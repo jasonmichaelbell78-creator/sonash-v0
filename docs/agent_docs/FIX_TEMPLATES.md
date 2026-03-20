@@ -1791,7 +1791,7 @@ levels in R1) and dedup boundaries (discovered 3 boundaries across 3 rounds).
 1. **Mapping completeness** — List ALL possible input values and their expected
    outputs. Fix all branches in one pass, not just the reported one:
 
-```
+```text
 // BAD: Fix only the reported level
 if (/critical/.test(text)) return "S0"; // fixed
 if (/high/.test(text)) return "S1";     // fixed

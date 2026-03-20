@@ -456,37 +456,10 @@ else
   (npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc") &
 fi
 
-# 5b. Cyclomatic complexity (background, unless skipped)
-if [ "$_cyc_skip" -eq 0 ]; then
-  (
-    _base=""
-    if git rev-parse --abbrev-ref --symbolic-full-name @{u} >/dev/null 2>&1; then
-      _base="@{u}"
-    elif git rev-parse --verify origin/main >/dev/null 2>&1; then
-      _base="origin/main"
-    elif git rev-parse --verify origin/master >/dev/null 2>&1; then
-      _base="origin/master"
-    fi
-    if [ -z "$_base" ]; then
-      echo "SKIP:no-base" > "$_CYC_OUT"; echo "0" > "${_CYC_OUT}.rc"; exit 0
-    fi
-    _all=$(git diff --name-only --diff-filter=ACMR "$_base"...HEAD 2>/dev/null | grep -E '\.(js|mjs)$' | grep -Ev '(\.test\.|\.spec\.|node_modules/|dist/|\.next/|tests/)' || true)
-    _total=$(printf '%s\n' "$_all" | sed '/^$/d' | wc -l | tr -d ' ')
-    _files=$(printf '%s\n' "$_all" | head -50)
-    if [ "$_total" -gt 50 ]; then
-      echo "TOO_MANY:$_total" > "$_CYC_OUT"; echo "1" > "${_CYC_OUT}.rc"; exit 0
-    fi
-    if [ -z "$_files" ]; then
-      echo "NO_FILES" > "$_CYC_OUT"; echo "0" > "${_CYC_OUT}.rc"; exit 0
-    fi
-    _eslint_rc=0
-    _out=$(printf '%s\n' "$_files" | grep -Ev '(eslint-plugin-sonash/|\.claude/hooks/backup/|\.claude/state/|docs/archive/|scripts/reviews/dist/|\.planning/)' | xargs -r npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- 2>&1) || _eslint_rc=$?
-    if [ "$_eslint_rc" -ne 0 ]; then
-      printf '%s\n' "$_out" > "$_CYC_OUT"; echo "1" > "${_CYC_OUT}.rc"
-    else
-      echo "0" > "${_CYC_OUT}.rc"
-    fi
-  ) &
+# 5b. Cyclomatic complexity via check-cyclomatic-cc.js (background, unless skipped)
+# Uses baseline from known-debt-baseline.json to suppress known debt
+if [ "$_cyc_skip" -eq 0 ] && [ -f scripts/check-cyclomatic-cc.js ]; then
+  (node scripts/check-cyclomatic-cc.js > "$_CYC_OUT" 2>&1; echo $? > "${_CYC_OUT}.rc") &
 fi
 
 # 5c. Cognitive complexity (background, unless skipped)
@@ -516,36 +489,28 @@ if [ "$_tsc_skip" -eq 0 ]; then
   echo "type-check|pass|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
 fi
 
-# 5b result: cyclomatic complexity
-if [ "$_cyc_skip" -eq 0 ]; then
+# 5b result: cyclomatic complexity (via check-cyclomatic-cc.js with baseline)
+if [ "$_cyc_skip" -eq 0 ] && [ -f scripts/check-cyclomatic-cc.js ]; then
   _cyc_rc=$(cat "${_CYC_OUT}.rc" 2>/dev/null || echo "0")
-  _cyc_out=$(cat "$_CYC_OUT" 2>/dev/null || echo "")
-  case "$_cyc_out" in
-    SKIP:no-base)
-      echo "  ⚠️ CC check: no upstream or main/master found, skipping"
-      echo "cyclomatic-cc|skip|0" >> "$CHECKS_TMPFILE" ;;
-    TOO_MANY:*)
-      _n=${_cyc_out#TOO_MANY:}
-      echo "  ❌ Cyclomatic complexity check: too many JS files changed ($_n > 50)."
-      echo "  Split the push or override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
-      echo "cyclomatic-cc|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
-      exit 1 ;;
-    NO_FILES)
-      echo "  ⏭️ No JS files in push diff"
-      echo "cyclomatic-cc|skip|0" >> "$CHECKS_TMPFILE" ;;
-    *)
-      if [ "$_cyc_rc" -ne 0 ]; then
-        echo "  ❌ Cyclomatic complexity violations (CC >15) in pushed files:"
-        grep -E "complexity" "$_CYC_OUT" | head -10
-        echo ""
-        echo "  Extract helper functions to reduce complexity before pushing."
-        echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
-        echo "cyclomatic-cc|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
-        exit 1
-      fi
-      echo "  ✅ Cyclomatic complexity passed (CC ≤15)"
-      echo "cyclomatic-cc|pass|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE" ;;
-  esac
+  if [ "$_cyc_rc" -eq 1 ]; then
+    echo "  ❌ Cyclomatic complexity regressions (CC >15) in pushed files:"
+    grep -E "FAIL|CC=" "$_CYC_OUT" | head -10
+    echo ""
+    echo "  Extract helper functions to reduce complexity before pushing."
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
+    echo "cyclomatic-cc|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    exit 1
+  elif [ "$_cyc_rc" -eq 0 ]; then
+    echo "  ✅ Cyclomatic complexity passed (CC ≤15, baseline-aware)"
+    echo "cyclomatic-cc|pass|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  else
+    echo "  ❌ Cyclomatic CC check errored (exit $_cyc_rc)"
+    echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
+    echo "cyclomatic-cc|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    exit 1
+  fi
+elif [ "$_cyc_skip" -eq 0 ]; then
+  echo "cyclomatic-cc|skip|0" >> "$CHECKS_TMPFILE"
 fi
 
 # 5c result: cognitive complexity

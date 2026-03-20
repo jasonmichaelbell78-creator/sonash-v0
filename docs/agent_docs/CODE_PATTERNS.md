@@ -205,6 +205,8 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 
 ## Security
 
+<!-- markdownlint-disable MD038 -->
+
 | Priority | Pattern                      | Rule                                                                                                         | Why                                                                                                    |
 | -------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
 | 🔴       | File path validation         | Validate within repo root before operations                                                                  | Prevent traversal                                                                                      |
@@ -221,7 +223,7 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 | 🟡       | Bound output                 | Limit count (e.g., `jq '.[0:50]'`) and length (`${VAR:0:500}`)                                               | Prevent DoS                                                                                            |
 | 🔴       | Hook output                  | Only output safe metadata                                                                                    | Never expose secrets                                                                                   |
 | 🔴       | .env files                   | Never recommend committing                                                                                   | Use environment vars                                                                                   |
-| 🔴       | Symlink write guard          | Use `isSafeToWrite(path)` from `lib/symlink-guard.js` before ALL writes                                      | Checks file + ancestor dirs for symlinks (Review #316-323)                                             |
+| 🔴       | Symlink write guard          | Use `isSafeToWrite(path)` from `scripts/lib/security-helpers.js` before ALL writes                           | Checks file + ancestor dirs for symlinks (Review #316-323)                                             |
 | 🔴       | guardSymlink pattern         | Use `guardSymlink(path)` or `refuseSymlinkWithParents(path)` as recognized guards                            | Both are valid symlink guard functions (PR #369 R7-R9)                                                 |
 | 🔴       | Atomic write tmp guard       | Guard BOTH target AND `.tmp` path: `isSafeToWrite(file) && isSafeToWrite(tmpFile)`                           | Tmp path is also a symlink attack vector (Review #322-323)                                             |
 | 🔴       | Symlink escape               | `realpathSync()` after resolve()                                                                             | Verify real path in project                                                                            |
@@ -1203,7 +1205,7 @@ These patterns are automatically enforced by:
 
 - `npm run patterns:check` - Pre-commit hook
 - `npm run patterns:check-all` - Full repo scan
-- `.claude/hooks/pattern-check.sh` - PostToolUse hook
+- `.claude/hooks/post-write-validator.js` - PostToolUse hook
 
 When a violation is flagged, reference this document (🔴 = critical patterns)
 for the pattern details and fix guidance.

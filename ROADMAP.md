@@ -1,14 +1,16 @@
 # SoNash Product Roadmap
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.26
-**Last Updated:** 2026-03-04
+**Document Version:** 3.28
+**Last Updated:** 2026-03-19
 **Status:** ACTIVE
 **Related:** [ROADMAP_FUTURE.md](./ROADMAP_FUTURE.md) (future milestones), [ROADMAP_LOG.md](./ROADMAP_LOG.md) (archive)
 <!-- prettier-ignore-end -->
 
 > **v3.17 UPDATE:** Removed all date-based scheduling. Now uses Priority + Phase
 > Buckets + Relative Ordering system. See Timing System section below.
+
+<!-- -->
 
 > **v3.16 UPDATE:** Created canonical audit findings location (Session #116).
 > 172 NET NEW findings consolidated to
@@ -22,7 +24,7 @@
 
 > For detailed AI update instructions, cross-document update triggers, and
 > validation commands, see
-> [claude.md Section 6](./claude.md#6-agentskill-triggers).
+> [CLAUDE.md Section 6](./CLAUDE.md#6-agentskill-triggers).
 
 **Quick Reference:**
 
@@ -287,6 +289,8 @@ Planned | 🟣 Research
 > dev **Status:** 🔄 ACTIVE | **Started:** Session #64 | **Updated:** Session
 > #98
 
+<!-- -->
+
 > **✅ SonarCloud Sprint Partially Complete (Session #85)**
 >
 > PR 1 (Mechanical Fixes) and PR 2 (Critical Issues) completed. Remaining work
@@ -298,11 +302,15 @@ Planned | 🟣 Research
 > - **Completed:** ~300 issues fixed (mechanical + critical)
 > - **Deferred:** ~1,400 issues to M2 (major, minor, security hotspots)
 
+<!-- -->
+
 > **📋 Process Audit Integration (Session #101)**
 >
 > This sprint now includes CI/CD reliability and solo developer automation work
 > from Process Audit DEBT-0851-0118 and Comprehensive Audit (Session #98). Total
 > sprint effort: ~65 hours across 5 tracks.
+
+<!-- -->
 
 > **📋 SWS Phase 3 Extraction (Session #219)**
 >
@@ -382,15 +390,19 @@ demoted to S1 in Session #179 — they are code quality, not critical.
 
 #### Session #116 Documentation Priority Items (S1/S2)
 
-- [ ] **DEBT-0075:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1
+- [x] **DEBT-0075:** 16 broken anchor links `SESSION_CONTEXT.md:47` [E1] - S1 --
+      Resolved: Wave 6 docs:accuracy (666 findings -> 0)
 - [ ] **DEBT-0076:** 20 placeholder issues in templates
       `PERFORMANCE_AUDIT_PLAN_2026_Q1.md` [E1] - S1
-- [ ] **DEBT-0386:** Broken relative links in review docs
-      `CODE_REVIEW_2026_Q1.md` [E1] - S1
+- [x] **DEBT-0386:** Broken relative links in review docs
+      `CODE_REVIEW_2026_Q1.md` [E1] - S1 -- Resolved: Wave 6 docs:accuracy (666
+      findings -> 0)
 - [ ] **DEBT-0387:** [X] placeholders in 2026-Q1 plans
       `CODE_REVIEW_PLAN_2026_Q1.md` [E1] - S1
-- [ ] **DEBT-0077:** 99 files fail docs:check (313 errors) `README.md` [E1] - S2
-- [ ] **CANON-0148:** Fix broken relative links [E1] - S1
+- [x] **DEBT-0077:** 99 files fail docs:check (313 errors) `README.md` [E1] - S2
+      -- Resolved: Wave 6 docs:accuracy (666 findings -> 0)
+- [x] **CANON-0148:** Fix broken relative links [E1] - S1 -- Resolved: Wave 6
+      docs:accuracy (666 findings -> 0)
 - [ ] **CANON-0149:** Replace [X] placeholders [E1] - S1
 
 #### Core Setup ✅ PARTIAL
@@ -409,7 +421,7 @@ demoted to S1 in Session #179 — they are code quality, not critical.
 - [ ] **B9:** Override Audit Tab (1hr) [depends: B4]
 - [ ] **B10:** System Health Tab (3hr) **NEW - Process Audit Integration**
       [depends: B4]
-  - Pattern compliance status (93 violations baseline)
+  - Pattern compliance status (0 violations — zero baseline achieved)
   - CI gate status, script test coverage
   - Pre-commit timing, agent compliance
 - [ ] **B11:** Warnings Resolution Tab (3hr) **NEW - Session #101** [depends:
@@ -1145,19 +1157,19 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
 
 > **Source:** Engineering Productivity Audit (Session #64, report archived)
 
-9. **EFF-001: Add `npm run dev:offline` Script** (S effort, High ROI)
+9. **EFF-001: Add `dev:offline` Script** (S effort, High ROI)
    - [ ] Install `concurrently` as dev dependency
    - [ ] Add
          `"dev:offline": "concurrently \"firebase emulators:start\" \"npm run dev\""`
    - [ ] Enables single-command offline development
-   - **Verification:** `npm run dev:offline` starts both emulators and Next.js
+   - **Verification:** `dev:offline` script starts both emulators and Next.js
 
 10. **EFF-003: Add `scripts/doctor.js` Environment Validator** (S effort, High
     ROI)
     - [ ] Create script to check Node version, npm, Firebase CLI, `.env.local`
-    - [ ] Add `npm run doctor` to package.json
+    - [ ] Add `doctor` script to package.json
     - [ ] Include helpful fix hints in error messages
-    - **Verification:** `npm run doctor` passes on working setup, fails clearly
+    - **Verification:** `doctor` script passes on working setup, fails clearly
       on broken
 
 11. **EFF-005: Cache npm ci in CI Workflow** (S effort, Medium ROI)
@@ -1196,8 +1208,10 @@ NEXT_PUBLIC_SENTRY_ENABLED=true
     - **Verification:** CI fails if coverage drops >5%
 
 16. **AUTO-005: Remove CI continue-on-error Flags** (S effort, Medium ROI)
-    - [ ] Fix Prettier baseline (run `npm run format`)
-    - [ ] Fix knip baseline (7 unused deps)
+    - [x] Fix Prettier baseline (run `npm run format`) -- Resolved: Wave 6 (1496
+          files formatted)
+    - [x] Fix knip baseline (7 unused deps) - ✅ Zero unused deps (housecleaning
+          Wave 1)
     - [ ] Remove all `continue-on-error: true` flags
     - **Verification:** CI blocks on formatting/linting issues
 
@@ -1661,8 +1675,8 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
     3. Script validation pre-commit hook checking for cross-platform patterns
   - **Priority:** P2 - Add to CI when cross-platform issues become frequent
 - ⏳ **knip** - Unused export detection (`npm run deps:unused`)
-  - Currently: baseline documented, not blocking
-  - Future: Add to CI with allow-list
+  - Currently: zero unused deps (cleaned in housecleaning Wave 1)
+  - Future: Add to CI with allow-list to maintain zero baseline
 - ⏳ **ESLint Import Boundary Rules**
   - Prerequisite: Feature folder refactoring (below)
   - Enforce import restrictions between feature domains
@@ -1908,7 +1922,7 @@ Developer tooling, SonarCloud cleanup, and code quality improvements.
 
 These pre-existing issues were identified during PR review CI:
 
-- ⏳ **Prettier Formatting (518 files)** - Run `npm run format:write` to fix
+- ⏳ **Prettier Formatting (518 files)** - Run `npx prettier --write .` to fix
   - **Priority:** P2 - Code style consistency
   - **Effort:** 5 minutes (automated fix)
 - ⏳ **Unused devDependencies** - Remove `@modelcontextprotocol/sdk`, `undici`
@@ -1922,18 +1936,12 @@ These pre-existing issues were identified during PR review CI:
   `components/providers/error-boundary.tsx`
   - **Priority:** P3 - Code style
   - **Effort:** 10 minutes
-- ⏳ **Pattern Compliance - Dev Utility Scripts** (Review #136)
-  - **Issue:** 79 pattern violations in development/migration scripts
-  - **Files:** `scripts/ai-review.js`, `scripts/assign-review-tier.js`,
-    `scripts/check-docs-light.js`, `scripts/check-document-sync.js`,
-    `scripts/normalize-canon-ids.js`, `scripts/validate-audit.js`, and others
-  - **Patterns:** Unsafe `error.message` access, `readFileSync` without
-    try/catch, `startsWith()` path validation, Windows path issues
-  - **Current State:** Excluded via `GLOBAL_EXCLUDE` in
-    `check-pattern-compliance.js`
-  - **Priority:** P4 - Low priority (dev tools, rarely run)
-  - **Effort:** 4-6 hours (fix all 79 violations incrementally)
-  - **Approach:** Fix during related maintenance work, not dedicated sprint
+- ✅ **Pattern Compliance - Dev Utility Scripts** (Review #136) - **RESOLVED**
+  - ~~**Issue:** 79 pattern violations in development/migration scripts~~
+  - **Resolved:** Housecleaning Wave 3 fixed all blocking pattern violations (72
+    blocking → 0). `npm run patterns:check-all` now reports 0 critical/high
+    violations.
+  - **Remaining:** 2 MEDIUM CRLF warnings (informational only)
 
 ---
 
@@ -1961,9 +1969,9 @@ Performance monitoring, incident response, and dashboard enhancements.
   - **Verification:** Go offline, trigger error, see `isOnline: false` in Sentry
 
 - ⏳ **EFF-008: Create Smoke Test Script** (M effort)
-  - Create `npm run smoke` that hits homepage, auth endpoint, Cloud Function
+  - Create `smoke` script that hits homepage, auth endpoint, Cloud Function
   - Quick deployment verification (~30s)
-  - **Verification:** `npm run smoke` passes on healthy deployment
+  - **Verification:** `smoke` script passes on healthy deployment
 
 - ⏳ **EFF-009: Add Bug Report GitHub Template** (M effort)
   - Create `.github/ISSUE_TEMPLATE/bug_report.md`
@@ -1995,7 +2003,7 @@ Performance monitoring, incident response, and dashboard enhancements.
 
 > **Source:** Lighthouse integration planning session (Session #66)
 > **Prerequisite:** PERF-001/PERF-002 from M1.5 complete **Spec:**
-> [LIGHTHOUSE_INTEGRATION_PLAN.md](docs/LIGHTHOUSE_INTEGRATION_PLAN.md)
+> [LIGHTHOUSE_INTEGRATION_PLAN.md](docs/plans/LIGHTHOUSE_INTEGRATION_PLAN.md)
 
 - ⏳ **PERF-003: Historical Score Tracking** (M effort)
   - Store Lighthouse scores in Firestore or flat files
@@ -3148,7 +3156,7 @@ Items deferred to post-launch or future versions. Items marked 🔬 require R&D.
 Update this document when milestone status changes, new features are added,
 priorities change, or progress percentages change significantly (>10%). For full
 trigger matrix and cross-document update rules, see
-[claude.md Section 7](./claude.md#7-reference-docs).
+[CLAUDE.md Section 7](./CLAUDE.md#7-reference-docs).
 
 ---
 
@@ -3156,6 +3164,8 @@ trigger matrix and cross-document update rules, see
 
 | Version | Session | Changes                                                                                                                                                                                                                                                                                                                                                                        |
 | ------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 3.28    | #230    | Wave 6 DEBT cleanup: resolved 592 DEBT items (574 broken links, 10 markdown lint, 4 Prettier baseline, 2 markdownlint+Prettier, 2 functions ESLint); marked docs:accuracy, docs:lint, Prettier baseline ROADMAP items complete                                                                                                                                                 |
+| 3.27    | #229    | Housecleaning Wave 4-5: marked knip baseline clean, pattern compliance resolved (79→0), updated stale baselines (93 violations→0, knip 7→0), moved 3 misplaced docs, updated Lighthouse plan path reference                                                                                                                                                                    |
 | 3.22    | #142    | Moved Agile Process, Process & Tooling Improvements to DEVELOPMENT.md; trimmed Update Triggers and AI Instructions sections to summaries with links                                                                                                                                                                                                                            |
 | 3.21    | #141    | Track T Phase 1 COMPLETE: `/test-suite` skill with 27 feature protocols, 5-phase pipeline (smoke/feature/security/performance/report), Firebase Preview Channels, dual browser support (Playwright MCP + Chrome Extension); added TESTING_USER_MANUAL.md references to all core docs; updated cross-document sync triggers for test protocols                                  |
 | 3.20    | #140    | Completed date-to-session migration: converted all remaining inline dates to session references; replaced Version History Date column with Session column; removed inline dates from completed items; npm audit fix (brace-expansion vuln); cleaned up stale .bak file                                                                                                         |

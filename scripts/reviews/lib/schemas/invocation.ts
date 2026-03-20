@@ -23,6 +23,13 @@ export const InvocationRecord = BaseRecord.extend({
       mean_score: z.number().min(0).max(100).nullable().optional(),
       improvements: z.number().int().min(0).nullable().optional(),
       categories: z.number().int().min(0).nullable().optional(),
+      // skill-audit context fields
+      target: z.string().min(1).nullable().optional(),
+      decisions: z.number().int().min(0).nullable().optional(),
+      score: z.number().int().min(0).max(100).nullable().optional(),
+      // general-purpose context fields
+      topic: z.string().min(1).nullable().optional(),
+      note: z.string().min(1).nullable().optional(),
     })
     .nullable()
     .optional(),

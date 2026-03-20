@@ -117,9 +117,12 @@ function mapInventoryEntry(
     id: entry.id,
     type: entryType,
     date,
+    // eslint-disable-next-line security/detect-object-injection -- entryType is typed NotebookEntryType union
     title: titleMap[entryType],
     preview,
+    // eslint-disable-next-line security/detect-object-injection -- entryType is typed NotebookEntryType union
     icon: iconMap[entryType],
+    // eslint-disable-next-line security/detect-object-injection -- entryType is typed NotebookEntryType union
     color: colorMap[entryType],
   };
 }

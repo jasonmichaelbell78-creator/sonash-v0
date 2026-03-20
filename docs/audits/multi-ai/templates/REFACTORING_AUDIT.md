@@ -75,7 +75,7 @@ EIGHT_PHASE_REFACTOR_PLAN.md.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -84,7 +84,7 @@ Last Refactoring Audit: [YYYY-MM-DD or "Never"]
 
 ### Tech Stack
 
-```
+```text
 - Framework: [e.g., Next.js 16.1 (App Router)]
 - UI Library: [e.g., React 19.2.3]
 - Language: [e.g., TypeScript 5.x]
@@ -95,7 +95,7 @@ Last Refactoring Audit: [YYYY-MM-DD or "Never"]
 
 ### Scope
 
-```
+```text
 Include: [directories, e.g., app/, components/, hooks/, lib/, functions/, tests/, types/]
 Secondary: [optional, e.g., scripts/, styles/]
 Exclude: [directories, e.g., docs/, public/, node_modules/]
@@ -196,8 +196,8 @@ Before beginning refactoring analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis (PRIMARY INPUT)**: SonarCloud integration available via
-   `npm run sonar:report` (see SonarCloud dashboard)
+5. **Static Analysis (PRIMARY INPUT)**: SonarCloud integration available via MCP
+   server or SonarCloud dashboard
    - **NOTE:** Run fresh SonarCloud scan or verify metrics are current before
      each audit—numbers become stale as issues are fixed.
    - CRITICAL cognitive complexity violations (functions exceeding 15-point
@@ -540,7 +540,7 @@ Paste only minimal excerpts (file paths + 1-3 lines per match).
 Use this as a second message only to tool-capable agents (Claude Code, Codex,
 Copilot-in-IDE, Jules), after the main prompt:
 
-```
+```text
 If (run_commands=yes AND repo_checkout=yes), prioritize PASS 1 duplication with these checks (do not install heavy tooling unless already present):
 
 1) Quality gates (capture only failures + file paths):
@@ -615,7 +615,7 @@ Create a document following EIGHT_PHASE_REFACTOR_PLAN.md structure:
 
 For each refactoring phase, follow the 4-step workflow:
 
-```
+```text
 1. IMPLEMENTATION -> 2. REVIEW R1 -> 3. REVIEW R2 -> 4. BETWEEN-PR CHECKLIST
 ```
 

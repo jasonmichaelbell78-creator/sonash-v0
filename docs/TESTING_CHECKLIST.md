@@ -216,7 +216,7 @@ backdoor, restored proper admin claim verification.
 
 **Test Case: Unauthorized Access Prevention**
 
-```
+```text
 Manual Test:
 1. Clear browser cache/cookies
 2. Navigate to /admin
@@ -233,7 +233,7 @@ Failure Case:
 
 **Test Case: Admin Claim Verification**
 
-```
+```text
 Manual Test (Firebase Emulator):
 1. Open Firebase Emulator UI → Authentication
 2. Create test user: test@example.com
@@ -269,7 +269,7 @@ and API routes.
 
 **Test Case: Server-Side Rendering**
 
-```
+```text
 Manual Test:
 1. npm run build
 2. npm start (production build)
@@ -293,7 +293,7 @@ proper `| undefined` types.
 
 **Test Case: Server-Side Safety**
 
-```
+```text
 Manual Test:
 1. Trigger a server-side render (SSR) that uses Firebase
    - Visit any page that calls Firestore in getServerSideProps
@@ -356,14 +356,13 @@ Failure Test (Non-Admin User):
    const functions = getFunctions()
    const save = httpsCallable(functions, 'adminSaveMeeting')
    save({ meeting: {...} })
-````
 
 Expected: Should throw "Unauthorized: admin access required"
-
-```
+````
 
 **Test Case: Zod Schema Validation**
-```
+
+````
 
 Manual Test (Invalid Data):
 
@@ -391,7 +390,7 @@ MeetingSchema.parse({ name: "Test" })).toThrow() expect(() =>
 MeetingSchema.parse({ name: "Valid", type: "AA", day: "Monday", time: "19:00",
 address: "123 St", neighborhood: "Area" })).not.toThrow() })
 
-```
+````
 
 ---
 
@@ -400,11 +399,13 @@ address: "123 St", neighborhood: "Area" })).not.toThrow() })
 ### 2.1 Meeting Finder Pagination
 
 **What Changed:**
+
 - Added `getAllMeetingsPaginated()` to `lib/db/meetings.ts`
 - Implemented infinite scroll in `components/notebook/pages/resources-page.tsx`
 
 **Test Case: Pagination with 50-Item Pages**
-```
+
+```text
 
 Manual Test (Requires 100+ meetings):
 
@@ -429,7 +430,8 @@ hasMore flag broken
 ```
 
 **Test Case: Cursor Persistence**
-```
+
+```text
 
 Manual Test:
 
@@ -461,11 +463,14 @@ const ids1 = result1.meetings.map(m => m.id) const ids2 = result2.meetings.map(m
 ### 2.2 Firestore-Based Rate Limiting
 
 **What Changed:**
+
 - Created `functions/src/firestore-rate-limiter.ts`
-- Replaced `RateLimiterMemory` with `FirestoreRateLimiter` in `functions/src/index.ts`
+- Replaced `RateLimiterMemory` with `FirestoreRateLimiter` in
+  `functions/src/index.ts`
 
 **Test Case: Rate Limit Enforcement**
-```
+
+````
 
 Manual Test (Rapid Requests):
 
@@ -512,10 +517,11 @@ limit exceeded')
 setTimeout(resolve, 11000)) await
 expect(limiter.consume(userId)).resolves.not.toThrow() })
 
-```
+````
 
 **Test Case: Persistence Across Function Instances**
-```
+
+````
 
 Manual Test (Cold Start Simulation):
 
@@ -536,10 +542,11 @@ Verification:
 - Check Firestore UI → rate_limits collection should survive restarts
 - Unlike memory-based limiter, limits should NOT reset on cold start
 
-```
+````
 
 **Test Case: Cleanup Scheduled Function**
-```
+
+````
 
 Manual Test (if deployed):
 
@@ -560,7 +567,7 @@ rate limits should be preserved ✓ Function logs should show deletion count
 
 Note: This cleanup function prevents Firestore bloat over time.
 
-```
+````
 
 ---
 
@@ -568,11 +575,12 @@ Note: This cleanup function prevents Firestore bloat over time.
 
 ### 3.1 SHA-256 Privacy Hashing
 
-**What Changed:** `functions/src/security-logger.ts:47-56`
-Upgraded from bitwise hash to SHA-256 for GDPR/HIPAA compliance.
+**What Changed:** `functions/src/security-logger.ts:47-56` Upgraded from bitwise
+hash to SHA-256 for GDPR/HIPAA compliance.
 
 **Test Case: Hash Irreversibility**
-```
+
+```text
 
 Manual Test:
 
@@ -602,7 +610,8 @@ expect(hashUserId('user456')).not.toBe(hash1) })
 ```
 
 **Test Case: Collision Resistance**
-```
+
+```text
 
 Automated Test: // tests/hash-collisions.test.ts import { hashUserId } from
 '@/functions/src/security-logger'
@@ -619,11 +628,12 @@ expect(hashes.size).toBe(10000) // All unique })
 
 ### 3.2 Error Handling Improvements
 
-**What Changed:** `lib/db/meetings.ts:86-89, 106-108`
-Changed from returning empty arrays to throwing errors with user-friendly messages.
+**What Changed:** `lib/db/meetings.ts:86-89, 106-108` Changed from returning
+empty arrays to throwing errors with user-friendly messages.
 
 **Test Case: Network Failure Handling**
-```
+
+```text
 
 Manual Test (Offline Mode):
 
@@ -646,7 +656,8 @@ Recovery Test:
 ```
 
 **Test Case: Firestore Permission Errors**
-```
+
+````
 
 Manual Test (if testing with production Firestore):
 
@@ -673,15 +684,17 @@ error'))
 await expect(MeetingsService.getMeetingsByDay('Monday'))
 .rejects.toThrow('Failed to load meetings for Monday') })
 
-```
+````
 
 ### 3.3 Date Function Consolidation
 
-**What Changed:** `lib/firestore-service.ts`
-Removed duplicate `getTodayLocalDateId()`, now uses `getTodayDateId()` from `lib/utils/date-utils.ts`.
+**What Changed:** `lib/firestore-service.ts` Removed duplicate
+`getTodayLocalDateId()`, now uses `getTodayDateId()` from
+`lib/utils/date-utils.ts`.
 
 **Test Case: Timezone Consistency**
-```
+
+```text
 
 Manual Test (Multiple Timezones):
 
@@ -726,10 +739,12 @@ from lib/utils/date-utils.ts expect(id1).toMatch(/^\d{4}-\d{2}-\d{2}$/) })
 
 ### 4.1 README Documentation
 
-**What Changed:** Complete rewrite of Setup & Installation section with Firebase setup instructions.
+**What Changed:** Complete rewrite of Setup & Installation section with Firebase
+setup instructions.
 
 **Test Case: New Developer Onboarding**
-```
+
+```text
 
 Manual Test (Fresh Setup):
 
@@ -754,7 +769,8 @@ Feedback Loop:
 **What Changed:** Added `*.log` to `.gitignore`
 
 **Test Case: Git Status Clean**
-```
+
+```text
 
 Manual Test:
 
@@ -776,7 +792,8 @@ Verification: git status --ignored
 ## Integration Testing Checklist
 
 ### End-to-End Admin Workflow
-```
+
+```text
 
 1. Admin Login □ Log in to /admin with admin claim □ Verify all tabs load:
    Meetings, Sober Living, Quotes, Users
@@ -793,7 +810,8 @@ Verification: git status --ignored
 ```
 
 ### End-to-End User Workflow
-```
+
+```text
 
 1. Anonymous Authentication □ Open app as new user □ Verify anonymous auth
    succeeds □ Check Firestore → users collection for new user
@@ -811,7 +829,8 @@ Verification: git status --ignored
 ## Performance Testing
 
 ### Meeting Finder Load Time
-```
+
+```text
 
 Test Setup:
 
@@ -838,7 +857,8 @@ Target Scores:
 ```
 
 ### Rate Limiter Performance
-```
+
+````
 
 Load Test (using artillery.io or similar):
 
@@ -872,18 +892,21 @@ consistent
 ## Security Audit Checklist
 
 ### Admin Security
+
 - [ ] Admin panel requires valid admin claim
 - [ ] No hardcoded credentials or demo backdoors
 - [ ] Cloud Functions verify admin claim server-side
 - [ ] Zod validation rejects invalid input
 
 ### Firebase Security
+
 - [ ] Firestore rules deny unauthorized access
 - [ ] Rate limiting prevents abuse
 - [ ] App Check enabled (reCAPTCHA Enterprise)
 - [ ] User IDs are hashed in logs (SHA-256)
 
 ### Client-Side Security
+
 - [ ] No sensitive data in localStorage
 - [ ] Auth tokens properly refreshed
 - [ ] HTTPS enforced in production
@@ -894,27 +917,28 @@ consistent
 ## Automated Testing Recommendations
 
 ### Unit Tests (Vitest or Jest)
+
 ```typescript
 // tests/unit/date-utils.test.ts
-import { getTodayDateId, parseDateId } from '@/lib/utils/date-utils'
+import { getTodayDateId, parseDateId } from "@/lib/utils/date-utils";
 
-describe('Date Utilities', () => {
-  test('getTodayDateId formats correctly', () => {
-    const date = new Date('2025-12-16T10:30:00')
-    expect(getTodayDateId(date)).toBe('2025-12-16')
-  })
-})
+describe("Date Utilities", () => {
+  test("getTodayDateId formats correctly", () => {
+    const date = new Date("2025-12-16T10:30:00");
+    expect(getTodayDateId(date)).toBe("2025-12-16");
+  });
+});
 
 // tests/unit/meetings.test.ts
-import { MeetingsService } from '@/lib/db/meetings'
+import { MeetingsService } from "@/lib/db/meetings";
 
-describe('Meetings Service', () => {
-  test('pagination returns correct page size', async () => {
-    const result = await MeetingsService.getAllMeetingsPaginated(50)
-    expect(result.meetings.length).toBeLessThanOrEqual(50)
-  })
-})
-````
+describe("Meetings Service", () => {
+  test("pagination returns correct page size", async () => {
+    const result = await MeetingsService.getAllMeetingsPaginated(50);
+    expect(result.meetings.length).toBeLessThanOrEqual(50);
+  });
+});
+```
 
 ### Integration Tests (Cypress or Playwright)
 

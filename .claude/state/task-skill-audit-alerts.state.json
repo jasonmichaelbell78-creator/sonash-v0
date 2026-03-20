@@ -1,73 +1,84 @@
 {
-  "task": "Skill Audit: alerts",
+  "task": "Skill Audit: alerts (repeat)",
   "target_skill": "alerts",
-  "status": "phase3_complete_awaiting_phase4",
-  "current_category": 10,
+  "status": "complete",
+  "current_category": 11,
+  "convergence_loop": {
+    "pass1_agents": 5,
+    "pass2_agents": 2,
+    "confirmed": 7,
+    "corrected": 1,
+    "extended": 1,
+    "new": 6,
+    "status": "converged"
+  },
   "decisions": {
-    "cat1_intent_fidelity": "4 decisions: A-accepted (clarify 'intelligent' in overview), B-accepted (move triggers from frontmatter to When to Use), C-accepted (clarify 'system health' = project health not infra), OPP-1A-accepted (add 'What This Skill Does NOT Do' note)",
-    "cat2_workflow_sequencing": "6 decisions: A-accepted (add warm-up before Phase 1), B-accepted (phase transition markers), C-accepted-as-no-change (keep Self-Audit at Phase 6 — current placement is fine), D-accepted (graceful skip for zero alerts), E-accepted (mid-workflow escape hatch after every 10 alerts), F-accepted (compaction resilience — persist decisions to session JSONL incrementally)",
-    "cat3_input_output_quality": "6 decisions: A-accepted (add alert object schema), B-accepted (done-when gates for Phases 3, 5, 7), C-accepted (checker failure handling — surface no_data as INFO alert), D-accepted (completion artifact summary), E-accepted (dashboard format with benchmark cross-ref, sort worst-first), F-accepted (session JSONL record format)",
-    "cat4_decision_points": "5 decisions: A-accepted (recommend action per alert based on severity+trend), B-accepted (delegation protocol for batch-accepting), C-accepted (cross-reference session JSONL format), D-accepted (decision revision gate at Phase 4), E-accepted (alert grouping for 3+ similar items)",
-    "cat5_integration_surface": "6 decisions: A-accepted (expand Integration section with neighbors, input, output, downstream), B-accepted (routing guide vs audit-health and ecosystem-health), C-accepted (document top script dependencies), D-accepted (invocation tracking — value depends on review pipeline consuming the data), E-accepted (skill-routing in suggested actions), OPP-5A-accepted (context-aware mode selection: limited from session-begin, ask standalone)",
-    "cat6_guard_rails": "6 decisions: A-accepted (script failure handling — don't proceed on crash), B-accepted (partial output recovery — show raw output, ask to debug or skip), C-accepted (suppression ratio guard >50%), D-accepted (scope escalation guard — pause if fix >5min or >3 files), E-accepted (script timeout guidance — 120s kill), F-accepted (baseline staleness check >7 days)",
-    "cat7_prompt_engineering": "4 decisions: A-accepted (add MUST/SHOULD/MAY to all instructions), B-accepted (add Critical Rules section front-loaded), C-accepted (move scoring formula to Phase 2 with cross-reference), D-accepted (expand Phase 3 with context card format example)",
-    "cat8_scope_boundaries": "4 decisions: A-accepted (replace generic When NOT to Use with named alternatives), B-accepted (add routing guide for health-related skills), C-accepted (duplicate-run detection via session JSONL timestamp), D-accepted (inline-fix vs skill-handoff guidance — 2min threshold)",
-    "cat9_institutional_memory": "5 decisions: A-accepted (CLAUDE.md reference for inline fixes), B-accepted-modified (learning loop feedback → alerts-history.jsonl not ephemeral session JSONL, consumed by Phase 6 checker review), C-accepted (preserve trend data to alerts-history.jsonl, consumed by Phase 2 dashboard), D-accepted (surface cross-session trends in Phase 2 dashboard from alerts-history.jsonl), E-accepted (persist suppression rationale, consumed by Phase 6 stale review)",
-    "cat10_user_experience": "6 decisions: A-accepted (warm-up — point-of-use repetition of Cat2-A), B-accepted (progress indicators in Phase 3 — alert N of M), C-accepted (dashboard table format with score/rating/alerts/trend columns), D-accepted (closure summary format — point-of-use of Cat3-D), E-accepted (visual formatting guidance per phase), OPP-10A-rejected (no emoji — project convention)",
-    "operational_script_fixes": "6 accepted: OD-A (fix findProjectRoot CRITICAL), OD-B (add 7 missing weights), OD-C (consistent no_data handling for all checkers), OD-D (addContext for checkReviewQuality), OD-E (add action field to 3 alerts), OD-F (add type-check npm script)",
-    "operational_scoring": "1 accepted: OD-H (document measuredPct in health score output)",
-    "operational_data_sources": "COMPLETE — 7 files investigated: 4 real bugs found (DS-1: absolute path rejection in post-read-handler.js kills context tracking, DS-4: saveWarnedFiles dead code in check-pattern-compliance.js, DS-5: no writer for commit-failures.jsonl, DS-6: log-session-activity.js never called automatically), 3 expected behavior (DS-2/DS-3: agent files only created when agents used, DS-7: velocity-log works)"
+    "cat1_intent_fidelity": "4 decisions: A-accepted (add trend=null handling as stable), B-accepted (downgrade suppression learning to suppression management), C-accepted (add cross-category pattern detection to Phase 2), D-accepted (add benchmark-to-alert severity mapping note)",
+    "cat2_workflow_sequencing": "6 decisions: A-accepted (clarify script vs caller responsibility), B-accepted (define Phase 5 execution model), C-accepted (escape hatch recurring every 10 alerts), D-accepted (Phase 4 done-when gate + revision mechanism), E-accepted (compaction resilience for Phase 3), F-accepted (Phase 7 re-run loops to Phase 1)",
+    "cat3_input_output_quality": "7 decisions: A-accepted (fix alert schema to match implementation), B-accepted (add suppression file schema), C-accepted (define alerts-history.jsonl schema), D-accepted (update category counts 18/42), E-accepted (document delta field format), F-accepted (add alerts-acknowledged.json schema), G-accepted (add context object variability note)",
+    "cat4_decision_points": "7 decisions: A-accepted (add example Q&A dialogue), B-accepted (enumerate delegation triggers), C-accepted (define 2-5min fix guidance), D-accepted (specify Phase 4 revision UX), E-accepted (clarify create task as DEBT item), F-accepted (add suppression reason validation 15 char min), G-accepted (decision logging per-alert immediately)",
+    "cat5_integration_surface": "5 decisions: A-accepted (create REFERENCE.md, extract detailed workflows/tables, target SKILL.md ~200 lines), B-accepted (add compaction resilience section with progress state file), C-accepted (add neighbor differentiation matrix), D-accepted (add data freshness contract), E-accepted (clarify ecosystem ownership hierarchy)",
+    "cat6_guard_rails": "6 decisions: A-accepted (add contradiction detection before Phase 5), B-accepted (delegation scope guard >15 alerts), C-accepted (checker escalation: no_data 3+ consecutive runs -> WARNING), D-accepted (fix appendFileSync race with atomic write), E-accepted (add input flag validation --limited/--full), F-accepted (skip-to-summary confirmation gate)",
+    "cat7_prompt_engineering": "5 decisions: A-accepted (extract to REFERENCE.md), B-accepted (add decision semantics table), C-accepted (add concrete example walkthrough), D-accepted (define metric terms in Learning Loop), E-accepted (add MUST/SHOULD/MAY hierarchy)",
+    "cat8_scope_boundaries": "4 decisions: A-accepted (add routing decision tree), B-accepted (add upstream dependencies section), C-accepted (clarify /alerts as lightweight consumer not full triage), D-accepted (update version history with accurate scope)",
+    "cat9_institutional_memory": "5 decisions: A-accepted (implement alerts-history.jsonl persistence), B-accepted (implement deterministic auto-insights), C-accepted (add learning recall to Phase 1 warm-up), D-accepted (add user feedback collection to Phase 6), E-accepted (clarify health-score-log vs alerts-history split)",
+    "cat10_user_experience": "5 decisions: A-accepted (add starting checks signal), B-accepted (add all alerts reviewed closure gate), C-accepted (show delegation preview before execution), D-accepted (add resume mechanism for interrupted sessions), E-accepted (add suppression reason retry prompt)",
+    "cat11_convergence_loops": "2 decisions: A-accepted (add fix-verification CL to Phase 5), B-accepted (document convergence scope)"
   },
   "scores": {
     "cat1": 7,
     "cat2": 6,
     "cat3": 5,
-    "cat4": 7,
-    "cat5": 5,
-    "cat6": 4,
+    "cat4": 6,
+    "cat5": 6,
+    "cat6": 7,
     "cat7": 5,
     "cat8": 4,
-    "cat9": 5,
-    "cat10": 5
+    "cat9": 3,
+    "cat10": 6,
+    "cat11": 3
   },
-  "total_decisions": 59,
-  "accepted_decisions": 58,
-  "rejected_decisions": 1,
-  "operational_findings": 8,
-  "overall_score": 53,
-  "estimated_post_fix_score": 80,
-  "pending": [
-    "Phase 4: Implementation — 83 total items (58 SKILL.md + 12 script + 4 data source + 5 skill-creator + 4 skill-audit)",
-    "Phase 5: Self-Audit",
-    "Phase 6: Learning Loop + Closure"
-  ],
-  "cross_cutting_principles": [
-    "USER-REQ-1: Script-level checker health — DONE, found critical root detection bug + 7 other fixes",
-    "USER-REQ-2: Skill-audit scope MUST include operational dependencies — AGREED: A(scripts)=MUST, B(hooks)=SHOULD, C(data files)=MUST, D(npm scripts)=SHOULD, E(docs)=SHOULD, F(function health)=MAY/MUST if >3 functions, G(state files)=MUST for ALL skills, H(adjacent skills)=Phase 3 crosscheck",
-    "USER-REQ-3: Every write must have a reader"
-  ],
+  "total_decisions": 56,
+  "accepted_decisions": 56,
+  "rejected_decisions": 0,
+  "overall_score": 58,
+  "estimated_post_fix_score": 82,
+  "cross_cutting_principles": [],
   "process_compliance_notes": [
-    "Operational dependency check added between Phase 2 and Phase 3 per USER-REQ-2.",
-    "Full 37-checker analysis performed per user request.",
-    "PROCESS DEVIATION: Jumped to Phase 3 without user approval. Corrected.",
-    "PROCESS DEVIATION: Did not give user opportunity to discuss OD findings or dependency checker definition."
+    "Deep research with 5 parallel Pass 1 agents + 2 Pass 2 verification agents",
+    "T20 tally: 7 confirmed, 1 corrected, 1 extended, 6 new findings",
+    "All 11 categories presented one at a time",
+    "User corrected Cat 11 assessment — convergence loops applicable for fix verification"
+  ],
+  "learnings": [
+    "Lowest category: Institutional Memory (3/10) — spec-implementation gap is biggest risk; audit for implementation not just specification",
+    "Most common gap type: missing schemas/formats (7 of 56 decisions) — skills reading/writing files must include schemas",
+    "Recurring pattern: scope confusion between neighbors — every shared ecosystem skill needs differentiation matrix + routing tree"
   ],
   "process_feedback": null,
-  "files_modified": [],
+  "files_modified": [
+    ".claude/skills/alerts/SKILL.md (rewritten 442->212 lines)",
+    ".claude/skills/alerts/REFERENCE.md (new, 402 lines)",
+    ".claude/skills/alerts/scripts/run-alerts.js (2 fixes: flag validation, atomic write)",
+    ".claude/skills/session-begin/SKILL.md (compaction note)",
+    ".claude/skills/ecosystem-health/SKILL.md (differentiation)",
+    ".claude/skills/health-ecosystem-audit/SKILL.md (history output)",
+    ".claude/skills/skill-creator/REFERENCE.md (5 gaps)"
+  ],
   "skill_creator_gaps": 5,
   "skill_creator_gap_details": [
-    "SC-1: No operational dependencies guidance in Step 2",
-    "SC-2: Compaction resilience conditional instead of MUST for all",
-    "SC-3: No 'What This Skill Does NOT Do' in content checklist",
-    "SC-4: No recommend-with-rationale for interactive skills",
-    "SC-5: No writer/reader pair verification"
+    "SC-1: Script vs caller responsibility — added to REFERENCE.md",
+    "SC-2: Neighbor differentiation matrix — added to REFERENCE.md",
+    "SC-3: Data freshness contracts — added to REFERENCE.md",
+    "SC-4: Suppression reason validation — added to REFERENCE.md",
+    "SC-5: Routing decision trees — added to REFERENCE.md"
   ],
-  "skill_audit_gaps": 4,
-  "skill_audit_gap_details": [
-    "SA-1: No operational dependency phase (add Phase 2.5 with checks A-G)",
-    "SA-2: Covered by SA-1",
-    "SA-3: No root cause investigation requirement",
-    "SA-4: Adjacent skill contract check not explicit in Phase 3"
-  ],
-  "updated": "2026-03-06T21:45:00Z"
+  "previous_audit": {
+    "date": "2026-03-06",
+    "score": 53,
+    "decisions": 59,
+    "accepted": 58,
+    "rejected": 1
+  },
+  "updated": "2026-03-19T03:00:00Z"
 }

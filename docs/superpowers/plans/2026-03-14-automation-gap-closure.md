@@ -1323,7 +1323,7 @@ Expected: Completes successfully. Enforcement pipeline steps run without errors.
 
 Check each criterion from the spec:
 
-1. Zero scaffolded entries: `node -e "..." ` (same check as Task 8 Step 3)
+1. Zero scaffolded entries: `node -e "..."` (same check as Task 8 Step 3)
 2. All 5 scripts wired: grep session-start.js for all script names
 3. No manual invocation required: pipeline runs on session-start automatically
 4. Run `/alerts` — verify pending refinements surface with fix-or-DEBT options

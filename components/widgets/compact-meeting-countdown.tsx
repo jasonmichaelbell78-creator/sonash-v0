@@ -272,9 +272,10 @@ export default function CompactMeetingCountdown() {
 
   return (
     <>
-      <div
+      <button
+        type="button"
         onClick={handleClick}
-        className="flex flex-col items-end gap-0.5 text-amber-900 hover:text-amber-700 transition-colors cursor-pointer group"
+        className="flex flex-col items-end gap-0.5 text-amber-900 hover:text-amber-700 transition-colors cursor-pointer group bg-transparent border-none p-0 text-left"
       >
         <div className="flex items-center gap-1.5">
           <Clock className="w-4 h-4 group-hover:scale-110 transition-transform" />
@@ -290,7 +291,7 @@ export default function CompactMeetingCountdown() {
             {formatTime(nextMeeting.time)} {timeUntil && `• ${timeUntil}`}
           </div>
         </div>
-      </div>
+      </button>
 
       <MeetingDetailsDialog
         meeting={nextMeeting}

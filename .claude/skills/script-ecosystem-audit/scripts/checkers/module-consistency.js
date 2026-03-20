@@ -124,6 +124,8 @@ function checkCjsEsmConsistency(scriptFiles) {
 
   let totalDirs = 0;
   let consistentDirs = 0;
+  let mixedDirFindingCount = 0;
+  let mixedFileFindingCount = 0;
 
   for (const [dir, files] of dirMap) {
     if (files.length < 2) {
@@ -136,7 +138,6 @@ function checkCjsEsmConsistency(scriptFiles) {
     totalDirs++;
     let cjsCount = 0;
     let esmCount = 0;
-    let mixedFileFindingCount = 0;
 
     for (const sf of files) {
       const usesCjs = requirePattern.test(sf.content) || /\bmodule\.exports\b/.test(sf.content);
@@ -167,7 +168,7 @@ function checkCjsEsmConsistency(scriptFiles) {
     // Check directory-level consistency
     if (cjsCount > 0 && esmCount > 0) {
       findings.push({
-        id: "SIA-101",
+        id: `SIA-101-${++mixedDirFindingCount}`,
         category: "cjs_esm_consistency",
         domain: DOMAIN,
         severity: "info",
@@ -377,6 +378,7 @@ function checkNodejsApiCompatibility(scriptFiles) {
 
   let totalScripts = scriptFiles.length;
   let cleanScripts = 0;
+  let deprecatedFindingCount = 0;
 
   for (const sf of scriptFiles) {
     let hasDeprecated = false;
@@ -385,7 +387,7 @@ function checkNodejsApiCompatibility(scriptFiles) {
       if (api.pattern.test(sf.content)) {
         hasDeprecated = true;
         findings.push({
-          id: "SIA-120",
+          id: `SIA-120-${++deprecatedFindingCount}`,
           category: "nodejs_api_compatibility",
           domain: DOMAIN,
           severity: "warning",

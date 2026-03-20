@@ -10,7 +10,7 @@
 **Audit Date:** 2026-02-22
 **Auditor:** Performance Agent (claude-sonnet-4-6)
 **Branch:** claude/fix-tool-use-ids-EfyvE
-**Stack:** Next.js 16.1.1, React 19.2.3, Firebase 12.6.0, Tailwind CSS 4.1.9
+**Stack:** Next.js 16.2.0, React 19.2.4, Firebase 12.10.0, Tailwind CSS 4.2.2
 **Scope:** Bundle size, rendering, Firestore, images, caching, Core Web Vitals, CSS, Server/Client boundaries
 <!-- prettier-ignore-end -->
 

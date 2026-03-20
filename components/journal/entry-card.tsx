@@ -50,6 +50,7 @@ const MOOD_EMOJI: Record<string, string> = {
  * Get styling classes for entry type
  */
 function getEntryStyles(type: string): string {
+  // eslint-disable-next-line security/detect-object-injection -- type from JournalEntry.type, a known set of entry types
   return ENTRY_STYLES[type] || ENTRY_STYLES.default;
 }
 
@@ -57,6 +58,7 @@ function getEntryStyles(type: string): string {
  * Get emoji for mood
  */
 function getMoodEmoji(mood: string): string {
+  // eslint-disable-next-line security/detect-object-injection -- mood from MoodEntry.data.mood, a known set of mood values
   return MOOD_EMOJI[mood] || "😐";
 }
 
@@ -186,8 +188,8 @@ function GratitudeContent({ data }: Readonly<{ data: GratitudeEntry["data"] }>) 
     <div className="w-full">
       <h4 className="font-heading text-lg mb-2 text-[var(--journal-text)]">Gratitude</h4>
       <ul className="list-disc pl-4 text-sm font-handlee text-[var(--journal-text)]">
-        {data.items.slice(0, 3).map((item: string, i: number) => (
-          <li key={`gratitude-${i}-${item}`}>{item}</li>
+        {data.items.slice(0, 3).map((item: string) => (
+          <li key={`gratitude-${item}`}>{item}</li>
         ))}
       </ul>
     </div>

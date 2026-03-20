@@ -113,7 +113,7 @@ For distributed execution across multiple AI models:
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -122,7 +122,7 @@ Last Documentation Audit: [YYYY-MM-DD or "Never"]
 
 ### Documentation Structure
 
-```
+```text
 Documentation Tiers (if applicable):
 - Tier 1: [Root-level canonical docs, e.g., README.md, ROADMAP.md]
 - Tier 2: [Foundation docs, e.g., ARCHITECTURE.md, DEVELOPMENT.md]
@@ -148,7 +148,7 @@ Documentation Directories:
 
 ### Scope
 
-```
+```text
 Include: [directories, e.g., docs/, README.md, ARCHITECTURE.md, *.md in root]
 Secondary: [optional, e.g., .claude/skills/*.md]
 Exclude: [directories, e.g., node_modules/, docs/archive/]

@@ -904,6 +904,8 @@
   "audit:M38": "DEBT-45603",
   "M39": "DEBT-45604",
   "audit:M39": "DEBT-45604",
+  "hook-bypass-REVIEWER": "DEBT-45608",
+  "hook-bypass-CROSS-DOC-DEPS": "DEBT-45609",
   "sonarcloud:AZuzlah-WljwcmJtvbRT": "DEBT-8578",
   "sonarcloud:AZuzlaFJWljwcmJtvbMK": "DEBT-8579",
   "sonarcloud:AZuzlaDlWljwcmJtvbMC": "DEBT-8580",

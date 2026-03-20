@@ -316,6 +316,7 @@ function checkErrorPathTesting(testFiles) {
 
   let totalTestFiles = testFiles.length;
   let testFilesWithErrorPaths = 0;
+  let errorPathFindingCount = 0;
 
   // Patterns that indicate error path testing
   const errorTestPatterns = [
@@ -345,7 +346,7 @@ function checkErrorPathTesting(testFiles) {
       testFilesWithErrorPaths++;
     } else {
       findings.push({
-        id: "SIA-520",
+        id: `SIA-520-${++errorPathFindingCount}`,
         category: "error_path_testing",
         domain: DOMAIN,
         severity: "info",

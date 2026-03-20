@@ -45,7 +45,9 @@ export function CelebrationProvider({ children }: Readonly<{ children: ReactNode
 
     const event: CelebrationEvent = {
       type,
+      // eslint-disable-next-line security/detect-object-injection -- type is typed CelebrationType enum
       intensity: data.intensity || CELEBRATION_INTENSITY_MAP[type],
+      // eslint-disable-next-line security/detect-object-injection -- type is typed CelebrationType enum
       message: data.message || CELEBRATION_MESSAGES[type],
       daysClean: data.daysClean,
       customData: data.customData,

@@ -91,7 +91,7 @@ This document is organized into the following sections:
 
 [Detailed explanation of how this works]
 
-```
+```text
 [ASCII diagram or architecture visualization if applicable]
 
 Example:
@@ -111,9 +111,9 @@ Example:
 
 **Technology Stack**:
 
-- [Tech 1]: [Purpose]
-- [Tech 2]: [Purpose]
-- [Tech 3]: [Purpose]
+- \[Tech 1\]: \[Purpose\]
+- \[Tech 2\]: \[Purpose\]
+- \[Tech 3\]: \[Purpose\]
 
 **Key Files/Directories**:
 

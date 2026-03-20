@@ -73,7 +73,7 @@ data synchronization.
 
 ### Firestore Schema
 
-```
+```text
 /users/{uid}
   - nickname: string
   - cleanStart: Timestamp
@@ -173,7 +173,7 @@ data synchronization.
 
 ### Authentication Flow
 
-```
+```text
 1. User visits app
    ↓
 2. Firebase Auth initializes
@@ -296,7 +296,7 @@ service cloud.firestore {
 
 ### Component Hierarchy
 
-```
+```text
 App
 ├── Layout (fonts, theme, providers)
 │   ├── AuthProvider (Firebase Auth context)
@@ -385,7 +385,7 @@ App
 
 ### Data Flow
 
-```
+```text
 User Input (Today/Growth tabs)
         ↓
   Debounced Save (1-2 seconds)
@@ -476,7 +476,7 @@ const handleSubmit = async () => {
 
 ### Function Structure
 
-```
+```text
 functions/
 ├── src/
 │   ├── index.ts              # Function exports

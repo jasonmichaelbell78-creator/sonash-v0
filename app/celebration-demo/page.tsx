@@ -108,6 +108,7 @@ function DemoContent() {
   };
 
   const getIntensityColor = (type: CelebrationType) => {
+    // eslint-disable-next-line security/detect-object-injection -- key is typed CelebrationType enum
     const intensity = CELEBRATION_INTENSITY_MAP[type];
     switch (intensity) {
       case "subtle":
@@ -120,6 +121,7 @@ function DemoContent() {
   };
 
   const getIntensityLabel = (type: CelebrationType) => {
+    // eslint-disable-next-line security/detect-object-injection -- key is typed CelebrationType enum
     return CELEBRATION_INTENSITY_MAP[type].toUpperCase();
   };
 

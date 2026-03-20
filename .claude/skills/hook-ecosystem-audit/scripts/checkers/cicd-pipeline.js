@@ -428,7 +428,7 @@ function checkBotConfigFreshness(rootDir, findings) {
     score: result.score,
     rating: result.rating,
     metrics: {
-      totalBots,
+      totalBots: BOT_CONFIG_PATTERNS.length,
       configsFound,
       configsHealthy,
       missingBots: missingBots.length,

@@ -70,7 +70,7 @@ Privacy) and M9 (Native App) in the dependency graph.
 
 ### 1.2 Edge Inventory (Adjacency List)
 
-```
+```text
 M0 → M1
 M1 → DOC
 DOC → OVS
@@ -103,7 +103,7 @@ M8 → M10
 
 **Longest Path (M0 to M10):**
 
-```
+```text
 M0 → M1 → DOC → OVS → M15 → M3 → M4 → M5 → M7 → M8 → M10
                          ↓
                         M16 →
@@ -190,7 +190,7 @@ from research work
 
 ### 3.1 Updated Adjacency List
 
-```
+```text
 M0 → M1
 M1 → DOC
 DOC → OVS
@@ -293,7 +293,7 @@ flowchart TD
 
 **New Longest Path (M0 to M10):**
 
-```
+```text
 M0 → M1 → DOC → OVS → M15 → M3 → M4 → M4.5 → M5 → M7 → M8 → M9 → M10
                          ↓
                         M16 →
@@ -317,7 +317,7 @@ M0 → M1 → DOC → OVS → M15 → M3 → M4 → M4.5 → M5 → M7 → M8 �
 
 Using Depth-First Search (DFS) with visited/visiting state tracking:
 
-```
+```text
 Starting from M0:
   Visit M0 (visiting)
     Visit M1 (visiting)
@@ -1205,19 +1205,19 @@ weeks, M9: +12 weeks)
 
 **Order 1 (M15 first):**
 
-```
+```text
 M0 → M1 → DOC → OVS → M15 → M16 → (M2) → M3 → M4 → M4.5 → M5 → M6, M7 → M8 → M9 → M10
 ```
 
 **Order 2 (M16 first):**
 
-```
+```text
 M0 → M1 → DOC → OVS → M16 → M15 → (M2) → M3 → M4 → M4.5 → M5 → M7, M6 → M8 → M9 → M10
 ```
 
 **Order 3 (M2 parallel):**
 
-```
+```text
 M0 → M1 → DOC → (M2) → OVS → M15, M16 → M3 → M4 → M4.5 → M5 → M6 || M7 → M8 → M9 → M10
 ```
 

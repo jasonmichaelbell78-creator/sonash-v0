@@ -52,7 +52,7 @@ optimization.
 
 ### Category Distribution Visualization
 
-```
+```text
 Feature        ████████████████████████████████  127 (32.1%)
 UI/UX          ████████████████  65 (16.4%)
 Security       ██████████  42 (10.6%)
@@ -92,7 +92,7 @@ Mobile/Native  █  6 (1.5%)
 
 ### Priority Distribution Visualization
 
-```
+```text
 P0 (Critical)  █████  54 (13.6%)
 P1 (Core)      ████████████████████████████████████████████████████  211 (53.3%)
 P2 (Nice-Have) ███████████████████████████  107 (27.0%)
@@ -375,7 +375,7 @@ explicit dependency to M7-F5 for user-facing features.
 | M15-009        | Meetings Starting Soon Filter    | Feature        | P1       | Yes                |
 | M15-010        | Too Tired Mode                   | Feature        | P2       | Yes                |
 | M15-011        | Disguised App Icon + Name        | Privacy        | P2       | Yes                |
-| M15-EFF-001    | npm run dev:offline Script       | Infrastructure | P1       | Yes                |
+| M15-EFF-001    | Add dev:offline Script           | Infrastructure | P1       | Yes                |
 | M15-EFF-003    | scripts/doctor.js Validator      | Infrastructure | P1       | Yes                |
 | M15-EFF-005    | Cache npm ci in CI               | Infrastructure | P1       | Yes                |
 | M15-AUTO-001   | Wire Session-Start Scripts       | Infrastructure | P1       | Yes                |

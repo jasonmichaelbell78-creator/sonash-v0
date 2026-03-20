@@ -189,8 +189,11 @@ function checkErrorHandlingSanitization(hookFiles) {
       }
     }
 
-    // Sanitize usage finding
-    if (hasErrorLogging && !usesSanitize) {
+    // Sanitize usage finding — only flag if hook actually logs raw error
+    // objects (has catch + error.message/stack), not if console.error is used
+    // for general informational output (e.g. decision-save-prompt.js).
+    const logsRawErrors = /\bcatch\b[\s\S]{0,500}?\.(?:message|stack)\b/.test(hook.content);
+    if (hasErrorLogging && !usesSanitize && logsRawErrors) {
       findings.push({
         id: "HEA-202",
         category: "error_handling_sanitization",

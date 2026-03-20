@@ -128,12 +128,14 @@ export function EntryWizard({ type, onClose }: Readonly<EntryWizardProps>) {
                 "Gratitude unlocks the fullness of life."
               </p>
               {gratitudeItems.map((item, i) => (
+                // eslint-disable-next-line sonash/no-index-key -- fixed 3-item form, no reordering
                 <div key={`gratitude-${i}`} className="flex gap-3 items-center">
                   <span className="font-bold text-rose-300 font-handlee text-xl">{i + 1}.</span>
                   <input
                     value={item}
                     onChange={(e) => {
                       const newItems = [...gratitudeItems];
+                      // eslint-disable-next-line security/detect-object-injection -- i is numeric index from .map()
                       newItems[i] = e.target.value;
                       setGratitudeItems(newItems);
                     }}

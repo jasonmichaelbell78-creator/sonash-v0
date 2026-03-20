@@ -302,8 +302,11 @@ surface auto-learnings and user feedback from the previous run.
 
 **Invocation tracking** (MUST):
 
+> **Context MUST include** `{"target":"SKILL_NAME","decisions":N}` — substitute
+> the actual skill name and decision count. Empty context breaks audit tracking.
+
 ```bash
-cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"skill-audit","type":"skill","success":true,"context":{"target":"SKILL_NAME"}}'
+cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"skill-audit","type":"skill","success":true,"context":{"target":"SKILL_NAME","decisions":N,"score":SCORE}}'
 ```
 
 **Closure summary:**
@@ -355,6 +358,7 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 | Version | Date       | Description                                                             |
 | ------- | ---------- | ----------------------------------------------------------------------- |
+| 3.4     | 2026-03-19 | Fix invocation tracking: context MUST include target+decisions+score    |
 | 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2     |
 | 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping |
 | 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts    |

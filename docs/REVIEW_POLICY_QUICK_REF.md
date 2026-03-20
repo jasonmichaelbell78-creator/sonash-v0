@@ -51,7 +51,7 @@ When following review policies:
 
 ## File Path → Tier Lookup
 
-```
+```text
 Tier 0 (Auto-merge):
   ✅ Non-critical .md files
   ✅ .log files
@@ -131,7 +131,7 @@ Tier 4 (Critical):
 
 ### "I'm fixing a typo in README.md"
 
-```
+```text
 Tier: 0 (if non-functional text)
 Review: None
 Action: Commit → Wait 4h → Auto-merge
@@ -139,7 +139,7 @@ Action: Commit → Wait 4h → Auto-merge
 
 ### "I'm adding a new React component"
 
-```
+```text
 Tier: 2
 Review: AI + 1 human
 Action: Create PR → AI reviews → Address issues →
@@ -149,7 +149,7 @@ Timeline: 1-2 days
 
 ### "I'm changing how login works"
 
-```
+```text
 Tier: 3
 Review: AI + 2 humans + security checklist
 Action: Create PR → AI exhaustive review →
@@ -161,7 +161,7 @@ Timeline: 3-5 days
 
 ### "I'm updating a GitHub Actions workflow"
 
-```
+```text
 Tier: 4
 Review: RFC + Multi-AI + all owners
 Action: Write RFC → Get RFC approval →

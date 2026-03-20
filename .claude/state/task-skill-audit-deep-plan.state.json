@@ -1,0 +1,23 @@
+{
+  "task": "Skill Audit: deep-plan",
+  "target_skill": "deep-plan",
+  "status": "completed",
+  "total_decisions": 29,
+  "accepted_decisions": null,
+  "rejected_decisions": null,
+  "overall_score": null,
+  "estimated_post_fix_score": null,
+  "skill_version_after_audit": "3.3",
+  "audit_date": "2026-03-15",
+  "previous_audit": {
+    "date": "2026-03-07",
+    "version": "3.0",
+    "decisions": 29
+  },
+  "process_compliance_notes": ["Backfilled from SKILL.md version history"],
+  "learnings": [],
+  "process_feedback": null,
+  "files_modified": [".claude/skills/deep-plan/SKILL.md"],
+  "updated": "2026-03-19T00:00:00Z",
+  "backfill_note": "Reconstructed from version history. Two audits: v3.0 2026-03-07 (29 decisions), v3.3 2026-03-15 (CL MUST for L/XL, verify-before-present, Integration section, failure paths). State reflects most recent audit."
+}

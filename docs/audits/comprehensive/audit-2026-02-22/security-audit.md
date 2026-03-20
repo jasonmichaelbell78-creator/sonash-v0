@@ -7,9 +7,9 @@
 # Security Audit Report — SoNash v0
 
 **Date:** 2026-02-22 **Auditor:** Security-Auditor Agent (claude-sonnet-4-6)
-**Scope:** Full application security audit **Stack:** Next.js 16.1.1, React
-19.2.3, Firebase 12.6.0, Cloud Functions (Node.js 24), Tailwind CSS 4.1.9, Zod
-4.2.1
+**Scope:** Full application security audit **Stack:** Next.js 16.2.0, React
+19.2.4, Firebase 12.10.0, Cloud Functions (Node.js 24), Tailwind CSS 4.2.2, Zod
+4.3.6
 
 ---
 
@@ -74,7 +74,7 @@ default behavior, but relying on implicit behavior rather than explicit rules).
 Functions (`saveDailyLog`, `saveJournalEntry`, `softDeleteJournalEntry`,
 `saveInventoryEntry`, `migrateAnonymousUserData`) with the comment:
 
-```
+```text
 requireAppCheck: false, // TEMPORARILY DISABLED - waiting for throttle to clear
 ```
 
@@ -173,7 +173,7 @@ Firebase's default behavior is to **deny all** client access to unmatched paths
 
 **Recommendation:** Add explicit deny-all rules:
 
-```
+```text
 // Security event logs - Admin SDK only (Cloud Functions)
 match /security_logs/{docId} {
   allow read, write: if false; // Only Cloud Functions (Admin SDK)
@@ -370,7 +370,7 @@ This means:
 
 **Description:** The migration function acknowledges in comments:
 
-```
+```text
 // Note: Not fully atomic across batches - if a later batch fails,
 // earlier batches cannot be rolled back (Firestore limitation).
 ```

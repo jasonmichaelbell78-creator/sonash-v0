@@ -484,9 +484,10 @@ function checkIntakePipeline(rootDir, findings) {
   }
 
   // Emit findings for each problematic intake script
+  let intakeFindingCount = 0;
   for (const item of issues) {
     findings.push({
-      id: "TDMS-330",
+      id: `TDMS-330-${++intakeFindingCount}`,
       category: "intake_pipeline",
       domain: DOMAIN,
       severity: item.severity,

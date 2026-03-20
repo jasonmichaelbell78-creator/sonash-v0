@@ -199,7 +199,7 @@ After T8.1 (Capacitor wrapper) is complete, these can parallelize:
 
 ### Compressed Timeline (With Parallelization)
 
-```
+```text
 M4.5 (12 weeks)
 ├── Encryption Core (T4.1-T4.3): Weeks 1-8
 ├── Group 1 (Privacy): Weeks 4-10 (parallel with encryption)

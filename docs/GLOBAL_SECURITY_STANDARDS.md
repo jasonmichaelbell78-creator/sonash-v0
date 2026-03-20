@@ -66,7 +66,7 @@ All public-facing endpoints and user-triggered actions MUST have rate limiting:
 
 ### Implementation Checklist
 
-```
+```text
 [ ] Cloud Functions: All callable functions use rate limiting
 [ ] API routes: All Next.js API routes have rate limiting middleware
 [ ] Client hooks: Write operations use client-side rate limiter for UX
@@ -127,7 +127,7 @@ ALL user inputs MUST be validated before processing:
 
 ### Implementation Checklist
 
-```
+```text
 [ ] All API inputs: Validated with Zod schema before processing
 [ ] All form inputs: Client-side validation + server-side validation
 [ ] Firestore writes: Data validated before write, not just after
@@ -193,7 +193,7 @@ NO secrets should ever be hardcoded or exposed client-side:
 
 ### Implementation Checklist
 
-```
+```text
 [ ] Grep clean: No hardcoded keys found (see commands below)
 [ ] .env.example: Documents all required env vars (no values)
 [ ] .gitignore: Includes .env, .env.local, .env.*.local
@@ -280,7 +280,7 @@ Code must follow OWASP best practices and not introduce vulnerabilities:
 
 ### Implementation Checklist
 
-```
+```text
 [ ] Authentication: All protected routes check auth state
 [ ] Authorization: Users can only access their own data (userId checks)
 [ ] Firestore rules: Match code-level access patterns
@@ -371,7 +371,7 @@ if grep -rn "sk_live\|sk_test\|api_key.*=.*['\"][A-Za-z0-9]" --include="*.ts" --
   exit 1
 fi
 
-npm run lint-staged
+npx lint-staged
 ```
 
 ---

@@ -240,12 +240,16 @@ History: `.claude/state/health-ecosystem-audit-history.jsonl`
 ## Phase 8: Closure (MUST)
 
 1. **Auto-learnings** (MUST): 2-3 data-driven insights
-2. **Invocation tracking** (MUST):
+2. **History record** (MUST): Append session record to
+   `.claude/state/health-ecosystem-audit-history.jsonl` with
+   `{timestamp, grade, score, testPassRate, unresolvedFindings}`. This file is
+   consumed by `/alerts` for the Test Health category.
+3. **Invocation tracking** (MUST):
    ```bash
    cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"health-ecosystem-audit","type":"skill","success":true,"context":{"score":SCORE,"grade":"GRADE"}}'
    ```
-3. **Closure signal** (MUST): List all artifacts
-4. **Cleanup** (SHOULD): Delete progress file
+4. **Closure signal** (MUST): List all artifacts
+5. **Cleanup** (SHOULD): Delete progress file
 
 ---
 

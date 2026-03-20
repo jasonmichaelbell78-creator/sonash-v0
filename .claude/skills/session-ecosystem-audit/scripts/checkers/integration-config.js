@@ -157,6 +157,7 @@ function checkHookRegistrationAlignment(rootDir, findings) {
   }
 
   // Check each expected session hook
+  let unregisteredFindingCount = 0;
   for (const hookFile of expectedFiles) {
     const hookPath = path.join(hooksDir, hookFile);
     let fileExists = false;
@@ -178,7 +179,7 @@ function checkHookRegistrationAlignment(rootDir, findings) {
       registeredAndPresent++;
     } else if (fileExists && !isRegistered) {
       findings.push({
-        id: "SEA-D5-010",
+        id: `SEA-D5-010-${++unregisteredFindingCount}`,
         category: "hook_registration_alignment",
         domain: DOMAIN,
         severity: "warning",

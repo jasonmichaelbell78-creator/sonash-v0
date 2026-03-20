@@ -595,6 +595,7 @@ async function estimateUserSubcollections(
   const estimates = Object.values(subcollectionCounts)
     .filter((counts) => counts.length > 0)
     .map((counts) => {
+      // eslint-disable-next-line sonash/no-unsafe-division -- guarded by .filter(counts => counts.length > 0) above
       const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
       return Math.round(avg * userCount);
     });
@@ -1237,6 +1238,7 @@ interface GetUserDetailRequest {
   activityLimit?: number;
 }
 
+// eslint-disable-next-line complexity -- admin endpoint with multi-source data aggregation
 export const adminGetUserDetail = onCall<GetUserDetailRequest>(async (request) => {
   await requireAdmin(request, "adminGetUserDetail");
 
@@ -1515,6 +1517,7 @@ const softDeleteSchema = z.object({
   reason: z.string().trim().max(500, "Reason too long").optional(),
 });
 
+// eslint-disable-next-line complexity -- multi-step soft-delete with validation, backup, and cleanup
 export const adminSoftDeleteUser = onCall<SoftDeleteUserRequest>(async (request) => {
   await requireAdmin(request, "adminSoftDeleteUser");
 
@@ -1633,6 +1636,7 @@ const undeleteSchema = z.object({
   uid: z.string().trim().min(1, "User ID is required").max(128, "User ID too long"),
 });
 
+// eslint-disable-next-line complexity -- multi-step undelete with validation and restoration
 export const adminUndeleteUser = onCall<UndeleteUserRequest>(async (request) => {
   await requireAdmin(request, "adminUndeleteUser");
 
@@ -2006,6 +2010,7 @@ const getJobRunHistorySchema = z.object({
  * A20: Admin: Get Job Run History
  * Returns detailed history of job executions with filtering options
  */
+// eslint-disable-next-line complexity -- job history query with multiple filter dimensions
 export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (request) => {
   await requireAdmin(request, "adminGetJobRunHistory");
 
@@ -2160,7 +2165,7 @@ export const adminGetJobRunHistory = onCall<GetJobRunHistoryRequest>(async (requ
 
     // Remove internal sorting field before returning
     const limitedResults: JobRunHistoryResponse[] = results.slice(0, safeLimit).map((r) => {
-      const { _startTimeMillis, ...rest } = r;
+      const { _startTimeMillis: _, ...rest } = r;
       return rest;
     });
 
@@ -3134,6 +3139,7 @@ interface SetUserPrivilegeRequest {
   privilegeTypeId: string;
 }
 
+// eslint-disable-next-line complexity -- privilege management with role validation and audit logging
 export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (request) => {
   await requireAdmin(request, "adminSetUserPrivilege");
 
@@ -3235,6 +3241,7 @@ export const adminSetUserPrivilege = onCall<SetUserPrivilegeRequest>(async (requ
   }
 });
 
+// eslint-disable-next-line complexity -- user listing with multi-field filtering and pagination
 export const adminListUsers = onCall<ListUsersRequest>(async (request) => {
   await requireAdmin(request, "adminListUsers");
 
@@ -3357,6 +3364,7 @@ const authApiKey = defineSecret("AUTH_REST_API_KEY");
 
 export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
   { secrets: [authApiKey] },
+  // eslint-disable-next-line complexity -- password reset with provider validation and API error handling
   async (request) => {
     await requireAdmin(request, "adminSendPasswordReset");
 

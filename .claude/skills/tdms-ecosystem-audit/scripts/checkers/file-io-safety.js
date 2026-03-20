@@ -201,6 +201,7 @@ function checkErrorHandlingCoverage(debtScripts) {
   let protectedIOCalls = 0;
   let totalJSONParse = 0;
   let protectedJSONParse = 0;
+  let ioFindingCount = 0;
 
   for (const script of debtScripts) {
     const lines = script.content.split("\n");
@@ -214,7 +215,7 @@ function checkErrorHandlingCoverage(debtScripts) {
       if (result.total > result.wrapped) {
         const unprotected = result.total - result.wrapped;
         findings.push({
-          id: "TDMS-300",
+          id: `TDMS-300-${++ioFindingCount}`,
           category: "error_handling_coverage",
           domain: DOMAIN,
           severity: "warning",

@@ -121,7 +121,7 @@ each with a trigger condition, evidence block, search patterns, and a table. A
 human reviewer would never run all 10 before every push. The pre-checks have
 become a reference manual, not an actionable checklist.
 
-- **Detection:** Count `### ` subsections within Step 0.5
+- **Detection:** Count `###` subsections within Step 0.5
 - **Signal:** More than 5-6 pre-checks means most are being skipped
 
 **2. Evidence Citation Inflation** Every pattern/template includes "Evidence: PR
@@ -182,7 +182,7 @@ every skill read.
 into `reference/` subdocs (pr-review already does this for SonarCloud, agents,
 TDMS, learning capture). The pre-checks in Step 0.5 are the prime candidate —
 keep a 1-line checklist in the main skill, move the full
-trigger/evidence/search-pattern blocks to `reference/PRE_PUSH_CHECKS.md`.
+trigger/evidence/search-pattern blocks to a separate reference document.
 
 **Pattern graduation:** When a Known Churn Pattern has been `IMPLEMENTED` and
 hasn't triggered in 3+ PRs, move it to an archive section or separate file. Keep

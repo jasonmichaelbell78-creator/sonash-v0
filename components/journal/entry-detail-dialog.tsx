@@ -34,8 +34,8 @@ function GratitudeDetailView({ data }: Readonly<{ data: GratitudeEntry["data"] }
     <div>
       <h4 className="font-bold text-lg mb-2">I am grateful for:</h4>
       <ul className="list-disc pl-5">
-        {data.items.map((item: string, i: number) => (
-          <li key={i}>{item}</li>
+        {data.items.map((item: string) => (
+          <li key={item}>{item}</li>
         ))}
       </ul>
     </div>
@@ -268,10 +268,12 @@ export function EntryDetailDialog({ entry, onClose }: Readonly<EntryDetailDialog
   if (!entry) return null;
 
   return (
+    // eslint-disable-next-line sonash/no-div-onclick-no-role -- modal backdrop dismiss, keyboard handled by close button
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
+      {/* eslint-disable-next-line sonash/no-div-onclick-no-role -- stopPropagation on dialog content, not interactive */}
       <div
         className="bg-white rounded-xl shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-6 space-y-4"
         onClick={(e) => e.stopPropagation()}
@@ -303,7 +305,9 @@ function renderWorksheetField(
   label: string
 ) {
   // Runtime type guards to validate data
+  // eslint-disable-next-line security/detect-object-injection -- examplesKey from trusted worksheet field config
   const examplesRaw = data[examplesKey];
+  // eslint-disable-next-line security/detect-object-injection -- resultsKey from trusted worksheet field config
   const resultsRaw = data[resultsKey];
 
   const examples =
@@ -321,6 +325,7 @@ function renderWorksheetField(
 
   // Check if there's any actual content
   const contentExists = Array.from({ length: maxLength }).some(
+    // eslint-disable-next-line security/detect-object-injection -- i is numeric index from Array.from
     (_, i) => examples[i]?.trim() || results[i]?.trim()
   );
   if (!contentExists) return null;
@@ -328,8 +333,11 @@ function renderWorksheetField(
   return (
     <div className="text-sm pl-3 border-l-2 border-slate-200">
       <p className="font-semibold text-slate-700 mb-1">{label}</p>
+      {/* eslint-disable sonash/no-index-key -- fixed-length parallel arrays keyed by position */}
       {Array.from({ length: maxLength }).map((_, i) => {
+        // eslint-disable-next-line security/detect-object-injection -- i is numeric index from Array.from
         const example = examples[i];
+        // eslint-disable-next-line security/detect-object-injection -- i is numeric index from Array.from
         const result = results[i];
 
         if (!example?.trim() && !result?.trim()) {
@@ -357,6 +365,7 @@ function renderWorksheetField(
 
 function renderWorksheetArray(data: Record<string, unknown>, key: string, label: string) {
   // Runtime type guard to validate data is an array of strings
+  // eslint-disable-next-line security/detect-object-injection -- key from trusted worksheet field config
   const raw = data[key];
   const values =
     Array.isArray(raw) && raw.every((item) => typeof item === "string") ? (raw as string[]) : [];
@@ -367,8 +376,8 @@ function renderWorksheetArray(data: Record<string, unknown>, key: string, label:
   return (
     <div className="text-sm pl-3 border-l-2 border-slate-200">
       <p className="font-semibold text-slate-700 mb-1">{label}</p>
-      {filledValues.map((value, i) => (
-        <p key={i} className="ml-2 text-slate-600 text-xs mb-1">
+      {filledValues.map((value) => (
+        <p key={value} className="ml-2 text-slate-600 text-xs mb-1">
           • {value}
         </p>
       ))}
@@ -378,6 +387,7 @@ function renderWorksheetArray(data: Record<string, unknown>, key: string, label:
 
 function renderWorksheetString(data: Record<string, unknown>, key: string, label: string) {
   // Runtime type guard to validate data is a string
+  // eslint-disable-next-line security/detect-object-injection -- key from trusted worksheet field config
   const raw = data[key];
   const value = typeof raw === "string" ? raw : "";
 

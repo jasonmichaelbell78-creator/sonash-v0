@@ -131,7 +131,7 @@ if (BLOCKED_USERS.includes(userId)) {
 
 Security events are logged to GCP Cloud Logging. Search patterns:
 
-```
+```text
 # All security events
 jsonPayload.securityEvent.type!=""
 

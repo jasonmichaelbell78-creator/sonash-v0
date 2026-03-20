@@ -136,7 +136,7 @@
     "claude.md": { "tier": 4 },
     "docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md": { "tier": 3 },
     "docs/MONETIZATION_RESEARCH.md": { "tier": 3 },
-    "docs/LIGHTHOUSE_INTEGRATION_PLAN.md": { "tier": 3 },
+    "docs/plans/LIGHTHOUSE_INTEGRATION_PLAN.md": { "tier": 3 },
     "docs/OPERATIONAL_VISIBILITY_SPRINT.md": { "tier": 3 },
     "docs/audits/AUDIT_TRACKER.md": { "tier": 3 },
     "docs/TESTING_CHECKLIST.md": { "tier": 3 },

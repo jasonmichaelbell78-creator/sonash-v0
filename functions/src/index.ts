@@ -483,6 +483,7 @@ interface MigrationData {
  * 5. Batch writes for atomicity
  * 6. Audit logging
  */
+// eslint-disable-next-line complexity -- migration with multi-collection transfer, validation, and rollback
 export const migrateAnonymousUserData = onCall<MigrationData>(async (request) => {
   const { data, auth } = request;
 

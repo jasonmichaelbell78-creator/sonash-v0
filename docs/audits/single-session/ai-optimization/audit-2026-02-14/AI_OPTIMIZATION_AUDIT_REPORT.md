@@ -164,9 +164,10 @@ single-line additions to SKILL_INDEX.md)
 
 **MCP/Settings Cleanup (6 items, ~20 min):** 4. Remove git entry from
 .mcp.json 5. Remove github from enabledMcpjsonServers 6. Remove
-mcp**filesystem**_ permissions from settings.local.json 7. Remove mcp**serena**_
-permissions from settings.local.json 8. Update mcp.global-template.json:
-puppeteer -> playwright 9. Document firebase MCP dependency or remove
+mcp**filesystem**\_ permissions from settings.local.json 7. Remove
+mcp**serena**\_ permissions from settings.local.json 8. Update
+mcp.global-template.json: puppeteer -> playwright 9. Document firebase MCP
+dependency or remove
 
 **State/File Cleanup (5 items, ~15 min):** 10. Delete stale
 task-audit-template-overhaul.state.json 11. Delete .claude/tmp-alerts.json 12.

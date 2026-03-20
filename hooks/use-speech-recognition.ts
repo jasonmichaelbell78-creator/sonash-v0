@@ -45,7 +45,9 @@ export function useSpeechRecognition(): UseSpeechRecognitionReturn {
 
         recognition.onresult = (event: SpeechRecognitionEvent) => {
           for (let i = event.resultIndex; i < event.results.length; i++) {
+            // eslint-disable-next-line security/detect-object-injection -- i is numeric loop index
             const transcriptPart = event.results[i][0].transcript;
+            // eslint-disable-next-line security/detect-object-injection -- i is numeric loop index
             if (event.results[i].isFinal) {
               setTranscript((prev) => (prev ? `${prev} ${transcriptPart}` : transcriptPart));
             }

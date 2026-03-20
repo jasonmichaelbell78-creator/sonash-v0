@@ -132,6 +132,7 @@ function checkFileIoSafety(scriptFiles) {
 
   let totalIOCalls = 0;
   let wrappedIOCalls = 0;
+  let ioFindingCount = 0;
 
   // Build IO operation names dynamically to avoid false-positive pattern-checker matches
   // (the checker flags literal "writeFileSync" strings as needing symlink guards)
@@ -154,7 +155,7 @@ function checkFileIoSafety(scriptFiles) {
           wrappedIOCalls += ioMatches.length;
         } else {
           findings.push({
-            id: "SIA-200",
+            id: `SIA-200-${++ioFindingCount}`,
             category: "file_io_safety",
             domain: DOMAIN,
             severity: "warning",
@@ -201,6 +202,7 @@ function checkErrorSanitization(scriptFiles) {
 
   let scriptsWithErrorLogging = 0;
   let scriptsUsingSanitize = 0;
+  let sanitizeFindingCount = 0;
 
   const errorLogPattern = /\bconsole\.(?:error|warn)\b/;
   const rawErrorPattern = /\b(?:error|err)\.message\b/;
@@ -217,7 +219,7 @@ function checkErrorSanitization(scriptFiles) {
       scriptsUsingSanitize++;
     } else if (rawErrorPattern.test(sf.content)) {
       findings.push({
-        id: "SIA-210",
+        id: `SIA-210-${++sanitizeFindingCount}`,
         category: "error_sanitization",
         domain: DOMAIN,
         severity: "warning",
@@ -268,6 +270,7 @@ function checkPathTraversalGuards(scriptFiles) {
 
   let totalPathChecks = 0;
   let compliantChecks = 0;
+  let traversalFindingCount = 0;
 
   // The correct pattern per CLAUDE.md: /^\.\.(?:[\\/]|$)/.test(rel)
   const correctTraversalPattern =
@@ -286,7 +289,7 @@ function checkPathTraversalGuards(scriptFiles) {
       compliantChecks++;
     } else if (startsWithDotDot.test(sf.content)) {
       findings.push({
-        id: "SIA-220",
+        id: `SIA-220-${++traversalFindingCount}`,
         category: "path_traversal_guards",
         domain: DOMAIN,
         severity: "warning",
@@ -334,6 +337,7 @@ function checkExecSafety(scriptFiles) {
 
   let totalExecCalls = 0;
   let safeExecCalls = 0;
+  let execFindingCount = 0;
 
   // Find regex.exec() calls in while/for loops
   const execCallPattern = /\.exec\s*\(/g;
@@ -399,7 +403,7 @@ function checkExecSafety(scriptFiles) {
               safeExecCalls++;
             } else {
               findings.push({
-                id: "SIA-231",
+                id: `SIA-231-${++execFindingCount}`,
                 category: "exec_safety",
                 domain: DOMAIN,
                 severity: "error",
@@ -457,6 +461,7 @@ function checkSecurityHelperUsage(scriptFiles) {
 
   let applicableScripts = 0;
   let usingHelpers = 0;
+  let helperFindingCount = 0;
 
   for (const sf of scriptFiles) {
     const doesFileIO = fileIOPattern.test(sf.content);
@@ -474,7 +479,7 @@ function checkSecurityHelperUsage(scriptFiles) {
       // Only flag scripts that do risky operations
       if (doesShell || doesGit || handlesCli) {
         findings.push({
-          id: "SIA-240",
+          id: `SIA-240-${++helperFindingCount}`,
           category: "security_helper_usage",
           domain: DOMAIN,
           severity: "info",

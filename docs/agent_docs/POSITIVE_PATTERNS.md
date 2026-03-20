@@ -6,6 +6,8 @@
 > Every anti-pattern in CODE_PATTERNS.md has a positive equivalent here. When in
 > doubt, copy-paste from this file.
 
+<!-- -->
+
 > Each section ID (S1, S2, ...) is stable and referenced by code-reviewer
 > anti-pattern checks. Do not renumber.
 
@@ -633,7 +635,7 @@ export type MyRecord = z.infer<typeof MyRecord>;
 - Use `.passthrough()` for forward-compatibility (D22)
 - Zod 4 requires `z.record(z.string(), z.unknown())` -- explicit key type
 - Export both schema and inferred type
-- Register in `SCHEMA_MAP` in `schemas/index.ts`
+- Register in `SCHEMA_MAP` in `scripts/reviews/lib/schemas/index.ts`
 
 ---
 

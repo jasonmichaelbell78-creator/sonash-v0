@@ -76,7 +76,7 @@ prioritized attention.
 
 **Path:** M0 -> M1 -> OVS -> M15 -> M3 -> M4 -> M4.5 (Security)
 
-```
+```text
 OV-A8 (user privilege types)
     └── OV-A9 (grant privileges)
             └── M16-P4-5 (user ID correlation)
@@ -90,7 +90,7 @@ OV-A8 (user privilege types)
 
 **Path:** M4 -> M4.5 -> M5 -> {M6, M7}
 
-```
+```text
 T4.1 (PIN passcode)
     └── T4.2 (PBKDF2 key derivation)
             └── T4.3 (AES-256-GCM encryption) **CRITICAL**
@@ -117,7 +117,7 @@ delayed **Mitigation:** Parallel R&D during M4
 
 **Path:** M4.5 -> M5-F1 -> {M5-F2, M5-F3, M5-F4, M6-F1, M6-F2, M7-F1}
 
-```
+```text
 T1.2 (Custom mutation queue)
     ├── T1.3 (Sync worker)
     │       └── T7.8 (Unit tests)
@@ -140,7 +140,7 @@ complex **Mitigation:** Implement T2.2 early in M5 sequence
 
 **Path:** M8 -> M9 -> M10
 
-```
+```text
 T8.1 (Capacitor wrapper) **DECISION GATE**
     ├── T8.4 (Native biometrics)
     │       └── T4.10 (Biometric unlock)
@@ -157,7 +157,7 @@ decision **Mitigation:** Capacitor PoC during M8
 
 **Path:** M5 -> M6-F1
 
-```
+```text
 F5.2 (Pattern Matcher)
     ├── F5.3 (Tag Heat Map) [bundled]
     ├── F5.7 (Weather Correlation) [bundled]
@@ -173,7 +173,7 @@ rule-based MVP **Mitigation:** Feature flag, rule-based first
 
 **Path:** M5 -> M7-F4
 
-```
+```text
 T5.2 (Client-side PDF)
     ├── T5.3 (EXIF stripping)
     │       └── F7.5 (Full Archive)
@@ -191,7 +191,7 @@ T5.2 (Client-side PDF)
 
 **Path:** M5 -> M6-F2
 
-```
+```text
 M6-LICENSE (AA/NA permissions) **EXTERNAL DEPENDENCY**
     └── F6.5 (Crisis Decision Tree)
             └── F10.1 (The Lifeline)
@@ -310,7 +310,7 @@ dependency **Mitigation:** Begin legal outreach during M5
 
 The longest chain of sequential dependencies from start to completion:
 
-```
+```text
 M0 (Baseline)
     └── M1 (Foundation)
             └── DOC (Integrated Improvement)
@@ -334,7 +334,7 @@ OVS completion **Primary Gates:**
 
 ### Item-Level Critical Path (within M4.5-M5)
 
-```
+```text
 T4.1 (PIN) -> T4.2 (PBKDF2) -> T4.3 (AES-256) -> T4.7 (DEK/KEK)
     -> T1.2 (Offline Queue) -> T1.4 (IndexedDB) -> T2.2 (sharedPackets)
         -> M7-F1 (Sponsor features)

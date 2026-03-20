@@ -355,12 +355,12 @@ Remaining Issues:
 
 ### Domain 2: Link & Reference Integrity (25% weight)
 
-| Category                      | What It Checks                                              |
-| ----------------------------- | ----------------------------------------------------------- |
-| Internal Link Health          | All markdown links [text](path) resolve to existing files   |
-| Cross-Doc Dependency Accuracy | Cross-doc dependency checker exists and rules are valid     |
-| Anchor Reference Validity     | Links with #section anchors point to existing headings      |
-| Image Asset References        | Image references (![](path), <img src>) point to real files |
+| Category                      | What It Checks                                                  |
+| ----------------------------- | --------------------------------------------------------------- |
+| Internal Link Health          | All markdown links [text](path) resolve to existing files       |
+| Cross-Doc Dependency Accuracy | Cross-doc dependency checker exists and rules are valid         |
+| Anchor Reference Validity     | Links with #section anchors point to existing headings          |
+| Image Asset References        | Image references (`![](path)`, `<img src>`) point to real files |
 
 ### Domain 3: Content Quality & Compliance (20% weight)
 

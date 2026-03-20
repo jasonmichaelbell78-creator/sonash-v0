@@ -114,6 +114,7 @@ function mapErrorToUserMessage(error: AuthError): LinkError {
     },
   };
 
+  // eslint-disable-next-line security/detect-object-injection -- code is a Firebase auth error code string
   const mapped = errorMap[code] || {
     message: "Something went wrong. Please try again.",
     recoverable: false,

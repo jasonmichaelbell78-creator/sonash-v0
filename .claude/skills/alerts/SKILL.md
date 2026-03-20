@@ -1,23 +1,26 @@
 ---
 name: alerts
 description: |
-  Intelligent health dashboard with scoring, benchmarks, trends, and interactive
-  alert-by-alert workflow. Default mode (--limited) checks 16 categories. Use
-  --full for comprehensive reporting with all 36 categories.
+  Lightweight health signal with scoring, benchmarks, trends, and interactive
+  alert-by-alert workflow. Default mode (--limited) checks 18 categories. Use
+  --full for comprehensive reporting with all 42 categories.
 ---
 
-# Alerts -- Intelligent Health Dashboard
+# Alerts -- Lightweight Health Signal
 
-**Ecosystem ownership:** Part of `health-ecosystem-audit` ecosystem (D#17).
-Audited by `/health-ecosystem-audit` D4: Consumer Integration.
+**Ecosystem role:** Consumer of `health-ecosystem-audit` ecosystem (D#17).
+`/health-ecosystem-audit` OWNS the ecosystem. `/ecosystem-health` and `/alerts`
+CONSUME it. `/audit-health` audits the audit system, not health.
 
 ## Critical Rules
 
 1. **MUST** run the checker script before presenting any data
 2. **MUST** present every alert to the user (no silent filtering)
 3. **MUST** recommend an action per alert based on severity + trend
-4. **MUST** log every decision to the session JSONL
+4. **MUST** log every decision to session JSONL immediately (per-alert, not
+   batched)
 5. **MUST NOT** present a health score without running checkers first
+6. **MUST** surface previous learnings from alerts-history.jsonl at warm-up
 
 ## When to Use
 
@@ -28,14 +31,19 @@ Audited by `/health-ecosystem-audit` D4: Consumer Integration.
 
 ## When NOT to Use
 
-Use a more specific skill instead:
+| Need                    | Use Instead         | Why                                |
+| ----------------------- | ------------------- | ---------------------------------- |
+| Domain-specific audit   | `/audit-code`, etc. | Deeper analysis per domain         |
+| Audit system meta-check | `/audit-health`     | Checks audit infra, not health     |
+| Full health dashboard   | `/ecosystem-health` | 8 weighted categories, deep triage |
+| Skill validation        | `/skill-audit`      | Quality audit for individual skill |
 
-| Need                      | Use Instead         |
-| ------------------------- | ------------------- |
-| Domain-specific audit     | `/audit-code`, etc. |
-| Audit system meta-check   | `/audit-health`     |
-| Ecosystem-wide diagnostic | `/ecosystem-health` |
-| Skill validation          | `/skill-audit`      |
+## Routing Decision Tree
+
+- "Just show me warnings" (30s) -> `/alerts --limited`
+- "Full health picture" (15min) -> `/ecosystem-health`
+- "Health system seems broken" (30min) -> `/health-ecosystem-audit`
+- "Is my audit system healthy?" (5min) -> `/audit-health`
 
 ## What This Skill Does NOT Do
 
@@ -45,47 +53,34 @@ Use a more specific skill instead:
 
 ## Overview
 
-Intelligence = trend detection, cross-category grouping, suppression learning,
+Intelligence = trend detection, cross-category grouping, suppression management,
 and self-audit of checker coverage. This skill measures **project/codebase
 health**, not infrastructure or server health.
 
-**Output:** v2 JSON with `{alerts:[], context:{}}` per category, health scores,
-benchmarks, trends, and session plans.
+**Note:** The checker script handles Phase 1 (data collection). Phases 2-7 are
+orchestrated by the skill caller (Claude). Session JSONL is created and
+populated by the caller.
 
 ## Alert Object Schema
 
 ```json
 {
   "severity": "error | warning | info",
-  "category": "string",
   "message": "string",
-  "details": "string | null",
-  "trend": "improving | stable | declining | null",
+  "details": "string | array of strings | null",
   "action": "string | null"
 }
 ```
 
-## Session JSONL Record Format
-
-File: `.claude/tmp/alert-session-{YYYY-MM-DD-HHMM}.jsonl`
-
-```json
-{
-  "timestamp": "ISO-8601",
-  "alert_id": "category-N",
-  "category": "string",
-  "severity": "error | warning | info",
-  "message": "string",
-  "decision": "fix_now | defer | ignore | suppress | acknowledge | delegated-accept",
-  "reason": "string (MUST for suppress)"
-}
-```
+Note: `category` is the key in `results.categories{}`, not a field in the alert
+object. `trend` is in `category.context`, not per-alert. Context objects vary
+per category (benchmarks, ratings, totals, sparklines, groups).
 
 ## Usage
 
 ```
-/alerts           # Limited mode (default) - 16 categories
-/alerts --full    # Full mode - 36 categories
+/alerts           # Limited mode (default) - 18 categories
+/alerts --full    # Full mode - 42 categories
 /alerts --limited # Explicit limited (used by session-begin)
 ```
 
@@ -96,347 +91,125 @@ When standalone, ask user which mode if not specified.
 
 ## Workflow
 
-### Warm-Up
+> Detailed phase workflows, schemas, benchmarks, and weights are in
+> [REFERENCE.md](./REFERENCE.md).
 
-Before Phase 1, inform the user:
+### Warm-Up (MUST)
 
-- **Mode:** limited (16 categories, ~15-30s) or full (36 categories, ~30-60s)
+- **Mode:** limited (18 categories, ~15-30s) or full (42 categories, ~30-60s)
 - **What to expect:** Dashboard overview, then interactive alert-by-alert
   walkthrough
-- **Expected runtime:** Kill script after 120s if no output
+- **Starting signal:** "Starting health checks... (this may take 15-30s)"
+- **Previous learnings (MUST):** Read last 3 entries from alerts-history.jsonl.
+  Surface insights if they exist.
+- **Resume check (SHOULD):** If progress file exists and is <2h old, offer
+  resume.
 
----
+### Phase 1: Run & Parse (MUST)
 
-### Phase 1: Run & Parse
+Run: `node .claude/skills/alerts/scripts/run-alerts.js --limited` (or `--full`).
+Parse v2 JSON. Create session log. Load suppressions. Check for duplicate run
+(<30min). See REFERENCE.md for error handling details.
 
-1. MUST run: `node .claude/skills/alerts/scripts/run-alerts.js --limited` (or
-   `--full`)
-2. Parse v2 JSON from stdout
-3. Create session log: `.claude/tmp/alert-session-{YYYY-MM-DD-HHMM}.jsonl`
-4. Load suppressions from `.claude/state/alert-suppressions.json`
-5. Check for duplicate run: if session JSONL exists from <30min ago, show
-   previous results and offer re-run
+### Phase 2: Dashboard Overview (MUST)
 
-**Error handling:**
+Scoring: 100 - (30/error + 10/warning). Grades: A=90+, B=80+, C=70+, D=60+,
+F=<60. Dashboard table sorted worst-first. Cross-session trends from
+alerts-history.jsonl. If 3+ categories declining simultaneously, flag as
+"ecosystem stress" and recommend `/ecosystem-health`. If trend=null, treat as
+stable. Zero alerts: skip Phases 3-5, go to Phase 6. Benchmark mapping: Poor ->
+error, Average -> warning, Good -> no alert.
 
-- Non-zero exit without JSON: report error, suggest
-  `node --stack-trace-limit=50 .claude/skills/alerts/scripts/run-alerts.js`, do
-  NOT proceed to Phase 2
-- JSON parse fails: show raw output (first 20 lines), ask "Debug or skip?"
-- Script timeout (>120s): kill process, report timeout, ask to retry or skip
+### Phase 3: Alert-by-Alert Loop (MUST)
 
----
+Sort errors first. Group 3+ same category+severity. Progress: "Alert N of M".
+See REFERENCE.md for context card format, decision semantics, example dialogue.
+Escape hatch every 10 alerts (10, 20, 30...). Remaining auto-defer with
+confirmation. Scope guard: >5min or >3 files -> pause. 2-5min -> defer to
+appropriate skill. <2min -> inline (follow CLAUDE.md Section 6). Decisions
+logged per-alert immediately.
 
-### Phase 2: Dashboard Overview
+### Phase 4: Decision Review (MUST, skip if zero alerts)
 
-**Scoring formula:** Start at 100, deduct 30 per error, 10 per warning.
-**Grades:** A=90+, B=80+, C=70+, D=60+, F=<60.
+Review all decisions. Contradiction check: same alert with conflicting
+decisions. Revision: show numbered list, user selects alerts to change.
+DONE-WHEN: User confirms "Proceed" or completes revisions.
 
-```
-Health: {grade} ({score}/100, {measuredPct}% measured)  |  {errors} errors / {warnings} warnings / {info} info
-```
+### Phase 5: Batch Execution + Fix Verification (MUST)
 
-**Dashboard table** (sort by score ascending — worst first):
+Execute fix_now items inline or via skills. Defer items: log and suggest
+`/add-debt`. On failure: report error, offer retry or skip. Update session JSONL
+with results. **Convergence loop (SHOULD):** Re-run affected checkers after
+fixes to verify resolution. If alert persists, flag as "fix failed" and present
+to user. DONE-WHEN: All selected fixes attempted and verified.
 
-| Category | Score | Rating | Alerts | Trend |
-| -------- | ----- | ------ | ------ | ----- |
+### Phase 6: Self-Audit + Feedback (MUST)
 
-Cross-reference Benchmarks section for rating thresholds.
+Checker coverage, suppression health (>50% -> WARNING), score integrity,
+decision balance, trend health, process gaps, baseline staleness (>7d). Checker
+escalation: no_data for 3+ consecutive runs -> WARNING. **User feedback
+(SHOULD):** "Any observations about checker quality?" Save to
+alerts-history.jsonl. DONE-WHEN: All findings presented and decided.
 
-**Cross-session trends:** If `.claude/state/alerts-history.jsonl` exists, show
-last 5 sessions as sparkline in dashboard header.
+### Phase 7: Cleanup & Verification (MUST)
 
-**Zero alerts path:** If zero alerts found, show dashboard, skip Phases 3-5, go
-directly to Phase 6 (Self-Audit).
-
-Then: "Found N alerts. Walking through each one..."
-
----
-
-### Phase 3: Alert-by-Alert Loop
-
-Sort: errors first, then warnings, then info.
-
-**Alert grouping:** If 3+ alerts share same category + severity, group them.
-Show first example in full, then: "Apply same decision to all N similar alerts?"
-
-**Progress indicator:** Show `Alert N of M (X fixed, Y deferred, Z ignored)`
-
-**Context card format per alert:**
-
-```
-[ERROR/WARNING/INFO] Category: {category}
-  Message: {message}
-  Details: {details}
-  Trend: {trend} {sparkline}
-  Benchmark: {benchmark_value} (Rating: {rating})
-  Suggested: {recommendation}
-
-  Options: [Fix Now] [Defer] [Ignore] [Suppress]
-```
-
-**Recommendation per alert:**
-
-- ERROR: recommend Fix Now
-- WARNING + declining trend: recommend Fix Now
-- WARNING + stable trend: recommend Defer
-- INFO: recommend Acknowledge
-
-**Delegation protocol:** If user says "you decide" or similar, apply all
-recommendations automatically, record each as `delegated-accept`, show summary.
-
-Present options via conversational Q&A (NEVER use AskUserQuestion):
-
-- **ERROR:** Fix Now | Defer | Suppress (permanent, requires reason)
-- **WARNING:** Fix Now | Defer | Ignore (session) | Suppress
-- **INFO:** Acknowledge | Ignore (session) | Suppress
-
-Suppress MUST include reason. Fix Now executes immediately. Log every decision
-to session JSONL.
-
-**Mid-workflow escape hatch:** After every 10 alerts, offer: "Skip to summary?
-(remaining default to Defer)"
-
-**Scope guard:** If a fix would take >5min or touch >3 files, pause and ask:
-"Continue inline or create task for later?"
-
-**Inline fix guidance:** <2min fix: do it inline. >2min: defer and suggest the
-appropriate skill (e.g., `/audit-code` for code issues).
-
-Follow CLAUDE.md Section 6 project conventions for all inline fixes.
-
----
-
-### Phase 4: Decision Review & Action Plan Summary
-
-**Decision revision gate:** Before executing, review all decisions: "Review all
-decisions. Revise any before executing?"
-
-Show: Fixed N, Deferred N, Ignored N, Suppressed N.
-
-If deferred items exist: list them, ask "Execute deferred fixes now?" (Execute
-all / selected / Skip).
-
----
-
-### Phase 5: Batch Execution
-
-Execute deferred fixes in order. Update session log with results.
-
-**Done-when gate:** Phase 5 is done when all selected fixes have been executed
-and results logged.
-
----
-
-### Phase 6: System Self-Audit
-
-Claude performs live analysis checking:
-
-- **Checker coverage:** Categories with `no_data` — surface as blind spots
-- **Suppression health:** Stale suppressions >90 days — warn if >50% suppressed
-- **Score integrity:** Unmeasured weight percentage
-- **Decision balance:** Fix/defer/ignore/suppress ratio
-- **Trend health:** Categories with declining scores across sessions
-- **Process gaps:** Missing log files, dead data sources
-- **Baseline staleness:** If baseline >7 days old, note and offer reset
-
-**Checker failure handling:** Any checker that returned `no_data` or error MUST
-be surfaced as an INFO alert in the self-audit. These represent blind spots.
-
-**Suppression ratio guard:** If >50% of alerts are suppressed, emit WARNING.
-
-Present findings via conversational Q&A: Acknowledge / Create tasks / Suppress.
-
-**Done-when gate:** Phase 6 is done when all self-audit findings are presented
-and decided.
-
----
-
-### Phase 7: Cleanup & Verification
-
-1. Write `.claude/alerts-acknowledged.json`
-2. Save new suppressions (with reason field MUST be present)
-3. Clear resolved warnings from `.claude/hook-warnings.json`
-4. Extract summary stats to `.claude/state/alerts-history.jsonl` (never cleaned)
-5. Offer re-run with delta display
-
-**Closure summary format:**
-
-```
-Health: {before_grade} ({before_score}) -> {after_grade} ({after_score})
-Fixed: N | Deferred: N | Ignored: N | Suppressed: N
-Session log: .claude/tmp/alert-session-{timestamp}.jsonl
-```
-
-**Done-when gate:** Phase 7 is done when files are written and closure summary
-is presented.
+Write artifacts, save suppressions (reason MUST be present), clear resolved
+warnings, append to alerts-history.jsonl with learnings. Offer re-run (loops to
+Phase 1, same mode, delta display). Closure: "Alert review complete. Health:
+{before} -> {after}. Session log: [path]." DONE-WHEN: Files written and closure
+summary presented.
 
 ---
 
 **Phase separators:** Use `---` between all phases in output.
 
----
+## Dependencies
 
-## Suppression System
+**Hard:** `run-alerts.js`, `.claude/state/alert-suppressions.json` **Soft:**
+`alerts-baseline.json` (computed first run), `alerts-history.jsonl` (no trends
+if missing), `health-ecosystem-audit-history.jsonl` (omit Test Health if
+missing/stale >1 day)
 
-File: `.claude/state/alert-suppressions.json`. Match by category + regex on
-message. Expired suppressions skipped. Filtered after checkers run, before score
-computation. Reason field MUST be present in every suppression record and shown
-during Phase 6 stale review.
+## Compaction Resilience
 
-## Modes
+State: `.claude/tmp/alerts-progress-{YYYY-MM-DD}.json`. On start: check if <2h
+old, offer resume. After every 5 decisions: update currentAlertIndex. On
+compaction: re-read state, skip completed alerts.
 
-**Limited (16 categories):** Code Health, Security, Session Context, Debt,
-Learning, Agent Compliance, Hook Warnings, Skip Abuse, Test Results, Hook
-Health, Session State, Pattern Hotspots, Context Usage, Reviews Sync, Review
-Archive Health, Cross-Document Dependencies.
+## Delegation Protocol
 
-**Full (+20 categories):** Debt Intake/Resolution, Doc Health, Roadmap, Review
-Quality, Consolidation, Velocity, Session/Commit Activity, Roadmap
-Validation/Hygiene, Trigger Compliance, Pattern Sync, Doc Placement, External
-Links, Unused Deps, Review Churn, Backlog, GitHub Actions, SonarCloud.
+Triggers: "you decide", "all", "auto", "apply all", "go ahead", "yes" at
+delegation prompt. For scoped requests ("fix errors only", "except item 3"),
+fall back to per-alert loop. If >15 alerts: "Apply to all N? [Apply All / Next
+15 / Revise]". Show preview before execution: "Will apply: X Fix Now, Y Defer.
+Confirm? [Y/n]"
 
-## Benchmarks
+## Suppression Reason Validation
 
-All ratings: Good / Average / Poor.
-
-| Category    | Metric              | Good | Average | Poor |
-| ----------- | ------------------- | ---- | ------- | ---- |
-| Debt        | S0 items            | 0    | --      | >0   |
-| Debt        | S1 items            | <10  | --      | >10  |
-| Debt        | Resolution rate     | >50% | >30%    | <10% |
-| Code        | TS errors           | 0    | <5      | >20  |
-| Code        | ESLint warnings     | 0    | <10     | >50  |
-| Tests       | Pass rate           | >98% | >90%    | <80% |
-| Security    | Critical vulns      | 0    | 0       | >0   |
-| Security    | High vulns          | 0    | <2      | >5   |
-| Learning    | Effectiveness       | >85% | >75%    | <60% |
-| Learning    | Automation coverage | >40% | >25%    | <10% |
-| Velocity    | Items/session       | >5   | >2      | 0    |
-| Reviews     | Fix ratio           | <15% | <25%    | >35% |
-| Reviews     | Max rounds          | <2   | <3      | >5   |
-| Hook Health | Warnings (7d)       | 0    | <5      | >15  |
-| Hook Health | False positive %    | 0%   | <30%    | >60% |
-| Agents      | Compliance %        | 100% | >80%    | <50% |
-| Docs        | Staleness (days)    | <3   | <7      | >14  |
-
-## Health Score Weights
-
-**Core (70%):** Code 15%, Security 15%, Debt 12%, Tests 10%, Learning 8%, Agents
-4%, Session 3%, Hook Health 3%, Skip Abuse 2%.
-
-**New state (8%):** Session State 3%, Pattern Hotspots 3%, Context Usage 2%.
-
-**Existing (9%):** Velocity 3%, Reviews 3%, Docs 3%.
-
-**Full-mode only (13%):** Debt Intake 2%, Roadmap 2%, GitHub Actions 2%,
-SonarCloud 2%, plus 1% each for Trigger Compliance, Pattern Sync, Doc Placement,
-External Links, Unused Deps, Review Churn, Backlog.
-
-**Operational (7%):** Hook Warnings 1%, Roadmap 1%, Consolidation 1%, Roadmap
-Health 1%, Debt Resolution 1%, Session Activity 1%, Commit Activity 1%.
-
-### Test Health Category (D#21, D#46)
-
-Added as part of `health-ecosystem-audit` ecosystem ownership. Shows data from
-the most recent `/health-ecosystem-audit` run:
-
-- **Last audit score:** Composite grade and numeric score (e.g., "B+ (82)")
-- **Test pass rate:** From most recent live test execution (e.g., "1,594/1,594
-  pass")
-- **Unresolved findings:** Count of ERROR/WARNING findings not yet fixed or
-  deferred
-
-Data source: `.claude/state/health-ecosystem-audit-history.jsonl` (most recent
-entry).
+Reason minimum: 15 characters. Must reference alert category or ticket/decision.
+Reject vague reasons ("skip", "not needed") — ask user to retry.
 
 ## Integration
 
-**Neighbors:**
+See [REFERENCE.md](./REFERENCE.md) for file schemas, benchmarks, weights, hook
+drill-down, scripts, learning loop details, and example walkthrough.
 
-- `/audit-health` — meta-audit of audit system health
-- `/ecosystem-health` — ecosystem-wide diagnostic
-- `session-begin` — calls `/alerts --limited` automatically
+**Neighbors:** `/audit-health`, `/ecosystem-health`, `/health-ecosystem-audit`,
+`session-begin`
 
-**Input:** Checker script JSON output, suppression file, baseline file.
+**Skill routing:** Code -> `/audit-code`, Security -> `/audit-security`, Reviews
+-> `/pr-retro`, Debt -> `/add-debt`, Hooks -> `/hook-ecosystem-audit`
 
-**Output artifacts:** Session JSONL, acknowledged alerts, updated suppressions,
-alerts-history.jsonl.
-
-**Skill routing in suggested actions:** Map alert actions to specific skills:
-
-- Code issues: `/audit-code`
-- Security alerts: `/audit-security`
-- Review quality: `/pr-retro {pr_number}`
-- Debt items: `/add-debt`
-- Hook issues: `/hook-ecosystem-audit`
-
-## Hook Data Drill-Down (L3 — opt-in)
-
-When the dashboard shows hook-related alerts (skip-abuse, hook-health, or
-hook-warning-trends), offer the user a drill-down:
-
-```
-Hook alerts detected. Drill down into hook data? [Y/n]
-```
-
-**If yes**, read and summarize these data sources:
-
-1. **Override log** (`.claude/state/override-log.jsonl`): Top 3 most-overridden
-   checks (7d), total count, trend vs previous week
-2. **Hook warnings log** (`.claude/state/hook-warnings-log.jsonl`): Top 3
-   warning types (7d), auto-escalation status, any with 15+ occurrences
-3. **Health score log** (`.claude/state/health-score-log.jsonl`): Last 3 grades
-   with timestamps, categories scoring below 70
-
-**Output format:**
-
-```
-Hook Drill-Down (7d):
-  Overrides: 18 total (cognitive-complexity: 12, propagation: 4, security: 2)
-    Trend: +125% vs prev week
-  Warnings: 8 total (propagation: 5, pattern-compliance: 2, canon: 1)
-    Auto-escalated: propagation (5+ occurrences → warning)
-  Health: F(59) ← C(76) ← B(80) — declining
-    Below 70: code(60), security(70), debt-metrics(60), hook-health(50)
-```
-
-**If no or no hook alerts:** Skip silently.
-
-## Scripts
-
-```bash
-node .claude/skills/alerts/scripts/run-alerts.js --limited   # or --full
-npm run alerts:cleanup   # Delete session logs >7 days
-```
-
-**Script dependencies:** npm scripts (`lint`, `patterns:check`,
-`roadmap:validate`), data files (`.claude/state/*.jsonl`), hooks that feed data
-(`post-read-handler`, `track-agent-invocation`).
-
-**Script timeout guidance:** Limited ~15-30s, full ~30-60s, kill after 120s.
-
-Exit code 1 if error-level alerts. Delta tracking: first run/day saves baseline
-to `.claude/state/alerts-baseline.json`.
-
-## Learning Loop
-
-**Auto-learnings** (MUST): Generate 2-3 data-driven insights from the alert run
-(top regressing checker, most common alert type, recurring blind spots). Save to
-`.claude/state/alerts-history.jsonl` as `learnings` field.
-
-**Optional user feedback** (SHOULD): "Any additional observations about checker
-quality?" Accept empty / "none" to proceed. If provided, save as `feedback`
-field. Both are consumed by Phase 6 self-audit to detect recurring blind spots.
-
-**On next startup** (MUST): Surface previous auto-learnings and user feedback.
+**Convergence loops:** Phase 5 fix verification only. Not used for initial
+checker execution (deterministic, single-pass).
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                                 |
-| ------- | ---------- | ----------------------------------------------------------- |
-| 2.0     | 2026-03-07 | Full rewrite from skill audit (51 decisions, 10 categories) |
-| 1.1     | 2026-02-25 | Trim to <500 lines: condense benchmark tables and weights   |
-| 1.0     | 2026-02-25 | Initial implementation                                      |
+| Version | Date       | Description                                                     |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 3.0     | 2026-03-19 | Skill audit v2: 56 decisions, REFERENCE.md extraction, CL fixes |
+| 2.0     | 2026-03-07 | Full rewrite: 18 limited + 24 full checkers, 7-phase workflow   |
+| 1.1     | 2026-02-25 | Trim to <500 lines: condense benchmark tables and weights       |
+| 1.0     | 2026-02-25 | Initial implementation                                          |

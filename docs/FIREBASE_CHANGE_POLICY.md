@@ -138,7 +138,7 @@ Before submitting a PR that modifies `firestore.rules`:
 - [ ] **Documentation Updated**
   - Document why the rule change is needed
   - Explain the security model for new collections
-  - Update `docs/FIREBASE_ARCHITECTURE.md` if collection structure changes
+  - Update Firebase architecture documentation if collection structure changes
 
 - [ ] **Test Coverage**
   - Unit tests added/updated for affected rules
@@ -173,7 +173,7 @@ All PRs modifying `firestore.rules` **MUST** include:
    ```
 
 2. **Test Evidence**
-   - Console output showing `npm run test:rules` passing
+   - Console output showing `npm test` passing
    - Screenshot or log excerpt showing negative test cases
 
 3. **Deployment Plan**
@@ -435,7 +435,7 @@ change]
 
 ### Firestore Rules Testing
 
-- [ ] Emulator tests pass (`npm run test:rules`)
+- [ ] Emulator tests pass (`npm test`)
 - [ ] Negative tests added (unauthorized access blocked)
 - [ ] Manual verification completed
 
@@ -444,7 +444,7 @@ change]
 
 [Paste test output or link to test run]
 
-```
+```text
 
 ### Cloud Functions Testing
 - [ ] Unit tests pass
@@ -457,7 +457,7 @@ change]
 
 [Paste test output]
 
-```
+```text
 
 ---
 

@@ -166,11 +166,8 @@ function GlossarySection() {
 
       {/* List */}
       <div className="flex-1 overflow-y-auto space-y-2 pr-2">
-        {filtered.map((item, i) => (
-          <div
-            key={`${item.term}-${i}`}
-            className="bg-white/60 border border-amber-100 rounded-lg p-3"
-          >
+        {filtered.map((item) => (
+          <div key={item.term} className="bg-white/60 border border-amber-100 rounded-lg p-3">
             <div className="flex items-start justify-between">
               <h4 className="font-heading-alt text-amber-900">{item.term}</h4>
               <span className="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded capitalize">
@@ -335,6 +332,7 @@ function LinksSection() {
       },
     };
 
+    // eslint-disable-next-line security/detect-object-injection -- color is typed ColorKey from component props
     const style = colors[color];
 
     return (

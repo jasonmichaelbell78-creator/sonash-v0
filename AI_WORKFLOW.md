@@ -90,7 +90,7 @@ Recovery Notebook project. It provides:
 >
 > These run before you start - review their output for warnings.
 
-```
+```text
 ☐ 1. Read SESSION_CONTEXT.md (current status, next goals)
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
      Note: GLOBAL_SECURITY_STANDARDS.md content is incorporated into CLAUDE.md
@@ -420,7 +420,7 @@ applies. If a capability **clearly applies** to your task, you MUST use it.
 
 **When you receive a task from the user, IMMEDIATELY check these triggers:**
 
-```
+```text
 ☐ Am I starting a new project or working in an unfamiliar domain?
    → SHOULD use '/find-skills' to discover specialized capabilities
 
@@ -455,7 +455,7 @@ applies. If a capability **clearly applies** to your task, you MUST use it.
 
 **Before committing, check these triggers:**
 
-```
+```text
 ☐ Did I write or modify code (any amount)?
    → MUST run 'code-reviewer' agent
 
@@ -521,7 +521,7 @@ invoked using the **Skill tool**.
 
 **Example:**
 
-```
+```text
 Task: "Fix this authentication bug"
 → Use `systematic-debugging` skill FIRST
 → Then use `senior-backend` or `security-auditor` for the fix
@@ -545,7 +545,7 @@ Agents are specialist subagents invoked via the **Task tool** with
 
 **Example:**
 
-```
+```text
 After writing a new Cloud Function:
 → Invoke code-reviewer agent to review the code
 → Invoke security-auditor agent to check for vulnerabilities
@@ -676,7 +676,7 @@ Run a deliverable audit when ANY of these occur:
 
 ### Audit Process
 
-```
+```text
 DELIVERABLE AUDIT CHECKLIST
 
 1. GATHER REQUIREMENTS

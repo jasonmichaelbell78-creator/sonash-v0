@@ -49,7 +49,7 @@ When working with technical debt:
 
 ## 1. Technical Debt Lifecycle
 
-```
+```text
 DISCOVERY        INTAKE         VERIFICATION      RESOLUTION
 ─────────────────────────────────────────────────────────────
 
@@ -121,7 +121,7 @@ When a PR review identifies items to defer:
 1. **Document in PR** - Add to Deferred Items section
 2. **Use the skill:**
 
-```
+```text
 Use the add-debt skill with:
 - File: path/to/file.ts
 - Line: 42
@@ -136,7 +136,7 @@ Use the add-debt skill with:
 
 To sync current SonarCloud issues:
 
-```
+```text
 Use the sonarcloud skill
 ```
 
@@ -151,7 +151,7 @@ The skill will:
 
 For ad-hoc technical debt discovery:
 
-```
+```text
 Use the add-debt skill with:
 - File: path/to/file.ts
 - Line: 42
@@ -404,21 +404,21 @@ All scripts are located in `scripts/debt/`.
 
 ### Generated Views
 
-| File                          | Purpose                         |
-| ----------------------------- | ------------------------------- |
-| `INDEX.md`                    | Human-readable index with stats |
-| `views/by-severity.md`        | Items grouped by S0/S1/S2/S3    |
-| `views/by-category.md`        | Items grouped by category       |
-| `views/by-status.md`          | Items grouped by status         |
-| `views/verification-queue.md` | NEW items needing verification  |
+| File                            | Purpose                         |
+| ------------------------------- | ------------------------------- |
+| `INDEX.md`                      | Human-readable index with stats |
+| `./views/by-severity.md`        | Items grouped by S0/S1/S2/S3    |
+| `./views/by-category.md`        | Items grouped by category       |
+| `./views/by-status.md`          | Items grouped by status         |
+| `./views/verification-queue.md` | NEW items needing verification  |
 
 ### Logs
 
-| File                        | Purpose                                                                                                                 |
-| --------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `logs/dedup-log.jsonl`      | Merge/deduplication history (archived to `docs/archive/tdms-intermediates-2026-02/logs/` — directory may not exist yet) |
-| `logs/intake-log.jsonl`     | Intake activity log                                                                                                     |
-| `logs/resolution-log.jsonl` | Resolution activity log                                                                                                 |
+| File                          | Purpose                                                                                                                 |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `./logs/dedup-log.jsonl`      | Merge/deduplication history (archived to `docs/archive/tdms-intermediates-2026-02/logs/` — directory may not exist yet) |
+| `./logs/intake-log.jsonl`     | Intake activity log                                                                                                     |
+| `./logs/resolution-log.jsonl` | Resolution activity log                                                                                                 |
 
 ---
 

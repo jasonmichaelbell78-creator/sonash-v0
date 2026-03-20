@@ -121,7 +121,7 @@ All audit outputs follow this order:
 
 ## Anti-Hallucination Rules
 
-```
+```text
 NON-NEGOTIABLE EVIDENCE RULE (ANTI-HALLUCINATION)
 
 A finding is CONFIRMED only if it includes:
@@ -139,7 +139,7 @@ If you cannot provide both, put it in SUSPECTED_FINDINGS with confidence <= 40.
 All templates include a PRE-REVIEW CONTEXT section that references
 project-specific resources. This section MUST include the following note:
 
-```
+```text
 > NOTE: The references below require repository access. If your AI model cannot
 > browse files or run commands, skip to the audit prompt section below.
 ```
@@ -152,7 +152,7 @@ project-specific resources. This section MUST include the following note:
 3. **Current Compliance** (`npm run patterns:check`): Known anti-pattern
    violations
 4. **Dependency Health**: `npm run deps:circular`, `npm run deps:unused`
-5. **Static Analysis**: SonarCloud integration via `npm run sonar:report`
+5. **Static Analysis**: SonarCloud integration (via MCP server or dashboard)
 
 ---
 
@@ -182,7 +182,7 @@ Every confirmed finding MUST include:
 
 **Example of sufficient evidence:**
 
-```
+```text
 files: ["lib/auth/session.ts:45-52"]
 evidence: [
   "No try/catch around Firebase auth call",
@@ -192,7 +192,7 @@ evidence: [
 
 **Insufficient evidence:**
 
-```
+```text
 files: ["lib/auth/"]
 evidence: ["Auth code needs improvement"]
 ```

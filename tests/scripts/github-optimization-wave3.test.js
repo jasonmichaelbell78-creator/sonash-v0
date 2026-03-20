@@ -142,7 +142,7 @@ describe("3.1b: no-eval-usage rule tuning", () => {
       "Should use metavariable-regex to restrict to string-literal callbacks"
     );
     assert.ok(
-      yamlContains(content, "regex:") && yamlContains(content, String.raw`['\"`),
+      yamlContains(content, "regex:") && yamlContains(content, `[''"`),
       "Should match string literals starting with quote characters"
     );
   });

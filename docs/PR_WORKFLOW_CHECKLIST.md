@@ -35,7 +35,7 @@ leads to incomplete work, regressions, and scope creep.
 
 ## 📋 The Complete PR Workflow
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  PHASE WORKFLOW (Do this for EVERY PR)                     │
 ├─────────────────────────────────────────────────────────────┤
@@ -77,7 +77,7 @@ leads to incomplete work, regressions, and scope creep.
 
 ### Required First Line
 
-```
+```text
 IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", limitations="None"
 ```
 
@@ -98,7 +98,7 @@ IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", l
 - [ ] **BASELINE** (if not done this session)
   - [ ] Run: `npm run lint`
   - [ ] Run: `npm run test`
-  - [ ] Run: `npm run typecheck` (if exists)
+  - [ ] Run: `npm run type-check` (if exists)
   - [ ] Record any pre-existing failures
 
 - [ ] **IMPLEMENTATION LOOP**
@@ -110,7 +110,7 @@ IMPL_CAPABILITIES: repo_checkout=yes, run_commands=yes, package_manager="npm", l
 - [ ] **FINAL VERIFICATION**
   - [ ] Run: `npm run lint`
   - [ ] Run: `npm run test`
-  - [ ] Run: `npm run typecheck` (if available)
+  - [ ] Run: `npm run type-check` (if available)
   - [ ] Run: `npm run build` (catches Next.js issues)
   - [ ] If coverage mentioned: `npm run test:coverage`
 

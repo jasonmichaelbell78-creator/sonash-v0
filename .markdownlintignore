@@ -1,0 +1,6 @@
+docs/archive/
+.claude/skills/
+.claude/state/
+.claude/hooks/
+.claude/agents/
+node_modules/

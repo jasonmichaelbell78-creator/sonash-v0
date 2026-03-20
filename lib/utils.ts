@@ -41,6 +41,7 @@ export function featureFlagEnabled(featureId: string): boolean {
   }
 
   // Use static env references so Next.js can inline on the client bundle
+  // eslint-disable-next-line security/detect-object-injection -- featureId validated against ALLOWED_FEATURE_FLAGS whitelist
   const value = FEATURE_FLAG_VALUES[featureId];
   return value === "true" || value === "1";
 }

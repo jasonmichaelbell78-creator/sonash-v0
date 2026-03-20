@@ -74,7 +74,7 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 
 ### Test Pyramid Strategy
 
-```
+```text
                     ┌─────────────────┐
                     │   E2E Tests     │  ← 10-15 critical journeys
                     │   (Playwright)  │     User-facing flows
@@ -128,7 +128,7 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 
 **Test File Structure:**
 
-```
+```text
 tests/e2e/
 ├── fixtures/
 │   ├── auth.fixture.ts       # Auth helpers
@@ -294,20 +294,21 @@ export default defineConfig({
 ### Running Modes
 
 ```bash
+# Planned npm scripts (not yet implemented):
 # CI/Remote (headless, no extensions)
-npm run test:e2e
+# npm run test:e2e
 
 # CLI/Local (headed, with Chrome extensions)
-npm run test:e2e:local
+# npm run test:e2e:local
 
 # Component tests only
-npm run test:components
+# npm run test:components
 
 # Visual regression
-npm run test:visual
+# npm run test:visual
 
 # Full suite with coverage
-npm run test:full
+# npm run test:full
 ```
 
 ---
@@ -316,7 +317,7 @@ npm run test:full
 
 ### Test Management Tab (proposed for Dev Dashboard)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  Test Suite Health                               [Run All]  │
 ├─────────────────────────────────────────────────────────────┤
@@ -340,8 +341,8 @@ npm run test:full
 ### Quick Actions from Dev Panel
 
 - **Run Unit Tests** - `npm test`
-- **Run E2E Tests** - `npm run test:e2e`
-- **Update Visual Baselines** - `npm run test:visual:update`
+- **Run E2E Tests** - `test:e2e` script (planned)
+- **Update Visual Baselines** - `test:visual:update` script (planned)
 - **View Coverage Report** - Opens HTML coverage report
 - **View Last Report** - Opens Playwright HTML report
 
@@ -438,7 +439,7 @@ When working with testing:
 2. **Bug Fix** → Add regression test that would have caught it
 3. **UI Change** → Update visual baselines if intentional
 4. **Component Change** → Update component tests
-5. **Running Tests** → Use `npm run test:e2e:local` for headed mode
+5. **Running Tests** → Use `test:e2e:local` script for headed mode (planned)
 
 **Test File Naming:**
 

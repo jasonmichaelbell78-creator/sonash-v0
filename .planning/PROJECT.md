@@ -85,7 +85,7 @@ data loss, no dead ends, no manual steps that get skipped.
 
 ## Constraints
 
-- **Tech Stack**: Next.js 16.1.6, TypeScript strict, Zod 4.3.5 — per CLAUDE.md
+- **Tech Stack**: Next.js 16.2.0, TypeScript strict, Zod 4.3.6 — per CLAUDE.md
 - **Testing**: Every commit must include its tests (UC-42)
 - **Documentation**: Doc updates in same commit as behavior changes (UC-42)
 - **Performance**: <3s per gate, <10s total pre-commit, <30s session-start

@@ -141,7 +141,7 @@ Queue for low-confidence items awaiting fix-or-DEBT resolution.
 Four scripts added to `session-start.js` after the existing `rotate-jsonl.js`
 block (insert before the `seed-commit-log.js` block), in dependency order:
 
-```
+```text
 session-start.js execution order:
   ... (existing: deps, build, patterns, consolidation, archive, rotate-jsonl) ...
   1. route-lifecycle-gaps.js      — discover gaps → new scaffolded entries
@@ -207,7 +207,7 @@ prominently.
 
 ### Full Lifecycle Map
 
-```
+```text
 scaffolded ──→ [confidence-classifier] ──→ HIGH ──→ enforced ──→ [verify-enforcement] ──→ verified
                                            │                            │
                                            │                      (verify fails)
@@ -232,7 +232,7 @@ scaffolded ──→ [confidence-classifier] ──→ HIGH ──→ enforced �
 
 ### Per-Session Data Flow
 
-```
+```text
 session-start
   ├─ rotate-jsonl.js             (existing — clean up old data)
   ├─ route-lifecycle-gaps.js     (discover gaps → scaffolded entries)

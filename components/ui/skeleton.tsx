@@ -35,8 +35,8 @@ export function JournalEntrySkeleton() {
 export function HistoryPageSkeleton() {
   return (
     <div className="space-y-4">
-      {[1, 2, 3].map((i) => (
-        <JournalEntrySkeleton key={i} />
+      {[1, 2, 3].map((n) => (
+        <JournalEntrySkeleton key={`entry-${n}`} />
       ))}
     </div>
   );
@@ -50,8 +50,8 @@ export function NotebookPageSkeleton() {
     <div className="space-y-6 p-6">
       {/* Mood selector skeleton */}
       <div className="flex justify-center gap-4">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <Skeleton key={i} className="w-10 h-10 rounded-full" />
+        {[1, 2, 3, 4, 5].map((n) => (
+          <Skeleton key={`mood-${n}`} className="w-10 h-10 rounded-full" />
         ))}
       </div>
 
@@ -94,14 +94,14 @@ export function MeetingFinderSkeleton() {
 
       {/* Filter pills skeleton */}
       <div className="flex gap-2">
-        {[1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} className="h-8 w-16 rounded-full" />
+        {[1, 2, 3, 4].map((n) => (
+          <Skeleton key={`filter-${n}`} className="h-8 w-16 rounded-full" />
         ))}
       </div>
 
       {/* Meeting cards skeleton */}
-      {[1, 2, 3].map((i) => (
-        <MeetingCardSkeleton key={i} />
+      {[1, 2, 3].map((n) => (
+        <MeetingCardSkeleton key={`meeting-${n}`} />
       ))}
     </div>
   );

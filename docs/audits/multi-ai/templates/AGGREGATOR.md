@@ -199,7 +199,7 @@ finding with:
 
 Before processing, print exactly:
 
-```
+```text
 AGG_CAPABILITIES: repo_checkout=<yes/no>, run_commands=<yes/no>, can_search_code=<yes/no>, limitations="<one sentence>"
 ```
 
@@ -224,7 +224,7 @@ Goal: do not install heavy tools unless already present.
 **Quality gates:**
 
 - npm run lint (or closest lint script)
-- npm run typecheck (or `tsc --noEmit`)
+- npm run type-check (or `tsc --noEmit`)
 - npm test (or closest test script)
 
 **Project-specific:**
@@ -491,7 +491,7 @@ Goal: small, reviewable PRs.
       "risk_level": "low|medium|high",
       "estimated_effort": "E0|E1|E2|E3",
       "prerequisites": ["PR0"],
-      "acceptance_tests": ["npm run lint", "npm run typecheck", "npm test"],
+      "acceptance_tests": ["npm run lint", "npm run type-check", "npm test"],
       "notes": "review guidance + pitfalls"
     }
   ],
@@ -612,7 +612,7 @@ Beyond S0-S3 severity, use composite scoring:
 
 **Formula:**
 
-```
+```text
 priority = severity_score × cross_domain_mult × effort_inv × dep_mult × hotspot_mult
 ```
 

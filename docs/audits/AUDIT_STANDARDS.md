@@ -30,7 +30,7 @@ consistent output, pipeline compatibility, and TDMS integration.
 
 ### When to Use Each
 
-```
+```text
 Decision Tree:
 ├─ Threshold triggered? → Single-session (matching category)
 ├─ 100+ commits or 14+ days? → Multi-AI consensus (all categories)
@@ -229,7 +229,7 @@ Comprehensive audits produce per-domain reports plus an aggregated report.
 
 ### Results Flow
 
-```
+```text
 Audit Output → Pipeline Scripts → TDMS Intake → MASTER_DEBT.jsonl → Views
 ```
 
@@ -267,7 +267,7 @@ reporting findings.
 **CRITICAL:** `generate-views.js` reads from
 `docs/technical-debt/raw/deduped.jsonl` and OVERWRITES `MASTER_DEBT.jsonl`. Any
 script that appends to MASTER_DEBT.jsonl MUST also append to
-`raw/deduped.jsonl`.
+`docs/technical-debt/raw/deduped.jsonl`.
 
 ---
 
@@ -290,7 +290,7 @@ script that appends to MASTER_DEBT.jsonl MUST also append to
 
 ### Option A: Use the Create-Audit Wizard
 
-```
+```text
 /create-audit
 ```
 
@@ -326,8 +326,8 @@ and generate all required files.
   - `scripts/debt/extract-audits.js` (category normalization)
   - `scripts/debt/validate-schema.js` (category enum)
   - `docs/audits/AUDIT_TRACKER.md` (threshold row)
-  - `audit-comprehensive/SKILL.md` (stage allocation)
-  - `audit-aggregator/SKILL.md` (input list)
+  - `.claude/skills/audit-comprehensive/SKILL.md` (stage allocation)
+  - `.claude/skills/audit-aggregator/SKILL.md` (input list)
 
 ---
 

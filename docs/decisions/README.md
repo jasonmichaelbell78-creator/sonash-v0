@@ -59,7 +59,7 @@ Each ADR follows this structure:
 5. **Consequences** - What results from this decision?
 6. **Alternatives Considered** - What other options were evaluated?
 
-See [TEMPLATE.md](./TEMPLATE.md) for the full template.
+See [TEMPLATE.md](../templates/TEMPLATE.md) for the full template.
 
 ## ADR Index
 

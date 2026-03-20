@@ -21,8 +21,26 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { isSafeToWrite } = require("./lib/symlink-guard");
-const { sanitizeInput } = require("./lib/sanitize-input");
+let isSafeToWrite;
+try {
+  ({ isSafeToWrite } = require("./lib/symlink-guard"));
+} catch {
+  console.error(
+    "[post-write-validator] symlink-guard unavailable; refusing to run (cannot safely validate writes)"
+  );
+  process.exit(2);
+}
+let sanitizeInput;
+try {
+  ({ sanitizeInput } = require("./lib/sanitize-input"));
+} catch {
+  /* eslint-disable no-control-regex -- intentional: strip dangerous control chars in fallback */
+  sanitizeInput = (v) =>
+    String(v ?? "")
+      .replace(/[\x00-\x1f\x7f]/g, "")
+      .slice(0, 500);
+  /* eslint-enable no-control-regex */
+}
 
 // ─── Optional dependency: sanitizeFilesystemError ────────────────────────────
 let sanitizeFilesystemError;
@@ -46,7 +64,12 @@ try {
 // 1. SHARED: Parse args ONCE
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const { projectDir } = require("./lib/git-utils");
+let projectDir;
+try {
+  ({ projectDir } = require("./lib/git-utils"));
+} catch {
+  projectDir = process.cwd();
+}
 const toolName = (process.env.CLAUDE_TOOL || "edit").toLowerCase();
 const isWriteTool = toolName === "write";
 
@@ -111,11 +134,11 @@ const pathLower = filePath.toLowerCase();
 const isTestFile = /\.(test|spec)\.(ts|tsx|js|jsx)$/.test(filename) || /__tests__\//.test(filePath);
 const isCodeFile = /\.(ts|tsx|js|jsx|py|sh|go|rs|rb|php|java|kt|swift)$/.test(filename);
 const isTsFile = /\.(ts|tsx)$/.test(filePath);
-const isTsxFile = /\.tsx$/.test(filePath);
+const isTsxFile = filePath.endsWith(".tsx");
 const isJsTsFile = /\.(ts|tsx|js|jsx)$/.test(filePath);
 const isPatternCheckable = /\.(js|ts|tsx|jsx|sh|yml|yaml)$/.test(filePath);
-const isMarkdownFile = /\.md$/.test(filename);
-const isDtsFile = /\.d\.ts$/.test(filePath);
+const isMarkdownFile = filename.endsWith(".md");
+const isDtsFile = filePath.endsWith(".d.ts");
 const isConfigFile = /\.(env|env\..+|config|cfg|ini|yaml|yml|json)$/.test(filename);
 
 // Lazy content reader — reads file from disk at most once
@@ -241,7 +264,7 @@ function firestoreWriteBlock() {
 function testMockingValidator() {
   if (!isTestFile) return;
   // Admin/functions/scripts test files are allowed
-  if (/^(?:app\/admin|functions)\//.test(filePath) || /^scripts\//.test(filePath)) return;
+  if (/^(?:app\/admin|functions)\//.test(filePath) || filePath.startsWith("scripts/")) return;
 
   const content = getContent();
   if (!content) return;
@@ -279,6 +302,116 @@ function testMockingValidator() {
 
 // ─── Validator 2: auditS0S1 (WARN/BLOCK, Write only) ────────────────────────
 
+const VALID_FIRST_PASS = new Set(["grep", "tool_output", "file_read", "code_search"]);
+const VALID_SECOND_PASS = new Set([
+  "contextual_review",
+  "exploitation_test",
+  "manual_verification",
+]);
+const VALID_TOOLS = new Set([
+  "eslint",
+  "sonarcloud",
+  "npm_audit",
+  "patterns_check",
+  "typescript",
+  "NONE",
+]);
+
+/**
+ * Validate verification_steps for a single S0/S1 finding.
+ * Returns an array of violation message strings.
+ */
+function validateVerificationSteps(prefix, vs) {
+  const violations = [];
+  if (!vs.first_pass) {
+    violations.push(`${prefix}: Missing first_pass`);
+  } else {
+    if (!VALID_FIRST_PASS.has(vs.first_pass.method))
+      violations.push(`${prefix}: Invalid first_pass.method`);
+    if (
+      !Array.isArray(vs.first_pass.evidence_collected) ||
+      vs.first_pass.evidence_collected.length < 1
+    )
+      violations.push(`${prefix}: Empty first_pass.evidence_collected`);
+  }
+  if (!vs.second_pass) {
+    violations.push(`${prefix}: Missing second_pass`);
+  } else {
+    if (!VALID_SECOND_PASS.has(vs.second_pass.method))
+      violations.push(`${prefix}: Invalid second_pass.method`);
+    if (vs.second_pass.confirmed !== true)
+      violations.push(`${prefix}: second_pass.confirmed must be true`);
+  }
+  if (!vs.tool_confirmation) {
+    violations.push(`${prefix}: Missing tool_confirmation`);
+  } else {
+    if (!VALID_TOOLS.has(vs.tool_confirmation.tool))
+      violations.push(`${prefix}: Invalid tool_confirmation.tool`);
+    if (!vs.tool_confirmation.reference?.trim?.())
+      violations.push(`${prefix}: Missing tool_confirmation.reference`);
+  }
+  return violations;
+}
+
+/**
+ * Validate a single S0/S1 finding and return violation messages.
+ */
+function validateS0S1Finding(f) {
+  const prefix = `${f.id || "unknown"} (${f.severity})`;
+  const violations = [];
+  if (f.confidence === "LOW") violations.push(`${prefix}: LOW confidence not allowed for S0/S1`);
+  if (f.cross_ref === "MANUAL_ONLY")
+    violations.push(`${prefix}: MANUAL_ONLY not allowed for S0/S1`);
+  if (!f.verification_steps) {
+    violations.push(`${prefix}: Missing verification_steps`);
+    return violations;
+  }
+  violations.push(...validateVerificationSteps(prefix, f.verification_steps));
+  if (!Array.isArray(f.evidence) || f.evidence.length < 2)
+    violations.push(`${prefix}: Need >= 2 evidence items`);
+  return violations;
+}
+
+/**
+ * Read and parse an audit JSONL file, returning S0/S1 findings.
+ * Returns null if file is inaccessible or has no S0/S1 findings.
+ */
+function loadAuditFindings(normalized) {
+  const fullPath = path.resolve(projectDir, normalized);
+  const relCheck = path.relative(projectDir, fullPath);
+  if (relCheck === "" || /^\.\.(?:[/\\]|$)/.test(relCheck) || path.isAbsolute(relCheck))
+    return null;
+
+  try {
+    const stats = fs.lstatSync(fullPath);
+    if (stats.isSymbolicLink()) return null;
+  } catch {
+    return null;
+  }
+
+  let content;
+  try {
+    content = fs.readFileSync(fullPath, "utf8");
+  } catch {
+    return null;
+  }
+
+  const findings = [];
+  const lines = content.split("\n").filter((l) => l.trim());
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    try {
+      const f = JSON.parse(line);
+      findings.push({ ...f, _lineNumber: i + 1 });
+    } catch {
+      findings.push({ _parseError: true, _lineNumber: i + 1 });
+    }
+  }
+
+  const s0s1 = findings.filter((f) => f.severity === "S0" || f.severity === "S1");
+  return s0s1.length > 0 ? s0s1 : null;
+}
+
 function auditS0S1() {
   if (!isWriteTool) return;
 
@@ -296,98 +429,12 @@ function auditS0S1() {
   const ROLLOUT_MODE = (process.env.AUDIT_S0S1_MODE || "WARN").trim().toUpperCase();
   const EFFECTIVE_MODE = ROLLOUT_MODE === "BLOCK" ? "BLOCK" : "WARN";
 
-  // Resolve and verify file
-  const fullPath = path.resolve(projectDir, normalized);
-  const relCheck = path.relative(projectDir, fullPath);
-  if (relCheck === "" || /^\.\.(?:[/\\]|$)/.test(relCheck) || path.isAbsolute(relCheck)) return;
-
-  // Reject symlinks
-  try {
-    const stats = fs.lstatSync(fullPath);
-    if (stats.isSymbolicLink()) return;
-  } catch {
-    return; // File doesn't exist yet
-  }
-
-  let content;
-  try {
-    content = fs.readFileSync(fullPath, "utf8");
-  } catch {
-    return;
-  }
-
-  // Parse JSONL
-  const findings = [];
-  const lines = content.split("\n").filter((l) => l.trim());
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    try {
-      const f = JSON.parse(line);
-      findings.push({ ...f, _lineNumber: i + 1 });
-    } catch {
-      findings.push({ _parseError: true, _lineNumber: i + 1 });
-    }
-  }
-
-  const s0s1 = findings.filter((f) => f.severity === "S0" || f.severity === "S1");
-  if (s0s1.length === 0) return;
-
-  const VALID_FIRST_PASS = new Set(["grep", "tool_output", "file_read", "code_search"]);
-  const VALID_SECOND_PASS = new Set([
-    "contextual_review",
-    "exploitation_test",
-    "manual_verification",
-  ]);
-  const VALID_TOOLS = new Set([
-    "eslint",
-    "sonarcloud",
-    "npm_audit",
-    "patterns_check",
-    "typescript",
-    "NONE",
-  ]);
+  const s0s1 = loadAuditFindings(normalized);
+  if (!s0s1) return;
 
   const violations = [];
   for (const f of s0s1) {
-    const prefix = `${f.id || "unknown"} (${f.severity})`;
-    if (f.confidence === "LOW")
-      violations.push({ message: `${prefix}: LOW confidence not allowed for S0/S1` });
-    if (f.cross_ref === "MANUAL_ONLY")
-      violations.push({ message: `${prefix}: MANUAL_ONLY not allowed for S0/S1` });
-    if (!f.verification_steps) {
-      violations.push({ message: `${prefix}: Missing verification_steps` });
-      continue;
-    }
-    const vs = f.verification_steps;
-    if (!vs.first_pass) {
-      violations.push({ message: `${prefix}: Missing first_pass` });
-    } else {
-      if (!VALID_FIRST_PASS.has(vs.first_pass.method))
-        violations.push({ message: `${prefix}: Invalid first_pass.method` });
-      if (
-        !Array.isArray(vs.first_pass.evidence_collected) ||
-        vs.first_pass.evidence_collected.length < 1
-      )
-        violations.push({ message: `${prefix}: Empty first_pass.evidence_collected` });
-    }
-    if (!vs.second_pass) {
-      violations.push({ message: `${prefix}: Missing second_pass` });
-    } else {
-      if (!VALID_SECOND_PASS.has(vs.second_pass.method))
-        violations.push({ message: `${prefix}: Invalid second_pass.method` });
-      if (vs.second_pass.confirmed !== true)
-        violations.push({ message: `${prefix}: second_pass.confirmed must be true` });
-    }
-    if (!vs.tool_confirmation) {
-      violations.push({ message: `${prefix}: Missing tool_confirmation` });
-    } else {
-      if (!VALID_TOOLS.has(vs.tool_confirmation.tool))
-        violations.push({ message: `${prefix}: Invalid tool_confirmation.tool` });
-      if (!vs.tool_confirmation.reference?.trim())
-        violations.push({ message: `${prefix}: Missing tool_confirmation.reference` });
-    }
-    if (!Array.isArray(f.evidence) || f.evidence.length < 2)
-      violations.push({ message: `${prefix}: Need >= 2 evidence items` });
+    violations.push(...validateS0S1Finding(f).map((message) => ({ message })));
   }
 
   if (violations.length > 0) {
@@ -412,7 +459,12 @@ function auditS0S1() {
 
 // ─── Validator 3: patternCheck (WARN) ────────────────────────────────────────
 
-const { checkInlinePatterns } = require("./lib/inline-patterns.js");
+let checkInlinePatterns;
+try {
+  ({ checkInlinePatterns } = require("./lib/inline-patterns.js"));
+} catch {
+  checkInlinePatterns = () => [];
+}
 
 function patternCheck() {
   if (!isPatternCheckable) return;
@@ -474,7 +526,7 @@ function componentSizeCheck() {
   if (!content) return;
 
   const lineCount = content.split("\n").length;
-  const isFormComponent = /Form\.tsx$/.test(filePath) || /form/i.test(filePath);
+  const isFormComponent = filePath.endsWith("Form.tsx") || /form/i.test(filePath);
   const threshold = isFormComponent ? 500 : 300;
 
   if (lineCount > threshold) {
@@ -538,7 +590,7 @@ function appCheckValidator() {
 function typescriptStrictCheck() {
   if (!isTsFile) return;
   if (isDtsFile || isTestFile) return;
-  if (/^scripts\//.test(filePath)) return;
+  if (filePath.startsWith("scripts/")) return;
 
   const content = getContent();
   if (!content) return;

@@ -132,7 +132,7 @@ for [feature/initiative name].
 
 **Architecture Diagram**:
 
-```
+```text
 [ASCII diagram showing component relationships]
 
 Example:

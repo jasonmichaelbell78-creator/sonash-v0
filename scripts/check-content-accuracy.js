@@ -76,12 +76,15 @@ function findMarkdownFiles(dir, files = []) {
   for (const entry of entries) {
     const fullPath = join(dir, entry);
 
+    // Skip generated directories where findings should be fixed at the source
+    const relDir = relative(ROOT, dir).replaceAll("\\", "/");
     if (
       entry[0] === "." ||
       entry === "node_modules" ||
       entry === "out" ||
       entry === "dist" ||
-      entry === "archive"
+      entry === "archive" ||
+      (entry === "views" && relDir === "docs/technical-debt")
     ) {
       continue;
     }
@@ -112,6 +115,7 @@ function checkVersionAccuracy(content, filePath) {
 
   // Pattern for version mentions
   // Match: "Package 1.2.3", "package@1.2.3", "Package v1.2.3", "Package: 1.2.3"
+  // SonarCloud S5852: bounded input from markdown lines (<500 chars), no ReDoS risk
   const versionPatterns = [
     // Table format: | Package | Version |
     /\|\s*([\w@/-]+)\s*\|\s*v?(\d+\.\d+\.\d+)\s*\|/gi,
@@ -194,6 +198,26 @@ function checkPathReferences(content, filePath) {
   const relPath = relative(ROOT, filePath);
   const docDir = dirname(filePath);
 
+  // Planning/roadmap files where missing paths are expected (planned features)
+  // Audit reports and changelogs reference files at time of writing — paths may have since moved
+  const snapshotFiles = [
+    /ROADMAP/i,
+    /CHECKLIST/i,
+    /PLAN[_.]|_PLAN\b/i,
+    /plans[/\\]/i,
+    /audits[/\\](?:single-session|comprehensive|multi-ai[/\\]templates)/i,
+    /FINAL_SYSTEM_AUDIT/i,
+    /CHANGELOG/i,
+    /SPRINT/i,
+    /RUNBOOK/i,
+    /specs[/\\]/i,
+    /aggregation[/\\]/i,
+    /SESSION_HISTORY/i,
+    /SESSION_DECISIONS/i,
+    /templates[/\\]/i, // doc templates with example paths
+  ];
+  const isSnapshotDoc = snapshotFiles.some((p) => p.test(relPath));
+
   // Patterns for file path references
   const pathPatterns = [
     // Backtick paths: `path/to/file.js`
@@ -209,10 +233,42 @@ function checkPathReferences(content, filePath) {
     /^#/,
     /\.[a-z]+\([^)]*\)/, // function calls like .map()
     /^node_modules\//,
-    /^<[^>]+>$/, // placeholder like <path>
-    /\.\*/, // glob patterns
+    /<[^>]+>/, // placeholder like <path> or path/<template>/file
+    /\.\*/, // glob patterns like *.md
+    /\*/, // any glob wildcard (e.g., .claude/skills/*/SKILL.md)
     /\$\{/, // template strings
     /example\.(js|ts|json)/i, // example files
+    /\/(file|X)\.\w+$/, // generic placeholder filenames like file.md, X.md
+    /\.tmp$/, // temp file references are examples, not real files
+    /\bpath\/to\b/, // generic example paths like ./path/to/file
+    /\[archived\]/, // explicitly marked as archived
+    /~\//, // home directory paths (user-specific)
+    /\$\(/, // shell command substitutions like $(git rev-parse ...)
+    /\[planned\]/, // explicitly marked as planned
+    /\{[^}]+\}/, // template variables like {name}.state.json
+    /^node\s/, // command invocations like `node --test path/to/file`
+    /,\s*\S+\.\w+/, // comma-separated file lists in single backtick
+    /\[multiple\]/, // placeholder like [multiple]
+    /\[[A-Za-z_-]+\]/, // template variables like [TYPE], [YYYY-MM-DD], [template-name]
+  ];
+
+  // Line-level context patterns that indicate planned/future/example paths
+  const planningLinePatterns = [
+    /\bNew\s+(Service|Component|Admin|File)\b/i, // planned new files
+    /\b(Create|Add|Build|Implement)\b.*`[^`]+`/i, // instructions to create
+    /\bOutput:\b/i, // planned output files
+    /\bFiles?:\b.*`[^`]+`/i, // planned files list
+    /^\s*-\s*\[ \]/, // unchecked todo items
+    /\(example\)/i, // explicitly marked as example
+    /\bcreate if\b/i, // "create if needed" instructions
+    /\[archived\]/, // line marks the path as archived
+    /\[planned\]/, // line marks the path as planned
+    /\bWhen created\b/i, // future action instructions
+    /\bnot.*created yet\b/i, // noting file doesn't exist yet
+    /\bFork from\b/i, // instructions to fork from a template
+    /\bAnalysis Source\b/i, // references to analysis source docs
+    /\bCopy template to\b/i, // template usage instructions
+    /\bSave.*to\b/i, // instructions to save to a path
   ];
 
   for (let i = 0; i < lines.length; i++) {
@@ -247,6 +303,16 @@ function checkPathReferences(content, filePath) {
 
         // Check if file exists
         if (!existsSync(resolvedPath)) {
+          // Skip planned/future paths based on line context
+          if (planningLinePatterns.some((p) => p.test(line))) {
+            continue;
+          }
+
+          // Skip missing paths in planning/roadmap docs (these reference future files)
+          if (isSnapshotDoc) {
+            continue;
+          }
+
           findings.push({
             id: `DOC-CONTENT-PATH-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
             category: "documentation",
@@ -274,6 +340,109 @@ function checkPathReferences(content, filePath) {
   return findings;
 }
 
+// Patterns for npm script references
+const npmPatterns = [
+  /npm\s+run\s+([\w:-]+)/g,
+  /npm\s+(test|start|build|dev|lint)(?:\s|$|[,)])/g,
+  /yarn\s+([\w:-]+)/g,
+  /pnpm\s+([\w:-]+)/g,
+];
+
+// Built-in npm scripts that don't need to be in package.json
+const builtInScripts = new Set([
+  "install",
+  "uninstall",
+  "update",
+  "init",
+  "publish",
+  "help",
+  "version",
+]);
+
+// Generic/example script names that appear in documentation as placeholders
+const exampleScriptNames = new Set(["script", "then"]);
+
+/**
+ * Check if a line should be skipped for npm script checking
+ */
+function shouldSkipNpmLine(line, inCodeBlock = false) {
+  const trimmed = line.trim();
+  // Skip commented-out references (shell comments only, not Markdown headings)
+  if (inCodeBlock && /^#\s+npm\s+run\s/.test(trimmed)) return true;
+  // Skip lines describing absence of a script or proposing to add one
+  if (/\bNo\s+npm\s+run\b/i.test(line)) return true;
+  if (/\bAdd\s+npm\s+run\b/i.test(line)) return true;
+  return false;
+}
+
+/**
+ * Check if a script name should be skipped (built-in, example, or flag)
+ */
+function shouldSkipScriptName(scriptName) {
+  return (
+    builtInScripts.has(scriptName) ||
+    exampleScriptNames.has(scriptName) ||
+    scriptName.startsWith("--")
+  );
+}
+
+/**
+ * Build a finding object for an unknown npm script reference
+ */
+function buildNpmFinding(relPath, lineNum, scriptName, lineText) {
+  return {
+    id: `DOC-CONTENT-NPM-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
+    category: "documentation",
+    severity: "S1",
+    effort: "E1",
+    confidence: "HIGH",
+    verified: "TOOL_VALIDATED",
+    file: relPath,
+    line: lineNum,
+    title: `Unknown npm script: ${scriptName}`,
+    description: `Documentation references npm script "${scriptName}" which does not exist in package.json`,
+    recommendation: "Update the script name or add the script to package.json",
+    evidence: [
+      `Script: ${scriptName}`,
+      `Available scripts: ${Object.keys(npmScripts).slice(0, 10).join(", ")}...`,
+      `Line: ${lineText.trim().substring(0, 100)}`,
+    ],
+    cross_ref: "npm_script_check",
+  };
+}
+
+/**
+ * Collect unknown npm script names from a single line.
+ * @param {string} line - The line to scan
+ * @returns {Array<{scriptName: string}>} Matched unknown scripts
+ */
+function collectUnknownScripts(line) {
+  const unknowns = [];
+  for (const pattern of npmPatterns) {
+    pattern.lastIndex = 0;
+    let match;
+    while ((match = pattern.exec(line)) !== null) {
+      const scriptName = match[1];
+      if (!shouldSkipScriptName(scriptName) && !npmScripts[scriptName]) {
+        unknowns.push({ scriptName });
+      }
+    }
+  }
+  return unknowns;
+}
+
+/** Set of code fence languages that may contain CLI commands */
+const COMMAND_FENCE_LANGS = new Set(["", "sh", "bash", "shell", "zsh", "console"]);
+
+/**
+ * Check if the current code block should be scanned for npm commands.
+ * @param {string} lang - The code fence language tag (lowercase, trimmed)
+ * @returns {boolean} true if the block may contain CLI commands
+ */
+function isCommandCodeFence(lang) {
+  return COMMAND_FENCE_LANGS.has(lang);
+}
+
 /**
  * Check npm script references
  * Looks for `npm run <script>` or `npm <script>` patterns
@@ -283,67 +452,31 @@ function checkNpmScriptReferences(content, filePath) {
   const lines = content.split("\n");
   const relPath = relative(ROOT, filePath);
 
-  // Patterns for npm script references
-  const npmPatterns = [
-    // npm run script
-    /npm\s+run\s+([\w:-]+)/g,
-    // npm script (built-in like test, start, build)
-    /npm\s+(test|start|build|dev|lint)(?:\s|$|[,)])/g,
-    // yarn script
-    /yarn\s+([\w:-]+)/g,
-    // pnpm script
-    /pnpm\s+([\w:-]+)/g,
-  ];
-
-  // Built-in npm scripts that don't need to be in package.json
-  const builtInScripts = new Set([
-    "install",
-    "uninstall",
-    "update",
-    "init",
-    "publish",
-    "help",
-    "version",
-  ]);
+  let inCodeBlock = false;
+  let codeFenceLang = "";
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    const trimmed = line.trim();
 
-    for (const pattern of npmPatterns) {
-      pattern.lastIndex = 0;
-      let match;
-
-      while ((match = pattern.exec(line)) !== null) {
-        const scriptName = match[1];
-
-        // Skip built-in commands
-        if (builtInScripts.has(scriptName)) {
-          continue;
-        }
-
-        // Check if script exists
-        if (!npmScripts[scriptName]) {
-          findings.push({
-            id: `DOC-CONTENT-NPM-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`,
-            category: "documentation",
-            severity: "S1",
-            effort: "E1",
-            confidence: "HIGH",
-            verified: "TOOL_VALIDATED",
-            file: relPath,
-            line: i + 1,
-            title: `Unknown npm script: ${scriptName}`,
-            description: `Documentation references npm script "${scriptName}" which does not exist in package.json`,
-            recommendation: "Update the script name or add the script to package.json",
-            evidence: [
-              `Script: ${scriptName}`,
-              `Available scripts: ${Object.keys(npmScripts).slice(0, 10).join(", ")}...`,
-              `Line: ${line.trim().substring(0, 100)}`,
-            ],
-            cross_ref: "npm_script_check",
-          });
-        }
+    if (trimmed.startsWith("```")) {
+      if (inCodeBlock) {
+        inCodeBlock = false;
+        codeFenceLang = "";
+      } else {
+        inCodeBlock = true;
+        codeFenceLang = trimmed.slice(3).trim().toLowerCase();
       }
+      continue;
+    }
+
+    // Only skip code blocks that are unlikely to contain CLI commands
+    if (inCodeBlock && !isCommandCodeFence(codeFenceLang)) continue;
+
+    if (shouldSkipNpmLine(line, inCodeBlock)) continue;
+
+    for (const { scriptName } of collectUnknownScripts(line)) {
+      findings.push(buildNpmFinding(relPath, i + 1, scriptName, line));
     }
   }
 

@@ -66,11 +66,11 @@ gh pr list --state merged --limit 100 --json number,title,mergedAt,author
 
 **D2.** Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`,
 `.claude/state/retros.jsonl` for existing retros. **D3.** Skip: PR# < 395, zero
-review entries, bot PRs (`[bot]`, `chore(deps)`, `build(deps)`, `Bump `).
-**D4.** Count review rounds per missing PR. **D5.** Display table: PR# | Title |
-Merged | Author | Rounds. Include action item summary from retros.jsonl. **D6.**
-"Which PRs to retro? [numbers / all / none]" If multiple, see REFERENCE.md:
-Batch Retro Scope.
+review entries, bot PRs (`[bot]`, `chore(deps)`, `build(deps)`, `Bump`). **D4.**
+Count review rounds per missing PR. **D5.** Display table: PR# | Title | Merged
+| Author | Rounds. Include action item summary from retros.jsonl. **D6.** "Which
+PRs to retro? [numbers / all / none]" If multiple, see REFERENCE.md: Batch Retro
+Scope.
 
 For each selected PR, proceed to Step 1 (deliverable verification), then Step 2.
 **Dashboard ends here -- do NOT continue without selection.**

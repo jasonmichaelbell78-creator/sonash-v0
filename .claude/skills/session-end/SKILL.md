@@ -270,6 +270,8 @@ occurred. If health score degraded since last check, note in session summary
 > **Note:** Learning consolidation runs automatically during SessionStart when
 > threshold is reached (10+ reviews). No action needed here.
 
+<!-- -->
+
 > **v1/v2 Note (INTG-06):** Review sync (7b) uses the v1 script which bridges
 > legacy markdown reviews to JSONL. The v2 pipeline writes JSONL directly.
 > Fallback: `npm run reviews:sync:v1`.

@@ -363,7 +363,9 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
     question;
 
   if (type === "dual-textarea" && examplesField && resultsField) {
+    // eslint-disable-next-line security/detect-object-injection -- examplesField from typed question config
     const examples = data[examplesField] as string[];
+    // eslint-disable-next-line security/detect-object-injection -- resultsField from typed question config
     const results = data[resultsField] as string[];
 
     return (
@@ -373,11 +375,13 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
         </label>
         {description && <p className="text-xs text-amber-900/60">{description}</p>}
         {examples.map((_, i) => (
+          // eslint-disable-next-line sonash/no-index-key -- fixed-length form array, no reordering
           <div key={`${id}_pair_${i}`} className="grid grid-cols-2 gap-3">
             <Textarea
               id={`${id}_example_${i}`}
               aria-labelledby={id}
               placeholder={`Example ${String.fromCharCode(97 + i)}`}
+              // eslint-disable-next-line security/detect-object-injection -- i is array index from .map()
               value={examples[i]}
               onChange={(e) => onUpdateArray(examplesField, i, e.target.value)}
               className="min-h-[60px]"
@@ -386,6 +390,7 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
               id={`${id}_result_${i}`}
               aria-labelledby={id}
               placeholder="What was the result?"
+              // eslint-disable-next-line security/detect-object-injection -- i is array index from .map()
               value={results[i]}
               onChange={(e) => onUpdateArray(resultsField, i, e.target.value)}
               className="min-h-[60px]"
@@ -397,6 +402,7 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
   }
 
   if (type === "single-textarea" && singleField) {
+    // eslint-disable-next-line security/detect-object-injection -- singleField from typed question config
     const values = data[singleField] as string[];
 
     return (
@@ -407,7 +413,8 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
         {description && <p className="text-xs text-amber-900/60">{description}</p>}
         {values.map((value, i) => (
           <Textarea
-            key={i}
+            // eslint-disable-next-line sonash/no-index-key -- fixed-length form array, no reordering
+            key={`${id}_item_${i}`}
             id={`${id}_${i}`}
             aria-labelledby={id}
             placeholder={`Response ${String.fromCharCode(97 + i)}`}
@@ -421,6 +428,7 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
   }
 
   if (type === "long-textarea" && singleField) {
+    // eslint-disable-next-line security/detect-object-injection -- singleField from typed question config
     const value = data[singleField] as string;
 
     return (
@@ -440,6 +448,7 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
   }
 
   if (type === "multi-textarea" && singleField && count) {
+    // eslint-disable-next-line security/detect-object-injection -- singleField from typed question config
     const values = data[singleField] as string[];
 
     return (
@@ -449,12 +458,14 @@ const QuestionBlock = ({ question, data, onUpdateArray, onUpdateField }: Questio
         </label>
         {description && <p className="text-xs text-amber-900/60">{description}</p>}
         {Array.from({ length: count }).map((_, i) => (
-          <div key={i} className="flex gap-2">
+          // eslint-disable-next-line sonash/no-index-key -- fixed-length form array, no reordering
+          <div key={`${id}_slot_${i}`} className="flex gap-2">
             <span className="text-sm text-amber-900/60 mt-2">{i + 1}.</span>
             <Textarea
               id={`${id}_${i}`}
               aria-labelledby={id}
               placeholder={`Reason ${i + 1}`}
+              // eslint-disable-next-line security/detect-object-injection -- i is numeric index from Array.from loop
               value={values[i] || ""}
               onChange={(e) => onUpdateArray(singleField, i, e.target.value)}
               className="min-h-[60px] flex-1"
@@ -513,8 +524,10 @@ export default function Step1WorksheetCard({
 
   const updateArrayField = (field: keyof Step1Data, index: number, value: string) => {
     setData((prev) => {
+      // eslint-disable-next-line security/detect-object-injection -- field is typed keyof Step1Data
       const current = prev[field] as string[];
       const updated = [...current];
+      // eslint-disable-next-line security/detect-object-injection -- index is a controlled numeric parameter
       updated[index] = value;
       return { ...prev, [field]: updated };
     });

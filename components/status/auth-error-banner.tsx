@@ -27,6 +27,7 @@ export function AuthErrorBanner({ className }: Readonly<AuthErrorBannerProps>) {
     const unseen = messages.filter((msg) => !seenMessages.has(msg));
     if (unseen.length > 0) {
       unseen.forEach((message) => toast.error(message));
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional: mark messages as seen after showing toasts to prevent re-display
       setSeenMessages((prev) => {
         const next = new Set(prev);
         unseen.forEach((msg) => next.add(msg));

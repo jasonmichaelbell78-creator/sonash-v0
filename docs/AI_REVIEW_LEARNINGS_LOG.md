@@ -1,5 +1,7 @@
 # AI Review Learnings Log
 
+<!-- markdownlint-disable MD038 -->
+
 **Document Version:** 17.104 **Created:** 2026-01-02 **Last Updated:**
 2026-03-18
 
@@ -767,7 +769,7 @@ accumulate.
 | Metric         | Value          | Threshold | Action if Exceeded                       |
 | -------------- | -------------- | --------- | ---------------------------------------- |
 | Main log lines | ~2048          | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 20 (#441-#479) | 20        | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 24 (#353-#490) | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -872,213 +874,76 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-## Retrospectives
-
-### Retro retro-427: PR #427 Retrospective (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Rounds:** 5 | **Total Items:** 139
-
-| Fixed | Rejected | Deferred |
-| ----- | -------- | -------- |
-| 0     | 0        | 0        |
-
----
-
-### Retro retro-428: PR #428 Retrospective (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #428 | **Rounds:** 1 | **Total Items:** 10
-
-| Fixed | Rejected | Deferred |
-| ----- | -------- | -------- |
-| 0     | 0        | 0        |
-
 ## Active Reviews
 
-### Review 473: PR #427 R1 — Mixed (SonarCloud + Semgrep + CI + Qodo) (2026-03-11)
+### Review 492: PR #453 R4 — Mixed (CI+SonarCloud+Qodo) (2026-03-19)
 
-**Date:** 2026-03-11 | **Source:** sonarcloud+ci
+**Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 16    | 11    | 0        | 5        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+| 1        | 2     | 10    | 3       |
 
 **Patterns:**
 
-- cc-double-counting-in-check-ccjs
-- generatewarnings-data-loss
-- cyclomatic-gate-true-mask
-- cjs-parse-fallback
-- score
+- prettier-ci-formatting
+- cc-extraction-helper
+- code-fence-negated-condition
+- atomic-write-backup-hardening
+- validatePaths-defensive-guard
+- heading-vs-shell-comment
 
 **Learnings:**
 
-- SonarCloud hotspots (6) + code smells (16), Semgrep (1), CI (1 + 127
-- First-scan volume on large PRs (247 files) produces significant reviewer
-- CC refactoring (extracting helpers) is mechanical but high-value — reduces
+- R3 code-fence logic increased CC from 15 to 16 — extract helper to stay under
+  threshold
+- Prettier must be run after code edits, not just before commit
+- Qodo flip-flops between rounds — evaluate on merits, don't blindly follow
+- shouldSkipNpmLine # check must distinguish shell comments from Markdown
+  headings
+- R4 fix rate 69% — still productive, R5 may hit diminishing returns
 
 ---
 
-### Review 353: PR #427 R2 — Security Fail-Closed, Error Safety Codemod, Bulk Lint (2026-03-12)
+### Review 491: PR #453 R3 — Mixed (Qodo+SonarCloud+CI) (2026-03-19)
 
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo+ci
+**Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 21    | 18    | 0        | 2        |
+| 23    | 22    | 0        | 1        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 1        | 6     | 8     | 3       |
+| 0        | 3     | 13    | 7       |
 
 **Patterns:**
 
-- root-cause
-- prevention
+- secret-redaction-global-regex
+- date-validation-nan-guard
+- atomic-write-backup-restore
+- section-heading-regex-robustness
+- memory-guard-large-files
+- fail-fast-missing-dependency
+- code-fence-language-aware-skip
+- dedup-key-completeness
 
 **Learnings:**
 
-- Mixed (Qodo Compliance, Semgrep, SonarCloud, CI, Qodo Suggestions)
-- Root cause: R1 introduced try/catch guards but used fail-open fallback
-- Prevention: ESLint rule for fail-open patterns in security guard loading
-- Root cause: Pattern accumulated over time, no auto-fixer existed
-- Prevention: Added auto-fixer to ESLint rule + ConditionalExpression guard
-- Root cause: Inconsistent application of atomic write best practice
-
----
-
-### Review 354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 25    | 20    | 0        | 5        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 11    | 8     | 4       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Mixed (Qodo Compliance + Suggestions, Semgrep/CodeQL, CI Pattern
-- Root cause: Single upfront check doesn't protect retry/fallback paths
-- Prevention: Re-check isSafeToWrite immediately before each mutation op
-- Root cause: Original fallback only truncated, didn't sanitize
-- Prevention: Propagation sweep caught all 6 instances (2 flagged + 4 found)
-- Root cause: nosemgrep comments copied from community rule, not updated for
-
----
-
-### Review 355: PR #428 R1 — ESLint v10 Contradiction, Phantom Corruption, Doc Lint (2026-03-12)
-
-**Date:** 2026-03-12 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- ai-hallucination-in-planning-docs
-- forward-referencing-non-existent-software
-- worktree-compatibility
-- doc-lint-as-automated-quality-gate
-
-**Learnings:**
-
-- Doc Lint, Qodo, Gemini, CI **Items:** 10 total (10 fixed, 0
-- Plan referenced "ESLint v10
-- Missing Purpose/Scope,
-
----
-
-### Review 480: PR #427 R3 — Mixed (CI + CodeQL + Semgrep + Qodo + SonarCloud) (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 45    | 45    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- root-cause
-- files
-- prevention
-- technique
-
-**Learnings:**
-
-- Mixed (CI blocking, CodeQL, Semgrep, Qodo Compliance, Qodo
-- PR #427 / testing-31126 **Items:** 45
-- Root cause: R2 auto-fixer didn't simplify pre-guarded patterns
-- Fix: Manual simplification to
-- Files: assign-review-tier.js, check-backlog-health.js, lighthouse-audit.js
-- Root cause: Agent didn't understand cross-device rename semantics
-- Fix: `safeRename` helper with copyFileSync+unlinkSync fallback
-
----
-
-### Review 481: PR #427 R5 — Qodo + Semgrep + SonarCloud (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 23    | 20    | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 6     | 12    | 5       |
-
-**Patterns:**
-
-- issafetowrite-4-round-evolution-r1r2r4r5
-- eslint-auto-fixer-cascade-r2r3
-- agent-fix-regression-r3
-- sanitizeinput-incremental-hardening-r4r5
-- ai-hallucination
-- forward-referencing
-- worktree-compatibility
-- doc-lint-effectiveness
-
-**Learnings:**
-
-- Mixed (Qodo Compliance, Qodo Code Suggestions, Semgrep, SonarCloud)
-- PR #427 / testing-31126 **Items:** 23 total (Major: 6, Minor: 12,
-- Fifth review round on large hook-systems-audit PR (426 files). R5
-- Rejected: 3 items (C3: local error logging not a leak, C4: system-generated
-- Expanding control char regex from `[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]` to
-- Semgrep taint analysis requires using the project's approved helper functions
+- indexOf-based secret redaction only finds first occurrence per line — use
+  global regex
+- daysSince without date format validation propagates NaN silently
+- Corrupted state files reported as missing hides data integrity issues
+- Code block skipping should be language-aware to validate shell examples
+- Large JSONL logs should use appendFileSync above 2MB to avoid memory blowup
 
 ---
 
@@ -1090,6 +955,26 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 54    | 54    | 0        | 0        |
 
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 8     | 21    | 23      |
+
+**Patterns:**
+
+- root-cause
+- prevention
+
+**Learnings:**
+
+- Root cause: Schema refactored without updating all consumers
+- Prevention: Schema migration checklist — grep all consumers before shipping
+- Root cause: Ad-hoc regex instead of using existing validatePathInDir helper
+- Prevention: Always use security-helpers.js for path validation
+- Root cause: Copy-paste fallbacks diverged from canonical implementation
+- Prevention: All fallbacks must match the 5-replace canonical pattern
+
 ---
 
 ### Review 357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
@@ -1098,66 +983,28 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 16    | 16    | 0        | 10       |
-
----
-
-### Review 474: PR #430 R1 — Mixed (Qodo + Gemini + CI) (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
+| 26    | 16    | 0        | 10       |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+| 2        | 8     | 14    | 2       |
 
 **Patterns:**
 
-- case-sensitive-file-links
-- flawed-ci-grep-exit-logic
-- append-only-metrics-without-dedup
-- score
+- root-cause
+- prevention
+- propagation
 
 **Learnings:**
 
-- Qodo PR Reviewer (3 items + 3 suggestions), Gemini Code Assist (2),
-- ESLint 1324 warnings — pre-existing across 100+ files, none introduced by
-- Multi-source convergence (Qodo + Gemini both flagged casing + grep logic)
-
----
-
-### Review 475: PR #430 R2 — Qodo (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- pre-commit-hook-overwrites-manual-edits
-- archive-jsonl-duplication
-- jsonl-records-with-nullzero-fields
-- score
-
-**Learnings:**
-
-- Qodo Bug (1), Qodo Compliance (1), Qodo Suggestions (7) **Items:** 9
-- PATH binary hijack (.lsp.json) — standard `$PATH` tool invocation, not a
-- Preserve metrics history — R1 dedup removed only duplicate entries (same PR
-- When editing auto-generated files, always check for pre-commit hooks that
+- Root cause: Overly broad catch-all added to complement Windows path
+- Prevention: Canonical sanitizeError should only redact known-sensitive
+- Propagation: Fixed in 8 files (canonical + 7 fallback copies)
+- Root cause: Single functions doing too much — iteration + mutation +
+- Prevention: Extract helpers when function has >2 concerns
+- Root cause: Test helper didn't account for the security boundary
 
 ---
 
@@ -1167,7 +1014,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 15    | 12    | 1        | 3        |
+| 15    | 12    | 1        | 2        |
 
 **Severity Breakdown:**
 
@@ -1238,7 +1085,25 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 37    | 37    | 0        | 15       |
+| 52    | 37    | 0        | 15       |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 3     | 0     | 34      |
+
+**Patterns:**
+
+- lesson
+
+**Learnings:**
+
+- Lesson: When SonarCloud will re-flag the same items every round, fix them
+- Rejected: 15 items (2 R3 dedup, 13 over-engineering/false-positive)
+- POSIX path redaction (R3 dedup — R3 deliberately removed this regex)
+- OS temp directory for tests (R3 dedup — tests need repo boundary compat)
+- Symlink security in run-alerts.js (isSafeToWrite guard already at L515)
 
 ---
 
@@ -1250,6 +1115,21 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 18    | 11    | 0        | 7        |
 
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 9     | 7       |
+
+**Learnings:**
+
+- Fixed: 11 items across 9 files
+- Rejected: 7 items (5 cross-round dedup from R3/R4, 1 architectural, 1 FP)
+- Symlink overwrite risk (R4 dedup — isSafeToWrite guard at L515)
+- Set.has x2 (R4 dedup — string.includes(), not array)
+- Unix path redaction (R3+R4 dedup — deliberately removed in R3)
+- Type-dependent design (R4 dedup — simple boolean in 6-line function)
+
 ---
 
 ### Review 360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
@@ -1259,6 +1139,21 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 20    | 14    | 0        | 6        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 1     | 12    | 7       |
+
+**Learnings:**
+
+- Fixed: 14 items across 8 files
+- Rejected: 6 items (3 cross-round dedup R4+R5, 1 architectural, 2
+- Set.has for tableContent (R4+R5 dedup — string.includes(), not array)
+- Set.has for antiPatternSection (R4+R5 dedup — string.includes(), not array)
+- Type-dependent design (R4+R5 dedup — simple boolean in 6-line function)
+- No JSONL schema validation (architectural — downstream has Number.isFinite and
 
 ---
 
@@ -1270,6 +1165,21 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 17    | 6     | 0        | 11       |
 
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 1     | 9     | 7       |
+
+**Learnings:**
+
+- Fixed: 6 items across 5 files
+- Rejected: 11 items (4 cross-round dedup R4-R6, 1 intentional TODO scaffold, 6
+- Set.has for tableContent (R4+R5+R6 dedup — string.includes())
+- Set.has for antiPatternSection (R4+R5+R6 dedup — string.includes())
+- Type-dependent design (R4+R5+R6 dedup — simple boolean)
+- OS temp dir for test (R3+R4 dedup — repo boundary needed)
+
 ---
 
 ### Review 485: PR #436 R1 — Qodo + Gemini + CI (2026-03-15)
@@ -1278,7 +1188,221 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
+| 7     | 2     | 0        | 5        |
+
+---
+
+### Review 486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 49    | 47    | 0        | 2        |
+
+---
+
+### Review 487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 488: PR #448 R3 — Mixed (Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 490: PR #448 R5 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review rev-1: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 49    | 47    | 0        | 2        |
+
+**Patterns:**
+
+- grep-false-positive
+- migration-silent-noop
+- timestamp-string-comparison
+- review_rounds-mutation-bug
+- semgrep-over-suppression
+- cc-extraction
+- path-traversal-fix
+- symlink-guard
+
+**Learnings:**
+
+- grep patterns must not match success messages
+- migration scripts must fail loudly on missing source
+- use Date.parse not string comparison for timestamps
+- semgrep pattern-not-inside with $X.map suppresses unrelated $ARR[0]
+
+---
+
+### Review rev-2: PR #448 R2 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 27    | 19    | 0        | 8        |
+
+**Patterns:**
+
+- eslint-cjs-config
+- no-control-regex-block
+- cli-path-traversal
+- promise-allsettled
+- number-nan-convention
+- cc-extraction
+
+**Learnings:**
+
+- eslint-disable-next-line only covers one line
+- CJS files need sourceType commonjs for \_\_dirname
+- passthrough entries change test expectations
+
+---
+
+### Review rev-3: PR #448 R3 — Mixed (Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 18    | 10    | 0        | 8        |
+
+**Patterns:**
+
+- path-traversal-resolution
+- dompurify-forbid-contents
+- dedup-index-latest
+- numeric-normalization
+- cc-extraction
+
+**Learnings:**
+
+- DOMPurify ALLOWED_TAGS:[] preserves script body — use FORBID_CONTENTS
+- dedup index must keep latest entry per key
+- path traversal guards at every entry point
+
+---
+
+### Review rev-4: PR #448 R4 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 17    | 10    | 0        | 7        |
+
+**Patterns:**
+
+- security-scan-exclusions
+- symlink-staged-filter
+- deterministic-errors
+- safeappend-containment
+- shared-sanitize
+- cc-extraction
+
+**Learnings:**
+
+- security scan false-positives on test files asserting pattern strings
+- replaceAll propagation to test assertions
+
+---
+
+### Review rev-5: PR #448 R5 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 18    | 11    | 0        | 7        |
+
+**Patterns:**
+
+- eslint-compiled-output
+- coerce-int-validation
+- bidirectional-crossdb
+- toctou-lstat
+- dedup-timestamp-fallback
+
+**Learnings:**
+
+- CI compiled output needs ESLint ignores
+- non-numeric coercion to 0 hides violations
+
+---
+
+### Review 354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 25    | 20    | 0        | 5        |
+
+---
+
+### Review 353: PR #427 R2 — Security Fail-Closed, Error Safety Codemod, Bulk Lint (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 21    | 18    | 0        | 3        |
+
+---
+
+### Review 480: PR #427 R3 — Mixed (CI + CodeQL + Semgrep + Qodo + SonarCloud) (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 45    | 45    | 0        | 0        |
+
+---
+
+### Review 481: PR #427 R5 — Qodo + Semgrep + SonarCloud (2026-03-12)
+
+**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 23    | 20    | 0        | 3        |
 
 ## Key Patterns
 

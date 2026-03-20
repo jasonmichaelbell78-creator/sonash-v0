@@ -82,8 +82,7 @@ trust.
 5. Add c8 coverage thresholds to block zero-coverage regressions — 6-line config
 6. Pin `tj-actions/changed-files` in `docs-lint.yml` to SHA (CVE-2025-30066
    vector) — 1-line change
-7. Add `npm run compact-meeting-countdown.tsx` polling from 30s → 60s — 1-number
-   change
+7. Fix `compact-meeting-countdown.tsx` polling from 30s to 60s — 1-number change
 8. Fix Share meeting button to actually call `navigator.clipboard.writeText()` —
    2-line fix
 9. Add `"type-check": "tsc --noEmit"` to package.json scripts
@@ -412,7 +411,7 @@ Findings fixable in under 15 minutes each:
 
 ### Baseline Metrics (from `baseline.txt`)
 
-```
+```text
 Tests: 294 total, 293 pass, 0 fail, 1 skipped
 ESLint: 0 errors, 1,690 warnings (security/detect-non-literal-fs-filename)
 Patterns: 1 medium warning (pre-commit trap cleanup)
@@ -443,7 +442,7 @@ The following raw findings were merged into single comprehensive entries:
 
 ### Severity Distribution of Final 115 Unique Findings
 
-```
+```text
 S0 Critical:  1  ( 1%)  — re-enable App Check
 S1 High:     28  (24%)  — immediate action required
 S2 Medium:   51  (44%)  — this sprint priority

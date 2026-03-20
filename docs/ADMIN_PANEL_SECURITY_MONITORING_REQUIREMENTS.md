@@ -264,7 +264,7 @@ interface RecaptchaConfig {
 
 **UI Mockup:**
 
-```
+```text
 ┌─ reCAPTCHA Configuration ────────────────────────────┐
 │                                                       │
 │  Minimum Score Threshold: [====|====] 0.5            │
@@ -288,7 +288,7 @@ interface RecaptchaConfig {
 
 ### Recent Missing reCAPTCHA Tokens
 
-```
+```text
 resource.type="cloud_function"
 jsonPayload.securityEvent.type="RECAPTCHA_MISSING_TOKEN"
 timestamp>="2025-12-30T00:00:00Z"
@@ -296,7 +296,7 @@ timestamp>="2025-12-30T00:00:00Z"
 
 ### Missing Token Rate (Last 24h)
 
-```
+```text
 resource.type="cloud_function"
 (jsonPayload.securityEvent.type="RECAPTCHA_MISSING_TOKEN" OR
  jsonPayload.securityEvent.type="RECAPTCHA_SUCCESS")
@@ -305,7 +305,7 @@ timestamp>="2025-12-29T00:00:00Z"
 
 ### Low Score Rejections
 
-```
+```text
 resource.type="cloud_function"
 jsonPayload.securityEvent.type="RECAPTCHA_LOW_SCORE"
 timestamp>="2025-12-30T00:00:00Z"
@@ -313,7 +313,7 @@ timestamp>="2025-12-30T00:00:00Z"
 
 ### User-Specific Security Events
 
-```
+```text
 resource.type="cloud_function"
 jsonPayload.securityEvent.userId="[HASHED_USER_ID]"
 severity>="WARNING"

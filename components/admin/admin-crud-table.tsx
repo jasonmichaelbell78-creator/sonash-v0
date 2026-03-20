@@ -114,6 +114,7 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: Readonly<AdminC
   // Filter items
   const filteredItems = items.filter((item) => {
     const matchesSearch = config.searchFields.some((field) => {
+      // eslint-disable-next-line security/detect-object-injection -- field from config.searchFields (trusted constant)
       const value = item[field];
       return value && String(value).toLowerCase().includes(searchTerm.toLowerCase());
     });

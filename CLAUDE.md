@@ -20,11 +20,11 @@ Section 8).
 
 | Package      | Version | Notes       |
 | ------------ | ------- | ----------- |
-| Next.js      | 16.1.6  | App Router  |
-| React        | 19.2.3  | Stable      |
-| Firebase     | 12.8.0  | Modular SDK |
-| Tailwind CSS | 4.1.18  |             |
-| Zod          | 4.3.5   |             |
+| Next.js      | 16.2.0  | App Router  |
+| React        | 19.2.4  | Stable      |
+| Firebase     | 12.10.0 | Modular SDK |
+| Tailwind CSS | 4.2.2   |             |
+| Zod          | 4.3.6   |             |
 
 ## 2. Security Rules
 

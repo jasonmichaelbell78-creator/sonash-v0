@@ -48,6 +48,7 @@ const redactValue = (value: unknown): unknown => {
   if (typeof value === "object") {
     return Object.entries(value as Record<string, unknown>).reduce<Record<string, unknown>>(
       (acc, [key, val]) => {
+        // eslint-disable-next-line security/detect-object-injection -- key from Object.entries iteration
         acc[key] = SENSITIVE_KEYS.some((sensitiveKey) => key.toLowerCase().includes(sensitiveKey))
           ? "[REDACTED]"
           : redactValue(val);
@@ -72,6 +73,7 @@ const redactValue = (value: unknown): unknown => {
 const sanitizeContext = (context?: LogContext) => {
   if (!context) return undefined;
   return Object.entries(context).reduce<Record<string, unknown>>((acc, [key, value]) => {
+    // eslint-disable-next-line security/detect-object-injection -- key from Object.entries iteration
     acc[key] = redactValue(value);
     return acc;
   }, {});

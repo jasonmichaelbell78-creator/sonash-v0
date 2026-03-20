@@ -96,6 +96,7 @@ export function AdminTabProvider({ children, defaultTab = "dashboard" }: AdminTa
 
       // Update refresh timestamps using functional update (avoids stale state)
       setRefreshTimestamps((prev) => {
+        // eslint-disable-next-line security/detect-object-injection -- tab is typed AdminTabId
         const lastRefresh = prev[tab];
         const shouldRefresh = now - lastRefresh >= MIN_REFRESH_INTERVAL_MS;
 
@@ -119,6 +120,7 @@ export function AdminTabProvider({ children, defaultTab = "dashboard" }: AdminTa
   }, [activeTab]);
 
   const getTabRefreshTimestamp = useCallback(
+    // eslint-disable-next-line security/detect-object-injection -- tabId is typed AdminTabId
     (tabId: AdminTabId) => refreshTimestamps[tabId],
     [refreshTimestamps]
   );
@@ -126,6 +128,7 @@ export function AdminTabProvider({ children, defaultTab = "dashboard" }: AdminTa
   const value: AdminTabContextValue = {
     activeTab,
     setActiveTab,
+    // eslint-disable-next-line security/detect-object-injection -- activeTab is typed AdminTabId
     lastRefreshTimestamp: refreshTimestamps[activeTab],
     getTabRefreshTimestamp,
     refreshCurrentTab,

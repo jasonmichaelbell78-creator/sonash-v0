@@ -129,7 +129,7 @@ Visit `http://localhost:3000`
 
 ## 🏗️ Project Structure
 
-```
+```text
 sonash-v0/
 ├── app/                          # Next.js App Router
 │   ├── page.tsx                  # Homepage (book cover)
@@ -435,8 +435,8 @@ firebase deploy
 
 ### Core Stack
 
-- **Next.js** 16.1.0 - React framework with App Router
-- **React** 19.2.3 - UI library
+- **Next.js** 16.2.0 - React framework with App Router
+- **React** 19.2.4 - UI library
 - **TypeScript** 5.x - Type safety
 - **Tailwind CSS** 4.x - Styling
 - **Framer Motion** 12.x - Animations
@@ -615,7 +615,7 @@ The pre-commit hook (`.husky/pre-commit`) runs multiple validation steps:
 | Learning reminder  | (checks staged files)                     | NO - reminder only                |
 | Audit S0/S1        | `validate-audit.js --strict-s0s1`         | YES - blocks commit (Session #98) |
 | Agent compliance   | `check-agent-compliance.js`               | NO - warning only                 |
-| Debt schema        | `debt/validate-schema.js`                 | YES - blocks commit               |
+| Debt schema        | `scripts/debt/validate-schema.js`         | YES - blocks commit               |
 | Debt location      | (canonical path check)                    | NO - warning only                 |
 
 #### Hook Stages Explained
@@ -727,7 +727,7 @@ Configured in `.claude/settings.json`.
 > will prevent operations that violate security patterns. All other hooks
 > provide warnings/guidance but don't block.
 
-**See:** `docs/HOOKIFY_STRATEGY.md` for full hook documentation.
+**See:** `docs/archive/HOOKIFY_STRATEGY.md` for full hook documentation.
 
 **Hook Health Infrastructure (Session #91):**
 
@@ -1028,7 +1028,7 @@ git push    # Let hooks run
 
 **Format:**
 
-```
+```text
 type(scope): subject
 
 body (optional)
@@ -1158,7 +1158,7 @@ Closes #123
 ### Development Dashboard (Planned - Near-term)
 
 **Status:** Planned **Priority:** P1 (Development Tooling) **Added:** Session
-#64
+\#64
 
 **Purpose:** Unified dev dashboard for monitoring session activity, error
 tracing, and development metrics. Not for production - strictly development

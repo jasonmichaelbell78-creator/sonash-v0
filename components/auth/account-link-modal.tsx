@@ -43,6 +43,7 @@ export default function AccountLinkModal({ onClose, onSuccess }: AccountLinkModa
     e.preventDefault();
 
     // Validate passwords match
+    // eslint-disable-next-line security/detect-possible-timing-attacks -- UI validation, not a security-critical comparison
     if (password !== confirmPassword) {
       setError("Passwords don't match");
       return;

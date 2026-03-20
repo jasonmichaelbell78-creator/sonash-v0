@@ -80,6 +80,11 @@ describe("Item #7: High-Churn Watchlist", () => {
     const watchlist = JSON.parse(raw);
     for (const filePath of watchlist.files) {
       const absPath = path.join(ROOT, filePath);
+      const rel = path.relative(ROOT, absPath);
+      assert.ok(
+        !/^\.\.(?:[\\/]|$)/.test(rel) && rel !== "",
+        `Watchlist file "${filePath}" must not escape project root`
+      );
       assert.ok(
         fs.existsSync(absPath),
         `Watchlist file "${filePath}" must exist on filesystem at ${absPath}`
@@ -201,7 +206,10 @@ describe("Item #13: TDMS source_pr field", () => {
     const normBlock = content.substring(normStart, normEnd);
     assert.ok(normBlock.includes("source_pr:"), "normalized item must include source_pr field");
     // Verify it handles null gracefully
-    assert.ok(normBlock.includes("!= null"), "source_pr must handle null/undefined input safely");
+    assert.ok(
+      normBlock.includes("=== null") || normBlock.includes("=== undefined"),
+      "source_pr must handle null/undefined input safely"
+    );
   });
 
   it("validate-schema.js accepts source_pr as valid optional field", () => {

@@ -163,7 +163,7 @@ identically across all of them.
 
 **Evidence:**
 
-```
+```text
 Line 310: npm ci --prefer-offline (root dependencies)
 Line 331: npm ci --prefer-offline --legacy-peer-deps (functions)
 Line 346: npm run build (Firebase Functions)
@@ -189,8 +189,7 @@ with Claude until the hook finishes.
 2. Keep only essential checks (pattern compliance, session state) in the
    synchronous hook
 3. Display a "background: dependencies updating" message rather than blocking
-4. Consider a dedicated `npm run session:start` alias that the user runs
-   manually
+4. Consider a dedicated `session:start` npm alias that the user runs manually
 
 ---
 
@@ -200,7 +199,7 @@ with Claude until the hook finishes.
 
 **Evidence:**
 
-```
+```bash
 $ wc -l claude.md CLAUDE.md
   138 claude.md
   138 CLAUDE.md
@@ -520,7 +519,7 @@ active, potentially skipping or interfering with new multi-AI audit runs.
 are entire git commit commands with multi-line heredoc messages embedded in the
 JSON, e.g.:
 
-```
+```text
 "Bash(SKIP_CROSS_DOC_CHECK=1 git commit -m \"$(cat <<'EOF'\nfix(hooks): apply Qodo Round 2 security hardening...\nEOF\n)\")"
 ```
 

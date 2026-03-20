@@ -74,7 +74,7 @@ for each mandatory standard, ingested to TDMS for tracking.
 
 ### Repository Information
 
-```
+```text
 Repository URL: [GITHUB_REPO_URL]
 Branch: [BRANCH_NAME or "main"]
 Commit: [COMMIT_SHA or "latest"]
@@ -83,7 +83,7 @@ Last Security Audit: [YYYY-MM-DD or "Never"]
 
 ### Tech Stack Security Considerations
 
-```
+```text
 - Framework: [e.g., Next.js 16.1] - SSR/CSR boundaries, API routes
 - Authentication: [e.g., Firebase Auth] - Session management, token handling
 - Database: [e.g., Firestore] - Rules, access patterns
@@ -93,7 +93,7 @@ Last Security Audit: [YYYY-MM-DD or "Never"]
 
 ### Scope
 
-```
+```text
 Security-Critical Paths:
 - Authentication flows: [list files/endpoints]
 - Data write operations: [list files/endpoints]
@@ -184,8 +184,8 @@ Before beginning security analysis, review these project-specific resources:
 4. **Dependency Health**:
    - Circular dependencies: npm run deps:circular (baseline: 0 expected)
    - Unused exports: npm run deps:unused (baseline documented in DEVELOPMENT.md)
-5. **Static Analysis**: SonarCloud integration available via
-   `npm run sonar:report` (see SonarCloud dashboard)
+5. **Static Analysis**: SonarCloud integration available via MCP server or
+   SonarCloud dashboard
 6. **Firebase Policy** (../FIREBASE_CHANGE_POLICY.md): Required security review
    process for Firebase changes
 
@@ -360,8 +360,8 @@ VERIFICATION COMMANDS:
 
 - npm audit --json
 - npm outdated
-- npm run licenses:check (Preferred: repo-pinned script. If unavailable, use a
-  locally installed tool and record its version/output in evidence.)
+- npx license-checker (or repo-pinned `licenses:check` script if available.
+  Record tool version/output in evidence.)
 - npm ls --depth=1 (check direct dependencies)
 - Review package-lock.json for unexpected additions (Priority: CRITICAL > HIGH
   vulnerabilities; outdated packages with security patches; license compliance;
@@ -627,6 +627,8 @@ Return 4 sections in this exact order:
 > all findings from this audit. Sub-categories (e.g., RateLimiting,
 > InputValidation, Authentication) go in the `fingerprint` and `title` only, not
 > in the `category` field.
+
+<!-- -->
 
 > **OPTIONAL supplements:** The `vulnerability_details` object is an optional
 > supplement for security-specific context. The PRIMARY fields for describing

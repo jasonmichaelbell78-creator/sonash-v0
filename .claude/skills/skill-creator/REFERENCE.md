@@ -1,8 +1,8 @@
 # Skill Creator Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-08
+**Document Version:** 1.1
+**Last Updated:** 2026-03-18
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -99,6 +99,9 @@ Handoffs, data flow, ecosystem connections.
 - "What skills come before/after this one in a typical workflow?"
 - "Does this skill produce artifacts consumed by other skills? What contract?"
 - "Does the skill read data from hooks, scripts, or other sources?"
+- "If the skill reads data from upstream sources: what are the freshness
+  expectations? How should the skill degrade gracefully when data is stale or
+  missing?"
 - "Should it check ROADMAP.md before proceeding?"
 - "Does it need session-end integration?"
 
@@ -124,6 +127,9 @@ User experience, progress, feedback loops.
   specific decision points." (SA session-begin audit)
 - "Does it need progress indicators? Warm-up? Closure signal?"
 - "What approval format? (accept/modify/reject, free-form, delegation)"
+- "If the skill allows suppressing or filtering items: does it require a reason
+  field? Reasons SHOULD have minimum quality validation (15+ chars, reject vague
+  one-word reasons)."
 - "Does the user need an effort estimate before starting?"
 - "Should there be a retro/feedback prompt after completion?"
 
@@ -160,12 +166,20 @@ non-negotiable; SHOULD items may be skipped with documented rationale.
 7. MUST: Long-running skills have compaction resilience (state persistence)
 8. MUST: Multi-step skills have UX (progress, warm-up, closure, effort est.)
 9. MUST: Project conventions referenced (CLAUDE.md by path), not duplicated
-10. MUST: Guided prompts used instead of generic `[placeholder]` text
-11. MUST: Steps/phases have "Done when:" completion criteria
-12. SHOULD: Anti-patterns list for common mistakes in the skill's domain
-13. SHOULD: Routing guide if 3+ skills share triggers (table format)
-14. SHOULD: Approval gates before irreversible actions or phase transitions
-15. SHOULD: Post-execution retro prompt (learning loop)
+10. MUST (if external scripts): Document which party (script vs skill caller)
+    owns each phase — clarify handoff boundaries, error ownership, and retry
+    responsibility
+11. MUST: Guided prompts used instead of generic `[placeholder]` text
+12. MUST: Steps/phases have "Done when:" completion criteria
+13. SHOULD: Anti-patterns list for common mistakes in the skill's domain
+14. SHOULD: Routing guide if 3+ skills share triggers (table format)
+15. MUST (if 3+ similar-trigger neighbors): Include a neighbor differentiation
+    matrix — table comparing purpose, time, scope, and when-to-use for each
+    neighbor skill
+16. SHOULD (if 3+ neighbor skills): Include a routing decision tree showing user
+    intent to recommended skill mapping
+17. SHOULD: Approval gates before irreversible actions or phase transitions
+18. SHOULD: Post-execution retro prompt (learning loop)
 
 ---
 

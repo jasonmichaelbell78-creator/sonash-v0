@@ -153,7 +153,7 @@ elif [ -z "$STAGED_JS" ]; then
   PID_LINT=""
 else
   echo "  ▶ Running ESLint (staged files only)..."
-  (printf '%s\n' "$STAGED_JS" | xargs npx eslint --no-error-on-unmatched-pattern -- > "$ESLINT_TMPFILE" 2>&1; echo $? > "${ESLINT_TMPFILE}.exit") &
+  (printf '%s\n' "$STAGED_JS" | xargs -r npx eslint --no-error-on-unmatched-pattern -- > "$ESLINT_TMPFILE" 2>&1; echo $? > "${ESLINT_TMPFILE}.exit") &
   PID_LINT=$!
 fi
 
@@ -324,6 +324,7 @@ if [ "$RUN_AUDIT" -eq 1 ]; then
     _start=$(date +%s%N 2>/dev/null || date +%s)
     # Write staged audit files to temp, validate each
     _audit_list=$(mktemp)
+    trap 'rm -f "$_audit_list"' EXIT
     echo "$STAGED_AUDIT_FILES" > "$_audit_list"
     _afail=0
     while IFS= read -r audit_file || [ -n "$audit_file" ]; do

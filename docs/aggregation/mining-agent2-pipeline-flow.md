@@ -423,7 +423,7 @@ definitively validate the current selection.
 
 ### Pipeline Flow
 
-```
+```text
 reviews.jsonl (406 entries)
     |
     v

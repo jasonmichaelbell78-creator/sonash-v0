@@ -126,5 +126,6 @@ export function getRotatedItemForNow<T extends SchedulableItem>(items: T[]): T |
   if (generalPool.length === 0) return items[0];
 
   const index = getRotationIndex(generalPool.length);
+  // eslint-disable-next-line security/detect-object-injection -- index from getRotationIndex (numeric)
   return generalPool[index];
 }

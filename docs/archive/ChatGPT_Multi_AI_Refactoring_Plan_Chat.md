@@ -2137,8 +2137,8 @@ pay off more than broad UI tests for drift prevention."}
 HUMAN_SUMMARY (markdown)
 
 Top duplication / inconsistency clusters to hunt first (once repo access works)
-Notebook page scaffolding drift across components/notebook/_ and app/_ (loading
-states, animations, keyboard shortcuts, scroll navigation). GitHub
+Notebook page scaffolding drift across components/notebook/\* and app/\*
+(loading states, animations, keyboard shortcuts, scroll navigation). GitHub
 
 Smart prompts + dismissal persistence: centralize logic behind one hook/module
 (README references useSmartPrompts + localStorage persistence). GitHub
