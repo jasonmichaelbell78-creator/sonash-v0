@@ -751,17 +751,46 @@ function formatWarningEntry(e, typeTotals, typeSinceAckTotals, ack) {
  */
 function writeWarningsFile(warningsPath, data) {
   try {
-    if (isSafeToWrite(warningsPath)) {
-      const tmpPath = `${warningsPath}.tmp`;
-      if (isSafeToWrite(tmpPath)) {
-        fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n");
+    if (!isSafeToWrite(warningsPath)) return;
+    const tmpPath = `${warningsPath}.tmp`;
+    const bakPath = `${warningsPath}.bak`;
+    if (!isSafeToWrite(tmpPath) || !isSafeToWrite(bakPath)) return;
+
+    fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n");
+
+    const hadExisting = fs.existsSync(warningsPath);
+    if (hadExisting) {
+      try {
+        fs.rmSync(bakPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(warningsPath, bakPath);
+    }
+
+    try {
+      fs.renameSync(tmpPath, warningsPath);
+      if (hadExisting) {
         try {
-          fs.rmSync(warningsPath, { force: true });
+          fs.rmSync(bakPath, { force: true });
         } catch {
           /* best-effort */
         }
-        fs.renameSync(tmpPath, warningsPath);
       }
+    } catch (renameErr) {
+      try {
+        if (hadExisting && fs.existsSync(bakPath)) {
+          fs.renameSync(bakPath, warningsPath);
+        }
+      } catch {
+        /* best-effort */
+      }
+      try {
+        fs.rmSync(tmpPath, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      throw renameErr;
     }
   } catch (err) {
     console.error(

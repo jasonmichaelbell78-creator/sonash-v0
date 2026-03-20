@@ -245,8 +245,8 @@ export default function SettingsPage({ onClose }: Readonly<SettingsPageProps>) {
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showCleanDateConfirm, setShowCleanDateConfirm] = useState(false);
-  const [, setOriginalCleanDate] = useState<string | null>(null);
-  const [, setOriginalCleanTime] = useState<string>("08:00");
+  const [_originalCleanDate, setOriginalCleanDate] = useState<string | null>(null);
+  const [_originalCleanTime, setOriginalCleanTime] = useState<string>("08:00");
 
   // Helper to format date as YYYY-MM-DD in local timezone (avoids UTC conversion issues)
   const formatLocalDate = useCallback((date: Date): string => {

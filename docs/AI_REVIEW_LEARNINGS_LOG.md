@@ -876,6 +876,41 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review 491: PR #453 R3 — Mixed (Qodo+SonarCloud+CI) (2026-03-19)
+
+**Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 23    | 22    | 0        | 1        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 3     | 13    | 7       |
+
+**Patterns:**
+
+- secret-redaction-global-regex
+- date-validation-nan-guard
+- atomic-write-backup-restore
+- section-heading-regex-robustness
+- memory-guard-large-files
+- fail-fast-missing-dependency
+- code-fence-language-aware-skip
+- dedup-key-completeness
+
+**Learnings:**
+
+- indexOf-based secret redaction only finds first occurrence per line — use global regex
+- daysSince without date format validation propagates NaN silently
+- Corrupted state files reported as missing hides data integrity issues
+- Code block skipping should be language-aware to validate shell examples
+- Large JSONL logs should use appendFileSync above 2MB to avoid memory blowup
+
+---
+
 ### Review 356: PR #431 R2 — Data Effectiveness Audit Schema & Security Fixes (2026-03-13)
 
 **Date:** 2026-03-13 | **Source:** sonarcloud+qodo+ci

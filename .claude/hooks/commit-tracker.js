@@ -308,7 +308,7 @@ function captureCommitMetadata(currentHead) {
     : gitExec(["rev-parse", "--abbrev-ref", "HEAD"]);
 
   // Call 2: files changed in the commit
-  const filesChanged = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD"])
+  const filesChanged = gitExec(["diff-tree", "--no-commit-id", "--name-only", "-r", currentHead])
     .split("\n")
     .filter((f) => f.length > 0);
 
@@ -429,26 +429,11 @@ function resolveGitDir() {
 function redactSensitiveLine(line) {
   let result = line;
   for (const keyword of ["token", "key", "secret", "password", "credential"]) {
-    for (const sep of ["=", ":"]) {
-      const idx = result.toLowerCase().indexOf(keyword + sep);
-      if (idx === -1) continue;
-      const afterSep = idx + keyword.length + sep.length;
-      let valueStart = afterSep;
-      while (valueStart < result.length && result[valueStart] === " ") valueStart++;
-      if (valueStart >= result.length) continue;
-      let valueEnd;
-      const quote = result[valueStart];
-      if (quote === '"' || quote === "'") {
-        const endQuote = result.indexOf(quote, valueStart + 1);
-        valueEnd = endQuote === -1 ? result.length : endQuote + 1;
-      } else {
-        valueEnd = valueStart;
-        while (valueEnd < result.length && result[valueEnd] !== " ") valueEnd++;
-      }
-      if (valueEnd > valueStart) {
-        result = result.slice(0, valueStart) + "[REDACTED]" + result.slice(valueEnd);
-      }
-    }
+    const re = new RegExp(
+      String.raw`(\b${keyword}\b\s*[:=]\s*)(?:"[^"]*"|'[^']*'|[^\s]+)`,
+      "gi"
+    );
+    result = result.replace(re, `$1[REDACTED]`);
   }
   result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***");
   result = result.replaceAll(/ghs_[A-Za-z0-9_]{36,}/g, "ghs_***REDACTED***");

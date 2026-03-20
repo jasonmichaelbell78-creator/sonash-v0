@@ -793,12 +793,13 @@ function main() {
         const claimedActive = Number.parseInt(activeMatch[1], 10);
 
         // Extract only the Active Reviews section content
-        const activeStart = logContent.indexOf("\n## Active Reviews");
+        const activeHeaderMatch = logContent.match(/^##\s+Active Reviews\s*$/m);
+        const activeStart = activeHeaderMatch ? activeHeaderMatch.index : -1;
         const activeSection = activeStart === -1 ? logContent : logContent.slice(activeStart);
         // Find the end of the Active Reviews section (next ## heading)
-        const nextH2Match = activeSection.slice(1).match(/\n## [A-Z]/);
+        const nextH2Match = activeSection.match(/\n##\s+/);
         const activeSectionOnly = nextH2Match
-          ? activeSection.slice(0, nextH2Match.index + 1)
+          ? activeSection.slice(0, nextH2Match.index)
           : activeSection;
 
         // Match both numeric IDs (Review 356, Review #356) and string IDs (Review rev-1)
@@ -829,7 +830,8 @@ function main() {
         try {
           const cState = JSON.parse(readFileSync(CONSOLIDATION_JSON, "utf8"));
           const stateNumber = cState.consolidationNumber || 0;
-          const activeIdx = logContent.indexOf("\n## Active Reviews");
+          const activeHeaderMatch2 = logContent.match(/^##\s+Active Reviews\s*$/m);
+          const activeIdx = activeHeaderMatch2 ? activeHeaderMatch2.index : -1;
           const headerContent = activeIdx === -1 ? logContent : logContent.slice(0, activeIdx);
           // Match the first "Previous Consolidation (#N)" — this is the most recent
           // SonarCloud S5852: bounded input from markdown header section (<500 chars), no ReDoS risk

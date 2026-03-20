@@ -354,7 +354,8 @@ function checkDependencies() {
         excludeRe = new RegExp(rule.excludePattern); // trusted-source: scripts/config/doc-dependencies.json
       } catch (regexErr) {
         log(
-          `  ⚠ Invalid excludePattern "${rule.excludePattern}": ${regexErr.message}`,
+          // eslint-disable-next-line no-control-regex -- intentional: strip control chars from error message
+          `  ⚠ Invalid excludePattern "${rule.excludePattern}": ${regexErr instanceof Error ? regexErr.message.replace(/[\x00-\x1f\x7f]/g, "").slice(0, 200) : "unknown error"}`,
           colors.yellow
         );
         continue;

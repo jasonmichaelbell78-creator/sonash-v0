@@ -441,15 +441,35 @@ function checkNpmScriptReferences(content, filePath) {
   const relPath = relative(ROOT, filePath);
 
   let inCodeBlock = false;
+  let codeFenceLang = "";
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    const trimmed = line.trim();
 
-    if (line.trim().startsWith("```")) {
-      inCodeBlock = !inCodeBlock;
+    if (trimmed.startsWith("```")) {
+      if (!inCodeBlock) {
+        inCodeBlock = true;
+        codeFenceLang = trimmed.slice(3).trim().toLowerCase();
+      } else {
+        inCodeBlock = false;
+        codeFenceLang = "";
+      }
       continue;
     }
-    if (inCodeBlock) continue;
+
+    // Only skip code blocks that are unlikely to contain CLI commands
+    if (inCodeBlock) {
+      const isCommandFence =
+        codeFenceLang === "" ||
+        codeFenceLang === "sh" ||
+        codeFenceLang === "bash" ||
+        codeFenceLang === "shell" ||
+        codeFenceLang === "zsh" ||
+        codeFenceLang === "console";
+      if (!isCommandFence) continue;
+    }
+
     if (shouldSkipNpmLine(line)) continue;
 
     for (const { scriptName } of collectUnknownScripts(line)) {

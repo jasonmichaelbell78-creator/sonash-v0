@@ -2754,7 +2754,10 @@ function collectSeenCheckIds(runs) {
 function findMissingChecks(manifest, runs7d) {
   if (!manifest || !Array.isArray(manifest.checks) || runs7d.length === 0) return [];
   const seenCheckIds = collectSeenCheckIds(runs7d);
-  return manifest.checks.filter((c) => !seenCheckIds.has(c.id)).map((c) => c.id);
+  return manifest.checks
+    .filter((c) => c && typeof c.id === "string" && c.id)
+    .filter((c) => !seenCheckIds.has(c.id))
+    .map((c) => c.id);
 }
 
 /**
@@ -4284,6 +4287,20 @@ function appendHealthScoreLog() {
       console.error("  [warn] isSafeToWrite blocked health-score-log write (pre-write check)");
       return;
     }
+
+    // Size guard: avoid reading very large logs into memory
+    try {
+      if (fs.existsSync(logPath)) {
+        const st = fs.statSync(logPath);
+        if (st.size > 2 * 1024 * 1024) {
+          fs.appendFileSync(logPath, entry + "\n");
+          return;
+        }
+      }
+    } catch {
+      /* non-fatal */
+    }
+
     const tmpPath = `${logPath}.${process.pid}.tmp`;
     try {
       let existing = "";

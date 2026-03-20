@@ -44,7 +44,7 @@ try {
   /* eslint-disable no-control-regex -- intentional: strip control chars in fallback */
   sanitizeError = (err) =>
     String(err ?? "")
-      .replace(/[\x00-\x1f\x7f]/g, "")
+      .replaceAll(/[\x00-\x1f\x7f]/g, "")
       .slice(0, 500);
   /* eslint-enable no-control-regex */
 }
@@ -240,7 +240,7 @@ function runEslintBatch(filePaths) {
   const eslintArgs = [
     "--no-config-lookup",
     "--rule",
-    `complexity: [error, ${THRESHOLD}]`,
+    `complexity: [2, ${THRESHOLD}]`,
     "--parser-options=ecmaVersion:2025",
     "--format=json",
     "--",

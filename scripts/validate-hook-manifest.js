@@ -128,6 +128,7 @@ function matchesPatternRule(content, rule) {
  * @returns {string[]} - Array of detected check IDs
  */
 function extractBashCheckIds(content, hookType) {
+  if (hookType !== "pre-commit" && hookType !== "pre-push") return [];
   const patternMap = hookType === "pre-commit" ? PRE_COMMIT_PATTERNS : PRE_PUSH_PATTERNS;
   const ids = [];
   for (const rule of patternMap) {
@@ -241,7 +242,7 @@ function findDuplicateIds(checks) {
   const seen = new Set();
   const duplicates = [];
   for (const check of checks) {
-    if (!check || !check.id) continue;
+    if (!check?.id) continue;
     if (seen.has(check.id)) duplicates.push(check.id);
     seen.add(check.id);
   }
@@ -280,9 +281,13 @@ function validateCheckFields(checks, errors) {
     "owner",
   ];
   for (const check of checks) {
+    if (!check || typeof check !== "object") {
+      errors.push("Manifest check entry is not an object");
+      continue;
+    }
     for (const field of requiredFields) {
       if (check[field] === undefined || check[field] === null) {
-        errors.push(`Check '${check.id}': missing required field '${field}'`);
+        errors.push(`Check '${check.id || "unknown"}': missing required field '${field}'`);
       }
     }
     validateCheckEnums(check, errors);

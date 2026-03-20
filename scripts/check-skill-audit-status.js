@@ -59,7 +59,7 @@ function checkStateFile(skillName) {
     const score = typeof data.overall_score === "number" ? data.overall_score : null;
     return { exists: true, date, decisions, score };
   } catch {
-    return { exists: false, date: null, decisions: null, score: null };
+    return { exists: true, date: null, decisions: null, score: null };
   }
 }
 
@@ -142,7 +142,7 @@ function checkVersionHistory(skillName) {
 
     const vhStart = content.indexOf("## Version History");
     const afterVh = content.indexOf("\n## ", vhStart + 1);
-    const vhSection = afterVh !== -1 ? content.slice(vhStart, afterVh) : content.slice(vhStart);
+    const vhSection = afterVh === -1 ? content.slice(vhStart) : content.slice(vhStart, afterVh);
 
     // SonarCloud S5852: bounded input from markdown table rows (<500 chars), no ReDoS risk
     const auditPattern =
@@ -167,7 +167,9 @@ function checkVersionHistory(skillName) {
  * @returns {number}
  */
 function daysSince(dateStr) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null;
   const then = new Date(dateStr + "T00:00:00Z");
+  if (!Number.isFinite(then.getTime())) return null;
   const now = new Date();
   const diffMs = now.getTime() - then.getTime();
   return Math.floor(diffMs / (1000 * 60 * 60 * 24));
