@@ -3,7 +3,6 @@ import assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { spawnSync } from "node:child_process";
-import * as os from "node:os";
 
 // Get project root (works both in source and compiled contexts)
 const PROJECT_ROOT = fs.existsSync(path.resolve(__dirname, "../../package.json"))
