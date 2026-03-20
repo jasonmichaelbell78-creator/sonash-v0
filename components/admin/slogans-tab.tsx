@@ -7,6 +7,7 @@
 import { AdminCrudTable } from "./admin-crud-table";
 import { AdminCrudConfig } from "./admin-crud-types";
 import { Slogan, SlogansService } from "@/lib/db/slogans";
+import { logger } from "@/lib/logger";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +25,7 @@ async function seedSlogans() {
       });
     }
   } catch (error) {
-    console.error("Failed to seed slogans:", error);
+    logger.error("Failed to seed slogans", { error });
     throw error;
   }
 }

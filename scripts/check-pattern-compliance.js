@@ -1760,13 +1760,12 @@ function findPatternMatches(antiPattern, content, filePath) {
     const safeMatches = Array.isArray(matches) ? matches : [];
     for (const m of safeMatches) {
       if (!m || typeof m.line !== "number") continue;
-      // nosemgrep: sonash.security.no-unsanitized-error-response
       violations.push({
         file: filePath,
         line: m.line,
         id: antiPattern.id,
         severity: antiPattern.severity || "medium",
-        message: antiPattern.message,
+        message: antiPattern.message, // nosemgrep: sonash.security.no-unsanitized-error-response -- static pattern description, not runtime error
         fix: antiPattern.fix,
         review: antiPattern.review,
         match: (m.match || "").slice(0, 50),
@@ -1818,13 +1817,12 @@ function findPatternMatches(antiPattern, content, filePath) {
 function buildViolation(antiPattern, match, content, filePath) {
   const beforeMatch = content.slice(0, match.index);
   const lineNumber = (beforeMatch.match(/\n/g) || []).length + 1;
-  // nosemgrep: sonash.security.no-unsanitized-error-response
   return {
     file: filePath,
     line: lineNumber,
     id: antiPattern.id,
     severity: antiPattern.severity || "medium",
-    message: antiPattern.message,
+    message: antiPattern.message, // nosemgrep: sonash.security.no-unsanitized-error-response -- static pattern description, not runtime error
     fix: antiPattern.fix,
     review: antiPattern.review,
     match: match[0].slice(0, 50) + (match[0].length > 50 ? "..." : ""),

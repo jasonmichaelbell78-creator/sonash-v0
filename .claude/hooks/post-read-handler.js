@@ -366,6 +366,7 @@ function main() {
     // Phase 1: Context tracking + large file warning
     runContextTracking();
   } catch (err) {
+    // nosemgrep: sonash.security.no-unsanitized-error-response -- console.warn for developer diagnostics, not user-facing
     console.warn(
       `post-read-handler: context tracking error: ${err instanceof Error ? err.message : String(err)}`
     );
@@ -375,6 +376,7 @@ function main() {
     // Phase 2: Auto-save context check
     runAutoSaveContext();
   } catch (err) {
+    // nosemgrep: sonash.security.no-unsanitized-error-response -- console.warn for developer diagnostics, not user-facing
     console.warn(
       `post-read-handler: auto-save error: ${err instanceof Error ? err.message : String(err)}`
     );

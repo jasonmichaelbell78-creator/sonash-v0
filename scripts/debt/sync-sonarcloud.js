@@ -269,7 +269,7 @@ async function fetchIssuePage(token, url) {
     throw new Error(`SonarCloud API error: HTTP ${response.status}`);
   }
 
-  return response.json();
+  return await response.json();
 }
 
 // Fetch issues from SonarCloud API (with pagination)
@@ -348,7 +348,7 @@ async function fetchHotspotPage(token, url) {
     throw new Error(`SonarCloud Hotspots API error: HTTP ${response.status}`);
   }
 
-  return response.json();
+  return await response.json();
 }
 
 // Fetch security hotspots from SonarCloud (separate API endpoint)

@@ -2,6 +2,8 @@
 
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { logger } from "@/lib/logger";
+
+const COPY_SUCCESS_RESET_MS = 2000; // Reset "Copied!" feedback after 2 seconds
 import {
   createErrorBoundaryExport,
   downloadErrorExport,
@@ -99,7 +101,7 @@ export class ErrorBoundary extends Component<Props, State> {
       this.copySuccessTimeout = setTimeout(() => {
         this.copySuccessTimeout = null;
         this.setState({ copySuccess: false });
-      }, 2000);
+      }, COPY_SUCCESS_RESET_MS);
     }
   };
 

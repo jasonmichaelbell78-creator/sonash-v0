@@ -4,6 +4,12 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Clock, MapPin, Calendar } from "lucide-react";
 
+const DEFAULT_MEETING_HOUR = 19; // 7:00 PM
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const MS_PER_HOUR = 1000 * 60 * 60;
+const MS_PER_MINUTE = 1000 * 60;
+const TIMER_INTERVAL_MS = 60000; // Update every minute
+
 /**
  * Meeting Countdown Timer - shows time until next meeting
  * For now displays a placeholder - will integrate with favorites later
@@ -16,17 +22,17 @@ export default function MeetingCountdown() {
     function calculateNextMeeting() {
       const now = new Date();
       const today7PM = new Date();
-      today7PM.setHours(19, 0, 0, 0); // 7:00 PM
+      today7PM.setHours(DEFAULT_MEETING_HOUR, 0, 0, 0);
 
       let nextMeeting = today7PM;
       if (now > today7PM) {
         // If past 7 PM, show tomorrow at 7 PM
-        nextMeeting = new Date(today7PM.getTime() + 24 * 60 * 60 * 1000);
+        nextMeeting = new Date(today7PM.getTime() + MS_PER_DAY);
       }
 
       const diff = nextMeeting.getTime() - now.getTime();
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const hours = Math.floor(diff / MS_PER_HOUR);
+      const minutes = Math.floor((diff % MS_PER_HOUR) / MS_PER_MINUTE);
 
       if (hours === 0) {
         setTimeRemaining(`${minutes}m`);
@@ -38,7 +44,7 @@ export default function MeetingCountdown() {
     }
 
     calculateNextMeeting();
-    const interval = setInterval(calculateNextMeeting, 60000); // Update every minute
+    const interval = setInterval(calculateNextMeeting, TIMER_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, []);

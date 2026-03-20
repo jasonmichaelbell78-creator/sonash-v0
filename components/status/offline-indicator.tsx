@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { WifiOff, Wifi } from "lucide-react";
 
+const RECONNECTED_BANNER_MS = 3000; // Show "back online" banner for 3 seconds
+
 export function OfflineIndicator() {
   const [isOnline, setIsOnline] = useState(() => navigator.onLine);
   const [showReconnected, setShowReconnected] = useState(false);
@@ -14,7 +16,7 @@ export function OfflineIndicator() {
     const handleOnline = () => {
       setIsOnline(true);
       setShowReconnected(true);
-      setTimeout(() => setShowReconnected(false), 3000);
+      setTimeout(() => setShowReconnected(false), RECONNECTED_BANNER_MS);
     };
 
     const handleOffline = () => {

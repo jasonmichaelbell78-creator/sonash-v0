@@ -365,11 +365,21 @@ async function fetchSonarCloudData() {
     gateUrl.searchParams.append("projectKey", SONAR_CONFIG.projectKey);
 
     // PERFORMANCE: Run all API calls in parallel with AbortSignal.timeout()
+    // Promises assigned to variables then collected in Promise.all for parallel execution
     const fetchOptions = { headers, signal: controller.signal };
+    const issuesFetch = fetch(issuesUrl.toString(), fetchOptions).catch((e) => {
+      throw e;
+    });
+    const hotspotsFetch = fetch(hotspotsUrl.toString(), fetchOptions).catch((e) => {
+      throw e;
+    });
+    const gateFetch = fetch(gateUrl.toString(), fetchOptions).catch((e) => {
+      throw e;
+    });
     const [issuesResponse, hotspotsResponse, gateResponse] = await Promise.all([
-      fetch(issuesUrl.toString(), fetchOptions),
-      fetch(hotspotsUrl.toString(), fetchOptions),
-      fetch(gateUrl.toString(), fetchOptions),
+      issuesFetch,
+      hotspotsFetch,
+      gateFetch,
     ]);
 
     // Collect warnings for partial failures (don't silently ignore)

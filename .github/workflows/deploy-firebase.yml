@@ -97,7 +97,7 @@ jobs:
             functions/package-lock.json
 
       - name: Install Firebase CLI
-        run: npm install -g firebase-tools
+        run: npm install -g firebase-tools@13.29.1
 
       - name: Install Next.js dependencies
         run: npm ci

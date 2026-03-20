@@ -11,8 +11,8 @@
  */
 
 import { useState, useEffect } from "react";
-import { collection, query, orderBy, limit, getDocs, Timestamp } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { Timestamp } from "firebase/firestore";
+import { FirestoreService } from "@/lib/firestore-service";
 import { logger } from "@/lib/logger";
 
 interface LighthouseScore {
@@ -47,16 +47,21 @@ function toDate(value: string | Timestamp): Date {
   return value.toDate();
 }
 
+const LIGHTHOUSE_SCORE_GOOD = 90; // Lighthouse "good" threshold
+const LIGHTHOUSE_SCORE_NEEDS_IMPROVEMENT = 50; // Lighthouse "needs improvement" threshold
+const GIT_SHORT_HASH_LENGTH = 7;
+const LIGHTHOUSE_SCORE_COLUMN_SPAN = 5; // Score columns: Performance, Accessibility, Best Practices, SEO, PWA
+
 // Score color based on value
 function getScoreColor(score: number): string {
-  if (score >= 90) return "text-green-400";
-  if (score >= 50) return "text-yellow-400";
+  if (score >= LIGHTHOUSE_SCORE_GOOD) return "text-green-400";
+  if (score >= LIGHTHOUSE_SCORE_NEEDS_IMPROVEMENT) return "text-yellow-400";
   return "text-red-400";
 }
 
 function getScoreBg(score: number): string {
-  if (score >= 90) return "bg-green-900/30";
-  if (score >= 50) return "bg-yellow-900/30";
+  if (score >= LIGHTHOUSE_SCORE_GOOD) return "bg-green-900/30";
+  if (score >= LIGHTHOUSE_SCORE_NEEDS_IMPROVEMENT) return "bg-yellow-900/30";
   return "bg-red-900/30";
 }
 
@@ -94,17 +99,14 @@ export function LighthouseTab() {
 
     async function fetchLatestRun() {
       try {
-        const historyRef = collection(db, "dev", "lighthouse", "history");
-        const q = query(historyRef, orderBy("timestamp", "desc"), limit(1));
-        const snapshot = await getDocs(q);
+        const rawDoc = await FirestoreService.getLatestLighthouseRun();
 
         if (isCancelled) return;
 
-        if (snapshot.empty) {
+        if (!rawDoc) {
           setLatestRun(null);
         } else {
-          const doc = snapshot.docs[0];
-          const data = doc.data() as Partial<LighthouseRun>;
+          const data = rawDoc as Partial<LighthouseRun>;
 
           // Validate required fields before setting state
           if (!data.timestamp || !Array.isArray(data.results)) {
@@ -208,7 +210,7 @@ export function LighthouseTab() {
             {toDate(latestRun.timestamp).toLocaleString()}
             {latestRun.commit && (
               <span className="ml-2 font-mono text-xs bg-gray-700 px-2 py-0.5 rounded">
-                {latestRun.commit.substring(0, 7)}
+                {latestRun.commit.substring(0, GIT_SHORT_HASH_LENGTH)}
               </span>
             )}
           </div>
@@ -253,7 +255,10 @@ export function LighthouseTab() {
                       </td>
                     </>
                   ) : (
-                    <td className="py-3 px-4 text-red-400 text-sm" colSpan={5}>
+                    <td
+                      className="py-3 px-4 text-red-400 text-sm"
+                      colSpan={LIGHTHOUSE_SCORE_COLUMN_SPAN}
+                    >
                       Audit failed
                     </td>
                   )}

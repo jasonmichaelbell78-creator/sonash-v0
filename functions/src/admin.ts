@@ -2243,7 +2243,7 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
       throw new Error(`Sentry issues API failed: ${issuesResponse.status}`);
     }
 
-    const issuesPayload: Array<{
+    const issuesPayload = (await issuesResponse.json()) as Array<{
       title?: string;
       count?: string;
       userCount?: number;
@@ -2253,7 +2253,7 @@ export const adminGetSentryErrorSummary = onCall({ secrets: [sentryApiToken] }, 
       level?: string;
       status?: string;
       permalink?: string;
-    }> = await issuesResponse.json();
+    }>;
 
     const issues: SentryIssueSummary[] = issuesPayload.map((issue) => ({
       title: sanitizeSentryTitle(issue.title || "Unknown error"),
@@ -3412,7 +3412,12 @@ export const adminSendPasswordReset = onCall<SendPasswordResetRequest>(
       }
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        let errorData: unknown = {};
+        try {
+          errorData = await response.json();
+        } catch {
+          // Ignore JSON parse errors on error responses
+        }
         const errorMessage = (errorData as { error?: { message?: string } })?.error?.message;
 
         // Handle specific Firebase Auth errors

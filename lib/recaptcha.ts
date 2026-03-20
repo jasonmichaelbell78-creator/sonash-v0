@@ -37,11 +37,13 @@ export async function getRecaptchaToken(action: string): Promise<string> {
     throw new Error("reCAPTCHA can only be used in the browser");
   }
 
+  const RECAPTCHA_TIMEOUT_MS = 10000; // 10 second timeout
+
   // Wait for reCAPTCHA to be ready
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       reject(new Error("reCAPTCHA failed to load"));
-    }, 10000); // 10 second timeout
+    }, RECAPTCHA_TIMEOUT_MS);
 
     if (!window.grecaptcha?.enterprise) {
       clearTimeout(timeout);

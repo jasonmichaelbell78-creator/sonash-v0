@@ -7,6 +7,7 @@
 import { AdminCrudTable } from "./admin-crud-table";
 import { AdminCrudConfig } from "./admin-crud-types";
 import { GlossaryTerm, GlossaryService } from "@/lib/db/glossary";
+import { logger } from "@/lib/logger";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,7 +25,7 @@ async function seedGlossary() {
       });
     }
   } catch (error) {
-    console.error("Failed to seed glossary:", error);
+    logger.error("Failed to seed glossary", { error });
     throw error;
   }
 }

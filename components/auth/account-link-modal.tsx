@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import { X, Loader2, Shield, CheckCircle } from "lucide-react";
 import { linkWithEmail, linkWithGoogle } from "@/lib/auth/account-linking";
 
+const SUCCESS_REDIRECT_DELAY_MS = 2000; // Delay before calling onSuccess after account link
+const MIN_PASSWORD_LENGTH = 6;
+
 interface AccountLinkModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -28,7 +31,7 @@ export default function AccountLinkModal({ onClose, onSuccess }: AccountLinkModa
       setSuccess(true);
       setTimeout(() => {
         onSuccess();
-      }, 2000);
+      }, SUCCESS_REDIRECT_DELAY_MS);
     } else {
       // Don't show error for user cancellation
       if (result.error.code !== "auth/popup-closed-by-user") {
@@ -49,7 +52,7 @@ export default function AccountLinkModal({ onClose, onSuccess }: AccountLinkModa
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < MIN_PASSWORD_LENGTH) {
       setError("Password must be at least 6 characters");
       return;
     }
@@ -63,7 +66,7 @@ export default function AccountLinkModal({ onClose, onSuccess }: AccountLinkModa
       setSuccess(true);
       setTimeout(() => {
         onSuccess();
-      }, 2000);
+      }, SUCCESS_REDIRECT_DELAY_MS);
     } else {
       setError(result.error.userMessage);
     }

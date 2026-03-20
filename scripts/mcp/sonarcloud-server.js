@@ -16,6 +16,7 @@ import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { ProxyAgent, fetch as undiciFetch } from "undici";
+import { sanitizeError } from "../lib/sanitize-error.js";
 
 const SONAR_BASE_URL = process.env.SONAR_URL || "https://sonarcloud.io";
 const SONAR_TOKEN = process.env.SONAR_TOKEN;
@@ -105,9 +106,7 @@ async function sonarFetch(endpoint, params = {}) {
     if (error instanceof Error && error.name === "AbortError") {
       throw new Error("SonarCloud API error: Request timed out");
     }
-    throw new Error(
-      `SonarCloud API error: Network request failed - ${(error instanceof Error ? error.message : String(error)) || "unknown"}`
-    );
+    throw new Error(`SonarCloud API error: Network request failed - ${sanitizeError(error)}`);
   } finally {
     clearTimeout(timeoutId);
   }
@@ -124,6 +123,7 @@ async function sonarFetch(endpoint, params = {}) {
   }
 
   try {
+    // nosemgrep: sonash.correctness.no-floating-promise -- response.json() is awaited; false positive from try wrapper
     return await response.json();
   } catch {
     throw new Error("SonarCloud API error: Invalid JSON response");
@@ -423,7 +423,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const safeArgs = args && typeof args === "object" && !Array.isArray(args) ? args : {};
     return await handler(safeArgs);
   } catch (error) {
-    const msg = error instanceof Error ? error.message : String(error);
+    const msg = sanitizeError(error);
     return {
       content: [
         {
@@ -450,9 +450,7 @@ try {
     );
   }
 } catch (error) {
-  // Sanitize error output - don't expose stack traces
-  console.error(
-    `Fatal error: ${(error instanceof Error ? error.message : String(error)) || "Unknown error"}`
-  );
+  // Sanitize error output - don't expose stack traces or internal paths
+  console.error(`Fatal error: ${sanitizeError(error)}`);
   process.exit(1);
 }

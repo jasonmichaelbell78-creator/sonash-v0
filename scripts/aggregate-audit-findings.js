@@ -234,7 +234,11 @@ const PR_BUCKET_MAP = {
  */
 function safeCell(value) {
   if (value === undefined || value === null) return "";
-  return String(value).replace(/\|/g, "\\|").replace(/\n/g, " ").replace(/\r/g, "");
+  return String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/\|/g, "\\|")
+    .replace(/\n/g, " ")
+    .replace(/\r/g, "");
 }
 
 /**

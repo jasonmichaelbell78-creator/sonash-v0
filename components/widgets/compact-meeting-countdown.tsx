@@ -9,6 +9,13 @@ import { MeetingDetailsDialog } from "@/components/meetings/meeting-details-dial
 import { logger } from "@/lib/logger";
 
 const MAX_DISTANCE_MILES = 10;
+const GEOLOCATION_TIMEOUT_MS = 5000;
+const TIMER_INTERVAL_MS = 30000; // Update every 30 seconds
+const MS_PER_HOUR = 1000 * 60 * 60;
+const MS_PER_MINUTE = 1000 * 60;
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const MINUTES_PER_HOUR = 60;
+const DAYS_IN_WEEK = 7;
 
 // Helper function to compute countdown string given a Meeting object
 function getCountdownString(meeting: Meeting): string | null {
@@ -53,15 +60,15 @@ function getCountdownString(meeting: Meeting): string | null {
   // If meeting is in the past, return null
   if (diff <= 0) return null;
 
-  const hoursUntil = Math.floor(diff / (1000 * 60 * 60));
-  const minutesUntil = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const hoursUntil = Math.floor(diff / MS_PER_HOUR);
+  const minutesUntil = Math.floor((diff % MS_PER_HOUR) / MS_PER_MINUTE);
 
   if (hoursUntil === 0) {
     return `${minutesUntil}m`;
   } else if (hoursUntil < 24) {
     return `${hoursUntil}h ${minutesUntil}m`;
   } else {
-    const daysUntil = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    const daysUntil = Math.ceil(diff / MS_PER_DAY);
     return daysUntil === 1 ? `tmrw` : `${daysUntil}d`;
   }
 }
@@ -79,7 +86,7 @@ function parse24HourMinutes(cleaned: string): number | null {
   if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
   if (h < 0 || h > 23 || m < 0 || m > 59) return null;
 
-  return h * 60 + m;
+  return h * MINUTES_PER_HOUR + m;
 }
 
 /**
@@ -100,7 +107,7 @@ function parse12HourMinutes(cleaned: string): number | null {
   if (period === "AM") h = h === 12 ? 0 : h;
   if (period === "PM") h = h === 12 ? 12 : h + 12;
 
-  return h * 60 + m;
+  return h * MINUTES_PER_HOUR + m;
 }
 
 /**
@@ -160,7 +167,7 @@ export default function CompactMeetingCountdown() {
   const [refreshKey, setRefreshKey] = useState(0);
   const { coordinates: userLocation, status: locationStatus } = useGeolocation({
     enableHighAccuracy: false, // Faster, less battery drain
-    timeout: 5000,
+    timeout: GEOLOCATION_TIMEOUT_MS,
   });
 
   useEffect(() => {
@@ -174,7 +181,7 @@ export default function CompactMeetingCountdown() {
         const todaysMeetings = await MeetingsService.getMeetingsByDay(today);
 
         // Current time in minutes since midnight
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const currentMinutes = now.getHours() * MINUTES_PER_HOUR + now.getMinutes();
 
         // Filter to upcoming meetings only (haven't started yet)
         const upcomingToday = todaysMeetings.filter((meeting) => {
@@ -189,7 +196,7 @@ export default function CompactMeetingCountdown() {
 
         // If no more meetings today, find first meeting tomorrow
         if (!selectedMeeting) {
-          const tomorrow = days[(now.getDay() + 1) % 7];
+          const tomorrow = days[(now.getDay() + 1) % DAYS_IN_WEEK];
           const tomorrowsMeetings = await MeetingsService.getMeetingsByDay(tomorrow);
           if (tomorrowsMeetings.length > 0) {
             selectedMeeting = pickNearestMeeting(tomorrowsMeetings, userLocation, locationStatus);
@@ -235,7 +242,7 @@ export default function CompactMeetingCountdown() {
     updateTimer(); // Initial call
 
     // Update every 30 seconds for better granularity without excessive overhead
-    const interval = setInterval(updateTimer, 30000);
+    const interval = setInterval(updateTimer, TIMER_INTERVAL_MS);
 
     return () => clearInterval(interval);
   }, [nextMeeting]);

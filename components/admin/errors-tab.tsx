@@ -41,6 +41,10 @@ import {
   X,
 } from "lucide-react";
 
+const ERROR_CORRELATION_LIMIT = 50;
+const ERROR_CORRELATION_HOURS_BACK = 24;
+const USER_ACTIVITY_FETCH_LIMIT = 50;
+
 interface SentryIssueSummary {
   title: string;
   count: number;
@@ -336,7 +340,7 @@ function UserActivityModal({
           httpsCallable<{ userIdHash: string; limit: number }, UserActivityData>(
             functions,
             "adminGetUserActivityByHash"
-          )({ userIdHash, limit: 50 }),
+          )({ userIdHash, limit: USER_ACTIVITY_FETCH_LIMIT }),
           httpsCallable<{ userIdHash: string }, { found: boolean; user: FoundUser | null }>(
             functions,
             "adminFindUserByHash"
@@ -545,7 +549,10 @@ function UserCorrelationSection({
         functions,
         "adminGetErrorsWithUsers"
       );
-      const result = await fn({ limit: 50, hoursBack: 24 });
+      const result = await fn({
+        limit: ERROR_CORRELATION_LIMIT,
+        hoursBack: ERROR_CORRELATION_HOURS_BACK,
+      });
       if (!isActive()) return;
       setData(result.data);
     } catch (err) {
