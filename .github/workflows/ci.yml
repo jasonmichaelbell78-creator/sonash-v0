@@ -94,10 +94,15 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+      - name: Build review scripts
+        # Tests import from scripts/reviews/dist/ which is gitignored
+        run: cd scripts/reviews && npx tsc
+
       - name: Run tests with coverage
         run: npm run test:coverage
         env:
           NODE_ENV: test
+          GH_TOKEN: ${{ github.token }}
           NEXT_PUBLIC_FIREBASE_API_KEY: test
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: test
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: test
@@ -125,7 +130,7 @@ jobs:
         run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
 
       - name: Upload coverage to Codecov
-        if: success()
+        if: ${{ success() && secrets.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.4.2
         with:
           directory: coverage/
@@ -196,8 +201,7 @@ jobs:
         run: npm run patterns:check-all
 
       - name: Security pattern check
-        if: ${{ github.event_name == 'pull_request' }}
-        run: node scripts/security-check.js --ci
+        run: node scripts/security-check.js --all
         continue-on-error: true
 
       - name: Documentation check
@@ -237,7 +241,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [lint, test]
+    needs: [lint, test, validate]
     permissions:
       contents: read
 
