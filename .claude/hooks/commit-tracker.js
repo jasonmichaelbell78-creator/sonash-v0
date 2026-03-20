@@ -429,10 +429,7 @@ function resolveGitDir() {
 function redactSensitiveLine(line) {
   let result = line;
   for (const keyword of ["token", "key", "secret", "password", "credential"]) {
-    const re = new RegExp(
-      String.raw`(\b${keyword}\b\s*[:=]\s*)(?:"[^"]*"|'[^']*'|[^\s]+)`,
-      "gi"
-    );
+    const re = new RegExp(String.raw`(\b${keyword}\b\s*[:=]\s*)(?:"[^"]*"|'[^']*'|[^\s]+)`, "gi");
     result = result.replace(re, `$1[REDACTED]`);
   }
   result = result.replaceAll(/ghp_[A-Za-z0-9_]{36,}/g, "ghp_***REDACTED***");

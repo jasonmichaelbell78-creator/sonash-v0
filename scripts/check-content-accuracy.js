@@ -365,10 +365,10 @@ const exampleScriptNames = new Set(["script", "then"]);
 /**
  * Check if a line should be skipped for npm script checking
  */
-function shouldSkipNpmLine(line) {
+function shouldSkipNpmLine(line, inCodeBlock = false) {
   const trimmed = line.trim();
-  // Skip commented-out references
-  if (/^#\s+npm\s+run\s/.test(trimmed)) return true;
+  // Skip commented-out references (shell comments only, not Markdown headings)
+  if (inCodeBlock && /^#\s+npm\s+run\s/.test(trimmed)) return true;
   // Skip lines describing absence of a script or proposing to add one
   if (/\bNo\s+npm\s+run\b/i.test(line)) return true;
   if (/\bAdd\s+npm\s+run\b/i.test(line)) return true;
@@ -431,6 +431,18 @@ function collectUnknownScripts(line) {
   return unknowns;
 }
 
+/** Set of code fence languages that may contain CLI commands */
+const COMMAND_FENCE_LANGS = new Set(["", "sh", "bash", "shell", "zsh", "console"]);
+
+/**
+ * Check if the current code block should be scanned for npm commands.
+ * @param {string} lang - The code fence language tag (lowercase, trimmed)
+ * @returns {boolean} true if the block may contain CLI commands
+ */
+function isCommandCodeFence(lang) {
+  return COMMAND_FENCE_LANGS.has(lang);
+}
+
 /**
  * Check npm script references
  * Looks for `npm run <script>` or `npm <script>` patterns
@@ -448,29 +460,20 @@ function checkNpmScriptReferences(content, filePath) {
     const trimmed = line.trim();
 
     if (trimmed.startsWith("```")) {
-      if (!inCodeBlock) {
-        inCodeBlock = true;
-        codeFenceLang = trimmed.slice(3).trim().toLowerCase();
-      } else {
+      if (inCodeBlock) {
         inCodeBlock = false;
         codeFenceLang = "";
+      } else {
+        inCodeBlock = true;
+        codeFenceLang = trimmed.slice(3).trim().toLowerCase();
       }
       continue;
     }
 
     // Only skip code blocks that are unlikely to contain CLI commands
-    if (inCodeBlock) {
-      const isCommandFence =
-        codeFenceLang === "" ||
-        codeFenceLang === "sh" ||
-        codeFenceLang === "bash" ||
-        codeFenceLang === "shell" ||
-        codeFenceLang === "zsh" ||
-        codeFenceLang === "console";
-      if (!isCommandFence) continue;
-    }
+    if (inCodeBlock && !isCommandCodeFence(codeFenceLang)) continue;
 
-    if (shouldSkipNpmLine(line)) continue;
+    if (shouldSkipNpmLine(line, inCodeBlock)) continue;
 
     for (const { scriptName } of collectUnknownScripts(line)) {
       findings.push(buildNpmFinding(relPath, i + 1, scriptName, line));

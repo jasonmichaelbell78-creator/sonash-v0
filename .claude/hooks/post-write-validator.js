@@ -347,7 +347,7 @@ function validateVerificationSteps(prefix, vs) {
   } else {
     if (!VALID_TOOLS.has(vs.tool_confirmation.tool))
       violations.push(`${prefix}: Invalid tool_confirmation.tool`);
-    if (!vs.tool_confirmation.reference?.trim())
+    if (!vs.tool_confirmation.reference?.trim?.())
       violations.push(`${prefix}: Missing tool_confirmation.reference`);
   }
   return violations;

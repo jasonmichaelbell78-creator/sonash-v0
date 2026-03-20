@@ -876,6 +876,41 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
+### Review 492: PR #453 R4 — Mixed (CI+SonarCloud+Qodo) (2026-03-19)
+
+**Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 16    | 11    | 0        | 5        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 2     | 10    | 3       |
+
+**Patterns:**
+
+- prettier-ci-formatting
+- cc-extraction-helper
+- code-fence-negated-condition
+- atomic-write-backup-hardening
+- validatePaths-defensive-guard
+- heading-vs-shell-comment
+
+**Learnings:**
+
+- R3 code-fence logic increased CC from 15 to 16 — extract helper to stay under
+  threshold
+- Prettier must be run after code edits, not just before commit
+- Qodo flip-flops between rounds — evaluate on merits, don't blindly follow
+- shouldSkipNpmLine # check must distinguish shell comments from Markdown
+  headings
+- R4 fix rate 69% — still productive, R5 may hit diminishing returns
+
+---
+
 ### Review 491: PR #453 R3 — Mixed (Qodo+SonarCloud+CI) (2026-03-19)
 
 **Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
@@ -903,7 +938,8 @@ deduplicated, non-overlapping ranges):
 
 **Learnings:**
 
-- indexOf-based secret redaction only finds first occurrence per line — use global regex
+- indexOf-based secret redaction only finds first occurrence per line — use
+  global regex
 - daysSince without date format validation propagates NaN silently
 - Corrupted state files reported as missing hides data integrity issues
 - Code block skipping should be language-aware to validate shell examples

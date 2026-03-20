@@ -759,18 +759,25 @@ function writeWarningsFile(warningsPath, data) {
     fs.writeFileSync(tmpPath, JSON.stringify(data, null, 2) + "\n");
 
     const hadExisting = fs.existsSync(warningsPath);
+    let backedUp = false;
     if (hadExisting) {
       try {
         fs.rmSync(bakPath, { force: true });
       } catch {
         /* best-effort */
       }
-      fs.renameSync(warningsPath, bakPath);
+      try {
+        fs.renameSync(warningsPath, bakPath);
+        backedUp = true;
+      } catch {
+        // If backup fails (locks/permissions), still attempt to write the new file
+        backedUp = false;
+      }
     }
 
     try {
       fs.renameSync(tmpPath, warningsPath);
-      if (hadExisting) {
+      if (backedUp) {
         try {
           fs.rmSync(bakPath, { force: true });
         } catch {
@@ -779,7 +786,7 @@ function writeWarningsFile(warningsPath, data) {
       }
     } catch (renameErr) {
       try {
-        if (hadExisting && fs.existsSync(bakPath)) {
+        if (backedUp && fs.existsSync(bakPath)) {
           fs.renameSync(bakPath, warningsPath);
         }
       } catch {

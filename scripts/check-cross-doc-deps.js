@@ -355,8 +355,8 @@ function checkDependencies() {
       } catch (regexErr) {
         log(
           // eslint-disable-next-line no-control-regex -- intentional: strip control chars from error message
-          `  ⚠ Invalid excludePattern "${rule.excludePattern}": ${regexErr instanceof Error ? regexErr.message.replace(/[\x00-\x1f\x7f]/g, "").slice(0, 200) : "unknown error"}`,
-          colors.yellow
+          `  ✖ Invalid excludePattern "${rule.excludePattern}": ${regexErr instanceof Error ? regexErr.message.replaceAll(/[\x00-\x1f\x7f]/g, "").slice(0, 200) : "unknown error"}`,
+          colors.red
         );
         continue;
       }

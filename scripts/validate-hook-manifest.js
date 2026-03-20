@@ -324,11 +324,17 @@ function validateCheckEnums(check, errors) {
  */
 function validatePaths(checks, errors, warnings) {
   for (const check of checks) {
-    const result = validateCommandPath(check.command);
-    if (!result.valid) {
-      errors.push(`Check '${check.id}': ${result.error}`);
+    if (!check || typeof check !== "object") continue;
+
+    if (typeof check.command !== "string" || !check.command.trim()) {
+      errors.push(`Check '${check.id || "unknown"}': missing required field 'command'`);
+    } else {
+      const result = validateCommandPath(check.command);
+      if (!result.valid) {
+        errors.push(`Check '${check.id}': ${result.error}`);
+      }
     }
-    if (check.reads_from && check.reads_from.length > 0) {
+    if (Array.isArray(check.reads_from) && check.reads_from.length > 0) {
       const missing = validateReadPaths(check.reads_from);
       for (const p of missing) {
         warnings.push(`Check '${check.id}': reads_from path not found: ${p}`);
