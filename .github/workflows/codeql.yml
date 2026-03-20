@@ -45,12 +45,12 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@a60c4df7a135c7317c1e9ddf9b5a9b07a910dda9 # v4.33.0
+        uses: github/codeql-action/init@c6f931105cb2c34c8f901cc885ba1e2e259cf745 # v4.34.0
         with:
           languages: javascript-typescript
           build-mode: none
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@a60c4df7a135c7317c1e9ddf9b5a9b07a910dda9 # v4.33.0
+        uses: github/codeql-action/analyze@c6f931105cb2c34c8f901cc885ba1e2e259cf745 # v4.34.0
         with:
           category: "/language:javascript-typescript"
