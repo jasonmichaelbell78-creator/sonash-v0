@@ -1,0 +1,1373 @@
+# Changelog
+
+## [0.2.0](https://github.com/jasonmichaelbell78-creator/sonash-v0/compare/sonash-v0.1.0...sonash-v0.2.0) (2026-03-20)
+
+### ⚠ BREAKING CHANGES
+
+- generate-views.js no longer overwrites MASTER_DEBT.jsonl.
+
+### Features
+
+- /sprint skill + data quality fixes — session
+  [#179](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/179)
+  ([e1409af](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e1409af645386ebc89c40fdc4b75afc3135adc0b))
+- /sprint skill, pre-commit overhaul, TDMS data quality fixes
+  ([90b0d35](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/90b0d35fc00bb93c1e88f7566e16d3b9b1b2155c))
+- **01-01:** create all 5 entity schemas with barrel export
+  ([b9b16cf](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b9b16cf9bb431e45397628058be47bf06213ad34))
+- **01-01:** create directory structure, tsconfig, and shared schema
+  ([cbd5fb4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cbd5fb47e8cd1a3464bf8192d4c0b6c04ad5fe5a))
+- **01-02:** create write-jsonl, read-jsonl, and completeness utilities
+  ([1eadf3e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1eadf3e58a9eb978484cb6272284d56206186b08))
+- **02-01:** create parse-review.ts with heading parser, table parser, and field
+  extractors
+  ([7bad7d7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7bad7d7dfa3e8ba6698a1df1a4f4aca1774dde85))
+- **02-02:** create backfill orchestrator with BKFL-04/05/06 data corrections
+  ([aa48889](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/aa488890ff9d93a6b42e7049d27912f04254bbf9))
+- **03-01:** create write-review-record CLI and tests
+  ([a8038c1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a8038c100872ec70436ee38c01b3f66629428929))
+- **03-02:** add write-invocation CLI for skill/agent tracking
+  ([6655657](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6655657440634eebf6eb70abb1c257f6dc550987))
+- **03-02:** add write-retro-record and write-deferred-items CLIs
+  ([91f0b9f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/91f0b9fcc339861589c32e10ef75fdc9778f5d16))
+- **03-04:** author 3 security FIX_TEMPLATES
+  ([#46](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/46)-[#48](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/48))
+  ([99d6399](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/99d6399ecd01cbf67b28589e8ffb7d76ffdb5b2a))
+- **03-04:** wire JSONL pipeline writes into pr-review and pr-retro skills
+  ([917732d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/917732d8642394dcc4aa3c81f41737b9b2ca9520))
+- add --check-only flag to ratchet-baselines.js with tests
+  ([1c3e5a1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1c3e5a17bf7dbcb8fcaf1519a251760ea680d829))
+- add "deferred" to LearningRouteRecord status enum
+  ([0ea4518](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0ea45183313695486f7ad33f038681742ce189a5))
+- add 3 ecosystem audit skills (hook, TDMS, session) + docs housekeeping
+  ([1f7b854](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1f7b8548493054f0bb974cd86fc19a8c38fa81cd))
+- add 3 missing checkers to alerts system (reviews-sync, review-archive,
+  crossdoc)
+  ([7567300](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/756730003a3d83f9baa4900383e46a2d1611a809))
+- add 5 hook-ecosystem-audit quality improvements
+  ([5b61e64](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5b61e64c1979cda90f9d1f6e80949244b8fbf2bd))
+- add active ecosystem audit detection to compaction resilience hooks
+  ([b47e380](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b47e380dfb8465e3e91c75322056b29f30b43214))
+- add checkPendingRefinements() to run-alerts.js (Tasks 7/7b/7c)
+  ([8707f9c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8707f9c975db169271b8eabde3b9238f732fdf90))
+- add compaction guard to ecosystem audit skills
+  ([3de39be](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3de39be5ddee1bd28b88e987a83f8927b43d5518))
+- add deep hook-health checker to /alerts limited mode
+  ([030ad37](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/030ad37c6783adbb61d0eb6e3ea7749b798e3a17))
+- add doc, script, comprehensive ecosystem audits + audit-health extension
+  ([d8d3ea9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d8d3ea9e26adc43cb474b3f36a1f5787dcde2fac))
+- add Gemini config, GitHub automation, and pr-retro Gemini sync
+  ([9eb3c8c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9eb3c8c381dd24ca2d924eccc927fbb5f381e6ea))
+- add hook tests for 14 untested hooks, automate in pre-push gate
+  ([666e445](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/666e445eeb758e0857e51750dc76cbae5927a043))
+- add hook-ecosystem-audit skill (16 categories, 5 domains, A-F scoring)
+  ([ad42ce4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ad42ce4eb5c7dacee32df3a5aeb5b15ad8107567))
+- add native LSP config for TypeScript code navigation
+  ([e7ee597](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e7ee5971fdcf8fccd1502ca631f3bc58d49e127b))
+- add review-lifecycle.js orchestrator (Step 4)
+  ([0543f18](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0543f18838ba972686326863c61a4e51f56e1e84))
+- add tdms-ecosystem-audit + session-ecosystem-audit skills
+  ([2153a33](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2153a33b4b9f064eb6eff765a7222bf3b550b353))
+- Automation Gap Closure — scaffolded→enforced pipeline, session-start wiring,
+  fix-or-DEBT
+  ([#432](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/432))
+  ([327821a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/327821abb1fd0a573684b50dd0d613296599b4c3))
+- big-bang migration to JSONL-canonical reviews (Task 7)
+  ([21f39b3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/21f39b375a7382e53d45e41c38d47d58073365a6))
+- bulk pr-retro action items — 13 fixes, 130 tests, 17 PR coverage
+  ([d0683eb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d0683eb1b27c50e7a2e3797929b230f06a1708c0))
+- complete ESLint + pattern compliance fix plan — 27 items across 3 phases
+  ([c18ebff](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c18ebff9bcddc5285b5537c5f65efbe06dcb63a8))
+- comprehensive 9-domain audit + TDMS intake + 100% debt placement
+  ([9270d14](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9270d14b9f7533f50b5355718f6b241b76784be0))
+- comprehensive 9-domain audit + TDMS intake + 100% debt placement
+  ([debf816](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/debf816479f05fc5aa62464e9f3d1503db24f9d7))
+- confidence-classifier — pure classify() for learning-routes automation gap
+  ([66bc9f1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/66bc9f114796cda77eaaee8ac61811262057b7c3))
+- convergence-loop integration into skill-creator + deep-plan + PLAN-v3 phase
+  self-audits
+  ([be26dbf](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/be26dbf48ab1a1a9b5c8aa24128b19650feb2c28))
+- convergence-loop integration, debt-runner skill, 3 skill audits (Session
+  [#222](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/222))
+  ([0a3a835](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0a3a835e156774f80e3a77dd2574e7ff48c8beb5))
+- convergence-loop skill v1.0 + skill-audit T25 update (Step 0.1)
+  ([348d982](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/348d982bf4de24d13fbfee08e18547fcd730d175))
+- Data Effectiveness Audit — learning-to-automation pipeline (35 decisions, 11
+  waves)
+  ([#431](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/431))
+  ([6ff68fe](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6ff68fe785bdff6d19338090501e7234f9e1a4d6))
+- debt-runner skill + session
+  [#222](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/222) end
+  — CL integration, 3 skill audits, metrics
+  ([be62eb0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/be62eb0ec3e79ed1c228a32a05c718d2ee8dd78a))
+- deep-plan agent environment analysis — 21 decisions, 5 phases, 3 Agent Teams
+  ([b0bc65b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b0bc65bd9d365ce2b3aa38cb66ce675563d7a74a))
+- Dev Environment Overhaul + fnm Migration + Skill Audit Deep-Plan — tooling,
+  65+ ripple fixes, 3 review rounds, skill quality
+  ([#421](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/421))
+  ([a25dabb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a25dabba1b1c3a65d1f7e8dfb30a46f4cfad7398))
+- Ecosystem Expansion Phases 1-2 — 87 Test Files, 1,594 Tests, Test Registry
+  (294 Entries), CI Coverage Enforcement, 52 Architectural Decisions,
+  TESTING_SYSTEM.md
+  ([#424](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/424))
+  ([c979c8c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c979c8cbf9c41c874a3bed764799960883d9b10d))
+- Ecosystem Expansion Phases 3-7 — health audit + 179 test files
+  ([#426](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/426))
+  ([cfa19d0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cfa19d0985b89b87ddb1bd34a8db8e871f8f7fca))
+- enforce CC regression + S5852 regex complexity checks (PR
+  [#386](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/386)
+  retro)
+  ([bbbd81a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bbbd81a9b892395dff5e4b24a1a29d666c71834f))
+- ESLint + pattern compliance fix plan — 27 items, 887 blockers→0, 381
+  warnings→56
+  ([89af231](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/89af2318ce956ecb1b2f2e7fdee9b8ad7563cfb2))
+- GitHub optimization Waves 0-2 — CI triage, security hardening, workflow
+  optimization
+  ([5923c1f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5923c1f63b1e98332122f4969131686a4c2765b1))
+- GitHub optimization Waves 0-2 + hook system fixes + pr-retro enhancements
+  ([25792e6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/25792e61b604c83199d06a5b9769a1798bd9a8be))
+- GitHub optimization Waves 3-4 — code scanning remediation + ecosystem
+  expansion
+  ([76e9dcd](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/76e9dcd8d530720bf27a45f6d259c1b7b3f95b9a))
+- Grand Plan Removal, Hook Systems Mini-Audit (35 Decisions, 8 Waves), Batch
+  Retros, Pre-Push CC Gate, writeFileSync Security Migration (21 Scripts)
+  ([#427](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/427))
+  ([d02d92a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d02d92a2197621c4808a4fcd7483a664862f3b3a))
+- **hook-audit:** add D6 CI/CD Pipeline Health domain (3 categories)
+  ([c8ae425](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c8ae425196a1ebc81c4d68f1dfcba6c9a623f295))
+- **hook-audit:** add D6 CI/CD Pipeline Health domain (3 categories)
+  ([13d3f3f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/13d3f3f727689f9b2e98f1a2208376d1c7ea5f47))
+- implement /pr-ecosystem-audit skill — 18-category ecosystem diagnostic
+  ([8f50f5b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8f50f5b434347c36a6cc21a6624947b1c4056317))
+- implement deep-plan automation & file overwrite fixes
+  ([d952ff5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d952ff54fe9856158fa6537930d49e2cef5296a7))
+- implement PR
+  [#390](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/390)/[#391](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/391)
+  retro action items
+  ([e1b3523](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e1b35236ee5f48934d8c7ffa17dd6a76d834708b))
+- implement retro automation candidates and update skills/templates
+  ([a1f7f62](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a1f7f628ca2b40acb9c2f6764d837b46762cc28b))
+- Meta Pipeline sequencing, LSP config, SWS forward-compatibility alignment
+  ([2f15da3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2f15da3205d53dcfe52dc9af3ad2ff4f88d90bf5))
+- pattern tests in CI + compaction guard improvements
+  ([1340a0d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1340a0d27578f28bad511e0884055e730d0d8b9d))
+- Phase 0 Steps 0.2-0.7 — mechanical pre-requisites complete
+  ([5bdd405](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5bdd405fb87a4bf6412b45b3ab94b5f4a6cb0104))
+- pipeline repair, safe-fs infrastructure, deep-plan automation & archive
+  hardening
+  ([9b53ad5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9b53ad5196959d284e5fe9cab63a7bb9fb6d5257))
+- Planning artifacts, agent infrastructure, memory system, CLAUDE.md v5.6
+  ([#445](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/445))
+  ([84a68fb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/84a68fbd9f7f60b71433307876b4fe4ef294a766))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  retro actions — propagation check, pattern enforcement, MAX_FILE_SIZE
+  ([e33fb1d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e33fb1d42521f3504d3ed41ffb7c8b808fc9b510))
+- PR ecosystem audit skill, scattered debt extractor, alerts deep hook-health,
+  ephemeral file cleanup
+  ([7b81a84](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7b81a84894e3e090a75a7930408d13cbb06c744d))
+- PR ecosystem diagnosis, Gemini config, GitHub automation
+  ([76aab89](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/76aab893cc6247473d08cd26ad439821d91ad186))
+- PR Review Ecosystem v2 — Phases 4-7, Milestone Audit, v1.0 Completion &
+  Archival
+  ([#411](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/411))
+  ([ea7f5e8](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ea7f5e8cc8dbe7e4fcfaebbdea4bc42b2ebec19e))
+- PR Review Ecosystem v2 (phases 1-3), Skill Quality Framework, and Alerts Fixes
+  ([b3b2782](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b3b27824ccfab59128b4453cbe606099b6099798))
+- pr-retro Step 0.5 — deliverable verification via convergence-loop
+  ([cfc5fdb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cfc5fdbf1a20da56d2309c4780fc5c78b37f96b9))
+- pr-review DAS framework — Signal/Dependency/Risk scoring replaces time-based
+  defer heuristic
+  ([dfcc687](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/dfcc687d6c555e54f54343d607da475c1fd140ee))
+- pr-review skill v4.3 — state file persistence for cross-round data
+  ([11bf2d8](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/11bf2d8b26b01b50f1c38efbd899f89661d36fdd))
+- pre-commit failure reduction + hook/skill observability
+  ([042be21](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/042be214835cf2566b10f03c74cdffc262856b88))
+- pre-commit system overhaul — 8 phases, ~50% faster
+  ([1cebc70](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1cebc701cf3c04fb62097706ad9fd0d7de33e2fa))
+- Pre-commit/pre-push hook system overhaul — 10 waves, 44 decisions, 14 SWS
+  tenets
+  ([6ca6025](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6ca6025f8b0493b321c35318ac3568cf10e32054))
+- Q34-Q38 decisions + decision-by-phase recall mechanism (Q38)
+  ([e4084ff](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e4084ff67113bf7bb7760f71f4e0f95cfcd9be3e))
+- refine-scaffolds.js with tests — Automation Gap Closure Task 5
+  ([a1c924f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a1c924f421f22c6d19729755065e12b0728dd27f))
+- retroactively process 21 scaffolded routes through refinement pipeline
+  ([494a438](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/494a438e744ce9df82ffce123715bc2c32565cb6))
+- Review Lifecycle Pipeline Overhaul + Automation Gap Closure + SWS PLAN-v3
+  ([4b13e4d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4b13e4df8ed9920187102d19b4916b204a5b9bcd))
+- Session
+  [#223](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/223) —
+  skill-audit create-audit + agent environment deep-plan
+  ([f063065](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f06306572d3e2c8b15d4d6e9152423815564a0b2))
+- Session
+  [#227](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/227) —
+  Pipeline fracture fix, bulk retro (17 PRs), GitHub Waves 3-4, memory audit
+  ([c6863fb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c6863fb04bd31d7cbe630072354071302b2b890c))
+- Sessions
+  [#218](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/218)-221
+  — Automation Gap Closure, SWS Phase 0, Review Lifecycle, Convergence Loop
+  ([3cb5f0c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3cb5f0cf878001b75e650ea39b29b400bd8c5e32))
+- Skill Quality Audits Wave 2 — 5 Skill Rewrites, 233 Decisions, Cross-Skill
+  Learning Loops, Hook Infrastructure Fixes, Ecosystem Expansion Planning
+  (Sessions
+  [#209](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/209)–[#212](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/212))
+  ([#423](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/423))
+  ([28ff9e7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/28ff9e796d849634d344506870511c0f4db8ca4a))
+- Skill Quality Framework — 4 skill audits, 5 skill rewrites, self-audit process
+  hardening
+  ([#420](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/420))
+  ([162ba8f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/162ba8f9c5b85821133716bb238293275eda02bf))
+- skill-audit create-audit — 32 decisions, score 75 to 88, CL on discovery +
+  evidence self-audit
+  ([25e4010](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/25e4010c4d6ebe52d5d833f9d0c1268e34280c68))
+- skill-audit session-begin — 31 decisions, score 51 to 73, 405 to 279 lines
+  ([ef9422e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ef9422e3f36e1038a82aa060e08f5edb8c1599e1))
+- **skills:** create skill-audit skill for interactive behavioral quality audits
+  ([9c27433](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9c274333523226eacc8d9d1b02ec5c5d2aa9b2cc))
+- **skills:** rewrite deep-plan v2 from 64-decision audit
+  ([3375fca](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3375fca08e813303c08db6772152b3be8547c9cd))
+- **skills:** update SKILL_STANDARDS and skill-creator with behavioral quality
+  standards
+  ([c5f3f9a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c5f3f9a53e603727c6de8798a5851671002d7acf))
+- Steps 0a-0c of tech debt resolution — extract 374 items into intake
+  ([b981c3d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b981c3d510f2f01cedf341ea32984fb77dbb51f8))
+- Steps 7-10 — sprint assignment, GRAND_PLAN_V2, ROADMAP reconciliation
+  ([d504854](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d504854cd88e6e7e6979d6f4fb499568c3ad0fbe))
+- System-Wide Standardization Deep-Plan — 92 Decisions, 18 Tenets, 21-Step
+  Overhaul Plan (PLAN.md v1.1)
+  ([#416](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/416))
+  ([5f98fa2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5f98fa2b7744c5c64f554acf0aeefa40fd0f6b80))
+- System-Wide Standardization Discovery + PR Creep Guardrail
+  ([#415](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/415))
+  ([398904e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/398904ecc66fcf3848c6c26ad675afd3b70fc726))
+- TDMS resolution Steps 0g-5 — SonarCloud intake, dedup, verification
+  ([c451a0a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c451a0a7b106f4410a7f768cfaadb7cbb8c5937c))
+- update npm scripts for review lifecycle orchestrator
+  ([097dcfe](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/097dcfe67042795b0f9fe0e5232eaddf1b8885e7))
+- W1 — hook contract manifest v1 + validation script (D14, D24)
+  ([d7f1db4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d7f1db4c22493b711303dcf9096fddd2c482ab84))
+- W3 — end-of-hook summary + hook-runs.jsonl + per-check timing (D6, D7, D11)
+  ([b77f8e0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b77f8e01aab921eafd382d5902ebc71ee30422c4))
+- W4 — escalation gate in pre-push blocks on unacknowledged errors (D4, D19)
+  ([6a98563](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6a98563f47c99b87c01a3b1eb7f0b3706c2ecf41))
+- W8 — /alerts hook completeness + analytics filter + maturity (D25, D8, D33b)
+  ([ff316ed](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ff316edb17635021f90b4af8f8b41eeb1df2cd15))
+- wire enforcement pipeline into session-start.js
+  ([308d541](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/308d541f7881557e48f73865f305a8db9744308a))
+
+### Bug Fixes
+
+- **01-03:** fix YAML frontmatter typo in plan metadata
+  ([9d18d70](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9d18d70d1f45f4a54d21df3a14421c27c3e4b1ca))
+- **01:** revise plans based on checker feedback
+  ([3addb69](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3addb69e34d133793fce59d92ab658dea014fa84))
+- **02:** revise plans based on checker feedback
+  ([ce35183](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ce351834a4d7012a20a00d9dab64fe51a6598666))
+- 3 run-alerts.js bugs — skip-abuse crash, backlog regex, review-archive regex
+  ([ae42807](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ae4280736652a6d0caf0e3308dcfe60ae6202805))
+- adapt check-review-archive.js for JSONL-canonical architecture (RC-1)
+  ([022ac6a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/022ac6aad63caf18446bac77fa905b3faeb4808c))
+- add 20 collision-renumbering artifact IDs to KNOWN_SKIPPED_IDS
+  ([4349a62](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4349a624008816ded1605d4b16f2b4ef4405cc39))
+- add 49 missing DEBT entries for orphaned ROADMAP references
+  ([51b8d07](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/51b8d078bc9eb53adf904b8b30cf129257a9ea54))
+- add ESLint test file to pattern compliance exclusions
+  ([31012de](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/31012de69337ece93a9190fcd3b6e341efaa5510))
+- add generate-views.js to verified-patterns exclusions
+  ([703f824](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/703f8245d7684f5348f46cf9355604058060d65a))
+- add output protocol compliance to 6 hooks
+  ([f55554f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f55554ff778f9b3d732eff65c8226cb91f659c98))
+- add required Purpose and Version History sections to SECURITY.md
+  ([88b1bf2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/88b1bf248fe34304a5775ed45e0d70aad82ba9b8))
+- add symlink guards to 4 file-writing hooks
+  ([a5901e8](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a5901e895ba9ffecdf8cb1ed59891f9eec65b50f))
+- address 5 code review findings in check-review-archive (RC-1)
+  ([d076f21](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d076f219aea484f13af873cbaa6a03396c35c260))
+- address 6 code review findings in render-reviews-to-md (RC-7)
+  ([099cfe2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/099cfe2e209d480b8f7c9ff6282ab3b819aa45f9))
+- address 6 code review findings in review-lifecycle.js
+  ([595f78e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/595f78e8e70865b19fb9126a92506ef8d2ff2882))
+- address code review findings (stateful regex, ReDoS risk)
+  ([642ca92](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/642ca92fde876654c61e17bfa7b7f601b4bd36e0))
+- address code review findings (stateful regex, ReDoS risk)
+  ([f20e2f3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f20e2f3bd7f9b4b52d2e4a9f419ee539b918a9b4))
+- address PR
+  [#398](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/398) R1
+  review — 9 items fixed across 10 files
+  ([cd3e350](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cd3e35000a54d6cc341ac0e164874b27e590874f))
+- address PR
+  [#398](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/398) R2
+  review — 14 items fixed across 5 files
+  ([6c04068](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6c04068274f1dd9a34cac2d06f053157c94f7681))
+- address PR review findings from SonarCloud, Qodo, and Gemini
+  ([e1bc01d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e1bc01d439fa7a3b14e22f6b8e044e5f78aff26a))
+- address R2 review — 8 items fixed across 5 files
+  ([264aae9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/264aae9ececb812dfe2f490f71b6206e466cd595))
+- address R3 review — 9 items fixed across 4 files
+  ([76f69e1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/76f69e147acca5836235bd0adb9554961018b52f))
+- address R4 review — 8 items fixed across 5 files
+  ([8ae1a6a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8ae1a6afec8b0ed6e9ebc66719b2fcc61839dac4))
+- address R5 review — S5852 regex replaced with string parsing
+  ([9b55e9f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9b55e9fdfacfd5e8270b3d1dd557c8bf5557aa51))
+- address R6 review — 7 items fixed across 4 files
+  ([745a53e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/745a53e64ea76cb5d9b86d3cb932f0fb1b7664e2))
+- address R7 review — 6 items fixed across 6 files
+  ([bc1cf93](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bc1cf93f88ae78db721ea739cd4086478ac95a48))
+- address SonarCloud + CI review feedback (35 code smells, 1 security hotspot, 2
+  CI blockers)
+  ([152fa65](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/152fa65b5e773565018ce7b591f81971b6d32c20))
+- address SonarCloud/Qodo/Gemini review — 22 items fixed across 9 files
+  ([0430b51](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0430b512d1f0cb0c4b5c2675cddaa14f86a50acb))
+- alerts session
+  [#174](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/174) —
+  automate 3 patterns, fix hygiene/backlog/placement scripts
+  ([ef01550](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ef01550c01e6950a5c2a1c0bd43047fe7b4f9c44))
+- alerts session fixes — commit-log sync, patterns, code review items
+  ([9bf5a67](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9bf5a67bcd952b6f9b68aa7b08de45c7288679a1))
+- alerts session fixes — commit-log sync, patterns, hook test config
+  ([8e82e1d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8e82e1d1fac372b0749e3ed89a2c0659b23c3718))
+- Archive System Repair, Windows Compatibility, Health Score C→A (92/100)
+  ([#419](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/419))
+  ([6d54358](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6d543589d2f7580058a364e3dfc6b26aa6c14e53))
+- audit findings — sanitize errors in jobs.ts, add timeouts + CI wiring
+  ([7fd3f00](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7fd3f00640dcfcbcb5ac5a7c3ca7722136b4fb8d))
+- automate 2 failing patterns + untrack ephemeral state files
+  ([0958a99](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0958a993c5eac2c46cecb040b4de4cc8ee463331))
+- **ci:** enable PR creation permissions and auto-merge for workflows (Wave 2)
+  ([0c7bdf9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0c7bdf9e6aa4a26d91256a0f4a69c5a243086da8))
+- close TOCTOU gaps in appendToCodePatterns (RC-3 review fixes)
+  ([5149228](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/51492283dceb9010026e03106af22886f8529055))
+- code review critical fixes — bidirectional match, check-only dryRun, VP
+  caching
+  ([bb8cc0c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bb8cc0c2e8737637d993f33941f364baf03064e9))
+- consolidate MCP/plugin/settings config
+  ([#418](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/418))
+  ([4549916](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4549916b909217244b06b723d5b3ed4a24d4b25a))
+- convergence-loop REFERENCE.md section numbering (self-audit cosmetic)
+  ([cd0b529](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cd0b52953fe4c4b396d37ae367a4c5758f7f8820))
+- convert exec()-in-while to matchAll() in propagation check
+  ([ad08757](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ad087573f912bf1715d9ba77cf6e24d6d8bec869))
+- correct claude.md refs, learning analyzer aliases, symlink guard detection
+  ([e86ef7a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e86ef7a102baa2feec3968d3e58b3c7eae606b8f))
+- cross-doc check false positive on hook state files
+  ([66f27d3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/66f27d303b096aac77596f283cf121ade51e9e60))
+- cross-doc-deps false positives and doc-header exclusions (Wave 3)
+  ([b0ffc64](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b0ffc643d5eeaad7a63edc589c3affbf630ad1bf))
+- docs:accuracy 666 → 0 findings (Wave 6)
+  ([ea0f5c8](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ea0f5c82a5803ed84e898282f03428a092c6a821))
+- documentation drift — accuracy, lint, headers, versions (Wave 3)
+  ([f78d176](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f78d1763aae6eeb577d4956c99e79373faf5b49e))
+- ESLint zero-warning — production code fixes (Wave 3)
+  ([6c74f76](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6c74f761026f60240fbf3f2ed4df82c614a1be84))
+- ESLint zero-warning — security overrides + prod suppressions (Wave 3)
+  ([d5cb287](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d5cb2877b9d23dc639613b12f8461c7e788f56df))
+- exclude consolidation-output from docs:check linter scan
+  ([0b22d23](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0b22d23ffd587a8257841c17f6cdd0ff27da74a6))
+- exclude scripts/archive/ from ESLint and SonarCloud analysis
+  ([95c00a0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/95c00a08e4d17034edc4f5d65138fe22563c72d9))
+- export RenderableReview type, fix test fixture types
+  ([818e3dc](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/818e3dc2911f88a2e7790c10f71f5f724c9b5807))
+- extend learning-router dedup guard to include refined/deferred status
+  ([6c89a72](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6c89a72c562a0cae237c776345a316da2a1e6448))
+- final convergence — 6 remaining check failures resolved
+  ([bea95a0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bea95a0d771364393e602513878da03f32f3e633))
+- Finding [#5](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/5)
+  — make generate-views.js non-destructive (read-only by default)
+  ([dbb3281](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/dbb3281eee2e345263fd324d1828a2c740f5cba6))
+- format pending-reviews.json + ESLint 0 warnings (final convergence)
+  ([9552037](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/95520377eb8c79a3d97bdfffa101095847a5a0cd))
+- git --since bare date undercounting same-day commits
+  ([a152af4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a152af420477416a62b9e65438d5f945f57b36d6))
+- hook ecosystem audit score 63→99 — fix 6 checker false positives, add
+  sanitize-input to 8 hooks
+  ([5338306](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5338306f2b10231b3920aca62a5df9172542b692))
+- implement PR
+  [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  retro action items — pattern check + || vs ??
+  ([9c9e1e3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9c9e1e3e6aea80a112ad802837d38f1eb07bb8c8))
+- move reportCommitFailure() before process.exit in failed-commit branch
+  ([03f1dad](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/03f1dad03492ca0e8a3cbc61e504a5a4465a7b40))
+- narrow CJS ESLint override to prevent no-redeclare CI failures
+  ([#452](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/452))
+  ([027c4f1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/027c4f1c372eb79823916497fe85383b9c0f52dd))
+- pattern compliance full scan — 72 blocking → 0 (Wave 3)
+  ([bb0ca08](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bb0ca086438d7a5c89ff878c19c71c77ede1f09b))
+- Phase 0 Step 0.3 — convergence-loop verification of PR
+  [#427](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/427) (23
+  claims)
+  ([1852c7a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1852c7a3c1e9b65fbe6b25ce8462792154ff533d))
+- PLAN-v3.md Phase 4 approval revisions — DE complete, 2-plan meta-pipeline
+  ([8272540](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/82725407edcb4239044111a5a3a4e29919baaf75))
+- PR [#381](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/381)
+  R1 review — empty catch logging, filter safety, regex broadening
+  ([64aa78c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/64aa78cea76af6771aba0350949f526aeafa7b6c))
+- PR [#381](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/381)
+  R2 review — truthy filter propagation, dedup metrics, defensive error access
+  ([efd4b20](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/efd4b205a68bcee09a7cda750f06b1656e1a5501))
+- PR [#382](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/382)
+  R1 review — regex DoS, severity mapping, table parsing, 42 fixes
+  ([0876321](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/08763212882eeba383f95a2181c955c7917891a2))
+- PR [#382](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/382)
+  R2 review — regex DoS string parse, CC extraction, severity split, 14 fixes
+  ([f78cbca](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f78cbca82e7898e52acd5e2b00b7ac6ecc7f4565))
+- PR [#382](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/382)
+  R3 review — cross-report dedup, milestone reset, severity case, 5 fixes
+  ([0b8a807](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0b8a8075eba81d92bc589683d443648aa61c8870))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review — 60+ SonarCloud fixes across 18 files
+  ([81a8858](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/81a8858c4f649d5c121eb2445ae13088fa927f75))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review round 2 — Qodo compliance + code suggestions
+  ([cd3b578](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cd3b578512877e9aa2d0ce64b1bf443052bde63e))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review round 3 — SonarCloud + Qodo + CI doc fixes
+  ([31d0bf0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/31d0bf0df029b9e38f870700990af9593034f4cf))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review round 4 — bare catch, i++ pattern, path guards, learning log
+  ([a8651b1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a8651b1cd05998cb65fa5a2016bebc54887a78b3))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review round 5 — secret leakage, path traversal, atomic writes, 19 fixes
+  ([a550eaa](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a550eaab2aa605f1201f00d72ab2c783468fe99f))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review round 6 — symlink dir bypass, double-counting, i assignment, 10 fixes
+  ([a0da24e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a0da24e466b7d45e6afb763c9a2de81f772aa3a6))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review round 7 — 25 CC reductions, 5 security hotspots, compliance fixes
+  ([1d68f81](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1d68f81b632847a954de2b4c901e15f5bfac9c32))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  review round 8 — 22 security, atomicity, and robustness fixes
+  ([177727d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/177727d868ee49e3aa17b2fea345bb8b1c753f9f))
+- PR [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  R2 — 112 CI blocking violations, 3 SonarCloud, 8 Qodo fixes across 17 files
+  ([2d472c5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2d472c566853f0744337de16e045b2935e73fe03))
+- PR [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  R3 — 10 SonarCloud + 7 Qodo fixes across 6 files
+  ([0a59886](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0a59886aca90dfff62aed7cec8bfc16675677d52))
+- PR [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  R4 — CI security excludes, CC extract, EXDEV guard, 6 Qodo fixes across 9
+  files
+  ([54f427b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/54f427bd910c919242b5540febe0f4bf1a1da81b))
+- PR [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  review R1 — 20 SonarCloud/Qodo/CI fixes across 6 files
+  ([22c8166](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/22c81661a168124ef67d85a516bee35151f07583))
+- PR [#386](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/386)
+  R1 review fixes — SonarCloud regex, seed-commit-log hardening, CI Prettier
+  ([aec0dee](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/aec0deef4b0a9e1dffcc2229617b5b1f01c932b4))
+- PR [#386](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/386)
+  R2 — S5852 string parsing, CC reduction, concurrency-safe tmp
+  ([a7ac0ce](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a7ac0ce1ba759112e4cb2bc6ce7c6ba78153b39c))
+- PR [#386](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/386)
+  retro + CC regression enforcement + S5852 regex checks
+  ([badbcfb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/badbcfb929f1535df959b3a02cac63a460b8a61e))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  R1 review — pattern compliance, code quality, TDMS tracking
+  ([3fe27d7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3fe27d77c9121d2e80bb767418302debab66f981))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  R2 review — broken ref detection, pattern overlap, hash stability
+  ([31c4034](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/31c403446542f973b24db4c3a327d67a2bdcfc90))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  R3 review — heuristic accuracy, regex safety, false positive reduction
+  ([4dbb008](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4dbb008cdf116c930c46d1bcb780319b5c34571d))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  R4 review — CI blocker, brace depth, iterative DFS, null safety
+  ([e2caaf5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e2caaf5f1b42978f9757531f3de0fd8a0edc612a))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  R5 review fixes — SonarCloud, CI, Gemini, Qodo (14 items)
+  ([f34ff10](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f34ff10348409b1e23b503e0e6750317d02ded4b))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  R6 review fixes — CI blocking, security, portability (11 items)
+  ([5d821e4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5d821e4952c30ba340cbd3323821a569eeebfe94))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  R7 review fixes — typeof guard on lazy-loaded imports (1+2 items)
+  ([78feeca](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/78feecabd6ebefcafd0a0e8e8bf2f48ed900c196))
+- PR [#389](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/389)
+  R2 review — resolve 31 items from Qodo + Compliance (Review
+  [#368](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/368))
+  ([a450283](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a450283858eff7fc8bc306e1ebdae19a22bae79c))
+- PR [#389](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/389)
+  review — resolve 22 items from Qodo, Gemini (Review
+  [#367](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/367))
+  ([7b34c15](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7b34c151d9ce23fe145d6e60833d4e661bcd4280))
+- PR [#390](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/390)
+  R1 review — metrics consistency, pattern syntax, section numbering (7 items)
+  ([a66a512](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a66a51239deadbfbc7bbbd20ddd2c23b3f83e61b))
+- PR [#390](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/390)
+  R2 review — committer date, stdin fd, POSIX ERE guidance, retro metrics (7
+  items)
+  ([be60fd6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/be60fd6436bbc3f52c9c805cdabddb4a13ad9a6f))
+- PR [#390](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/390)
+  R3 review — git follow, replaceAll, cache key normalization (4 items)
+  ([1c3d095](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1c3d0957cf8c4ae75b3fb8460f0d89ff4ac1e7b8))
+- PR [#390](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/390)
+  R4 review — deterministic date fallback, fix rejected numbering (2 items)
+  ([aa699f4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/aa699f47d714c02848cd5b0475390948b81413c1))
+- PR [#430](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/430)
+  R1 — claude.md casing, SHA-pin grep logic, metrics dedup
+  ([0e4e301](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0e4e301661f6399c3f6b100eedbff56ba0370406))
+- PR [#430](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/430)
+  R2 — rename claude.md→CLAUDE.md, archive dedup, grep hardening
+  ([79f6f4d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/79f6f4d54620a96e1bc185f4715e29fc07130dca))
+- PR [#432](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/432)
+  R1 code review — escalation integrity, pipeline safety, DRY refactor
+  ([6db8b9a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6db8b9a4aea907e3192c7610354bffe305920863))
+- PR [#432](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/432)
+  R2 code review — safe writes, error sanitization, fail-fast appends
+  ([9f69eec](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9f69eec6ed5e9e1f673ca25d98f2fe6b003034f5))
+- PR [#432](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/432)
+  R3 code review — cache retry bug, alert truncation, TOCTOU removal
+  ([32d52dc](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/32d52dcf7468c356e01e3665827093baa1704a26))
+- PR [#432](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/432)
+  R4 code review — terminal injection, CodeQL env fix, schema alignment
+  ([e76d5d4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e76d5d4ddb220cd08837c479aac8264863a4d30b))
+- PR [#433](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/433)
+  R1 code review — PII redaction, T11 contradiction, Mermaid alignment
+  ([fa2669e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/fa2669eef784fe8123a02dbe1b2297a87f36a3cc))
+- PR [#434](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/434)
+  R1 code review — path resolution bug, sanitization, style
+  ([5fb6cc3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5fb6cc34940489bc219a294d120c7e17067ea4bd))
+- PR [#434](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/434)
+  R1 Qodo review — path bug, sanitization, pattern extraction
+  ([0e4cac0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0e4cac0e0241a29d42d90f918c1bb75117a25d0c))
+- PR [#434](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/434)
+  R2 code review — existsSync race, marker detection, path safety
+  ([6b5ca91](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6b5ca917e175ee1654681b32a979bd8e020e6bb6))
+- PR [#434](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/434)
+  R3 code review — Number.NaN, forward-findings dedup, sort fix
+  ([82ac978](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/82ac97864c787edf6fadc37efddf332f0cf986d4))
+- PR [#435](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/435)
+  R1 — Prettier CI, stderr routing, data quality fixes
+  ([5474514](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5474514e0fcab080a479b1b0acb9809f6076ac14))
+- PR [#435](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/435)
+  R2 — log injection, section-scoped parsing, forward-findings dedup
+  ([efe00ac](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/efe00ac0b98bba036bd8858ad8c7813accce3930))
+- PR [#436](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/436)
+  R1 — try/catch in REFERENCE.md, Prettier formatting
+  ([41e991e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/41e991e1788efe88a93cf0e966c57c58ef770424))
+- PR [#443](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/443)
+  R1 — invocation schema, 3 deferred to TDMS, learning
+  [#478](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/478)
+  ([673c0d6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/673c0d69376a4555c5ce26d34beb7e6881483030))
+- PR [#443](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/443)
+  R2 — relative link depth, session counter, learning
+  [#479](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/479)
+  ([4e97a73](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4e97a7380162283e3e6a78a66c248d65bfdf746d))
+- PR [#444](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/444)
+  R1 — 14 review fixes (injection, sanitization, false pass, formatting)
+  ([382aa67](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/382aa67f58572187e0f322ab7fb04199418df7b9))
+- PR [#444](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/444)
+  R2 — escalation gate lastCleared, PII removal, perf, hardening
+  ([71cc9e2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/71cc9e24b67ce796d840f25353152b87799f2f3b))
+- PR [#444](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/444)
+  R3 — CI ESLint fix, symlink parent guard, NaN-safe timestamps
+  ([07fb561](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/07fb561223d684bfc75fc7ac97ce48fe91bb2bf3))
+- PR [#447](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/447)
+  R1 review — 8 fixes (security, workflows, hooks)
+  ([e5fbe5d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e5fbe5d3dec0fdd10e59a735ddd927e496de0cc9))
+- PR [#447](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/447)
+  R2 — exit code 1 on hook-report usage error
+  ([d6d6fb5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d6d6fb5e544fcd484c0a9cbea9c3b507612c7b6a))
+- PR [#448](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/448)
+  R1 — 47 fixes across security, bugs, CC reduction, style
+  ([7f9c51e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7f9c51ee98c6ab9f5b43b25d44f3f8040bd1c788))
+- PR [#448](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/448)
+  R2 — 19 fixes (CI blockers, security, style, CC)
+  ([bbb830f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bbb830ffedb9a9b0ac4a4445345f4b97ebdeb8de))
+- PR [#448](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/448)
+  R3 — 10 fixes (path traversal, DOMPurify, CC, dedup)
+  ([c6b6de1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c6b6de19f74c2a1d6eec2a2706f9d7d7753bff89))
+- PR [#448](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/448)
+  R4 — 10 fixes (CI security scan, symlink, CC, sanitize)
+  ([1817d80](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1817d8048fcc2905f5fbd59aae5b9e6986a4eeb5))
+- PR [#448](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/448)
+  R5 — 11 fixes (CI ESLint, validation, cross-db, TOCTOU)
+  ([9cd6ea2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9cd6ea24841a94a7c97ac5505401d3fdf1ea0c25))
+- PR [#453](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/453)
+  R1 — 34 items (6 security, 4 CC, 10 major, 14 minor/info)
+  ([31694e0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/31694e08b37563c3542bdfe57c3c507965c9bd62))
+- PR [#453](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/453)
+  R2 — 11 items (CC, sanitize fallback, README, Qodo hardening)
+  ([0a74477](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0a74477fea535ec109965b150ccb49cdee926044))
+- PR [#453](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/453)
+  R3 — 22 items (security redaction, date validation, atomic write, robustness)
+  ([66ea9e5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/66ea9e57e8e194dcb58e71697a3f4956428d6c1e))
+- PR [#453](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/453)
+  R4 — 11 items (CC extraction, Prettier, backup hardening, defensive guards)
+  ([87ed172](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/87ed172b4b0292795597de28ac3a03d4bdadc6ab))
+- PR ecosystem audit — fix 8 checker detection issues + archive + sync
+  ([d5cfca2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d5cfca2deaee7b677787840ef6cf0eaa82ed945c))
+- PR ecosystem audit 65(D)→91(A) — 12 checker bug fixes + SKILL.md v1.1
+  ([73f28fb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/73f28fba77ba9d986583a06b3bc6d61a4e4fad51))
+- PR ecosystem audit fixes, retro action items, and SonarCloud sync step
+  ([4715d65](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4715d655ca224fc53754119ac692af85d1a0544d))
+- PR ecosystem audit score 87→94 — fix 7 checker keyword gaps and benchmark
+  calibrations
+  ([9de82f9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9de82f949712eb4894ddbbc452602c88a43b3d23))
+- PR retro actions + code-reviewer hardening
+  ([5f2984b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5f2984bae2211e72047b7153ce6bcc308d2d5e30))
+- PR review
+  [#375](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/375) —
+  resolve 55 items from SonarCloud, Qodo, CI, Gemini
+  ([ba2f7fa](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ba2f7fa4e7a3fa7054267d72b302e954f2627683))
+- PR review
+  [#392](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/392) —
+  resolve 11 items from SonarCloud, Qodo, Gemini
+  ([8e7902f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8e7902f5677fb1eb2a2db08235f1bbcbc524994d))
+- PR review
+  [#392](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/392) R2
+  — resolve 6 items from SonarCloud, Qodo
+  ([1e7018d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1e7018d273037220e9f0919b25812a8e680c66cb))
+- PR review
+  [#392](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/392) R3
+  — resolve 3 cross-platform and ERE issues
+  ([54f238c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/54f238c979c59451ab5d388c5a9dd82101adae6f))
+- PR review
+  [#392](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/392) R4
+  — resolve 15 items from Qodo, SonarCloud
+  ([152fb8a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/152fb8a563913a480d668c1f951e08bc0fdfc18c))
+- PR review
+  [#393](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/393) R1
+  — 4 fixes from Qodo, Gemini, CI
+  ([8b173e9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8b173e98238b19abc3cd5042470710a8995f883c))
+- PR review
+  [#393](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/393) R2
+  — bounds check, cross-platform log rotation
+  ([634a169](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/634a1691887a86632cd0d4bb75d095c0ebb05efa))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R10
+  — 20 fixes (guard patterns, optional chaining, CI test excludes)
+  ([0cbdfcc](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0cbdfcc96788c7c3d6859ef9e034064bfbf1b6f9))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R11
+  — 14 fixes (CC reduction, ReDoS, per-access guards, modern APIs)
+  ([404cd9f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/404cd9f9142a81065d06e4ad7637452f5006d422))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R12
+  — 7 fixes (outer scope, CC, LogicalExpression, early-exit guards)
+  ([4178be3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4178be347093217e738c2b97ec113c40257738d0))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R2
+  — 8 fixes from SonarCloud + Qodo
+  ([d63dd4a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d63dd4aa38c3618c9233c92ec1dcecfa2ac1de22))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R3
+  — 8 fixes + shared AST utility extraction
+  ([e75536c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e75536cae3c2ae7cd00eebf2cb6c3dba090117f0))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R4
+  — 3 AST utility correctness fixes
+  ([5176cdf](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5176cdf780c62ce5129d8598ed4fb3ce803f6f57))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R5
+  — 5 ESLint rule correctness fixes
+  ([ef1bf7e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ef1bf7efc3836301e9c53567b52393732cd76242))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R6
+  — 11 ESLint rule fixes + SonarCloud CC reduction
+  ([e23481f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e23481f47621b30ed1991f1abce59b21b00cf9db))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R7
+  — 9 fixes (CC reduction, scope, optional chains)
+  ([ec432ce](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ec432ceba1e0cea0cc690a71505efef98ddf2b3a))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R8
+  — 13 fixes (AST wrappers, false positives, JSONL safety)
+  ([1d58855](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1d588554fb6e30ed657fee123a97e2c4714e4944))
+- PR review
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R9
+  — 13 fixes (CC reduction, SEC-004, computed innerHTML, RegExp calls)
+  ([f30440c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f30440cbf50a86fe587bedeb76be1f7438303fe4))
+- PR review
+  [#395](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/395) R1
+  — 10 fixes (secret redaction hardening, TDMS data quality)
+  ([e5eb4dd](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e5eb4dd454b8f2555eece3a358ac0ed167c3eea8))
+- PR review
+  [#395](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/395) R2
+  — 7 fixes (JSON key quoting, TDMS data quality)
+  ([40dcc8b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/40dcc8b03208d98351605ad960f74163088b9ca4))
+- PR review
+  [#396](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/396) R1
+  — 24 fixes (safe-fs security, path containment, regex broadening)
+  ([b5a0778](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b5a077861f431f2f762069e6c942f1b1be482ba9))
+- PR review
+  [#396](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/396) R2
+  — 6 fixes (same-path rename guard, test regex alignment)
+  ([fae64ee](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/fae64ee5c2b581fc2bd84e392bb48bbfc0e4cd35))
+- PR review round 5 — CC extraction, checker surfacing, CRLF propagation
+  ([b2fc068](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b2fc0680afa780b5f4f4ccf9d389f9f1d53cb514))
+- PR review round 6 — null metrics, safeRename, linter accuracy, edge guards
+  ([4e335b0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4e335b030892c37e2a4fbbe04fd4a72bb17d1179))
+- pre-commit grep exit code under husky sh -e
+  ([a960c38](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a960c3843ee44f09695d210af5bfcfce29523738))
+- pre-push rebase detection + hook report surfacing + gitignore GSD
+  ([e79707f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e79707f7430b04dde4c18f514b72d0921249dfcb))
+- propagate full-path dedup to run-hook-ecosystem-audit.js
+  ([71efb98](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/71efb9805b7e008e46414aceaf41da3a536bbe3b))
+- propagate walkDir absolute-safe hardening to content-quality +
+  coverage-completeness
+  ([1dafd18](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1dafd186aa5086dbae64ee941606bf52a72076a4))
+- refactor hook files for oxlint compliance (Wave 3)
+  ([544ab42](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/544ab42b117e11e594fbb3ad9216535e4fca1ec0))
+- register orphaned hooks, add I/O guards, add self-audit phase
+  ([782204d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/782204dc34e2bae049ddb55e088138dc0fbc4e88))
+- remove broken CLAUDE.md link from README
+  ([f3218a9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f3218a9a804d6f4ad2602282ddbbcb621641ee1c))
+- remove orphaned hook report persist + wire hook data into pr-retro
+  ([d762065](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d762065b453314c3ff11673a091732deea494a89))
+- remove Serena, fix hook stderr errors, uninstall broken plugins
+  ([b68df40](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b68df40657c71eb4c22d74b5ca9098998f6c62c2))
+- reorder consolidation writes so CODE_PATTERNS.md precedes state advance (RC-3)
+  ([de24a3a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/de24a3a8f19ff0fba730e340a27a169f7e40fa8f))
+- repair consolidation + archive pipeline and enhance audit coverage
+  ([d1cf06d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d1cf06d81943bdb0eecb00469f93d79e456c22da))
+- replace exec() while loop with matchAll in audit checker
+  ([c6294b9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c6294b99c5db271df8f34451654117a50c58b6f1))
+- resolve 11 PR review items from Qodo/SonarCloud (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R11)
+  ([ec20aed](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ec20aedda410f6f9e8c45e7b4930a4e893bef128))
+- resolve 11 PR review items from Qodo/SonarCloud (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R16)
+  ([6564ef5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6564ef5858f057716e224adc5f633001d6e7a1f8))
+- resolve 115 SonarCloud issues across 21 files (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R1)
+  ([435986e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/435986e8c909af6e7ea291e2d159f5832ae32041))
+- resolve 12 PR review items from SonarCloud/Qodo (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R14)
+  ([ef52646](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ef52646357078533a7d13bb2a9f518eed947fc3c))
+- resolve 13 PR review items from Qodo/SonarCloud (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R15)
+  ([0573760](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0573760605b80dbe402d7fbc8619181ed0975bce))
+- resolve 13 PR review items from Qodo/SonarCloud/CI (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R13)
+  ([b09a2f5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b09a2f56be6d1969b469f7c5d75b978443563d21))
+- resolve 14 PR review items from SonarCloud/Qodo/CI (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R6)
+  ([bf4858f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bf4858fc0a40c97ccd8e98e3afa20436a0bcf441))
+- resolve 18 PR review items from CI/Qodo/SonarCloud (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R8)
+  ([bffd742](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bffd742ea650d6c08bc517d6d518589acdba9645))
+- resolve 2 PR review items from SonarCloud/Qodo/CI (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R7)
+  ([c2ef776](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c2ef77665ee21e610860ef3eda0a0357ef655f92))
+- resolve 21 PR review items from SonarCloud/Qodo (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R10)
+  ([d7b42f7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d7b42f755c2df8f208412abdb77ab6d515d2be50))
+- resolve 25 PR review items from SonarCloud/Qodo/CI (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R5)
+  ([f6dc8a6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f6dc8a6f72e12478efef595e8f1d8b0b08263c02))
+- resolve 3 PR review items from SonarCloud/Qodo/CI (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R17)
+  ([a6d1e17](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a6d1e17280e49e786d6c64ef0cda12273760a859))
+- resolve 30+ PR review items from Qodo/Gemini/CI (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R4)
+  ([ab6cf8c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ab6cf8c7bf70b0b4f9ee40ff4fdaaf1672133a20))
+- resolve 33 SonarCloud issues across 6 review pipeline files (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R3
+  batch 1)
+  ([1fb0c4b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1fb0c4be1990a329b83818e86a5feb2884433f10))
+- resolve 4 PR review items from SonarCloud/Qodo (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407)
+  R12)
+  ([d50d774](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d50d7742605d2c2b1fc3f91f59fc2f88b1169b32))
+- resolve 43 PR review items from Qodo/Gemini/CI (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R2)
+  ([747ffc8](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/747ffc8a49fdad073ba642af8363fa39a3b0c8c4))
+- resolve all blocking pre-commit/pre-push/CI failures (Wave 1)
+  ([f2728b3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f2728b3842c936f3799e7c753bcc5827cd5666d7))
+- resolve CI pattern compliance blockers and add verified-pattern entries (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R9)
+  ([ab703b9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ab703b9acdfe58b1a5c8dfcdb2e32390641dbaa1))
+- resolve code-reviewer findings in check-propagation.js
+  ([53e836d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/53e836d8e96552299617a1373031c0defd76f1c8))
+- resolve code-reviewer findings in check-propagation.js
+  ([9f0aee3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9f0aee38bc0f2a5077975db3ffb6cca2f7fc5a40))
+- resolve SonarCloud security hotspot + code smells from PR review round 2
+  ([cea6097](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cea6097e133f39fefd4e9d34a0a49c49bd758267))
+- review archive health — false-positive duplicates, metadata drift, archival
+  ([c7305e5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c7305e5839d1ac94730265fd539072a5786fcca6))
+- review pipeline split-brain — recover 222 orphaned records across 73 PRs
+  ([d761467](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d76146708dda5b3fd1fbc20791f6d2c7b2df45b5))
+- review system integrity + orphan cleanup + ESM (Wave 3)
+  ([e7f6bc7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e7f6bc741fd9078ba62c18c3a2f8ffc48a0aea44))
+- rewrite render-reviews-to-md.ts for JSONL-canonical architecture (RC-7)
+  ([1826f75](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1826f75e70c6da02d1c1170969dca02fb1b376ba))
+- session
+  [#183](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/183) —
+  pre-commit hardening, pattern automation, and PR
+  [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  retrospective
+  ([fc1a6ce](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/fc1a6ceb1b1b241489e4bc9973b11687576b9fba))
+- session
+  [#183](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/183) —
+  pre-commit trap, seed-commit-log, review archive cleanup
+  ([6a9e4b4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6a9e4b444910b8fbabc55b86a2ff569a7ee5a6a7))
+- severity-based pattern compliance — 9 fixes, 69 patterns, pre-commit restored
+  ([ac42c57](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ac42c572f3c6a3bd749cff8943cfe342588dafd7))
+- skill-audit S1-S27 — convergence-loop v1.1, skill-audit/creator updates
+  ([7b4f996](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7b4f996fd573d565c03754bbd881fc710c50b14c))
+- skill-audit tracking — backfill state files, fix invocation context
+  ([8b9e285](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8b9e2859b02ead4587dde0a9e0f2e15950c00702))
+- skip environment-dependent compact-restore hook tests
+  ([6590614](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/65906140c5e2a1618fa814fa2c8121de53d7542c))
+- Step 6 — reopen 85 possibly-incorrect status items to VERIFIED
+  ([77d33fd](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/77d33fd4238daecb91b72a6f2da8c33b2c1fbe31))
+- test:audits 5 failures — duplicate IDs + FP regressions (Wave 6)
+  ([7fe955d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7fe955dd5dc0e18122cf1b171dd8179814e24dd8))
+- untrack ephemeral hook state files to stop noisy commits
+  ([4b6e46e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4b6e46ebb3edacd7c800e45443427358595f2dbe))
+- untrack health-score-log and hook-warnings-log from git
+  ([d037f9d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d037f9d3ad7880da42dad9b09199353b3cf5f203))
+- update heading regex to match new renderer format (no # sigil)
+  ([015adfb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/015adfbbd3c51a7de3685e55372c4e833886e92e))
+- use git log dates in docs:index + cross-platform stdin in CC check
+  ([069c0f3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/069c0f339437c1c98c525cda8a9a64ce9eff76bf))
+- use POSIX ERE in check-propagation.js git grep patterns
+  ([f68c58d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f68c58d26d294b3494aa6953b6f4731e842c803a))
+- use safeWriteFile in learning analyzer, fix pattern checker guards
+  ([2cbb6f3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2cbb6f3f893ed73596f07ea4056cb3c57a8b8d18))
+- W2 — eliminate 10 silent failure paths (D17, D2, D3)
+  ([49e2f07](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/49e2f07100a4f2cb7a89c4f08a336095b4b1e2ee))
+- W5 — data store fixes: commit-failures, rotation, single-owner (D5, D13)
+  ([02ef24e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/02ef24eab8d486c1c8471d6f9f7ebee94a6ce78d))
+- Wave 6 regressions + quick fixes
+  ([6751864](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/675186438f7d250ae877c828e3299bed42843ca4))
+- Zero-Warning Infrastructure — 6 waves, 630 DEBT resolved, all checks pass
+  ([eb11360](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/eb11360e5959e4ea2db7409c9406e75305419b0b))
+
+### Performance
+
+- W6 — parallelize compliance + doc checks in pre-commit (D18)
+  ([e15a332](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e15a3320561b1d25637acfeae8deb48887c7ba8c))
+
+### Refactoring
+
+- Finding [#4](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/4)
+  — delete dead scripts, extract shared TDMS utils
+  ([113c098](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/113c098723b19576f4ed84fbce81fdb4b2244acc))
+- migrate 11 regex patterns to AST-based ESLint rules (eslint-plugin-sonash
+  v2.0)
+  ([ed2a9a3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ed2a9a36f6a9e49cc835be1d0ef7a90ca81614d3))
+- migrate 14 more regex patterns to AST-based ESLint rules (eslint-plugin-sonash
+  v3.0)
+  ([916156d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/916156dd15cf0ce738c00600ad6740197acc83d2))
+- over-engineering audit — ESLint AST migration, dead code cleanup, retro action
+  items
+  ([2fbbfba](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2fbbfba883648027257e261787a3b9684ecfc00c))
+- pr-retro skill-audit — 33 decisions, v4.7 (83→95/110)
+  ([db89b0c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/db89b0c94efdbecc836ca6fafd2b80e6f7e64ea2))
+- skill-audit alerts v3 — 56 decisions, REFERENCE.md extraction, CL fixes
+  ([ec40b09](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ec40b09a55138663533c1f6441254b9a99908144))
+- **skills:** ecosystem audit expansion + skill bloat reduction
+  ([302b3ce](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/302b3ce1713d66594e7a64c2499a30a8e97cc555))
+- **skills:** ecosystem overhaul — trim 20 skills under 500 lines, fix audit
+  checker
+  ([d036e9a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d036e9aba02dc054d9f3ff2c6d9066863ea39fd3))
+- W7 — JSONL canonical source, hook-warnings.json as regenerated view (D16, D30)
+  ([6fd49df](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6fd49df3b2196fb8afb1bef6e4afa35bcec652fe))
+- wire review-lifecycle orchestrator into session-start.js (RC-5)
+  ([84df643](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/84df6438bdba78545ee2ca3ada53abad46c34c0b))
+
+### Documentation
+
+- **01-01:** complete Zod Schema Foundation plan
+  ([4ae3b7f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4ae3b7fecd7b5e0b2564124cb3131f20b2743219))
+- **01-02:** complete JSONL Utilities and Tests plan
+  ([56c35e5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/56c35e50b8724171c2c2a0619e4c75ac412a1bd3))
+- **01-03:** complete Test Fixtures and Contract Tests plan
+  ([9848840](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/984884010ed893654ae7473239e59215a155f66b))
+- **01:** create phase plan for Storage Foundation
+  ([05f340f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/05f340f2b81b81d26ab227e797deb7ed80e5eb43))
+- **02-01:** complete archive parser plan
+  ([9f91bd7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9f91bd72e1353bba3ca69ceda32e66e6ba74e389))
+- **02-02:** complete backfill orchestrator plan
+  ([fb6c5c1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/fb6c5c1b3532d0e390191f87b9dd89b2caaf015d))
+- **02-03:** complete MASTER_DEBT.jsonl dedup plan
+  ([6415132](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6415132566604e1f842f252da63f7a6327b57c4f))
+- **02:** create phase plan for Backfill & Data Migration
+  ([22be725](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/22be7251e789a7e326a3f8c7fa8ca401fb006e53))
+- **03-02:** complete writer CLIs plan
+  ([7f74890](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7f7489065b6240ef81d06f564692b2bda2e8b65d))
+- **03-03:** complete promotion pipeline plan
+  ([9aa2103](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9aa2103fee1db61846c62298c049db9ecbf0fb42))
+- **03-04:** complete skill wiring & security templates plan
+  ([25a763d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/25a763d9f1a01d582e9fe468c19787296b72f7ba))
+- **03:** create phase plan for Core Pipeline
+  ([088db2b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/088db2bd81f4a30caa194c5a1fc0162b9608e5e7))
+- **1:** research phase domain
+  ([9313506](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/93135064b60072b70fd41d364f35a75bfa9b0c53))
+- **2:** research phase domain
+  ([be768de](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/be768deaaa4abfe09b6bce5d8d429682fa9fc76c))
+- add deep-plan implementation plan for automation & overwrite fixes
+  ([f34422c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f34422cc612be86e34458b4e5b9d0fd4bf46e7b8))
+- add retroactive learning log entries for Review
+  [#357](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/357) and
+  [#358](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/358)
+  ([9a909ae](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9a909ae5e3e5eeb99582d8d35ddd0676260eecb7))
+- add Review
+  [#369](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/369)
+  learning entry for PR
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R1
+  ([660da34](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/660da344ace9ad774b9d79fc1c666c13173d5249))
+- add Review
+  [#417](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/417)
+  learning entry and JSONL records (PR
+  [#407](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/407) R8)
+  ([eb17f4f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/eb17f4fa36aaf26da7bc5d0d492dc630a43483dd))
+- add SonarCloud sync step (0g) to tech debt resolution plan
+  ([7e5a684](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7e5a6842ee04b727ef9f924320549b4694a9bb39))
+- align 4 plans with SWS forward-compat, CI guardrails, ROADMAP Meta Pipeline
+  ([5af6f3e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5af6f3eb91a2cbf66489985486f8de656f93fd11))
+- apply PR
+  [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  retro action items — skills, templates, patterns, JSONL sync
+  ([9908e90](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/9908e902ca7690ade973e573b92c148d2b2f26e1))
+- Auto-sync README status from ROADMAP.md
+  ([ffa82c4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ffa82c4aad646b9d1df595d1f4fc0fd184795f6b))
+- Auto-sync README status from ROADMAP.md
+  ([f357d47](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f357d4709e6348f2316f1bbfc3420d17fd80c0d4))
+- Auto-sync README status from ROADMAP.md
+  ([31e90be](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/31e90bebfdabad2935567d651ba15b3acafc804d))
+- automation gap closure design spec
+  ([54399c9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/54399c972db172e574a5aa78629fe7e374c2bcdf))
+- automation gap closure implementation plan (9 tasks, 7 chunks)
+  ([d273344](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d273344b2bafd078b1bd104480e55e52339d77a4))
+- comprehensive PR ecosystem v2 changelog with before/after break…
+  ([#414](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/414))
+  ([0eba530](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0eba530faa5225f2a2aa3c3aadd867605a50133c))
+- create 7-phase roadmap for PR Review Ecosystem v2
+  ([731f408](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/731f408f5b908b4ee99ca018b2da4d98dbcbe91f))
+- Data Effectiveness Audit Deep Plan (35 Decisions), PR
+  [#427](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/427)/[#428](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/428)
+  Retro Actions, Session
+  [#217](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/217) End
+  ([#429](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/429))
+  ([d4905fa](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d4905fac41258faad02f60e34b8e5a640f28fd19))
+- define v1 requirements
+  ([441487a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/441487a677a88e769424172d405118d005eceef9))
+- ecosystem v2 deep-plan discovery — 60 decisions recorded
+  ([243000f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/243000f7897b15001ffac80d3fbdbd0d13d8d87c))
+- implement PR
+  [#379](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/379)
+  retro action items — algorithm design pre-check
+  ([bc607c6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bc607c634532fc5de052c69da9665da30682b82a))
+- implement PR
+  [#392](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/392)
+  retro "do now" action items — 6 skills/templates updates
+  ([139d2f7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/139d2f720a9d6fd006076b7d16c6a1543e8b46ae))
+- implement PR
+  [#393](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/393)/[#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394)
+  retro action items — templates, patterns, skills
+  ([b509d04](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b509d04c3552806ddf87926bc19738863ce3a6e9))
+- initialize project
+  ([c80b1ef](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c80b1ef830d61f9dc9473089a49c3b07cbc75993))
+- **phase-1:** complete Storage Foundation phase
+  ([2160cfa](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2160cfaa5207b29fab7dcad4aef4b36f3a18fbf5))
+- **phase-2:** complete Backfill & Data Migration phase
+  ([13bf6cc](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/13bf6cc55271f981ad4606326b858c3004382dfa))
+- **phase-3:** complete Core Pipeline phase
+  ([dd783e8](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/dd783e8caee348ffb1cf4f868d8bc3a8baf97655))
+- **phase-3:** research Core Pipeline phase domain
+  ([77e5c85](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/77e5c8584edb1bb3410bec0fd4663ce429983da3))
+- PR [#379](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/379)
+  retrospective + apply retro action items
+  ([954587c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/954587c4dc79b30d98b365d592a8938faa2062b9))
+- PR [#382](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/382)
+  retro action items — new patterns, templates, skill updates
+  ([1c97085](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1c97085f2fbef4906f298a7e142f77dc3dba5e45))
+- PR [#382](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/382)
+  retrospective — 3 rounds, 61 fixed, Qodo compliance exclusion
+  ([3ba60b6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3ba60b693d43af7b7a9bd3a9437b13eab7cd55e0))
+- PR [#383](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/383)
+  retro action items — Template 36, Pattern 9, skill updates
+  ([0eec075](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0eec075cac04861f450e1b1fc20b15998e2e6a3c))
+- PR [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  retrospective — 4 rounds, 197 items, ~2.5 avoidable
+  ([4da92e5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4da92e5e0b463a7c2fab11e0ca405de4da345541))
+- PR [#386](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/386)
+  retrospective — 2 rounds, 25 items, cleanest cycle
+  ([d1d915f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d1d915f6eca2089818198404e0d65d58a0ca112d))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  final retrospective (R1-R7) — 144 items, 7 rounds
+  ([a10437c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a10437c3f66507bec7402448df02c527afb4e332))
+- PR [#388](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/388)
+  retrospective + retro action items
+  ([45667d8](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/45667d87e8fca529cee50a7583fdc9c36a751947))
+- PR
+  [#391](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/391) +
+  PR [#390](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/390)
+  dual retrospective
+  ([894ad1b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/894ad1b2a4d0d076be3a80800fca752e2ea656af))
+- PR [#392](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/392)
+  full retrospective — 4 rounds, 54 items, 2 systemic patterns resolved
+  ([70b74d4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/70b74d403702f295482429535b8d8df05587fb51))
+- PR [#395](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/395)
+  and [#396](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/396)
+  retrospectives + pr-retro baseline update
+  ([bc3064a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/bc3064a5426e93c027052911d28a932dda5c8a98))
+- PR [#448](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/448)
+  R1 learning entry
+  [#486](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/486),
+  JSONL record, state file
+  ([6c06abe](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6c06abe9e208035c34499787c9662187a3c8b58d))
+- PR review ecosystem comprehensive diagnosis
+  ([446daca](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/446daca97c78517fe461bc8aaf18f4f9b7584835))
+- review lifecycle overhaul planning artifacts + session context
+  ([4079c23](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4079c23e3ecbd6c237deb5742f0be828dd4a3252))
+- save skill-ecosystem-audit and bloat detection brainstorm
+  ([b91b08c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b91b08c847ef8bcaafa2da9fa2b90872a5ba874a))
+- session
+  [#174](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/174) end
+  — tool_use ID bug investigation + cherry-pick
+  ([b6e9ea2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b6e9ea29e9f2cb069071825fba08341847770d53))
+- session
+  [#182](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/182) end
+  — PR
+  [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384) R4
+  review + TDMS metrics
+  ([2dcd2b7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2dcd2b7065ba1be94603edc437a4fcfac681b63d))
+- session
+  [#183](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/183) end
+  — PR
+  [#384](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/384)
+  retro, PR
+  [#386](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/386)
+  R1/R2, date fix
+  ([619d4e0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/619d4e0a79c75dee4dfa88ab35d7531cd8542419))
+- session
+  [#183](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/183)
+  start — increment counter, update timestamp
+  ([18a7da3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/18a7da3e8b47699ba852664d950ea9aa7c101fd7))
+- session
+  [#184](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/184)
+  documentation housekeeping — full sweep across 302 docs
+  ([966c3b0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/966c3b0b607d1640d07deb4fa4185fd648b01997))
+- session
+  [#184](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/184)
+  documentation housekeeping — full sweep across 302 docs
+  ([766ca3b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/766ca3b08d2fc8cd66b4347f3700623e3f5c8aea))
+- session
+  [#185](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/185) end
+  — hook audit 63→99, PR audit 87→94, 5 quality improvements
+  ([cf0f32c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cf0f32c03dc682a90155b32ddf63336c5790110f))
+- session
+  [#191](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/191) end
+  — retro action items complete, PR
+  [#395](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/395)
+  created
+  ([8cc57e4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8cc57e461612ae502b7d53a4a6e4c819f6b1085f))
+- session
+  [#192](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/192) end
+  — ESLint + compliance plan complete, TDMS metrics update
+  ([526f992](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/526f99261742e00071bd0365fe3b7d818bf7d6a4))
+- session
+  [#197](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/197) end
+  — ecosystem v2 phases 1-3 + skill quality framework
+  ([7517d99](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7517d9911b548098a44b18f4b68e60bb596e9bb6))
+- session
+  [#213](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/213) end
+  — PR
+  [#424](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/424)
+  merged, branch cleanup, metrics refresh
+  ([#425](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/425))
+  ([98fd18a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/98fd18ab13943d9987aa5e4255044e5e28a13770))
+- session
+  [#220](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/220) end
+  — review lifecycle overhaul, metrics capture
+  ([3bfd420](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3bfd4204a4a8f44d9ce5220f7e0d5f5dcaad1f10))
+- session
+  [#221](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/221) end
+  — SWS Phase 0 complete, metrics capture
+  ([b177d0d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b177d0d6ead624be483b6da68b1dd2f908e3fa13))
+- session
+  [#227](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/227) end
+  — pipeline fix, bulk retro, GitHub Waves 3-4, memory audit
+  ([4b0480f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4b0480f4b3f18365bec61aea795a08ae81668ced))
+- session end - mark complete
+  ([cac121f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cac121f5d22459ff2a7222c5114f474ede99e178))
+- session end - mark complete
+  ([a52b47d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a52b47da0b05a63e5d1610e240ddee8d0b456246))
+- session-end — context preservation, metrics, TDMS consolidation
+  ([331cdad](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/331cdadf9de2c5898bd737014a54970d318ef348))
+- SWS PLAN-v3.md — 5-pass convergence loop rebuild
+  ([f90f091](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f90f09116dc5a8f3dc39278fc865d2bdf48847b5))
+- SWS PLAN-v3.md — 5-pass convergence loop rebuild (2,467 lines)
+  ([7281913](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/72819135bd2d2fb653fdf77a93a4bb71d7fe9229))
+- Two Deep Plans — Tooling Audit (30 decisions) + Code Quality Overhaul (26
+  decisions)
+  ([#428](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/428))
+  ([75d431d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/75d431d71389cada60e906ffc5cf05d86d1dead2))
+- update LEARNING_METRICS.md with latest analysis results
+  ([1448a28](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1448a281a117ca56ee163203bdd55045f6bc6804))
+- update over-engineering findings — ESLint migration now 25 rules (Phase 2
+  complete)
+  ([3687835](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3687835561f84997a46a3dc330455cf16104f206))
+- update session
+  [#183](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/183)
+  summary with retro enforcement work
+  ([799c303](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/799c3031d6ffedc0648c9729d77b040b0d834441))
+- update SESSION_CONTEXT.md for Session
+  [#226](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/226) —
+  GitHub optimization Waves 0-2
+  ([c88eed0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c88eed0cd2f3768ba45974519bf17ec9d2b19ff3))
+
+### Testing
+
+- **01-02:** add 42 tests for schemas, write-jsonl, read-jsonl, and completeness
+  ([501a039](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/501a039564b5bcc08ed2d558ef2b3d8cc73123a5))
+- **01-03:** create 11 test fixtures for all completeness tiers
+  ([aa8d92d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/aa8d92d11ae7da575751cc41aab7f7d357d861bb))
+- **01-03:** create 7 contract tests for pipeline data handoff points
+  ([b5710be](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b5710becb513e3bcde3b29d1e3564c1c83594001))
+- **02-01:** add parse-review tests covering all parser functions
+  ([e71b0b1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e71b0b109d52317affd20cf0c5c51de6aa9dcac0))
+- **02-02:** add backfill integration tests covering all BKFL concerns
+  ([1d4ed01](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1d4ed01809f58ac53d79ebc4f9e84ea7b2dd0856))
+
+### Miscellaneous
+
+- add code-reviewer-session.json to gitignore
+  ([966c74c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/966c74cf8834bb1a2030ce4bf24d6f64f5f9580a))
+- add compiled dist files, pattern consolidation, and session state
+  ([a59c538](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a59c5386337c4687536412d4bb07c6260d6bc918))
+- add project config
+  ([2f84bc4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2f84bc4985648da8e6d97f509f9fd5b43fc36f0c))
+- auto-generated learning metrics refresh and consolidation log
+  ([56e5091](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/56e50913a9bf3786be4717ad07b52cfcf6bf10b2))
+- canonical memory finalized + retro records + metrics dedup + state sync
+  ([cddd81b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cddd81b0061de939e34d56419c39700d7889a7e9))
+- **ci:** bump actions/checkout from 4 to 6
+  ([#410](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/410))
+  ([945f4c1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/945f4c1eeb2301143a5f621a08f9122ffec4e446))
+- **ci:** bump actions/github-script from 7 to 8
+  ([#409](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/409))
+  ([5d9bb4c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5d9bb4ca6d32d31704c0f02e57ca0a67b0b6bfe8))
+- **ci:** bump actions/setup-node from 4 to 6
+  ([cee2cc6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cee2cc6473e55bfcf4a5bc3a3ed039c085b15dbd))
+- **ci:** bump actions/setup-node from 4 to 6
+  ([47712d7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/47712d76b3097ccbb22cd03b85734804c7e58169))
+- **ci:** bump actions/setup-python from 5.6.0 to 6.2.0
+  ([#451](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/451))
+  ([7d7e1c0](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/7d7e1c027976af1acff4448af06725df4fc29ea4))
+- **ci:** bump actions/upload-artifact from 4 to 7
+  ([6a14ae6](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6a14ae66491535dc61b685581146e61bf923e781))
+- **ci:** bump actions/upload-artifact from 4 to 7
+  ([4896f5f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4896f5f4b5e444b117f44853f3115526158e99f6))
+- **ci:** bump github/codeql-action from 3 to 4
+  ([b5a6c4f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b5a6c4f2377e61a6e0add4746cb684edbab951aa))
+- **ci:** bump github/codeql-action from 3 to 4
+  ([8895b83](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8895b831aed4022708ccd04269deb952da0bd326))
+- **ci:** bump returntocorp/semgrep-action
+  ([#402](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/402))
+  ([d8cbef3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d8cbef3b0e45bdcdfc68f09da041bdba8be68b53))
+- **ci:** bump SonarSource/sonarcloud-github-action from 3.1.0 to 5.0.0
+  ([b260dba](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b260dbaab5a73ffbc60e17ed305b23bcbba0a89f))
+- **ci:** bump SonarSource/sonarcloud-github-action from 3.1.0 to 5.0.0
+  ([37f57d1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/37f57d1c1c688d71d23e89e15fa1f1ffcfda7045))
+- **ci:** bump tj-actions/changed-files
+  ([#450](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/450))
+  ([68e0d16](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/68e0d164fb39d495e09bfb1db9cb26c49db7a5cd))
+- **ci:** bump tj-actions/changed-files from 46 to 47
+  ([#408](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/408))
+  ([27bfc2c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/27bfc2ce508c77119b5dba467450b84bb7a34a7b))
+- commit hook state files
+  ([4035996](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4035996690d73482fbccebd3513e9b10c6062170))
+- cosmetic cleanup + ROADMAP updates (Wave 4-5)
+  ([f52c36c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f52c36c39134878f2caaf0db0fce98b4f5620f49))
+- **debt:** add 7 new items from codebase-wide regex audit
+  ([43f62a3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/43f62a31d32167728512f2301fe489d11f075350))
+- **deps:** bump @eslint/js from 9.39.2 to 10.0.1 in /functions
+  ([0c6203b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0c6203b5f054ebc2e3017bf9c66c37b6ad8d8efd))
+- **deps:** bump @eslint/js from 9.39.2 to 10.0.1 in /functions
+  ([e045b38](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e045b38d0f31ee658f953fe470ff851c2fd268f6))
+- **deps:** bump @modelcontextprotocol/sdk in /scripts/mcp
+  ([#439](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/439))
+  ([edec223](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/edec22361bc3accacc10cab02b627f57bbac7b41))
+- **deps:** bump ajv from 8.17.1 to 8.18.0 in /scripts/mcp
+  ([#442](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/442))
+  ([2bf2cbe](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2bf2cbebfefc356188d56432eb5ea4d61af2120d))
+- **deps:** bump fast-xml-parser from 5.4.2 to 5.5.6 in /functions
+  ([#446](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/446))
+  ([5295128](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/52951283c50772ca40c0087ab95878ecabeca5c2))
+- **deps:** bump google-auth-library from 9.15.1 to 10.6.1 in /functions
+  ([6e10aa5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6e10aa5ca375c019d0afe693ba49dec9e9563999))
+- **deps:** bump google-auth-library in /functions
+  ([88ad36a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/88ad36a54d534dfb0952c2a0e9618dbd1b508bd7))
+- **deps:** bump hono from 4.11.3 to 4.12.8 in /scripts/mcp
+  ([#441](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/441))
+  ([25d56a2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/25d56a23c89e34dff6947a7b22155cf898538d83))
+- **deps:** bump qs from 6.14.1 to 6.15.0 in /scripts/mcp
+  ([#438](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/438))
+  ([6e23f7f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6e23f7f1070335db784f97b95133772e2264e014))
+- **deps:** bump the minor-and-patch group in /functions with 3 updates
+  ([#437](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/437))
+  ([398ee44](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/398ee4413a4ebefda90f285fff82fd246cdc429b))
+- **deps:** bump the minor-and-patch group in /functions with 4 updates
+  ([#449](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/449))
+  ([1993ed9](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1993ed9c7ae93a293ec4958a6a18271b899ff4a7))
+- **deps:** bump the minor-and-patch group in /functions with 5 updates
+  ([#404](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/404))
+  ([287c28b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/287c28bfcf89da094f7438394a2b4c7b1d7323bd))
+- disable security plugin false positives for internal tooling scripts
+  ([3c4b6d7](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3c4b6d762a89e316790d00e2e6b899445fc5ea12))
+- expand ESLint plan to include 393 CI pattern compliance fixes
+  ([1341232](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1341232488d69e6893392e509d2c18008ae9cc5d))
+- expand fix plan + update session context
+  ([f17b227](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/f17b2277846127668fdb623ae433e2b6a75238ac))
+- Finding [#6](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/6)
+  — delete 6 senior-\* stub skills (5,595 lines of no-ops)
+  ([80ce3f3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/80ce3f37d40994d8361636c21e417e75bcb353eb))
+- Finding [#8](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/8)
+  — delete 5 dead app code files + test (650 lines)
+  ([1273f2e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1273f2e35b728cfcae210985eab725209fea964d))
+- Findings
+  [#9](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/9)-[#15](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/15)
+  walkthrough — delete markitdown skill, add DEBT-7593 SQLite research
+  ([20cc25c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/20cc25c7a56126517b14b8373103816df4ff2857))
+- gitignore pr-ecosystem-audit state file
+  ([6fce812](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6fce812ed2300fe22a529baf5d647ca2f451f048))
+- housecleaning + statusline/autoresearch research (Session
+  [#229](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/229))
+  ([d10f3a3](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d10f3a3c6a43a5e3ecc5a610bd1581758fe84605))
+- increment session counter to
+  [#191](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/191)
+  ([d130a3e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/d130a3eb7b5eb4ce3c67ed96fe7a22dc52251444))
+- increment session counter to
+  [#193](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/193)
+  ([23f1566](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/23f15669e014c6728150008aa3de8bac6b8f4a4e))
+- persist PR
+  [#448](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/448) R2
+  state file
+  ([8246fc2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8246fc2ed572823ea3e86aa1d462e7a909dfbf98))
+- remove tracked ephemeral state files from index
+  ([893e69e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/893e69e1276f4639ec908f8071ba18f2e406a175))
+- resolve 38 DEBT items from zero-warning-infra effort
+  ([64b5142](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/64b5142ee094c119f7541fb342ebc86c6d612e24))
+- resolve 592 DEBT items + ROADMAP v3.28 (Wave 6 cleanup)
+  ([09e5575](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/09e5575148f65754daf056045f5f00864d44677f))
+- save deep-plan findings to guard against compaction
+  ([e00e686](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e00e68659ea072de3a72f5dc2382dd3203f77721))
+- save ESLint enhancement plan (11 items) + 2 DEBT deferrals from PR
+  [#394](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/394) R1
+  ([4a03052](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4a03052e522598961d0aa236960e0e0992c4983d))
+- save over-engineering research findings (15 ranked items)
+  ([0913fa5](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/0913fa5fded8a28b8b4a61e3cde7fe9518638f92))
+- save session state — awaiting roadmap approval
+  ([16e4329](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/16e43294f947839e8b8df7e17fe14799c7f572d7))
+- session
+  [#184](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/184) end
+  — update context, TDMS metrics, review sync
+  ([fed125b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/fed125bfc708e357998a1d990a319caccd176af2))
+- session
+  [#185](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/185) end
+  — TDMS consolidation and metrics update
+  ([2f00452](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2f00452e3cc70a420769534748c381709b9396a9))
+- session
+  [#185](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/185)
+  start — increment counter
+  ([fb013f4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/fb013f4844e1f79b2fe5ade4a26e8579cf425d85))
+- session
+  [#186](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/186) end
+  — update context, TDMS metrics
+  ([35fda64](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/35fda64aa20c9bf331435951d6cb0ba3d3dc2a2a))
+- session
+  [#186](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/186)
+  start — increment counter
+  ([a29774f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a29774f68ec03d03240c5e7d21ed3ce8418f0fd3))
+- session
+  [#187](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/187)
+  start — increment counter
+  ([54a3630](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/54a3630e65afbaad03caf312c7b41875a2284235))
+- session
+  [#188](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/188) end
+  — update context, metrics, reviews sync
+  ([3e5fa2f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3e5fa2f6c96d69c7796e9b72da130755a59560b6))
+- session
+  [#189](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/189) end
+  — hook consolidation, doc cleanup, TDMS metrics
+  ([aabea0d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/aabea0d9b93aaaf96effb5fe1818abc8c1788128))
+- session
+  [#190](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/190)
+  start — increment counter, update branch
+  ([ed11c9c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ed11c9cc346e77c602d7439003d44731e5cef0ad))
+- session
+  [#194](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/194) end
+  — pipeline repair + deep-plan automation + TDMS refresh
+  ([1da4b47](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/1da4b47465b808f2efb8f96aea1e6b04f5602703))
+- session
+  [#197](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/197) end
+  — TDMS metrics, session history archive
+  ([b52e6d2](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b52e6d2494f652576061faaf7870648bdb86edca))
+- session
+  [#223](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/223) end
+  — metrics, health D(68/+4), TDMS consolidation
+  ([2ad5b05](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/2ad5b05bff263f41fb83b4eeaab51266658c822b))
+- session
+  [#224](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/224) end
+  — hook system overhaul, health 65, TDMS consolidation
+  ([888e3cb](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/888e3cb130a84536d40dbd0bd351f3d34c28d8d3))
+- session housekeeping — rotated state files, deduped.jsonl sync
+  ([ed1abba](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/ed1abba527addb888ed2fd3d657d0b5989ab1838))
+- session-begin
+  [#174](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/174) —
+  counter increment
+  ([3dffad4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/3dffad4a08d1c11accffdf78b523afb41cd1e892))
+- session-end
+  [#173](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/173) —
+  retro actions, scattered debt extractor, TDMS consolidation
+  ([82f656e](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/82f656efb2e3525d5e66550508a6cf133370549f))
+- session-end
+  [#176](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/176) —
+  update TDMS metrics
+  ([413953a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/413953aee50992b50c30fc98da6929214ee78142))
+- session-end
+  [#230](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/230) —
+  zero-warning infrastructure complete
+  ([c302877](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/c302877be59455a3ff98e5d2f09b4a78476a9a87))
+- session-start hook auto-updates (consolidation + metrics refresh)
+  ([dd1e47a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/dd1e47ac97238eb4a3dd51be0ecc9f80cdee56a9))
+- track DEBT-3526 — repo code execution risk in pattern-lifecycle.js
+  ([de51b06](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/de51b0691071e564f9512f779da0bcaca1e9266e))
+- update CC baselines and fix remaining markdownlint error
+  ([6a30d4a](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/6a30d4ac4d0704f0cc4dbbf094a66b357526e65e))
+- update consolidation log and learning metrics from session-start
+  ([cba5607](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/cba5607a2ba302bb90f25344ade51c707a183653))
+- update consolidation state and learning metrics from session-start
+  ([24ae025](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/24ae02557e38cc94a2bac68d8f31027afd887e71))
+- update hook cache and rotate reviews log
+  ([5a2100f](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/5a2100f8844b51b6362e8c433d0662e1e2bffc84))
+- update hook runtime state files
+  ([02aca3c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/02aca3cc78501b0a82c38629e813944d05582559))
+- update hook runtime state files
+  ([e048214](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/e0482148a8b2360ffea9befc854fc044ac8a2083))
+- update hook runtime state files
+  ([52b40c1](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/52b40c1572945b7eec04edd4fd84ea862d18f024))
+- update hook state files
+  ([b671c10](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b671c1020a2b23133de880712d8e2583f970943e))
+- update hook state files (session runtime artifacts)
+  ([03d3210](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/03d3210a31b94d2b6ece0149d1e01d980ede9189))
+- update hook state files from session activity
+  ([69ce48d](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/69ce48d5e3b5a94ce5d425476fde6912805b171d))
+- update hook state files from session activity
+  ([b18500c](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/b18500c0d08e62aeb5a65d8e473f270ffa0f2456))
+- update hook warnings log
+  ([12021de](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/12021de403f88bac703eb2427b55bfa9a6d8563c))
+- update package-lock.json from npm audit fix attempt
+  ([8f40ad4](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/8f40ad40a2355efa0c1f87ff1d599edb9c91b2ff))
+- update session agents state
+  ([4641aee](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4641aee2af82e6e835304cb7ceedc0a859c28c42))
+- update session context for session
+  [#196](https://github.com/jasonmichaelbell78-creator/sonash-v0/issues/196)
+  ([549719b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/549719b983a2982b202aced7de8d2b461292accc))
+- update TDMS metrics for session end
+  ([4772154](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/4772154a7cb895745fdb5c2e3f5d55d916170252))
+
+### CI/CD
+
+- add CodeQL and dependency-review workflows
+  ([a0c0c3b](https://github.com/jasonmichaelbell78-creator/sonash-v0/commit/a0c0c3b5df1d0a6e401724121dbd0132434209d2))
