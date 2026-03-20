@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { spawnSync } from "node:child_process";
+import * as os from "node:os";
 
 // Get project root (works both in source and compiled contexts)
 const PROJECT_ROOT = fs.existsSync(path.resolve(__dirname, "../../package.json"))
@@ -16,7 +17,7 @@ const SCRIPT_PATH = path.resolve(PROJECT_ROOT, "scripts/check-docs-light.js");
  * Case mismatch detection only works on case-insensitive filesystems.
  */
 function isCaseSensitiveFS(): boolean {
-  const testDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".temp-case-detect-"));
+  const testDir = fs.mkdtempSync(path.join(os.tmpdir(), "sonash-case-detect-"));
   try {
     const upper = path.join(testDir, "TEST.txt");
     fs.writeFileSync(upper, "test");

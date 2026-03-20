@@ -1,6 +1,6 @@
 {
   "config": {
-    "excludeDirs": ["node_modules", ".git", ".next", "coverage", "dist", ".turbo"],
+    "excludeDirs": ["node_modules", ".git", ".next", "coverage", "dist", ".turbo", ".worktrees"],
     "excludeFiles": ["DOCUMENTATION_INDEX.md"],
     "archiveDirs": ["docs/archive"],
     "outputFile": "DOCUMENTATION_INDEX.md",

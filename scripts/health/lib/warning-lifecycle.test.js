@@ -201,8 +201,21 @@ describe("warning-lifecycle", () => {
 
     const stats = getWarningStats({ warningsPath });
 
-    assert.equal(stats.total, 4);
-    assert.equal(stats.byLifecycle.new, 2);
+    // Read raw file for diagnostic on CI failures
+    const raw = readFileSync(warningsPath, "utf8").trim().split("\n");
+    const records = raw.map((l) => JSON.parse(l));
+    const lifecycles = records.map((r) => r.lifecycle);
+
+    assert.equal(
+      stats.total,
+      4,
+      `Expected 4 total, got ${stats.total}. Lifecycles: ${JSON.stringify(lifecycles)}`
+    );
+    assert.equal(
+      stats.byLifecycle.new,
+      2,
+      `Expected 2 new, got ${stats.byLifecycle.new}. Lifecycles: ${JSON.stringify(lifecycles)}`
+    );
     assert.equal(stats.byLifecycle.acknowledged, 1);
     assert.equal(stats.byLifecycle.resolved, 1);
     assert.equal(stats.byLifecycle.stale, 0);

@@ -96,7 +96,8 @@ jobs:
 
       - name: Build review scripts
         # Tests import from scripts/reviews/dist/ which is gitignored
-        run: cd scripts/reviews && npx tsc
+        working-directory: scripts/reviews
+        run: npx tsc -p ./tsconfig.json
 
       - name: Run tests with coverage
         run: npm run test:coverage
@@ -130,12 +131,12 @@ jobs:
         run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
 
       - name: Upload coverage to Codecov
-        if: success()
+        if: ${{ success() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
         uses: codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad # v5.4.2
         with:
           directory: coverage/
           fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN || '' }}
 
       - name: Upload coverage report
         if: success()
