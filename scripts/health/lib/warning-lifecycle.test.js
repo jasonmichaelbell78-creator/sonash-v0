@@ -202,8 +202,17 @@ describe("warning-lifecycle", () => {
     const stats = getWarningStats({ warningsPath });
 
     // Read raw file for diagnostic on CI failures
-    const raw = readFileSync(warningsPath, "utf8").trim().split("\n");
-    const records = raw.map((l) => JSON.parse(l));
+    const rawLines = readFileSync(warningsPath, "utf8")
+      .split("\n")
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const records = rawLines.map((l, idx) => {
+      try {
+        return JSON.parse(l);
+      } catch {
+        assert.fail(`Failed to parse JSONL at line ${idx + 1}: ${l}`);
+      }
+    });
     const lifecycles = records.map((r) => r.lifecycle);
 
     assert.equal(

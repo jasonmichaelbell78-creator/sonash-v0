@@ -17,7 +17,7 @@ const SCRIPT_PATH = path.resolve(PROJECT_ROOT, "scripts/check-docs-light.js");
  * Case mismatch detection only works on case-insensitive filesystems.
  */
 function isCaseSensitiveFS(): boolean {
-  const testDir = fs.mkdtempSync(path.join(os.tmpdir(), "sonash-case-detect-"));
+  const testDir = fs.mkdtempSync(path.join(PROJECT_ROOT, ".tmp-case-detect-"));
   try {
     const upper = path.join(testDir, "TEST.txt");
     fs.writeFileSync(upper, "test");
@@ -25,7 +25,11 @@ function isCaseSensitiveFS(): boolean {
     // On case-insensitive FS, this returns true (same file); on case-sensitive, false
     return !fs.existsSync(lower);
   } finally {
-    fs.rmSync(testDir, { recursive: true, force: true });
+    try {
+      fs.rmSync(testDir, { recursive: true, force: true });
+    } catch {
+      /* cleanup best-effort */
+    }
   }
 }
 const caseSensitive = isCaseSensitiveFS();

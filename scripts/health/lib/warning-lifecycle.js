@@ -101,11 +101,12 @@ function writeAll(filePath, records) {
  * @param {string} [opts.warningsPath] - Override default warnings.jsonl path
  * @returns {object} The created WarningRecord
  */
+let _warnIdCounter = 0;
 export function createWarning({ category, message, severity, source_script, related_ids }, opts) {
   const filePath = resolveWarningsPath(opts);
 
   const record = {
-    id: `warn-${Date.now()}`,
+    id: `warn-${Date.now()}-${_warnIdCounter++}`,
     date: today(),
     schema_version: 1,
     completeness: "full",
