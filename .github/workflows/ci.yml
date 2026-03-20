@@ -4,23 +4,27 @@ on:
   push:
     branches: [main]
     paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - "LICENSE"
+      - "README.md"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
       - "SECURITY.md"
+      - "LICENSE"
+      - "release-notes.md"
+      - "docs/archive/**"
+      - "docs/SESSION_HISTORY.md"
+      - ".github/ISSUE_TEMPLATE/**"
   pull_request:
     branches: [main]
     paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - "LICENSE"
+      - "README.md"
       - "CONTRIBUTING.md"
       - "CODE_OF_CONDUCT.md"
       - "SECURITY.md"
+      - "LICENSE"
+      - "release-notes.md"
+      - "docs/archive/**"
+      - "docs/SESSION_HISTORY.md"
+      - ".github/ISSUE_TEMPLATE/**"
 
 permissions: {}
 
@@ -59,88 +63,6 @@ jobs:
       - name: Check code formatting (Prettier)
         # Now blocking - initial format applied 2026-01-13
         run: npm run format:check
-
-      - name: Check for circular dependencies
-        run: npm run deps:circular
-
-      - name: Check for unused dependencies/exports
-        # Now blocking - knip passes clean (2026-02-02)
-        run: npm run deps:unused
-
-      - name: Get changed files for pattern check
-        if: ${{ github.event_name == 'pull_request' }}
-        id: changed-files
-        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
-        with:
-          files: |
-            **/*.js
-            **/*.ts
-            **/*.tsx
-            **/*.jsx
-            **/*.sh
-            **/*.yml
-            **/*.yaml
-            .husky/**
-          separator: " "
-
-      - name: Pattern compliance check (PR - changed files only)
-        if: ${{ github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed == 'true' }}
-        run: |
-          echo "Checking pattern compliance on changed files..."
-          echo "Files to check: ${{ steps.changed-files.outputs.all_changed_files }}"
-          # Use -- to prevent filenames starting with - from being interpreted as options
-          node scripts/check-pattern-compliance.js -- ${{ steps.changed-files.outputs.all_changed_files }}
-
-      - name: Pattern compliance check (PR - no relevant files changed)
-        if: ${{ github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed != 'true' }}
-        run: echo "No pattern-checkable files changed, skipping pattern compliance"
-
-      - name: Pattern compliance check (push to main)
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        # For push to main, run full check but don't block (baseline exists)
-        # This provides visibility without blocking merges
-        continue-on-error: true
-        run: npm run patterns:check-all
-
-      - name: Pattern test suite
-        run: npx vitest run tests/pattern-compliance.test.js
-
-      - name: GitHub optimization wave tests
-        run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
-
-      - name: Documentation check
-        # Non-blocking: templates/stubs have expected issues, active docs are clean
-        continue-on-error: true
-        run: npm run docs:check
-
-      - name: Validate CANON schema
-        # Validates all CANON*.jsonl files have correct structure
-        run: npm run validate:canon
-
-      - name: Validate audit files
-        # Validates audit JSONL files have required fields
-        # Review #207: Use -- to pass args through npm to the script
-        continue-on-error: true
-        run: npm run audit:validate -- --all
-
-      - name: Validate technical debt schema
-        # TDMS Phase 8: Validates MASTER_DEBT.jsonl has correct structure
-        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
-        run: node scripts/debt/validate-schema.js
-
-      - name: Check ROADMAP debt references
-        # TDMS Phase 8: Validates DEBT-XXXX references exist in canonical source
-        # Now blocking - prevents orphaned DEBT-XXXX references (2026-02-02)
-        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
-        run: node scripts/debt/sync-roadmap-refs.js --check-only
-
-      - name: Verify technical debt views current
-        # TDMS Phase 8: Ensures generated views match MASTER_DEBT.jsonl
-        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
-        continue-on-error: true
-        run: |
-          node scripts/debt/generate-views.js
-          git diff --exit-code docs/technical-debt/views/ || echo "⚠️ Views are stale - run: node scripts/debt/generate-views.js"
 
       - name: Type check
         run: npx tsc --noEmit
@@ -184,6 +106,90 @@ jobs:
           name: coverage-report
           path: coverage/
           retention-days: 14
+
+      - name: Check for circular dependencies
+        run: npm run deps:circular
+
+      - name: Check for unused dependencies/exports
+        # Now blocking - knip passes clean (2026-02-02)
+        run: npm run deps:unused
+
+      - name: Get changed files for pattern check
+        if: ${{ github.event_name == 'pull_request' }}
+        id: changed-files
+        uses: tj-actions/changed-files@22103cc46bda19c2b464ffe86db46df6922fd323 # v47.0.5
+        with:
+          files: |
+            **/*.js
+            **/*.ts
+            **/*.tsx
+            **/*.jsx
+            **/*.sh
+            **/*.yml
+            **/*.yaml
+            .husky/**
+          separator: " "
+
+      - name: Pattern compliance check (PR - changed files only)
+        if: ${{ github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed == 'true' }}
+        run: |
+          echo "Checking pattern compliance on changed files..."
+          echo "Files to check: ${{ steps.changed-files.outputs.all_changed_files }}"
+          # Use -- to prevent filenames starting with - from being interpreted as options
+          node scripts/check-pattern-compliance.js -- ${{ steps.changed-files.outputs.all_changed_files }}
+
+      - name: Pattern compliance check (PR - no relevant files changed)
+        if: ${{ github.event_name == 'pull_request' && steps.changed-files.outputs.any_changed != 'true' }}
+        run: echo "No pattern-checkable files changed, skipping pattern compliance"
+
+      - name: Pattern compliance check (push to main)
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: npm run patterns:check-all
+
+      - name: Pattern test suite
+        run: npx vitest run tests/pattern-compliance.test.js
+
+      - name: GitHub optimization wave tests
+        run: node --test tests/scripts/github-optimization-wave3.test.js tests/scripts/github-optimization-wave4.test.js
+
+      - name: Security pattern check
+        if: ${{ github.event_name == 'pull_request' }}
+        run: node scripts/security-check.js --ci
+        continue-on-error: true
+
+      - name: Documentation check
+        # Non-blocking: templates/stubs have expected issues, active docs are clean
+        continue-on-error: true
+        run: npm run docs:check
+
+      - name: Validate CANON schema
+        # Validates all CANON*.jsonl files have correct structure
+        run: npm run validate:canon
+
+      - name: Validate audit files
+        # Validates audit JSONL files have required fields
+        # Review #207: Use -- to pass args through npm to the script
+        continue-on-error: true
+        run: npm run audit:validate -- --all
+
+      - name: Validate technical debt schema
+        # TDMS Phase 8: Validates MASTER_DEBT.jsonl has correct structure
+        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
+        run: node scripts/debt/validate-schema.js
+
+      - name: Check ROADMAP debt references
+        # TDMS Phase 8: Validates DEBT-XXXX references exist in canonical source
+        # Now blocking - prevents orphaned DEBT-XXXX references (2026-02-02)
+        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
+        run: node scripts/debt/sync-roadmap-refs.js --check-only
+
+      - name: Verify technical debt views current
+        # TDMS Phase 8: Ensures generated views match MASTER_DEBT.jsonl
+        if: ${{ hashFiles('docs/technical-debt/MASTER_DEBT.jsonl') != '' }}
+        continue-on-error: true
+        run: |
+          node scripts/debt/generate-views.js
+          git diff --exit-code docs/technical-debt/views/ || echo "⚠️ Views are stale - run: node scripts/debt/generate-views.js"
 
   build:
     name: Build

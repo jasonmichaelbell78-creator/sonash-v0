@@ -24,6 +24,10 @@
       "note": "deprecated backup hook, not actively used"
     },
     {
+      "path": ".claude/hooks/pre-commit-agent-compliance.js",
+      "lines": 146
+    },
+    {
       "path": ".claude/skills/alerts/scripts/run-alerts.js",
       "lines": 3746
     },
@@ -78,6 +82,10 @@
     {
       "path": ".claude/skills/health-ecosystem-audit/scripts/checkers/data-persistence.js",
       "lines": 459
+    },
+    {
+      "path": ".claude/skills/health-ecosystem-audit/scripts/checkers/scoring-pipeline.js",
+      "lines": 390
     },
     {
       "path": ".claude/skills/health-ecosystem-audit/scripts/lib/benchmarks.js",
@@ -309,20 +317,88 @@
       "lines": 360
     },
     {
-      "path": "scripts/debt/extract-audit-reports.js",
-      "lines": 1021
-    },
-    {
-      "path": "scripts/generate-test-registry.js",
-      "lines": 729
-    },
-    {
       "path": "scripts/archive/run-consolidation.v1.js",
       "lines": 825
     },
     {
       "path": "scripts/archive/sync-reviews-to-jsonl.v1.js",
       "lines": 1109
+    },
+    {
+      "path": "scripts/check-cc.js",
+      "lines": 704
+    },
+    {
+      "path": "scripts/check-cyclomatic-cc.js",
+      "lines": 458
+    },
+    {
+      "path": "scripts/check-skill-audit-status.js",
+      "lines": 303
+    },
+    {
+      "path": "scripts/debt/extract-audit-reports.js",
+      "lines": 1021
+    },
+    {
+      "path": "scripts/generate-lifecycle-scores-md.js",
+      "lines": 334
+    },
+    {
+      "path": "scripts/generate-test-registry.js",
+      "lines": 729
+    },
+    {
+      "path": "scripts/health/lib/utils.js",
+      "lines": 110
+    },
+    {
+      "path": "scripts/hook-report.js",
+      "lines": 250
+    },
+    {
+      "path": "scripts/metrics/dedup-review-metrics.js",
+      "lines": 227
+    },
+    {
+      "path": "scripts/review-lifecycle.js",
+      "lines": 917
+    },
+    {
+      "path": "scripts/reviews/migrate-ecosystem-v2.js",
+      "lines": 267
+    },
+    {
+      "path": "scripts/reviews/migrate-retros.js",
+      "lines": 226
+    },
+    {
+      "path": "scripts/reviews/validate-jsonl-schemas.js",
+      "lines": 156
+    },
+    {
+      "path": "scripts/rotate-jsonl.js",
+      "lines": 412
+    },
+    {
+      "path": "scripts/route-enforcement-gaps.js",
+      "lines": 240
+    },
+    {
+      "path": "scripts/route-lifecycle-gaps.js",
+      "lines": 179
+    },
+    {
+      "path": "scripts/test-semgrep-rules.js",
+      "lines": 161
+    },
+    {
+      "path": "scripts/validate-hook-manifest.js",
+      "lines": 439
+    },
+    {
+      "path": "scripts/verify-enforcement.js",
+      "lines": 552
     }
   ]
 }
