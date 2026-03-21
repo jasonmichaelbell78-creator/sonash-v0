@@ -1545,6 +1545,180 @@ const ANTI_PATTERNS = [
     fileTypes: [".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:app|components|pages)\//,
   },
+
+  // Non-standard exit codes — exit codes should follow 0=success, 1=action-needed, 2=fatal
+  // Recurred 5 times in reviews; enforcing signal-error-code semantics
+  {
+    id: "non-standard-exit-code",
+    severity: "medium",
+    pattern: /process\.exit\(\s*(?!(?:[012])\s*\))[^)]+\)/g,
+    message: "Exit code not 0 (success), 1 (action-needed), or 2 (fatal) — see CODE_PATTERNS.md",
+    fix: "Use: process.exit(0) for success, process.exit(1) for action-needed/recoverable, process.exit(2) for fatal error",
+    review: "5 review recurrences — signal-error-code semantics",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+  },
+  {
+    id: "non-standard-exit-code-shell",
+    severity: "medium",
+    pattern: /\bexit\s+(?!(?:[012])(?:\s|$|;|\)))\d+/g,
+    message: "Exit code not 0 (success), 1 (action-needed), or 2 (fatal) — see CODE_PATTERNS.md",
+    fix: "Use: exit 0 for success, exit 1 for action-needed/recoverable, exit 2 for fatal error",
+    review: "5 review recurrences — signal-error-code semantics",
+    fileTypes: [".sh"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+  },
+
+  // Inline array literal with .includes() — prefer Set for O(1) lookups
+  // Recurred 5 times in reviews; low-severity suggestion
+  {
+    id: "array-includes-over-set",
+    severity: "low",
+    pattern: /\[[^\]]{40,}\]\.includes\(/g,
+    message: "Consider using a Set for lookups on constant arrays with 5+ elements",
+    fix: "Replace `[...].includes(x)` with `new Set([...]).has(x)` for O(1) lookups",
+    review: "5 review recurrences — Set vs Array migration",
+    fileTypes: [".js", ".ts", ".tsx"],
+  },
+
+  // Multiple writeFileSync calls without try/catch — partial writes may leave repo inconsistent
+  // Recurred 4 times in reviews. Heuristic: 3+ writeFileSync in a file with no wrapping try/catch.
+  {
+    id: "multi-write-no-rollback",
+    severity: "medium",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      // Collect all non-comment writeFileSync call locations
+      const writeLines = [];
+      for (let i = 0; i < lines.length; i++) {
+        const trimmed = lines[i].trimStart();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        if (lines[i].includes("writeFileSync")) {
+          writeLines.push(i);
+        }
+      }
+      // Only flag if 3+ writeFileSync calls exist
+      if (writeLines.length < 3) return matches;
+      // Check if ANY try block wraps writeFileSync calls
+      // For each writeFileSync, walk backwards to find enclosing try {
+      let wrappedCount = 0;
+      for (const wLine of writeLines) {
+        let depth = 0;
+        let foundTry = false;
+        for (let j = wLine - 1; j >= 0; j--) {
+          const ln = lines[j];
+          // Count braces to track scope (simplified)
+          for (let c = ln.length - 1; c >= 0; c--) {
+            if (ln[c] === "}") depth++;
+            if (ln[c] === "{") depth--;
+          }
+          // If we have exited the current block scope, stop
+          if (depth < 0) break;
+          if (/\btry\b/.test(ln)) {
+            foundTry = true;
+            break;
+          }
+        }
+        if (foundTry) wrappedCount++;
+      }
+      // Flag if fewer than half are wrapped in try/catch
+      if (wrappedCount < writeLines.length / 2) {
+        matches.push({
+          line: writeLines[0] + 1,
+          match: `${writeLines.length} writeFileSync calls, ${wrappedCount} wrapped in try/catch`,
+        });
+      }
+      return matches;
+    },
+    message: "Multiple writeFileSync calls without try/catch — partial writes may corrupt state",
+    fix: "Wrap related writeFileSync calls in a try/catch block with cleanup/rollback in the catch",
+    review: "Recurred 4 times in reviews — multi-file rollback pattern",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // readFileSync with variable path and no binary file check — may crash on binary input
+  // Recurred 2 times in reviews; low severity suggestion for scripts processing arbitrary files
+  {
+    id: "read-without-binary-check",
+    severity: "low",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+
+      // Known-text extensions that are safe to read as utf8 without a binary check
+      const safeExtensions = new Set([
+        ".json",
+        ".md",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".jsx",
+        ".yml",
+        ".yaml",
+        ".txt",
+        ".css",
+        ".html",
+        ".mjs",
+        ".cjs",
+        ".sh",
+        ".env",
+        ".toml",
+        ".xml",
+        ".csv",
+        ".svg",
+        ".jsonl",
+        ".log",
+      ]);
+
+      // Check if file has any binary-safety guard anywhere
+      const hasBinaryCheck =
+        content.includes("isBinary") ||
+        content.includes("Buffer.isBuffer") ||
+        content.includes("istextorbinary") ||
+        content.includes("isbinaryfile");
+
+      if (hasBinaryCheck) return matches;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const trimmed = line.trim();
+
+        // Skip comments and imports
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        if (trimmed.startsWith("import ") || trimmed.startsWith("import{")) continue;
+        if (trimmed.includes("require(")) continue;
+
+        // Must contain readFileSync
+        if (!line.includes("readFileSync")) continue;
+
+        // Skip if reading a hardcoded path with a known-text extension
+        // e.g. readFileSync("foo.json", "utf8") or readFileSync(path.join(__dirname, "x.md"))
+        let hasSafeHardcoded = false;
+        for (const ext of safeExtensions) {
+          if (line.includes(ext)) {
+            hasSafeHardcoded = true;
+            break;
+          }
+        }
+        if (hasSafeHardcoded) continue;
+
+        // Must use utf8 encoding (the risk is reading binary as text)
+        if (!line.includes("utf8") && !line.includes("utf-8")) continue;
+
+        matches.push({ line: i + 1, match: trimmed.slice(0, 50) });
+      }
+      return matches;
+    },
+    message: "readFileSync on variable path without binary file check — may crash on binary files",
+    fix: "Add a binary file check before reading (e.g., isBinary from 'istextorbinary', or filter by known-text extensions)",
+    review: "2 review recurrences — binary file safety",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════════

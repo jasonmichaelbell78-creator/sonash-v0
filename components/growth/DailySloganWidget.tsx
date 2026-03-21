@@ -8,7 +8,6 @@
 
 import { useEffect, useState } from "react";
 import { logger } from "@/lib/logger";
-import { FirestoreService } from "@/lib/firestore-service";
 import { SlogansService, Slogan } from "@/lib/db/slogans";
 import { Lightbulb, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -20,9 +19,8 @@ export default function DailySloganWidget() {
   useEffect(() => {
     async function fetchDailySlogan() {
       try {
-        // Fetch all slogans via repository pattern
-        const rawSlogans = await FirestoreService.getAllSlogans();
-        const slogans = rawSlogans as Slogan[];
+        // Fetch all slogans via typed SlogansService (not generic FirestoreService)
+        const slogans = await SlogansService.getAllSlogans();
 
         if (slogans.length === 0) {
           setLoading(false);

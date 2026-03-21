@@ -24,7 +24,9 @@
         ".claude/state/session-ecosystem-audit-history.jsonl",
         ".claude/state/skill-ecosystem-audit-history.jsonl",
         ".claude/state/tdms-ecosystem-audit-history.jsonl",
-        ".claude/state/hook-ecosystem-audit-history.jsonl"
+        ".claude/state/hook-ecosystem-audit-history.jsonl",
+        ".claude/state/audit-findings.jsonl",
+        ".claude/state/audit-findings-history.jsonl"
       ]
     },
     "permanent": {

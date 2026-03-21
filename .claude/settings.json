@@ -139,7 +139,7 @@
         ]
       },
       {
-        "matcher": "^(task|Task|TASK)$",
+        "matcher": "^(task|Task|TASK|agent|Agent|AGENT)$",
         "hooks": [
           {
             "type": "command",

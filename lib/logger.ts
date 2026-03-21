@@ -44,8 +44,10 @@ const sanitizeMessage = (message: string): string => {
 
   // Redact sensitive-looking tokens even when adjacent to punctuation
   // (e.g., "token=abc123...", "Bearer abc123...", URLs with credentials)
+  // Require at least one digit AND one letter to avoid redacting normal words
+  // like "meetingDetails", "authentication", "FirestoreError"
   const redacted = cleaned.replace(/[A-Za-z0-9_\-.:]{12,}/g, (match) =>
-    looksLikeSensitiveId(match) ? "[REDACTED]" : match
+    /\d/.test(match) && /[A-Za-z]/.test(match) ? "[REDACTED]" : match
   );
 
   // Cap size to avoid oversized log payloads

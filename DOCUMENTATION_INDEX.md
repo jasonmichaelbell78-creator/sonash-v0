@@ -250,7 +250,7 @@ _Planning & Active_
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-03-19    |
-| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-03-13    |
+| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-03-21    |
 | [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-03-19    |
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓1 ↑2      | 2026-03-19    |
 | [Testing Plan](docs/TESTING_CHECKLIST.md)                                                              | Comprehensive testing guidance for the SoNash application, i... | ↓5 ↑1      | 2026-03-19    |
@@ -814,7 +814,7 @@ _Uncategorized_
 | ------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
 | [Decision Record: Deep Research Skill](.planning/deep-research-skill/DECISIONS.md)    | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-20    |
 | [Diagnosis: Deep Research Skill/Agent(s)](.planning/deep-research-skill/DIAGNOSIS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-20    |
-| [Implementation Plan: `/deep-research` Skill](.planning/deep-research-skill/PLAN.md)  | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-20    |
+| [Implementation Plan: `/deep-research` Skill](.planning/deep-research-skill/PLAN.md)  | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-21    |
 
 ### .planning > deep-research-skill > discovery (Tier 4)
 
@@ -941,7 +941,7 @@ _Uncategorized_
 | [Finding 04: File Overwrite and Data Loss Propagation Risks](.planning/propagation-research/findings/04-FILE_OVERWRITE.md) | -                                                               | ↓0 ↑0      | 2026-03-20    |
 | [Finding 05: Pattern Compliance Enforcement Gaps](.planning/propagation-research/findings/05-PATTERN_COMPLIANCE.md)        | -                                                               | ↓0 ↑0      | 2026-03-20    |
 | [Finding 06: TDMS Dual-File Write Trap](.planning/propagation-research/findings/06-TDMS_TRAP.md)                           | The TDMS pipeline has a structural vulnerability where `MAST... | ↓0 ↑0      | 2026-03-20    |
-| [Finding 10: Outside-the-Box Analysis](.planning/propagation-research/findings/10-OUTSIDE_THE_BOX.md)                      | -                                                               | ↓0 ↑0      | 2026-03-20    |
+| [Finding 10: Outside-the-Box Analysis](.planning/propagation-research/findings/10-OUTSIDE_THE_BOX.md)                      | -                                                               | ↓0 ↑0      | 2026-03-21    |
 | [Hook Effectiveness Analysis](.planning/propagation-research/findings/07-HOOK_EFFECTIVENESS.md)                            | -                                                               | ↓0 ↑0      | 2026-03-20    |
 | [PR #453 Deferred Propagation Patterns — Research Findings](.planning/propagation-research/findings/02-PR453_DEFERRED.md)  | -                                                               | ↓0 ↑0      | 2026-03-20    |
 | [Propagation Detection Gaps Analysis](.planning/propagation-research/findings/01-DETECTION_GAPS.md)                        | -                                                               | ↓0 ↑0      | 2026-03-20    |
@@ -1099,7 +1099,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-03-19    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-20    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-21    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓3 ↑1      | 2026-03-12    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-23    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-03-19    |

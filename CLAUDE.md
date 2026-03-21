@@ -99,6 +99,12 @@ Section 8).
     (fix, defer, acknowledge) before continuing other work. Hook data persists
     in `hook-runs.jsonl` and `hook-warnings-log.jsonl` for `/alerts` and
     `/pr-retro`. `[BEHAVIORAL: no automated enforcement]`
+14. **Never set SKIP_REASON autonomously.** When a pre-commit or pre-push check
+    fails and requires a skip, present the user with three options: (a) Fix now,
+    (b) Defer to `known-debt-baseline.json`, (c) Skip with user-provided reason.
+    Never compose a SKIP_REASON yourself — the user must authorize the exact
+    wording. Rewording "pre-existing" with synonyms is still a violation.
+    `[BEHAVIORAL: no automated enforcement]`
 
 ## 5. Critical Anti-Patterns
 
@@ -208,13 +214,14 @@ Evidence-Based).
 
 ## Version History
 
-| Version | Date       | Changes                                           |
-| ------- | ---------- | ------------------------------------------------- |
-| 5.6     | 2026-03-17 | Add 6 behavioral guardrails from /insights (7-12) |
-| 5.5     | 2026-03-13 | Enforcement annotations on all rules              |
-| 5.4     | 2026-03-13 | Add LSP code navigation preference                |
-| 5.3     | 2026-03-05 | Add behavioral guardrails (Section 4)             |
-| 5.2     | 2026-02-26 | Agent triggers, reference docs table              |
-| 5.1     | 2026-02-10 | Initial versioned release                         |
+| Version | Date       | Changes                                               |
+| ------- | ---------- | ----------------------------------------------------- |
+| 5.7     | 2026-03-21 | Add guardrail #14: never set SKIP_REASON autonomously |
+| 5.6     | 2026-03-17 | Add 6 behavioral guardrails from /insights (7-12)     |
+| 5.5     | 2026-03-13 | Enforcement annotations on all rules                  |
+| 5.4     | 2026-03-13 | Add LSP code navigation preference                    |
+| 5.3     | 2026-03-05 | Add behavioral guardrails (Section 4)                 |
+| 5.2     | 2026-02-26 | Agent triggers, reference docs table                  |
+| 5.1     | 2026-02-10 | Initial versioned release                             |
 
 [Full version history](docs/SESSION_HISTORY.md)

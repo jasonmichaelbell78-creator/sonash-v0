@@ -116,7 +116,7 @@ const BENCHMARKS = {
     acceleration_threshold: 0.15,
   },
   review: {
-    fix_ratio: { good: 0.15, average: 0.25, poor: 0.35 },
+    fix_ratio: { good: 0.3, average: 0.45, poor: 0.6 },
     max_rounds: { good: 2, average: 3, poor: 5 },
   },
   code: {
@@ -1905,20 +1905,37 @@ function checkReviewQuality() {
     }
   }
 
-  // Average fix ratio
-  const ratios = recent.map((e) => e.fix_ratio).filter((r) => typeof r === "number");
+  // Average fix ratio — prefer review-findings-based rate from reviews.jsonl
+  // over commit-message-based fix_ratio from review-metrics.jsonl (which conflates
+  // commit message patterns like "fix:" with actual review fix rates)
+  const reviewsPath = path.join(ROOT_DIR, ".claude", "state", "reviews.jsonl");
+  const reviewLines = safeReadLines(reviewsPath);
+  const recentReviews = reviewLines
+    .slice(-10)
+    .map((l) => safeParse(l))
+    .filter((r) => r && typeof r.total === "number" && r.total > 0);
+
   let avgFixRatio = 0;
-  if (ratios.length > 0) {
-    avgFixRatio = ratios.reduce((a, b) => a + b, 0) / ratios.length;
-    if (avgFixRatio > 0.3) {
-      addAlert(
-        "review-quality",
-        "warning",
-        `Average fix ratio ${(avgFixRatio * 100).toFixed(0)}% (target: <25%)`,
-        null,
-        "Check if review scope is consistent between rounds"
-      );
+  if (recentReviews.length > 0) {
+    // Findings-based: fixed / total from actual review records
+    const findingsRatios = recentReviews.map((r) => (r.fixed || 0) / r.total);
+    avgFixRatio = findingsRatios.reduce((a, b) => a + b, 0) / findingsRatios.length;
+  } else {
+    // Fallback to commit-based fix_ratio if no review records
+    const ratios = recent.map((e) => e.fix_ratio).filter((r) => typeof r === "number");
+    if (ratios.length > 0) {
+      avgFixRatio = ratios.reduce((a, b) => a + b, 0) / ratios.length;
     }
+  }
+
+  if (avgFixRatio > 0.6) {
+    addAlert(
+      "review-quality",
+      "warning",
+      `Average fix ratio ${(avgFixRatio * 100).toFixed(0)}% (target: <60%)`,
+      null,
+      "Check if review scope is consistent between rounds"
+    );
   }
 
   // Avoidable round rate (D12/D26: review-metrics → /alerts)

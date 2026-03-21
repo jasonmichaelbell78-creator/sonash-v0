@@ -66,7 +66,6 @@ scripts/suggested-patterns.json
 .claude/state/handoff.json
 .claude/state/consolidation.json
 .claude/state/alerts-baseline.json
-.claude/state/agent-invocations.jsonl
 .claude/state/hook-runs.jsonl
 .claude/state/commit-failures.jsonl
 
@@ -105,7 +104,6 @@ serviceAccountKey.json
 # Claude Code session runtime data (per-session, not tracked)
 .claude/tmp/
 .claude/session-activity*.jsonl
-.claude/override-log*.jsonl
 .claude/multi-ai-audit/
 
 # Claude Code local user settings (user-specific, never commit!)
