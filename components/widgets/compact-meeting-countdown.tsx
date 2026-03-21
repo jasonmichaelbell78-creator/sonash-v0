@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Clock } from "lucide-react";
 import { MeetingsService, Meeting } from "@/lib/db/meetings";
 import { useGeolocation } from "@/hooks/use-geolocation";
@@ -222,22 +222,24 @@ export default function CompactMeetingCountdown() {
     findNextMeeting();
   }, [userLocation, locationStatus, refreshKey]);
 
+  // Define interval handler as stable useCallback before the effect (CLAUDE.md meeting widget requirement)
+  const updateTimer = useCallback(() => {
+    if (!nextMeeting) return;
+    const newTimeUntil = getCountdownString(nextMeeting);
+    if (newTimeUntil === null) {
+      // Meeting passed! Trigger re-fetch and clear stale timer
+      setTimeUntil(null);
+      setLoading(true);
+      setNextMeeting(null);
+      setRefreshKey((k) => k + 1);
+    } else {
+      setTimeUntil(newTimeUntil);
+    }
+  }, [nextMeeting]);
+
   // Timer effect
   useEffect(() => {
     if (!nextMeeting) return;
-
-    const updateTimer = () => {
-      const newTimeUntil = getCountdownString(nextMeeting);
-      if (newTimeUntil === null) {
-        // Meeting passed! Trigger re-fetch and clear stale timer
-        setTimeUntil(null);
-        setLoading(true);
-        setNextMeeting(null);
-        setRefreshKey((k) => k + 1);
-      } else {
-        setTimeUntil(newTimeUntil);
-      }
-    };
 
     updateTimer(); // Initial call
 
@@ -245,7 +247,7 @@ export default function CompactMeetingCountdown() {
     const interval = setInterval(updateTimer, TIMER_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, [nextMeeting]);
+  }, [nextMeeting, updateTimer]);
 
   function formatTime(time24: string): string {
     const [hours, minutes] = time24.split(":").map(Number);

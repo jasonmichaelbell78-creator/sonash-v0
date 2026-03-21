@@ -45,8 +45,16 @@ and `.planning/` exclusions.
 
 ```gitignore
 # Research output (session-specific, not committed)
-.research/
+.research/**
+
+# Allowlist curated cross-session index files if the repo chooses to version them
+!.research/research-index.jsonl
+!.research/strategy-log.jsonl
+!.research/source-reputation.jsonl
 ```
+
+> **Note:** If the intent is "never commit anything under `.research/`", use
+> `.research/` instead and omit the allowlist lines.
 
 **Files:**
 
@@ -1018,12 +1026,20 @@ Phase 5 must:
 
 3. Per CLAUDE.md guardrail #6: require acknowledgment before continuing
 
-4. **Cleanup raw findings** (per Decision #21): Delete `findings/*.md` and
-   `challenges/*.md` after synthesis is verified complete. Preserve only:
-   RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json. These
-   conclusion artifacts support decision provenance, research memory, overlap
-   detection, and `/research-refresh`. Raw agent outputs are superseded by the
-   synthesis.
+4. **Cleanup raw findings** (per Decision #21): Do **not** hard-delete raw
+   artifacts by default. Instead:
+   - Default: keep `findings/*.md` and `challenges/*.md` for resume + audit
+     provenance.
+   - Optional (user-confirmed in Phase 5 acknowledgment step): archive them to
+     `.research/<topic-slug>/archive/findings/` and
+     `.research/<topic-slug>/archive/challenges/` after synthesis + verification
+     are complete.
+   - Record cleanup action in state file (e.g.,
+     `output.rawArtifacts: "kept" | "archived" | "deleted"`) so
+     resume/verification does not assume missing files.
+   - Preserve always: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl,
+     metadata.json. These conclusion artifacts support decision provenance,
+     research memory, overlap detection, and `/research-refresh`.
 
 5. Update state file to `complete`
 
@@ -1284,21 +1300,25 @@ Add to `.mcp.json` (currently `.mcp.json.example` entries need activation):
     "tavily": {
       "command": "npx",
       "args": ["-y", "@anthropic/mcp-server-tavily"],
-      "env": { "TAVILY_API_KEY": "<from .env>" }
+      "env": { "TAVILY_API_KEY": "${TAVILY_API_KEY}" }
     },
     "brave-search": {
       "command": "npx",
       "args": ["-y", "@anthropic/mcp-server-brave-search"],
-      "env": { "BRAVE_API_KEY": "<from .env>" }
+      "env": { "BRAVE_API_KEY": "${BRAVE_API_KEY}" }
     },
     "firecrawl": {
       "command": "npx",
       "args": ["-y", "@anthropic/mcp-server-firecrawl"],
-      "env": { "FIRECRAWL_API_KEY": "<from .env>" }
+      "env": { "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY}" }
     }
   }
 }
 ```
+
+> **Secrets must live only in `.env` (gitignored).** Never paste real keys into
+> `.mcp.json`. Prefer committing `.mcp.json.example` and keeping `.mcp.json`
+> local if it is developer-specific.
 
 Paper Search MCP is P2 (academic mode).
 

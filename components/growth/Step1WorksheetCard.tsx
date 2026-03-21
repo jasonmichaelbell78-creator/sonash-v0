@@ -122,7 +122,7 @@ const initialData: Step1Data = {
   conclusion_q1: ["", "", ""],
   conclusion_q2: "",
   conclusion_q3: "",
-  conclusion_q4: Array(CONCLUSION_Q4_COUNT).fill(""),
+  conclusion_q4: new Array(CONCLUSION_Q4_COUNT).fill(""),
 };
 
 const FORM_SECTIONS: SectionConfig[] = [

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Clock, MapPin, Calendar } from "lucide-react";
 
@@ -17,37 +17,37 @@ const TIMER_INTERVAL_MS = 60000; // Update every minute
 export default function MeetingCountdown() {
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Placeholder: Calculate time until 7:00 PM today (or tomorrow if past)
-    function calculateNextMeeting() {
-      const now = new Date();
-      const today7PM = new Date();
-      today7PM.setHours(DEFAULT_MEETING_HOUR, 0, 0, 0);
+  // Define interval handler as stable useCallback before the effect (CLAUDE.md meeting widget requirement)
+  const calculateNextMeeting = useCallback(() => {
+    const now = new Date();
+    const today7PM = new Date();
+    today7PM.setHours(DEFAULT_MEETING_HOUR, 0, 0, 0);
 
-      let nextMeeting = today7PM;
-      if (now > today7PM) {
-        // If past 7 PM, show tomorrow at 7 PM
-        nextMeeting = new Date(today7PM.getTime() + MS_PER_DAY);
-      }
-
-      const diff = nextMeeting.getTime() - now.getTime();
-      const hours = Math.floor(diff / MS_PER_HOUR);
-      const minutes = Math.floor((diff % MS_PER_HOUR) / MS_PER_MINUTE);
-
-      if (hours === 0) {
-        setTimeRemaining(`${minutes}m`);
-      } else if (hours < 24) {
-        setTimeRemaining(`${hours}h ${minutes}m`);
-      } else {
-        setTimeRemaining(`Tomorrow 7:00 PM`);
-      }
+    let nextMeeting = today7PM;
+    if (now > today7PM) {
+      // If past 7 PM, show tomorrow at 7 PM
+      nextMeeting = new Date(today7PM.getTime() + MS_PER_DAY);
     }
 
+    const diff = nextMeeting.getTime() - now.getTime();
+    const hours = Math.floor(diff / MS_PER_HOUR);
+    const minutes = Math.floor((diff % MS_PER_HOUR) / MS_PER_MINUTE);
+
+    if (hours === 0) {
+      setTimeRemaining(`${minutes}m`);
+    } else if (hours < 24) {
+      setTimeRemaining(`${hours}h ${minutes}m`);
+    } else {
+      setTimeRemaining(`Tomorrow 7:00 PM`);
+    }
+  }, []);
+
+  useEffect(() => {
     calculateNextMeeting();
     const interval = setInterval(calculateNextMeeting, TIMER_INTERVAL_MS);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [calculateNextMeeting]);
 
   if (!timeRemaining) {
     return null;

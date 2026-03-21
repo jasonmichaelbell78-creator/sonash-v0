@@ -476,8 +476,8 @@ These deliberately conflict with some of the structured findings' proposals:
 
 ### R1: Consolidate before you detect (disagrees with Finding 08 prioritization)
 
-Finding 08 proposes "Expand SEARCH_DIRS" and "Add propagation check to CI" as
-Tier 1. These are useful but they are _detection_ fixes. The higher-leverage
+Finding 08 proposes "Expand SEARCH*DIRS" and "Add propagation check to CI" as
+Tier 1. These are useful but they are \_detection* fixes. The higher-leverage
 move is to consolidate the top-5 duplicated functions first, which permanently
 eliminates the need for detection on those patterns.
 

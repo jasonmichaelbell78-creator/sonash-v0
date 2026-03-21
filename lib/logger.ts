@@ -42,11 +42,11 @@ const sanitizeMessage = (message: string): string => {
   // eslint-disable-next-line no-control-regex
   const cleaned = message.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
 
-  // Split into words and fully redact any that look like sensitive IDs
-  const redacted = cleaned
-    .split(/(\s+)/)
-    .map((part) => (looksLikeSensitiveId(part) ? "[REDACTED]" : part))
-    .join("");
+  // Redact sensitive-looking tokens even when adjacent to punctuation
+  // (e.g., "token=abc123...", "Bearer abc123...", URLs with credentials)
+  const redacted = cleaned.replace(/[A-Za-z0-9_\-.:]{12,}/g, (match) =>
+    looksLikeSensitiveId(match) ? "[REDACTED]" : match
+  );
 
   // Cap size to avoid oversized log payloads
   return redacted.length > 2000 ? `${redacted.slice(0, 2000)}...[truncated]` : redacted;

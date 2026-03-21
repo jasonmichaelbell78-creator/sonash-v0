@@ -358,15 +358,37 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     },
 
     /**
-     * Fetch all documents from an arbitrary Firestore collection by name.
+     * Fetch all documents from an allowed Firestore collection by name.
      * Used by the admin CRUD table for collections without a dedicated service.
+     * Restricted to an explicit allowlist to prevent unauthorized data access.
      *
-     * @param collectionName - Name of the top-level Firestore collection
+     * @param collectionName - Name of the top-level Firestore collection (must be in allowlist)
      * @returns Array of documents with their IDs merged in
      */
     async getCollectionDocs(
       collectionName: string
     ): Promise<Array<{ id: string } & Record<string, unknown>>> {
+      const ALLOWED_COLLECTIONS = new Set([
+        "meetings",
+        "slogans",
+        "quotes",
+        "glossary",
+        "sober_living",
+      ]);
+
+      if (!ALLOWED_COLLECTIONS.has(collectionName)) {
+        deps.logger.warn("Blocked admin collection access", {
+          collection: collectionName,
+          action: "getCollectionDocs",
+        });
+        throw new Error(`Collection "${collectionName}" is not in the admin allowlist`);
+      }
+
+      deps.logger.info("Admin collection read", {
+        collection: collectionName,
+        action: "getCollectionDocs",
+      });
+
       const ref = deps.collection(deps.db, collectionName);
       const snapshot = await deps.getDocs(ref);
       return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));

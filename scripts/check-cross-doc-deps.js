@@ -206,8 +206,10 @@ function isTrivialChange(file) {
           const trimmed = line.trim();
           if (trimmed === "") return true;
           if (trimmed.startsWith("//")) return true;
-          if (trimmed.startsWith("/*") || trimmed.startsWith("*/") || trimmed.startsWith("*"))
-            return true;
+          // Block comment markers — match "/*", "*/", bare "*", and " * " (JSDoc interior)
+          // but NOT markdown bullets like "* item text"
+          if (trimmed.startsWith("/*") || trimmed.startsWith("*/")) return true;
+          if (trimmed === "*" || (trimmed.startsWith("* ") && ext !== "md")) return true;
           if (trimmed.startsWith("<!--") || trimmed.startsWith("-->")) return true;
           if (hashIsComment && trimmed.startsWith("#")) return true;
           if (/^\*\*(?:Status|Last Updated|Document Version):\*\*\s/.test(trimmed)) return true;

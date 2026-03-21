@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-03-13
+**Last Updated:** 2026-03-21
 
 ---
 
@@ -27,28 +27,40 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #353 - #355 (3 reviews) **Analysis Date:** 2026-03-13
+**Review Range:** #353 - #361 (8 reviews) **Analysis Date:** 2026-03-21
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 93.0% |
-| Patterns Learned          | 391   |
-| Patterns Automated        | 22    |
-| Patterns Failing          | 0     |
-| Critical Pattern Success  | 96.6% |
+| Learning Effectiveness    | 90.1% |
+| Patterns Learned          | 369   |
+| Patterns Automated        | 31    |
+| Patterns Failing          | 6     |
+| Critical Pattern Success  | 96.0% |
 | Automation Coverage       | 14.6% |
 | Total Documented Patterns | 444   |
 | Total Automated Patterns  | 65    |
 
 ### Top Recommended Actions
 
-1. **[Documentation]** Improve documentation for "Signal error code semantics"
+1. **[Automation]** Automate "Signal error code semantics"
+   - Recurred 5 times after documentation \(Reviews: 353, 354, 357, 359, 361\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+2. **[Automation]** Automate "Set vs Array migration"
+   - Recurred 5 times after documentation \(Reviews: 353, 357, 358, 359, 360\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+3. **[Automation]** Automate "Multi\-file rollback"
+   - Recurred 4 times after documentation \(Reviews: 353, 357, 359, 361\)
+   - Action: Add pattern to check\-pattern\-compliance.js
+
+4. **[Documentation]** Improve documentation for "Binary file detection"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-2. **[Documentation]** Improve documentation for "Set vs Array migration"
+5. **[Documentation]** Improve documentation for "Atomic file writes"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -58,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 391   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 22    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 31    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 369   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 31    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 38    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 6     | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -69,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-03-13 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-03-21 | Rewritten to focus on Claude's learning effectiveness |

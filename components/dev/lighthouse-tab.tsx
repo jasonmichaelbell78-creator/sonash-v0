@@ -105,18 +105,19 @@ export function LighthouseTab() {
 
         if (!rawDoc) {
           setLatestRun(null);
-        } else {
-          const data = rawDoc as Partial<LighthouseRun>;
-
-          // Validate required fields before setting state
-          if (!data.timestamp || !Array.isArray(data.results)) {
-            setError("Invalid Lighthouse data format");
-            setLatestRun(null);
-            return;
-          }
-
-          setLatestRun(data as LighthouseRun);
+          return;
         }
+
+        const data = rawDoc as Partial<LighthouseRun>;
+
+        // Validate required fields before setting state
+        if (!data.timestamp || !Array.isArray(data.results)) {
+          setError("Invalid Lighthouse data format");
+          setLatestRun(null);
+          return;
+        }
+
+        setLatestRun(data as LighthouseRun);
       } catch (err) {
         if (isCancelled) return;
 
