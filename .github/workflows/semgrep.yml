@@ -49,7 +49,7 @@ jobs:
           cache: "pip"
 
       - name: Install Semgrep
-        run: pip install semgrep
+        run: pip install semgrep==1.67.0
 
       # Run local custom rules from .semgrep/rules/
       # No --error flag: findings are informational (uploaded via SARIF).

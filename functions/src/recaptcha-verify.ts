@@ -135,7 +135,7 @@ export async function verifyRecaptchaToken(
       throw new HttpsError("internal", "reCAPTCHA verification failed");
     }
 
-    const assessment: RecaptchaAssessment = await response.json();
+    const assessment = (await response.json()) as RecaptchaAssessment;
 
     // Check if token is valid
     if (!assessment.tokenProperties.valid) {

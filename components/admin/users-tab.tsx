@@ -92,6 +92,11 @@ interface PrivilegeType {
   isDefault?: boolean;
 }
 
+const USERS_PAGE_SIZE = 20;
+const USERS_SEARCH_LIMIT = 50;
+const USER_ACTIVITY_LIMIT = 30;
+const PASSWORD_RESET_SUCCESS_MS = 5000; // Show "sent" confirmation for 5 seconds
+
 // ============================================================================
 // Helper Functions (extracted for cognitive complexity reduction)
 // ============================================================================
@@ -148,7 +153,7 @@ async function fetchUsersList(params: {
   >(functions, "adminListUsers");
 
   const result = await listFn({
-    limit: 20,
+    limit: USERS_PAGE_SIZE,
     startAfterUid: params.cursor || undefined,
     sortBy: params.sortBy,
     sortOrder: params.sortOrder,
@@ -165,7 +170,7 @@ async function searchUsersApi(query: string): Promise<UserSearchApiResult> {
     functions,
     "adminSearchUsers"
   );
-  const result = await searchFn({ query, limit: 50 });
+  const result = await searchFn({ query, limit: USERS_SEARCH_LIMIT });
   return result.data;
 }
 
@@ -178,7 +183,7 @@ async function fetchUserDetailApi(uid: string): Promise<UserDetail> {
     functions,
     "adminGetUserDetail"
   );
-  const result = await getDetailFn({ uid, activityLimit: 30 });
+  const result = await getDetailFn({ uid, activityLimit: USER_ACTIVITY_LIMIT });
   return result.data;
 }
 
@@ -310,7 +315,7 @@ function usePasswordResetTimeout(selectedUid: string | undefined) {
   const setSuccessWithTimeout = useCallback(() => {
     setSent(true);
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    timeoutRef.current = setTimeout(() => setSent(false), 5000);
+    timeoutRef.current = setTimeout(() => setSent(false), PASSWORD_RESET_SUCCESS_MS);
   }, []);
 
   return { sending, setSending, sent, setSuccessWithTimeout };

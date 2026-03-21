@@ -47,7 +47,7 @@ fi
 # Check if pnpm is installed
 if ! command -v pnpm &> /dev/null; then
   echo "📦 pnpm not found. Installing pnpm..."
-  npm install -g pnpm
+  npm install -g pnpm@9.15.4
 fi
 
 # Check if project name is provided

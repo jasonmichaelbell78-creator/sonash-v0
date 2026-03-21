@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useAuth } from "@/components/providers/auth-provider";
 import { useCelebration } from "@/components/celebrations/celebration-provider";
 import { FirestoreService } from "@/lib/firestore-service";
-import { intervalToDuration, subDays, startOfDay, format, differenceInDays } from "date-fns";
+import { intervalToDuration, differenceInDays } from "date-fns";
 import { toast } from "sonner";
 import MoodSparkline from "../visualizations/mood-sparkline";
 import { AuthErrorBanner } from "@/components/status/auth-error-banner";
@@ -17,7 +17,6 @@ import { getLocalStorage, setLocalStorage } from "@/lib/utils/storage";
 import { DailyQuoteCard } from "../features/daily-quote-card";
 import { RecoveryNotepad } from "../features/recovery-notepad";
 import CompactMeetingCountdown from "@/components/widgets/compact-meeting-countdown";
-import { db } from "@/lib/firebase";
 import type { DocumentSnapshot } from "firebase/firestore";
 import { TodayPageSkeleton } from "./today-page-skeleton";
 import { QuickActionsFab } from "../features/quick-actions-fab";
@@ -31,6 +30,11 @@ interface TodayPageProps {
   nickname: string;
   onNavigate: (id: NotebookModuleId) => void;
 }
+
+const MOOD_INTENSITY_DEFAULT = 5;
+const SAVE_COMPLETE_BANNER_MS = 2000; // Hide "Saved" message after 2 seconds
+const JOURNAL_SAVE_DEBOUNCE_MS = 2000; // Debounce for journal entry saves
+const LOADING_SKELETON_DELAY_MS = 500; // Brief delay to show skeleton
 
 // Duration part configuration for clean time display
 type DurationPart = { text: string; size: string };
@@ -80,34 +84,9 @@ function calculateCleanTimeParts(start: Date): DurationPart[] | null {
  */
 async function fetchWeeklyStats(userId: string): Promise<{ daysLogged: number; streak: number }> {
   try {
-    const { collection, query, where, getDocs, orderBy, limit } =
-      await import("firebase/firestore");
-
-    const sevenDaysAgo = subDays(startOfDay(new Date()), 6);
-    const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
-
-    const logsRef = collection(db, `users/${userId}/daily_logs`);
-    const q = query(
-      logsRef,
-      where("date", ">=", sevenDaysAgoId),
-      orderBy("date", "desc"),
-      limit(7)
-    );
-    const snapshot = await getDocs(q);
-
-    const uniqueDays = new Set(snapshot.docs.map((doc) => doc.data().date as string));
-
-    // Calculate current streak (consecutive days from today backwards)
-    let streak = 0;
-    let checkDate = new Date();
-    while (uniqueDays.has(format(startOfDay(checkDate), "yyyy-MM-dd"))) {
-      streak++;
-      checkDate = subDays(checkDate, 1);
-    }
-
-    return { daysLogged: uniqueDays.size, streak };
+    return await FirestoreService.getWeeklyStats(userId);
   } catch (error) {
-    console.error("Error fetching weekly stats:", error);
+    logger.error("Error fetching weekly stats", { error });
     return { daysLogged: 0, streak: 0 };
   }
 }
@@ -386,7 +365,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
             type: "mood",
             data: {
               mood: data.mood,
-              intensity: 5,
+              intensity: MOOD_INTENSITY_DEFAULT,
             },
           });
         }
@@ -507,7 +486,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       setHaltSubmitted(true);
       setTimeout(() => {
         setHaltCheck({ hungry: false, angry: false, lonely: false, tired: false });
-      }, 2000);
+      }, SAVE_COMPLETE_BANNER_MS);
     } catch (error) {
       logger.error("Failed to save HALT check", {
         userId: maskIdentifier(user.uid),
@@ -521,7 +500,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
   useEffect(() => {
     if (user && profile) {
       // Set loading to false after a brief delay to show skeleton
-      const timer = setTimeout(() => setIsLoading(false), 500);
+      const timer = setTimeout(() => setIsLoading(false), LOADING_SKELETON_DELAY_MS);
       return () => clearTimeout(timer);
     }
   }, [user, profile]);
@@ -650,7 +629,11 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         used: dataToSave.used,
       };
       if (process.env.NODE_ENV === "development") {
-        console.log("💾 Attempting to save:", saveData);
+        logger.info("Attempting to save daily log", {
+          hasMood: !!saveData.mood,
+          hasCravings: saveData.cravings !== null,
+          hasUsed: saveData.used !== null,
+        });
       }
 
       // Save to cloud (daily_logs collection - for Today tab persistence)
@@ -667,21 +650,13 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
       }
 
       setSaveComplete(true);
-      // Hide "Saved" message after 2 seconds
+      // Hide "Saved" message after a short delay
       if (saveCompleteTimeoutRef.current) clearTimeout(saveCompleteTimeoutRef.current);
       saveCompleteTimeoutRef.current = setTimeout(() => {
         setSaveComplete(false);
         saveCompleteTimeoutRef.current = null;
-      }, 2000);
+      }, SAVE_COMPLETE_BANNER_MS);
     } catch (error) {
-      // Log detailed error information for debugging
-      if (process.env.NODE_ENV === "development") {
-        console.error("❌ Save failed with error:", error);
-        if (error instanceof Error) {
-          console.error("Error message:", error.message);
-          console.error("Error stack:", error.stack);
-        }
-      }
       logger.error("Autosave failed", { userId: maskIdentifier(user.uid), error });
       toast.error("We couldn't save today's notes. Please check your connection.");
     } finally {
@@ -726,7 +701,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         cravings,
         used,
       });
-    }, 2000); // Longer delay for journal saves
+    }, JOURNAL_SAVE_DEBOUNCE_MS);
 
     return () => clearTimeout(journalTimeoutId);
   }, [mood, cravings, used, user, hasTouched, journalEntry, createJournalDailyLog]);

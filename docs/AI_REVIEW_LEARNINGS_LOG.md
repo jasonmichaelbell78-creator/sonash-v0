@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.104 **Created:** 2026-01-02 **Last Updated:**
-2026-03-18
+**Document Version:** 17.106 **Created:** 2026-01-02 **Last Updated:**
+2026-03-21
 
 ## Purpose
 
@@ -34,6 +34,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.106   | 2026-03-21               | Review #496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI). 16 fixes: getCollectionDocs allowlist+audit trail, isTrivialLine markdown bug, sanitizeMessage embedded secrets, useCallback meeting widgets (propagation), PLAN.md provenance/secrets/gitignore, negated condition, Array() constructor, replaceAll, Prettier. 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 17.105   | 2026-03-18               | Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud). 10 fixes: security scan exclusions for test files, symlink staged filter, deterministic error counting, safeAppend root containment, shared sanitizeError, CC extraction. 7 repeat-rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 17.104   | 2026-03-18               | Review #488: PR #448 R3 — Mixed (Qodo+SonarCloud). 10 fixes: resolveLinkPath path traversal, options.stagedFiles validation, DOMPurify FORBID_CONTENTS, churn-tracker latest-index, numeric normalization, CC reductions, token redaction. 8 repeat-rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 17.103   | 2026-03-18               | Review #487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud). 19 fixes: ESLint CJS config for \_\_dirname, no-control-regex block disable, CLI path traversal guard, Promise.allSettled, NaN→Number.NaN propagation, CC reductions. 8 auto-rejected (R1 stale repeats).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
@@ -361,6 +362,19 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#1)</summary>
+
+- **Date:** 2026-03-21
+- **Reviews consolidated:** #353-#495
+- **Recurring patterns:**
+  - qodo (16x)
+  - ci (13x)
+  - sonarcloud (11x)
+  - gemini (4x)
+  - sanitiz (3x)
+
+</details>
 <details>
 <summary>Previous Consolidation (#4)</summary>
 
@@ -1444,6 +1458,29 @@ deduplicated, non-overlapping ranges):
 - Exclude auto-generated release-please files from docs linter
 - Review IDs must be sequential numeric, not string-based
 
+---
+
+### Review 495: PR #457 R1 — Mixed (CI + Qodo) (2026-03-20)
+
+**Date:** 2026-03-20 | **PR:** #457 | **Source:** ci+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 7     | 0        | 1        |
+
+**Patterns:**
+
+- gitignored-build-artifacts
+- cli-flag-verification
+- cross-platform-test-assumptions
+
+**Learnings:**
+
+- scripts/reviews/dist/ must be built in CI
+- security-check.js --ci falls back to staged
+- case-sensitivity tests need FS detection
+- review-churn-tracker needs GH_TOKEN
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
@@ -2516,5 +2553,49 @@ SonarCloud 33)
 - `review-churn-tracker.test.js` needs GH_TOKEN for `gh` CLI commands
 - Keeping security check `continue-on-error` until validated against full
   codebase (reject making it blocking now)
+
+---
+
+### Review #496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI) (2026-03-21)
+
+**Date:** 2026-03-21 | **PR:** #459 | **Source:** qodo+gemini+sonarcloud+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 17    | 16    | 0        | 1        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 5     | 9     | 1       |
+
+**Patterns:**
+
+- Generic Firestore collection methods need allowlists even when callers are
+  hardcoded — defense in depth against future callers
+- `startsWith("*")` in line classifiers must be gated by file extension to avoid
+  misclassifying markdown list items
+- Token redaction using word-split misses embedded secrets (e.g.,
+  `token=abc123`) — regex match is more robust
+- Meeting widget `setInterval` handlers: define as `useCallback` before effect
+  (CLAUDE.md requirement) — propagate to both countdown widgets
+
+**Learnings:**
+
+- `getCollectionDocs` accepted arbitrary collection names — added allowlist +
+  audit logging (warn on block, info on access)
+- `isTrivialLine` treated `* list item` as trivial in .md files — gated
+  `startsWith("*")` behind non-md extension check
+- `sanitizeMessage` split on whitespace then checked tokens — switched to regex
+  `.replace()` to catch secrets adjacent to punctuation
+- SonarCloud `replaceAll` suggestions: use `replaceAll()` with string args
+  instead of `.replace()` with regex — simpler and intentional
+- `String.raw` template literals with single backslash cause parse errors in CJS
+  context — use string escapes instead
+- PLAN.md: raw research findings should be archived, not deleted, to preserve
+  provenance for resume/audit
+- Rejected: `post-read-handler` console.warn — already has nosemgrep with
+  documented rationale, developer-only diagnostics confirmed by Gemini
 
 ---

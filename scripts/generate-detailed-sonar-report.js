@@ -93,12 +93,17 @@ async function fetchSonarCloudIssues(token, componentKey) {
     const controller = new AbortController();
     // nosemgrep: sonash.security.no-eval-usage
     const timeout = setTimeout(() => controller.abort(), 30_000);
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
-      },
-    }).finally(() => clearTimeout(timeout));
+    let response;
+    try {
+      response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
+        },
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!response.ok) {
       const rawError = await response.text();
@@ -148,12 +153,17 @@ async function fetchSonarCloudHotspots(token, componentKey) {
     const controller = new AbortController();
     // nosemgrep: sonash.security.no-eval-usage
     const timeout = setTimeout(() => controller.abort(), 30_000);
-    const response = await fetch(url, {
-      signal: controller.signal,
-      headers: {
-        Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
-      },
-    }).finally(() => clearTimeout(timeout));
+    let response;
+    try {
+      response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Authorization: `Basic ${Buffer.from(token + ":").toString("base64")}`,
+        },
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
 
     if (!response.ok) {
       const rawError = await response.text();

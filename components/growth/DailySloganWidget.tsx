@@ -7,9 +7,8 @@
  */
 
 import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { logger } from "@/lib/logger";
+import { FirestoreService } from "@/lib/firestore-service";
 import { SlogansService, Slogan } from "@/lib/db/slogans";
 import { Lightbulb, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -21,10 +20,9 @@ export default function DailySloganWidget() {
   useEffect(() => {
     async function fetchDailySlogan() {
       try {
-        // Fetch all slogans
-        const slogansRef = collection(db, "slogans");
-        const snapshot = await getDocs(slogansRef);
-        const slogans = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Slogan);
+        // Fetch all slogans via repository pattern
+        const rawSlogans = await FirestoreService.getAllSlogans();
+        const slogans = rawSlogans as Slogan[];
 
         if (slogans.length === 0) {
           setLoading(false);

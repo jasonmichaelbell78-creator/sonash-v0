@@ -146,10 +146,4 @@ export function safeErrorMessage(error) {
   return sanitizeError(error);
 }
 
-// CommonJS compatibility for scripts that don't use ES modules
-export default {
-  sanitizeError,
-  sanitizeErrorForJson,
-  createSafeLogger,
-  safeErrorMessage,
-};
+// Named exports only — use: import { sanitizeError } from "./sanitize-error.js"

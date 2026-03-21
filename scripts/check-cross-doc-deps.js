@@ -200,11 +200,22 @@ function isTrivialChange(file) {
         const ext = gitPath.split(".").pop()?.toLowerCase();
         const hashIsComment =
           ext && ["sh", "bash", "zsh", "py", "rb", "yml", "yaml", "toml"].includes(ext);
-        // Include \* for block comment interior lines (Review #315)
-        const trivialPattern = hashIsComment
-          ? /^\s*$|^\s*(?:\/\/|#|\/\*|\*\/|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/
-          : /^\s*$|^\s*(?:\/\/|\/\*|\*\/|\*|<!--).*$|^\s*\*\*(?:Status|Last Updated|Document Version):\*\*\s/;
-        result = changeLines.every((line) => trivialPattern.test(line));
+        // Check if a line is trivial (comment, whitespace, doc metadata)
+        // Uses string checks for HTML comment markers to avoid CodeQL js/bad-tag-filter (Review #315)
+        const isTrivialLine = (line) => {
+          const trimmed = line.trim();
+          if (trimmed === "") return true;
+          if (trimmed.startsWith("//")) return true;
+          // Block comment markers — match "/*", "*/", bare "*", and " * " (JSDoc interior)
+          // but NOT markdown bullets like "* item text"
+          if (trimmed.startsWith("/*") || trimmed.startsWith("*/")) return true;
+          if (trimmed === "*" || (trimmed.startsWith("* ") && ext !== "md")) return true;
+          if (trimmed.startsWith("<!--") || trimmed.startsWith("-->")) return true;
+          if (hashIsComment && trimmed.startsWith("#")) return true;
+          if (/^\*\*(?:Status|Last Updated|Document Version):\*\*\s/.test(trimmed)) return true;
+          return false;
+        };
+        result = changeLines.every(isTrivialLine);
       }
     }
   } catch {

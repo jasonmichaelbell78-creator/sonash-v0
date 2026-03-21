@@ -7,6 +7,7 @@
 import { AdminCrudTable } from "./admin-crud-table";
 import { AdminCrudConfig } from "./admin-crud-types";
 import { Quote, QuotesService } from "@/lib/db/quotes";
+import { logger } from "@/lib/logger";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -103,7 +104,7 @@ async function seedQuotes() {
       await QuotesService.addQuote(q);
     }
   } catch (error) {
-    console.error("Failed to seed quotes:", error);
+    logger.error("Failed to seed quotes", { error });
     throw error;
   }
 }

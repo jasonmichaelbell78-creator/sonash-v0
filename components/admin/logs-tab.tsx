@@ -153,6 +153,7 @@ function safeStringify(obj: unknown): string {
         }
         // Handle Error objects - SECURITY: Don't expose stack traces in UI
         if (value instanceof Error) {
+          // nosemgrep: sonash.security.no-unsanitized-error-response -- admin-only log viewer; sanitizing would hide info admins need
           return { name: value.name, message: value.message };
         }
         return value;

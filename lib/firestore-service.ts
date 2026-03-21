@@ -27,6 +27,7 @@ import {
   query,
   orderBy,
   limit,
+  where,
   serverTimestamp,
 } from "firebase/firestore";
 import { assertUserScope, validateUserDocumentPath } from "./security/firestore-validation";
@@ -41,6 +42,7 @@ import {
   isCloudFunctionError,
   type HandleErrorOptions,
 } from "./utils/callable-errors";
+import { subDays, startOfDay, format } from "date-fns";
 import type { DailyLog, DailyLogResult, DailyLogHistoryResult } from "./types/daily-log";
 
 /**
@@ -107,6 +109,7 @@ type FirestoreDependencies = {
   query: typeof query;
   orderBy: typeof orderBy;
   limit: typeof limit;
+  where: typeof where;
   serverTimestamp: typeof serverTimestamp;
   logger: typeof defaultLogger;
 };
@@ -122,6 +125,7 @@ const defaultDeps: FirestoreDependencies = {
   query,
   orderBy,
   limit,
+  where,
   serverTimestamp,
   logger: defaultLogger,
 };
@@ -351,6 +355,107 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
         });
         return { entries: [], error };
       }
+    },
+
+    /**
+     * Fetch all documents from an allowed Firestore collection by name.
+     * Used by the admin CRUD table for collections without a dedicated service.
+     * Restricted to an explicit allowlist to prevent unauthorized data access.
+     *
+     * @param collectionName - Name of the top-level Firestore collection (must be in allowlist)
+     * @returns Array of documents with their IDs merged in
+     */
+    async getCollectionDocs(
+      collectionName: string
+    ): Promise<Array<{ id: string } & Record<string, unknown>>> {
+      const ALLOWED_COLLECTIONS = new Set([
+        "meetings",
+        "slogans",
+        "quotes",
+        "glossary",
+        "sober_living",
+      ]);
+
+      if (!ALLOWED_COLLECTIONS.has(collectionName)) {
+        deps.logger.warn("Blocked admin collection access", {
+          collection: collectionName,
+          action: "getCollectionDocs",
+        });
+        throw new Error(`Collection "${collectionName}" is not in the admin allowlist`);
+      }
+
+      deps.logger.info("Admin collection read", {
+        collection: collectionName,
+        action: "getCollectionDocs",
+      });
+
+      const ref = deps.collection(deps.db, collectionName);
+      const snapshot = await deps.getDocs(ref);
+      return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    },
+
+    /**
+     * Fetch the most recent Lighthouse run from the dev/lighthouse/history collection
+     *
+     * @returns The latest Lighthouse run document data, or null if none exists
+     */
+    async getLatestLighthouseRun(): Promise<(Record<string, unknown> & { id: string }) | null> {
+      const historyRef = deps.collection(deps.db, "dev", "lighthouse", "history");
+      const q = deps.query(historyRef, deps.orderBy("timestamp", "desc"), deps.limit(1));
+      const snapshot = await deps.getDocs(q);
+
+      if (snapshot.empty) return null;
+
+      const doc = snapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
+    },
+
+    /**
+     * Fetch all slogans from the slogans collection
+     *
+     * @returns Array of slogan objects with their document IDs
+     */
+    async getAllSlogans(): Promise<Array<{ id: string } & Record<string, unknown>>> {
+      const slogansRef = deps.collection(deps.db, "slogans");
+      const snapshot = await deps.getDocs(slogansRef);
+      return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+    },
+
+    /**
+     * Fetch weekly engagement stats for the today page
+     * Returns days logged and current consecutive streak for the past 7 days.
+     *
+     * @param userId - ID of the user
+     * @returns Object with daysLogged count and streak length
+     */
+    async getWeeklyStats(userId: string): Promise<{ daysLogged: number; streak: number }> {
+      ensureValidUser(userId);
+      deps.assertUserScope({ userId });
+
+      const WEEKLY_STATS_DAYS = 7;
+      const sevenDaysAgo = subDays(startOfDay(new Date()), WEEKLY_STATS_DAYS - 1);
+      const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
+
+      const logsRef = deps.collection(deps.db, buildPath.dailyLogsCollection(userId));
+      const q = deps.query(
+        logsRef,
+        deps.where("date", ">=", sevenDaysAgoId),
+        deps.orderBy("date", "desc"),
+        deps.limit(WEEKLY_STATS_DAYS)
+      );
+      const snapshot = await deps.getDocs(q);
+
+      const uniqueDays = new Set(snapshot.docs.map((d) => d.data().date as string));
+
+      // Calculate current streak (consecutive days from today backwards)
+      let streak = 0;
+      let checkDate = new Date();
+      while (uniqueDays.has(format(startOfDay(checkDate), "yyyy-MM-dd"))) {
+        streak++;
+        checkDate = subDays(checkDate, 1);
+      }
+
+      return { daysLogged: uniqueDays.size, streak };
     },
 
     // Save an inventory entry (Spot Check, Night Review, etc.)

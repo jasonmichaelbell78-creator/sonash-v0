@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { collection, getDocs } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { db } from "@/lib/firebase";
+import { FirestoreService } from "@/lib/firestore-service";
 import { logger } from "@/lib/logger";
 import { Button } from "@/components/ui/button";
 import { useTabRefresh } from "@/lib/hooks/use-tab-refresh";
@@ -79,10 +78,9 @@ export function AdminCrudTable<T extends BaseEntity>({ config }: Readonly<AdminC
         // Use provided service
         data = await config.service.getAll();
       } else if (config.collectionName) {
-        // Direct Firestore fetch
-        const ref = collection(db, config.collectionName);
-        const snapshot = await getDocs(ref);
-        data = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as T);
+        // Fetch via FirestoreService repository pattern
+        const docs = await FirestoreService.getCollectionDocs(config.collectionName);
+        data = docs as T[];
       } else {
         throw new Error("Must provide either service or collectionName");
       }

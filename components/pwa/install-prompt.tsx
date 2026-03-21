@@ -5,6 +5,8 @@ import { Download, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { logger } from "@/lib/logger";
 
+const IOS_PROMPT_DELAY_MS = 3000; // Show iOS install prompt after 3 seconds
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -31,7 +33,7 @@ export function InstallPrompt() {
   useEffect(() => {
     // Show prompt after delay for iOS devices
     if (isIOS) {
-      const timer = setTimeout(() => setIsVisible(true), 3000);
+      const timer = setTimeout(() => setIsVisible(true), IOS_PROMPT_DELAY_MS);
       return () => clearTimeout(timer);
     }
   }, [isIOS]);

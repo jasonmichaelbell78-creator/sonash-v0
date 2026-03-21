@@ -17,6 +17,10 @@ import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { logger } from "@/lib/logger";
 
+const INVENTORY_FETCH_LIMIT = 50;
+const AUTO_SAVE_DEBOUNCE_MS = 2000; // Save 2 seconds after last change
+const CONCLUSION_Q4_COUNT = 15; // "Give 15 reasons why..." question
+
 type Step1WorksheetCardProps = HTMLMotionProps<"button">;
 
 interface Step1Data {
@@ -118,7 +122,7 @@ const initialData: Step1Data = {
   conclusion_q1: ["", "", ""],
   conclusion_q2: "",
   conclusion_q3: "",
-  conclusion_q4: Array(15).fill(""),
+  conclusion_q4: new Array(CONCLUSION_Q4_COUNT).fill(""),
 };
 
 const FORM_SECTIONS: SectionConfig[] = [
@@ -539,7 +543,10 @@ export default function Step1WorksheetCard({
 
     setIsLoading(true);
     try {
-      const { entries, error } = await FirestoreService.getInventoryEntries(user.uid, 50);
+      const { entries, error } = await FirestoreService.getInventoryEntries(
+        user.uid,
+        INVENTORY_FETCH_LIMIT
+      );
 
       if (error) {
         logger.error("Failed to load saved worksheet", { error });
@@ -630,7 +637,7 @@ export default function Step1WorksheetCard({
     if (isOpen && hasContent) {
       saveTimeoutRef.current = setTimeout(() => {
         autoSave();
-      }, 2000); // Save 2 seconds after last change
+      }, AUTO_SAVE_DEBOUNCE_MS);
     }
 
     return () => {

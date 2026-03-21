@@ -6,8 +6,7 @@ on:
     paths:
       - "ROADMAP.md"
 
-permissions:
-  contents: write
+permissions: {}
 
 # Prevent race conditions from concurrent pushes
 concurrency:

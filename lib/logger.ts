@@ -31,12 +31,35 @@ const looksLikeSensitiveId = (value: string): boolean => {
   return value.length >= 12 && /^[A-Za-z0-9_\-.:]+$/.test(value);
 };
 
+/**
+ * Sanitize a message string before external logging (e.g., Sentry, production console)
+ * Redacts potential secrets/PII that may appear in error messages
+ *
+ * Defined before redactValue so it can be used to sanitize Error.message in log context.
+ */
+const sanitizeMessage = (message: string): string => {
+  // Strip control characters to prevent log injection
+  // eslint-disable-next-line no-control-regex
+  const cleaned = message.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
+
+  // Redact sensitive-looking tokens even when adjacent to punctuation
+  // (e.g., "token=abc123...", "Bearer abc123...", URLs with credentials)
+  const redacted = cleaned.replace(/[A-Za-z0-9_\-.:]{12,}/g, (match) =>
+    looksLikeSensitiveId(match) ? "[REDACTED]" : match
+  );
+
+  // Cap size to avoid oversized log payloads
+  return redacted.length > 2000 ? `${redacted.slice(0, 2000)}...[truncated]` : redacted;
+};
+
 const redactValue = (value: unknown): unknown => {
   if (value === null || value === undefined) return value;
   if (value instanceof Error) {
+    // Sanitize error message to prevent leaking internal paths/secrets in log context
+    const safeMessage = sanitizeMessage(value.message);
     return {
       name: value.name,
-      message: value.message,
+      message: safeMessage, // nosemgrep: sonash.security.no-unsanitized-error-response -- sanitized above
       stack: isDevelopment ? value.stack : undefined,
     };
   }
@@ -77,25 +100,6 @@ const sanitizeContext = (context?: LogContext) => {
     acc[key] = redactValue(value);
     return acc;
   }, {});
-};
-
-/**
- * Sanitize a message string before external logging (e.g., Sentry, production console)
- * Redacts potential secrets/PII that may appear in error messages
- */
-const sanitizeMessage = (message: string): string => {
-  // Strip control characters to prevent log injection
-  // eslint-disable-next-line no-control-regex
-  const cleaned = message.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, "");
-
-  // Split into words and fully redact any that look like sensitive IDs
-  const redacted = cleaned
-    .split(/(\s+)/)
-    .map((part) => (looksLikeSensitiveId(part) ? "[REDACTED]" : part))
-    .join("");
-
-  // Cap size to avoid oversized log payloads
-  return redacted.length > 2000 ? `${redacted.slice(0, 2000)}...[truncated]` : redacted;
 };
 
 const log = (level: LogLevel, message: string, context?: LogContext) => {
