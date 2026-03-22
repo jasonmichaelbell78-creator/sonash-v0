@@ -7,10 +7,21 @@
  * infinite recursion when the .ts file re-exported from the .js file.
  */
 
-export declare function sanitizeError(error: unknown): string;
-export declare function sanitizeErrorForJson(error: unknown): Record<string, unknown>;
-export declare function createSafeLogger(prefix: string): {
-  error: (...args: unknown[]) => void;
-  warn: (...args: unknown[]) => void;
-};
+export interface SanitizeOptions {
+  preserveStackInDev?: boolean;
+  verbose?: boolean;
+}
+
+export interface SafeLogger {
+  error: (msg: string, error?: unknown) => void;
+  warn: (msg: string, error?: unknown) => void;
+  info: (msg: string) => void;
+}
+
+export declare function sanitizeError(error: unknown, options?: SanitizeOptions): string;
+export declare function sanitizeErrorForJson(
+  error: unknown,
+  options?: SanitizeOptions
+): { error: boolean; message: string; type: string };
+export declare function createSafeLogger(prefix?: string): SafeLogger;
 export declare function safeErrorMessage(error: unknown): string;

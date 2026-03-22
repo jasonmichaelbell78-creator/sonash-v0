@@ -332,7 +332,7 @@ function runSync() {
 
   logStep(
     "SYNC",
-    `Markdown reviews: ${mdReviews.length}, JSONL existing: ${existingIds.size}, new: ${missing.length}`
+    `Markdown reviews: ${mdReviews.length}, JSONL existing: ${existingIds.size}, archived: ${archivedIds.size}, new: ${missing.length}`
   );
 
   if (missing.length === 0) {
