@@ -23,6 +23,7 @@
  *   critical - Always blocks (pre-commit + CI): security patterns
  *   high     - Blocks in CI, warns in pre-commit: correctness patterns
  *   medium   - Always warns: style/quality patterns
+ *   low      - Informational: suggestions, best practices
  *
  * Exit codes: 0 = no critical violations, 1 = critical violations found, 2 = error
  */
@@ -222,8 +223,17 @@ const GLOBAL_EXCLUDE = [
  */
 function collectWriteLines(lines) {
   const writeLines = [];
+  let inBlockComment = false;
   for (let i = 0; i < lines.length; i++) {
     const trimmed = lines[i].trimStart();
+    if (inBlockComment) {
+      if (trimmed.includes("*/")) inBlockComment = false;
+      continue;
+    }
+    if (trimmed.startsWith("/*")) {
+      if (!trimmed.includes("*/")) inBlockComment = true;
+      continue;
+    }
     if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
     if (lines[i].includes("writeFileSync")) writeLines.push(i);
   }
@@ -235,15 +245,18 @@ function collectWriteLines(lines) {
  * Walks backwards counting braces to track scope.
  */
 function isWrappedInTry(lines, wLine) {
-  let braceBalance = 0;
+  // Backwards scan: '}' = entering a nested block (depth++),
+  // '{' = exiting to outer scope (depth--). We look for `try` at depth 0.
+  let depth = 0;
   for (let j = wLine - 1; j >= 0; j--) {
     const ln = lines[j];
-    if (braceBalance === 0 && /\btry\b/.test(ln)) return true;
+    // Count braces first so depth is accurate for this line
     for (let c = ln.length - 1; c >= 0; c--) {
-      if (ln[c] === "{") braceBalance++;
-      if (ln[c] === "}") braceBalance--;
+      if (ln[c] === "}") depth++;
+      else if (ln[c] === "{") depth = Math.max(0, depth - 1);
     }
-    if (braceBalance > 0) break;
+    // At depth 0, we're in the same scope as the write — check for try
+    if (depth === 0 && /\btry\b/.test(ln)) return true;
   }
   return false;
 }
@@ -2065,7 +2078,7 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
   }
 
   // Count by severity
-  const bySeverity = { critical: 0, high: 0, medium: 0 };
+  const bySeverity = { critical: 0, high: 0, medium: 0, low: 0 };
   for (const v of violations) {
     const sev = v.severity || "medium";
     bySeverity[sev] = (bySeverity[sev] || 0) + 1;
@@ -2244,7 +2257,7 @@ function expireStaleWarnings() {
  */
 function outputResultsAndExit(allViolations, files, warnings, blocks) {
   if (JSON_OUTPUT) {
-    const severityCounts = { critical: 0, high: 0, medium: 0 };
+    const severityCounts = { critical: 0, high: 0, medium: 0, low: 0 };
     for (const v of allViolations) {
       const sev = v.severity || "medium";
       severityCounts[sev] = (severityCounts[sev] || 0) + 1;

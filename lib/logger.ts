@@ -46,7 +46,7 @@ const sanitizeMessage = (message: string): string => {
   // (e.g., "token=abc123...", "Bearer abc123...", URLs with credentials)
   // Two-tier check: mixed alphanumeric always redacted, pure-alpha checked
   // against looksLikeSensitiveId to catch long API keys/passphrases
-  const redacted = cleaned.replace(/[A-Za-z0-9_\-.:]{12,}/g, (match) => {
+  const redacted = cleaned.replaceAll(/[A-Za-z0-9_\-.:]{12,}/g, (match) => {
     if (/\d/.test(match) && /[A-Za-z]/.test(match)) return "[REDACTED]";
     if (looksLikeSensitiveId(match)) return "[REDACTED]";
     return match;
