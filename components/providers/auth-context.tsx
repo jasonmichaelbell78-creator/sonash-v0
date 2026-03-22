@@ -84,7 +84,7 @@ export function AuthProvider({ children, onUserChange }: Readonly<AuthProviderPr
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
       setUser(currentUser);
       onUserChange?.(currentUser);
 

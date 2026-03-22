@@ -363,7 +363,7 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
-<summary>Previous Consolidation (#1)</summary>
+<summary>Previous Consolidation (#14)</summary>
 
 - **Date:** 2026-03-21
 - **Reviews consolidated:** #353-#495
@@ -795,7 +795,7 @@ accumulate.
 | Metric         | Value          | Threshold | Action if Exceeded                       |
 | -------------- | -------------- | --------- | ---------------------------------------- |
 | Main log lines | ~2048          | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 24 (#353-#490) | 30        | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 20 (#360-#496) | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -901,191 +901,6 @@ deduplicated, non-overlapping ranges):
 ---
 
 ## Active Reviews
-
-### Review 356: PR #431 R2 — Data Effectiveness Audit Schema & Security Fixes (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 54    | 54    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 8     | 21    | 23      |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Schema refactored without updating all consumers
-- Prevention: Schema migration checklist — grep all consumers before shipping
-- Root cause: Ad-hoc regex instead of using existing validatePathInDir helper
-- Prevention: Always use security-helpers.js for path validation
-- Root cause: Copy-paste fallbacks diverged from canonical implementation
-- Prevention: All fallbacks must match the 5-replace canonical pattern
-
----
-
-### Review 357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 26    | 16    | 0        | 10       |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 8     | 14    | 2       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-- propagation
-
-**Learnings:**
-
-- Root cause: Overly broad catch-all added to complement Windows path
-- Prevention: Canonical sanitizeError should only redact known-sensitive
-- Propagation: Fixed in 8 files (canonical + 7 fallback copies)
-- Root cause: Single functions doing too much — iteration + mutation +
-- Prevention: Extract helpers when function has >2 concerns
-- Root cause: Test helper didn't account for the security boundary
-
----
-
-### Review 482: PR #429 R1 — SonarCloud + Qodo + CI (2026-03-13)
-
-**Date:** 2026-03-13 | **PR:** #429 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 15    | 12    | 1        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 5     | 6     | 0       |
-
-**Learnings:**
-
-- Mixed (SonarCloud Security Hotspots, SonarCloud Code Smells, Qodo PR
-- PR #429 / tooling-code-plan **Items:** 15 total (Critical: 1,
-- First review round on tooling/code-plan PR (46 files). Mix of new
-- Deferred: 1 item (DEBT-45528)
-- Rejected: 2 items (S4036 PATH: `execFileSync` doesn't use shell; secure
-- Dead imports from pre-migration code can trigger CI blockers — `setDoc` was in
-- Hook placement matters: `block-push-to-main.js` is a PreToolUse hook (blocks
-
----
-
-### Review 483: PR #429 R2 — Qodo + Gemini + CI (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Auto-generated DEBT entries (e.g. from log-override.js hook bypass detection)
-- When Zod schemas and documentation disagree on enum values, check existing
-- SARIF upload guarded by `hashFiles() != ''` without asserting file existence
-- Validator scripts claiming "all files" coverage but only checking a hardcoded
-
----
-
-### Review 484: PR #429 R3 — SonarCloud + Qodo + CI (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Semgrep `--test` mode catch blocks must distinguish between "flag not
-- IIFE-in-template-literal (`${(() => {...})()}`) is valid JS but hurts
-- Cross-round dedup saves effort: R3 item 7 (hook.command logging risk) was
-
----
-
-### Review 358: PR #431 R4 — Modernization, Complexity & Data Guards (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 52    | 37    | 0        | 15       |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 3     | 0     | 34      |
-
-**Patterns:**
-
-- lesson
-
-**Learnings:**
-
-- Lesson: When SonarCloud will re-flag the same items every round, fix them
-- Rejected: 15 items (2 R3 dedup, 13 over-engineering/false-positive)
-- POSIX path redaction (R3 dedup — R3 deliberately removed this regex)
-- OS temp directory for tests (R3 dedup — tests need repo boundary compat)
-- Symlink security in run-alerts.js (isSafeToWrite guard already at L515)
-
----
-
-### Review 359: PR #431 R5 — Backup Safety, Nullish Coalescing & Error Context (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 11    | 0        | 7        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 9     | 7       |
-
-**Learnings:**
-
-- Fixed: 11 items across 9 files
-- Rejected: 7 items (5 cross-round dedup from R3/R4, 1 architectural, 1 FP)
-- Symlink overwrite risk (R4 dedup — isSafeToWrite guard at L515)
-- Set.has x2 (R4 dedup — string.includes(), not array)
-- Unix path redaction (R3+R4 dedup — deliberately removed in R3)
-- Type-dependent design (R4 dedup — simple boolean in 6-line function)
-
----
 
 ### Review 360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
 
@@ -1321,46 +1136,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 354: PR #427 R4 — TOCTOU Hardening, Sanitize Fallbacks, Semgrep Rule ID Fix (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 25    | 20    | 0        | 5        |
-
----
-
-### Review 353: PR #427 R2 — Security Fail-Closed, Error Safety Codemod, Bulk Lint (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 18    | 0        | 3        |
-
----
-
-### Review 480: PR #427 R3 — Mixed (CI + CodeQL + Semgrep + Qodo + SonarCloud) (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 45    | 45    | 0        | 0        |
-
----
-
-### Review 481: PR #427 R5 — Qodo + Semgrep + SonarCloud (2026-03-12)
-
-**Date:** 2026-03-12 | **PR:** #427 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 23    | 20    | 0        | 3        |
-
----
-
 ### Review 491: PR #453 R3 — Mixed (Qodo+SonarCloud+CI) (2026-03-19)
 
 **Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
@@ -1480,6 +1255,49 @@ deduplicated, non-overlapping ranges):
 - security-check.js --ci falls back to staged
 - case-sensitivity tests need FS detection
 - review-churn-tracker needs GH_TOKEN
+
+---
+
+### Review 496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI) (2026-03-21)
+
+**Date:** 2026-03-21 | **PR:** #459 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Generic Firestore collection methods need allowlists even when callers are
+- `startsWith("*")` in line classifiers must be gated by file extension to avoid
+- Token redaction using word-split misses embedded secrets (e.g.,
+- Meeting widget `setInterval` handlers: define as `useCallback` before effect
+
+**Learnings:**
+
+- `getCollectionDocs` accepted arbitrary collection names — added allowlist +
+- `isTrivialLine` treated `* list item` as trivial in .md files — gated
+- `sanitizeMessage` split on whitespace then checked tokens — switched to regex
+- SonarCloud `replaceAll` suggestions: use `replaceAll()` with string args
+- `String.raw` template literals with single backslash cause parse errors in CJS
+- PLAN.md: raw research findings should be archived, not deleted, to preserve
+- Rejected: `post-read-handler` console.warn — already has nosemgrep with
+
+---
+
+### Review review-496: PR #459 R1 — 16 review fixes (security, bugs, compliance, planning) (2026-03-21)
+
+**Date:** 2026-03-21 | **PR:** #459 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 17    | 16    | 0        | 1        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 5     | 9     | 1       |
 
 ## Key Patterns
 

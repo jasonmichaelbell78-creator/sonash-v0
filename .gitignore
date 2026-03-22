@@ -59,12 +59,10 @@ dataconnect/
 # auto-generated pattern suggestions
 scripts/suggested-patterns.json
 
-# ephemeral session state (velocity tracking, pattern graduation, scratchpad)
-.claude/state/velocity-log.jsonl
+# ephemeral session state (pattern graduation, scratchpad)
 .claude/state/warned-files.json
 .claude/state/session-notes.json
 .claude/state/handoff.json
-.claude/state/consolidation.json
 .claude/state/alerts-baseline.json
 .claude/state/hook-runs.jsonl
 .claude/state/commit-failures.jsonl
@@ -95,8 +93,6 @@ serviceAccountKey.json
 .claude/hooks/.directive-dedup.json
 .claude/hooks/.fetch-cache.json
 .claude/state/reviews.jsonl
-.claude/state/health-score-log.jsonl
-.claude/state/hook-warnings-log.jsonl
 .claude/state/pr-ecosystem-audit.jsonl
 .claude/state/code-reviewer-session.json
 .claude/state/last-hook-report.md*

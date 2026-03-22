@@ -316,8 +316,19 @@ function runSync() {
   const existingRecords = loadReviews();
   const existingIds = loadExistingIds(existingRecords);
 
-  // Filter to reviews not already in JSONL (compare as strings for type safety)
-  const missing = mdReviews.filter((r) => !existingIds.has(String(r.id)));
+  // Also check archived reviews to avoid re-syncing entries that were already archived
+  let archivedRecords = [];
+  try {
+    archivedRecords = readJsonl(REVIEWS_ARCHIVE_JSONL, { safe: true, quiet: true });
+  } catch {
+    // Archive file may not exist yet — that's fine
+  }
+  const archivedIds = loadExistingIds(archivedRecords);
+
+  // Filter to reviews not already in JSONL or archive (compare as strings for type safety)
+  const missing = mdReviews.filter(
+    (r) => !existingIds.has(String(r.id)) && !archivedIds.has(String(r.id))
+  );
 
   logStep(
     "SYNC",
