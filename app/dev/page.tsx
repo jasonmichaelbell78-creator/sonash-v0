@@ -49,7 +49,7 @@ export default function DevPage() {
     }
 
     // Listen for auth state (single subscription on mount)
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
       if (isCancelled) return;
 
       if (!firebaseUser || firebaseUser.isAnonymous) {

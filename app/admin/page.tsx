@@ -55,7 +55,7 @@ export default function AdminPage() {
     if (state === "mobile") return;
 
     // Listen for auth state
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
       // No user or anonymous user = show login
       if (!firebaseUser || firebaseUser.isAnonymous) {
         setState("login");
