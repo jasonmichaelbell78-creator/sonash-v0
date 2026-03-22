@@ -5,5 +5,8 @@ handoff.json
 pending-reviews.json
 commit-log.jsonl
 
+# Locale sync backups (temporary, created during cross-locale merges)
+.work-backup-*/
+
 # Keep this .gitignore tracked
 !.gitignore

@@ -23,6 +23,7 @@
  *   critical - Always blocks (pre-commit + CI): security patterns
  *   high     - Blocks in CI, warns in pre-commit: correctness patterns
  *   medium   - Always warns: style/quality patterns
+ *   low      - Informational: suggestions, best practices
  *
  * Exit codes: 0 = no critical violations, 1 = critical violations found, 2 = error
  */
@@ -217,6 +218,62 @@ const GLOBAL_EXCLUDE = [
  * - review: Which review(s) documented this
  * - fileTypes: Which file extensions to check
  */
+/**
+ * Collect non-comment writeFileSync line numbers from file content.
+ */
+function collectWriteLines(lines) {
+  const writeLines = [];
+  let inBlockComment = false;
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trimStart();
+    if (inBlockComment) {
+      if (trimmed.includes("*/")) inBlockComment = false;
+      continue;
+    }
+    if (trimmed.startsWith("/*")) {
+      if (!trimmed.includes("*/")) inBlockComment = true;
+      continue;
+    }
+    if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+    if (lines[i].includes("writeFileSync")) writeLines.push(i);
+  }
+  return writeLines;
+}
+
+/**
+ * Check if a writeFileSync call at `wLine` is wrapped in a try block.
+ * Walks backwards counting braces to track scope.
+ */
+function isWrappedInTry(lines, wLine) {
+  // Backwards scan: '}' = entering a nested block (depth++),
+  // '{' = exiting to outer scope (depth--). We look for `try` at depth 0.
+  let depth = 0;
+  for (let j = wLine - 1; j >= 0; j--) {
+    const ln = lines[j];
+    // Count braces first so depth is accurate for this line
+    for (let c = ln.length - 1; c >= 0; c--) {
+      if (ln[c] === "}") depth++;
+      else if (ln[c] === "{") depth = Math.max(0, depth - 1);
+    }
+    // At depth 0, we're in the same scope as the write — check for try
+    if (depth === 0 && /\btry\b/.test(ln)) return true;
+  }
+  return false;
+}
+
+/**
+ * Check if a readFileSync call reads a hardcoded path with a known-text extension.
+ */
+function readsKnownTextExtension(line, safeExtensions) {
+  const stringLiterals = line.match(/["'`][^"'`]+["'`]/g) || [];
+  for (const lit of stringLiterals) {
+    const inner = lit.slice(1, -1);
+    const dotIdx = inner.lastIndexOf(".");
+    if (dotIdx !== -1 && safeExtensions.has(inner.slice(dotIdx))) return true;
+  }
+  return false;
+}
+
 const ANTI_PATTERNS = [
   // Bash/Shell patterns
   {
@@ -1545,6 +1602,123 @@ const ANTI_PATTERNS = [
     fileTypes: [".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:app|components|pages)\//,
   },
+
+  // Non-standard exit codes — exit codes should follow 0=success, 1=action-needed, 2=fatal
+  // Recurred 5 times in reviews; enforcing signal-error-code semantics
+  {
+    id: "non-standard-exit-code",
+    severity: "medium",
+    pattern: /process\.exit\(\s*(?!(?:[012])\s*\))[^)]+\)/g,
+    message: "Exit code not 0 (success), 1 (action-needed), or 2 (fatal) — see CODE_PATTERNS.md",
+    fix: "Use: process.exit(0) for success, process.exit(1) for action-needed/recoverable, process.exit(2) for fatal error",
+    review: "5 review recurrences — signal-error-code semantics",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+  },
+  {
+    id: "non-standard-exit-code-shell",
+    severity: "medium",
+    pattern: /\bexit\s+(?!(?:[012])(?:\s|$|;|\)|[&|><]))\d+/g,
+    message: "Exit code not 0 (success), 1 (action-needed), or 2 (fatal) — see CODE_PATTERNS.md",
+    fix: "Use: exit 0 for success, exit 1 for action-needed/recoverable, exit 2 for fatal error",
+    review: "5 review recurrences — signal-error-code semantics",
+    fileTypes: [".sh"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+  },
+
+  // Inline array literal with .includes() — prefer Set for O(1) lookups
+  // Recurred 5 times in reviews; low-severity suggestion
+  {
+    id: "array-includes-over-set",
+    severity: "low",
+    pattern: /\[[^\]]{40,}\]\.includes\(/g,
+    message: "Consider using a Set for lookups on constant arrays with 5+ elements",
+    fix: "Replace `[...].includes(x)` with `new Set([...]).has(x)` for O(1) lookups",
+    review: "5 review recurrences — Set vs Array migration",
+    fileTypes: [".js", ".ts", ".tsx"],
+  },
+
+  // Multiple writeFileSync calls without try/catch — partial writes may leave repo inconsistent
+  // Recurred 4 times in reviews. Heuristic: 3+ writeFileSync in a file with no wrapping try/catch.
+  {
+    id: "multi-write-no-rollback",
+    severity: "medium",
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const writeLines = collectWriteLines(lines);
+      if (writeLines.length < 3) return [];
+      const wrappedCount = writeLines.filter((wl) => isWrappedInTry(lines, wl)).length;
+      if (wrappedCount < writeLines.length / 2) {
+        return [
+          {
+            line: writeLines[0] + 1,
+            match: `${writeLines.length} writeFileSync calls, ${wrappedCount} wrapped in try/catch`,
+          },
+        ];
+      }
+      return [];
+    },
+    message: "Multiple writeFileSync calls without try/catch — partial writes may corrupt state",
+    fix: "Wrap related writeFileSync calls in a try/catch block with cleanup/rollback in the catch",
+    review: "Recurred 4 times in reviews — multi-file rollback pattern",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
+
+  // readFileSync with variable path and no binary file check — may crash on binary input
+  // Recurred 2 times in reviews; low severity suggestion for scripts processing arbitrary files
+  {
+    id: "read-without-binary-check",
+    severity: "low",
+    testFn: (content) => {
+      const safeExtensions = new Set([
+        ".json",
+        ".md",
+        ".js",
+        ".ts",
+        ".tsx",
+        ".jsx",
+        ".yml",
+        ".yaml",
+        ".txt",
+        ".css",
+        ".html",
+        ".mjs",
+        ".cjs",
+        ".sh",
+        ".env",
+        ".toml",
+        ".xml",
+        ".csv",
+        ".svg",
+        ".jsonl",
+        ".log",
+      ]);
+
+      // Skip files with any binary-safety guard
+      if (/isBinary|Buffer\.isBuffer|istextorbinary|isbinaryfile/.test(content)) return [];
+
+      const lines = content.split("\n");
+      const matches = [];
+      for (let i = 0; i < lines.length; i++) {
+        const trimmed = lines[i].trim();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        if (trimmed.startsWith("import ") || trimmed.includes("require(")) continue;
+        if (!lines[i].includes("readFileSync")) continue;
+        if (readsKnownTextExtension(lines[i], safeExtensions)) continue;
+        if (!lines[i].includes("utf8") && !lines[i].includes("utf-8")) continue;
+        matches.push({ line: i + 1, match: trimmed.slice(0, 50) });
+      }
+      return matches;
+    },
+    message: "readFileSync on variable path without binary file check — may crash on binary files",
+    fix: "Add a binary file check before reading (e.g., isBinary from 'istextorbinary', or filter by known-text extensions)",
+    review: "2 review recurrences — binary file safety",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════════
@@ -1904,7 +2078,7 @@ function formatTextOutput(violations, filesChecked, warnCount = 0, blockCount = 
   }
 
   // Count by severity
-  const bySeverity = { critical: 0, high: 0, medium: 0 };
+  const bySeverity = { critical: 0, high: 0, medium: 0, low: 0 };
   for (const v of violations) {
     const sev = v.severity || "medium";
     bySeverity[sev] = (bySeverity[sev] || 0) + 1;
@@ -2083,7 +2257,7 @@ function expireStaleWarnings() {
  */
 function outputResultsAndExit(allViolations, files, warnings, blocks) {
   if (JSON_OUTPUT) {
-    const severityCounts = { critical: 0, high: 0, medium: 0 };
+    const severityCounts = { critical: 0, high: 0, medium: 0, low: 0 };
     for (const v of allViolations) {
       const sev = v.severity || "medium";
       severityCounts[sev] = (severityCounts[sev] || 0) + 1;

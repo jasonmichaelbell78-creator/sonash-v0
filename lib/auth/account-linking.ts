@@ -15,8 +15,12 @@ import {
   linkWithCredential,
   linkWithPopup,
   signInWithPopup,
-  AuthError,
 } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
+
+// AuthError extends FirebaseError but @firebase/util types may be missing
+// in some installs, so we alias through FirebaseError which has .code
+type AuthError = FirebaseError;
 import { auth } from "../firebase";
 import { updateUserProfile } from "../db/users";
 import { logger, maskIdentifier } from "../logger";

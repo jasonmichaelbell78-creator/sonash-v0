@@ -28,14 +28,19 @@ export function isFirebaseError(error: unknown): error is FirebaseError {
  * @returns User-friendly error message
  */
 export function getErrorMessage(error: unknown, fallback = "An unexpected error occurred"): string {
-  // Firebase errors
+  // Firebase errors (which are also Error instances)
   if (isFirebaseError(error)) {
     return getFirebaseErrorMessage(error);
   }
 
-  // Standard Error objects
-  if (error instanceof Error) {
-    return error.message;
+  // Standard Error objects (use typeof check to avoid narrowing conflict with FirebaseError guard)
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof (error as Error).message === "string"
+  ) {
+    return (error as Error).message;
   }
 
   // String errors
@@ -153,13 +158,11 @@ export function isAuthError(error: unknown): boolean {
  */
 export function isNetworkError(error: unknown): boolean {
   if (!isFirebaseError(error)) {
-    // Check for standard network errors
-    if (error instanceof Error) {
-      return (
-        error.message.includes("network") ||
-        error.message.includes("offline") ||
-        error.message.includes("timeout")
-      );
+    // Check for standard network errors (structural check avoids narrowing conflict)
+    if (typeof error === "object" && error !== null && "message" in error) {
+      const msg = (error as { message?: unknown }).message;
+      if (typeof msg !== "string") return false;
+      return msg.includes("network") || msg.includes("offline") || msg.includes("timeout");
     }
     return false;
   }

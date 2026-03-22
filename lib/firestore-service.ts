@@ -411,17 +411,6 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
     },
 
     /**
-     * Fetch all slogans from the slogans collection
-     *
-     * @returns Array of slogan objects with their document IDs
-     */
-    async getAllSlogans(): Promise<Array<{ id: string } & Record<string, unknown>>> {
-      const slogansRef = deps.collection(deps.db, "slogans");
-      const snapshot = await deps.getDocs(slogansRef);
-      return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
-    },
-
-    /**
      * Fetch weekly engagement stats for the today page
      * Returns days logged and current consecutive streak for the past 7 days.
      *
@@ -450,7 +439,10 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       // Calculate current streak (consecutive days from today backwards)
       let streak = 0;
       let checkDate = new Date();
-      while (uniqueDays.has(format(startOfDay(checkDate), "yyyy-MM-dd"))) {
+      while (
+        streak < WEEKLY_STATS_DAYS &&
+        uniqueDays.has(format(startOfDay(checkDate), "yyyy-MM-dd"))
+      ) {
         streak++;
         checkDate = subDays(checkDate, 1);
       }

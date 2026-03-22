@@ -42,7 +42,7 @@ export function initSentryClient(): void {
     tracesSampleRate: isDev ? 1.0 : 0.1,
 
     // Don't capture PII
-    beforeSend(event) {
+    beforeSend(event: Sentry.ErrorEvent) {
       // Redact any email addresses in error messages
       if (event.message) {
         event.message = event.message.replace(/[\w.-]+@[\w.-]+\.\w+/g, "[EMAIL_REDACTED]");
@@ -50,7 +50,7 @@ export function initSentryClient(): void {
 
       // Redact breadcrumb data that might contain PII
       if (event.breadcrumbs) {
-        event.breadcrumbs = event.breadcrumbs.map((breadcrumb) => {
+        event.breadcrumbs = event.breadcrumbs.map((breadcrumb: Sentry.Breadcrumb) => {
           if (breadcrumb.data) {
             // Remove any potential PII fields
             const {
