@@ -654,9 +654,68 @@ claims.jsonl → Filter confidence < HIGH → Format as claim list
 
 ---
 
+## 16. Strategy Log Schema (P3+)
+
+Location: `.research/strategy-log.jsonl`
+
+```json
+{
+  "domain": "string",
+  "questionType": "string",
+  "depth": "L1 | L2 | L3 | L4",
+  "searchProfile": "web | docs | codebase | academic",
+  "sourceCount": 0,
+  "highConfidenceRate": 0.0,
+  "queryReformulations": 0,
+  "topPerformingSources": ["official-docs", "github"],
+  "completedAt": "ISO 8601"
+}
+```
+
+Phase 0 reads this log to inform strategy selection — which profiles work best
+for which question types and domains.
+
+---
+
+## 17. Source Reputation Schema (P3+)
+
+Location: `.research/source-reputation.jsonl`
+
+```json
+{
+  "sourceUrl": "string — normalized URL or domain",
+  "totalCitations": 0,
+  "verifiedCitations": 0,
+  "failedCitations": 0,
+  "reliabilityScore": 0.0,
+  "lastUpdated": "ISO 8601"
+}
+```
+
+Consulted during searcher execution to adjust initial confidence. Low-reputation
+sources get automatic confidence downgrade. Updated after verification passes.
+
+---
+
+## 18. Management Sub-Commands (P3+)
+
+| Sub-Command         | Usage                                        | Effect                                 |
+| ------------------- | -------------------------------------------- | -------------------------------------- |
+| `--recall <topic>`  | `/deep-research --recall firebase auth`      | Search index, surface prior research   |
+| `--forget <topic>`  | `/deep-research --forget websocket-patterns` | Archive research, remove from index    |
+| `--refresh <topic>` | `/deep-research --refresh firebase auth`     | Re-run research, preserve old for diff |
+
+`--recall` searches `.research/research-index.jsonl` by topic and keywords.
+`--forget` marks as archived and optionally deletes output files. `--refresh`
+creates a new research session, preserves old at `<topic>-v1/`, and surfaces
+what changed between versions.
+
+---
+
 ## Version History
 
 | Version | Date       | Description                                         |
 | ------- | ---------- | --------------------------------------------------- |
+| 1.2     | 2026-03-22 | P3: management commands, strategy log, reputation   |
 | 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles |
 | 1.0     | 2026-03-22 | Initial implementation                              |

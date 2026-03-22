@@ -83,6 +83,9 @@ downstream routing.
 | `--domain`        | auto    | Override auto-detected domain                       |
 | `--auto`          | off     | Skip plan approval gate                             |
 | `--audit-details` | off     | Show full self-audit report instead of summary line |
+| `--recall`        | off     | Search research index for prior research on topic   |
+| `--forget`        | off     | Archive/remove prior research on topic              |
+| `--refresh`       | off     | Re-run research, preserving old output for diff     |
 
 **Output location:** `.research/<topic-slug>/`
 
@@ -406,22 +409,39 @@ to synthesizer for incorporation into the final report. Update state file.
 
 **Purpose:** Verify research quality before presenting results.
 
-Run these 6 checks inline (not via a separate agent):
+Run tiered checks inline (not via a separate agent). Tier depth scales with
+research depth level.
+
+**Tier 1 (all levels):**
 
 1. **Completeness** — all sub-questions addressed in RESEARCH_OUTPUT.md
 2. **Citation density** — every substantive claim has at least one citation
 3. **Confidence distribution** — not all HIGH (confidence theater), not all LOW
-   (insufficient research)
 4. **Source diversity** — not all from same domain/author
 5. **Contradiction resolution** — all contradictions surfaced, not silently
    resolved
 6. **Challenge integration** — contrarian and OTB findings acknowledged
 
+**Tier 2 (L2+):**
+
+7. **Source span** — sources from 3+ distinct domains/authors
+8. **Confidence calibration** — HIGH claims genuinely well-supported
+
+**Tier 3 (L3+):**
+
+9. **Temporal validity** — sources within domain staleness threshold
+10. **Bias detection** — no single perspective dominates
+11. **Actionability** — recommendations are specific, not generic
+
+**Tier 4 (L4 only):**
+
+12. **Full 8-dimension quality assessment**
+13. **Adversarial challenge of key findings**
+
 ### Output
 
-- **Default:** `Self-audit: 6/6 passed` or
-  `Self-audit: 5/6 passed, 1 warning: [detail]`
-- **With `--audit-details`:** Full checklist with evidence for each check
+- **Default:** `Self-audit: N/N passed` (tier count depends on depth)
+- **With `--audit-details`:** Full tiered checklist with evidence for each check
 
 Update state file with audit results.
 
@@ -480,7 +500,25 @@ Do NOT hard-delete raw artifacts by default:
 
 After completion, append an entry to `.research/research-index.jsonl` (see
 REFERENCE.md Section 12 for schema). This enables overlap detection, staleness
-tracking, and `/research-recall`.
+tracking, and `--recall`.
+
+### Strategy Log Entry (P3+)
+
+Append a strategy performance record to `.research/strategy-log.jsonl` (see
+REFERENCE.md Section 16). Tracks which search strategies produce the best
+results per domain, informing future Phase 0 strategy selection.
+
+### Source Reputation Update (P3+)
+
+Update `.research/source-reputation.jsonl` with verification outcomes (see
+REFERENCE.md Section 17). Sources that consistently verify get higher trust;
+sources that fail verification get downgraded.
+
+### MCP Memory Persistence (P3+)
+
+Auto-suggest: "Save N HIGH-confidence durable insights to memory?" User reviews
+each candidate before persistence. Only persist claims that are HIGH confidence,
+cross-session relevant, and durable (not rapidly changing).
 
 Update state file to `complete`.
 
