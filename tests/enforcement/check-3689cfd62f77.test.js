@@ -5,8 +5,8 @@
  */
 
 /* global describe, beforeAll, test, expect */
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const ROTATION_POLICY_PATH = path.resolve(__dirname, "../../config/rotation-policy.json");
 
@@ -39,7 +39,7 @@ describe("3689cfd62f77: Audit findings rotation coverage", () => {
 
   test("audit findings tier has maxAgeDays <= 90", () => {
     // Find which tier contains the audit findings
-    for (const [tierName, tier] of Object.entries(policy.tiers)) {
+    for (const [, tier] of Object.entries(policy.tiers)) {
       const hasAuditFiles = AUDIT_FINDINGS_PATHS.some((p) => (tier.files || []).includes(p));
       if (hasAuditFiles) {
         expect(tier.maxAgeDays).toBeLessThanOrEqual(90);

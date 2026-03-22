@@ -160,7 +160,8 @@ export function isNetworkError(error: unknown): boolean {
   if (!isFirebaseError(error)) {
     // Check for standard network errors (structural check avoids narrowing conflict)
     if (typeof error === "object" && error !== null && "message" in error) {
-      const msg = (error as Error).message;
+      const msg = (error as { message?: unknown }).message;
+      if (typeof msg !== "string") return false;
       return msg.includes("network") || msg.includes("offline") || msg.includes("timeout");
     }
     return false;
