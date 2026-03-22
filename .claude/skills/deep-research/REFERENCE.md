@@ -570,6 +570,90 @@ upgraded/downgraded confidence.
 
 ---
 
+## 15. Downstream Adapter Contract (P2+)
+
+### Universal Interface
+
+Every adapter follows the same contract:
+
+1. **Reads:** claims.jsonl + sources.jsonl + metadata.json
+2. **Filters:** by claim category, confidence, and routing flags
+3. **Transforms:** to consumer-specific format
+4. **Presents:** to user for confirmation (never auto-writes to consumer files)
+5. **Reports:** what was adapted, what was skipped, and why
+
+### Adapter Registry
+
+| Adapter          | Consumer             | Trigger                                   | Category Filter                 | Confidence Gate |
+| ---------------- | -------------------- | ----------------------------------------- | ------------------------------- | --------------- |
+| deep-plan        | `/deep-plan` Phase 0 | User selects "Route to /deep-plan"        | all                             | all             |
+| skill-creator    | `/skill-creator`     | User selects "Create skill from research" | all                             | all             |
+| gsd              | GSD pipeline         | User selects "Start GSD with research"    | stack, features, arch, pitfalls | all             |
+| convergence-loop | `/convergence-loop`  | Auto-suggest for LOW claims               | all                             | < HIGH          |
+
+### Write Boundaries
+
+Research NEVER overwrites consumer-owned files. Adapters produce formatted
+output that the consumer skill reads from `.research/<topic>/` or that is
+presented inline for the user to approve injection.
+
+### deep-plan Adapter
+
+Transforms research into a `## Research Context` section for DIAGNOSIS.md:
+
+```
+claims.jsonl → Filter routing.deepPlan === true → Extract:
+  - Domain ecosystem summary (from metadata + HIGH-confidence claims)
+  - Key recommendations with confidence levels
+  - Pitfalls relevant to the task
+  - Contradictions that affect planning
+→ Format as "## Research Context" markdown section
+→ Present to user: "Add this to DIAGNOSIS.md? [yes/no/edit]"
+```
+
+When `/deep-plan` Phase 0 begins, it checks `.research/<topic-slug>/` for
+existing research. If found, auto-inject Research Context into DIAGNOSIS.md.
+
+### skill-creator Adapter
+
+Extracts domain knowledge for skill creation:
+
+```
+claims.jsonl → Extract by category:
+  - Domain patterns → inform "Architecture & Structure" questions
+  - Existing tool analysis → inform "Scope & Scale" questions
+  - Pitfalls → inform "Guard Rails" section
+  - Best practices → inform "Critical Rules" section
+→ Present as pre-populated defaults in skill-creator discovery
+```
+
+### GSD Adapter
+
+Transforms to GSD research file format:
+
+```
+claims.jsonl → Transform by category:
+  claims[category=stack]     → STACK.md format
+  claims[category=features]  → FEATURES.md format
+  claims[category=arch]      → ARCHITECTURE.md format
+  claims[category=pitfalls]  → PITFALLS.md format
+  executive_summary          → SUMMARY.md with "Implications for Roadmap"
+→ Write to .planning/research/ (GSD's expected location)
+→ User confirms before writing
+```
+
+### convergence-loop Adapter
+
+Routes low-confidence claims for verification:
+
+```
+claims.jsonl → Filter confidence < HIGH → Format as claim list
+→ Auto-suggest: "N low-confidence claims. Verify with /convergence-loop?"
+→ On convergence: update claims.jsonl with corrected confidence
+```
+
+---
+
 ## Version History
 
 | Version | Date       | Description                                         |

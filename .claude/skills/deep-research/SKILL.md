@@ -445,14 +445,21 @@ Report: .research/<topic-slug>/RESEARCH_OUTPUT.md
 
 ### "What Next?" Menu
 
-Present recognition-over-recall options:
+Present recognition-over-recall options. Adapter-aware — each option triggers
+the corresponding adapter from REFERENCE.md Section 15:
 
 1. "Deepen research on: [top 2-3 suggested sub-topics from gaps]"
-2. "Route to /deep-plan for implementation planning"
-3. "Verify LOW-confidence claims with /convergence-loop (N claims)"
-4. "Save HIGH-confidence insights to memory (N candidates) (P2+)"
-5. "View full report"
-6. "Done"
+2. "Route to /deep-plan for implementation planning" — runs deep-plan adapter,
+   generates Research Context section for DIAGNOSIS.md
+3. "Route to /skill-creator for skill creation" — runs skill-creator adapter,
+   extracts domain patterns for discovery defaults
+4. "Route to GSD pipeline" — runs GSD adapter, produces STACK.md/FEATURES.md/
+   ARCHITECTURE.md/PITFALLS.md/SUMMARY.md in `.planning/research/`
+5. "Verify LOW-confidence claims with /convergence-loop (N claims)" — runs
+   convergence-loop adapter, filters claims by confidence < HIGH
+6. "Save HIGH-confidence insights to memory (N candidates) (P3+)"
+7. "View full report"
+8. "Done"
 
 Per CLAUDE.md guardrail #6: require acknowledgment before continuing.
 

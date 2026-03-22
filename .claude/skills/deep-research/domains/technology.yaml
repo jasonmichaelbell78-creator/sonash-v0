@@ -1,0 +1,33 @@
+name: technology
+keywords:
+  - api
+  - framework
+  - library
+  - architecture
+  - deploy
+  - devops
+  - database
+  - frontend
+  - backend
+  - cloud
+  - serverless
+source_authority:
+  - tier: 1
+    sources: [context7, official-docs]
+    trust: HIGH
+  - tier: 2
+    sources: [github, stackoverflow, web-search]
+    trust: MEDIUM
+  - tier: 3
+    sources: [blog, tutorial, training-data]
+    trust: LOW
+verification_rules:
+  recency_threshold_days: 30
+  min_independent_sources: 2
+  check_deprecation: true
+staleness:
+  stale_after_days: 7
+  expired_after_days: 30
+output_tuning:
+  include_code_examples: true
+  include_version_matrix: true

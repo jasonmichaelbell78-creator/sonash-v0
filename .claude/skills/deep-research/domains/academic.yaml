@@ -1,0 +1,33 @@
+name: academic
+keywords:
+  - research
+  - paper
+  - study
+  - peer-reviewed
+  - hypothesis
+  - methodology
+  - empirical
+  - theoretical
+  - citation
+  - journal
+source_authority:
+  - tier: 1
+    sources: [peer-reviewed, arxiv-preprint]
+    trust: HIGH
+  - tier: 2
+    sources: [survey-papers, meta-analyses]
+    trust: MEDIUM
+  - tier: 3
+    sources: [blog-summaries, conference-talks, training-data]
+    trust: LOW
+verification_rules:
+  recency_threshold_days: 365
+  min_independent_sources: 3
+  check_retractions: true
+  follow_citation_chains: true
+staleness:
+  stale_after_days: 90
+  expired_after_days: 365
+output_tuning:
+  include_citation_counts: true
+  include_methodology_notes: true

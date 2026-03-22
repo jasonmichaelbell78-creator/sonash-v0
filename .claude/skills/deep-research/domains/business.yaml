@@ -1,0 +1,32 @@
+name: business
+keywords:
+  - market
+  - revenue
+  - competitor
+  - strategy
+  - pricing
+  - growth
+  - customer
+  - product
+  - industry
+  - stakeholder
+source_authority:
+  - tier: 1
+    sources: [company-filings, official-announcements]
+    trust: HIGH
+  - tier: 2
+    sources: [industry-reports, analyst-research]
+    trust: MEDIUM
+  - tier: 3
+    sources: [news-articles, blog-posts, training-data]
+    trust: LOW
+verification_rules:
+  recency_threshold_days: 90
+  min_independent_sources: 2
+  check_source_bias: true
+staleness:
+  stale_after_days: 14
+  expired_after_days: 60
+output_tuning:
+  include_market_data: true
+  include_competitor_matrix: true
