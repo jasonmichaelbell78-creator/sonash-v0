@@ -152,6 +152,17 @@ Use phase transition markers: `========== PHASE N: [NAME] ==========`
 **Purpose:** Understand the research question deeply before dispatching agents.
 This is inline orchestration — no agents spawned yet.
 
+### Step 0.0: Research Index Check (P1+)
+
+Before decomposition, check `.research/research-index.jsonl` for prior research:
+
+1. **Exact topic match** → offer to resume or re-research
+2. **Keyword overlap >50%** → surface existing research, ask if user wants to
+   build on it or start fresh
+3. **No overlap** → proceed normally
+4. **Stale research** → flag staleness per domain rules (see REFERENCE.md
+   Section 12)
+
 ### Step 0.1: Classify Question Type
 
 Classify the research question into one of 8 types (see REFERENCE.md for full
@@ -201,12 +212,12 @@ Batch questions 5-8 per round (per CLAUDE.md guardrail #10).
 From the decomposition, generate Mutually Exclusive, Collectively Exhaustive
 sub-questions. Each sub-question gets assigned a search profile:
 
-| Profile  | Tools                          | When                        | Status |
-| -------- | ------------------------------ | --------------------------- | ------ |
-| web      | WebSearch, WebFetch            | General knowledge, trends   | P0     |
-| docs     | Context7 MCP, WebFetch         | Library/framework specifics | P0     |
-| codebase | Grep, Glob, Read, Bash         | Internal code questions     | P1+    |
-| academic | WebSearch, WebFetch for papers | Research papers, theory     | P1+    |
+| Profile  | Tools                          | When                        |
+| -------- | ------------------------------ | --------------------------- |
+| web      | WebSearch, WebFetch            | General knowledge, trends   |
+| docs     | Context7 MCP, WebFetch         | Library/framework specifics |
+| codebase | Grep, Glob, Read, Bash         | Internal code questions     |
+| academic | WebSearch, WebFetch for papers | Research papers, theory     |
 
 ### Step 0.6: Apply Allocation Formula
 
@@ -351,6 +362,39 @@ it can explore adjacent domains.
 | L3    | 2 agents (different adversarial strategies) | 2 agents            |
 | L4    | 3 agents + red team pass + pre-mortem       | 3 agents            |
 
+### Cross-Model Verification via Gemini CLI (P1+)
+
+For HIGH-confidence claims, run independent verification via Gemini CLI to
+address same-model bias (Decision #13):
+
+```bash
+echo '<verification prompt>' | gemini --json 2>/dev/null
+```
+
+- **L1:** Verify top 5 HIGH-confidence claims
+- **L2:** Verify all HIGH-confidence claims
+- **L3-L4:** Full verification suite (all claims above LOW)
+
+If Gemini disagrees with a claim, flag it and include both perspectives. Update
+confidence based on cross-model consensus.
+
+**Prerequisite:** `npm install -g @google/gemini-cli` + Google auth (one-time).
+If Gemini CLI is not available, skip with a note in the self-audit.
+
+### Convergence-Loop Research-Claims Verification (P1+)
+
+For MEDIUM/LOW confidence claims, invoke `/convergence-loop` with the
+`research-claims` preset (6 behaviors: verify-sources, cross-reference,
+temporal-check, completeness-audit, bias-check, synthesis-fidelity).
+
+Update claims.jsonl with upgraded/downgraded confidence levels after
+verification.
+
+### Re-Synthesis Trigger
+
+If verification changed >20% of claims, re-run the synthesizer to update
+RESEARCH_OUTPUT.md with corrected confidence levels and new evidence.
+
 ### Post-Challenge
 
 If challenges reveal significant gaps, optionally feed challenge findings back
@@ -424,6 +468,12 @@ Do NOT hard-delete raw artifacts by default:
 - **Always preserve:** RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl,
   metadata.json — these support decision provenance, research memory, overlap
   detection, and `/research-refresh`
+
+### Research Index Entry (P1+)
+
+After completion, append an entry to `.research/research-index.jsonl` (see
+REFERENCE.md Section 12 for schema). This enables overlap detection, staleness
+tracking, and `/research-recall`.
 
 Update state file to `complete`.
 

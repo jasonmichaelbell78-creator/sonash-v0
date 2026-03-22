@@ -58,11 +58,12 @@ full definitions, agent prompt templates, and required output format.
 
 ## Presets
 
-| Preset     | Sequence                                                                | Passes | Use Case                 |
-| ---------- | ----------------------------------------------------------------------- | ------ | ------------------------ |
-| `standard` | source-check -> verification -> fresh-eyes                              | 3      | General purpose          |
-| `quick`    | verification -> verification                                            | 2      | Lightweight confirmation |
-| `thorough` | source-check -> discovery -> verification -> verification -> fresh-eyes | 5      | High-stakes (SWS-level)  |
+| Preset            | Sequence                                                                                                      | Passes | Use Case                            |
+| ----------------- | ------------------------------------------------------------------------------------------------------------- | ------ | ----------------------------------- |
+| `standard`        | source-check -> verification -> fresh-eyes                                                                    | 3      | General purpose                     |
+| `quick`           | verification -> verification                                                                                  | 2      | Lightweight confirmation            |
+| `thorough`        | source-check -> discovery -> verification -> verification -> fresh-eyes                                       | 5      | High-stakes (SWS-level)             |
+| `research-claims` | verify-sources -> cross-reference -> temporal-check -> completeness-audit -> bias-check -> synthesis-fidelity | 6      | `/deep-research` claim verification |
 
 Custom: compose any behavior sequence. Callers can inject domain-specific
 instructions into agent prompts via the prompt customization hook (see

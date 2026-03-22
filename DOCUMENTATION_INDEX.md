@@ -467,7 +467,7 @@ _Uncategorized_
 
 | Document                                                              | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-03-18    |
+| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-03-22    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                        | Documents all Claude Code hooks configured in `.claude/setti... | ↓2 ↑4      | 2026-02-25    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)   | > **DEPRECATION NOTICE (2026-02-23):** The `scripts/sync-cla... | ↓3 ↑0      | 2026-02-25    |
 | [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)          | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-15    |
@@ -838,9 +838,9 @@ _Uncategorized_
 
 | Document                                                                              | Description                    | References | Last Modified |
 | ------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Decision Record: Deep Research Skill](.planning/deep-research-skill/DECISIONS.md)    | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-20    |
+| [Decision Record: Deep Research Skill](.planning/deep-research-skill/DECISIONS.md)    | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-22    |
 | [Diagnosis: Deep Research Skill/Agent(s)](.planning/deep-research-skill/DIAGNOSIS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-20    |
-| [Implementation Plan: `/deep-research` Skill](.planning/deep-research-skill/PLAN.md)  | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-21    |
+| [Implementation Plan: `/deep-research` Skill](.planning/deep-research-skill/PLAN.md)  | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-22    |
 
 ### .planning > deep-research-skill > discovery (Tier 4)
 

@@ -476,8 +476,103 @@ Write your insights to: .research/<topic>/challenges/OUTSIDE_THE_BOX.md
 
 ---
 
+## 12. Research Index Schema (P1+)
+
+Location: `.research/research-index.jsonl`
+
+```json
+{
+  "topicSlug": "string — kebab-case",
+  "topic": "string — original question",
+  "depth": "L1 | L2 | L3 | L4",
+  "domain": "string",
+  "completedAt": "ISO 8601",
+  "claimCount": 0,
+  "sourceCount": 0,
+  "confidenceDistribution": {
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
+  "keywords": ["array", "of", "topic", "keywords"],
+  "outputPath": ".research/<topic-slug>/",
+  "status": "complete | partial | stale"
+}
+```
+
+### Staleness Rules
+
+| Domain     | Stale After  | Expired After |
+| ---------- | ------------ | ------------- |
+| Technology | 7 days       | 30 days       |
+| Business   | 14 days      | 60 days       |
+| Academic   | 90 days      | 365 days      |
+| Historical | No staleness | No expiry     |
+
+---
+
+## 13. Gemini CLI Cross-Model Verification (P1+)
+
+### Setup
+
+```bash
+npm install -g @google/gemini-cli
+# One-time: Google auth required
+```
+
+### Verification Prompt Template
+
+```
+Is the following claim accurate and current as of [current date]?
+Provide evidence for or against.
+
+Claim: [claim text]
+Context: [research domain and topic]
+
+Respond with:
+- AGREE or DISAGREE
+- Evidence supporting your assessment
+- Confidence level (HIGH/MEDIUM/LOW)
+```
+
+### Invocation
+
+```bash
+echo '<prompt>' | gemini --json 2>/dev/null
+```
+
+Parse JSON response for `agree/disagree` + evidence. If Gemini disagrees with a
+HIGH-confidence claim, downgrade to MEDIUM and note the disagreement in the
+research output.
+
+### Rate Limits
+
+1,000 free queries/day. Typical L1 session uses 9-30 queries (HIGH claims only).
+
+---
+
+## 14. Convergence-Loop Research-Claims Behaviors (P1+)
+
+Six research-specific behaviors for the `research-claims` preset:
+
+| #   | Behavior           | Purpose                                                  |
+| --- | ------------------ | -------------------------------------------------------- |
+| 1   | verify-sources     | Check cited URLs exist and support the claims            |
+| 2   | cross-reference    | Find independent corroborating sources                   |
+| 3   | temporal-check     | Verify information is current per domain staleness rules |
+| 4   | completeness-audit | Check all sub-questions were addressed                   |
+| 5   | bias-check         | Assess perspective diversity and source concentration    |
+| 6   | synthesis-fidelity | Verify synthesis accurately represents findings          |
+
+Input: `claims.jsonl` from deep-research output. Output: Verified claims with
+upgraded/downgraded confidence.
+
+---
+
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-03-22 | Initial implementation |
+| Version | Date       | Description                                         |
+| ------- | ---------- | --------------------------------------------------- |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles |
+| 1.0     | 2026-03-22 | Initial implementation                              |

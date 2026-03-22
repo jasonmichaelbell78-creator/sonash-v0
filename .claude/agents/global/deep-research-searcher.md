@@ -139,19 +139,37 @@ synthesizer should not need to re-research anything you covered.
    - Fetch multiple pages if needed
 3. **WebSearch** — fallback for undocumented features
 
-## Codebase Profile (P1+)
+## Codebase Profile
 
 **Primary tools:** Grep, Glob, Read, Bash
 
-- Pattern discovery, file location, structure analysis
-- Internal code questions, existing implementation review
+1. **Grep/Glob** — pattern discovery, file location, symbol search
+2. **Read** — deep-read specific files for implementation details
+3. **Bash (ls, wc, git log)** — structure analysis, metrics, change history
+4. **WebSearch/WebFetch** — external patterns for comparison ("how do other
+   projects handle X?")
 
-## Academic Profile (P1+)
+**Source hierarchy for codebase:**
+
+- Filesystem (ground truth) > git log (recency) > CLAUDE.md conventions
+- Mixed queries (local + external) compare internal implementation against
+  external best practices
+
+## Academic Profile
 
 **Primary tools:** WebSearch, WebFetch
 
-- Conference proceedings, preprints, arxiv
-- Paper retrieval and analysis
+1. **WebSearch** — conference proceedings, preprints, arxiv queries
+   - Query templates: `"[topic] site:arxiv.org"`, `"[topic] ICSE|FSE|ASE 2025"`
+2. **WebFetch** — specific paper retrieval from arxiv, scholar
+3. **Paper Search MCP** — if available, use for structured academic search
+
+**Academic verification protocol:**
+
+- Peer-reviewed > preprint > blog
+- Check citation count as quality signal (higher = more established)
+- Check for retractions or corrections
+- Follow citation chains: cited-by (impact) and references (foundations)
 
 </tool_strategy>
 
