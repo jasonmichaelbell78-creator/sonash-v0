@@ -34,6 +34,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/create-audit`                   | Interactive wizard to scaffold new audit type                     |
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                             |
 | `/deep-plan`                      | Discovery-first planning with exhaustive Q&A and decision record  |
+| `/deep-research`                  | Multi-agent research engine with parallel search and challenges   |
 | `/doc-optimizer`                  | Scan docs, auto-fix formatting/headers/links                      |
 | `/docs-maintain`                  | Check doc sync and auto-update artifacts                          |
 | `/pr-review`                      | PR code review processor                                          |

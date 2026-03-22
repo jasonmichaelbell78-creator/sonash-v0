@@ -3,7 +3,7 @@
 <!-- prettier-ignore-start -->
 **Date:** 2026-03-20
 **Questions Asked:** 21
-**Decisions Captured:** 20
+**Decisions Captured:** 21
 <!-- prettier-ignore-end -->
 
 ## Identity & Naming
@@ -53,9 +53,9 @@
 
 ## Research Artifact Lifecycle
 
-| #   | Decision                       | Choice                                                                                                                                                                                         | Rationale                                                                                                                                                   |
-| --- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 21  | Research artifact preservation | Preserve conclusions (RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json). Delete raw process artifacts (findings/\*.md) after synthesis. Gitignore entire `.research/` directory. | Conclusions have lasting value (decision provenance, research memory, overlap detection, /research-refresh). Raw agent outputs are superseded by synthesis. |
+| #   | Decision                       | Choice                                                                                                                                                                                                                                                                                                                | Rationale                                                                                                                                                                                                                                   |
+| --- | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 21  | Research artifact preservation | Preserve conclusions (RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json) in git. Keep raw process artifacts (findings/\*.md, challenges/\*.md) by default for resume + audit provenance; optionally archive after synthesis. Gitignore only intermediate directories (findings/, challenges/, archive/). | Conclusions have lasting value (decision provenance, research memory, overlap detection, /research-refresh). Raw artifacts support resume and audit provenance. Updated from original "delete + gitignore all" after implementation review. |
 
 ## Core Design Principle
 

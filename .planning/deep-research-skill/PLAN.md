@@ -36,25 +36,24 @@ and a "what next?" menu. Per Decision #5, the floor depth is L1 (Exhaustive).
 
 ## Step 1: Add `.research/` to `.gitignore`
 
-Per Decision #19, research output lives in `.research/<topic-slug>/`. This
-directory should be git-ignored like `.worktrees/` since research output is
-ephemeral and session-specific.
+Per Decision #19, research output lives in `.research/<topic-slug>/`.
+Intermediate artifacts (raw findings, challenge files) are ephemeral and
+session-specific. Conclusion artifacts (reports, structured data) are retained
+in git for decision provenance, overlap detection, and `/research-refresh`.
 
-Add `.research/` entry to `.gitignore`, grouped near the existing `.worktrees/`
-and `.planning/` exclusions.
+Add `.research/` entries to `.gitignore`, grouped near the existing
+`.worktrees/` and `.planning/` exclusions.
 
 ```gitignore
-# Research output (session-specific, not committed)
-.research/**
+# Research intermediate artifacts (session-specific, not committed)
+.research/**/findings/
+.research/**/challenges/
+.research/**/archive/
 
-# Allowlist curated cross-session index files if the repo chooses to version them
-!.research/research-index.jsonl
-!.research/strategy-log.jsonl
-!.research/source-reputation.jsonl
+# Conclusion artifacts are retained in git:
+# RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json,
+# research-index.jsonl, strategy-log.jsonl, source-reputation.jsonl
 ```
-
-> **Note:** If the intent is "never commit anything under `.research/`", use
-> `.research/` instead and omit the allowlist lines.
 
 **Files:**
 
@@ -1043,15 +1042,33 @@ Phase 5 must:
 
 5. Update state file to `complete`
 
+6. **Integration survey (inbound routing):** Before finalizing downstream
+   routing, survey existing skills and workflows to identify where
+   `/deep-research` should be suggested or triggered. Key candidates:
+   - `/deep-plan` discovery phases (currently does ad-hoc WebSearch)
+   - `/gsd:research-phase` (currently uses gsd-phase-researcher)
+   - `/brainstorming` (research-dependent creative work)
+   - `convergence-loop` discovery passes
+   - Any skill that currently does ad-hoc WebSearch/WebFetch that could delegate
+     to structured research
+   - Agent definitions that include WebSearch/WebFetch in their tools
+
+   Run the survey at implementation time. Use findings to populate both the
+   "What next?" outbound menu AND add inbound triggers/suggestions to the
+   surveyed skills.
+
 **Files:**
 
 - **Modified:** `.claude/skills/deep-research/SKILL.md` -- Phase 5 section
   detail
+- **Potentially modified:** Existing skills identified by integration survey
 
 **Done when:**
 
 - Terminal summary format is specified
 - "What next?" menu includes all routing options
+- Integration survey completed — inbound trigger points identified and
+  documented
 - Acknowledgment requirement is documented
 - State file transitions to `complete`
 
