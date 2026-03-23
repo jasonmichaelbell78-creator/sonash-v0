@@ -136,6 +136,14 @@ Group findings by conceptual theme, NOT by source file or sub-question:
 Themes should be named descriptively (e.g., "Performance at Scale", "Security
 Model Tradeoffs", "Community Adoption Patterns").
 
+**Theme identification method:** Identify themes by clustering findings that
+address the same underlying concept across different sub-questions. A theme
+emerges when 2+ findings from different searchers converge on the same insight.
+For example, if Searcher A finds "React Server Components reduce bundle size"
+and Searcher B finds "streaming SSR improves TTFB," both converge on the theme
+"Performance at Scale." Single-searcher findings that don't cluster remain as
+standalone findings under the most relevant theme.
+
 ## Step 4: Identify Cross-File Contradictions
 
 Look for contradictions that individual searchers may not have seen:

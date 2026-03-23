@@ -301,7 +301,7 @@ _Claude Code skills_
 | [audit-comprehensive](.claude/skills/audit-comprehensive/SKILL.md)                                                                  | -                                                               | ↓0 ↑6      | 2026-02-24    |
 | [audit-documentation](.claude/skills/audit-documentation/SKILL.md)                                                                  | - User explicitly invokes `/audit-documentation`                | ↓0 ↑1      | 2026-02-24    |
 | [audit-engineering-productivity](.claude/skills/audit-engineering-productivity/SKILL.md)                                            | Evaluates developer experience (DX), debugging capabilities,... | ↓0 ↑0      | 2026-02-24    |
-| [audit-enhancements](.claude/skills/audit-enhancements/SKILL.md)                                                                    | - Tasks related to audit-enhancements                           | ↓0 ↑0      | 2026-02-24    |
+| [audit-enhancements](.claude/skills/audit-enhancements/SKILL.md)                                                                    | - Tasks related to audit-enhancements                           | ↓0 ↑0      | 2026-03-22    |
 | [audit-health](.claude/skills/audit-health/SKILL.md)                                                                                | Quick meta-check that verifies the audit ecosystem is health... | ↓0 ↑0      | 2026-02-24    |
 | [audit-performance](.claude/skills/audit-performance/SKILL.md)                                                                      | - Tasks related to audit-performance                            | ↓0 ↑0      | 2026-02-24    |
 | [audit-process](.claude/skills/audit-process/SKILL.md)                                                                              | -                                                               | ↓0 ↑0      | 2026-02-24    |
@@ -326,7 +326,7 @@ _Claude Code skills_
 | [Convergence Loop — Reference](.claude/skills/convergence-loop/REFERENCE.md)                                                        | Verify claims against their cited source material before any    | ↓0 ↑0      | 2026-03-15    |
 | [convergence-loop](.claude/skills/convergence-loop/SKILL.md)                                                                        | Verify claims about reality through multi-pass agent loops w... | ↓0 ↑0      | 2026-03-22    |
 | [Create Audit — Reference](.claude/skills/create-audit/REFERENCE.md)                                                                | {what this category evaluates}                                  | ↓0 ↑1      | 2026-03-16    |
-| [create-audit](.claude/skills/create-audit/SKILL.md)                                                                                | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-16    |
+| [create-audit](.claude/skills/create-audit/SKILL.md)                                                                                | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-22    |
 | [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md)                                     | Reference example of extracting, structuring, and bulletproo... | ↓0 ↑0      | 2026-01-12    |
 | [Data Analysis Patterns for Market Research](.claude/skills/market-research-reports/references/data_analysis_patterns.md)           | Templates and frameworks for conducting rigorous market anal... | ↓0 ↑0      | 2026-01-12    |
 | [data-effectiveness-audit](.claude/skills/data-effectiveness-audit/SKILL.md)                                                        | Systematic audit of all data systems to identify write-only ... | ↓0 ↑0      | 2026-03-15    |
@@ -348,7 +348,7 @@ _Claude Code skills_
 | [ecosystem-health](.claude/skills/ecosystem-health/SKILL.md)                                                                        | -                                                               | ↓0 ↑0      | 2026-03-18    |
 | [Excel Analysis](.claude/skills/excel-analysis/SKILL.md)                                                                            | - Analyze Excel spreadsheets, create pivot tables, generate ... | ↓0 ↑0      | 2026-02-24    |
 | [find-skills](.claude/skills/find-skills/SKILL.md)                                                                                  | This skill helps you discover and install skills and plugins... | ↓0 ↑0      | 2026-02-24    |
-| [frontend-design](.claude/skills/frontend-design/SKILL.md)                                                                          | -                                                               | ↓0 ↑0      | 2026-02-24    |
+| [frontend-design](.claude/skills/frontend-design/SKILL.md)                                                                          | -                                                               | ↓0 ↑0      | 2026-03-22    |
 | [gh-fix-ci](.claude/skills/gh-fix-ci/SKILL.md)                                                                                      | - Inspect GitHub PR checks with gh, pull failing GitHub Acti... | ↓0 ↑0      | 2026-02-24    |
 | [Health Ecosystem Audit — Reference](.claude/skills/health-ecosystem-audit/REFERENCE.md)                                            | Reference material for the health ecosystem audit skill. Con... | ↓0 ↑0      | 2026-03-10    |
 | [health-ecosystem-audit](.claude/skills/health-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of the health monitoring system — `scripts/h... | ↓0 ↑0      | 2026-03-18    |
@@ -392,7 +392,7 @@ _Claude Code skills_
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                               | ↓0 ↑0      | 2026-03-14    |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                                                        | <!-- prettier-ignore-start -->                                  | ↓5 ↑0      | 2026-03-16    |
 | [skill-audit](.claude/skills/skill-audit/SKILL.md)                                                                                  | Interactive, category-by-category behavioral quality audit f... | ↓0 ↑0      | 2026-03-19    |
-| [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | Structured creation workflow that produces high-quality skil... | ↓0 ↑2      | 2026-03-16    |
+| [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | Structured creation workflow that produces high-quality skil... | ↓0 ↑2      | 2026-03-22    |
 | [skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md)                                                              | Deep diagnostic of the entire skill ecosystem — SKILL.md fil... | ↓0 ↑0      | 2026-03-10    |
 | [sonarcloud](.claude/skills/sonarcloud/SKILL.md)                                                                                    | Unified orchestrator for all SonarCloud operations against t... | ↓0 ↑2      | 2026-03-12    |
 | [SonarCloud Enrichment (Step 1.5)](.claude/skills/pr-review/reference/SONARCLOUD_ENRICHMENT.md)                                     | When SonarCloud issues are detected in pasted feedback, auto... | ↓1 ↑0      | 2026-02-14    |
@@ -516,10 +516,10 @@ _Uncategorized_
 | [gsd-debugger](.claude/agents/global/gsd-debugger.md)                           | 100 commits between working and broken: ~7 tests to find exa... | ↓0 ↑0      | 2026-02-02    |
 | [gsd-executor](.claude/agents/global/gsd-executor.md)                           | -                                                               | ↓0 ↑0      | 2026-02-02    |
 | [gsd-integration-checker](.claude/agents/global/gsd-integration-checker.md)     | -                                                               | ↓0 ↑0      | 2026-02-02    |
-| [gsd-phase-researcher](.claude/agents/global/gsd-phase-researcher.md)           | -                                                               | ↓0 ↑0      | 2026-02-02    |
+| [gsd-phase-researcher](.claude/agents/global/gsd-phase-researcher.md)           | -                                                               | ↓0 ↑0      | 2026-03-22    |
 | [gsd-plan-checker](.claude/agents/global/gsd-plan-checker.md)                   | -                                                               | ↓0 ↑0      | 2026-02-02    |
 | [gsd-planner](.claude/agents/global/gsd-planner.md)                             | No overlap -> can run parallel.                                 | ↓0 ↑0      | 2026-02-02    |
-| [gsd-project-researcher](.claude/agents/global/gsd-project-researcher.md)       | -                                                               | ↓0 ↑0      | 2026-02-02    |
+| [gsd-project-researcher](.claude/agents/global/gsd-project-researcher.md)       | -                                                               | ↓0 ↑0      | 2026-03-22    |
 | [gsd-research-synthesizer](.claude/agents/global/gsd-research-synthesizer.md)   | -                                                               | ↓0 ↑0      | 2026-02-02    |
 | [gsd-roadmapper](.claude/agents/global/gsd-roadmapper.md)                       | -                                                               | ↓0 ↑0      | 2026-02-02    |
 | [gsd-verifier](.claude/agents/global/gsd-verifier.md)                           | Extract phase goal from ROADMAP.md. This is the outcome to v... | ↓0 ↑0      | 2026-02-02    |

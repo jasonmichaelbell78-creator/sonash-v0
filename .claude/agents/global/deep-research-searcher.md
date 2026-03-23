@@ -95,8 +95,21 @@ and dig deeper when initial results are insufficient.
 - `output_dir`: Path to findings directory (e.g., `.research/<topic>/findings/`)
 - `depth`: Current depth level (L1-L4)
 - `domain`: Detected domain for source authority tuning
+- `domain_config`: Domain module configuration (from
+  `.claude/skills/deep-research/domains/<domain>.yaml`) containing:
+  - `source_authority`: Tiered source trust levels specific to this domain
+  - `verification_rules`: Domain-specific verification requirements (recency
+    thresholds, minimum independent sources, deprecation checks)
 
-Parse and confirm understanding before proceeding. </upstream_input>
+Parse and confirm understanding before proceeding.
+
+**Domain config application:** When domain_config is provided, use its
+`source_authority` tiers to override the default source hierarchy for confidence
+assignment. Apply `verification_rules` to determine recency thresholds (e.g.,
+technology domain requires sources within 30 days for HIGH confidence), minimum
+independent source counts, and whether to check for deprecation. If
+domain_config is not provided, fall back to the default source hierarchy in the
+source_hierarchy section below. </upstream_input>
 
 <downstream_consumer> Your output is consumed by:
 

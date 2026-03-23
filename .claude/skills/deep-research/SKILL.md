@@ -3,13 +3,13 @@ name: deep-research
 description: >-
   Multi-agent research engine that decomposes questions, dispatches parallel
   searcher agents, synthesizes findings with citations and confidence levels,
-  runs mandatory contrarian and outside-the-box challenges, and produces
-  structured output for downstream consumption by deep-plan, GSD,
-  convergence-loop, and other skills.
+  runs mandatory contrarian/OTB challenges and cross-model verification via
+  Gemini CLI, and produces structured output with downstream adapters, research
+  index, and management commands.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.4
 **Last Updated:** 2026-03-22
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -17,95 +17,66 @@ description: >-
 # Deep Research
 
 Multi-agent research engine that does what a single conversation cannot.
-Decomposes questions into sub-questions, dispatches parallel searcher agents,
-synthesizes findings with citations and confidence levels, runs mandatory
-contrarian and outside-the-box challenges, and produces structured output with
-downstream routing.
+Decomposes questions, dispatches parallel searcher agents, synthesizes with
+citations and confidence levels, runs mandatory contrarian/OTB challenges, and
+produces structured output with downstream routing.
 
 ## Critical Rules (MUST follow)
 
-1. **Always show research plan before executing** — present the decomposition,
-   agent allocation, and cost estimate. Wait for user approval. `--auto` flag
-   skips approval for trusted/repeated research. (Decision #2)
-2. **Contrarian + outside-the-box mandatory at ALL levels** — no exceptions.
-   These are not optional quality passes. (Decision #3)
-3. **Floor depth is L1 (Exhaustive)** — Quick/Standard/Deep eliminated. If
-   someone wants quick, they ask Claude directly. `/deep-research` does what a
-   single conversation cannot. (Decision #5)
-4. **Write to disk first** — findings must survive crashes. Every agent writes
-   its output to `.research/<topic-slug>/` before returning.
-5. **State file updated after every state-changing event** — plan approval,
-   agent completion, synthesis, challenges, audit. Enables resume after
-   compaction or interruption.
-6. **Research writes ONLY to `.research/<topic-slug>/`** — never to
-   consumer-owned artifacts. Downstream consumers pull from research output.
-7. **Agent allocation formula: `D + 3 + floor(D/5)`** — where D = number of
-   sub-questions. Dimension-driven, not capped. Budget is a guardrail, not a
-   constraint. (Decision #7)
+1. **Always show research plan before executing** -- present decomposition,
+   agent allocation, cost estimate. Wait for approval. `--auto` skips plan
+   approval only (all other checkpoints still require interaction). Recommend
+   `--auto` only when invoked by another skill or for topics with prior
+   research.
+2. **Contrarian + OTB mandatory at ALL levels** -- no exceptions.
+3. **Floor depth is L1 (Exhaustive)** -- no shallow modes. If someone wants
+   quick, they ask Claude directly.
+4. **Write to disk first** -- findings must survive crashes.
+5. **State file updated after every state-changing event** -- enables resume.
+6. **Research writes ONLY to `.research/<topic-slug>/`** -- never to
+   consumer-owned artifacts.
+7. **Agent allocation: `D + 3 + floor(D/5)`** -- D = sub-questions. Budget is a
+   guardrail, not a constraint.
 
-## When to Use
+## When to Use / When NOT to Use
 
-- User invokes `/deep-research` explicitly
-- Task requires understanding a domain, technology, or landscape before planning
-- Multiple conflicting sources need structured evaluation
-- `/deep-plan` Phase 0 reveals the task needs domain research before questions
-  can even be asked
-- Creating a new skill and domain expertise is needed (via `/skill-creator`)
-- GSD project research where thoroughness matters more than speed
+**Use:** Explicit `/deep-research` invocation | Domain understanding before
+planning | Conflicting sources need evaluation | `/deep-plan` needs domain
+research | Skill creation via `/skill-creator` | GSD project research.
 
-## When NOT to Use
-
-- Simple factual questions — just ask Claude directly
-- Codebase-only questions — use `Explore` agent or Grep/Glob
-- Questions where the user already knows the answer and wants confirmation
-- Mid-implementation lookups — use WebSearch/WebFetch/Context7 directly
-- Research that must complete in under 2 minutes — this is thorough, not fast
+**Don't use:** Simple factual questions | Codebase-only (use `Explore`) | User
+wants confirmation | Mid-implementation lookups | Must complete in <2 minutes.
 
 ## Routing Guide
 
-| Situation                       | Use                | Why                                    |
-| ------------------------------- | ------------------ | -------------------------------------- |
-| Domain research before planning | `/deep-research`   | Structured multi-agent investigation   |
-| Quick factual lookup            | Ask Claude         | Single-turn, no orchestration needed   |
-| Codebase understanding          | `Explore` agent    | Codebase-specific tools                |
-| Planning with known domain      | `/deep-plan`       | Discovery-first planning, not research |
-| Multi-phase project setup       | `/gsd:new-project` | Project-level with built-in research   |
+| Situation                       | Use                | Why                                  |
+| ------------------------------- | ------------------ | ------------------------------------ |
+| Domain research before planning | `/deep-research`   | Structured multi-agent investigation |
+| Quick factual lookup            | Ask Claude         | Single-turn, no orchestration needed |
+| Codebase understanding          | `Explore` agent    | Codebase-specific tools              |
+| Planning with known domain      | `/deep-plan`       | Discovery-first planning             |
+| Multi-phase project setup       | `/gsd:new-project` | Project-level with built-in research |
 
 ## Input
 
-**Argument:** Research question or topic, passed as `/deep-research "<topic>"`.
+**Argument:** `/deep-research "<topic>"`. Validation: empty topic = prompt user;
+
+> 200 chars = confirm or abbreviate.
 
 **Flags:**
 
-| Flag              | Default | Effect                                              |
-| ----------------- | ------- | --------------------------------------------------- |
-| `--depth`         | L1      | Depth level: L1, L2, L3, L4                         |
-| `--domain`        | auto    | Override auto-detected domain                       |
-| `--auto`          | off     | Skip plan approval gate                             |
-| `--audit-details` | off     | Show full self-audit report instead of summary line |
-| `--recall`        | off     | Search research index for prior research on topic   |
-| `--forget`        | off     | Archive/remove prior research on topic              |
-| `--refresh`       | off     | Re-run research, preserving old output for diff     |
+| Flag              | Default | Effect                                             |
+| ----------------- | ------- | -------------------------------------------------- |
+| `--depth`         | L1      | L1, L2, L3, L4 (see REFERENCE.md Section 2)        |
+| `--domain`        | auto    | Override auto-detected domain                      |
+| `--auto`          | off     | Skip plan approval (Critical Rule #1)              |
+| `--audit-details` | off     | Full self-audit report instead of summary          |
+| `--recall`        | off     | Search index for prior research (REFERENCE.md S18) |
+| `--forget`        | off     | Archive/remove prior research (REFERENCE.md S18)   |
+| `--refresh`       | off     | Re-run, preserve old for diff (REFERENCE.md S18)   |
 
-**Output location:** `.research/<topic-slug>/`
-
----
-
-## Depth Levels
-
-Per Decision #5, L1 (Exhaustive) is the floor. No shallow modes.
-
-| Level | Name               | Typical Agents | Search Rounds | Contrarian                       | OTB                 | Self-Audit         |
-| ----- | ------------------ | -------------- | ------------- | -------------------------------- | ------------------- | ------------------ |
-| L1    | Exhaustive         | 4-5            | 5-8           | 1 agent (CL preset)              | 1 agent (CL preset) | Summary            |
-| L2    | Comprehensive      | 3-4            | 3-5           | 1 agent                          | 1 agent             | Summary            |
-| L3    | Investigation      | 5-7            | 5-8           | 2 agents (different strategies)  | 2 agents            | Full               |
-| L4    | Deep Investigation | 8-10           | 8+            | 3 agents + red team + pre-mortem | 3 agents            | Full + adversarial |
-
-> **Precedence:** The allocation formula `D + 3 + floor(D/5)` determines actual
-> agent count. The "Typical Agents" column shows ranges for common sub-question
-> counts. When they conflict, the formula wins. L4 additionally uses agent team
-> orchestration when sub-questions are interdependent (Decision #4).
+**Output:** `.research/<topic-slug>/` -- slug: lowercase, hyphens for spaces and
+special chars, max 50 chars, 4-char hash suffix on collision.
 
 ---
 
@@ -113,493 +84,113 @@ Per Decision #5, L1 (Exhaustive) is the floor. No shallow modes.
 
 ```
 PHASE 0: Interactive Decomposition (inline)
-  → Classify question type (8 types) + domain detection
-  → Start at level B (2-3 rounds Q&A), escalate to C if needed
-  → Generate MECE sub-questions
-  → Apply allocation formula: D + 3 + floor(D/5) agents
-  → Present research plan with cost estimate
-  → User approves / modifies / aborts
+  0.0: Duplicate check -- offer resume/re-research/abort if exists
+  0.1: Classify (8 types) + domain detection
+  0.2: Load domain module (domains/<domain>.yaml), pass to searchers
+  0.3: Select depth (default L1)
+  0.4: Q&A (level B: 2-3 rounds; fast-path: 1 round for simple topics;
+       escalate to C if multi-domain/8+ dimensions). Persist after each round.
+  0.5: Generate MECE sub-questions + internal overlap/gap verification
+  0.6: Apply allocation formula
+  0.7: Present plan with "Estimated: ~N min" (L1~5-10, L2~3-5, L3~10-20, L4~20-40)
+  0.8: Approve / modify / abort (--auto skips)
+  0.9: Create state file
 
-PHASE 1: Parallel Research (Agent tool → searcher agents)
-  → Spawn searcher agents per allocation formula
-  → Each gets: sub-question(s), search profile, output path, budget slice
-  → Each writes: .research/<topic-slug>/findings/<sub-query>-FINDINGS.md
-  → Checkpoint after each agent completes
+PHASE 1: Parallel Research (searcher agents)
+  Spawn with: sub-questions, profile, path, depth, domain config
+  Wave progress: "Wave N/M complete. X answered, Y remaining."
+  Timeout: 5 min/searcher. USER CHECKPOINT on failures.
 
-PHASE 2: Synthesis (Agent tool → synthesizer agent)
-  → Spawn synthesizer agent
-  → Reads all FINDINGS.md files
-  → Writes: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json
+PHASE 2: Synthesis (synthesizer agent)
+  Writes: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json
 
-PHASE 3: Mandatory Challenges (convergence-loop presets)
-  → Contrarian: challenge consensus, seek disconfirming evidence
-  → Outside-the-box: find what structured research missed
-  → Both write to .research/<topic-slug>/challenges/
+PHASE 3: Challenges (contrarian + OTB in parallel)
+  Cross-model (Gemini CLI) + CL verification. Re-synthesize if >20% changed.
 
-PHASE 4: Self-Audit (inline, depth-dependent)
-  → Summary line by default ("Self-audit: 6/6 passed")
-  → --audit-details flag for full report
+PHASE 4: Self-Audit (inline, tiered by depth)
 
-PHASE 5: Presentation + Downstream Routing (inline)
-  → Terminal summary (5-10 lines)
-  → "What next?" menu with routing options
-  → Require acknowledgment (CLAUDE.md guardrail #6)
+PHASE 5: Presentation + Routing
+  Terminal summary -> "What next?" menu -> post-menu artifacts
 ```
 
-Use phase transition markers: `========== PHASE N: [NAME] ==========`
+Phase markers: `========== PHASE N: [NAME] ==========`
 
 ---
 
-## Phase 0: Interactive Decomposition (MUST)
+## Phase 0: Interactive Decomposition
 
-**Purpose:** Understand the research question deeply before dispatching agents.
-This is inline orchestration — no agents spawned yet.
+**0.0 Duplicate Check.** Check `.research/<topic-slug>/` existence: offer
+resume, re-research, or abort. Check `research-index.jsonl` for >50% keyword
+overlap and surface existing research.
 
-### Step 0.0: Research Index Check (P1+)
+**0.1 Classify.** 8 types (REFERENCE.md Section 1).
 
-Before decomposition, check `.research/research-index.jsonl` for prior research:
+**0.2 Domain + Module.** Auto-detect domain (ask if uncertain). Read
+`domains/<domain>.yaml`, pass `source_authority` + `verification_rules` to
+searchers.
 
-1. **Exact topic match** → offer to resume or re-research
-2. **Keyword overlap >50%** → surface existing research, ask if user wants to
-   build on it or start fresh
-3. **No overlap** → proceed normally
-4. **Stale research** → flag staleness per domain rules (see REFERENCE.md
-   Section 12)
+**0.3 Depth.** Default L1. `--depth` overrides.
 
-### Step 0.1: Classify Question Type
+**0.4 Q&A.** Level B: 2-3 rounds (batched 5-8). Escalate to C if multi-domain,
+user requests, or 8+ sub-dimensions. **Fast-path:** 1 round for simple
+well-scoped topics. Persist Q&A state after each round (compaction resilience).
 
-Classify the research question into one of 8 types (see REFERENCE.md for full
-classification guide):
+**0.5 MECE.** Generate sub-questions with search profiles (web/docs/codebase/
+academic). MECE verification: check overlaps + gaps, fix before presenting.
 
-| Type          | Example                                       | Decomposition Strategy        |
-| ------------- | --------------------------------------------- | ----------------------------- |
-| Factual       | "What is the latest version of Next.js?"      | Direct lookup, verify sources |
-| Descriptive   | "How does React Server Components work?"      | Feature survey + examples     |
-| Comparative   | "Next.js vs Remix for our use case?"          | Matrix + tradeoffs            |
-| Evaluative    | "Is Firebase a good choice for our scale?"    | Criteria-based assessment     |
-| Exploratory   | "What are the best practices for WebSockets?" | Landscape survey + patterns   |
-| Investigative | "Why is our build time increasing?"           | Hypothesis → evidence         |
-| Predictive    | "Will Deno replace Node.js?"                  | Trend analysis + signals      |
-| Relational    | "How do auth, billing, and roles interact?"   | Dependency mapping            |
+**0.6 Allocation.** `D + 3 + floor(D/5)`. Example: 7 SQs = 11 agents, 3 waves.
 
-### Step 0.2: Detect Domain
+**0.7 Plan.** Include estimated duration. `--auto` skips approval.
 
-Auto-detect the domain from the question. If confident, proceed. If uncertain,
-ask: "I'm detecting this as a [domain] question. Correct, or is there a more
-specific domain?"
-
-### Step 0.3: Select Depth Level
-
-Default to L1 (Exhaustive). User can override with `--depth` flag. Present the
-depth level and its implications (agent count, search rounds).
-
-### Step 0.4: Interactive Decomposition
-
-Start at **level B** (2-3 rounds of probing questions):
-
-- What is the scope and boundaries of this research?
-- What does the user already know? (avoid re-researching known ground)
-- What angles matter most? What would make this research actionable?
-- Are there specific constraints (technologies, timelines, existing systems)?
-
-**Escalate to level C** (deep-plan-style exhaustive discovery) if:
-
-- Question is multi-domain
-- User requests deeper decomposition
-- Initial decomposition reveals 8+ sub-dimensions
-
-Batch questions 5-8 per round (per CLAUDE.md guardrail #10).
-
-### Step 0.5: Generate MECE Sub-Questions
-
-From the decomposition, generate Mutually Exclusive, Collectively Exhaustive
-sub-questions. Each sub-question gets assigned a search profile:
-
-| Profile  | Tools                          | When                        |
-| -------- | ------------------------------ | --------------------------- |
-| web      | WebSearch, WebFetch            | General knowledge, trends   |
-| docs     | Context7 MCP, WebFetch         | Library/framework specifics |
-| codebase | Grep, Glob, Read, Bash         | Internal code questions     |
-| academic | WebSearch, WebFetch for papers | Research papers, theory     |
-
-### Step 0.6: Apply Allocation Formula
-
-Calculate agent count: `D + 3 + floor(D/5)` where D = number of sub-questions.
-
-**Worked example:** 7 sub-questions → 7 + 3 + floor(7/5) = 7 + 3 + 1 = 11
-agents. Per AGENT_ORCHESTRATION.md: max 4 concurrent agents, so batch into 3
-waves.
-
-### Step 0.7: Present Research Plan
-
-Present to user for approval:
-
-```
-========== RESEARCH PLAN ==========
-Question: [original question]
-Type: [classification] | Domain: [detected domain]
-Depth: [L1-L4] ([label])
-
-Sub-Questions ([N]):
-  SQ-001: [question] (profile: web)
-  SQ-002: [question] (profile: docs)
-  ...
-
-Agents: [N] searchers + 1 synthesizer + [N] challenge agents
-Waves: [N] (max 4 concurrent)
-
-Approve / Modify / Abort?
-====================================
-```
-
-**If `--auto` flag:** Skip approval, log that auto-mode was used.
-
-### Step 0.8: Update State File
-
-After approval, create state file at
-`.claude/state/deep-research.<topic-slug>.state.json` with plan details.
+**0.8-0.9 State.** Create `.claude/state/deep-research.<slug>.state.json`
+(schema: REFERENCE.md Section 19).
 
 ---
 
-## Phase 1: Parallel Research (MUST)
+## Phase 1: Parallel Research
 
-**Purpose:** Dispatch searcher agents to investigate sub-questions in parallel.
+Spawn searcher agents. Each receives: sub-questions, search profile, output
+path, depth, domain, **domain config** (source_authority + verification_rules
+from domain module). See REFERENCE.md Section 20 for spawn prompt example.
 
-### Execution
-
-1. Read approved plan from state file
-2. **L4 team check (Decision #4):** If depth is L4 AND sub-questions are
-   interdependent (agents need to react to each other's findings), route to
-   agent team orchestration — use TeamCreate to spawn a coordinated team where
-   agents can share findings via SendMessage. Otherwise, proceed with standard
-   wave dispatch below.
-3. Group sub-questions into agent assignments
-4. Spawn searcher agents in parallel via Agent tool:
-
-   ```
-   For each agent assignment:
-     Agent(
-       subagent_type: "deep-research-searcher",
-       prompt: {
-         sub_questions: [...],
-         search_profile: "web" | "docs",
-         output_dir: ".research/<topic>/findings/",
-         depth: <depth level>,
-         domain: <detected domain>
-       }
-     )
-   ```
-
-5. Respect 4-agent concurrency limit — batch into waves if needed
-6. Update state file after each agent completes
-7. If critical gaps found and budget allows, spawn additional searcher(s)
-8. Proceed to Phase 2 when all searchers complete
-
-### Error Handling
-
-- If an agent fails: log the failure, mark sub-questions as `failed` in state
-- If 50%+ of agents fail: stop and present to user with options
-- Individual agent failure does not block synthesis — synthesizer works with
-  available findings
+Respect 4-agent concurrency. Wave progress after each wave. **Timeout:** 5 min
+per searcher -- mark failed, inform user. **User checkpoint:** if any failed,
+ask proceed or re-run. **L4:** TeamCreate for interdependent sub-questions.
 
 ---
 
-## Phase 2: Synthesis (MUST)
+## Phase 2: Synthesis
 
-**Purpose:** Combine all findings into a coherent research report.
-
-### Execution
-
-1. Verify all expected FINDINGS.md files exist on disk
-2. Spawn synthesizer agent:
-
-   ```
-   Agent(
-     subagent_type: "deep-research-synthesizer",
-     prompt: {
-       findings_dir: ".research/<topic>/findings/",
-       output_dir: ".research/<topic>/",
-       topic: <original question>,
-       depth: <depth level>,
-       sub_questions: <full list>
-     }
-   )
-   ```
-
-3. Verify output files exist: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl,
-   metadata.json
-4. Update state file with synthesis status
-
-### Error Handling
-
-- If findings files are missing: warn synthesizer, proceed with available data
-- If synthesizer fails: present error to user, offer re-run or manual synthesis
+Spawn synthesizer with findings_dir, output_dir, topic, depth, sub_questions.
+Verify: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json.
 
 ---
 
-## Phase 3: Mandatory Challenges (MUST)
+## Phase 3: Mandatory Challenges
 
-**Purpose:** Stress-test findings. Contrarian + OTB are mandatory at ALL levels.
+Contrarian and OTB agents **run in parallel**. Scale: L1-L2 (1+1), L3 (2+2), L4
+(3+3 + red team + pre-mortem). Templates: REFERENCE.md Sections 8-9.
+Cross-model + CL verification: REFERENCE.md Sections 13-14. Re-synthesize if
 
-### Contrarian Challenge
-
-Spawn a general-purpose agent with the contrarian prompt template from
-`.claude/skills/deep-research/REFERENCE.md` Section 8. The agent receives
-RESEARCH_OUTPUT.md as input and writes CONTRARIAN.md to
-`.research/<topic>/challenges/`. Give the agent WebSearch and WebFetch tools so
-it can find disconfirming evidence.
-
-### Outside-the-Box Challenge
-
-Spawn a general-purpose agent with the OTB prompt template from
-`.claude/skills/deep-research/REFERENCE.md` Section 9. The agent receives
-RESEARCH_OUTPUT.md as input and writes OUTSIDE_THE_BOX.md to
-`.research/<topic>/challenges/`. Give the agent WebSearch and WebFetch tools so
-it can explore adjacent domains.
-
-### Scaling by Depth Level (Decision #15)
-
-| Level | Contrarian                                  | OTB                 |
-| ----- | ------------------------------------------- | ------------------- |
-| L1-L2 | 1 agent (CL preset)                         | 1 agent (CL preset) |
-| L3    | 2 agents (different adversarial strategies) | 2 agents            |
-| L4    | 3 agents + red team pass + pre-mortem       | 3 agents            |
-
-### Cross-Model Verification via Gemini CLI (P1+)
-
-For HIGH-confidence claims, run independent verification via Gemini CLI to
-address same-model bias (Decision #13):
-
-```bash
-echo '<verification prompt>' | gemini --json 2>/dev/null
-```
-
-- **L1:** Verify top 5 HIGH-confidence claims
-- **L2:** Verify all HIGH-confidence claims
-- **L3-L4:** Full verification suite (all claims above LOW)
-
-If Gemini disagrees with a claim, flag it and include both perspectives. Update
-confidence based on cross-model consensus.
-
-**Prerequisite:** `npm install -g @google/gemini-cli` + Google auth (one-time).
-If Gemini CLI is not available, skip with a note in the self-audit.
-
-### Convergence-Loop Research-Claims Verification (P1+)
-
-For MEDIUM/LOW confidence claims, invoke `/convergence-loop` with the
-`research-claims` preset (6 behaviors: verify-sources, cross-reference,
-temporal-check, completeness-audit, bias-check, synthesis-fidelity).
-
-Update claims.jsonl with upgraded/downgraded confidence levels after
-verification.
-
-### Re-Synthesis Trigger
-
-If verification changed >20% of claims, re-run the synthesizer to update
-RESEARCH_OUTPUT.md with corrected confidence levels and new evidence.
-
-### Post-Challenge
-
-If challenges reveal significant gaps, optionally feed challenge findings back
-to synthesizer for incorporation into the final report. Update state file.
+> 20% claims changed.
 
 ---
 
-## Phase 4: Self-Audit (MUST)
+## Phase 4: Self-Audit
 
-**Purpose:** Verify research quality before presenting results.
-
-Run tiered checks inline (not via a separate agent). Tier depth scales with
-research depth level.
-
-**Tier 1 (all levels):**
-
-1. **Completeness** — all sub-questions addressed in RESEARCH_OUTPUT.md
-2. **Citation density** — every substantive claim has at least one citation
-3. **Confidence distribution** — not all HIGH (confidence theater), not all LOW
-4. **Source diversity** — not all from same domain/author
-5. **Contradiction resolution** — all contradictions surfaced, not silently
-   resolved
-6. **Challenge integration** — contrarian and OTB findings acknowledged
-
-**Tier 2 (L2+):**
-
-7. **Source span** — sources from 3+ distinct domains/authors
-8. **Confidence calibration** — HIGH claims genuinely well-supported
-
-**Tier 3 (L3+):**
-
-9. **Temporal validity** — sources within domain staleness threshold
-10. **Bias detection** — no single perspective dominates
-11. **Actionability** — recommendations are specific, not generic
-
-**Tier 4 (L4 only):**
-
-12. **Full 8-dimension quality assessment**
-13. **Adversarial challenge of key findings**
-
-### Output
-
-- **Default:** `Self-audit: N/N passed` (tier count depends on depth)
-- **With `--audit-details`:** Full tiered checklist with evidence for each check
-
-Update state file with audit results.
+Inline tiered checks. T1 (all): completeness, citations, confidence
+distribution, source diversity, contradictions, challenges. T2 (L2+): source
+span, calibration. T3 (L3+): temporal validity, bias, actionability. T4 (L4):
+8-dimension + adversarial. Default: summary. `--audit-details`: full report.
 
 ---
 
-## Phase 5: Presentation + Downstream Routing (MUST)
+## Phase 5: Presentation + Downstream Routing
 
-### Terminal Summary
-
-```
-========== RESEARCH COMPLETE ==========
-Topic: [question]
-Depth: [L1-L4] ([label])
-Claims: N (HIGH: X, MEDIUM: Y, LOW: Z)
-Sources: N unique sources consulted
-Challenges: Contrarian [N issues], OTB [N insights]
-Self-audit: [summary line]
-Report: .research/<topic-slug>/RESEARCH_OUTPUT.md
-========================================
-```
-
-### "What Next?" Menu
-
-Present recognition-over-recall options. Adapter-aware — each option triggers
-the corresponding adapter from REFERENCE.md Section 15:
-
-1. "Deepen research on: [top 2-3 suggested sub-topics from gaps]"
-2. "Route to /deep-plan for implementation planning" — runs deep-plan adapter,
-   generates Research Context section for DIAGNOSIS.md
-3. "Route to /skill-creator for skill creation" — runs skill-creator adapter,
-   extracts domain patterns for discovery defaults
-4. "Route to GSD pipeline" — runs GSD adapter, produces STACK.md/FEATURES.md/
-   ARCHITECTURE.md/PITFALLS.md/SUMMARY.md in `.planning/research/`
-5. "Verify LOW-confidence claims with /convergence-loop (N claims)" — runs
-   convergence-loop adapter, filters claims by confidence < HIGH
-6. "Save HIGH-confidence insights to memory (N candidates) (P3+)"
-7. "View full report"
-8. "Done"
-
-Per CLAUDE.md guardrail #6: require acknowledgment before continuing.
-
-### Raw Artifact Cleanup
-
-Do NOT hard-delete raw artifacts by default:
-
-- **Default:** keep `findings/*.md` and `challenges/*.md` for resume + audit
-  provenance
-- **Optional (user-confirmed):** archive to `.research/<topic>/archive/`
-- Record cleanup action in state file
-  (`output.rawArtifacts: "kept" | "archived"`)
-- **Always preserve:** RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl,
-  metadata.json — these support decision provenance, research memory, overlap
-  detection, and `/research-refresh`
-
-### Research Index Entry (P1+)
-
-After completion, append an entry to `.research/research-index.jsonl` (see
-REFERENCE.md Section 12 for schema). This enables overlap detection, staleness
-tracking, and `--recall`.
-
-### Strategy Log Entry (P3+)
-
-Append a strategy performance record to `.research/strategy-log.jsonl` (see
-REFERENCE.md Section 16). Tracks which search strategies produce the best
-results per domain, informing future Phase 0 strategy selection.
-
-### Source Reputation Update (P3+)
-
-Update `.research/source-reputation.jsonl` with verification outcomes (see
-REFERENCE.md Section 17). Sources that consistently verify get higher trust;
-sources that fail verification get downgraded.
-
-### MCP Memory Persistence (P3+)
-
-Auto-suggest: "Save N HIGH-confidence durable insights to memory?" User reviews
-each candidate before persistence. Only persist claims that are HIGH confidence,
-cross-session relevant, and durable (not rapidly changing).
-
-Update state file to `complete`.
-
----
-
-## State Management
-
-### State File
-
-Location: `.claude/state/deep-research.<topic-slug>.state.json`
-
-```json
-{
-  "version": 1,
-  "topic": "string — original research question",
-  "topicSlug": "string — kebab-case slug",
-  "status": "planning | researching | synthesizing | verifying | complete | failed",
-  "depth": "L1 | L2 | L3 | L4",
-  "depthLabel": "Exhaustive | Comprehensive | Investigation | Deep Investigation",
-  "createdAt": "ISO 8601",
-  "updatedAt": "ISO 8601",
-  "plan": {
-    "questionType": "factual | descriptive | comparative | evaluative | exploratory | investigative | predictive | relational",
-    "domain": "string",
-    "domainConfidence": "number 0-1",
-    "subQuestions": [
-      {
-        "id": "SQ-001",
-        "question": "string",
-        "searchProfile": "web | docs | codebase | academic",
-        "status": "pending | assigned | complete | failed",
-        "agentId": "string",
-        "findingsPath": "string"
-      }
-    ],
-    "approved": "boolean",
-    "approvedAt": "ISO 8601 | null"
-  },
-  "agents": {
-    "searchers": [
-      {
-        "id": "searcher-1",
-        "subQuestions": ["SQ-001"],
-        "status": "pending | running | complete | failed",
-        "findingsPaths": ["string"],
-        "startedAt": "ISO 8601 | null",
-        "completedAt": "ISO 8601 | null"
-      }
-    ],
-    "synthesizer": {
-      "status": "pending | running | complete | failed",
-      "outputPath": "string | null"
-    }
-  },
-  "output": {
-    "researchOutputPath": "string | null",
-    "claimsPath": "string | null",
-    "sourcesPath": "string | null",
-    "metadataPath": "string | null",
-    "rawArtifacts": "kept | archived"
-  },
-  "verification": {
-    "contrarian": { "status": "pending | complete | skipped", "passCount": 0 },
-    "outsideTheBox": {
-      "status": "pending | complete | skipped",
-      "passCount": 0
-    },
-    "selfAudit": { "status": "pending | complete", "result": "string | null" }
-  },
-  "errors": [],
-  "resumePoint": "string — phase + step identifier for resume"
-}
-```
-
-### Resume Protocol
-
-**Automatic:** Session-start detects incomplete research via state file. Offers
-to resume.
-
-**Manual:** Re-invoke `/deep-research "<same topic>"`. Skill detects existing
-state file, skips completed phases, resumes from `resumePoint`.
+Terminal summary, then menu: (1) deepen, (2) /deep-plan, (3) /skill-creator, (4)
+GSD, (5) /convergence-loop for LOW claims, (6) save to memory, (7) view report,
+(8) done. Post-menu: cleanup, index entry, strategy log, source reputation, MCP
+memory. Details: REFERENCE.md Sections 16-17, 20.
 
 ---
 
@@ -607,74 +198,56 @@ state file, skips completed phases, resumes from `resumePoint`.
 
 ```
 .research/<topic-slug>/
-  findings/                          # gitignored — intermediate
-    <sub-query-1>-FINDINGS.md
-    <sub-query-2>-FINDINGS.md
-  challenges/                        # gitignored — intermediate
-    CONTRARIAN.md
-    OUTSIDE_THE_BOX.md
-  RESEARCH_OUTPUT.md                 # retained — human-readable report
-  claims.jsonl                       # retained — machine-parseable claims
-  sources.jsonl                      # retained — source registry
-  metadata.json                      # retained — session metadata + consumer hints
+  findings/              # gitignored -- intermediate
+  challenges/            # gitignored -- intermediate
+  RESEARCH_OUTPUT.md     # retained -- report
+  claims.jsonl           # retained -- machine-parseable
+  sources.jsonl          # retained -- source registry
+  metadata.json          # retained -- metadata + consumer hints
 ```
 
-### Output Format Schemas
-
-See [REFERENCE.md](./REFERENCE.md) for:
-
-- RESEARCH_OUTPUT.md template
-- claims.jsonl record schema
-- sources.jsonl record schema
-- metadata.json schema
-- FINDINGS.md template (for searcher agents)
-- Contrarian and OTB prompt templates
-
----
-
-## Compaction Resilience
-
-- **State file:** `.claude/state/deep-research.<topic-slug>.state.json` —
-  updated after every state-changing event
-- **Recovery:** On resume, read state file, skip completed phases
-- **Topic matching:** State file name derived from topic (lowercase, hyphens).
-  If no matching state file exists, start fresh.
-- **Artifacts as checkpoints:** FINDINGS.md files, RESEARCH_OUTPUT.md persist
-  even if state file is lost
-- **Cleanup:** `rm .claude/state/deep-research.<topic-slug>.state.json`
-- **List active research:** `ls .claude/state/deep-research.*.state.json`
-
----
-
-## Integration
-
-- **Neighbors:** `/deep-plan` (consumes research for Phase 0 context),
-  `/convergence-loop` (challenge presets + low-confidence claim verification),
-  `/skill-creator` (domain research for skill creation), `/gsd:research-phase`
-  (structured alternative to gsd-project-researcher)
-- **References:** [REFERENCE.md](./REFERENCE.md) (output templates, question
-  type classification, prompt templates, schemas)
-- **Downstream consumers:** claims.jsonl + sources.jsonl + metadata.json
-  consumed by downstream adapters (P2+)
+**Gitignore rationale:** Intermediate artifacts (findings/, challenges/) are
+gitignored. Conclusion artifacts retained for decision provenance and
+cross-session recall. Schemas: REFERENCE.md Section 11.
 
 ---
 
 ## Guard Rails
 
-- **Budget enforcement:** Monitor token usage at 70/85/95/100% thresholds. At
-  95%: warn. At 100%: force synthesis with available data.
-- **Scope explosion:** If sub-question count exceeds 15, pause: "Research has N
-  sub-questions. Continue, scope-reduce, or split into multiple research
-  sessions?"
-- **Agent failure cascade:** If 50%+ of searcher agents fail, stop and present
-  options to user instead of proceeding with partial data.
-- **Disengagement:** If user says "skip" or "let's work" mid-research, save
-  state and present what's completed vs remaining.
+- **Budget:** Design targets, not hard limits. Use agent/round count as proxies
+  if token tracking unavailable. Warn 70/85/95%. At 100%: force synthesis.
+- **Scope explosion:** >15 sub-questions = pause, offer continue/reduce/split.
+- **Failure cascade:** 50%+ agents fail = stop, present options.
+- **Timeout:** 5 min/searcher. Mark failed, present to user.
+- **Disengagement:** Save state, present completed vs remaining.
+
+---
+
+## Compaction Resilience
+
+State file updated after every event. Resume: read state, skip completed. Disk
+artifacts persist as checkpoints. Phase 0 Q&A persisted incrementally. Schema:
+REFERENCE.md Section 19.
+
+---
+
+## Integration
+
+- **Neighbors:** `/deep-plan`, `/convergence-loop`, `/skill-creator`,
+  `/gsd:research-phase`, `/skill-audit`, `/superpowers`
+- **References:** [REFERENCE.md](./REFERENCE.md) (templates, schemas, prompts,
+  domains, management commands)
+- **Consumers:** claims.jsonl + sources.jsonl + metadata.json via adapters
+  (REFERENCE.md Section 15)
 
 ---
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-03-22 | Initial implementation |
+| Version | Date       | Description                                                  |
+| ------- | ---------- | ------------------------------------------------------------ |
+| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)     |
+| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation     |
+| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles   |
+| 1.0     | 2026-03-22 | Initial implementation                                       |

@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.3
 **Last Updated:** 2026-03-22
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -7,7 +7,33 @@
 # Deep Research Reference
 
 Output templates, question type classification, source evaluation framework,
-prompt templates, and schemas for the deep-research skill.
+prompt templates, schemas, domain modules, and management commands for the
+deep-research skill.
+
+---
+
+## Table of Contents
+
+1. [Question Type Classification](#1-question-type-classification)
+2. [Depth Level Detail](#2-depth-level-detail)
+3. [Source Hierarchy by Domain](#3-source-hierarchy-by-domain)
+4. [CRAAP+SIFT Framework](#4-craapsift-framework)
+5. [RESEARCH_OUTPUT.md Template](#5-research_outputmd-template)
+6. [Interactive Decomposition Protocol](#6-interactive-decomposition-protocol)
+7. [Budget Estimation Heuristics](#7-budget-estimation-heuristics)
+8. [Contrarian Challenge Prompt Template](#8-contrarian-challenge-prompt-template)
+9. [Outside-the-Box Prompt Template](#9-outside-the-box-prompt-template)
+10. [Self-Audit Checklist](#10-self-audit-checklist)
+11. [Output Format Schemas](#11-output-format-schemas)
+12. [Research Index Schema](#12-research-index-schema)
+13. [Gemini CLI Cross-Model Verification](#13-gemini-cli-cross-model-verification)
+14. [Convergence-Loop Research-Claims Behaviors](#14-convergence-loop-research-claims-behaviors)
+15. [Downstream Adapter Contract](#15-downstream-adapter-contract)
+16. [Strategy Log Schema](#16-strategy-log-schema)
+17. [Source Reputation Schema](#17-source-reputation-schema)
+18. [Management Sub-Commands](#18-management-sub-commands)
+19. [State File Schema](#19-state-file-schema)
+20. [Phase Details (moved from SKILL.md)](#20-phase-details-moved-from-skillmd)
 
 ---
 
@@ -22,7 +48,7 @@ prompt templates, and schemas for the deep-research skill.
 | Comparative   | "vs", "compare", "which is better"     | Matrix + tradeoffs + recommendation  | All criteria evaluated for all options  |
 | Evaluative    | "is it good", "should we", "worth it"  | Criteria-based assessment + evidence | Clear recommendation with confidence    |
 | Exploratory   | "best practices", "patterns", "how to" | Landscape survey + categorization    | Major approaches covered with tradeoffs |
-| Investigative | "why", "root cause", "what happened"   | Hypothesis → evidence → conclusion   | Root cause identified with evidence     |
+| Investigative | "why", "root cause", "what happened"   | Hypothesis -> evidence -> conclusion | Root cause identified with evidence     |
 | Predictive    | "will", "future", "trend"              | Trend analysis + signals + scenarios | Scenarios documented with likelihoods   |
 | Relational    | "interact", "depend", "connect"        | Dependency mapping + interface docs  | All relationships documented            |
 
@@ -52,6 +78,20 @@ prompt templates, and schemas for the deep-research skill.
 ---
 
 ## 2. Depth Level Detail
+
+### Summary Table
+
+| Level | Name               | Typical Agents | Search Rounds | Contrarian                       | OTB                 | Self-Audit         |
+| ----- | ------------------ | -------------- | ------------- | -------------------------------- | ------------------- | ------------------ |
+| L1    | Exhaustive         | 4-5            | 5-8           | 1 agent (CL preset)              | 1 agent (CL preset) | Summary            |
+| L2    | Comprehensive      | 3-4            | 3-5           | 1 agent                          | 1 agent             | Summary            |
+| L3    | Investigation      | 5-7            | 5-8           | 2 agents (different strategies)  | 2 agents            | Full               |
+| L4    | Deep Investigation | 8-10           | 8+            | 3 agents + red team + pre-mortem | 3 agents            | Full + adversarial |
+
+> **Precedence:** The allocation formula `D + 3 + floor(D/5)` determines actual
+> agent count. The "Typical Agents" column shows ranges for common sub-question
+> counts. When they conflict, the formula wins. L4 additionally uses agent team
+> orchestration when sub-questions are interdependent.
 
 ### L1: Exhaustive (Default)
 
@@ -93,7 +133,7 @@ prompt templates, and schemas for the deep-research skill.
   - Agent 2: Methodology challenge
   - Agent 3: Assumption audit
   - Red team: Adversarial attack on conclusions
-  - Pre-mortem: "This research led to a bad decision — why?"
+  - Pre-mortem: "This research led to a bad decision -- why?"
 - **OTB:** 3 agents with distinct lateral approaches
 - **Self-audit:** Full + adversarial (self-audit is itself challenged)
 - **When:** Critical architecture decisions, new domain entry,
@@ -117,7 +157,7 @@ prompt templates, and schemas for the deep-research skill.
 
 **Technology/Framework:**
 
-- Tier 1: Context7 → official docs → GitHub releases/changelogs
+- Tier 1: Context7 -> official docs -> GitHub releases/changelogs
 - Tier 2: Framework community (Next.js blog, React RFC discussions)
 - Tier 3: General tech blogs, conference talks
 
@@ -135,11 +175,11 @@ prompt templates, and schemas for the deep-research skill.
 
 ### Confidence Assignment Rules
 
-- 2+ independent sources agree → MEDIUM minimum
-- Official/authoritative source confirms → HIGH eligible
-- Training data only → always UNVERIFIED
-- Sources contradict → MEDIUM at best, surface contradiction
-- Single unverified blog post → LOW
+- 2+ independent sources agree -> MEDIUM minimum
+- Official/authoritative source confirms -> HIGH eligible
+- Training data only -> always UNVERIFIED
+- Sources contradict -> MEDIUM at best, surface contradiction
+- Single unverified blog post -> LOW
 
 ---
 
@@ -223,14 +263,14 @@ should understand the research conclusions and key recommendations.]
 
 ## Recommendations
 
-1. **[Recommendation]** — [rationale with citations]
-2. **[Recommendation]** — [rationale with citations]
+1. **[Recommendation]** -- [rationale with citations]
+2. **[Recommendation]** -- [rationale with citations]
 
 ---
 
 ## Unexpected Findings
 
-[High-value findings outside the original research scope — discoveries made
+[High-value findings outside the original research scope -- discoveries made
 along the way that are worth noting.]
 
 ---
@@ -239,12 +279,12 @@ along the way that are worth noting.]
 
 ### Contrarian Findings
 
-[Summary of contrarian challenge results — what was challenged, what held up,
+[Summary of contrarian challenge results -- what was challenged, what held up,
 what was weakened. Full details in challenges/CONTRARIAN.md]
 
 ### Outside-the-Box Insights
 
-[Summary of OTB findings — what structured research missed, adjacent domain
+[Summary of OTB findings -- what structured research missed, adjacent domain
 insights, second-order effects. Full details in challenges/OUTSIDE_THE_BOX.md]
 
 ---
@@ -284,22 +324,22 @@ insights, second-order effects. Full details in challenges/OUTSIDE_THE_BOX.md]
 
 ### Level B (Default: 2-3 Rounds)
 
-**Round 1 — Scope & Boundaries:**
+**Round 1 -- Scope & Boundaries:**
 
 - What specifically do you want to learn about [topic]?
-- What's the context — are you planning to build something, evaluating options,
+- What's the context -- are you planning to build something, evaluating options,
   or exploring a domain?
 - What do you already know? (so we don't re-research known ground)
 - Are there specific technologies, constraints, or systems involved?
 
-**Round 2 — Priorities & Angles:**
+**Round 2 -- Priorities & Angles:**
 
-- Which aspects matter most — technical depth, practical patterns, tradeoffs,
+- Which aspects matter most -- technical depth, practical patterns, tradeoffs,
   risks?
 - Any specific concerns or hypotheses you want tested?
 - What would make this research actionable for you?
 
-**Round 3 (if needed) — Refinement:**
+**Round 3 (if needed) -- Refinement:**
 
 - Based on your answers, I'm planning to investigate [sub-questions]. Any gaps
   or angles I'm missing?
@@ -325,12 +365,12 @@ inter-batch synthesis, mid-discovery check). Escalate when:
 | L3    | 5-7 searchers + 5 support  | 400K-700K   | $8-$15           |
 | L4    | 8-10 searchers + 8 support | 700K-1.2M   | $15-$30          |
 
-Budget allocation (Decision #8 — not a constraint, a guardrail):
+Budget allocation (not a constraint, a guardrail):
 
-- 60% — search (Phase 1)
-- 20% — verification (Phase 3)
-- 10% — synthesis (Phase 2)
-- 10% — overhead (Phases 0, 4, 5)
+- 60% -- search (Phase 1)
+- 20% -- verification (Phase 3)
+- 10% -- synthesis (Phase 2)
+- 10% -- overhead (Phases 0, 4, 5)
 
 ---
 
@@ -349,7 +389,7 @@ research report. For each key claim:
 Rules:
 - Write specific challenges with evidence, not generic skepticism
 - Use WebSearch to find disconfirming evidence where possible
-- If a claim holds up under challenge, say so — don't force disagreement
+- If a claim holds up under challenge, say so -- don't force disagreement
 - Rate each claim: CONFIRMED (withstands challenge) | WEAKENED (valid concerns)
   | REFUTED (disconfirming evidence found)
 
@@ -389,14 +429,14 @@ Write your insights to: .research/<topic>/challenges/OUTSIDE_THE_BOX.md
 
 ## 10. Self-Audit Checklist
 
-| #   | Check                   | Pass Criteria                                         | Fail Example                            |
-| --- | ----------------------- | ----------------------------------------------------- | --------------------------------------- |
-| 1   | Completeness            | Every sub-question has findings in RESEARCH_OUTPUT.md | SQ-003 not addressed at all             |
-| 2   | Citation density        | Every substantive claim has ≥1 inline citation `[n]`  | "React is faster" with no citation      |
-| 3   | Confidence distribution | Not >80% HIGH and not >80% LOW                        | All 12 claims marked HIGH               |
-| 4   | Source diversity        | Sources from ≥2 tiers AND ≥3 distinct domains/authors | All sources from one blog               |
-| 5   | Contradiction handling  | All contradictions surfaced in dedicated section      | Source A and B disagree but not noted   |
-| 6   | Challenge integration   | Contrarian + OTB findings acknowledged in report      | Challenges completed but not referenced |
+| #   | Check                   | Pass Criteria                                           | Fail Example                            |
+| --- | ----------------------- | ------------------------------------------------------- | --------------------------------------- |
+| 1   | Completeness            | Every sub-question has findings in RESEARCH_OUTPUT.md   | SQ-003 not addressed at all             |
+| 2   | Citation density        | Every substantive claim has >=1 inline citation `[n]`   | "React is faster" with no citation      |
+| 3   | Confidence distribution | Not >80% HIGH and not >80% LOW                          | All 12 claims marked HIGH               |
+| 4   | Source diversity        | Sources from >=2 tiers AND >=3 distinct domains/authors | All sources from one blog               |
+| 5   | Contradiction handling  | All contradictions surfaced in dedicated section        | Source A and B disagree but not noted   |
+| 6   | Challenge integration   | Contrarian + OTB findings acknowledged in report        | Challenges completed but not referenced |
 
 ---
 
@@ -407,9 +447,9 @@ Write your insights to: .research/<topic>/challenges/OUTSIDE_THE_BOX.md
 ```json
 {
   "id": "C-001",
-  "claim": "string — the assertion",
+  "claim": "string -- the assertion",
   "confidence": "HIGH | MEDIUM | LOW | UNVERIFIED",
-  "evidence": "string — what supports this",
+  "evidence": "string -- what supports this",
   "sourceIds": ["S-001", "S-003"],
   "category": "stack | features | architecture | pitfalls | general",
   "subQuestionId": "SQ-001",
@@ -476,14 +516,14 @@ Write your insights to: .research/<topic>/challenges/OUTSIDE_THE_BOX.md
 
 ---
 
-## 12. Research Index Schema (P1+)
+## 12. Research Index Schema
 
 Location: `.research/research-index.jsonl`
 
 ```json
 {
-  "topicSlug": "string — kebab-case",
-  "topic": "string — original question",
+  "topicSlug": "string -- kebab-case",
+  "topic": "string -- original question",
   "depth": "L1 | L2 | L3 | L4",
   "domain": "string",
   "completedAt": "ISO 8601",
@@ -512,7 +552,7 @@ Location: `.research/research-index.jsonl`
 
 ---
 
-## 13. Gemini CLI Cross-Model Verification (P1+)
+## 13. Gemini CLI Cross-Model Verification
 
 ### Setup
 
@@ -550,9 +590,17 @@ research output.
 
 1,000 free queries/day. Typical L1 session uses 9-30 queries (HIGH claims only).
 
+### Depth Scaling
+
+- **L1:** Verify top 5 HIGH-confidence claims
+- **L2:** Verify all HIGH-confidence claims
+- **L3-L4:** Full verification suite (all claims above LOW)
+
+If Gemini CLI is not available, skip with a note in the self-audit.
+
 ---
 
-## 14. Convergence-Loop Research-Claims Behaviors (P1+)
+## 14. Convergence-Loop Research-Claims Behaviors
 
 Six research-specific behaviors for the `research-claims` preset:
 
@@ -568,9 +616,14 @@ Six research-specific behaviors for the `research-claims` preset:
 Input: `claims.jsonl` from deep-research output. Output: Verified claims with
 upgraded/downgraded confidence.
 
+### Re-Synthesis Trigger
+
+If verification changed >20% of claims, re-run the synthesizer to update
+RESEARCH_OUTPUT.md with corrected confidence levels and new evidence.
+
 ---
 
-## 15. Downstream Adapter Contract (P2+)
+## 15. Downstream Adapter Contract
 
 ### Universal Interface
 
@@ -602,13 +655,13 @@ presented inline for the user to approve injection.
 Transforms research into a `## Research Context` section for DIAGNOSIS.md:
 
 ```
-claims.jsonl → Filter routing.deepPlan === true → Extract:
+claims.jsonl -> Filter routing.deepPlan === true -> Extract:
   - Domain ecosystem summary (from metadata + HIGH-confidence claims)
   - Key recommendations with confidence levels
   - Pitfalls relevant to the task
   - Contradictions that affect planning
-→ Format as "## Research Context" markdown section
-→ Present to user: "Add this to DIAGNOSIS.md? [yes/no/edit]"
+-> Format as "## Research Context" markdown section
+-> Present to user: "Add this to DIAGNOSIS.md? [yes/no/edit]"
 ```
 
 When `/deep-plan` Phase 0 begins, it checks `.research/<topic-slug>/` for
@@ -619,12 +672,12 @@ existing research. If found, auto-inject Research Context into DIAGNOSIS.md.
 Extracts domain knowledge for skill creation:
 
 ```
-claims.jsonl → Extract by category:
-  - Domain patterns → inform "Architecture & Structure" questions
-  - Existing tool analysis → inform "Scope & Scale" questions
-  - Pitfalls → inform "Guard Rails" section
-  - Best practices → inform "Critical Rules" section
-→ Present as pre-populated defaults in skill-creator discovery
+claims.jsonl -> Extract by category:
+  - Domain patterns -> inform "Architecture & Structure" questions
+  - Existing tool analysis -> inform "Scope & Scale" questions
+  - Pitfalls -> inform "Guard Rails" section
+  - Best practices -> inform "Critical Rules" section
+-> Present as pre-populated defaults in skill-creator discovery
 ```
 
 ### GSD Adapter
@@ -632,14 +685,14 @@ claims.jsonl → Extract by category:
 Transforms to GSD research file format:
 
 ```
-claims.jsonl → Transform by category:
-  claims[category=stack]     → STACK.md format
-  claims[category=features]  → FEATURES.md format
-  claims[category=arch]      → ARCHITECTURE.md format
-  claims[category=pitfalls]  → PITFALLS.md format
-  executive_summary          → SUMMARY.md with "Implications for Roadmap"
-→ Write to .planning/research/ (GSD's expected location)
-→ User confirms before writing
+claims.jsonl -> Transform by category:
+  claims[category=stack]     -> STACK.md format
+  claims[category=features]  -> FEATURES.md format
+  claims[category=arch]      -> ARCHITECTURE.md format
+  claims[category=pitfalls]  -> PITFALLS.md format
+  executive_summary          -> SUMMARY.md with "Implications for Roadmap"
+-> Write to .planning/research/ (GSD's expected location)
+-> User confirms before writing
 ```
 
 ### convergence-loop Adapter
@@ -647,14 +700,14 @@ claims.jsonl → Transform by category:
 Routes low-confidence claims for verification:
 
 ```
-claims.jsonl → Filter confidence < HIGH → Format as claim list
-→ Auto-suggest: "N low-confidence claims. Verify with /convergence-loop?"
-→ On convergence: update claims.jsonl with corrected confidence
+claims.jsonl -> Filter confidence < HIGH -> Format as claim list
+-> Auto-suggest: "N low-confidence claims. Verify with /convergence-loop?"
+-> On convergence: update claims.jsonl with corrected confidence
 ```
 
 ---
 
-## 16. Strategy Log Schema (P3+)
+## 16. Strategy Log Schema
 
 Location: `.research/strategy-log.jsonl`
 
@@ -672,18 +725,18 @@ Location: `.research/strategy-log.jsonl`
 }
 ```
 
-Phase 0 reads this log to inform strategy selection — which profiles work best
+Phase 0 reads this log to inform strategy selection -- which profiles work best
 for which question types and domains.
 
 ---
 
-## 17. Source Reputation Schema (P3+)
+## 17. Source Reputation Schema
 
 Location: `.research/source-reputation.jsonl`
 
 ```json
 {
-  "sourceUrl": "string — normalized URL or domain",
+  "sourceUrl": "string -- normalized URL or domain",
   "totalCitations": 0,
   "verifiedCitations": 0,
   "failedCitations": 0,
@@ -697,7 +750,7 @@ sources get automatic confidence downgrade. Updated after verification passes.
 
 ---
 
-## 18. Management Sub-Commands (P3+)
+## 18. Management Sub-Commands
 
 | Sub-Command         | Usage                                        | Effect                                 |
 | ------------------- | -------------------------------------------- | -------------------------------------- |
@@ -712,10 +765,182 @@ what changed between versions.
 
 ---
 
+## 19. State File Schema
+
+Location: `.claude/state/deep-research.<topic-slug>.state.json`
+
+```json
+{
+  "version": 1,
+  "topic": "string -- original research question",
+  "topicSlug": "string -- kebab-case slug",
+  "status": "planning | researching | synthesizing | verifying | complete | failed",
+  "depth": "L1 | L2 | L3 | L4",
+  "depthLabel": "Exhaustive | Comprehensive | Investigation | Deep Investigation",
+  "createdAt": "ISO 8601",
+  "updatedAt": "ISO 8601",
+  "plan": {
+    "questionType": "factual | descriptive | comparative | evaluative | exploratory | investigative | predictive | relational",
+    "domain": "string",
+    "domainConfidence": "number 0-1",
+    "subQuestions": [
+      {
+        "id": "SQ-001",
+        "question": "string",
+        "searchProfile": "web | docs | codebase | academic",
+        "status": "pending | assigned | complete | failed",
+        "agentId": "string",
+        "findingsPath": "string"
+      }
+    ],
+    "approved": "boolean",
+    "approvedAt": "ISO 8601 | null",
+    "decompositionState": {
+      "qaRounds": [
+        {
+          "round": 1,
+          "questions": ["string"],
+          "answers": ["string"],
+          "subQuestionCandidates": ["string"]
+        }
+      ]
+    }
+  },
+  "agents": {
+    "searchers": [
+      {
+        "id": "searcher-1",
+        "subQuestions": ["SQ-001"],
+        "status": "pending | running | complete | failed | timeout",
+        "findingsPaths": ["string"],
+        "startedAt": "ISO 8601 | null",
+        "completedAt": "ISO 8601 | null"
+      }
+    ],
+    "synthesizer": {
+      "status": "pending | running | complete | failed",
+      "outputPath": "string | null"
+    }
+  },
+  "output": {
+    "researchOutputPath": "string | null",
+    "claimsPath": "string | null",
+    "sourcesPath": "string | null",
+    "metadataPath": "string | null",
+    "rawArtifacts": "kept | archived"
+  },
+  "verification": {
+    "contrarian": { "status": "pending | complete | skipped", "passCount": 0 },
+    "outsideTheBox": {
+      "status": "pending | complete | skipped",
+      "passCount": 0
+    },
+    "selfAudit": { "status": "pending | complete", "result": "string | null" }
+  },
+  "errors": [],
+  "resumePoint": "string -- phase + step identifier for resume"
+}
+```
+
+### Resume Protocol
+
+**Automatic:** Session-start detects incomplete research via state file. Offers
+to resume.
+
+**Manual:** Re-invoke `/deep-research "<same topic>"`. Skill detects existing
+state file, skips completed phases, resumes from `resumePoint`.
+
+---
+
+## 20. Phase Details (moved from SKILL.md)
+
+### Phase 1 Spawn Prompt Example
+
+```
+Agent(
+  subagent_type: "deep-research-searcher",
+  prompt: "Research the following sub-questions thoroughly.
+
+    Sub-questions:
+    - SQ-001: What does Next.js 16 officially support for WebSockets?
+    - SQ-002: What patterns does the community use for WebSocket connections?
+
+    Search profile: web
+    Output directory: .research/websocket-nextjs-16/findings/
+    Depth: L1
+    Domain: technology
+    Domain config:
+      source_authority:
+        - tier 1: context7, official-docs (HIGH trust)
+        - tier 2: github, stackoverflow, web-search (MEDIUM trust)
+        - tier 3: blog, tutorial, training-data (LOW trust)
+      verification_rules:
+        recency_threshold_days: 30
+        min_independent_sources: 2
+        check_deprecation: true
+
+    Write findings to separate FINDINGS.md files per sub-question.
+    Follow the FINDINGS.md template from REFERENCE.md."
+)
+```
+
+### Phase 3 Detailed Verification
+
+**Cross-Model Verification via Gemini CLI:** For HIGH-confidence claims, run
+independent verification via Gemini CLI to address same-model bias. See Section
+13 for setup, templates, and depth scaling. If Gemini CLI is not available, skip
+with a note in the self-audit.
+
+**Convergence-Loop Research-Claims Verification:** For MEDIUM/LOW confidence
+claims, invoke `/convergence-loop` with the `research-claims` preset (6
+behaviors). See Section 14 for details. Update claims.jsonl with
+upgraded/downgraded confidence levels after verification.
+
+**Re-Synthesis Trigger:** If verification changed >20% of claims, re-run the
+synthesizer to update RESEARCH_OUTPUT.md with corrected confidence levels and
+new evidence.
+
+**Post-Challenge:** If challenges reveal significant gaps, optionally feed
+challenge findings back to synthesizer for incorporation into the final report.
+Update state file.
+
+### Phase 5 Detailed Sub-Steps
+
+**Raw Artifact Cleanup:** Do NOT hard-delete raw artifacts by default. Keep
+`findings/*.md` and `challenges/*.md` for resume + audit provenance. Optional
+(user-confirmed): archive to `.research/<topic>/archive/`. Record cleanup action
+in state file (`output.rawArtifacts: "kept" | "archived"`). Always preserve:
+RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json -- these support
+decision provenance, research memory, overlap detection, and
+`/research-refresh`.
+
+**Research Index Entry:** After completion, append an entry to
+`.research/research-index.jsonl` (see Section 12 for schema). This enables
+overlap detection, staleness tracking, and `--recall`.
+
+**Strategy Log Entry:** Append a strategy performance record to
+`.research/strategy-log.jsonl` (see Section 16). Tracks which search strategies
+produce the best results per domain, informing future Phase 0 strategy
+selection.
+
+**Source Reputation Update:** Update `.research/source-reputation.jsonl` with
+verification outcomes (see Section 17). Sources that consistently verify get
+higher trust; sources that fail verification get downgraded.
+
+**MCP Memory Persistence:** Auto-suggest: "Save N HIGH-confidence durable
+insights to memory?" User reviews each candidate before persistence. Only
+persist claims that are HIGH confidence, cross-session relevant, and durable
+(not rapidly changing).
+
+Update state file to `complete`.
+
+---
+
 ## Version History
 
-| Version | Date       | Description                                         |
-| ------- | ---------- | --------------------------------------------------- |
-| 1.2     | 2026-03-22 | P3: management commands, strategy log, reputation   |
-| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles |
-| 1.0     | 2026-03-22 | Initial implementation                              |
+| Version | Date       | Description                                                  |
+| ------- | ---------- | ------------------------------------------------------------ |
+| 1.3     | 2026-03-22 | Skill-audit: state schema, phase details, ToC, spawn example |
+| 1.2     | 2026-03-22 | P3: management commands, strategy log, reputation            |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles          |
+| 1.0     | 2026-03-22 | Initial implementation                                       |
