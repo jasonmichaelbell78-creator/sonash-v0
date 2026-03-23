@@ -2418,6 +2418,25 @@ SonarCloud 33)
 
 ---
 
+### Review #498: PR #461 R2 — Qodo (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+
+- **Undefined CL preset behaviors** — `research-claims` preset referenced 6
+  behaviors not defined in convergence-loop. Added full behavior definitions
+  (verify-sources, cross-reference, temporal-check, completeness-audit,
+  bias-check, synthesis-fidelity) to convergence-loop REFERENCE.md.
+- **Broken `/research-refresh`** → fixed to `--refresh` (consistent with flags).
+- **Flags missing `<topic>` arg** — `--recall/--forget/--refresh` shown as
+  toggles but require topic. Fixed flag table.
+- **"auto-inject" wording** → changed to "offer to inject" matching deep-plan.
+
+**Key Learning:** When adding a preset to another skill that references new
+behaviors, MUST define those behaviors in the host skill's REFERENCE.md — a
+preset name alone is not executable without behavior definitions.
+
+---
+
 ### Review #497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** gemini+qodo

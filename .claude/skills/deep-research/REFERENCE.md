@@ -665,7 +665,8 @@ claims.jsonl -> Filter routing.deepPlan === true -> Extract:
 ```
 
 When `/deep-plan` Phase 0 begins, it checks `.research/<topic-slug>/` for
-existing research. If found, auto-inject Research Context into DIAGNOSIS.md.
+existing research. If found, offer to inject Research Context into DIAGNOSIS.md
+(user confirms before injection).
 
 ### skill-creator Adapter
 
@@ -911,8 +912,7 @@ Update state file.
 (user-confirmed): archive to `.research/<topic>/archive/`. Record cleanup action
 in state file (`output.rawArtifacts: "kept" | "archived"`). Always preserve:
 RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json -- these support
-decision provenance, research memory, overlap detection, and
-`/research-refresh`.
+decision provenance, research memory, overlap detection, and `--refresh`.
 
 **Research Index Entry:** After completion, append an entry to
 `.research/research-index.jsonl` (see Section 12 for schema). This enables

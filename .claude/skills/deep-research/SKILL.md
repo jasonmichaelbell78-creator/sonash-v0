@@ -65,15 +65,15 @@ wants confirmation | Mid-implementation lookups | Must complete in <2 minutes.
 
 **Flags:**
 
-| Flag              | Default | Effect                                             |
-| ----------------- | ------- | -------------------------------------------------- |
-| `--depth`         | L1      | L1, L2, L3, L4 (see REFERENCE.md Section 2)        |
-| `--domain`        | auto    | Override auto-detected domain                      |
-| `--auto`          | off     | Skip plan approval (Critical Rule #1)              |
-| `--audit-details` | off     | Full self-audit report instead of summary          |
-| `--recall`        | off     | Search index for prior research (REFERENCE.md S18) |
-| `--forget`        | off     | Archive/remove prior research (REFERENCE.md S18)   |
-| `--refresh`       | off     | Re-run, preserve old for diff (REFERENCE.md S18)   |
+| Flag                | Default | Effect                                             |
+| ------------------- | ------- | -------------------------------------------------- |
+| `--depth`           | L1      | L1, L2, L3, L4 (see REFERENCE.md Section 2)        |
+| `--domain`          | auto    | Override auto-detected domain                      |
+| `--auto`            | off     | Skip plan approval (Critical Rule #1)              |
+| `--audit-details`   | off     | Full self-audit report instead of summary          |
+| `--recall <topic>`  | —       | Search index for prior research (REFERENCE.md S18) |
+| `--forget <topic>`  | —       | Archive/remove prior research (REFERENCE.md S18)   |
+| `--refresh <topic>` | —       | Re-run, preserve old for diff (REFERENCE.md S18)   |
 
 **Output:** `.research/<topic-slug>/` -- slug: lowercase, hyphens for spaces and
 special chars, max 50 chars, 4-char hash suffix on collision.
