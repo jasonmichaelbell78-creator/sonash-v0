@@ -2,7 +2,7 @@
 
 **Document Version**: 8.6 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-22 (Session #232)
+2026-03-22 (Session #233 — /deep-research skill)
 
 ## Purpose
 
@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-22 **Branch**: `housecleaning` **Working On**:
-Session #232 — Cross-locale sync, review lifecycle fixes, skill-audit
+**Last Checkpoint**: 2026-03-22 **Branch**: `cleanup` **Working On**: Session
+#233 — /deep-research skill (full plan execution P0-P3 + audit)
 
-**Uncommitted Work**: None (session-end in progress)
+**Uncommitted Work**: None
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 232 (since Jan 1, 2026)
+**Current Session Count**: 233 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,40 +48,41 @@ Session #232 — Cross-locale sync, review lifecycle fixes, skill-audit
 
 ## Recent Session Summaries
 
+**Session #233** (/DEEP-RESEARCH SKILL — FULL PLAN EXECUTION):
+
+- **Branch**: `cleanup`
+- **Full 34-step plan executed across 4 phases** (P0-P3 + post-build audit):
+  - P0: Core engine — SKILL.md, REFERENCE.md, searcher + synthesizer agents,
+    .gitignore. Code-reviewed (15 findings, 3 critical fixed).
+  - P1: Gemini CLI verification, convergence-loop research-claims preset,
+    research index, codebase + academic profiles activated.
+  - P2: Adapter contract + 4 downstream adapters (deep-plan, skill-creator, GSD,
+    convergence-loop), 3 domain modules (technology, academic, business).
+  - P3: Management commands (--recall/--forget/--refresh), strategy log, source
+    reputation, tiered self-audit (6→13 checks).
+- **Ecosystem integration survey**: 64 skills analyzed across 3 parallel agents.
+  8 genuine integration points found and implemented (CLAUDE.md trigger table,
+  deep-plan, skill-creator, frontend-design, audit-enhancements, create-audit,
+  gsd-project-researcher, gsd-phase-researcher).
+- **Skill-audit** (11 categories, 25 decisions): SKILL.md rewritten 680→250
+  lines. Added: MECE verification, wave progress, duration estimates, Phase 0
+  fast-path, timeout handling, duplicate guard, domain module wiring, honest
+  budget enforcement, removed all P1+ markers.
+- **Gemini CLI installed and authenticated** (v0.34.0).
+- **Codex CLI installed** by user.
+- **2 feedback memories saved**: grep-vs-understanding, user-action-steps.
+- **7 commits.**
+
 **Session #232** (CROSS-LOCALE SYNC + REVIEW LIFECYCLE + SKILL-AUDIT):
 
 - **Branch**: `housecleaning`
-- **Cross-locale state sync**: 3-agent parallel discovery + CL verification
-  (4/10 claims refuted). Tracked 4 files for cross-locale sync
-  (consolidation.json, velocity-log.jsonl, health-score-log.jsonl,
-  hook-warnings-log.jsonl). Untracked 23 stale \*.state.json files. Work-locale
-  sync plan created at `.claude/state/work-locale-sync-plan.md`.
-- **Review lifecycle fixes**: tsx infinite recursion (sanitize-error.ts→.d.ts),
-  recurring re-sync loop (archive dedup), review-496 missing title, rendered
-  view drift (count + consolidation#), cross-DB round mismatch. All checks now
-  pass.
-- **TS type errors fixed** (pre-existing): account-linking.ts (AuthError),
-  sentry.client.ts (param types), errors.ts (narrowing conflict),
-  auth-context.tsx (onAuthStateChanged callback).
-- **Dependency fixes**: tsx, oxlint, hermes-parser all had corrupted native
-  bindings. Clean reinstalls resolved.
-- **Skill-audit on pre-commit-fixer** (41→78/100): 47 decisions across 10
-  categories. Full rewrite — user confirmation gates, guardrail alignment
-  (#9/#13/#14), pre-existing detection, regression detection, multi-category
-  handling, ecosystem integration.
-- **3 commits.**
+- Cross-locale state sync, review lifecycle fixes, TS type errors, dependency
+  fixes, skill-audit on pre-commit-fixer (41→78/100). 3 commits.
 
 **Session #230** (ZERO-WARNING INFRASTRUCTURE — DEEP-PLAN + 6-WAVE EXECUTION):
 
 - **Branch**: `housecleaning`
-- 22 questions, 23 decisions, 6 waves. 630 DEBT items resolved.
-- Final convergence: 38/48 checks PASS. 22 commits pushed.
-
-**Session #229** (HOUSECLEANING + STATUSLINE/AUTORESEARCH RESEARCH):
-
-- **Branch**: `housecleaning`
-- Research only — statusline survey (23+ repos), autoresearch analysis. No
-  implementation.
+- 22 questions, 23 decisions, 6 waves. 630 DEBT items resolved. 22 commits.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -104,7 +105,7 @@ Session #232 — Cross-locale sync, review lifecycle fixes, skill-audit
 | **Review Pipeline**               | FIXED    | Split-brain resolved, 222 records recovered               |
 | **Bulk PR Retro**                 | COMPLETE | 17 PRs, 13 action items, 130 tests                        |
 
-**Current Branch**: `housecleaning`
+**Current Branch**: `cleanup`
 
 **Test Status**: 3586 tests pass, 0 fail, 6 skip
 
@@ -117,16 +118,16 @@ hooks). Serena fully removed.
 
 ### Immediate Priority
 
-1. **Work-locale sync** — follow `.claude/state/work-locale-sync-plan.md` to
-   merge state files at work computer after pulling.
-2. **Merge housecleaning to main** — 25+ commits ready. Create PR, review,
-   merge.
-3. **SWS Phase 1: Tooling & Infrastructure** — 30 decisions, 0% progress. Code
-   Quality and Data Effectiveness are part of SWS now (not separate tracks).
+1. **Merge cleanup to main** — 7 commits: /deep-research skill (P0-P3 +
+   ecosystem integration + skill-audit). Create PR, review, merge.
+2. **Test /deep-research on a real topic** — first real invocation to validate
+   the skill end-to-end.
+3. **SWS Phase 1: Tooling & Infrastructure** — 30 decisions, 0% progress.
 
 ### After Merge
 
-4. **Register hook-checks.json in CANON** — Schema from Session #224 (D14).
+4. **MCP source expansion** — procure Tavily/Brave/Firecrawl API keys if needed
+   after testing native sources.
 5. **Agent Environment Analysis Phase 1** — Plan at
    `.planning/agent-environment-analysis/PLAN.md` (21 decisions).
 6. **Run /debt-runner** — First real test on debt corpus.
@@ -205,7 +206,8 @@ npm run docs:check   # Documentation linting
 | Version | Date | Changes |
 | ------- | ---- | ------- |
 
-| 8.6 | 2026-03-22 | Session #232 — Cross-locale sync, review lifecycle,
+| 8.7 | 2026-03-22 | Session #233 — /deep-research skill, ecosystem integration
+| | 8.6 | 2026-03-22 | Session #232 — Cross-locale sync, review lifecycle,
 skill-audit | | 8.5 | 2026-03-18 | Session #227 — Pipeline fix, bulk retro,
 GitHub Waves 3-4 |
 

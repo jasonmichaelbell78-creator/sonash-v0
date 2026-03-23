@@ -145,6 +145,12 @@ nul
 # Consolidation output (local-only)
 consolidation-output/
 
+# Research intermediate artifacts (session-specific, not committed)
+# Conclusion artifacts (RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json) are retained
+.research/**/findings/
+.research/**/challenges/
+.research/**/archive/
+
 # Git worktrees (isolated workspaces, never commit)
 .worktrees/
 functions/.next/

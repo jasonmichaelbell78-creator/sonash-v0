@@ -115,6 +115,73 @@ new full pass. Avoids wasting a full pass on known fixes.
 **When to use:** When a pass finds <5 corrections that are clearly fixable. If
 corrections are numerous or complex, prefer a new full pass.
 
+### verify-sources (research-claims preset)
+
+**Purpose:** Check that cited URLs/sources actually exist and support the claims
+made from them.
+
+**Agent instruction:**
+
+> You are a source verification agent. For each claim, fetch the cited source
+> URL and verify: (1) the URL is reachable, (2) the source content supports the
+> claim as stated. Report Confirmed, Corrected, or New (source says something
+> the claim missed).
+
+### cross-reference (research-claims preset)
+
+**Purpose:** Find independent corroborating sources for each claim.
+
+**Agent instruction:**
+
+> You are a cross-reference agent. For each claim, search for independent
+> sources that confirm or contradict it. Report: Confirmed (independent source
+> agrees), Corrected (independent source disagrees — provide evidence), Extended
+> (found additional supporting evidence).
+
+### temporal-check (research-claims preset)
+
+**Purpose:** Verify information currency per domain staleness rules.
+
+**Agent instruction:**
+
+> You are a temporal verification agent. For each claim, check whether the cited
+> sources are current enough for the domain. Technology claims need sources
+> within 30 days; academic within 365 days. Flag stale sources and check if
+> newer information contradicts the claim.
+
+### completeness-audit (research-claims preset)
+
+**Purpose:** Verify all sub-questions from the research plan were addressed.
+
+**Agent instruction:**
+
+> You are a completeness auditor. Compare the original sub-question list against
+> the research output. For each sub-question: Confirmed (fully addressed),
+> Corrected (partially addressed — identify gaps), New (sub-question entirely
+> missing from output).
+
+### bias-check (research-claims preset)
+
+**Purpose:** Assess perspective diversity and source concentration.
+
+**Agent instruction:**
+
+> You are a bias detection agent. Review the full set of claims and sources.
+> Check: Are all claims from one perspective? Is one source over-represented?
+> Are counterarguments acknowledged? Report bias findings as New items.
+
+### synthesis-fidelity (research-claims preset)
+
+**Purpose:** Verify the synthesis accurately represents the raw findings.
+
+**Agent instruction:**
+
+> You are a synthesis fidelity agent. Compare RESEARCH_OUTPUT.md against the
+> individual FINDINGS.md files. For each key claim in the synthesis: Confirmed
+> (accurately represents findings), Corrected (misrepresents or overstates
+> findings — cite the discrepancy), New (findings contain insights the synthesis
+> missed).
+
 ---
 
 ## 2. Domain Slicing Templates

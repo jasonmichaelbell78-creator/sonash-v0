@@ -105,27 +105,36 @@ reference actual patterns, not generic placeholders.
 
 1. Check CLAUDE.md for documented project conventions (MUST)
 2. Read ROADMAP.md — verify task aligns with project direction (MUST)
-3. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
-4. Identify existing patterns, conventions, and neighboring systems (MUST)
-5. Produce `DIAGNOSIS.md` at the plan output location (MUST):
+3. **Research check** (MUST) — two checks:
+   - **Prior research:** look for `.research/<topic-slug>/`. If found, offer to
+     inject `## Research Context` into DIAGNOSIS.md (deep-plan adapter,
+     REFERENCE.md Section 15).
+   - **Research needed:** If the task involves a domain, technology, or
+     landscape not present in the codebase, suggest: "This task needs domain
+     research before I can ask informed questions. Run `/deep-research` first?"
+     Do not proceed with uninformed discovery questions when domain expertise is
+     absent.
+4. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
+5. Identify existing patterns, conventions, and neighboring systems (MUST)
+6. Produce `DIAGNOSIS.md` at the plan output location (MUST):
    - ROADMAP alignment check (aligned / misaligned / new direction)
    - Relevant existing systems and their patterns
    - Reframe check: is the task what it appears to be?
-6. **Verify code-state claims (MUST):** All claims in DIAGNOSIS.md about
+7. **Verify code-state claims (MUST):** All claims in DIAGNOSIS.md about
    specific code state (line numbers, bug descriptions, specific values,
    corruption claims) MUST include a verify command. Claims without verification
    are flagged as `[UNVERIFIED]`. Run `npm view <pkg> version` for any version
    references — plans MUST NOT assume future/unreleased software exists. Use
    "preparation" language ("prepare for eventual vN") not imperative ("migrate
    to vN").
-7. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M) —
+8. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M) —
    if DIAGNOSIS.md makes 5+ claims about codebase state (claims = testable
    assertions about codebase state, per `/convergence-loop` SKILL.md), verify
    via convergence-loop quick preset. Wrong diagnosis cascades through the
    entire plan. **If claims are wrong:** correct DIAGNOSIS.md and re-verify
    before presenting. See `/convergence-loop` SKILL.md "Programmatic Mode" for
    the integration contract.
-8. Present DIAGNOSIS.md to user for review (MUST)
+9. Present DIAGNOSIS.md to user for review (MUST)
 
 **If misaligned with ROADMAP:** Present the conflict to the user. Options: (1)
 proceed with acknowledgment, (2) reframe to align, (3) abort. Do NOT silently

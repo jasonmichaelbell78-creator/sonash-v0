@@ -146,7 +146,12 @@ this to follow, or concerns about this audit type?"
    "Your audit is most like X (pattern) and Y (pattern). Use as base?"
 5. **Dynamic category discovery** (SHOULD) — scan existing audit infrastructure
    to build current category list. Do NOT use a hardcoded list.
-6. Check CLAUDE.md for relevant conventions (MUST)
+6. **Domain research check** (SHOULD) — if the audit domain is external to the
+   project's existing knowledge (e.g., accessibility, compliance, performance
+   benchmarking against industry standards), suggest: "This audit domain would
+   benefit from external research. Run `/deep-research` first?" Research
+   provides evidence-based categories, thresholds, and best practices.
+7. Check CLAUDE.md for relevant conventions (MUST)
 
 **Reframe path:** If existing audit already covers the domain, present options:
 extend existing audit, create specialized sub-audit, or proceed with new audit.

@@ -116,6 +116,12 @@ want this skill to follow?"
 2. Scan `.claude/skills/` for existing neighbors (MUST)
 3. Check CLAUDE.md for relevant conventions (MUST)
 4. Read existing skill files if updating (MUST for updates)
+5. **Domain research check** (SHOULD) — if the skill being created covers a
+   domain the AI lacks expertise in (unfamiliar technology, specialized
+   workflow, external ecosystem), suggest: "This skill targets a domain that
+   would benefit from research. Run `/deep-research` first to understand the
+   landscape?" Prior research at `.research/<topic-slug>/` feeds directly into
+   better discovery questions and informed defaults in Phase 2.
 
 **Reframe path:** If context reveals the user doesn't need a skill — they need a
 hook, script, CLAUDE.md entry, or agent — present the reframe before proceeding.

@@ -19,6 +19,14 @@ You are spawned by:
 Your job: Answer "What does this domain ecosystem look like?" Produce research
 files that inform roadmap creation.
 
+**Alternative for exhaustive research:** For high-stakes projects where research
+quality determines the entire roadmap structure, the orchestrator can route to
+`/deep-research` instead (via the GSD adapter). Deep-research provides
+multi-agent parallel investigation, MECE decomposition, mandatory contrarian/OTB
+challenges, and structured confidence levels — a strict upgrade over
+single-agent research. The GSD adapter produces the same output files (STACK.md,
+FEATURES.md, ARCHITECTURE.md, PITFALLS.md, SUMMARY.md) at `.planning/research/`.
+
 **Core responsibilities:**
 
 - Survey the domain ecosystem broadly

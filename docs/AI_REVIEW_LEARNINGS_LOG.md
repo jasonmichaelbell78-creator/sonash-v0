@@ -363,6 +363,18 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#15)</summary>
+
+- **Date:** 2026-03-22
+- **Reviews consolidated:** #485-#496
+- **Recurring patterns:**
+  - qodo (12x)
+  - ci (10x)
+  - sonarcloud (8x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#14)</summary>
 
 - **Date:** 2026-03-21
@@ -1298,6 +1310,38 @@ deduplicated, non-overlapping ranges):
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
 | 1        | 5     | 9     | 1       |
+
+---
+
+### Review rev-6: PR #460 R1 — logger redaction, CC extraction, brace-counting, type guards (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 15    | 10    | 0        | 5        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 4     | 5     | 4       |
+
+---
+
+### Review rev-7: PR #460 R2 — Sentry return, brace logic, low severity tier, block comments (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 2     | 2     | 2       |
 
 ## Key Patterns
 
@@ -2371,6 +2415,44 @@ SonarCloud 33)
 - `review-churn-tracker.test.js` needs GH_TOKEN for `gh` CLI commands
 - Keeping security check `continue-on-error` until validated against full
   codebase (reject making it blocking now)
+
+---
+
+### Review #498: PR #461 R2 — Qodo (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+
+- **Undefined CL preset behaviors** — `research-claims` preset referenced 6
+  behaviors not defined in convergence-loop. Added full behavior definitions
+  (verify-sources, cross-reference, temporal-check, completeness-audit,
+  bias-check, synthesis-fidelity) to convergence-loop REFERENCE.md.
+- **Broken `/research-refresh`** → fixed to `--refresh` (consistent with flags).
+- **Flags missing `<topic>` arg** — `--recall/--forget/--refresh` shown as
+  toggles but require topic. Fixed flag table.
+- **"auto-inject" wording** → changed to "offer to inject" matching deep-plan.
+
+**Key Learning:** When adding a preset to another skill that references new
+behaviors, MUST define those behaviors in the host skill's REFERENCE.md — a
+preset name alone is not executable without behavior definitions.
+
+---
+
+### Review #497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** gemini+qodo
+
+- **Malformed markdown table** in searcher agent FINDINGS.md template — header
+  had 7 columns but separator had 13. Prettier reformatted the pipe-separated
+  enum values into extra columns. Fixed by collapsing enum into single column.
+- **5 compliance "unverified" items** rejected as N/A — PR contains markdown
+  skill definitions, not runtime code. Compliance checks for audit logging,
+  error handling, and input validation require implementation code to verify.
+- **TDMS empty-string-vs-null** deferred (DAS 6/6) — auto-generated data from
+  consolidation scripts, changing requires auditing all TDMS consumers.
+
+**Key Learning:** Markdown templates with pipe characters (`|`) inside table
+cells get mangled by prettier — it interprets pipes as column separators. Use
+brackets or separate the enum values from the table.
 
 ---
 

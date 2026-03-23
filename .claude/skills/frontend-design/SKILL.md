@@ -28,7 +28,11 @@ technical constraints.
 
 ## Design Thinking
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
+Before coding, understand the context and commit to a BOLD aesthetic direction.
+For specialized domains (medical, financial, children's educational,
+accessibility- first), consider running `/deep-research` on the domain's UX
+conventions and exemplars first — generic design intuition produces uninformed
+results for niche audiences.
 
 - **Purpose**: What problem does this interface solve? Who uses it?
 - **Tone**: Pick an extreme: brutally minimal, maximalist chaos,
