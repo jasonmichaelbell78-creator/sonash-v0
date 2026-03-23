@@ -2,7 +2,8 @@
 
 **Document Version**: 8.6 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-23 (Session #234 — work-locale sync + planning)
+2026-03-23 (Session #234 — CLI tools research + statusline research + plan
+housecleaning)
 
 ## Purpose
 
@@ -29,8 +30,8 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-22 **Branch**: `cleanup` **Working On**: Session
-#233 — /deep-research skill (full plan execution P0-P3 + audit)
+**Last Checkpoint**: 2026-03-23 **Branch**: `planning-32326` **Working On**:
+Session #234 — CLI tools research, statusline research, plan housecleaning
 
 **Uncommitted Work**: None
 
@@ -48,30 +49,38 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Recent Session Summaries
 
+**Session #234** (CLI TOOLS + STATUSLINE RESEARCH + PLAN HOUSECLEANING):
+
+- **Branch**: `planning-32326`
+- **Work locale sync**: Followed cross-locale sync plan from Session #232.
+  Merged work-locale state data (velocity, health, hook-warnings JSONL). Main
+  synced with origin/main.
+- **/deep-research CLI tools** (L1 Exhaustive): 15 agents, 140+ tools evaluated,
+  45 claims, 73 sources. Key findings: "install less, configure more," ntfy.sh
+  biggest gap, 2 refutations (WezTerm abandoned, Copilot CLI deprecated). Work
+  locale capability assessment done (winget, go, pip, curl all available).
+- **/deep-plan CLI tools implementation**: 34 questions, 41 decisions, 25-step
+  plan across 8 phases. 16 tools + 1 font + 2 config changes selected.
+  Locale-agnostic install scripts. APPROVED.
+- **Plan housecleaning**: Analyzed all 13 plans. Archived 7 completed + 1
+  mostly-complete (memory audit). Corrected statuses (hook overhaul COMPLETE,
+  review lifecycle COMPLETE, agent env Phase 1-2 DONE). Created propagation
+  patterns PLAN.md from research output. Restored statusline research from
+  archive (blocked, not complete). 6 active plans, 10 archived.
+- **/deep-research custom statusline** (L1 Exhaustive): 12 agents, 8 visual
+  patterns, 9 implementation approaches, 30 claims, 27 sources. Non-dev widgets
+  added (calendar, email, timer). Corrected: current baseline documented, Go
+  advantage is 2x not 5-16x on Windows.
+- **User profile corrected**: User is a director who directs AI, not a
+  developer. Memory updated.
+- **8 commits.**
+
 **Session #233** (/DEEP-RESEARCH SKILL — FULL PLAN EXECUTION):
 
 - **Branch**: `cleanup`
-- **Full 34-step plan executed across 4 phases** (P0-P3 + post-build audit):
-  - P0: Core engine — SKILL.md, REFERENCE.md, searcher + synthesizer agents,
-    .gitignore. Code-reviewed (15 findings, 3 critical fixed).
-  - P1: Gemini CLI verification, convergence-loop research-claims preset,
-    research index, codebase + academic profiles activated.
-  - P2: Adapter contract + 4 downstream adapters (deep-plan, skill-creator, GSD,
-    convergence-loop), 3 domain modules (technology, academic, business).
-  - P3: Management commands (--recall/--forget/--refresh), strategy log, source
-    reputation, tiered self-audit (6→13 checks).
-- **Ecosystem integration survey**: 64 skills analyzed across 3 parallel agents.
-  8 genuine integration points found and implemented (CLAUDE.md trigger table,
-  deep-plan, skill-creator, frontend-design, audit-enhancements, create-audit,
-  gsd-project-researcher, gsd-phase-researcher).
-- **Skill-audit** (11 categories, 25 decisions): SKILL.md rewritten 680→250
-  lines. Added: MECE verification, wave progress, duration estimates, Phase 0
-  fast-path, timeout handling, duplicate guard, domain module wiring, honest
-  budget enforcement, removed all P1+ markers.
-- **Gemini CLI installed and authenticated** (v0.34.0).
-- **Codex CLI installed** by user.
-- **2 feedback memories saved**: grep-vs-understanding, user-action-steps.
-- **7 commits.**
+- Full 34-step plan executed (P0-P3 + audit). /deep-research skill built,
+  ecosystem integration survey (64 skills, 8 adapters), skill-audit (25
+  decisions). Gemini CLI + Codex CLI installed. 7 commits.
 
 **Session #232** (CROSS-LOCALE SYNC + REVIEW LIFECYCLE + SKILL-AUDIT):
 
@@ -79,38 +88,24 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 - Cross-locale state sync, review lifecycle fixes, TS type errors, dependency
   fixes, skill-audit on pre-commit-fixer (41→78/100). 3 commits.
 
-**Session #230** (ZERO-WARNING INFRASTRUCTURE — DEEP-PLAN + 6-WAVE EXECUTION):
-
-- **Branch**: `housecleaning`
-- 22 questions, 23 decisions, 6 waves. 630 DEBT items resolved. 22 commits.
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                              | Status   | Progress                                                  |
-| --------------------------------- | -------- | --------------------------------------------------------- |
-| **PR Review Ecosystem v2**        | SHIPPED  | v1.0 tagged/pushed                                        |
-| **Skill Quality Framework**       | COMPLETE | All 4 deliverables                                        |
-| **Data Effectiveness Audit**      | 95% DONE | 10/11 waves delivered (PRs #431, #432)                    |
-| **Review Lifecycle Overhaul**     | COMPLETE | JSONL-canonical, orchestrator, migration done             |
-| **Agent Environment Analysis**    | PLANNED  | Deep-plan complete (21 decisions), Phase 1 next           |
-| **System-Wide Standardization**   | ACTIVE   | Phase 0 COMPLETE + CL integration, ready for Phase 1      |
-| **Operational Visibility Sprint** | ACTIVE   | ~75% (5 items moved to SWS Phase 3)                       |
-| **Pre-Commit/Push Overhaul**      | COMPLETE | 10 waves, 44 decisions, 14 SWS tenets addressed           |
-| **Zero-Warning Infrastructure**   | COMPLETE | 6 waves, 23 decisions, 630 DEBT resolved, all checks pass |
-| **GitHub Optimization Plan**      | COMPLETE | All 5 waves done, audit passed                            |
-| **Review Pipeline**               | FIXED    | Split-brain resolved, 222 records recovered               |
-| **Bulk PR Retro**                 | COMPLETE | 17 PRs, 13 action items, 130 tests                        |
+| Item                            | Status      | Progress                                         |
+| ------------------------------- | ----------- | ------------------------------------------------ |
+| **CLI Tools Implementation**    | APPROVED    | 41 decisions, 25-step plan, research complete    |
+| **Custom Statusline**           | RESEARCHED  | 2 research rounds complete, deep-plan next       |
+| **Propagation Patterns**        | APPROVED    | 4-wave plan (14 steps, ~17h), research complete  |
+| **Agent Environment Analysis**  | Phase 1-2   | Research done, audit skill created, Phase 3 next |
+| **Passive Surfacing**           | NOT STARTED | 17 decisions, 33 violations to fix               |
+| **System-Wide Standardization** | APPROVED    | Phase 0 done, Phase 1 (CANON) next               |
 
 **Current Branch**: `planning-32326`
 
 **Test Status**: 3586 tests pass, 0 fail, 6 skip
-
-**Plugins**: semgrep, hookify, qodo-skills UNINSTALLED (Session #221 — broken
-hooks). Serena fully removed.
 
 ---
 
@@ -118,19 +113,21 @@ hooks). Serena fully removed.
 
 ### Immediate Priority
 
-1. **Merge cleanup to main** — 7 commits: /deep-research skill (P0-P3 +
-   ecosystem integration + skill-audit). Create PR, review, merge.
-2. **Test /deep-research on a real topic** — first real invocation to validate
-   the skill end-to-end.
-3. **SWS Phase 1: Tooling & Infrastructure** — 30 decisions, 0% progress.
+1. **Execute CLI tools plan** — `.planning/cli-tools-implementation/PLAN.md` (8
+   phases, 25 steps). Start with Phase 1 (configure existing tools).
+2. **Deep-plan custom statusline** — research at
+   `.research/custom-statusline/RESEARCH_OUTPUT.md`. Create implementation plan.
+3. **Merge planning-32326 to main** — 8 commits: 2 research reports, 1 plan,
+   plan housecleaning.
 
-### After Merge
+### After Current Work
 
-4. **MCP source expansion** — procure Tavily/Brave/Firecrawl API keys if needed
-   after testing native sources.
-5. **Agent Environment Analysis Phase 1** — Plan at
-   `.planning/agent-environment-analysis/PLAN.md` (21 decisions).
-6. **Run /debt-runner** — First real test on debt corpus.
+4. **Execute propagation patterns plan** —
+   `.planning/propagation-research/PLAN.md` (4 waves, 14 steps, ~17h single
+   run).
+5. **Agent Environment Phase 3** — Run audit on agents.
+6. **Execute passive surfacing remediation** — 33 violations to fix.
+7. **SWS Phase 1: CANON** — 92 decisions, foundational for all ecosystems.
 
 ---
 
