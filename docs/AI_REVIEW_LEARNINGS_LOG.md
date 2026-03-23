@@ -1343,6 +1343,46 @@ deduplicated, non-overlapping ranges):
 | -------- | ----- | ----- | ------- |
 | 1        | 2     | 2     | 2       |
 
+---
+
+### Review rev-8: (untitled) (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 1     | 1        | 5        |
+
+---
+
+### Review rev-9: (untitled) (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 4     | 0        | 8        |
+
+---
+
+### Review 498: PR #461 R2 — Qodo (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
