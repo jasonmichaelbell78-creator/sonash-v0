@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-03-21
+**Last Updated:** 2026-03-22
 
 ---
 
@@ -27,20 +27,20 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #353 - #361 (8 reviews) **Analysis Date:** 2026-03-21
+**Review Range:** #353 - #361 (8 reviews) **Analysis Date:** 2026-03-22
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 90.1% |
-| Patterns Learned          | 369   |
-| Patterns Automated        | 31    |
-| Patterns Failing          | 6     |
-| Critical Pattern Success  | 96.0% |
-| Automation Coverage       | 14.6% |
+| Learning Effectiveness    | 90.8% |
+| Patterns Learned          | 367   |
+| Patterns Automated        | 36    |
+| Patterns Failing          | 4     |
+| Critical Pattern Success  | 97.2% |
+| Automation Coverage       | 15.8% |
 | Total Documented Patterns | 444   |
-| Total Automated Patterns  | 65    |
+| Total Automated Patterns  | 70    |
 
 ### Top Recommended Actions
 
@@ -48,19 +48,19 @@ This is a **Tier 2 metrics document** - reference during:
    - Recurred 5 times after documentation \(Reviews: 353, 354, 357, 359, 361\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-2. **[Automation]** Automate "Set vs Array migration"
-   - Recurred 5 times after documentation \(Reviews: 353, 357, 358, 359, 360\)
+2. **[Automation]** Automate "Silent parse prevention"
+   - Recurred 4 times after documentation \(Reviews: 353, 356, 357, 359\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-3. **[Automation]** Automate "Multi\-file rollback"
-   - Recurred 4 times after documentation \(Reviews: 353, 357, 359, 361\)
+3. **[Automation]** Automate "Symlink parent traversal"
+   - Recurred 3 times after documentation \(Reviews: 353, 357, 358\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "Binary file detection"
+4. **[Documentation]** Improve documentation for "Atomic file writes"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Atomic file writes"
+5. **[Documentation]** Improve documentation for "Secure file permissions"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,10 +70,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 369   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 31    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 38    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 6     | Pattern recurred 3+ times - needs automation |
+| ✅ LEARNED   | 367   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 36    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 37    | Pattern recurred 1-2 times - needs attention |
+| 🔴 FAILED    | 4     | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-03-21 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-03-22 | Rewritten to focus on Claude's learning effectiveness |

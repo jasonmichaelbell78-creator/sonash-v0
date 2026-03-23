@@ -363,6 +363,18 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#15)</summary>
+
+- **Date:** 2026-03-22
+- **Reviews consolidated:** #485-#496
+- **Recurring patterns:**
+  - qodo (12x)
+  - ci (10x)
+  - sonarcloud (8x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#14)</summary>
 
 - **Date:** 2026-03-21
@@ -1298,6 +1310,38 @@ deduplicated, non-overlapping ranges):
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
 | 1        | 5     | 9     | 1       |
+
+---
+
+### Review rev-6: PR #460 R1 — logger redaction, CC extraction, brace-counting, type guards (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 15    | 10    | 0        | 5        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 4     | 5     | 4       |
+
+---
+
+### Review rev-7: PR #460 R2 — Sentry return, brace logic, low severity tier, block comments (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 2     | 2     | 2       |
 
 ## Key Patterns
 
