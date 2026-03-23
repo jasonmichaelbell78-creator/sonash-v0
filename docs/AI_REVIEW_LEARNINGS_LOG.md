@@ -2418,6 +2418,25 @@ SonarCloud 33)
 
 ---
 
+### Review #497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** gemini+qodo
+
+- **Malformed markdown table** in searcher agent FINDINGS.md template — header
+  had 7 columns but separator had 13. Prettier reformatted the pipe-separated
+  enum values into extra columns. Fixed by collapsing enum into single column.
+- **5 compliance "unverified" items** rejected as N/A — PR contains markdown
+  skill definitions, not runtime code. Compliance checks for audit logging,
+  error handling, and input validation require implementation code to verify.
+- **TDMS empty-string-vs-null** deferred (DAS 6/6) — auto-generated data from
+  consolidation scripts, changing requires auditing all TDMS consumers.
+
+**Key Learning:** Markdown templates with pipe characters (`|`) inside table
+cells get mangled by prettier — it interprets pipes as column separators. Use
+brackets or separate the enum values from the table.
+
+---
+
 ### Review #496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI) (2026-03-21)
 
 **Date:** 2026-03-21 | **PR:** #459 | **Source:** qodo+gemini+sonarcloud+ci

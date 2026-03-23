@@ -269,9 +269,9 @@ Write to: `<output_dir>/<sub-query-slug>-FINDINGS.md`
 
 ## Sources
 
-| #   | URL   | Title   | Type           | Trust | CRAAP    | Date      |
-| --- | ----- | ------- | -------------- | ----- | -------- | --------- | -------------- | ----- | ------ | ---- | ----------- | ------ |
-| 1   | [url] | [title] | [official-docs | blog  | academic | community | training-data] | [HIGH | MEDIUM | LOW] | [avg score] | [date] |
+| #   | URL   | Title   | Type            | Trust  | CRAAP       | Date   |
+| --- | ----- | ------- | --------------- | ------ | ----------- | ------ |
+| 1   | [url] | [title] | [official-docs] | [HIGH] | [avg score] | [date] |
 
 ## Contradictions
 
