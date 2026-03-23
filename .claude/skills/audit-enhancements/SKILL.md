@@ -322,11 +322,15 @@ before spawning any deep-dive agents:
 
 1. **Summarize Phase 1 results**: Show finding count by domain and impact tier
 2. **Identify clusters**: Group findings into 5-8 opportunity clusters
-3. **Ask the user**: "Phase 1 found N findings across M domains. Would you like
-   to run Phase 2 deep-dive agents on the top clusters, or skip to Phase 3
-   synthesis and go straight to review?"
-4. **If user opts in**: Spawn deep-dive agents per cluster
-5. **If user skips**: Proceed directly to Phase 3 with Phase 1 findings only
+3. **Ask the user**: "Phase 1 found N findings across M domains. Options:
+   - Run Phase 2 deep-dive agents on the top clusters
+   - Run `/deep-research` on top clusters first (evidence-based best practices
+     from external sources), then deep-dive with research context
+   - Skip to Phase 3 synthesis with Phase 1 findings only"
+4. **If deep-research**: Run `/deep-research` on the top 2-3 clusters, then
+   spawn deep-dive agents with research claims as context
+5. **If deep-dive only**: Spawn deep-dive agents per cluster
+6. **If user skips**: Proceed directly to Phase 3 with Phase 1 findings only
 
 Deep-dive agents produce full-schema findings with:
 

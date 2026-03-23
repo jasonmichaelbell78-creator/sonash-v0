@@ -105,11 +105,15 @@ reference actual patterns, not generic placeholders.
 
 1. Check CLAUDE.md for documented project conventions (MUST)
 2. Read ROADMAP.md — verify task aligns with project direction (MUST)
-3. **Check for existing research** (SHOULD) — look for `.research/<topic-slug>/`
-   matching the task topic. If found, read metadata.json and offer: "Prior
-   research exists on this topic. Use as Research Context in DIAGNOSIS.md?" If
-   accepted, inject `## Research Context` section from the deep-plan adapter
-   (see `/deep-research` REFERENCE.md Section 15).
+3. **Research check** (MUST) — two checks:
+   - **Prior research:** look for `.research/<topic-slug>/`. If found, offer to
+     inject `## Research Context` into DIAGNOSIS.md (deep-plan adapter,
+     REFERENCE.md Section 15).
+   - **Research needed:** If the task involves a domain, technology, or
+     landscape not present in the codebase, suggest: "This task needs domain
+     research before I can ask informed questions. Run `/deep-research` first?"
+     Do not proceed with uninformed discovery questions when domain expertise is
+     absent.
 4. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
 5. Identify existing patterns, conventions, and neighboring systems (MUST)
 6. Produce `DIAGNOSIS.md` at the plan output location (MUST):
