@@ -118,7 +118,12 @@ F=<60. Dashboard table sorted worst-first. Cross-session trends from
 alerts-history.jsonl. If 3+ categories declining simultaneously, flag as
 "ecosystem stress" and recommend `/ecosystem-health`. If trend=null, treat as
 stable. Zero alerts: skip Phases 3-5, go to Phase 6. Benchmark mapping: Poor ->
-error, Average -> warning, Good -> no alert.
+error, Average -> warning, Good -> no alert. **Volume spike guard:** If current
+run has >2x the alert count of the previous run (from alerts-history.jsonl),
+flag: "Alert volume spike: N alerts (previous: M). This may indicate new warning
+sources. Review by category before walkthrough?" **Trend data integrity (CL):**
+Before computing trends, verify alerts-history.jsonl has entries, most recent is
+<7 days old, and count is reasonable. If any fail, mark trends as "unverified."
 
 ### Phase 3: Alert-by-Alert Loop (MUST)
 
@@ -198,18 +203,27 @@ drill-down, scripts, learning loop details, and example walkthrough.
 `session-begin`
 
 **Skill routing:** Code -> `/audit-code`, Security -> `/audit-security`, Reviews
--> `/pr-retro`, Debt -> `/add-debt`, Hooks -> `/hook-ecosystem-audit`
+-> `/pr-retro`, Debt -> `/add-debt`, Hooks -> `/hook-ecosystem-audit`, Passive
+Surfacing -> `/session-ecosystem-audit` or `/hook-ecosystem-audit`
 
-**Convergence loops:** Phase 5 fix verification only. Not used for initial
-checker execution (deterministic, single-pass).
+**Scope boundary with session-begin:** Session-begin gates on infrastructure
+failures (session-start-failures.json, pending-test-registry.json). `/alerts`
+reviews health trends from hook-warnings.json and other data sources. When
+called after session-begin in the same session, `/alerts` skips items already
+acknowledged by session-begin (uses `lastCleared` timestamp in
+hook-warnings.json as shared boundary).
+
+**Convergence loops:** Phase 5 fix verification and Phase 2 trend data
+integrity. Not used for initial checker execution (deterministic, single-pass).
 
 ---
 
 ## Version History
 
-| Version | Date       | Description                                                     |
-| ------- | ---------- | --------------------------------------------------------------- |
-| 3.0     | 2026-03-19 | Skill audit v2: 56 decisions, REFERENCE.md extraction, CL fixes |
-| 2.0     | 2026-03-07 | Full rewrite: 18 limited + 24 full checkers, 7-phase workflow   |
-| 1.1     | 2026-02-25 | Trim to <500 lines: condense benchmark tables and weights       |
-| 1.0     | 2026-02-25 | Initial implementation                                          |
+| Version | Date       | Description                                                       |
+| ------- | ---------- | ----------------------------------------------------------------- |
+| 3.1     | 2026-03-24 | Focused audit (11 decisions): PS boundary, volume spike, CL scope |
+| 3.0     | 2026-03-19 | Skill audit v2: 56 decisions, REFERENCE.md extraction, CL fixes   |
+| 2.0     | 2026-03-07 | Full rewrite: 18 limited + 24 full checkers, 7-phase workflow     |
+| 1.1     | 2026-02-25 | Trim to <500 lines: condense benchmark tables and weights         |
+| 1.0     | 2026-02-25 | Initial implementation                                            |

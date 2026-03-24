@@ -279,6 +279,48 @@ Verification, Pending Refinements.
 
 ---
 
+## Passive-Surfacing Data Sources (Session #237)
+
+The passive-surfacing remediation (Session #237) added new state files written
+by hooks. These are **NOT consumed by /alerts directly** — they are owned by
+`session-begin` (Section 4.3 Infrastructure Failure Gate). `/alerts` measures
+codebase health trends; session-start failures are ephemeral infrastructure
+issues better handled at session startup.
+
+| State File                                  | Writer                  | Consumer                | /alerts Role                        |
+| ------------------------------------------- | ----------------------- | ----------------------- | ----------------------------------- |
+| `.claude/state/session-start-failures.json` | session-start.js        | session-begin           | None — infrastructure gate          |
+| `.claude/state/pending-test-registry.json`  | post-write-validator.js | session-begin           | None — infrastructure gate          |
+| `.claude/hooks/.suggest-dedup.json`         | user-prompt-handler.js  | user-prompt-handler.js  | None — internal dedup               |
+| `.claude/hooks/.session-end-cooldown.json`  | user-prompt-handler.js  | user-prompt-handler.js  | None — internal cooldown            |
+| `.claude/hooks/.multistep-dedup.json`       | user-prompt-handler.js  | user-prompt-handler.js  | None — internal dedup               |
+| `.claude/hook-warnings.json`                | append-hook-warning.js  | session-begin + /alerts | **Shared** — see ownership contract |
+
+### Acknowledgment Ownership Contract
+
+Session-begin owns the **gate** — it blocks until the user acknowledges
+warnings. `/alerts` owns the **review** — interactive triage with
+fix/defer/suppress decisions. The `lastCleared` timestamp in
+`hook-warnings.json` is the shared boundary:
+
+- **session-begin** clears `lastCleared` after acknowledgment
+- **/alerts** reads entries since `lastCleared` for the Hook Warnings category
+- When called after session-begin in the same session, `/alerts` skips items
+  already acknowledged (entries before `lastCleared`)
+
+### New Warning Type Evaluation Checklist
+
+When new `append-hook-warning.js` types are added (e.g., `pr-creep`,
+`pattern-error`, `doc-index`, `session-context-drift`,
+`decision-documentation`):
+
+1. Does this type need its own checker category, or is Hook Warnings sufficient?
+2. Should it appear in limited mode (18 categories) or full mode only?
+3. Does it need a benchmark threshold in the Benchmarks table?
+4. Will it create duplicate surfacing with session-begin Section 4.3?
+
+---
+
 ## Benchmarks
 
 All ratings: Good / Average / Poor. Poor -> error alert, Average -> warning,
