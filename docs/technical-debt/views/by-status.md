@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2119)
+## NEW (2123)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -717,6 +717,9 @@
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | code-quality             |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | code-quality             |
 | DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | code-quality             |
+| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | security                 |
+| DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | code-quality             |
+| DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | code-quality             |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
@@ -2131,6 +2134,7 @@
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | code-quality             |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | code-quality             |
 | DEBT-45614 | Add event_id and run_id to dedup-log records                    | S3       | code-quality             |
+| DEBT-45618 | Skip logging self-matches where kept === removed in dedup...    | S3       | code-quality             |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 
 ## VERIFIED (5156)

@@ -1405,7 +1405,7 @@
 | DEBT-45610 | Hook bypass threshold: reviewer overridden 15+ times in 1...  | reviewer                                                                                                                                           | 0    | process                  | E2        |
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...  | cross-doc-deps                                                                                                                                     | 0    | process                  | E2        |
 
-## S2 - Medium (3438)
+## S2 - Medium (3441)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4847,8 +4847,11 @@
 | DEBT-45606 | Invocations file tracks skills only, not agents                   | data/ecosystem-v2/invocations.jsonl                                                                                                                                         | 0         | code-quality             | E2        |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...      | .claude/agents/global/gsd-planner.md                                                                                                                                        | 0         | code-quality             | E1        |
 | DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)      | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0         | code-quality             | E1        |
+| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...      | .claude/override-log.jsonl                                                                                                                                                  | 0         | security                 | E1        |
+| DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...      | docs/technical-debt/logs/resolution-log.jsonl                                                                                                                               | 0         | code-quality             | E1        |
+| DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...      | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0         | code-quality             | E1        |
 
-## S3 - Low (3640)
+## S3 - Low (3641)
 
 | ID         | Title                                                           | File                                                                                             | Line      | Category                 | Effort    |
 | ---------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------- | ------------------------ | --------- |
@@ -8492,3 +8495,4 @@
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | .claude/agents/git-flow-manager.md                                                               | 0         | code-quality             | E0        |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | .claude/agents/technical-writer.md                                                               | 0         | code-quality             | E2        |
 | DEBT-45614 | Add event_id and run_id to dedup-log records                    | docs/technical-debt/logs/dedup-log.jsonl                                                         | 0         | code-quality             | E1        |
+| DEBT-45618 | Skip logging self-matches where kept === removed in dedup...    | scripts/debt/dedup-multi-pass.js                                                                 | 0         | code-quality             | E1        |

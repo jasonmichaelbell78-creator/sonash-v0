@@ -2458,6 +2458,27 @@ SonarCloud 33)
 
 ---
 
+### Review #501: PR #466 R3 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+- **Classification downgrade during merge** — when promoting `source_id` from a
+  known source in R2, also need to promote `type` (code-smell → vulnerability)
+  and `created` date to match the original source record. Partial promotion
+  creates inconsistent data.
+- **z.preprocess type guard hardening** — `z.coerce.number()` silently converts
+  booleans (`true` → 1) and arrays (`[5]` → 5). Return `NaN` for unexpected
+  types to force validation failure instead of silent coercion.
+- **Trim centralization** — when using `z.preprocess` for null-coercion, also
+  move trimming into preprocess so the downstream schema doesn't need `.trim()`.
+  Avoids double-trim and makes the data flow clearer.
+
+**Key Learning:** When fixing one field in a merged TDMS record (e.g.,
+source_id), audit ALL fields that should derive from the promoted source — type,
+created date, description — to avoid partial promotion.
+
+---
+
 ### Review #500: PR #466 R2 — Qodo (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo

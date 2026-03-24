@@ -70,3 +70,7 @@
 {"timestamp":"2026-03-15T23:12:21.161Z","action":"intake-pr-deferred","pr_number":435,"item_id":"DEBT-45530","file":".claude/state/learning-routes.jsonl","severity":"S2"}
 {"timestamp":"2026-03-24T21:00:05.794Z","action":"intake-pr-deferred","pr_number":466,"item_id":"DEBT-45613","file":"docs/technical-debt/logs/dedup-log.jsonl","severity":"S2"}
 {"timestamp":"2026-03-24T21:00:10.727Z","action":"intake-pr-deferred","pr_number":466,"item_id":"DEBT-45614","file":"docs/technical-debt/logs/dedup-log.jsonl","severity":"S3"}
+{"timestamp":"2026-03-24T21:15:32.638Z","action":"intake-pr-deferred","pr_number":466,"item_id":"DEBT-45615","file":".claude/override-log.jsonl","severity":"S2"}
+{"timestamp":"2026-03-24T21:15:37.366Z","action":"intake-pr-deferred","pr_number":466,"item_id":"DEBT-45616","file":"docs/technical-debt/logs/resolution-log.jsonl","severity":"S2"}
+{"timestamp":"2026-03-24T21:15:41.602Z","action":"intake-pr-deferred","pr_number":466,"item_id":"DEBT-45617","file":"docs/technical-debt/logs/dedup-log.jsonl","severity":"S2"}
+{"timestamp":"2026-03-24T21:15:46.297Z","action":"intake-pr-deferred","pr_number":466,"item_id":"DEBT-45618","file":"scripts/debt/dedup-multi-pass.js","severity":"S3"}
