@@ -1,8 +1,8 @@
 # AI Context & Rules for SoNash
 
 <!-- prettier-ignore-start -->
-**Document Version:** 5.6
-**Last Updated:** 2026-03-17
+**Document Version:** 5.8
+**Last Updated:** 2026-03-24
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -192,6 +192,15 @@ LSP tools over Grep for symbol lookups:**
 **Session End**: Run `/session-end` for session closure pipeline (context,
 metrics, commit).
 
+**Agent Teams** (`.claude/teams/`): `audit-review-team` and
+`research-plan-team`. Spawned through existing skill triggers (`/deep-research`,
+`/deep-plan`, `/skill-audit`) when complexity thresholds are met — not invoked
+directly.
+
+**Specialized agents** (`.claude/agents/`): 27 agents available beyond this
+table (e.g., `test-engineer`, `performance-engineer`, `debugger`). Invoke by
+name when the task fits; the table above covers the most common triggers.
+
 **Detailed orchestration guidance** (parallelization, teams, capacity):
 [docs/agent_docs/AGENT_ORCHESTRATION.md](docs/agent_docs/AGENT_ORCHESTRATION.md)
 
@@ -217,6 +226,7 @@ Evidence-Based).
 
 | Version | Date       | Changes                                               |
 | ------- | ---------- | ----------------------------------------------------- |
+| 5.8     | 2026-03-24 | Section 7: add teams/specialized agents notes (P5)    |
 | 5.7     | 2026-03-21 | Add guardrail #14: never set SKIP_REASON autonomously |
 | 5.6     | 2026-03-17 | Add 6 behavioral guardrails from /insights (7-12)     |
 | 5.5     | 2026-03-13 | Enforcement annotations on all rules                  |

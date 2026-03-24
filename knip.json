@@ -20,8 +20,6 @@
     "react-hook-form",
     "isomorphic-dompurify",
     "vaul",
-    "@firebase/rules-unit-testing",
-    "msw",
     "@modelcontextprotocol/server-memory"
   ],
   "ignoreBinaries": ["report", "vitest", "gitleaks"],

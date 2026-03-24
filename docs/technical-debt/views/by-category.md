@@ -268,7 +268,7 @@
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions         | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-10933 | Filesystem MCP server configured but noted as unused              | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (4710)
+## code-quality (4715)
 
 | ID         | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | ---------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -544,6 +544,7 @@
 | DEBT-1285  | Refactor this function to reduce its Cognitive Complexity...    | S1       | scripts/check-triggers.js                                                                                                                                                   | 259  |
 | DEBT-1286  | Refactor this function to reduce its Cognitive Complexity...    | S1       | scripts/validate-skill-config.js                                                                                                                                            | 98   |
 | DEBT-1290  | Remove this useless assignment to variable "isSession".         | S1       | scripts/validate-skill-config.js                                                                                                                                            | 113  |
+| DEBT-1293  | Security risk: Client-side filtering of sensitive data          | S1       | hooks/use-journal.ts                                                                                                                                                        | 174  |
 | DEBT-1294  | Performance anti-pattern: Excessive re-renders from conte...    | S1       | components/providers/auth-provider.tsx                                                                                                                                      | 43   |
 | DEBT-1295  | Missing input validation on server-generated data               | S1       | hooks/use-journal.ts                                                                                                                                                        | 172  |
 | DEBT-1296  | Data flow violation: Direct Firestore writes in admin com...    | S1       | components/admin/dashboard-tab.tsx                                                                                                                                          | 4    |
@@ -3439,6 +3440,9 @@
 | DEBT-45605 | GSD ecosystem (12 agents) isolated from CLAUDE.md standar...    | S2       | .claude/agents/gsd-planner.md                                                                                                                                               | 0    |
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | data/ecosystem-v2/invocations.jsonl                                                                                                                                         | 0    |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | .claude/agents/global/gsd-planner.md                                                                                                                                        | 0    |
+| DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
+| DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | docs/technical-debt/logs/resolution-log.jsonl                                                                                                                               | 0    |
+| DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-0554  | Prefer `String#replaceAll()` over `String#replace()`.           | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555  | Visible, non-interactive elements with click handlers mus...    | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
@@ -4981,7 +4985,8 @@
 | DEBT-45586 | Model borderline: sonnet for complex framework agent            | S3       | .claude/agents/nextjs-architecture-expert.md                                                                                                                                | 0    |
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | .claude/agents/git-flow-manager.md                                                                                                                                          | 0    |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | .claude/agents/technical-writer.md                                                                                                                                          | 0    |
-| DEBT-1293  | Security risk: Client-side filtering of sensitive data          | S0       | hooks/use-journal.ts                                                                                                                                                        | 174  |
+| DEBT-45614 | Add event_id and run_id to dedup-log records                    | S3       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
+| DEBT-45618 | Skip logging self-matches where kept === removed in dedup...    | S3       | scripts/debt/dedup-multi-pass.js                                                                                                                                            | 0    |
 
 ## documentation (982)
 
@@ -6527,6 +6532,7 @@
 | DEBT-1873  | Ineffective: large-context-warning warningShown flag prev...  | S2       | .claude/hooks/large-context-warning.js                                  | 146  |
 | DEBT-1874  | Ineffective: check-remote-session-context always succeeds     | S2       | .claude/hooks/check-remote-session-context.js                           | 32   |
 | DEBT-1876  | Ineffective: commit-tracker continueOnError makes failure...  | S2       | .claude/settings.json                                                   | 251  |
+| DEBT-1878  | CI gap: pull_request_target security vulnerability allows...  | S2       | .github/workflows/deploy-firebase.yml                                   | 7    |
 | DEBT-1880  | CI gap: continue-on-error bypasses critical validations       | S2       | .github/workflows/ci.yml                                                | 74   |
 | DEBT-1881  | CI gap: Missing secrets cause silent build success            | S2       | 154-159                                                                 | 0    |
 | DEBT-1882  | CI gap: Pattern compliance only checks changed files in PRs   | S2       | 58-68                                                                   | 0    |
@@ -7113,7 +7119,6 @@
 | DEBT-11199 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...  | S3       | scripts/check-cross-doc-deps.js                                         | 0    |
 | DEBT-11271 | Hook log file .git/hook-output.log grows unboundedly          | S3       | .husky/pre-commit                                                       | 0    |
 | DEBT-11272 | require_skip_reason() function duplicated verbatim in pre...  | S3       | .husky/pre-commit                                                       | 0    |
-| DEBT-1878  | CI gap: pull_request_target security vulnerability allows...  | S0       | .github/workflows/deploy-firebase.yml                                   | 7    |
 | DEBT-2121  | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 | DEBT-9295  | CI quality gates non-blocking allowing regressions            | S0       | .github/workflows/ci.yml                                                | 0    |
 
@@ -7997,6 +8002,9 @@
 | DEBT-0530  | Admin privilege hardening                                      | S2       | functions/src/admin.ts                                                  | 89   |
 | DEBT-0531  | Token rotation for long-lived sessions                         | S2       | lib/auth-context.tsx                                                    | 156  |
 | DEBT-0532  | Security rules for new collections                             | S2       | firestore.rules                                                         | 45   |
+| DEBT-0853  | App Check disabled on all production Cloud Functions           | S2       | functions/src/index.ts                                                  | 0    |
+| DEBT-0855  | App Check disabled on all Cloud Functions and client init...   | S2       | functions/src/index.ts                                                  | 0    |
+| DEBT-0864  | Re-enable App Check on Cloud Functions                         | S2       | lib/firebase.ts                                                         | 45   |
 | DEBT-0889  | Missing Content-Security-Policy Header                         | S2       | N/A                                                                     | 0    |
 | DEBT-0890  | Script Injection Vulnerability in resolve-debt Workflow        | S2       | N/A                                                                     | 0    |
 | DEBT-0892  | Security Check Doesn't Scan Cloud Functions                    | S2       | N/A                                                                     | 0    |
@@ -8216,6 +8224,7 @@
 | DEBT-11316 | High Severity Findings (Security & Stability)                  | S2       | N/A                                                                     | 0    |
 | DEBT-11320 | High Severity Findings (Security & Stability)                  | S2       | docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md               | 2    |
 | DEBT-11326 | ReDoS in credential sanitizer: alternation-inside-quantif...   | S2       | scripts/lib/sanitize-error.js                                           | 26   |
+| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...   | S2       | .claude/override-log.jsonl                                              | 0    |
 | DEBT-0774  | App Check disabled on Functions and client init disabled ...   | S3       | functions/src/index.ts                                                  | 0    |
 | DEBT-0800  | SonarCloud: Potentially hard-coded password pattern            | S3       | lib/utils/errors.ts                                                     | 69   |
 | DEBT-0801  | Math.random for visual effects                                 | S3       | components/celebrations/confetti-burst.tsx                              | 39   |
@@ -8489,19 +8498,14 @@
 | DEBT-11321 | Medium Severity & Code Quality Findings                        | S3       | docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md               | 3    |
 | DEBT-11322 | Add query limits to meetings reads                             | S3       | lib/db/meetings.ts                                                      | 0    |
 | DEBT-0849  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
-| DEBT-0853  | App Check disabled on all production Cloud Functions           | S0       | functions/src/index.ts                                                  | 0    |
 | DEBT-0854  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
-| DEBT-0855  | App Check disabled on all Cloud Functions and client init...   | S0       | functions/src/index.ts                                                  | 0    |
 | DEBT-0856  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
 | DEBT-0859  | Re-enable App Check on Cloud Functions                         | S0       | N/A                                                                     | 0    |
 | DEBT-0860  | Close legacy journalEntries write path                         | S0       | N/A                                                                     | 0    |
-| DEBT-0864  | Re-enable App Check on Cloud Functions                         | S0       | lib/firebase.ts                                                         | 45   |
 | DEBT-0865  | Close legacy journalEntries write path                         | S0       | lib/firestore-service.ts                                                | 156  |
-| DEBT-4399  | Review this potentially hard-coded password.                   | S0       | lib/utils/errors.ts                                                     | 69   |
 | DEBT-4400  | Review this potentially hard-coded password.                   | S0       | lib/utils/errors.ts                                                     | 71   |
 | DEBT-4401  | Review this potentially hard-coded password.                   | S0       | tests/utils/logger.test.ts                                              | 96   |
 | DEBT-4402  | Review this potentially hard-coded password.                   | S0       | tests/utils/logger.test.ts                                              | 130  |
-| DEBT-4403  | Make sure that executing this OS command is safe here.         | S0       | scripts/check-review-needed.js                                          | 214  |
 | DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...   | S0       | package-lock.json                                                       | 0    |
 | DEBT-9286  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
 | DEBT-9290  | App Check disabled on all production Cloud Functions           | S0       | functions/src/index.ts                                                  | 0    |
@@ -8516,3 +8520,4 @@
 | DEBT-11125 | Review this potentially hard-coded password.                   | S0       | tests/utils/logger.test.ts                                              | 96   |
 | DEBT-11126 | Make sure that executing this OS command is safe here.         | S0       | scripts/check-review-needed.js                                          | 214  |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...   | S0       | package-lock.json                                                       | 0    |
+| DEBT-45612 | Review this potentially hard-coded password.                   | S0       | lib/utils/errors.ts                                                     | 71   |

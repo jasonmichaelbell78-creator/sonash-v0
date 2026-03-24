@@ -1,5 +1,6 @@
 ---
 name: gsd-codebase-mapper
+model: sonnet
 description:
   Explores codebase and writes structured analysis documents. Spawned by
   map-codebase with a focus area (tech, arch, quality, concerns). Writes

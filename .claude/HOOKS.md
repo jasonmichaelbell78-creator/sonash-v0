@@ -22,6 +22,7 @@ Four event types are configured:
 | Event              | When It Fires                            |
 | ------------------ | ---------------------------------------- |
 | `SessionStart`     | New session begins (or after compaction) |
+| `PreToolUse`       | Before specific tools are used           |
 | `PreCompact`       | Before conversation compaction           |
 | `PostToolUse`      | After specific tools are used            |
 | `UserPromptSubmit` | When user submits a prompt               |
@@ -43,6 +44,15 @@ Four event types are configured:
 | Hook                 | Purpose                          |
 | -------------------- | -------------------------------- |
 | `compact-restore.js` | Restore context after compaction |
+
+---
+
+## PreToolUse Hooks
+
+| Matcher | Hook                             | Purpose                                          |
+| ------- | -------------------------------- | ------------------------------------------------ |
+| Bash    | `block-push-to-main.js`          | Block direct pushes to main branch               |
+| Bash    | `pre-commit-agent-compliance.js` | Warn if commit is made without agent code review |
 
 ---
 
@@ -86,6 +96,8 @@ Four event types are configured:
 | `check-mcp-servers.js`            | SessionStart         | MCP server availability check              |
 | `check-remote-session-context.js` | SessionStart         | Remote branch context check                |
 | `compact-restore.js`              | SessionStart:compact | Restore context after compaction           |
+| `block-push-to-main.js`           | PreToolUse (Bash)    | Block direct pushes to main branch         |
+| `pre-commit-agent-compliance.js`  | PreToolUse (Bash)    | Warn on commit without agent review        |
 | `pre-compaction-save.js`          | PreCompact           | Save state snapshot before compaction      |
 | `post-write-validator.js`         | PostToolUse          | Validate Write/Edit/MultiEdit operations   |
 | `post-read-handler.js`            | PostToolUse          | Process Read operations                    |

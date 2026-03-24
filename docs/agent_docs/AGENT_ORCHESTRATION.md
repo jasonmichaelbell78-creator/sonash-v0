@@ -11,7 +11,7 @@
 Detailed guidance for parallelizing agents, forming teams, and managing
 multi-agent coordination. Loaded on-demand when spawning agents.
 
-**Source:** Extracted from claude.md Sections 6.2-6.7 (v4.2)
+**Source:** Extracted from claude.md Sections 6.2-6.7 (v5.6)
 
 ---
 
@@ -216,4 +216,4 @@ If a team approaches its token budget, the lead should:
 
 | Version | Date       | Change                                  |
 | ------- | ---------- | --------------------------------------- |
-| 1.0     | 2026-02-10 | Extracted from claude.md v4.2 S6.2-S6.7 |
+| 1.0     | 2026-02-10 | Extracted from claude.md v5.6 S6.2-S6.7 |

@@ -1,0 +1,20 @@
+{
+  "pr": 466,
+  "round": 2,
+  "review_number": 500,
+  "source": "qodo",
+  "total": 12,
+  "fixed": 8,
+  "deferred": 2,
+  "rejected": 2,
+  "severity": { "critical": 0, "major": 2, "minor": 8, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": "d36dfd90",
+  "completed_at": "2026-03-24T21:00:00Z",
+  "deferred_ids": ["DEBT-45613", "DEBT-45614"],
+  "rejected_items": [
+    "#3: content_hash recompute deduped.jsonl — hash is identity-based, verified correct",
+    "#4: content_hash recompute normalized-all.jsonl — same reason"
+  ]
+}

@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2118
+**Items Needing Verification:** 2123
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -719,6 +719,10 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45605 | GSD ecosystem (12 agents) isolated from CLAUDE.md standar...    | S2       | .claude/agents/gsd-planner.md                                                    | 0         |
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | data/ecosystem-v2/invocations.jsonl                                              | 0         |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | .claude/agents/global/gsd-planner.md                                             | 0         |
+| DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
+| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | .claude/override-log.jsonl                                                       | 0         |
+| DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | docs/technical-debt/logs/resolution-log.jsonl                                    | 0         |
+| DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |
@@ -2132,5 +2136,6 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45586 | Model borderline: sonnet for complex framework agent            | S3       | .claude/agents/nextjs-architecture-expert.md                                     | 0         |
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | .claude/agents/git-flow-manager.md                                               | 0         |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | .claude/agents/technical-writer.md                                               | 0         |
-| DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |
+| DEBT-45614 | Add event_id and run_id to dedup-log records                    | S3       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
+| DEBT-45618 | Skip logging self-matches where kept === removed in dedup...    | S3       | scripts/debt/dedup-multi-pass.js                                                 | 0         |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |

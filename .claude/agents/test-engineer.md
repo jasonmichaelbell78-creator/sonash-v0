@@ -30,7 +30,19 @@ automation, and quality assurance across all application layers.
 - **Visual Testing**: Screenshot comparison, UI regression testing
 - **Performance Testing**: Load testing, stress testing, benchmark testing
 
-## SoNash Overrides (apply to ALL code examples below)
+## SoNash Testing Context
+
+**Test framework:** Vitest (NOT Jest). The project uses Vitest for all unit and
+integration tests.
+
+**Test scale:** 3,500+ tests across ~860 suites.
+
+**Test file locations:**
+
+- `tests/` — primary test directory
+- `scripts/__tests__/` — script/tooling tests
+
+**SoNash Overrides (apply to ALL code examples below):**
 
 The generic examples below predate SoNash patterns. When generating test code
 for this project, ALWAYS apply these overrides:
@@ -42,9 +54,11 @@ for this project, ALWAYS apply these overrides:
    against a static list. The examples below use `${tableName}` — in SoNash,
    validate table names against an allowlist first.
 3. **Test mocking:** Mock `httpsCallable` from Firebase, NOT direct Firestore
-   writes. Use `jest.mock('firebase/functions')`.
+   writes. Use `vi.mock('firebase/functions')` (Vitest, not Jest).
 4. **Assertions:** Use `expect().toHaveBeenCalledWith()` on the callable mock,
    not on Firestore document snapshots.
+5. **Import style:** Use Vitest imports:
+   `import { describe, it, expect, vi } from 'vitest'`.
 
 ## Technical Implementation
 
@@ -1004,3 +1018,34 @@ Your testing implementations should always include:
 
 Focus on creating maintainable, reliable tests that provide fast feedback and
 high confidence in code quality.
+
+## Return Protocol
+
+When your task is complete, return a structured summary to the caller:
+
+```markdown
+## TEST ENGINEERING COMPLETE
+
+**Task:** {what was requested} **Scope:** {files/areas covered}
+
+### Work Performed
+
+- {action 1 with specific files}
+- {action 2 with specific files}
+
+### Test Results
+
+| Metric               | Value   |
+| -------------------- | ------- |
+| Tests added/modified | {count} |
+| Suites affected      | {count} |
+| Coverage delta       | {+/-X%} |
+
+### Files Changed
+
+- `{path}`: {what changed}
+
+### Recommendations
+
+- {any follow-up items or concerns}
+```

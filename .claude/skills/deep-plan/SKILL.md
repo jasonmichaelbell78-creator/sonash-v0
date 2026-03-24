@@ -349,6 +349,11 @@ Capture in state file `process_feedback` field.
   templates, routing table, state schema)
 - **Handoff:** DECISIONS.md + PLAN.md consumed by execution approach
   (subagent/GSD/manual)
+- **Team config:** When preceded by `/deep-research` on the same topic and
+  research complexity is L/XL, consider spawning the `research-plan-team`
+  (`.claude/teams/research-plan-team.md`) instead of sequential solo execution.
+  The team enables direct researcher-planner-verifier communication and
+  progressive handoff during the research-to-plan pipeline.
 
 ---
 

@@ -7,9 +7,11 @@
       "description": "High-volume operational logs",
       "files": [
         ".claude/state/hook-warnings-log.jsonl",
-        ".claude/state/override-log.jsonl",
+        ".claude/override-log.jsonl",
         ".claude/state/commit-log.jsonl",
-        ".claude/state/agent-invocations.jsonl"
+        ".claude/state/agent-invocations.jsonl",
+        ".claude/state/hook-runs.jsonl",
+        "docs/technical-debt/raw/scattered-intake.jsonl"
       ]
     },
     "historical": {

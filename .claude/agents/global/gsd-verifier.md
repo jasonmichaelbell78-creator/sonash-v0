@@ -5,6 +5,7 @@ description:
   codebase delivers what phase promised, not just that tasks completed. Creates
   VERIFICATION.md report.
 tools: Read, Bash, Grep, Glob
+model: sonnet
 color: green
 ---
 

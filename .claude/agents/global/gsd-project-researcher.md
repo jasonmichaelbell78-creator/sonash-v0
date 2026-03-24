@@ -1,5 +1,6 @@
 ---
 name: gsd-project-researcher
+model: sonnet
 description:
   Researches domain ecosystem before roadmap creation. Produces files in
   .planning/research/ consumed during roadmap creation. Spawned by

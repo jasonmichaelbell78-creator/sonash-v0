@@ -4,6 +4,7 @@ description:
   Investigates bugs using scientific method, manages debug sessions, handles
   checkpoints. Spawned by /gsd:debug orchestrator.
 tools: Read, Write, Edit, Bash, Grep, Glob, WebSearch
+model: sonnet
 color: orange
 ---
 

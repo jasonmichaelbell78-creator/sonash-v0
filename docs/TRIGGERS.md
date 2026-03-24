@@ -63,13 +63,13 @@ repository. This document serves as:
 | ------------------------ | ----- | --------- | ------ | ------ |
 | GitHub Actions (CI/CD)   | 5     | ✅        | -      | Active |
 | Pre-Commit Hooks         | 1     | ✅        | -      | Active |
-| Session Hooks            | 13    | ✅        | -      | Active |
+| Session Hooks            | 15    | ✅        | -      | Active |
 | npm Scripts              | 8     | Semi      | ✅     | Active |
 | Automation Scripts       | 6     | -         | ✅     | Active |
 | Documentation Directives | 12+   | -         | ✅     | Active |
 | Anti-Pattern Checks      | 35+   | ✅        | -      | Active |
 
-**Total Enforcement Points**: 79+
+**Total Enforcement Points**: 81+
 
 ---
 
@@ -596,17 +596,22 @@ feedback on code quality, security, and best practices.
 
 ### Hooks Implemented
 
-| Hook                      | Trigger              | Action  | Purpose                                         |
-| ------------------------- | -------------------- | ------- | ----------------------------------------------- |
-| session-start.js          | SessionStart         | Setup   | Deps, builds, patterns, TDMS check              |
-| compact-restore.js        | SessionStart:compact | Restore | Output recovery context after compaction (#138) |
-| pre-compaction-save.js    | PreCompact           | Save    | Full state snapshot before compaction (#138)    |
-| post-write-validator.js   | Write/Edit           | Warn    | Schema, lint, pattern validation                |
-| post-read-handler.js      | Read                 | Track   | Context tracking, auto-save, handoff            |
-| commit-tracker.js         | Bash                 | Track   | Log git commits to JSONL (#138)                 |
-| track-agent-invocation.js | Task                 | Track   | Record agent invocations for compliance (#101)  |
-| decision-save-prompt.js   | AskQuestion          | Prompt  | Remind to document decisions                    |
-| user-prompt-handler.js    | UserPromptSubmit     | Process | Process user prompts                            |
+| Hook                            | Trigger              | Action  | Purpose                                         |
+| ------------------------------- | -------------------- | ------- | ----------------------------------------------- |
+| session-start.js                | SessionStart         | Setup   | Deps, builds, patterns, TDMS check              |
+| check-mcp-servers.js            | SessionStart         | Report  | Check MCP server availability                   |
+| check-remote-session-context.js | SessionStart         | Warn    | Detect newer SESSION_CONTEXT on remote branches |
+| global/gsd-check-update.js      | SessionStart         | Check   | Check for GSD package updates                   |
+| compact-restore.js              | SessionStart:compact | Restore | Output recovery context after compaction (#138) |
+| block-push-to-main.js           | PreToolUse (Bash)    | Block   | Block direct pushes to main branch              |
+| pre-commit-agent-compliance.js  | PreToolUse (Bash)    | Warn    | Warn on commit without agent code review        |
+| pre-compaction-save.js          | PreCompact           | Save    | Full state snapshot before compaction (#138)    |
+| post-write-validator.js         | Write/Edit           | Warn    | Schema, lint, pattern validation                |
+| post-read-handler.js            | Read                 | Track   | Context tracking, auto-save, handoff            |
+| commit-tracker.js               | Bash                 | Track   | Log git commits to JSONL (#138)                 |
+| track-agent-invocation.js       | Task                 | Track   | Record agent invocations for compliance (#101)  |
+| decision-save-prompt.js         | AskQuestion          | Prompt  | Remind to document decisions                    |
+| user-prompt-handler.js          | UserPromptSubmit     | Process | Process user prompts                            |
 
 ### Verification
 

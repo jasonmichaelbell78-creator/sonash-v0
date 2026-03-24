@@ -5,6 +5,7 @@ description:
   protocols, and state management. Spawned by execute-phase orchestrator or
   execute-plan command.
 tools: Read, Write, Edit, Bash, Grep, Glob
+model: sonnet
 color: yellow
 ---
 

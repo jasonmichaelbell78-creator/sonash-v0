@@ -21,10 +21,21 @@ Run `git diff --cached --name-only` (staged) or `git diff HEAD --name-only`
 (recent commit) to identify changed files. Then run `git diff --cached` or
 `git diff HEAD` to see the actual changes.
 
-### Step 2: Automated Pattern Check
+### Step 2: Automated Checks
 
-Run `npm run patterns:check` against changed files. This catches the critical
-anti-patterns automatically. Report any violations verbatim.
+Run both automated checks and report any violations verbatim:
+
+```bash
+# Pattern compliance (error sanitization, path traversal, test mocking, file read safety, exec /g)
+npm run patterns:check
+
+# ESLint (TypeScript strict, no-any, import rules, React hooks)
+npm run lint
+```
+
+If either check fails, list every violation before proceeding to manual review.
+Pattern check failures are GATE-enforced (pre-commit will block). ESLint
+failures must be resolved before commit.
 
 ### Step 3: Manual Pattern Review
 
@@ -215,3 +226,34 @@ inline in components. Types come from `types/` or `functions/src/schemas.ts`.
 - `useState` for local state, Context for global, Firestore for server
 - Use `node:` prefix for Node.js imports (`node:fs`, `node:path`)
 - Cognitive complexity under 15 per function (pre-commit hook blocks >15)
+
+## Return Protocol
+
+Return your findings to the orchestrator in this exact format:
+
+```
+## Code Review: [scope summary]
+
+### Automated Checks
+- patterns:check: PASS | FAIL (N violations)
+- lint: PASS | FAIL (N errors, M warnings)
+
+### CRITICAL (must fix before merge)
+| # | File:Line | Issue | Fix |
+|---|-----------|-------|-----|
+
+### WARNING (should fix)
+| # | File:Line | Issue | Fix |
+|---|-----------|-------|-----|
+
+### SUGGESTION (consider)
+| # | File:Line | Issue | Fix |
+|---|-----------|-------|-----|
+
+### Verdict: APPROVE | REQUEST_CHANGES | BLOCK
+[One-sentence summary of the most important finding or confirmation of quality]
+```
+
+If no issues found in a tier, omit that tier. Always include the Verdict line.
+BLOCK means critical security or data-loss issues. REQUEST_CHANGES means
+non-critical issues that should be fixed. APPROVE means ready to merge.

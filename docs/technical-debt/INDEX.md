@@ -9,20 +9,20 @@
 
 ---
 
-**Total Items:** 8463
+**Total Items:** 8468
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 32    |
-| S1 (High)     | 1359  |
-| S2 (Medium)   | 3433  |
-| S3 (Low)      | 3639  |
+| S0 (Critical) | 26    |
+| S1 (High)     | 1360  |
+| S2 (Medium)   | 3441  |
+| S3 (Low)      | 3641  |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 4710  |
+| code-quality             | 4715  |
 | documentation            | 982   |
 | process                  | 726   |
 | security                 | 722   |
@@ -34,10 +34,10 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 5158  |
-| RESOLVED       | 1113  |
+| VERIFIED       | 5156  |
+| RESOLVED       | 1115  |
 | FALSE_POSITIVE | 74    |
-| NEW            | 2118  |
+| NEW            | 2123  |
 
 ## Views
 
@@ -50,35 +50,22 @@
 
 - **DEBT-0849**: Legacy journalEntries collection allows direct client writes
   (bypasses Functi... (firestore.rules:0)
-- **DEBT-0853**: App Check disabled on all production Cloud Functions
-  (functions/src/index.ts:0)
 - **DEBT-0854**: Legacy journalEntries collection allows direct client writes
   (bypasses functi... (firestore.rules:0)
-- **DEBT-0855**: App Check disabled on all Cloud Functions and client init
-  disabled (functions/src/index.ts:0)
 - **DEBT-0856**: Legacy journalEntries collection allows direct client writes
   bypassing valida... (firestore.rules:0)
 - **DEBT-0859**: Re-enable App Check on Cloud Functions (N/A:0)
 - **DEBT-0860**: Close legacy journalEntries write path (N/A:0)
-- **DEBT-0864**: Re-enable App Check on Cloud Functions (lib/firebase.ts:45)
 - **DEBT-0865**: Close legacy journalEntries write path
   (lib/firestore-service.ts:156)
-- **DEBT-1293**: Security risk: Client-side filtering of sensitive data
-  (hooks/use-journal.ts:174)
-- **DEBT-1878**: CI gap: pull_request_target security vulnerability allows
-  untrusted code exec... (.github/workflows/deploy-firebase.yml:7)
 - **DEBT-2121**: Security: Potential command injection in resolve-item.js
   execSync (scripts/debt/resolve-item.js:21)
-- **DEBT-4399**: Review this potentially hard-coded password.
-  (lib/utils/errors.ts:69)
 - **DEBT-4400**: Review this potentially hard-coded password.
   (lib/utils/errors.ts:71)
 - **DEBT-4401**: Review this potentially hard-coded password.
   (tests/utils/logger.test.ts:96)
 - **DEBT-4402**: Review this potentially hard-coded password.
   (tests/utils/logger.test.ts:130)
-- **DEBT-4403**: Make sure that executing this OS command is safe here.
-  (scripts/check-review-needed.js:214)
 - **DEBT-7544**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
   firebase-admin) (package-lock.json:0)
 - **DEBT-9286**: Legacy journalEntries collection allows direct client writes
@@ -106,6 +93,8 @@
   (scripts/check-review-needed.js:214)
 - **DEBT-11283**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
   firebase-admin) (package-lock.json:0)
+- **DEBT-45612**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:71)
 
 ## High Priority Items (S1)
 
@@ -153,7 +142,7 @@
 - **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/add-false-positive.js:139)
 
-_...and 1339 more. See [by-severity.md](./views/by-severity.md)_
+_...and 1340 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 
