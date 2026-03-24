@@ -1,5 +1,6 @@
 ---
 name: deep-research-synthesizer
+model: sonnet
 description: >-
   Combines findings from multiple searcher agents into a coherent research
   report with inline citations, confidence levels, and structured machine-

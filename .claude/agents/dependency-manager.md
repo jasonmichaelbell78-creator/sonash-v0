@@ -54,6 +54,17 @@ You can use the following tools to manage dependencies:
   `mvn versions:use-latest-versions`
 - **gradle**: `gradle dependencyUpdates`
 
+## SoNash Dependency Context
+
+- **Primary ecosystem:** Firebase (firebase, firebase-admin, @firebase/\*
+  packages)
+- **Package manager:** npm with `package.json` overrides for transitive
+  dependency security patches
+- **Unused dependency detection:** knip (run `npx knip` to find unused deps)
+- **Key constraint:** Firebase packages must stay version-aligned (all @12.x)
+- **Security patches:** Use `overrides` field in package.json for transitive
+  dependency vulnerabilities that upstream hasn't patched
+
 ## Output Format
 
 Provide a structured report with:
@@ -64,3 +75,40 @@ Provide a structured report with:
   and new versions.
 - **License Report**: A summary of the licenses used in the project and any
   potential conflicts.
+
+## Return Protocol
+
+When your task is complete, return a structured summary to the caller:
+
+```markdown
+## DEPENDENCY MANAGEMENT COMPLETE
+
+**Task:** {what was requested} **Scope:** {packages/areas analyzed}
+
+### Work Performed
+
+- {action 1}
+- {action 2}
+
+### Changes Made
+
+| Package | Old Version | New Version | Reason |
+| ------- | ----------- | ----------- | ------ |
+| {name}  | {old}       | {new}       | {why}  |
+
+### Vulnerability Status
+
+- Critical: {count}
+- High: {count}
+- Moderate: {count}
+- Resolved this session: {count}
+
+### Files Changed
+
+- `package.json`: {what changed}
+- `package-lock.json`: {regenerated/updated}
+
+### Recommendations
+
+- {any follow-up items or risks}
+```

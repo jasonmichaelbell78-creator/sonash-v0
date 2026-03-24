@@ -4,9 +4,9 @@ description:
   Review code for vulnerabilities, implement secure authentication, and ensure
   OWASP compliance. Handles JWT, OAuth2, CORS, CSP, and encryption. Use
   PROACTIVELY for security reviews, auth flows, or vulnerability fixes.
-tools: Read, Write, Edit, Bash, Grep
+tools: Read, Write, Edit, Bash, Grep, Glob
 disallowedTools: Agent
-model: opus
+model: sonnet
 maxTurns: 25
 ---
 
@@ -281,12 +281,15 @@ Check for critical/high vulnerabilities. Flag any in Firebase, Next.js, or Zod.
 ### Step 2: Pattern Compliance Check
 
 ```bash
+# Pattern compliance (180+ patterns: error sanitization, path traversal, file reads, shell injection, regex safety)
 npm run patterns:check -- <target-files>
+
+# ESLint with security-relevant rules (no-any, strict TypeScript, React hooks safety)
+npm run lint
 ```
 
-This runs `scripts/check-pattern-compliance.js` against the codebase, checking
-180+ patterns including error sanitization, path traversal, file read safety,
-shell injection, and regex safety.
+This runs `scripts/check-pattern-compliance.js` against the codebase. Pattern
+check failures are GATE-enforced (pre-commit will block the commit).
 
 ### Step 3: Semgrep Security Rules
 
@@ -346,15 +349,125 @@ Severity levels:
 - **S2 Medium**: Missing headers, verbose errors, weak rate limits
 - **S3 Low**: Best practice improvements, defense-in-depth suggestions
 
-OWASP references to use:
+## OWASP Top 10 — SoNash-Specific Examples
 
-- A01: Broken Access Control (direct writes, missing auth checks)
-- A02: Cryptographic Failures (weak hashing, plaintext secrets)
-- A03: Injection (shell injection, path traversal, XSS)
-- A04: Insecure Design (fail-open guards, missing rate limiting)
-- A05: Security Misconfiguration (missing headers, permissive CORS)
-- A07: Identity and Auth Failures (weak session, missing App Check)
-- A09: Security Logging Failures (raw error.message, PII in logs)
+Map every finding to one of these categories. Each includes a SoNash
+before/after pair showing the real vulnerability and its fix.
+
+### A01: Broken Access Control
+
+SoNash risk: user A accessing user B's data via direct Firestore writes or
+missing userId checks in Cloud Functions.
+
+```typescript
+// VULNERABLE — Cloud Function trusts client-supplied userId
+export const saveDailyLog = onCall(async (request) => {
+  const { userId, date, content } = request.data;
+  await db.doc(`users/${userId}/daily_logs/${date}`).set({ content });
+});
+
+// FIXED — withSecurityChecks() extracts userId from auth token, ignores client value
+export const saveDailyLog = onCall(async (request) =>
+  withSecurityChecks(request, { functionName: "saveDailyLog", ... },
+    async ({ data, userId }) => { // userId from request.auth.uid, NOT data
+      await db.doc(`users/${userId}/daily_logs/${data.date}`).set({ content: data.content });
+    })
+);
+```
+
+### A03: Injection
+
+SoNash risk: path traversal in scripts, shell injection via execSync, XSS
+through unsanitized journal content.
+
+```javascript
+// VULNERABLE — path traversal via user-controlled input
+const filePath = path.join(baseDir, userInput);
+const content = readFileSync(filePath); // reads /etc/passwd if userInput = "../../etc/passwd"
+
+// FIXED — validate with security-helpers before any fs operation
+const { validatePathInDir } = require("./lib/security-helpers");
+validatePathInDir(baseDir, userInput); // throws on traversal
+const content = readFileSync(path.resolve(baseDir, userInput));
+```
+
+### A04: Insecure Design
+
+SoNash risk: fail-open rate limiters, security guards that default to allow on
+error.
+
+```javascript
+// VULNERABLE — fail-open: Firestore outage disables rate limiting
+try {
+  await rateLimiter.check(userId);
+} catch {
+  /* swallow error, allow request through */
+}
+
+// FIXED — fail-closed: deny on any error (SoNash standard)
+try {
+  await rateLimiter.check(userId);
+} catch (error) {
+  if (isRateLimitError(error)) throw error;
+  throw new HttpsError("internal", "Rate limiter unavailable"); // deny
+}
+```
+
+### A05: Security Misconfiguration
+
+SoNash risk: wrong COOP header breaks Google OAuth, missing HSTS or
+X-Frame-Options.
+
+```json
+// VULNERABLE — same-origin blocks Google OAuth popup callback
+{ "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
+
+// FIXED — allow popups for OAuth flow (firebase.json)
+{ "key": "Cross-Origin-Opener-Policy", "value": "same-origin-allow-popups" }
+```
+
+### A07: Identity and Authentication Failures
+
+SoNash risk: Cloud Functions without App Check, reCAPTCHA bypass leaking to
+production.
+
+```typescript
+// VULNERABLE — no App Check, no rate limiting, no validation
+export const deleteAccount = onCall(async (request) => {
+  await db.recursiveDelete(db.doc(`users/${request.data.userId}`));
+});
+
+// FIXED — full security wrapper with all controls
+export const deleteAccount = onCall(async (request) =>
+  withSecurityChecks(
+    request,
+    {
+      functionName: "deleteAccount",
+      requireAppCheck: true,
+      rateLimiter: deleteAccountLimiter,
+      validationSchema: deleteAccountSchema,
+    },
+    async ({ userId }) => {
+      await db.recursiveDelete(db.doc(`users/${userId}`));
+    }
+  )
+);
+```
+
+### A09: Security Logging and Monitoring Failures
+
+SoNash risk: raw error.message in logs exposes file paths, credentials, PII.
+
+```javascript
+// VULNERABLE — raw error leaks internal paths and possibly secrets
+console.error(`Failed: ${error.message}`);
+// Output: "Failed: ENOENT: no such file, open '/home/jbell/.config/firebase-key.json'"
+
+// FIXED — sanitizeError strips paths, credentials, IPs, tokens
+const { sanitizeError } = require("./lib/sanitize-error");
+console.error(`Failed: ${sanitizeError(error)}`);
+// Output: "Failed: ENOENT: no such file, open '[PATH_REDACTED]'"
+```
 
 ## Focus Areas
 
@@ -382,3 +495,40 @@ OWASP references to use:
 
 Focus on practical fixes over theoretical risks. Reference actual SoNash files
 and patterns in every finding.
+
+## Return Protocol
+
+Return your findings to the orchestrator in this exact format:
+
+```
+## Security Audit: [scope summary]
+
+### Automated Checks
+- npm audit: PASS | FAIL (N critical, M high)
+- patterns:check: PASS | FAIL (N violations)
+- lint: PASS | FAIL (N errors)
+
+### Critical (S0) — Must fix before merge
+| # | Finding | OWASP | File:Line | Fix |
+|---|---------|-------|-----------|-----|
+
+### High (S1) — Fix within current sprint
+| # | Finding | OWASP | File:Line | Fix |
+|---|---------|-------|-----------|-----|
+
+### Medium (S2) — Track in technical debt
+| # | Finding | OWASP | File:Line | Fix |
+|---|---------|-------|-----------|-----|
+
+### Low (S3) — Informational
+| # | Finding | OWASP | File:Line | Fix |
+|---|---------|-------|-----------|-----|
+
+### Verdict: SECURE | CONDITIONAL | BLOCK
+[One-sentence summary: what is the most serious finding, or confirmation of security posture]
+```
+
+If no issues found in a severity tier, omit that tier. Always include the
+Verdict line. BLOCK means S0 issues that must be resolved before merge.
+CONDITIONAL means S1/S2 issues that need tracking. SECURE means no actionable
+findings.

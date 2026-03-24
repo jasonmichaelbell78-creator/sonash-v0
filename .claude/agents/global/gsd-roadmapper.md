@@ -5,6 +5,7 @@ description:
   criteria derivation, and coverage validation. Spawned by /gsd:new-project
   orchestrator.
 tools: Read, Write, Bash, Glob, Grep
+model: sonnet
 color: purple
 ---
 

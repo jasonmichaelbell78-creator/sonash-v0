@@ -487,32 +487,32 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                                           | Description                                     | References | Last Modified |
-| ---------------------------------------------------------------------------------- | ----------------------------------------------- | ---------- | ------------- |
-| [backend-architect](.claude/agents/backend-architect.md)                           | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [code-reviewer](.claude/agents/code-reviewer.md)                                   | -                                               | ↓0 ↑0      | 2026-03-17    |
-| [database-architect](.claude/agents/database-architect.md)                         | async def create_customer(self, customer_data): | ↓0 ↑0      | 2026-01-12    |
-| [debugger](.claude/agents/debugger.md)                                             | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [dependency-manager](.claude/agents/dependency-manager.md)                         | -                                               | ↓0 ↑0      | 2026-03-17    |
-| [deployment-engineer](.claude/agents/deployment-engineer.md)                       | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [devops-troubleshooter](.claude/agents/devops-troubleshooter.md)                   | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [documentation-expert](.claude/agents/documentation-expert.md)                     | -                                               | ↓0 ↑0      | 2026-03-17    |
-| [error-detective](.claude/agents/error-detective.md)                               | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [frontend-developer](.claude/agents/frontend-developer.md)                         | -                                               | ↓0 ↑0      | 2026-03-19    |
-| [fullstack-developer](.claude/agents/fullstack-developer.md)                       | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [git-flow-manager](.claude/agents/git-flow-manager.md)                             | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [markdown-syntax-formatter](.claude/agents/markdown-syntax-formatter.md)           | -                                               | ↓0 ↑0      | 2026-03-19    |
-| [mcp-expert](.claude/agents/mcp-expert.md)                                         | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [nextjs-architecture-expert](.claude/agents/nextjs-architecture-expert.md)         | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [penetration-tester](.claude/agents/penetration-tester.md)                         | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [performance-engineer](.claude/agents/performance-engineer.md)                     | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [prompt-engineer](.claude/agents/prompt-engineer.md)                               | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [react-performance-optimization](.claude/agents/react-performance-optimization.md) | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [security-auditor](.claude/agents/security-auditor.md)                             | Patterns that `patterns:check` cannot catch:    | ↓0 ↑0      | 2026-03-17    |
-| [security-engineer](.claude/agents/security-engineer.md)                           | terraform {                                     | ↓0 ↑0      | 2026-01-12    |
-| [technical-writer](.claude/agents/technical-writer.md)                             | -                                               | ↓0 ↑0      | 2026-01-12    |
-| [test-engineer](.claude/agents/test-engineer.md)                                   | -                                               | ↓0 ↑0      | 2026-03-17    |
-| [ui-ux-designer](.claude/agents/ui-ux-designer.md)                                 | -                                               | ↓0 ↑0      | 2026-01-12    |
+| Document                                                                           | Description                                                     | References | Last Modified |
+| ---------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [backend-architect](.claude/agents/backend-architect.md)                           | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [code-reviewer](.claude/agents/code-reviewer.md)                                   | If either check fails, list every violation before proceedin... | ↓0 ↑0      | 2026-03-17    |
+| [database-architect](.claude/agents/database-architect.md)                         | async def create_customer(self, customer_data):                 | ↓0 ↑0      | 2026-01-12    |
+| [debugger](.claude/agents/debugger.md)                                             | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [dependency-manager](.claude/agents/dependency-manager.md)                         | -                                                               | ↓0 ↑0      | 2026-03-17    |
+| [deployment-engineer](.claude/agents/deployment-engineer.md)                       | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [devops-troubleshooter](.claude/agents/devops-troubleshooter.md)                   | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [documentation-expert](.claude/agents/documentation-expert.md)                     | -                                                               | ↓0 ↑0      | 2026-03-17    |
+| [error-detective](.claude/agents/error-detective.md)                               | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [frontend-developer](.claude/agents/frontend-developer.md)                         | -                                                               | ↓0 ↑0      | 2026-03-19    |
+| [fullstack-developer](.claude/agents/fullstack-developer.md)                       | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [git-flow-manager](.claude/agents/git-flow-manager.md)                             | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [markdown-syntax-formatter](.claude/agents/markdown-syntax-formatter.md)           | -                                                               | ↓0 ↑0      | 2026-03-19    |
+| [mcp-expert](.claude/agents/mcp-expert.md)                                         | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [nextjs-architecture-expert](.claude/agents/nextjs-architecture-expert.md)         | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [penetration-tester](.claude/agents/penetration-tester.md)                         | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [performance-engineer](.claude/agents/performance-engineer.md)                     | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [prompt-engineer](.claude/agents/prompt-engineer.md)                               | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [react-performance-optimization](.claude/agents/react-performance-optimization.md) | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [security-auditor](.claude/agents/security-auditor.md)                             | This runs `scripts/check-pattern-compliance.js` against the ... | ↓0 ↑0      | 2026-03-17    |
+| [security-engineer](.claude/agents/security-engineer.md)                           | terraform {                                                     | ↓0 ↑0      | 2026-01-12    |
+| [technical-writer](.claude/agents/technical-writer.md)                             | -                                                               | ↓0 ↑0      | 2026-01-12    |
+| [test-engineer](.claude/agents/test-engineer.md)                                   | -                                                               | ↓0 ↑0      | 2026-03-17    |
+| [ui-ux-designer](.claude/agents/ui-ux-designer.md)                                 | -                                                               | ↓0 ↑0      | 2026-01-12    |
 
 ### .claude > agents > global (Tier 4)
 

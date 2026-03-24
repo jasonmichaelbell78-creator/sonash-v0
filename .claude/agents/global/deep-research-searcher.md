@@ -1,5 +1,6 @@
 ---
 name: deep-research-searcher
+model: sonnet
 description: >-
   General-purpose web researcher spawned by the /deep-research skill. Executes
   search queries, fetches and analyzes sources, extracts findings with
