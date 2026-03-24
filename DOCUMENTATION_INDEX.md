@@ -440,7 +440,7 @@ _TDMS tracking and management_
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-24    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-23    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-24    |
 
 ### Templates (Tier 3)
 
@@ -679,7 +679,7 @@ _Uncategorized_
 | --------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
 | [Agent Environment Analysis — Decisions](.planning/agent-environment-analysis/DECISIONS.md)                           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-17    |
 | [Agent Environment Analysis — Diagnosis](.planning/agent-environment-analysis/DIAGNOSIS.md)                           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-16    |
-| [Agent Environment Analysis — Implementation Plan](.planning/agent-environment-analysis/PLAN.md)                      | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-16    |
+| [Agent Environment Analysis — Implementation Plan](.planning/agent-environment-analysis/PLAN.md)                      | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-24    |
 | [AGENT INVENTORY — SoNash-v0](.planning/agent-environment-analysis/AGENT_INVENTORY.md)                                | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-17    |
 | [Agent Teams Research](.planning/agent-environment-analysis/AGENT_TEAMS_RESEARCH.md)                                  | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-17    |
 | [External Agent Research](.planning/agent-environment-analysis/EXTERNAL_RESEARCH.md)                                  | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-17    |

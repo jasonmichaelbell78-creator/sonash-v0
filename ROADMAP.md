@@ -360,10 +360,8 @@ reliability, and solo developer automations.
 | DEBT-1293 | Client-side filtering of sensitive data          | hooks/use-journal.ts                  | code-quality | E1     |
 | DEBT-1878 | pull_request_target security vulnerability       | .github/workflows/deploy-firebase.yml | process      | E2     |
 | DEBT-2121 | Potential command injection in resolve-item.js   | scripts/debt/resolve-item.js          | process      | E1     |
-| DEBT-4399 | Potentially hard-coded password                  | lib/utils/errors.ts                   | security     | E0     |
-| DEBT-4403 | OS command safety review needed                  | scripts/check-review-needed.js        | security     | E1     |
 
-**Total: 10 highest-priority items | Security (5), Memory/Performance (2),
+**Total: 8 highest-priority items | Security (3), Memory/Performance (2),
 Process (2), Code Quality (1)**
 
 **Note:** Cognitive complexity items (DEBT-0012, 0037, 1056, 1064, 1538, 1624)
