@@ -12,9 +12,16 @@ export const InvocationRecord = BaseRecord.extend({
   success: z.boolean(),
   error: z.string().nullable().optional(),
   agent_name: z.string().min(1).nullable().optional(),
-  team_name: z.string().trim().min(1).nullable().optional(),
+  team_name: z.preprocess(
+    (v) => (typeof v === "string" && v.trim() === "" ? null : v),
+    z.string().trim().min(1).max(64).nullable().optional()
+  ),
   model: z.string().min(1).nullable().optional(),
-  tokens: z.coerce.number().int().min(0).nullable().optional(),
+  tokens: z.preprocess((v) => {
+    if (v === null || v === undefined) return null;
+    if (v === "") return null;
+    return v;
+  }, z.coerce.number().finite().int().min(0).max(Number.MAX_SAFE_INTEGER).nullable().optional()),
   context: z
     .object({
       pr: z.number().int().positive().optional(),
