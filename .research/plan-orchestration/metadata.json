@@ -1,0 +1,26 @@
+{
+  "topic": "Optimal sequencing and interleaving of 7 active plans for execution",
+  "depth": "L3",
+  "questionType": "relational",
+  "domain": "technology",
+  "startedAt": "2026-03-24T06:00:00Z",
+  "completedAt": "2026-03-24T12:00:00Z",
+  "agentCount": 22,
+  "searchRounds": 4,
+  "sourceCount": 28,
+  "claimCount": 34,
+  "confidenceDistribution": {
+    "HIGH": 25,
+    "MEDIUM": 9,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
+  "selfAuditResult": "5/6 passed (challenge integration updated, Gemini CLI unavailable — skipped with note)",
+  "consumerHints": {
+    "hasStackClaims": false,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 0
+  }
+}
