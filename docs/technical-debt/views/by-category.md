@@ -268,7 +268,7 @@
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions         | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-10933 | Filesystem MCP server configured but noted as unused              | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (4710)
+## code-quality (4712)
 
 | ID         | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | ---------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -3440,6 +3440,7 @@
 | DEBT-45605 | GSD ecosystem (12 agents) isolated from CLAUDE.md standar...    | S2       | .claude/agents/gsd-planner.md                                                                                                                                               | 0    |
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | data/ecosystem-v2/invocations.jsonl                                                                                                                                         | 0    |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | .claude/agents/global/gsd-planner.md                                                                                                                                        | 0    |
+| DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-0554  | Prefer `String#replaceAll()` over `String#replace()`.           | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555  | Visible, non-interactive elements with click handlers mus...    | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
@@ -4982,6 +4983,7 @@
 | DEBT-45586 | Model borderline: sonnet for complex framework agent            | S3       | .claude/agents/nextjs-architecture-expert.md                                                                                                                                | 0    |
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | .claude/agents/git-flow-manager.md                                                                                                                                          | 0    |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | .claude/agents/technical-writer.md                                                                                                                                          | 0    |
+| DEBT-45614 | Add event_id and run_id to dedup-log records                    | S3       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
 
 ## documentation (982)
 

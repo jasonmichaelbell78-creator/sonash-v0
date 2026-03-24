@@ -2458,6 +2458,51 @@ SonarCloud 33)
 
 ---
 
+### Review #500: PR #466 R2 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+- **Lockfile drift after dependency removal** — `package.json` removed
+  `@playwright/test` but `package-lock.json` retained stale entries. Fix: delete
+  both `node_modules` and `package-lock.json`, then `npm install` to regenerate.
+  `npm install` alone reuses the existing lockfile.
+- **Override-log rotation path mismatch** — `config/rotation-policy.json`
+  referenced `.claude/state/override-log.jsonl` but the actual log lives at
+  `.claude/override-log.jsonl`. `rotate-jsonl.js` silently skips missing files,
+  masking the misconfiguration.
+- **z.coerce.number() nullifies null** — `z.coerce.number()` converts `null` to
+  `0`, losing the semantic distinction. Use `z.preprocess` to preserve null.
+- **content_hash is identity-based** — TDMS `content_hash` uses only
+  `[file, line, title[:100], description[:200]]`, NOT the full record. Adding
+  `resolution` or changing `status` does not invalidate the hash. Verified
+  programmatically — rejected Qodo's recomputation suggestion.
+- **Dedup-log had 1825 duplicate lines** (7696 → 5871) — `dedup-multi-pass.js`
+  appends without checking for existing identical entries.
+
+**Key Learning:** When a reviewer suggests recomputing hashes, verify the hash
+algorithm's inputs before assuming the hash is stale. Identity-based hashes are
+intentionally stable across metadata changes.
+
+---
+
+### Review #499: PR #466 R1 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+- **JSONL blank line** in `agent-token-usage.jsonl` — parser safety fix.
+- **Orphaned DEBT refs** in `ROADMAP.md` — DEBT-4399/4403 moved to
+  `FALSE_POSITIVES.jsonl`, refs removed.
+- **z.coerce.number() for tokens** — string→number robustness.
+- **z.string().trim() for team_name** — prevent whitespace-only values.
+- Deferred 8 pre-existing items (DAS 4-6): actor audit trail, PII in logs, 6
+  TDMS data quality items.
+
+**Key Learning:** Reconstructed post-hoc — R1 session did not persist state
+file, JSONL record, or learning entry. Root cause: `.claude/state/.gitignore`
+had `*.state.json` blanket rule blocking new state files from being committed.
+
+---
+
 ### Review #498: PR #461 R2 — Qodo (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo

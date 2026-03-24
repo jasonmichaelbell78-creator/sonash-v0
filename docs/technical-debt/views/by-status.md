@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2117)
+## NEW (2119)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -716,6 +716,7 @@
 | DEBT-45605 | GSD ecosystem (12 agents) isolated from CLAUDE.md standar...    | S2       | code-quality             |
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | code-quality             |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | code-quality             |
+| DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | code-quality             |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
@@ -2129,6 +2130,7 @@
 | DEBT-45586 | Model borderline: sonnet for complex framework agent            | S3       | code-quality             |
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | code-quality             |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | code-quality             |
+| DEBT-45614 | Add event_id and run_id to dedup-log records                    | S3       | code-quality             |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 
 ## VERIFIED (5156)
