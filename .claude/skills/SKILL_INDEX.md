@@ -1,6 +1,6 @@
 # Skill Index
 
-**Version**: 2.5 **Last Updated**: 2026-03-13 **Total Skills**: 67
+**Version**: 2.6 **Last Updated**: 2026-03-24 **Total Skills**: 64
 
 Quick reference for all available Claude Code skills organized by category.
 
@@ -16,11 +16,12 @@ Quick reference for all available Claude Code skills organized by category.
 
 ## Categories
 
-### Audit & Code Quality (24 skills)
+### Audit & Code Quality (30 skills)
 
 | Skill                             | Description                                                                     |
 | --------------------------------- | ------------------------------------------------------------------------------- |
 | `/audit-comprehensive`            | Run all 9 audit domains in staged waves                                         |
+| `/audit-agent-quality`            | Hybrid agent audit — structural + behavioral review                             |
 | `/audit-code`                     | Code quality audit (complexity, patterns)                                       |
 | `/audit-documentation`            | Documentation coverage and quality                                              |
 | `/audit-enhancements`             | Enhancement audit across all domains                                            |
@@ -44,15 +45,18 @@ Quick reference for all available Claude Code skills organized by category.
 | `/doc-ecosystem-audit`            | Documentation ecosystem diagnostic (16 categories, 5 domains, A-F scoring)      |
 | `/script-ecosystem-audit`         | Script infrastructure diagnostic (18 categories, 5 domains, A-F scoring)        |
 | `/comprehensive-ecosystem-audit`  | Run all 8 ecosystem audits in staged waves with unified report                  |
+| `/ecosystem-health`               | 8-category composite health scoring with 13-dimension drill-down                |
 | `/data-effectiveness-audit`       | Lifecycle scoring audit for data system effectiveness (C/S/R/A, 0-12)           |
+| `/skill-audit`                    | Interactive behavioral quality audit for individual skills                      |
 | `/sonarcloud`                     | Fetch, sync, report, and resolve SonarCloud issues (replaces sonarcloud-sprint) |
 | `/quick-fix`                      | Auto-suggest fixes for common issues                                            |
 
-### Planning (1 skill)
+### Planning & Research (2 skills)
 
-| Skill        | Description                                        |
-| ------------ | -------------------------------------------------- |
-| `/deep-plan` | Discovery-first planning with exhaustive questions |
+| Skill            | Description                                                                  |
+| ---------------- | ---------------------------------------------------------------------------- |
+| `/deep-plan`     | Discovery-first planning with exhaustive questions                           |
+| `/deep-research` | Multi-agent research engine with parallel search, verification, and adaptors |
 
 ### Session Management (5 skills)
 
@@ -64,17 +68,11 @@ Quick reference for all available Claude Code skills organized by category.
 | `/task-next`     | Show dependency-resolved next tasks from active sprint       |
 | `/alerts`        | View system health alerts                                    |
 
-### Development Roles (7 skills)
+### Development Roles (1 skill)
 
-| Skill                   | Description                         |
-| ----------------------- | ----------------------------------- |
-| `/senior-architect`     | Architecture guidance and decisions |
-| `/senior-backend`       | Backend development expertise       |
-| `/senior-devops`        | DevOps and infrastructure guidance  |
-| `/senior-frontend`      | Frontend development expertise      |
-| `/senior-fullstack`     | Full-stack development guidance     |
-| `/senior-qa`            | QA and testing expertise            |
-| `/systematic-debugging` | Systematic bug investigation        |
+| Skill                   | Description                  |
+| ----------------------- | ---------------------------- |
+| `/systematic-debugging` | Systematic bug investigation |
 
 ### Design & UX (3 skills)
 
@@ -84,14 +82,13 @@ Quick reference for all available Claude Code skills organized by category.
 | `/ui-design-system`       | Design system components |
 | `/ux-researcher-designer` | UX research and design   |
 
-### Documentation & Content (4 skills)
+### Documentation & Content (3 skills)
 
 | Skill                      | Description                                                              |
 | -------------------------- | ------------------------------------------------------------------------ |
 | `/doc-optimizer`           | Auto-fix + enhance all docs (13 agents, 5 waves)                         |
 | `/docs-maintain`           | Check doc sync + auto-update artifacts (replaces docs-sync, docs-update) |
 | `/content-research-writer` | Content research and writing                                             |
-| `/markitdown`              | Convert various formats to markdown                                      |
 
 ### Testing (3 skills)
 
@@ -101,27 +98,29 @@ Quick reference for all available Claude Code skills organized by category.
 | `/test-suite`     | Multi-phase UI testing orchestration (Playwright) |
 | `/webapp-testing` | Web application testing                           |
 
-### Infrastructure & Setup (7 skills)
+### Infrastructure & Setup (8 skills)
 
-| Skill                     | Description                                 |
-| ------------------------- | ------------------------------------------- |
-| `/decrypt-secrets`        | Decrypt MCP secrets                         |
-| `/find-skills`            | Discover and install agent skills           |
-| `/gh-fix-ci`              | Fix GitHub CI issues                        |
-| `/mcp-builder`            | Build MCP server configurations             |
-| `/pre-commit-fixer`       | Auto-fix pre-commit hook failures and retry |
-| `/skill-creator`          | Create new skills                           |
-| `/validate-claude-folder` | Validate .claude folder structure           |
+| Skill                     | Description                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| `/convergence-loop`       | Multi-pass verification of claims via agent discovery and tallies |
+| `/decrypt-secrets`        | Decrypt MCP secrets                                               |
+| `/find-skills`            | Discover and install agent skills                                 |
+| `/gh-fix-ci`              | Fix GitHub CI issues                                              |
+| `/mcp-builder`            | Build MCP server configurations                                   |
+| `/pre-commit-fixer`       | Auto-fix pre-commit hook failures and retry                       |
+| `/skill-creator`          | Create new skills                                                 |
+| `/validate-claude-folder` | Validate .claude folder structure                                 |
 
-### Project Specific (7 skills)
+### Project Specific (6 skills)
 
-| Skill                        | Description                                      |
-| ---------------------------- | ------------------------------------------------ |
-| `/add-debt`                  | Add technical debt items to MASTER_DEBT.jsonl    |
-| `/developer-growth-analysis` | Analyze developer growth                         |
-| `/pr-retro`                  | PR review retrospective with actionable analysis |
-| `/pr-review`                 | Process PR review feedback                       |
-| `/using-superpowers`         | Claude superpowers guide                         |
+| Skill                        | Description                                                           |
+| ---------------------------- | --------------------------------------------------------------------- |
+| `/add-debt`                  | Add technical debt items to MASTER_DEBT.jsonl                         |
+| `/debt-runner`               | Interactive TDMS orchestrator with 7 modes (verify, sync, plan, etc.) |
+| `/developer-growth-analysis` | Analyze developer growth                                              |
+| `/pr-retro`                  | PR review retrospective with actionable analysis                      |
+| `/pr-review`                 | Process PR review feedback                                            |
+| `/using-superpowers`         | Claude superpowers guide                                              |
 
 ### Data & Analysis (3 skills)
 
@@ -146,7 +145,12 @@ Quick reference for all available Claude Code skills organized by category.
 | Security concerns      | `/audit-security`                             |
 | Performance issues     | `/audit-performance`                          |
 | Complex task planning  | `/deep-plan`                                  |
-| Architecture decisions | `/senior-architect`                           |
+| Domain/tech research   | `/deep-research`                              |
+| Claim verification     | `/convergence-loop`                           |
+| TDMS orchestration     | `/debt-runner`                                |
+| Agent quality audit    | `/audit-agent-quality`                        |
+| Skill quality audit    | `/skill-audit`                                |
+| Ecosystem composite    | `/ecosystem-health`                           |
 | UI/UX work             | `/frontend-design`, `/ux-researcher-designer` |
 | Doc repair + enhance   | `/doc-optimizer`                              |
 | Ending work            | `/session-end`                                |

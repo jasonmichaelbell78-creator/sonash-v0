@@ -443,7 +443,7 @@ firebase deploy
 
 ### Firebase
 
-- **Firebase** 12.7.0 - Backend platform
+- **Firebase** 12.10.0 - Backend platform
   - Authentication (Anonymous, Email, Google)
   - Firestore (Real-time database)
   - Cloud Functions v2

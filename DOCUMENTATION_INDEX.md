@@ -134,7 +134,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓5 ↑9      | 2026-03-22    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓6 ↑9      | 2026-03-22    |
 | [Changelog](CHANGELOG.md)                               | - generate-views.js no longer overwrites MASTER_DEBT.jsonl.      | ↓0 ↑0      | 2026-03-20    |
 | [Code of Conduct](CODE_OF_CONDUCT.md)                   | This document establishes the standards of behavior expected...  | ↓1 ↑0      | 2026-03-19    |
 | [Contributing to SoNash](CONTRIBUTING.md)               | Guidelines for contributing to SoNash. We welcome bug report...  | ↓0 ↑8      | 2026-03-18    |
@@ -436,7 +436,7 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-23    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-24    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
 | [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-23    |
 
@@ -1317,7 +1317,7 @@ _Reference_
 
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑16    | 2026-03-19    |
+| [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-19    |
 | [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-03-24    |
 
 ### scripts (Tier 4)
@@ -1342,11 +1342,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-23    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-23    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-23    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-24    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-24    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-24    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-23    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-24    |
 
 ---
 
@@ -1377,7 +1377,7 @@ Documents that are linked to most frequently:
 | [\[Project Name\] Multi-AI Refactoring Audit](docs/audits/multi-ai/templates/REFACTORING_AUDIT.md)      | 7             | README, COORDINATOR, README +4 more                 |
 | [\[Project Name\] Multi-AI Security Audit Plan](docs/audits/multi-ai/templates/SECURITY_AUDIT.md)       | 7             | FIREBASE_CHANGE_POLICY, README, COORDINATOR +4 more |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                        | 7             | SKILL, SKILL, DOCUMENTATION_STANDARDS +4 more       |
-| [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                            | 5             | REFERENCE, SKILL, SLASH_COMMANDS_REFERENCE +2 more  |
+| [AI Context &amp; Rules for SoNash](CLAUDE.md)                                                          | 6             | AI_WORKFLOW, CONTRIBUTING, README +3 more           |
 
 ### Most Linking Documents (Outbound Links)
 
@@ -1389,7 +1389,7 @@ Documents that link to other documents most frequently:
 | [SoNash Product Roadmap](ROADMAP.md)                                                                      | 18             |
 | [Audit Ecosystem](docs/audits/README.md)                                                                  | 18             |
 | [Multi-AI Review Coordinator](docs/audits/multi-ai/COORDINATOR.md)                                        | 18             |
-| [AI Workflow Guide](AI_WORKFLOW.md)                                                                       | 16             |
+| [AI Workflow Guide](AI_WORKFLOW.md)                                                                       | 17             |
 | [SoNash - Sober Nashville Recovery Notebook](README.md)                                                   | 15             |
 | [Multi-AI Audit System](docs/audits/multi-ai/README.md)                                                   | 15             |
 | [Development Guide](DEVELOPMENT.md)                                                                       | 11             |
@@ -2498,7 +2498,7 @@ Documents with no inbound links (not referenced by any other document):
 | 592 | [docs/REVIEW_POLICY_INDEX.md](docs/REVIEW_POLICY_INDEX.md)                                                                                                                                                                 | Review Policy Index                                                                                | 4    | Active **Implementation Status:** Partially implemented **Purpose:**    |
 | 593 | [docs/REVIEW_POLICY_QUICK_REF.md](docs/REVIEW_POLICY_QUICK_REF.md)                                                                                                                                                         | Review Policy Quick Reference                                                                      | 4    | -                                                                       |
 | 594 | [docs/REVIEW_POLICY_VISUAL_GUIDE.md](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                                                                                                                                                   | Review Policy Visual Guide                                                                         | 4    | -                                                                       |
-| 595 | [docs/SECURITY.md](docs/SECURITY.md)                                                                                                                                                                                       | Security &amp; Privacy Guide                                                                       | 2    | ACTIVE **Last Updated:** 2026-01-05                                     |
+| 595 | [docs/SECURITY.md](docs/SECURITY.md)                                                                                                                                                                                       | Security &amp; Privacy Guide                                                                       | 2    | ACTIVE **Last Updated:** 2026-03-24                                     |
 | 596 | [docs/SENTRY_INTEGRATION_GUIDE.md](docs/SENTRY_INTEGRATION_GUIDE.md)                                                                                                                                                       | Sentry Integration Guide for SoNash Admin Panel                                                    | 2    | Active **Last Updated:**                                                |
 | 597 | [docs/SERVER_SIDE_SECURITY.md](docs/SERVER_SIDE_SECURITY.md)                                                                                                                                                               | Server-Side Security Implementation Guide                                                          | 2    | 🟡 RECOMMENDED BEFORE PUBLIC                                            |
 | 598 | [docs/SESSION_DECISIONS.md](docs/SESSION_DECISIONS.md)                                                                                                                                                                     | Session Decision Log                                                                               | 4    | -                                                                       |

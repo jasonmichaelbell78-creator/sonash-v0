@@ -54,8 +54,8 @@ data synchronization.
 
 | Layer              | Technology                       | Purpose                  |
 | ------------------ | -------------------------------- | ------------------------ |
-| **Frontend**       | Next.js 16.1 (App Router)        | React framework with SSR |
-| **UI Framework**   | React 19.2.3                     | Component library        |
+| **Frontend**       | Next.js 16.2.0 (App Router)      | React framework with SSR |
+| **UI Framework**   | React 19.2.4                     | Component library        |
 | **Styling**        | Tailwind CSS v4                  | Utility-first CSS        |
 | **Animations**     | Framer Motion 12                 | Motion library           |
 | **Type Safety**    | TypeScript 5.x                   | Static typing            |

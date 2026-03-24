@@ -95,6 +95,8 @@ Recovery Notebook project. It provides:
 ☐ 2. Read GLOBAL_SECURITY_STANDARDS.md (MANDATORY before any coding)
      Note: GLOBAL_SECURITY_STANDARDS.md content is incorporated into CLAUDE.md
      Section 2 — not a standalone requirement separate from CLAUDE.md.
+     CLAUDE.md S2 (Security Rules) and S4 (Behavioral Guardrails) are the
+     authoritative source for all security and behavioral constraints.
 ☐ 3. Check docs/audits/multi-ai/COORDINATOR.md:
      - Increment session counter
      - Note any health issues
@@ -376,7 +378,8 @@ Session Goals"
 
 **System Architecture**: → [ARCHITECTURE.md](./ARCHITECTURE.md)
 
-**Security Guidelines**: →
+**Security Guidelines**: → [CLAUDE.md](./CLAUDE.md) S2 + S4 - **authoritative
+source** for security rules and behavioral guardrails →
 [GLOBAL_SECURITY_STANDARDS.md](./docs/GLOBAL_SECURITY_STANDARDS.md) - MANDATORY
 standards → [SECURITY.md](./docs/SECURITY.md) - Additional security docs
 

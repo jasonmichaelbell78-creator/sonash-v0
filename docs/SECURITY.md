@@ -1,6 +1,6 @@
 # Security & Privacy Guide
 
-**Document Version:** 2.2 **Status:** ACTIVE **Last Updated:** 2026-01-05
+**Document Version:** 2.3 **Status:** ACTIVE **Last Updated:** 2026-03-24
 
 ---
 
@@ -671,10 +671,14 @@ When working with security-related code:
 
 1. **Follow [GLOBAL_SECURITY_STANDARDS.md](./GLOBAL_SECURITY_STANDARDS.md)** -
    mandatory for all code
-2. **Check data classification** before logging or exposing data
-3. **Test Firestore rules** after any schema changes
-4. **Update this document** when adding new security controls
-5. **Never expose Red/Yellow data** in logs, errors, or API responses
+2. **Apply CLAUDE.md v5.6 Section 2 (Security Rules)** - authoritative source
+   for no-direct-write gate, App Check requirement, and 429 rate-limit handling
+3. **Apply CLAUDE.md v5.6 Section 4 (Behavioral Guardrails)** - authoritative
+   source for AI behavioral constraints when working on security code
+4. **Check data classification** before logging or exposing data
+5. **Test Firestore rules** after any schema changes
+6. **Update this document** when adding new security controls
+7. **Never expose Red/Yellow data** in logs, errors, or API responses
 
 ---
 
@@ -682,6 +686,7 @@ When working with security-related code:
 
 | Version | Date       | Changes                                                                                                                                                              |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2.3     | 2026-03-24 | AI Instructions: added explicit references to CLAUDE.md v5.6 S2 (Security Rules) and S4 (Behavioral Guardrails) as authoritative sources                             |
 | 2.2     | 2026-01-06 | Review #68: Renamed misleading rotateServiceAccountKey → serviceAccountKeyRotationHealthCheck (function does NOT rotate keys, only verifies after external rotation) |
 | 2.1     | 2026-01-05 | Added comprehensive Key Rotation Policy section - service account, Firebase API keys, reCAPTCHA, procedures, checklists, automation roadmap (Task 4.1.10)            |
 | 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                                                         |
