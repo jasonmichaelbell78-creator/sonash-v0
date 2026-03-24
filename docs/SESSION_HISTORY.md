@@ -27,6 +27,14 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #232 (2026-03-22)
+
+**Focus**: Cross-locale sync, review lifecycle, skill-audit
+
+- **Branch**: `housecleaning`
+- Cross-locale state sync, review lifecycle fixes, TS type errors, dependency
+  fixes, skill-audit on pre-commit-fixer (41→78/100). 3 commits.
+
 ### Session #220 (2026-03-15)
 
 **Focus**: Review Lifecycle Pipeline Overhaul — JSONL-Canonical

@@ -345,7 +345,7 @@ _Claude Code skills_
 | [Deep Plan Reference](.claude/skills/deep-plan/REFERENCE.md)                                                                        | Question categories, example questions, output templates, an... | ↓1 ↑0      | 2026-03-17    |
 | [Deep Research Reference](.claude/skills/deep-research/REFERENCE.md)                                                                | Output templates, question type classification, source evalu... | ↓1 ↑0      | 2026-03-22    |
 | [deep-plan](.claude/skills/deep-plan/SKILL.md)                                                                                      | Structured discovery-first planning that produces high-quali... | ↓0 ↑1      | 2026-03-22    |
-| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa... | ↓0 ↑1      | 2026-03-22    |
+| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa... | ↓0 ↑1      | 2026-03-23    |
 | [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)                                              | Reject obviously invalid input at API boundary                  | ↓0 ↑0      | 2026-01-12    |
 | [developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod... | ↓0 ↑0      | 2026-02-24    |
 | [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)                                                                  | Deep diagnostic of the entire documentation ecosystem — docu... | ↓0 ↑0      | 2026-03-19    |
@@ -1002,7 +1002,7 @@ _Uncategorized_
 
 | Document                                                                   | Description | References | Last Modified |
 | -------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Plan Orchestration: DIAGNOSIS](.planning/plan-orchestration/DIAGNOSIS.md) | -           | ↓0 ↑0      | 2026-03-24    |
+| [Plan Orchestration: DIAGNOSIS](.planning/plan-orchestration/DIAGNOSIS.md) | -           | ↓0 ↑0      | 2026-03-23    |
 
 ### .planning > propagation-research (Tier 4)
 
