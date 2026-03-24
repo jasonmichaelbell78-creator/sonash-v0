@@ -334,3 +334,8 @@
 {"pr":462,"title":"chore(deps): bump @sentry/node from 10.44.0 to 10.45.0 in /functions in the minor-and-patch group","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-24T20:58:55.319Z"}
 {"pr":461,"title":"feat: /deep-research skill — multi-agent research engine","total_commits":9,"fix_commits":2,"fix_ratio":0.22,"review_rounds":1,"timestamp":"2026-03-24T20:58:56.168Z"}
 {"pr":460,"title":"fix: Session #232 — cross-locale sync, review lifecycle, skill-audit","total_commits":9,"fix_commits":8,"fix_ratio":0.89,"review_rounds":1,"timestamp":"2026-03-24T20:58:56.981Z"}
+{"pr":466,"title":"feat: Wave 0 execution + agent-env complete — plan orchestration Session #236","total_commits":15,"fix_commits":11,"fix_ratio":0.73,"review_rounds":0,"timestamp":"2026-03-24T23:30:46.016Z"}
+{"pr":465,"title":"feat: plan-orchestration — 22-agent L3 research + 26-decision execution plan","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-24T23:30:47.245Z"}
+{"pr":464,"title":"chore: planning sprint — 3 research reports, 4 implementation plans, 8 plan archives","total_commits":13,"fix_commits":2,"fix_ratio":0.15,"review_rounds":1,"timestamp":"2026-03-24T23:30:49.352Z"}
+{"pr":462,"title":"chore(deps): bump @sentry/node from 10.44.0 to 10.45.0 in /functions in the minor-and-patch group","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-24T23:30:50.210Z"}
+{"pr":461,"title":"feat: /deep-research skill — multi-agent research engine","total_commits":9,"fix_commits":2,"fix_ratio":0.22,"review_rounds":1,"timestamp":"2026-03-24T23:30:51.110Z"}

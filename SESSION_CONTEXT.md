@@ -2,8 +2,8 @@
 
 **Document Version**: 8.8 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-24 (Session #236 — Plan orchestration complete + Wave 0 + agent-env
-complete)
+2026-03-24 (Session #237 — Passive-surfacing complete + CL-PROTOCOL + mid-audit
+PASS)
 
 ## Purpose
 
@@ -30,10 +30,10 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-24 **Branch**: `plan-32426` **Working On**: Session
-#236 — Plan orchestration execution (Wave 0 + agent-env done)
+**Last Checkpoint**: 2026-03-24 **Branch**: `planning-32426` **Working On**:
+Session #237 — PS remediation complete, Wave 1b next
 
-**Uncommitted Work**: SESSION_CONTEXT.md update (session-end pending)
+**Uncommitted Work**: None (session-end commit pending)
 
 ---
 
@@ -49,39 +49,35 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Recent Session Summaries
 
+**Session #237** (PASSIVE-SURFACING REMEDIATION + PR #466 R2-R3 + CL-PROTOCOL):
+
+- **Branch**: `planning-32426`
+- **PR #466 R2-R3**: 17 fixes across 2 rounds (lockfile regen, rotation path,
+  schema hardening, TDMS data quality, classification downgrade). 6 items
+  deferred to DEBT. Learning entries #499-501.
+- **CL-PROTOCOL.md created**: Multi-pass convergence-loop protocol for plan
+  execution discovery (Phase D) and verification (Phase V). All agents use opus.
+  Embedded in plan orchestrator + sub-plans.
+- **Passive-surfacing remediation COMPLETE**: 14 root causes, 46 violation sites
+  across 16 files. Phase D discovery (8 opus D1 + 2 opus D3 contrarian). Phase V
+  verification (8 opus V1). Code-reviewer audit (7 findings fixed). PS
+  Compliance category added to 3 audit skills.
+- **/skill-audit alerts** (focused, 11 decisions): PS boundary, volume spike
+  guard, CL scope, acknowledgment ownership contract. Alerts v3.1.
+- **Wave 1a mid-audit PASS**: 5 shared files verified, no cross-plan conflicts
+  between agent-env and passive-surfacing.
+- **Plan orchestration Steps 7-8 complete**. Wave 1a fully done.
+- **7 commits** on `planning-32426`.
+
 **Session #236** (PLAN ORCHESTRATION EXECUTION — WAVE 0 + AGENT-ENV COMPLETE):
 
 - **Branch**: `plan-32426`
-- **/deep-research plan-orchestration** (L3 Investigation): 22 agents, 6 waves,
-  17 sub-questions, 34 claims, 28 sources, 4 challenge files. Central finding:
-  scheduling is trivially solved — "star graph with one heavy leaf." Only 1 hard
-  dependency (agent-env → SWS). CANON built within SWS, not external.
-  Methodology verdict: SOUND. PR #465 merged.
-- **/deep-plan plan-orchestration**: 26 decisions, 26-step plan across 5 waves.
-  Key decisions: prep-first (D1), M1.6 after CANON (D2), checkpoint gates (D4),
-  WIP=1 (D5), CL verification everywhere (D24-D26).
-- **Wave 0 executed**: S0 debt triage (4 agents, S0: 32→25, 0 fixes needed).
-  Repo-cleanup (5 orphans, 3 archives, 7 docs, 3 deps removed). Audit PASS.
-- **Agent-env ALL 5 PHASES COMPLETE**: P4 — 6 agents improved (SoNash-specific
-  patterns, return protocols), 13 global agents got model fields, 2 team configs
-  created, 2 new agents (explore, plan). P5 — CLAUDE.md v5.8, 3 skills wired,
-  hooks verified, token monitoring schema, invocation tracking updated.
-- **SWS HARD GATE CLEARED**: agent-env complete → SWS can begin after remaining
-  Wave 1 plans.
-- **8 commits** on `plan-32426`.
+- Wave 0 executed (S0 triage + repo cleanup). Agent-env all 5 phases complete.
+  SWS hard gate cleared. 8 commits. PR #465 merged.
 
 **Session #235** (PLAN ORCHESTRATION RESEARCH — SCRAPPED, REDO NEEDED):
 
-- **Branch**: `planning-32326`
-- /deep-research plan-orchestration scrapped (Phases 3-5 skipped). Redone in
-  Session #236 with full compliance (22 agents, L3).
-
-**Session #234** (CLI TOOLS + STATUSLINE RESEARCH + PLAN HOUSECLEANING):
-
-- **Branch**: `planning-32326`
-- /deep-research CLI tools (15 agents), /deep-plan CLI tools (41 decisions),
-  /deep-research statusline (12 agents), plan housecleaning (7 archived). 8
-  commits.
+- Redone in Session #236 with full compliance (22 agents, L3).
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -89,36 +85,34 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Quick Status
 
-| Item                            | Status    | Progress                                           |
-| ------------------------------- | --------- | -------------------------------------------------- |
-| **Plan Orchestration**          | EXECUTING | Wave 0 DONE, Wave 1 agent-env DONE, 4 plans remain |
-| **Repo Cleanup**                | COMPLETE  | Wave 0: 5 orphans, 3 archives, 7 docs, 3 deps      |
-| **Agent Environment Analysis**  | COMPLETE  | All 5 phases done (Session #236)                   |
-| **Passive Surfacing**           | NEXT      | 33 violations verified present, CL pre-verified    |
-| **Propagation Patterns**        | NEXT      | File triage done (13 sanitize, 10 readJsonl)       |
-| **CLI Tools Implementation**    | BLOCKED   | Waits for PS session-start.js (D9)                 |
-| **Custom Statusline**           | READY     | Go 1.23.6 installed, fully isolated, float work    |
-| **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1         |
+| Item                            | Status    | Progress                                             |
+| ------------------------------- | --------- | ---------------------------------------------------- |
+| **Plan Orchestration**          | EXECUTING | Steps 1-8 DONE, Wave 1b next (Step 9)                |
+| **Repo Cleanup**                | COMPLETE  | Wave 0 done                                          |
+| **Agent Environment Analysis**  | COMPLETE  | All 5 phases done (Session #236)                     |
+| **Passive Surfacing**           | COMPLETE  | 14 root causes, 46 sites, CL-verified (Session #237) |
+| **Propagation Patterns**        | NEXT      | File triage done, session-start.js unblocked by PS   |
+| **CLI Tools Implementation**    | UNBLOCKED | PS session-start.js done → CLI can proceed           |
+| **Custom Statusline**           | READY     | Go 1.23.6 installed, fully isolated, float work      |
+| **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1           |
 
 **Current Branch**: `planning-32426`
 
-**Test Status**: 3543 tests pass, 0 fail, 6 skip (2 test files deleted in
-cleanup)
+**Test Status**: 3548 tests pass, 0 fail, 1 skip
 
 ---
 
 ## Next Session Goals
 
-### Immediate Priority (Wave 1 remaining — WIP=1 per D5)
+### Immediate Priority (Wave 1b — Step 9, WIP=1 per D5)
 
-Priority order per plan-orchestration PLAN.md Step 7:
+Priority order per plan-orchestration PLAN.md Step 9:
 
-1. **Passive-surfacing** — 33 violations, 11 steps. session-start.js changes
-   first (blocks CLI). Line numbers stale — use pattern grep.
-2. **Propagation W1** — Steps 1-5. File triage done: 13 sanitizeError, 10
-   readJsonl. Per D15: security+docs continue-on-error only.
-3. **CLI tools** — 25 steps, 8 phases. BLOCKED until PS session-start.js done.
-4. **Custom statusline** — float work. Go 1.23.6 installed. Zero conflicts.
+1. **Propagation W1** — Steps 1-5. File triage done: 13 sanitizeError, 10
+   readJsonl. Per D15: security+docs continue-on-error only. Run CL-PROTOCOL
+   Phase D before execution.
+2. **CLI tools** — 25 steps, 8 phases. UNBLOCKED (PS session-start.js done).
+3. **Custom statusline** — float work. Go 1.23.6 installed. Zero conflicts.
 
 ### After Wave 1 Complete
 

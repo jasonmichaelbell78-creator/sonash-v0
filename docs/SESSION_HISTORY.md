@@ -27,6 +27,14 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #234 (2026-03-24)
+
+**Focus**: CLI tools + statusline research + plan housecleaning
+
+- /deep-research CLI tools (15 agents), /deep-plan CLI tools (41 decisions),
+  /deep-research statusline (12 agents), plan housecleaning (7 archived). 8
+  commits.
+
 ### Session #232 (2026-03-22)
 
 **Focus**: Cross-locale sync, review lifecycle, skill-audit
