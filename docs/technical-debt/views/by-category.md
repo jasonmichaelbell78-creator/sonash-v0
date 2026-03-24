@@ -544,6 +544,7 @@
 | DEBT-1285  | Refactor this function to reduce its Cognitive Complexity...    | S1       | scripts/check-triggers.js                                                                                                                                                   | 259  |
 | DEBT-1286  | Refactor this function to reduce its Cognitive Complexity...    | S1       | scripts/validate-skill-config.js                                                                                                                                            | 98   |
 | DEBT-1290  | Remove this useless assignment to variable "isSession".         | S1       | scripts/validate-skill-config.js                                                                                                                                            | 113  |
+| DEBT-1293  | Security risk: Client-side filtering of sensitive data          | S1       | hooks/use-journal.ts                                                                                                                                                        | 174  |
 | DEBT-1294  | Performance anti-pattern: Excessive re-renders from conte...    | S1       | components/providers/auth-provider.tsx                                                                                                                                      | 43   |
 | DEBT-1295  | Missing input validation on server-generated data               | S1       | hooks/use-journal.ts                                                                                                                                                        | 172  |
 | DEBT-1296  | Data flow violation: Direct Firestore writes in admin com...    | S1       | components/admin/dashboard-tab.tsx                                                                                                                                          | 4    |
@@ -4981,7 +4982,6 @@
 | DEBT-45586 | Model borderline: sonnet for complex framework agent            | S3       | .claude/agents/nextjs-architecture-expert.md                                                                                                                                | 0    |
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | .claude/agents/git-flow-manager.md                                                                                                                                          | 0    |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | .claude/agents/technical-writer.md                                                                                                                                          | 0    |
-| DEBT-1293  | Security risk: Client-side filtering of sensitive data          | S0       | hooks/use-journal.ts                                                                                                                                                        | 174  |
 
 ## documentation (982)
 
@@ -6527,6 +6527,7 @@
 | DEBT-1873  | Ineffective: large-context-warning warningShown flag prev...  | S2       | .claude/hooks/large-context-warning.js                                  | 146  |
 | DEBT-1874  | Ineffective: check-remote-session-context always succeeds     | S2       | .claude/hooks/check-remote-session-context.js                           | 32   |
 | DEBT-1876  | Ineffective: commit-tracker continueOnError makes failure...  | S2       | .claude/settings.json                                                   | 251  |
+| DEBT-1878  | CI gap: pull_request_target security vulnerability allows...  | S2       | .github/workflows/deploy-firebase.yml                                   | 7    |
 | DEBT-1880  | CI gap: continue-on-error bypasses critical validations       | S2       | .github/workflows/ci.yml                                                | 74   |
 | DEBT-1881  | CI gap: Missing secrets cause silent build success            | S2       | 154-159                                                                 | 0    |
 | DEBT-1882  | CI gap: Pattern compliance only checks changed files in PRs   | S2       | 58-68                                                                   | 0    |
@@ -7113,7 +7114,6 @@
 | DEBT-11199 | Add bidirectional SESSION_CONTEXT.md ↔ ROADMAP.md sync va...  | S3       | scripts/check-cross-doc-deps.js                                         | 0    |
 | DEBT-11271 | Hook log file .git/hook-output.log grows unboundedly          | S3       | .husky/pre-commit                                                       | 0    |
 | DEBT-11272 | require_skip_reason() function duplicated verbatim in pre...  | S3       | .husky/pre-commit                                                       | 0    |
-| DEBT-1878  | CI gap: pull_request_target security vulnerability allows...  | S0       | .github/workflows/deploy-firebase.yml                                   | 7    |
 | DEBT-2121  | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 | DEBT-9295  | CI quality gates non-blocking allowing regressions            | S0       | .github/workflows/ci.yml                                                | 0    |
 
@@ -7790,7 +7790,7 @@
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)  | S3       | package.json                                                                     | 142  |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest          | S3       | package.json                                                                     | 11   |
 
-## security (722)
+## security (720)
 
 | ID         | Title                                                          | Severity | File                                                                    | Line |
 | ---------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -7997,6 +7997,9 @@
 | DEBT-0530  | Admin privilege hardening                                      | S2       | functions/src/admin.ts                                                  | 89   |
 | DEBT-0531  | Token rotation for long-lived sessions                         | S2       | lib/auth-context.tsx                                                    | 156  |
 | DEBT-0532  | Security rules for new collections                             | S2       | firestore.rules                                                         | 45   |
+| DEBT-0853  | App Check disabled on all production Cloud Functions           | S2       | functions/src/index.ts                                                  | 0    |
+| DEBT-0855  | App Check disabled on all Cloud Functions and client init...   | S2       | functions/src/index.ts                                                  | 0    |
+| DEBT-0864  | Re-enable App Check on Cloud Functions                         | S2       | lib/firebase.ts                                                         | 45   |
 | DEBT-0889  | Missing Content-Security-Policy Header                         | S2       | N/A                                                                     | 0    |
 | DEBT-0890  | Script Injection Vulnerability in resolve-debt Workflow        | S2       | N/A                                                                     | 0    |
 | DEBT-0892  | Security Check Doesn't Scan Cloud Functions                    | S2       | N/A                                                                     | 0    |
@@ -8489,19 +8492,14 @@
 | DEBT-11321 | Medium Severity & Code Quality Findings                        | S3       | docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md               | 3    |
 | DEBT-11322 | Add query limits to meetings reads                             | S3       | lib/db/meetings.ts                                                      | 0    |
 | DEBT-0849  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
-| DEBT-0853  | App Check disabled on all production Cloud Functions           | S0       | functions/src/index.ts                                                  | 0    |
 | DEBT-0854  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
-| DEBT-0855  | App Check disabled on all Cloud Functions and client init...   | S0       | functions/src/index.ts                                                  | 0    |
 | DEBT-0856  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
 | DEBT-0859  | Re-enable App Check on Cloud Functions                         | S0       | N/A                                                                     | 0    |
 | DEBT-0860  | Close legacy journalEntries write path                         | S0       | N/A                                                                     | 0    |
-| DEBT-0864  | Re-enable App Check on Cloud Functions                         | S0       | lib/firebase.ts                                                         | 45   |
 | DEBT-0865  | Close legacy journalEntries write path                         | S0       | lib/firestore-service.ts                                                | 156  |
-| DEBT-4399  | Review this potentially hard-coded password.                   | S0       | lib/utils/errors.ts                                                     | 69   |
 | DEBT-4400  | Review this potentially hard-coded password.                   | S0       | lib/utils/errors.ts                                                     | 71   |
 | DEBT-4401  | Review this potentially hard-coded password.                   | S0       | tests/utils/logger.test.ts                                              | 96   |
 | DEBT-4402  | Review this potentially hard-coded password.                   | S0       | tests/utils/logger.test.ts                                              | 130  |
-| DEBT-4403  | Make sure that executing this OS command is safe here.         | S0       | scripts/check-review-needed.js                                          | 214  |
 | DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...   | S0       | package-lock.json                                                       | 0    |
 | DEBT-9286  | Legacy journalEntries collection allows direct client wri...   | S0       | firestore.rules                                                         | 0    |
 | DEBT-9290  | App Check disabled on all production Cloud Functions           | S0       | functions/src/index.ts                                                  | 0    |

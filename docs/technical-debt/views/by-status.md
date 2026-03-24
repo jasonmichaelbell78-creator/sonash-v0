@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2118)
+## NEW (2117)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -2129,10 +2129,9 @@
 | DEBT-45586 | Model borderline: sonnet for complex framework agent            | S3       | code-quality             |
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | code-quality             |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | code-quality             |
-| DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 
-## VERIFIED (5158)
+## VERIFIED (5155)
 
 | ID         | Title                                                             | Severity | Category                 |
 | ---------- | ----------------------------------------------------------------- | -------- | ------------------------ |
@@ -2445,6 +2444,7 @@
 | DEBT-1285  | Refactor this function to reduce its Cognitive Complexity...      | S1       | code-quality             |
 | DEBT-1286  | Refactor this function to reduce its Cognitive Complexity...      | S1       | code-quality             |
 | DEBT-1290  | Remove this useless assignment to variable "isSession".           | S1       | code-quality             |
+| DEBT-1293  | Security risk: Client-side filtering of sensitive data            | S1       | code-quality             |
 | DEBT-1294  | Performance anti-pattern: Excessive re-renders from conte...      | S1       | code-quality             |
 | DEBT-1295  | Missing input validation on server-generated data                 | S1       | code-quality             |
 | DEBT-1296  | Data flow violation: Direct Firestore writes in admin com...      | S1       | code-quality             |
@@ -3669,6 +3669,9 @@
 | DEBT-0749  | 'unknown' overrides all other types in this union type.           | S2       | code-quality             |
 | DEBT-0760  | 'nickname' PropType is defined but prop is never used             | S2       | code-quality             |
 | DEBT-0767  | Unexpected negated condition.                                     | S2       | code-quality             |
+| DEBT-0853  | App Check disabled on all production Cloud Functions              | S2       | security                 |
+| DEBT-0855  | App Check disabled on all Cloud Functions and client init...      | S2       | security                 |
+| DEBT-0864  | Re-enable App Check on Cloud Functions                            | S2       | security                 |
 | DEBT-0868  | Optimize admin analytics functions (cache/pre-compute)            | S2       | performance              |
 | DEBT-0889  | Missing Content-Security-Policy Header                            | S2       | security                 |
 | DEBT-0890  | Script Injection Vulnerability in resolve-debt Workflow           | S2       | security                 |
@@ -4001,6 +4004,7 @@
 | DEBT-1873  | Ineffective: large-context-warning warningShown flag prev...      | S2       | process                  |
 | DEBT-1874  | Ineffective: check-remote-session-context always succeeds         | S2       | process                  |
 | DEBT-1876  | Ineffective: commit-tracker continueOnError makes failure...      | S2       | process                  |
+| DEBT-1878  | CI gap: pull_request_target security vulnerability allows...      | S2       | process                  |
 | DEBT-1880  | CI gap: continue-on-error bypasses critical validations           | S2       | process                  |
 | DEBT-1908  | CI gap: Tier comment spam on every synchronize event              | S2       | process                  |
 | DEBT-1909  | Bug: check-review-needed.js - getNextDay() fails silently...      | S2       | process                  |
@@ -7277,17 +7281,9 @@
 | DEBT-11064 | Complete the task associated to this "TODO" comment.              | S3       | code-quality             |
 | DEBT-11200 | Add limit(50) to queries in lib/db/meetings.ts                    | S3       | security                 |
 | DEBT-11201 | Massive Context Provider (God Object)                             | S3       | refactoring              |
-| DEBT-0853  | App Check disabled on all production Cloud Functions              | S0       | security                 |
-| DEBT-0855  | App Check disabled on all Cloud Functions and client init...      | S0       | security                 |
-| DEBT-0864  | Re-enable App Check on Cloud Functions                            | S0       | security                 |
-| DEBT-1293  | Security risk: Client-side filtering of sensitive data            | S0       | code-quality             |
-| DEBT-1878  | CI gap: pull_request_target security vulnerability allows...      | S0       | process                  |
-| DEBT-2121  | Security: Potential command injection in resolve-item.js ...      | S0       | process                  |
-| DEBT-4399  | Review this potentially hard-coded password.                      | S0       | security                 |
 | DEBT-4400  | Review this potentially hard-coded password.                      | S0       | security                 |
 | DEBT-4401  | Review this potentially hard-coded password.                      | S0       | security                 |
 | DEBT-4402  | Review this potentially hard-coded password.                      | S0       | security                 |
-| DEBT-4403  | Make sure that executing this OS command is safe here.            | S0       | security                 |
 | DEBT-9290  | App Check disabled on all production Cloud Functions              | S0       | security                 |
 | DEBT-9292  | App Check disabled on all Cloud Functions and client init...      | S0       | security                 |
 | DEBT-9301  | Re-enable App Check on Cloud Functions                            | S0       | security                 |
@@ -7299,7 +7295,7 @@
 
 _No items_
 
-## RESOLVED (1113)
+## RESOLVED (1115)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -8409,6 +8405,8 @@ _No items_
 | DEBT-0859  | Re-enable App Check on Cloud Functions                          | S0       | security                 |
 | DEBT-0860  | Close legacy journalEntries write path                          | S0       | security                 |
 | DEBT-0865  | Close legacy journalEntries write path                          | S0       | security                 |
+| DEBT-2121  | Security: Potential command injection in resolve-item.js ...    | S0       | process                  |
+| DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 | DEBT-9286  | Legacy journalEntries collection allows direct client wri...    | S0       | security                 |
 | DEBT-9291  | Legacy journalEntries collection allows direct client wri...    | S0       | security                 |
 | DEBT-9293  | Legacy journalEntries collection allows direct client wri...    | S0       | security                 |

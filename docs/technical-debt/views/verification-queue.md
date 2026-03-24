@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2118
+**Items Needing Verification:** 2117
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -2132,5 +2132,4 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45586 | Model borderline: sonnet for complex framework agent            | S3       | .claude/agents/nextjs-architecture-expert.md                                     | 0         |
 | DEBT-45587 | Missing AskUserQuestion for checkpoint confirmations            | S3       | .claude/agents/git-flow-manager.md                                               | 0         |
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | .claude/agents/technical-writer.md                                               | 0         |
-| DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |
