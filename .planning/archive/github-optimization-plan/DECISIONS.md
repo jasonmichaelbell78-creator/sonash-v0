@@ -1,0 +1,44 @@
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Last Updated:** 2026-03-17
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
+
+# Decision Record: GitHub Optimization Plan
+
+**Date:** 2026-03-17 **Questions Asked:** 29 **Decisions Captured:** 30
+
+---
+
+| #   | Decision                   | Choice                                                                                        | Rationale                                                                                                                           |
+| --- | -------------------------- | --------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Emergency triage timing    | Fix CI as Wave 0 before full execution                                                        | 113 consecutive failures blocking all branches, Dependabot merges, and wasting ~226 minutes                                         |
+| D2  | Phasing strategy           | 5 waves (0-4)                                                                                 | Emergency → Security → Optimization → Code Scanning → Ecosystem. Called "waves" not "phases"                                        |
+| D3  | Execution location         | Planning worktree for plans, feature branch for implementation                                | Planning branch is for this plan + future plans. Implementation on a dedicated branch off main                                      |
+| D4  | PR strategy                | Single PR, no reduction in thoroughness                                                       | All waves in one PR for atomic review, but each wave gets its own commit(s)                                                         |
+| D5  | Code scanning strategy     | 4-bucket approach as its own wave with subsections                                            | Tune rules (177 alerts) → Fix real issues (13) → Dismiss false positives (7) → Defer to DEBT (48). Wave 3.                          |
+| D6  | License                    | Apache 2.0                                                                                    | Patent protection + enterprise-friendly for health organizations. More legally clear than MIT.                                      |
+| D7  | OIDC for Firebase          | Defer to DEBT                                                                                 | Requires GCP console access and testing. Separate effort. Document rotation process instead.                                        |
+| D8  | SonarCloud                 | Intentionally toggled — optimize both configs, not part of this plan                          | Disabled for PR reviews; enabled for full codebase scans. Two configs to optimize separately.                                       |
+| D9  | SHA pinning policy         | Strict — all actions SHA-pinned with version comments                                         | CI handles FIREBASE_SERVICE_ACCOUNT and SONAR_TOKEN. High-value targets justify strictest policy. Dependabot auto-updates SHA pins. |
+| D10 | Secret scanning            | Enable both secret scanning + push protection                                                 | Public repo with credentials in CI. No reason not to enable.                                                                        |
+| D11 | Timeout defaults           | 10 min lightweight / 20 min CI / 30 min deploy+security                                       | Current default is 360 min (6 hours). These are generous but prevent hung jobs.                                                     |
+| D12 | Concurrency                | Cancel-in-progress for CI, not for deploy                                                     | Outdated CI runs are wasted. Active deployments must never be cancelled.                                                            |
+| D13 | Path filtering             | Add paths-ignore to CI, CodeQL, Semgrep for docs-only changes                                 | Prevents full pipeline runs on markdown edits. Saves ~10 min per docs-only push.                                                    |
+| D14 | Ruleset hardening          | All: required status checks, linear history, block force push + deletion                      | Solo dev with 0 approvals is fine, but status checks must pass. Linear history for clean git log.                                   |
+| D15 | Environment cleanup        | Delete 4 duplicates, keep Production + Preview + copilot                                      | Stale environments from early setup. Add branch restriction to Production (main only).                                              |
+| D16 | Community health files     | All: SECURITY.md, LICENSE, CONTRIBUTING.md, CODE_OF_CONDUCT.md, CODEOWNERS, issue templates   | Community health from 42% to ~95%. All low-effort, high-signal for a public repo.                                                   |
+| D17 | StepSecurity Harden-Runner | Defer — follow-up effort after this plan lands                                                | Requires modifying every workflow twice (audit mode → block mode). Better as standalone effort when CI is stable.                   |
+| D18 | Codecov configuration      | With thresholds (ratcheting baseline)                                                         | Prevents coverage regression. Fails PR if coverage drops below current level.                                                       |
+| D19 | Release Please versioning  | Conventional Commits (automatic)                                                              | Commits already use `fix:`, `feat:`, `chore:` prefixes. Release Please will just work.                                              |
+| D20 | Stale environments         | Delete 4 duplicates via API                                                                   | Keep Production, Preview, copilot. Delete the `– sonash-v0` and `– sonash-v0-2drw` variants.                                        |
+| D21 | Copilot instructions       | Refresh + add path-scoped instruction files                                                   | Update stale numbers, add security.instructions.md and tests.instructions.md for better AI reviews.                                 |
+| D22 | Issue templates            | bug_report.md + feature_request.md + config.yml                                               | Standard templates. Security issues via GitHub Private Vulnerability Reporting instead.                                             |
+| D23 | GitHub Guide               | Add `docs/GITHUB_GUIDE.md` — solo dev audience, requires web research                         | 9 sections: workflows, security, branch rules, environments, labels, apps, secrets, releases, quick reference.                      |
+| D24 | CI fix approach            | Fix Prettier + investigate test failures (fallback to Prettier-only)                          | Full green is the goal, but Prettier is mechanical and may be sufficient.                                                           |
+| D25 | Required status checks     | Lint/Type Check/Test, Build, Dependency Review, CodeQL                                        | Semgrep, docs-lint, review-check, auto-label remain informational (not blocking).                                                   |
+| D26 | Dependabot alerts          | Resolve in Wave 0 (verify if already fixed on plan-implementation)                            | 3 open alerts. May already be resolved in uncommitted work. Verify first.                                                           |
+| D27 | Socket.dev install         | Manual action item in Wave 4 — guided walkthrough, wait for completion                        | GitHub App marketplace install. Can't be done via CLI.                                                                              |
+| D28 | GitHub Guide sections      | 9 sections as proposed                                                                        | Workflows, Security, Branch Rules, Environments, Labels, Apps, Secrets, Releases, Quick Reference                                   |
+| D29 | SECURITY.md process        | GitHub Private Vulnerability Reporting only                                                   | Free, structured, built-in. No email alias needed.                                                                                  |
+| D30 | New apps in plan           | Codecov, Socket.dev, OpenSSF Scorecard, Release Please. Defer: StepSecurity, Bundle Analysis. | 4 high-impact, low-effort additions. 2 deferred for complexity/timing reasons.                                                      |
