@@ -12,6 +12,24 @@ Steps 2-21 with checkpoint gates (Wave 3).
 sessions across all waves) **Research:**
 `.research/plan-orchestration/RESEARCH_OUTPUT.md` (22-agent L3)
 
+## Progress (Session #236)
+
+| Step  | Description                     | Status                                                  |
+| ----- | ------------------------------- | ------------------------------------------------------- |
+| Pre   | Merge planning-32326 to main    | DONE (PR #465)                                          |
+| 1     | S0 Pre-Verification (CL agents) | DONE — 0 fixes needed, S0: 32→25                        |
+| 2     | Repo Cleanup                    | DONE — 5 orphans, 3 archives, 7 docs, 3 deps            |
+| 3     | S0 Fixes                        | DONE — no-op (all deferred/FP/resolved)                 |
+| 4     | S0 Post-Verification            | DONE — no-op                                            |
+| 5     | Wave 0 Audit                    | DONE — PASS, 7/7 checks                                 |
+| 6     | Wave 1 Pre-Verification         | DONE — all 5 plans verified                             |
+| 7     | Wave 1a (agent-env P4)          | DONE — 6 agents, 13 model fields, 2 teams, 2 new agents |
+| 7     | Wave 1a (agent-env P5)          | DONE — CLAUDE.md, skills, hooks, monitoring, tracking   |
+| 8     | Wave 1a Mid-Audit               | NOT YET — deferred to next session                      |
+| 9     | Wave 1b (PS, PR, CLI, SL)       | NOT YET                                                 |
+| 10    | Wave 1 Final Audit              | NOT YET                                                 |
+| 11-25 | Waves 2-3                       | NOT YET                                                 |
+
 ## Files to Create/Modify
 
 ### New Files (2)

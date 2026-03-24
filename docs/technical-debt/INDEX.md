@@ -9,13 +9,13 @@
 
 ---
 
-**Total Items:** 8461
+**Total Items:** 8462
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
-| S0 (Critical) | 25    |
+| S0 (Critical) | 26    |
 | S1 (High)     | 1360  |
 | S2 (Medium)   | 3437  |
 | S3 (Low)      | 3639  |
@@ -25,7 +25,7 @@
 | code-quality             | 4710  |
 | documentation            | 982   |
 | process                  | 726   |
-| security                 | 720   |
+| security                 | 721   |
 | refactoring              | 668   |
 | ai-optimization          | 254   |
 | performance              | 179   |
@@ -34,7 +34,7 @@
 
 | Status         | Count |
 | -------------- | ----- |
-| VERIFIED       | 5155  |
+| VERIFIED       | 5156  |
 | RESOLVED       | 1115  |
 | FALSE_POSITIVE | 74    |
 | NEW            | 2117  |
@@ -93,6 +93,8 @@
   (scripts/check-review-needed.js:214)
 - **DEBT-11283**: CRITICAL: fast-xml-parser DoS vulnerability (transitive via
   firebase-admin) (package-lock.json:0)
+- **DEBT-45612**: Review this potentially hard-coded password.
+  (lib/utils/errors.ts:71)
 
 ## High Priority Items (S1)
 

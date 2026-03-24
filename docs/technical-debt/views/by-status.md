@@ -2131,7 +2131,7 @@
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | code-quality             |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 
-## VERIFIED (5155)
+## VERIFIED (5156)
 
 | ID         | Title                                                             | Severity | Category                 |
 | ---------- | ----------------------------------------------------------------- | -------- | ------------------------ |
@@ -7290,6 +7290,7 @@
 | DEBT-11124 | Review this potentially hard-coded password.                      | S0       | security                 |
 | DEBT-11125 | Review this potentially hard-coded password.                      | S0       | security                 |
 | DEBT-11126 | Make sure that executing this OS command is safe here.            | S0       | security                 |
+| DEBT-45612 | Review this potentially hard-coded password.                      | S0       | security                 |
 
 ## IN_PROGRESS (0)
 

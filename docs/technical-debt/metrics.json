@@ -1,29 +1,29 @@
 {
-  "generated": "2026-03-24T02:51:04.922Z",
+  "generated": "2026-03-24T18:57:41.771Z",
   "generated_date": "2026-03-24",
   "summary": {
-    "total": 8463,
-    "open": 7276,
-    "resolved": 1113,
+    "total": 8462,
+    "open": 7273,
+    "resolved": 1115,
     "false_positives": 74,
     "resolution_rate_pct": 13
   },
   "by_status": {
-    "NEW": 2118,
-    "VERIFIED": 5158,
+    "NEW": 2117,
+    "VERIFIED": 5156,
     "IN_PROGRESS": 0,
-    "RESOLVED": 1113,
+    "RESOLVED": 1115,
     "FALSE_POSITIVE": 74
   },
   "by_severity": {
-    "S0": 32,
-    "S1": 1359,
-    "S2": 3433,
+    "S0": 26,
+    "S1": 1360,
+    "S2": 3437,
     "S3": 3639
   },
   "by_category": {
     "code-quality": 4710,
-    "security": 722,
+    "security": 721,
     "performance": 179,
     "documentation": 982,
     "refactoring": 668,
@@ -34,7 +34,7 @@
   },
   "by_source": {
     "unknown": 766,
-    "sonarcloud": 2562,
+    "sonarcloud": 2561,
     "review": 623,
     "audit": 2942,
     "manual": 81,
@@ -55,51 +55,9 @@
     "pr-retro-batch-420-424-426": 1
   },
   "alerts": {
-    "s0_count": 19,
-    "s1_count": 1258,
+    "s0_count": 11,
+    "s1_count": 1259,
     "s0_items": [
-      {
-        "id": "DEBT-0853",
-        "title": "App Check disabled on all production Cloud Functions",
-        "file": "functions/src/index.ts",
-        "line": 0
-      },
-      {
-        "id": "DEBT-0855",
-        "title": "App Check disabled on all Cloud Functions and client init di",
-        "file": "functions/src/index.ts",
-        "line": 0
-      },
-      {
-        "id": "DEBT-0864",
-        "title": "Re-enable App Check on Cloud Functions",
-        "file": "lib/firebase.ts",
-        "line": 45
-      },
-      {
-        "id": "DEBT-1293",
-        "title": "Security risk: Client-side filtering of sensitive data",
-        "file": "hooks/use-journal.ts",
-        "line": 174
-      },
-      {
-        "id": "DEBT-1878",
-        "title": "CI gap: pull_request_target security vulnerability allows un",
-        "file": ".github/workflows/deploy-firebase.yml",
-        "line": 7
-      },
-      {
-        "id": "DEBT-2121",
-        "title": "Security: Potential command injection in resolve-item.js exe",
-        "file": "scripts/debt/resolve-item.js",
-        "line": 21
-      },
-      {
-        "id": "DEBT-4399",
-        "title": "Review this potentially hard-coded password.",
-        "file": "lib/utils/errors.ts",
-        "line": 69
-      },
       {
         "id": "DEBT-4400",
         "title": "Review this potentially hard-coded password.",
@@ -117,6 +75,48 @@
         "title": "Review this potentially hard-coded password.",
         "file": "tests/utils/logger.test.ts",
         "line": 130
+      },
+      {
+        "id": "DEBT-9290",
+        "title": "App Check disabled on all production Cloud Functions",
+        "file": "functions/src/index.ts",
+        "line": 0
+      },
+      {
+        "id": "DEBT-9292",
+        "title": "App Check disabled on all Cloud Functions and client init di",
+        "file": "functions/src/index.ts",
+        "line": 0
+      },
+      {
+        "id": "DEBT-9301",
+        "title": "Re-enable App Check on Cloud Functions",
+        "file": "lib/firebase.ts",
+        "line": 45
+      },
+      {
+        "id": "DEBT-11124",
+        "title": "Review this potentially hard-coded password.",
+        "file": "lib/utils/errors.ts",
+        "line": 69
+      },
+      {
+        "id": "DEBT-11125",
+        "title": "Review this potentially hard-coded password.",
+        "file": "tests/utils/logger.test.ts",
+        "line": 96
+      },
+      {
+        "id": "DEBT-11126",
+        "title": "Make sure that executing this OS command is safe here.",
+        "file": "scripts/check-review-needed.js",
+        "line": 214
+      },
+      {
+        "id": "DEBT-11283",
+        "title": "CRITICAL: fast-xml-parser DoS vulnerability (transitive via ",
+        "file": "package-lock.json",
+        "line": 0
       }
     ],
     "s1_items": [
@@ -186,6 +186,6 @@
     "avg_age_days": 39,
     "oldest_age_days": 53,
     "oldest_item_id": "DEBT-0002",
-    "verification_queue_size": 2118
+    "verification_queue_size": 2117
   }
 }

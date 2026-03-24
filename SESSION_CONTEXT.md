@@ -1,9 +1,9 @@
 # Session Context
 
-**Document Version**: 8.7 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.8 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-24 (Session #235 — Plan orchestration research, scrapped due to skipped
-verification phases)
+2026-03-24 (Session #236 — Plan orchestration complete + Wave 0 + agent-env
+complete)
 
 ## Purpose
 
@@ -30,11 +30,10 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-24 **Branch**: `planning-32326` **Working On**:
-Session #235 — Plan orchestration research (scrapped, redo needed)
+**Last Checkpoint**: 2026-03-24 **Branch**: `plan-32426` **Working On**: Session
+#236 — Plan orchestration execution (Wave 0 + agent-env done)
 
-**Uncommitted Work**: SESSION_CONTEXT.md update, memory file, research-index
-cleanup
+**Uncommitted Work**: SESSION_CONTEXT.md update (session-end pending)
 
 ---
 
@@ -50,63 +49,39 @@ cleanup
 
 ## Recent Session Summaries
 
+**Session #236** (PLAN ORCHESTRATION EXECUTION — WAVE 0 + AGENT-ENV COMPLETE):
+
+- **Branch**: `plan-32426`
+- **/deep-research plan-orchestration** (L3 Investigation): 22 agents, 6 waves,
+  17 sub-questions, 34 claims, 28 sources, 4 challenge files. Central finding:
+  scheduling is trivially solved — "star graph with one heavy leaf." Only 1 hard
+  dependency (agent-env → SWS). CANON built within SWS, not external.
+  Methodology verdict: SOUND. PR #465 merged.
+- **/deep-plan plan-orchestration**: 26 decisions, 26-step plan across 5 waves.
+  Key decisions: prep-first (D1), M1.6 after CANON (D2), checkpoint gates (D4),
+  WIP=1 (D5), CL verification everywhere (D24-D26).
+- **Wave 0 executed**: S0 debt triage (4 agents, S0: 32→25, 0 fixes needed).
+  Repo-cleanup (5 orphans, 3 archives, 7 docs, 3 deps removed). Audit PASS.
+- **Agent-env ALL 5 PHASES COMPLETE**: P4 — 6 agents improved (SoNash-specific
+  patterns, return protocols), 13 global agents got model fields, 2 team configs
+  created, 2 new agents (explore, plan). P5 — CLAUDE.md v5.8, 3 skills wired,
+  hooks verified, token monitoring schema, invocation tracking updated.
+- **SWS HARD GATE CLEARED**: agent-env complete → SWS can begin after remaining
+  Wave 1 plans.
+- **8 commits** on `plan-32426`.
+
 **Session #235** (PLAN ORCHESTRATION RESEARCH — SCRAPPED, REDO NEEDED):
 
 - **Branch**: `planning-32326`
-- **Plan-orchestration deep-plan started**: Goal is to sequence all 7 active
-  plans (repo-cleanup, cli-tools, custom-statusline, passive-surfacing,
-  propagation, agent-env, SWS) into an optimal interleaved execution sequence.
-  Produce a DECISIONS.md + PLAN.md that defines wave-by-wave execution order
-  respecting file overlaps, dependencies, redundancies, and synergies.
-- **/deep-research plan-orchestration** (L1 Exhaustive): 15 agents, 4 waves, 10
-  sub-questions. Agents produced step inventories for all 7 plans (~121 steps),
-  cross-plan file overlap analysis (35 overlaps), dependency graph (acyclic),
-  redundancy/synergy detection (7+9), ROADMAP alignment audit, SWS
-  decomposition, optimal execution sequence (24 waves, ~93 steps after dedup),
-  best practices research (Coffman-Graham scheduling).
-- **Research SCRAPPED**: Phases 3-5 of /deep-research were skipped — no
-  convergence-loop verification, no cross-model (Gemini) verification, no
-  self-audit, no proper presentation. Confidence levels are self-reported by
-  agents, not independently verified. Research artifacts deleted (DIAGNOSIS.md
-  at `.planning/plan-orchestration/` kept). Must re-run /deep-research from
-  scratch with full Phase 3-5 compliance before deep-plan discovery continues.
-- **Key user decision**: All 7 plans stay in scope. No deferrals.
-- **Research also incorrectly stored at `.claude/state/deep-research/`** instead
-  of `.research/` — corrected before deletion.
-- **0 commits** (all artifacts deleted).
+- /deep-research plan-orchestration scrapped (Phases 3-5 skipped). Redone in
+  Session #236 with full compliance (22 agents, L3).
 
 **Session #234** (CLI TOOLS + STATUSLINE RESEARCH + PLAN HOUSECLEANING):
 
 - **Branch**: `planning-32326`
-- **Work locale sync**: Followed cross-locale sync plan from Session #232.
-  Merged work-locale state data (velocity, health, hook-warnings JSONL). Main
-  synced with origin/main.
-- **/deep-research CLI tools** (L1 Exhaustive): 15 agents, 140+ tools evaluated,
-  45 claims, 73 sources. Key findings: "install less, configure more," ntfy.sh
-  biggest gap, 2 refutations (WezTerm abandoned, Copilot CLI deprecated). Work
-  locale capability assessment done (winget, go, pip, curl all available).
-- **/deep-plan CLI tools implementation**: 34 questions, 41 decisions, 25-step
-  plan across 8 phases. 16 tools + 1 font + 2 config changes selected.
-  Locale-agnostic install scripts. APPROVED.
-- **Plan housecleaning**: Analyzed all 13 plans. Archived 7 completed + 1
-  mostly-complete (memory audit). Corrected statuses (hook overhaul COMPLETE,
-  review lifecycle COMPLETE, agent env Phase 1-2 DONE). Created propagation
-  patterns PLAN.md from research output. Restored statusline research from
-  archive (blocked, not complete). 6 active plans, 10 archived.
-- **/deep-research custom statusline** (L1 Exhaustive): 12 agents, 8 visual
-  patterns, 9 implementation approaches, 30 claims, 27 sources. Non-dev widgets
-  added (calendar, email, timer). Corrected: current baseline documented, Go
-  advantage is 2x not 5-16x on Windows.
-- **User profile corrected**: User is a director who directs AI, not a
-  developer. Memory updated.
-- **8 commits.**
-
-**Session #233** (/DEEP-RESEARCH SKILL — FULL PLAN EXECUTION):
-
-- **Branch**: `cleanup`
-- Full 34-step plan executed (P0-P3 + audit). /deep-research skill built,
-  ecosystem integration survey (64 skills, 8 adapters), skill-audit (25
-  decisions). Gemini CLI + Codex CLI installed. 7 commits.
+- /deep-research CLI tools (15 agents), /deep-plan CLI tools (41 decisions),
+  /deep-research statusline (12 agents), plan housecleaning (7 archived). 8
+  commits.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -114,39 +89,42 @@ cleanup
 
 ## Quick Status
 
-| Item                            | Status      | Progress                                         |
-| ------------------------------- | ----------- | ------------------------------------------------ |
-| **Plan Orchestration**          | REDO NEEDED | DIAGNOSIS.md exists, research scrapped, redo     |
-| **CLI Tools Implementation**    | APPROVED    | 41 decisions, 25-step plan, research complete    |
-| **Custom Statusline**           | RESEARCHED  | 2 research rounds complete, deep-plan next       |
-| **Propagation Patterns**        | APPROVED    | 4-wave plan (14 steps, ~17h), research complete  |
-| **Agent Environment Analysis**  | Phase 1-2   | Research done, audit skill created, Phase 3 next |
-| **Passive Surfacing**           | NOT STARTED | 17 decisions, 33 violations to fix               |
-| **System-Wide Standardization** | APPROVED    | Phase 0 done, Phase 1 (CANON) next               |
+| Item                            | Status    | Progress                                           |
+| ------------------------------- | --------- | -------------------------------------------------- |
+| **Plan Orchestration**          | EXECUTING | Wave 0 DONE, Wave 1 agent-env DONE, 4 plans remain |
+| **Repo Cleanup**                | COMPLETE  | Wave 0: 5 orphans, 3 archives, 7 docs, 3 deps      |
+| **Agent Environment Analysis**  | COMPLETE  | All 5 phases done (Session #236)                   |
+| **Passive Surfacing**           | NEXT      | 33 violations verified present, CL pre-verified    |
+| **Propagation Patterns**        | NEXT      | File triage done (13 sanitize, 10 readJsonl)       |
+| **CLI Tools Implementation**    | BLOCKED   | Waits for PS session-start.js (D9)                 |
+| **Custom Statusline**           | READY     | Go 1.23.6 installed, fully isolated, float work    |
+| **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1         |
 
-**Current Branch**: `planning-32326`
+**Current Branch**: `plan-32426`
 
-**Test Status**: 3586 tests pass, 0 fail, 6 skip
+**Test Status**: 3543 tests pass, 0 fail, 6 skip (2 test files deleted in
+cleanup)
 
 ---
 
 ## Next Session Goals
 
-### Immediate Priority
+### Immediate Priority (Wave 1 remaining — WIP=1 per D5)
 
-1. **Re-run /deep-research plan-orchestration** — with full Phase 3-5 compliance
-   (CL verification, cross-model Gemini checks, self-audit, proper
-   presentation). DIAGNOSIS.md at `.planning/plan-orchestration/` is still
-   valid. All 7 plans in scope, no deferrals.
-2. **Resume /deep-plan plan-orchestration** — after research passes
-   verification, continue Phase 1 Discovery to produce DECISIONS.md + PLAN.md.
-3. **Merge planning-32326 to main** — session cleanup commits.
+Priority order per plan-orchestration PLAN.md Step 7:
 
-### After Plan-Orchestration Complete
+1. **Passive-surfacing** — 33 violations, 11 steps. session-start.js changes
+   first (blocks CLI). Line numbers stale — use pattern grep.
+2. **Propagation W1** — Steps 1-5. File triage done: 13 sanitizeError, 10
+   readJsonl. Per D15: security+docs continue-on-error only.
+3. **CLI tools** — 25 steps, 8 phases. BLOCKED until PS session-start.js done.
+4. **Custom statusline** — float work. Go 1.23.6 installed. Zero conflicts.
 
-4. **Execute plans in the order determined by plan-orchestration** — the whole
-   point of this work is to produce the optimal execution sequence.
-5. **SWS CANON integration** — determined by plan-orchestration sequencing.
+### After Wave 1 Complete
+
+5. **Wave 1 Final Audit** (Step 10) — heavy CL verification, SWS gate confirm
+6. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions
+7. **Wave 2b: M1.6 feature work** (Step 14) — break the feature drought
 
 ---
 
@@ -222,9 +200,10 @@ npm run docs:check   # Documentation linting
 | Version | Date | Changes |
 | ------- | ---- | ------- |
 
-| 8.7 | 2026-03-24 | Session #235 — Plan orchestration research scrapped, redo
-needed | | 8.6 | 2026-03-23 | Session #234 — CLI tools + statusline research +
-plan housecleaning | | 8.5 | 2026-03-22 | Session #233 — /deep-research skill,
-ecosystem integration |
+| 8.8 | 2026-03-24 | Session #236 — Wave 0 + agent-env complete, SWS gate
+cleared | | 8.7 | 2026-03-24 | Session #235 — Plan orchestration research
+scrapped, redo needed | | 8.6 | 2026-03-23 | Session #234 — CLI tools +
+statusline research + plan housecleaning | | 8.5 | 2026-03-22 | Session #233 —
+/deep-research skill, ecosystem integration |
 
 [Full version history](docs/SESSION_HISTORY.md#version-history-archived-from-session_contextmd)

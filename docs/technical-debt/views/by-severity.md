@@ -9,7 +9,7 @@
 
 ---
 
-## S0 - Critical (25)
+## S0 - Critical (26)
 
 | ID         | Title                                                        | File                           | Line | Category | Effort |
 | ---------- | ------------------------------------------------------------ | ------------------------------ | ---- | -------- | ------ |
@@ -38,6 +38,7 @@
 | DEBT-11125 | Review this potentially hard-coded password.                 | tests/utils/logger.test.ts     | 96   | security | E0     |
 | DEBT-11126 | Make sure that executing this OS command is safe here.       | scripts/check-review-needed.js | 214  | security | E0     |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v... | package-lock.json              | 0    | security | E1     |
+| DEBT-45612 | Review this potentially hard-coded password.                 | lib/utils/errors.ts            | 71   | security | E0     |
 
 ## S1 - High (1360)
 

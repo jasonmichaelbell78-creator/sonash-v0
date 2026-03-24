@@ -7790,7 +7790,7 @@
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)  | S3       | package.json                                                                     | 142  |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest          | S3       | package.json                                                                     | 11   |
 
-## security (720)
+## security (721)
 
 | ID         | Title                                                          | Severity | File                                                                    | Line |
 | ---------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -8514,3 +8514,4 @@
 | DEBT-11125 | Review this potentially hard-coded password.                   | S0       | tests/utils/logger.test.ts                                              | 96   |
 | DEBT-11126 | Make sure that executing this OS command is safe here.         | S0       | scripts/check-review-needed.js                                          | 214  |
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...   | S0       | package-lock.json                                                       | 0    |
+| DEBT-45612 | Review this potentially hard-coded password.                   | S0       | lib/utils/errors.ts                                                     | 71   |
