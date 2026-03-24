@@ -202,7 +202,30 @@ Unacknowledged hook warnings (N):
 **Y:** Record timestamp in `hook-warnings.json`, proceed. **R:** Present each
 for individual decision. **No warnings:** Skip silently.
 
-### 4.3 Technical Debt Snapshot (SHOULD)
+### 4.3 Infrastructure Failure Gate (MUST)
+
+Check for state files written by session-start.js passive-surfacing fixes:
+
+1. **Build failures:** Read `.claude/state/session-start-failures.json`. If it
+   exists and has entries, present each failure with its `Fix:` command:
+
+   ```
+   Session-start build failures (N):
+     1. [description] — Fix: [command]
+     2. ...
+
+   Fix now / Acknowledge / Defer?
+   ```
+
+2. **Pending test registry:** Read `.claude/state/pending-test-registry.json`.
+   If it exists, remind: "Test registry needs update. Run: npm run
+   tests:registry"
+3. **Pending decisions:** Read `.claude/hook-warnings.json` for
+   `decision-documentation` type entries. Surface undocumented decisions.
+
+**All items require acknowledgment** before proceeding. Do not skip silently.
+
+### 4.4 Technical Debt Snapshot (SHOULD)
 
 Read [Technical Debt INDEX](../../../docs/technical-debt/INDEX.md). Note S0/S1
 counts for the summary.

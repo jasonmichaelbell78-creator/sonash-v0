@@ -56,7 +56,7 @@ const projectDir = path.resolve(baseDir, projectDirInput);
 // Security: Ensure projectDir is within baseDir using path.relative() (prevent path traversal)
 // Note: rel === '' means projectDir equals baseDir, which is valid for session startup
 const rel = path.relative(baseDir, projectDir);
-if (rel.startsWith(".." + path.sep) || rel === ".." || path.isAbsolute(rel)) {
+if (/^\.\.(?:[/\\]|$)/.test(rel) || path.isAbsolute(rel)) {
   process.exit(0);
 }
 
@@ -417,11 +417,12 @@ function runCommand(description, command, timeoutMs = 120000) {
     return true;
   } catch (error) {
     const reason = error.killed ? "timed out" : "failed";
-    const fixCmd = `Fix: ${command}`;
+    const safeCmd = sanitizeInput(command);
+    const fixCmd = `Fix: ${safeCmd}`;
     console.log(`   ⚠️ ${description} ${reason}. ${fixCmd}`);
     runCommandFailures.push({
       description,
-      command,
+      command: safeCmd,
       reason,
       timestamp: new Date().toISOString(),
     });
@@ -641,7 +642,7 @@ try {
   } else if (err.status === 2) {
     // I/O error — surface as error
     const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
-    const line0 = String(sanitized).split("\n")[0];
+    const line0 = String(sanitized).split("\n")[0].replace(/\r$/, "");
     console.error(
       "❌ Review lifecycle error: " + sanitizeInput(line0) + " Fix: npm run reviews:lifecycle"
     );
@@ -675,7 +676,7 @@ try {
       .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
     console.log(
       "   ⚠️ JSONL rotation: " +
-        sanitizeInput(redactedMsg.split("\n")[0]) +
+        sanitizeInput(redactedMsg.split("\n")[0].replace(/\r$/, "")) +
         ". Fix: node scripts/rotate-jsonl.js --verbose"
     );
     warnings++;
@@ -986,7 +987,11 @@ function executePipelineScript(scriptArgs, description, timeout, fixCommand) {
     const sanitized = sanitizeError(err);
     const fixSuffix = fixCommand ? ` Fix: ${fixCommand}` : "";
     console.log(
-      "   ⚠️ " + description + ": " + sanitizeInput(String(sanitized).split("\n")[0]) + fixSuffix
+      "   ⚠️ " +
+        description +
+        ": " +
+        sanitizeInput(String(sanitized).split("\n")[0].replace(/\r$/, "")) +
+        fixSuffix
     );
     warnings++;
   }

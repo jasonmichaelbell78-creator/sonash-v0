@@ -190,7 +190,8 @@ function main() {
     console.error("");
   }
 
-  process.exit(STRICT ? 1 : 0);
+  // Exit 1 when issues found (even non-strict) so callers can distinguish pass/warn
+  process.exit(issues.length > 0 ? 1 : 0);
 }
 
 main();

@@ -235,7 +235,7 @@ function runAnalyze() {
       /* first run or corrupt file */
     }
 
-    const key = msg.substring(0, 50);
+    const key = msg.trim().substring(0, 60);
     if (shown[key] && Date.now() - shown[key] < 4 * 60 * 60 * 1000) return;
 
     process.stderr.write(msg + "\n");
@@ -482,8 +482,8 @@ function runSessionEnd() {
     // Record cooldown
     const tmpCooldown = `${SESSION_END_COOLDOWN_FILE}.tmp`;
     try {
-      if (!isSafeToWrite(SESSION_END_COOLDOWN_FILE)) return;
-      if (!isSafeToWrite(tmpCooldown)) return;
+      if (!isSafeToWrite(SESSION_END_COOLDOWN_FILE)) return; // Fail-open: banner may repeat next prompt
+      if (!isSafeToWrite(tmpCooldown)) return; // Fail-open: banner may repeat next prompt
       fs.mkdirSync(path.dirname(SESSION_END_COOLDOWN_FILE), { recursive: true });
       fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
       try {
@@ -603,8 +603,8 @@ function runPlanSuggestion() {
       multistepShown[complexityKey] = Date.now();
       const tmpMultistep = `${MULTISTEP_DEDUP_FILE}.tmp`;
       try {
-        if (!isSafeToWrite(MULTISTEP_DEDUP_FILE)) return;
-        if (!isSafeToWrite(tmpMultistep)) return;
+        if (!isSafeToWrite(MULTISTEP_DEDUP_FILE)) return; // Fail-open: banner may repeat next prompt
+        if (!isSafeToWrite(tmpMultistep)) return; // Fail-open: banner may repeat next prompt
         fs.writeFileSync(tmpMultistep, JSON.stringify(multistepShown), "utf-8");
         try {
           fs.rmSync(MULTISTEP_DEDUP_FILE, { force: true });

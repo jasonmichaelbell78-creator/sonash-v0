@@ -257,7 +257,7 @@ function main() {
           "--hook=session-start",
           "--type=session-context-drift",
           "--severity=warning",
-          `--message=Remote branch has newer session context (session ${newerCounter} vs local ${localCounter})`,
+          `--message=Remote branch has newer session context (session ${Number.isFinite(newerCounter) ? newerCounter : "unknown"} vs local ${Number.isFinite(localCounter) ? localCounter : "unknown"})`,
           `--action=Run: git merge ${safeBranch} or review with git show ${safeBranch}:SESSION_CONTEXT.md`,
         ],
         { cwd: projectDir, timeout: 5000, stdio: "ignore" }
