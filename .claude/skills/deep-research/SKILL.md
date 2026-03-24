@@ -9,8 +9,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.4
-**Last Updated:** 2026-03-22
+**Document Version:** 1.5
+**Last Updated:** 2026-03-23
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -35,8 +35,10 @@ produces structured output with downstream routing.
 5. **State file updated after every state-changing event** -- enables resume.
 6. **Research writes ONLY to `.research/<topic-slug>/`** -- never to
    consumer-owned artifacts.
-7. **Agent allocation: `D + 3 + floor(D/5)`** -- D = sub-questions. Budget is a
-   guardrail, not a constraint.
+7. **Agent allocation: `D + 3 + floor(D/5)` is the FLOOR, not the answer** -- D
+   = sub-questions. Always assess scope size (file count, plan count, lines to
+   read) and present: "Formula suggests N. Scope has X. I recommend Y.
+   Override?" User decides final count.
 
 ## When to Use / When NOT to Use
 
@@ -138,7 +140,11 @@ well-scoped topics. Persist Q&A state after each round (compaction resilience).
 **0.5 MECE.** Generate sub-questions with search profiles (web/docs/codebase/
 academic). MECE verification: check overlaps + gaps, fix before presenting.
 
-**0.6 Allocation.** `D + 3 + floor(D/5)`. Example: 7 SQs = 11 agents, 3 waves.
+**0.6 Allocation.** Compute floor: `D + 3 + floor(D/5)`. Then assess scope size
+(files, plans, lines to read). Present both: "Formula floor: N. Scope: X
+files/plans. Recommended: Y agents." User approves final count. The formula
+underestimates for large codebase tasks where agents need to read contextually
+(not just grep).
 
 **0.7 Plan.** Include estimated duration. `--auto` skips approval.
 
@@ -244,10 +250,11 @@ REFERENCE.md Section 19.
 
 ## Version History
 
-| Version | Date       | Description                                                  |
-| ------- | ---------- | ------------------------------------------------------------ |
-| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)     |
-| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation     |
-| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing |
-| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles   |
-| 1.0     | 2026-03-22 | Initial implementation                                       |
+| Version | Date       | Description                                                     |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override |
+| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)        |
+| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation        |
+| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing    |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles      |
+| 1.0     | 2026-03-22 | Initial implementation                                          |
