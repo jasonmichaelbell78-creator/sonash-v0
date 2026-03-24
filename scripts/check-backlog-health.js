@@ -276,6 +276,8 @@ function warnCorruptLines(corruptLines, isQuiet) {
   if (corruptLines.length > 3) {
     console.log(`   ... and ${corruptLines.length - 3} more`);
   }
+  console.log(`  Fix: Review and repair corrupt lines in docs/technical-debt/MASTER_DEBT.jsonl`);
+  console.log(`  Run: node scripts/debt/validate-schema.js for details`);
   console.log("");
 }
 

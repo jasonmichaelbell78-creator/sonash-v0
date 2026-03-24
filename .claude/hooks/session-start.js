@@ -63,6 +63,7 @@ if (rel.startsWith(".." + path.sep) || rel === ".." || path.isAbsolute(rel)) {
 process.chdir(projectDir);
 
 let warnings = 0;
+const runCommandFailures = [];
 
 console.log(`🚀 SessionStart Hook for sonash-v0 (${envType})`);
 
@@ -144,7 +145,9 @@ if (previousState && previousState.lastBegin) {
   // If begin exists but no end after it, warn about incomplete session
   if (!lastEnd || lastEnd < lastBegin) {
     const hoursAgo = Math.round((Date.now() - lastBegin.getTime()) / (1000 * 60 * 60));
-    console.log(`⚠️  Previous session started ${hoursAgo}h ago without session-end`);
+    console.log(
+      `⚠️  Previous session started ${hoursAgo}h ago without session-end. Action: review with /alerts`
+    );
     warnings++;
 
     // Auto-close the previous session to keep begin/end counts approximately aligned
@@ -413,11 +416,15 @@ function runCommand(description, command, timeoutMs = 120000) {
     console.log(`   ✓ ${description} complete`);
     return true;
   } catch (error) {
-    if (error.killed) {
-      console.log(`   ⚠️ ${description} timed out (continuing anyway)`);
-    } else {
-      console.log(`   ⚠️ ${description} failed (continuing anyway)`);
-    }
+    const reason = error.killed ? "timed out" : "failed";
+    const fixCmd = `Fix: ${command}`;
+    console.log(`   ⚠️ ${description} ${reason}. ${fixCmd}`);
+    runCommandFailures.push({
+      description,
+      command,
+      reason,
+      timestamp: new Date().toISOString(),
+    });
     warnings++;
     return false;
   }
@@ -432,7 +439,9 @@ if (needsRootInstall()) {
       saveRootHash();
     }
   } else {
-    console.log("   ⚠️ package-lock.json not found, falling back to npm install");
+    console.log(
+      "   ⚠️ package-lock.json not found, falling back to npm install. Fix: npm install && git add package-lock.json"
+    );
     warnings++;
     runCommand(
       "Installing root dependencies (no lockfile)",
@@ -456,7 +465,9 @@ if (fs.existsSync("functions")) {
         saveFunctionsHash();
       }
     } else {
-      console.log("   ⚠️ functions/package-lock.json not found, falling back to npm install");
+      console.log(
+        "   ⚠️ functions/package-lock.json not found, falling back to npm install. Fix: cd functions && npm install && git add package-lock.json"
+      );
       warnings++;
       runCommand(
         "Installing Firebase Functions dependencies (no lockfile)",
@@ -506,6 +517,48 @@ if (needsTestBuild) {
   console.log("📦 Skipping test build (dist-tests fresh, <1h old)");
 }
 
+// Persist runCommand failures for /alerts surfacing
+if (runCommandFailures.length > 0) {
+  const failuresPath = path.join(projectDir, ".claude", "state", "session-start-failures.json");
+  try {
+    const failuresDir = path.dirname(failuresPath);
+    if (!fs.existsSync(failuresDir)) fs.mkdirSync(failuresDir, { recursive: true });
+    if (isSafeToWrite(failuresPath)) {
+      const tmpFailPath = `${failuresPath}.tmp`;
+      if (isSafeToWrite(tmpFailPath)) {
+        fs.writeFileSync(
+          tmpFailPath,
+          JSON.stringify(
+            { failures: runCommandFailures, timestamp: new Date().toISOString() },
+            null,
+            2
+          )
+        );
+        try {
+          fs.rmSync(failuresPath, { force: true });
+        } catch {
+          /* best-effort */
+        }
+        fs.renameSync(tmpFailPath, failuresPath);
+      }
+    }
+  } catch (err) {
+    console.error(
+      "session-start: failed to write session-start-failures.json: " +
+        sanitizeInput(err instanceof Error ? err.message : String(err))
+    );
+  }
+} else {
+  // Clear stale failures file from previous sessions
+  try {
+    fs.rmSync(path.join(projectDir, ".claude", "state", "session-start-failures.json"), {
+      force: true,
+    });
+  } catch {
+    /* best-effort */
+  }
+}
+
 // Pattern compliance check (v1 — pre-commit gate, v2 partial overlap via verify-enforcement-manifest)
 try {
   execFileSync(process.execPath, ["scripts/check-pattern-compliance.js"], {
@@ -538,12 +591,16 @@ try {
 } catch (error) {
   const exitCode = error.status || 1;
   if (exitCode >= 2) {
-    console.error(`🔍 Consolidation: ❌ failed (exit ${exitCode})`);
+    console.error(
+      `🔍 Consolidation: ❌ failed (exit ${exitCode}). Fix: node scripts/run-consolidation.js --verbose`
+    );
     warnings++;
   } else if (exitCode === 1) {
     const stdout = (error.stdout || "").toString().trim();
     if (stdout) console.log(stdout);
-    console.warn("🔍 Consolidation: ⚠️ exit code 1 (unexpected for --auto)");
+    console.warn(
+      "🔍 Consolidation: ⚠️ exit code 1 (unexpected for --auto). Fix: node scripts/run-consolidation.js --verbose"
+    );
   }
 }
 
@@ -579,16 +636,23 @@ try {
       const output = stdoutText || stderrText || "Unknown validation issue";
       console.warn(sanitizeInput(output.split("\n").slice(0, 5).join("\n")));
     }
+    console.warn("   Fix: npm run reviews:lifecycle");
     warnings++;
   } else if (err.status === 2) {
     // I/O error — surface as error
     const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
     const line0 = String(sanitized).split("\n")[0];
-    console.error("❌ Review lifecycle error: " + sanitizeInput(line0));
+    console.error(
+      "❌ Review lifecycle error: " + sanitizeInput(line0) + " Fix: npm run reviews:lifecycle"
+    );
     warnings++;
   } else {
     // Other/unexpected error
-    console.warn("   ⚠️ Review lifecycle: unexpected exit code " + (err.status || "unknown"));
+    console.warn(
+      "   ⚠️ Review lifecycle: unexpected exit code " +
+        (err.status || "unknown") +
+        ". Fix: npm run reviews:lifecycle"
+    );
     warnings++;
   }
 }
@@ -609,7 +673,11 @@ try {
       .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
       .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
       .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
-    console.log("   ⚠️ JSONL rotation: " + sanitizeInput(redactedMsg.split("\n")[0]));
+    console.log(
+      "   ⚠️ JSONL rotation: " +
+        sanitizeInput(redactedMsg.split("\n")[0]) +
+        ". Fix: node scripts/rotate-jsonl.js --verbose"
+    );
     warnings++;
   }
 }
@@ -905,8 +973,9 @@ if (!sanitizeError) {
  * @param {string[]} scriptArgs - Args for execFileSync (script path + flags)
  * @param {string} description - Label for warning output
  * @param {number} timeout - Timeout in ms
+ * @param {string} fixCommand - Command to include as Fix: action path
  */
-function executePipelineScript(scriptArgs, description, timeout) {
+function executePipelineScript(scriptArgs, description, timeout, fixCommand) {
   try {
     execFileSync(process.execPath, scriptArgs, {
       cwd: projectDir,
@@ -915,25 +984,53 @@ function executePipelineScript(scriptArgs, description, timeout) {
     });
   } catch (err) {
     const sanitized = sanitizeError(err);
-    console.log("   ⚠️ " + description + ": " + sanitizeInput(String(sanitized).split("\n")[0]));
+    const fixSuffix = fixCommand ? ` Fix: ${fixCommand}` : "";
+    console.log(
+      "   ⚠️ " + description + ": " + sanitizeInput(String(sanitized).split("\n")[0]) + fixSuffix
+    );
     warnings++;
   }
 }
 
 // 1. Route lifecycle gaps (discover new gaps → scaffolded entries)
-executePipelineScript(["scripts/route-lifecycle-gaps.js"], "Lifecycle gaps", 15000);
+executePipelineScript(
+  ["scripts/route-lifecycle-gaps.js"],
+  "Lifecycle gaps",
+  15000,
+  "npm run lifecycle:gaps"
+);
 
 // 2. Route enforcement gaps (discover CLAUDE.md gaps → scaffolded entries)
-executePipelineScript(["scripts/route-enforcement-gaps.js"], "Enforcement gaps", 15000);
+executePipelineScript(
+  ["scripts/route-enforcement-gaps.js"],
+  "Enforcement gaps",
+  15000,
+  "node scripts/route-enforcement-gaps.js --verbose"
+);
 
 // 3. Refine scaffolded entries (scaffolded → enforced or refined)
-executePipelineScript(["scripts/refine-scaffolds.js"], "Scaffold refinement", 20000);
+executePipelineScript(
+  ["scripts/refine-scaffolds.js"],
+  "Scaffold refinement",
+  20000,
+  "node scripts/refine-scaffolds.js --verbose"
+);
 
 // 4. Verify enforced entries (enforced → verified, or flag for repair)
-executePipelineScript(["scripts/verify-enforcement.js"], "Enforcement verify", 30000);
+executePipelineScript(
+  ["scripts/verify-enforcement.js"],
+  "Enforcement verify",
+  30000,
+  "node scripts/verify-enforcement.js --verbose"
+);
 
 // 5. Ratchet baselines (tighten thresholds on improvement, check-only mode)
-executePipelineScript(["scripts/ratchet-baselines.js", "--check-only"], "Ratchet baselines", 20000);
+executePipelineScript(
+  ["scripts/ratchet-baselines.js", "--check-only"],
+  "Ratchet baselines",
+  20000,
+  "node scripts/ratchet-baselines.js --check-only --verbose"
+);
 
 // Sync commit log from git history (fills gaps when commit-tracker hook misses)
 try {
@@ -944,7 +1041,11 @@ try {
   });
 } catch (err) {
   // Non-fatal: commit log sync failure doesn't block session start
-  console.warn("Commit log sync failed:", err instanceof Error ? err.message : String(err));
+  console.warn(
+    "Commit log sync failed: " +
+      sanitizeInput(err instanceof Error ? err.message : String(err)) +
+      ". Fix: node scripts/seed-commit-log.js --sync"
+  );
 }
 
 // Rotate other state logs with archive-on-rotation (Findings 3, 6)
@@ -990,7 +1091,9 @@ try {
       warnings++;
     }
     if (s1Count > 10) {
-      console.log(`   🟡 S1: ${s1Count} high (threshold: 10)`);
+      console.log(
+        `   🟡 S1: ${s1Count} high (threshold: 10). Action: npm run debt:report --severity=S1`
+      );
     }
   } else {
     console.log("📊 TDMS: ⚠️ metrics not found — npm run debt:metrics");
@@ -1037,7 +1140,7 @@ try {
     const deltaStr = scoreDelta >= 0 ? `+${scoreDelta}` : `${scoreDelta}`;
     if (curIdx >= 0 && prevIdx >= 0 && curIdx - prevIdx >= 2) {
       console.log(
-        `   ⚠️ Health grade dropped ${previous.grade} → ${current.grade} (${deltaStr}pts)`
+        `   ⚠️ Health grade dropped ${previous.grade} → ${current.grade} (${deltaStr}pts). Action: run /alerts --full for details`
       );
       warnings++;
     } else if (curIdx >= 0 && prevIdx >= 0 && curIdx !== prevIdx) {

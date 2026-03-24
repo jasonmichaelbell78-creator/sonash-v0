@@ -1,7 +1,7 @@
 ---
 name: session-ecosystem-audit
 description: |
-  Comprehensive diagnostic of the Session Ecosystem — 16 categories across
+  Comprehensive diagnostic of the Session Ecosystem — 17 categories across
   5 domains with composite health scoring, trend tracking, patch suggestions,
   and interactive finding-by-finding walkthrough. Covers session lifecycle hooks,
   state persistence, compaction resilience layers, cross-session safety, and
@@ -155,6 +155,7 @@ Session Ecosystem Health: {grade} ({score}/100)  |  Trend: {sparkline} ({delta})
 │   Session End Completeness       │  {s}  │ {rating} │ {trend}      │
 │   Session Counter Accuracy       │  {s}  │ {rating} │ {trend}      │
 │   Session Documentation Freshness│  {s}  │ {rating} │ {trend}      │
+│   Passive Surfacing Compliance   │  {s}  │ {rating} │ {trend}      │
 ├──────────────────────────────────┼───────┼──────────┼──────────────┤
 │ D2: State Persistence & Handoff  │       │          │              │
 │   Handoff File Schema            │  {s}  │ {rating} │ {trend}      │
@@ -321,6 +322,7 @@ Stable:
 | Session End Completeness        | All /session-end sections backed by scripts/npm commands that exist      |
 | Session Counter Accuracy        | SESSION_CONTEXT.md counter matches commit-log.jsonl session numbers      |
 | Session Documentation Freshness | SESSION_CONTEXT.md within limits: line count, staleness, section quality |
+| Passive Surfacing Compliance    | Warnings have action paths, HIGH→state flags, MEDIUM→JSONL, no wallpaper |
 
 ### Domain 2: State Persistence & Handoff (25% weight)
 
@@ -360,7 +362,7 @@ Stable:
 
 Internal benchmarks are defined in `scripts/lib/benchmarks.js`. Each category
 scores 0-100 with ratings: good (90+), average (70-89), poor (<70). The
-composite grade uses weighted average across all 16 categories with domain
+composite grade uses weighted average across all 17 categories with domain
 weights: D1=20%, D2=25%, D3=20%, D4=15%, D5=20%.
 
 ---

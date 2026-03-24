@@ -73,8 +73,16 @@ if [ -n "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "main" ] && [ "$BRANCH_NAME" != 
       exit 1
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_STRONG" ]; then
       echo "  ⚠️  PR CREEP WARNING: $COMMIT_COUNT commits on this branch — PR strongly recommended" >&3
+      node scripts/append-hook-warning.js --hook=pre-commit --type=pr-creep --severity=warning \
+        --message="$COMMIT_COUNT commits on branch — PR strongly recommended" \
+        --action="Create PR: gh pr create" \
+        || true
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_WARN" ]; then
-      echo "  📋 Branch has $COMMIT_COUNT commits — consider creating a PR soon" >&3
+      echo "  📋 Branch has $COMMIT_COUNT commits — Action: create a PR with \`gh pr create\`" >&3
+      node scripts/append-hook-warning.js --hook=pre-commit --type=pr-creep --severity=info \
+        --message="$COMMIT_COUNT commits on branch" \
+        --action="Create PR: gh pr create" \
+        || true
     fi
   fi
 fi
@@ -375,6 +383,10 @@ if [ "$RUN_PATTERNS" -eq 1 ]; then
   elif [ "$PATTERN_EXIT" -eq 2 ]; then
     echo "  ⚠️ Pattern compliance check errored (non-blocking)"
     tail -5 "$PATTERNS_TMP"
+    node scripts/append-hook-warning.js --hook=pre-commit --type=pattern-error --severity=warning \
+      --message="Pattern compliance check errored" \
+      --action="Investigate: node scripts/check-pattern-compliance.js --staged" \
+      || true
     echo "pattern-compliance|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
     # Exit 0: no critical violations (may have warnings)
@@ -572,6 +584,10 @@ else
         mv DOCUMENTATION_INDEX.md.bak DOCUMENTATION_INDEX.md
       fi
       echo "  ⚠️ Documentation index generation failed, original preserved (non-blocking)"
+      node scripts/append-hook-warning.js --hook=pre-commit --type=doc-index --severity=warning \
+        --message="Documentation index generation failed" \
+        --action="Run: npm run docs:index" \
+        || true
       CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
       if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
       echo "doc-index|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"

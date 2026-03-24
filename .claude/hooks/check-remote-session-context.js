@@ -240,12 +240,31 @@ function main() {
     console.error(`Last Updated: ${sanitizeInput(newerDate)}`);
     console.error("");
     console.error("The remote branch has newer session context.");
-    console.error("Consider checking out or merging that branch,");
-    console.error("or manually update SESSION_CONTEXT.md.");
+    console.error("Action: check out or merge that branch to sync session context.");
     console.error("");
     console.error(`To view: git show ${sanitizeInput(newerBranch)}:SESSION_CONTEXT.md`);
     console.error(`To merge: git merge ${sanitizeInput(newerBranch)}`);
     console.error("━".repeat(40));
+
+    // Guardrail #6: Persist warning for /alerts acknowledgment tracking
+    try {
+      const warningScript = path.join(projectDir, "scripts", "append-hook-warning.js");
+      const safeBranch = sanitizeInput(newerBranch);
+      execFileSync(
+        "node",
+        [
+          warningScript,
+          "--hook=session-start",
+          "--type=session-context-drift",
+          "--severity=warning",
+          `--message=Remote branch has newer session context (session ${newerCounter} vs local ${localCounter})`,
+          `--action=Run: git merge ${safeBranch} or review with git show ${safeBranch}:SESSION_CONTEXT.md`,
+        ],
+        { cwd: projectDir, timeout: 5000, stdio: "ignore" }
+      );
+    } catch {
+      /* best-effort — do not block hook on warning persistence failure */
+    }
   }
 
   console.log("ok");

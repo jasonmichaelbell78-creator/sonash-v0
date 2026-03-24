@@ -1012,7 +1012,7 @@ _Uncategorized_
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Decision Record: Passive Surfacing Remediation](.planning/passive-surfacing-remediation/DECISIONS.md) | -                                                               | ↓0 ↑0      | 2026-03-17    |
 | [Diagnosis: Passive Surfacing Remediation](.planning/passive-surfacing-remediation/DIAGNOSIS.md)       | -                                                               | ↓0 ↑0      | 2026-03-17    |
-| [Implementation Plan: Passive Surfacing Remediation](.planning/passive-surfacing-remediation/PLAN.md)  | Fix 33 passive surfacing violations across 8 files to achiev... | ↓0 ↑0      | 2026-03-17    |
+| [Implementation Plan: Passive Surfacing Remediation](.planning/passive-surfacing-remediation/PLAN.md)  | Fix 33 passive surfacing violations across 8 files to achiev... | ↓0 ↑0      | 2026-03-24    |
 
 ### .planning > plan-orchestration (Tier 4)
 

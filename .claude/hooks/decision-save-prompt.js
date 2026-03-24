@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-/* global process, console */
+/* global process, console, require */
+/* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * decision-save-prompt.js - PostToolUse hook for decision documentation
  *
@@ -11,6 +12,9 @@
  * - Action: PROMPT (not block)
  * - Time Cost: +10ms per AskUserQuestion
  */
+
+const { execFileSync } = require("node:child_process");
+const path = require("node:path");
 
 // Parse arguments
 const arg = process.argv[2] || "";
@@ -88,8 +92,10 @@ if (shouldPrompt) {
   console.error("");
   console.error("\ud83d\udcdd  DECISION DOCUMENTATION REMINDER");
   console.error("\u2501".repeat(35));
-  console.error("Multi-option decision detected. Consider documenting in:");
-  console.error("  docs/SESSION_DECISIONS.md");
+  console.error("Multi-option decision detected.");
+  console.error(
+    "Action: Document decision in docs/SESSION_DECISIONS.md or acknowledge with /alerts"
+  );
   console.error("");
   console.error("Template:");
   console.error("  ## Decision: [Topic]");
@@ -100,6 +106,26 @@ if (shouldPrompt) {
   console.error("");
   console.error("See: CLAUDE.md Section 7 for decision documentation policy");
   console.error("\u2501".repeat(35));
+
+  // Guardrail #6: Persist warning for /alerts acknowledgment tracking
+  try {
+    const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+    const warningScript = path.join(projectDir, "scripts", "append-hook-warning.js");
+    execFileSync(
+      "node",
+      [
+        warningScript,
+        "--hook=post-tool-use",
+        "--type=decision-documentation",
+        "--severity=info",
+        "--message=Multi-option decision detected without documentation",
+        "--action=Document decision in docs/SESSION_DECISIONS.md or acknowledge with /alerts",
+      ],
+      { cwd: projectDir, timeout: 5000, stdio: "ignore" }
+    );
+  } catch {
+    /* best-effort — do not block hook on warning persistence failure */
+  }
 }
 
 // Always succeed

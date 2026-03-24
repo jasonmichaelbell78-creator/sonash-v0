@@ -184,7 +184,8 @@ function runContextTracking() {
     warnings.push({
       type: "large_file",
       message: `File has ${lineCount} lines (>${SINGLE_FILE_LINE_LIMIT})`,
-      suggestion: "Consider using offset/limit parameters for large files",
+      suggestion:
+        "Fix: Re-read with limit parameter, e.g., Read(file_path, {offset: 0, limit: 500})",
     });
   }
 
@@ -193,7 +194,7 @@ function runContextTracking() {
     warnings.push({
       type: "many_files",
       message: `${contextState.filesRead.length} files read this session (>=${SESSION_FILE_LIMIT})`,
-      suggestion: "Consider using /save-context to preserve important context to MCP memory",
+      suggestion: "Action: Run /save-context or /checkpoint to preserve context before compaction",
     });
     contextState.warningShown = true;
     // Save state with warning flag
@@ -212,7 +213,6 @@ function runContextTracking() {
     }
 
     console.error("");
-    console.error("Tip: Use /save-context to save to MCP memory before compaction");
     console.error("\u2501".repeat(28));
   }
 }

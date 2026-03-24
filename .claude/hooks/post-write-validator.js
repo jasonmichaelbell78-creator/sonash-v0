@@ -5,13 +5,13 @@
  * post-write-validator.js - Consolidated PostToolUse hook for Write/Edit/MultiEdit
  *
  * Replaces 10 separate hooks with ONE Node process (~800ms saved on Windows):
- *   1. checkRequirements     — agent suggestions based on file type (SUGGEST)
+ *   1. (removed)             — was checkRequirements, now handled by agentTriggerEnforcer
  *   2. auditS0S1             — S0/S1 audit JSONL validation (WARN/BLOCK, Write only)
  *   3. patternCheck          — inline pattern compliance (WARN)
  *   4. componentSizeCheck    — React component size limit (WARN)
  *   5. firestoreWriteBlock   — direct Firestore write prevention (BLOCK)
  *   6. testMockingValidator  — bad test mocking prevention (BLOCK)
- *   7. appCheckValidator     — missing App Check in Cloud Functions (WARN)
+ *   7. appCheckValidator     — missing App Check in Cloud Functions (WARN, suppressed while disabled)
  *   8. typescriptStrictCheck — `any` type usage (WARN)
  *   9. repositoryPatternCheck — Firestore queries in components (WARN)
  *  10. agentTriggerEnforcer  — track modifications, suggest agents (SUGGEST)
@@ -536,10 +536,11 @@ function componentSizeCheck() {
     console.error(`File: ${filePath}`);
     console.error(`Lines: ${lineCount} (threshold: ${threshold})`);
     console.error("");
-    console.error("Consider splitting into smaller components:");
-    console.error("  - Extract sub-components for distinct UI sections");
-    console.error("  - Move business logic to custom hooks");
-    console.error("  - Extract utility functions to separate files");
+    console.error("This component exceeds the size threshold and must be refactored:");
+    console.error(`  Fix: Run /code-reviewer for refactoring guidance on ${filePath}`);
+    console.error(`  Fix: Extract sub-components for distinct UI sections`);
+    console.error(`  Fix: Move business logic to custom hooks in hooks/ directory`);
+    console.error(`  Fix: Extract utility functions to lib/ or utils/ files`);
     console.error("");
     console.error("See: docs/agent_docs/CODE_PATTERNS.md for component patterns");
     console.error("\u2501".repeat(28));
@@ -549,6 +550,22 @@ function componentSizeCheck() {
 // ─── Validator 7: appCheckValidator (WARN) ───────────────────────────────────
 
 function appCheckValidator() {
+  // App Check is currently DISABLED per ROADMAP.md M2.
+  // Suppress this validator entirely to avoid wallpaper warnings.
+  // Re-enable when App Check is activated by setting APP_CHECK_ENABLED=true
+  // in .claude/hooks/.agent-trigger-state.json or environment.
+  const stateFile = path.join(projectDir, ".claude/hooks/.agent-trigger-state.json");
+  let appCheckEnabled = process.env.APP_CHECK_ENABLED === "true";
+  if (!appCheckEnabled) {
+    try {
+      const stateData = JSON.parse(fs.readFileSync(stateFile, "utf8"));
+      appCheckEnabled = stateData.appCheckEnabled === true;
+    } catch {
+      // State file unavailable — App Check remains disabled
+    }
+  }
+  if (!appCheckEnabled) return;
+
   if (!/^functions\/src\/.*\.ts$/.test(filePath)) return;
   if (/\.(test|spec)\.ts$/.test(filePath)) return;
 
@@ -570,16 +587,15 @@ function appCheckValidator() {
     console.error("\u2501".repeat(25));
     console.error(`File: ${filePath}`);
     console.error("");
-    console.error("Cloud Function uses onCall but may not verify App Check.");
+    console.error("Cloud Function uses onCall but does not verify App Check.");
     console.error("");
-    console.error("When App Check is re-enabled, add verification:");
-    console.error("  if (!context.app) {");
-    console.error('    throw new HttpsError("failed-precondition", "App Check required");');
-    console.error("  }");
+    console.error("  Fix: Add App Check verification to this function:");
+    console.error("    if (!context.app) {");
+    console.error('      throw new HttpsError("failed-precondition", "App Check required");');
+    console.error("    }");
     console.error("");
-    console.error("Or use the withSecurityChecks wrapper which handles this.");
+    console.error("  Fix: Or wrap with withSecurityChecks which handles App Check.");
     console.error("");
-    console.error("Note: App Check is currently DISABLED per ROADMAP.md M2.");
     console.error("See: docs/reviews/2026-Q1/canonical/tier2-output/APP_CHECK_REENABLE_PLAN.md");
     console.error("\u2501".repeat(25));
   }
@@ -629,14 +645,15 @@ function typescriptStrictCheck() {
     console.error("");
     for (const v of violations.slice(0, 5)) {
       console.error(`  Line ${v.line}: ${v.snippet}`);
+      console.error(`    Fix: Replace 'any' with proper type at line ${v.line} in ${filePath}`);
     }
     if (violations.length > 5) console.error(`  ... and ${violations.length - 5} more`);
     console.error("");
-    console.error("Suggestions:");
-    console.error("  - Use `unknown` instead of `any` when type is truly unknown");
-    console.error("  - Define proper types/interfaces");
-    console.error("  - Use generics for flexible typing");
-    console.error("  - Add eslint-disable comment if `any` is intentional");
+    console.error("Remediation options:");
+    console.error("  Fix: Use 'unknown' instead of 'any' when type is truly unknown");
+    console.error("  Fix: Define proper types/interfaces in types/ directory");
+    console.error("  Fix: Use generics for flexible typing");
+    console.error("  Fix: Add eslint-disable comment with justification if 'any' is intentional");
     console.error("");
     console.error("See: tsconfig.json strict mode settings");
     console.error("\u2501".repeat(35));
@@ -713,6 +730,9 @@ function repositoryPatternCheck() {
     console.error("Violations:");
     for (const v of violations.slice(0, 3)) {
       console.error(`  Line ${v.line}: ${v.method}() - ${v.snippet}`);
+      console.error(
+        `    Fix: Move ${v.method}() call at line ${v.line} to lib/firestore-service.ts`
+      );
     }
     if (violations.length > 3) console.error(`  ... and ${violations.length - 3} more`);
     console.error("");
@@ -728,50 +748,10 @@ function repositoryPatternCheck() {
   }
 }
 
-// ─── Validator 1: checkRequirements (SUGGEST) ────────────────────────────────
-
-function checkRequirements() {
-  const isTestDir = /__tests__|\/test\/|\/tests\/|\/spec\//.test(pathLower);
-
-  const securityKeywordsBase =
-    /(^|[^a-z0-9])(auth|token|credential|secret|password|apikey|api-key|jwt|oauth|session|encrypt|crypto)([^a-z0-9]|$)/;
-  const securityKeywordsExtended =
-    /(^|[^a-z0-9])(auth|token|credential|secret|password|apikey|api-key|jwt|oauth|session|encrypt|crypto|keys?|cert|certificate|ssl|tls|hash|hmac)([^a-z0-9]|$)/;
-  const securityFilenames = /^(\.env|secrets|credentials|auth|token|keys?|cert|certificate)/;
-
-  const isSecuritySensitive = isWriteTool
-    ? securityKeywordsBase.test(pathLower)
-    : securityKeywordsExtended.test(pathLower) || securityFilenames.test(filename);
-
-  const hasSensitiveName =
-    /(secret|credential|auth|key|token|password)/.test(filename) || filename.startsWith(".env");
-
-  let suggestion = "";
-
-  if (isWriteTool) {
-    if (isTestFile)
-      suggestion = "POST-TASK: SHOULD run test-engineer agent to validate test strategy";
-    else if (isSecuritySensitive)
-      suggestion = "POST-TASK: MUST run security-auditor agent before committing";
-    else if (isCodeFile) suggestion = "POST-TASK: MUST run code-reviewer agent before committing";
-    else if (isMarkdownFile)
-      suggestion = "POST-TASK: SHOULD run technical-writer agent for quality check";
-    else if (isConfigFile && hasSensitiveName)
-      suggestion = "POST-TASK: SHOULD review for sensitive data exposure";
-  } else {
-    if (isSecuritySensitive)
-      suggestion = "POST-TASK: MUST run security-auditor agent before committing";
-    else if (isTestFile || isTestDir)
-      suggestion = "POST-TASK: SHOULD run test-engineer agent to validate tests";
-    else if (isCodeFile) suggestion = "POST-TASK: MUST run code-reviewer agent before committing";
-    else if (isMarkdownFile)
-      suggestion = "POST-TASK: SHOULD run technical-writer agent for quality check";
-  }
-
-  if (suggestion) {
-    console.error(suggestion);
-  }
-}
+// ─── Validator 1: checkRequirements — REMOVED ────────────────────────────────
+// Removed: redundant with agentTriggerEnforcer which provides the same agent
+// suggestions WITH dedup, state tracking, and phased rollout. checkRequirements
+// was fire-and-forget with no acknowledgment gate (Guardrail #6 violation).
 
 // ─── Validator 10: agentTriggerEnforcer (SUGGEST) ────────────────────────────
 
@@ -814,13 +794,15 @@ function checkPhaseTransition(state) {
   if (state.phase === 1 && (state.uses >= 50 || daysSinceFirstUse >= 30)) {
     return {
       message: `Agent Trigger Enforcer has been active for ${state.uses} uses / ${daysSinceFirstUse} days`,
-      recommendation: "Consider upgrading to Phase 2 (WARNING mode) for stronger guidance",
+      recommendation: "Upgrade to Phase 2 (WARNING mode) for stronger guidance",
+      fix: 'Fix: Set "phase": 2 in .claude/hooks/.agent-trigger-state.json',
     };
   }
   if (state.phase === 2 && (state.uses >= 100 || daysSinceFirstUse >= 60)) {
     return {
       message: `Agent Trigger Enforcer has been active for ${state.uses} uses / ${daysSinceFirstUse} days`,
-      recommendation: "Consider upgrading to Phase 3 (BLOCKING mode) for enforcement",
+      recommendation: "Upgrade to Phase 3 (BLOCKING mode) for enforcement",
+      fix: 'Fix: Set "phase": 3 in .claude/hooks/.agent-trigger-state.json',
     };
   }
   return null;
@@ -850,14 +832,10 @@ function updateReviewQueue(reviewQueuePath, normalizedFile, threshold) {
     console.error("\u{1F4CB}  DELEGATED REVIEW QUEUED");
     console.error("\u2501".repeat(30));
     console.error(`  ${reviewQueue.files.length} code files modified this session.`);
-    console.error("  Consider spawning a code-reviewer subagent:");
     console.error("");
-    console.error("  Task({ subagent_type: 'code-reviewer',");
-    console.error("    description: 'Review session changes',");
-    console.error("    prompt: '<diff of changes>' })");
-    console.error("");
-    console.error("  Or run /code-reviewer before committing.");
-    console.error("  Review queue: .claude/state/pending-reviews.json");
+    console.error("  Action required: Run /code-reviewer before committing.");
+    console.error(`  Fix: Run /code-reviewer to review ${reviewQueue.files.length} pending files`);
+    console.error("  Tracked in: .claude/state/pending-reviews.json");
     console.error("\u2501".repeat(30));
   }
 
@@ -962,7 +940,7 @@ function agentTriggerEnforcer() {
   // Output suggestions
   if (newAgents.length > 0) {
     console.error("");
-    console.error("\u{1F4A1}  AGENT SUGGESTION (Phase 1)");
+    console.error("\u{1F4A1}  AGENT SUGGESTION [Phase 1 \u2014 non-blocking]");
     console.error("\u2501".repeat(28));
     console.error(`File: ${filePath}`);
     console.error("");
@@ -971,8 +949,9 @@ function agentTriggerEnforcer() {
       console.error(`  \u2192 ${agent.agent}: ${agent.description}`);
     }
     console.error("");
-    console.error("Invoke with: Task tool using the agent type");
-    console.error("Or use /code-reviewer skill after completing changes");
+    console.error("  Fix: Invoke with Task tool using the agent type");
+    console.error("  Fix: Or run /code-reviewer skill after completing changes");
+    console.error("  Tracked in: .claude/hooks/.agent-trigger-state.json");
     console.error("\u2501".repeat(28));
   }
 
@@ -982,14 +961,13 @@ function agentTriggerEnforcer() {
     console.error("\u2501".repeat(35));
     console.error(phaseTransition.message);
     console.error("");
-    console.error(`Recommendation: ${phaseTransition.recommendation}`);
+    console.error(`Action required: ${phaseTransition.recommendation}`);
+    console.error(`  ${phaseTransition.fix}`);
     console.error("");
     console.error("Current phases:");
     console.error("  Phase 1 (current): SUGGEST - non-blocking suggestions");
     console.error("  Phase 2: WARN - prominent warnings, still non-blocking");
     console.error("  Phase 3: BLOCK - require agent invocation before push");
-    console.error("");
-    console.error("To upgrade, update agent-trigger-enforcer.js phase config");
     console.error("\u2501".repeat(35));
   }
 
@@ -1035,8 +1013,7 @@ runValidator("appCheckValidator", appCheckValidator);
 runValidator("typescriptStrictCheck", typescriptStrictCheck);
 runValidator("repositoryPatternCheck", repositoryPatternCheck);
 
-// SUGGEST validators
-runValidator("checkRequirements", checkRequirements);
+// SUGGEST validators (checkRequirements removed — redundant with agentTriggerEnforcer)
 runValidator("agentTriggerEnforcer", agentTriggerEnforcer);
 runValidator("testRegistryReminder", testRegistryReminder);
 
@@ -1061,9 +1038,35 @@ function testRegistryReminder() {
       }
     });
     if (!found) {
-      console.error(
-        `[suggest] New test file created: ${sanitizeInput(filePath)}. Run \`npm run tests:registry\` to update the test registry.`
+      console.error(`[suggest] New test file not in registry: ${sanitizeInput(filePath)}`);
+      console.error(`  Fix: Run \`npm run tests:registry\` to update the test registry.`);
+
+      // Track to state file so /session-end can verify registry was updated
+      const pendingRegistryPath = path.join(
+        projectDir,
+        ".claude",
+        "state",
+        "pending-test-registry.json"
       );
+      try {
+        let pending = { files: [], lastUpdated: null };
+        try {
+          pending = JSON.parse(fs.readFileSync(pendingRegistryPath, "utf8"));
+          if (!Array.isArray(pending.files)) pending.files = [];
+        } catch {
+          // Use default
+        }
+        if (!pending.files.includes(normalizedFilePath)) {
+          pending.files.push(normalizedFilePath);
+        }
+        pending.lastUpdated = new Date().toISOString();
+        if (isSafeToWrite(pendingRegistryPath)) {
+          fs.mkdirSync(path.dirname(pendingRegistryPath), { recursive: true });
+          fs.writeFileSync(pendingRegistryPath, JSON.stringify(pending, null, 2));
+        }
+      } catch {
+        // State tracking failed — warning was still emitted
+      }
     }
   } catch {
     // Registry not readable, skip

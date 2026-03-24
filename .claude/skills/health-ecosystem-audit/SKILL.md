@@ -1,7 +1,7 @@
 ---
 name: health-ecosystem-audit
 description: >-
-  Comprehensive diagnostic of the health monitoring ecosystem — 25 categories
+  Comprehensive diagnostic of the health monitoring ecosystem — 26 categories
   across 6 domains with composite health scoring, trend tracking, live test
   execution, patch suggestions, and interactive finding-by-finding walkthrough.
 ---
