@@ -281,6 +281,7 @@ Stable:
 | Cooldown State Management     | healthy_pct           | 100%  | 80%  | 50%  | higher-is-better |
 | Warning Lifecycle Consistency | consistent_pct        | 100%  | 85%  | 60%  | higher-is-better |
 | Score Degradation Detection   | accurate_pct          | 100%  | 80%  | 50%  | higher-is-better |
+| Passive Surfacing Compliance  | compliant_pct         | 100%  | 80%  | 50%  | higher-is-better |
 
 Staleness guard: benchmarks.js uses `HMS_STALENESS_HOURS` env var (default: 24h)
 for CI result freshness (D#52).
