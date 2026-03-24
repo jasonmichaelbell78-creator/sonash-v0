@@ -39,7 +39,7 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Session Tracking
 
-**Current Session Count**: 236 (since Jan 1, 2026)
+**Current Session Count**: 237 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -100,7 +100,7 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 | **Custom Statusline**           | READY     | Go 1.23.6 installed, fully isolated, float work    |
 | **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1         |
 
-**Current Branch**: `plan-32426`
+**Current Branch**: `planning-32426`
 
 **Test Status**: 3543 tests pass, 0 fail, 6 skip (2 test files deleted in
 cleanup)

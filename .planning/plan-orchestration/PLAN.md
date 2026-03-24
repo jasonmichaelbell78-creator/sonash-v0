@@ -59,9 +59,9 @@ challenges, decisions, and plan artifacts on main. **Depends on:** Nothing.
 
 ## Wave 0: S0 Debt Triage + Repo Cleanup (1-2 sessions)
 
-### Step 1: S0 Pre-Verification (CL agents)
+### Step 1: S0 Pre-Verification (CL Protocol Phase D)
 
-Per D6, D24. Spawn CL verification agents to triage the 8 unresolved S0 items
+Per D6, D24. Run **CL-PROTOCOL.md Phase D** to triage the 8 unresolved S0 items
 before any fixes. Agents must go deeper than grep — inspect actual code paths,
 test behavior, check if vulnerabilities are exploitable in context.
 
@@ -121,11 +121,11 @@ Execute fixes for S0 items classified as FIX NOW in Step 1.
 
 ---
 
-### Step 4: S0 Post-Verification (CL agents)
+### Step 4: S0 Post-Verification (CL Protocol Phase V)
 
-Per D6, D25. Spawn CL agents to verify S0 fixes are effective. Must be
-functional verification — not grep for removed code, but proof the vulnerability
-is actually closed.
+Per D6, D25. Run **CL-PROTOCOL.md Phase V** to verify S0 fixes are effective.
+Must be functional verification — not grep for removed code, but proof the
+vulnerability is actually closed.
 
 **Done when:** Each fix verified with evidence. Any failed verifications
 escalated for re-fix or deferral. **Depends on:** Step 3.
@@ -158,10 +158,10 @@ Per D1, D5. WIP=1 per session. Session priority order:
 4. **cli-tools** (must wait for PS session-start.js)
 5. **custom-statusline** (fully independent, lowest priority)
 
-### Step 6: Wave 1 Pre-Verification (CL agents)
+### Step 6: Wave 1 Pre-Verification (CL Protocol Phase D)
 
-Per D24. Before starting Wave 1, verify key plan claims against current codebase
-state:
+Per D24. Run **CL-PROTOCOL.md Phase D** before starting Wave 1. Verify key plan
+claims against current codebase state:
 
 - agent-env: Phases 1-3 still marked done? Phase 4 entry criteria met?
 - passive-surfacing: 33 violations still present? session-start.js unchanged
@@ -208,11 +208,12 @@ Per D5, D9, D22. WIP=1 per session, pick from priority list.
 
 ---
 
-### Step 8: Wave 1a Mid-Audit
+### Step 8: Wave 1a Mid-Audit (CL Protocol Phase V)
 
-Per D26. Medium audit — multiple plans modifying shared files.
+Per D26. Run **CL-PROTOCOL.md Phase V** — medium audit, multiple plans modifying
+shared files.
 
-CL agents verify:
+Phase V agents verify:
 
 - session-start.js: PS changes functional (not just present)
 - `.husky/pre-commit`: section ownership labels in place, hooks still work
@@ -260,11 +261,12 @@ mid-audit pass.
 
 ---
 
-### Step 10: Wave 1 Final Audit
+### Step 10: Wave 1 Final Audit (CL Protocol Phase V + Code-Reviewer)
 
-Per D26. Heavy audit — covers all Wave 1 work before SWS gate.
+Per D26. Run **CL-PROTOCOL.md Phase V** — heavy audit covering all Wave 1 work
+before SWS gate.
 
-**CL agents verify (multi-level, per D25):**
+**Phase V agents verify (multi-level, per D25):**
 
 - agent-env ALL 5 phases complete and functional (not just "done" markers)
 - session-start.js: all 3 plans' changes work together
@@ -285,9 +287,9 @@ plans complete.
 
 ## Wave 2: SWS CANON (6-10 sessions)
 
-### Step 11: SWS Pre-Verification (CL agents)
+### Step 11: SWS Pre-Verification (CL Protocol Phase D)
 
-Per D24. Before starting SWS, verify:
+Per D24. Run **CL-PROTOCOL.md Phase D** before starting SWS. Verify:
 
 - Agent-env all 5 phases truly complete (functional check, not grep)
 - Passive-surfacing 33 violations resolved (SWS won't re-flag them)
