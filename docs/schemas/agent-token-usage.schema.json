@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "agent-token-usage.schema.json",
+  "title": "Agent Token Usage Record",
+  "description": "Schema for tracking per-agent token consumption. Data source: TBD — Claude Code does not currently expose per-agent token counts. This schema defines the target format for when token data becomes available.",
+  "type": "object",
+  "properties": {
+    "agent": {
+      "type": "string",
+      "description": "Agent name (matches agent_name in invocation schema)"
+    },
+    "team": {
+      "type": ["string", "null"],
+      "description": "Team name if agent was part of a team, null otherwise"
+    },
+    "model": {
+      "type": "string",
+      "description": "Model used (e.g., claude-sonnet-4-20250514, claude-opus-4-20250514)"
+    },
+    "tokens": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total tokens consumed (input + output)"
+    },
+    "input_tokens": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Input/prompt tokens consumed"
+    },
+    "output_tokens": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Output/completion tokens consumed"
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Wall-clock duration in milliseconds"
+    },
+    "success": {
+      "type": "boolean",
+      "description": "Whether the agent invocation completed successfully"
+    },
+    "context": {
+      "type": "string",
+      "description": "Free-form context string (skill name, PR number, etc.)"
+    },
+    "session": {
+      "type": ["string", "null"],
+      "description": "Session identifier for grouping"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the invocation"
+    }
+  },
+  "required": ["agent", "model", "timestamp"],
+  "additionalProperties": false
+}

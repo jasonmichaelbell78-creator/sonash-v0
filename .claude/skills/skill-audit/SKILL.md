@@ -351,6 +351,10 @@ Files modified: [list] | Skill-creator gaps: [N]
 - **Output:** Updated skill files + decision record in state file (the state
   file IS the persistent decision record)
 - **Handoff:** Use `/skill-creator` for major rewrites after audit
+- **Team config:** When auditing 3+ skills in a batch, consider spawning the
+  `audit-review-team` (`.claude/teams/audit-review-team.md`) instead of
+  sequential solo invocations. The team's reviewer-fixer pipeline accumulates
+  cross-target patterns after 3+ targets and reuses proven fixes.
 
 ---
 

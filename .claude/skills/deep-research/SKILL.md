@@ -241,6 +241,9 @@ REFERENCE.md Section 19.
 
 - **Neighbors:** `/deep-plan`, `/convergence-loop`, `/skill-creator`,
   `/gsd:research-phase`, `/skill-audit`, `/superpowers`
+- **Team config:** `.claude/teams/research-plan-team.md` — when `/deep-research`
+  is followed by `/deep-plan` on the same topic, the research-plan-team can
+  coordinate the handoff (researcher → planner → verifier pipeline)
 - **References:** [REFERENCE.md](./REFERENCE.md) (templates, schemas, prompts,
   domains, management commands)
 - **Consumers:** claims.jsonl + sources.jsonl + metadata.json via adapters
