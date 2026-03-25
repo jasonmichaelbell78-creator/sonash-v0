@@ -161,7 +161,7 @@ function logEvent(eventData) {
   // Build entry with user identifier and outcome for audit trail compliance
   const entry = {
     timestamp: new Date().toISOString(),
-    user: process.env.USER || process.env.USERNAME || "unknown",
+    user: "redacted",
     outcome: "success", // Will be overridden if eventData includes outcome
     ...sanitizedData,
   };

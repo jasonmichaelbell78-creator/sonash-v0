@@ -29,13 +29,13 @@ function checkEcosystemIntegration() {
   // Review quality from review-metrics.jsonl
   const metricsPath = path.join(ROOT_DIR, ".claude", "state", "review-metrics.jsonl");
   const lines = safeReadLines(metricsPath);
-  const allMetrics = lines.map((l) => safeParse(l)).filter(Boolean);
+  const allMetrics = lines.map((l) => safeParse(l)).filter((v) => v && typeof v === "object");
 
   // Sort by timestamp descending to get genuinely recent entries
   // (file may be sorted by PR number after reconcile, not by time)
   allMetrics.sort((a, b) => {
-    const tA = Date.parse(a.timestamp || "");
-    const tB = Date.parse(b.timestamp || "");
+    const tA = Date.parse(typeof a.timestamp === "string" ? a.timestamp : "");
+    const tB = Date.parse(typeof b.timestamp === "string" ? b.timestamp : "");
     if (Number.isFinite(tB) && Number.isFinite(tA)) return tB - tA;
     if (Number.isFinite(tB)) return 1;
     if (Number.isFinite(tA)) return -1;

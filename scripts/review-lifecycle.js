@@ -896,7 +896,8 @@ function runReconcile() {
   let reconciledCount = 0;
   for (const entry of dedupedEntries) {
     const jsonlCount = reviewCountsNorm.get(String(entry.pr));
-    if (jsonlCount !== undefined && entry.review_rounds !== jsonlCount) {
+    if (jsonlCount === undefined) continue;
+    if (entry.review_rounds !== jsonlCount || entry.jsonl_review_records !== jsonlCount) {
       entry.review_rounds = jsonlCount;
       entry.jsonl_review_records = jsonlCount;
       entry.reconciled_at = new Date().toISOString();
@@ -1022,10 +1023,10 @@ function setExitCodeFromValidation(validateResult, reconcileResult) {
   }
   // Reconcile changed data — re-validate to check if issues are resolved
   const postResult = runValidate();
-  if (!postResult.valid) {
-    process.exitCode = 1;
-  } else {
+  if (postResult.valid) {
     log("  NOTE: Validation issues were auto-fixed by RECONCILE");
+  } else {
+    process.exitCode = 1;
   }
 }
 
