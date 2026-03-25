@@ -33,7 +33,12 @@
       "mcp__sonarcloud",
       "mcp__memory"
     ],
-    "deny": ["Bash(git push *)", "Bash(git reset --hard *)", "Bash(rm -rf *)"]
+    "deny": [
+      "Bash(git push --force *)",
+      "Bash(git push origin main)",
+      "Bash(git reset --hard *)",
+      "Bash(rm -rf *)"
+    ]
   },
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
