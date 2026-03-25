@@ -79,7 +79,7 @@
   },
   "execution_model": {
     "approach": "Sequential implementation + parallel research overlap",
-    "sequence": "6 phases (0-5), 18 ecosystems in dependency order within Phase 3",
+    "sequence": "6 phases (0-5), 19 ecosystems in dependency order within Phase 3 (R&D inserted as Step 3 per DA-1)",
     "checkpoints": [
       "Phase 1 gate: CANON schemas exist and validate",
       "Phase 3 Checkpoint 3.7: Core infrastructure complete (6 ecosystems)",
@@ -104,6 +104,16 @@
     "changelog": "changelog.jsonl"
   },
   "migration_note": "Decomposed from .claude/state/deep-plan.state.json per D77. JSONL files are now the canonical source.",
-  "updated": "2026-03-15T00:00:00.000Z",
-  "resume_instructions": "PLAN-v3.md is the active plan (approved, in execution). Phase 0 (Pre-Requisites) is in progress — Step 0.1 (/convergence-loop skill) complete. Steps 0.2-0.7 pending. After Phase 0, proceed to Phase 1 (CANON Foundation). See PLAN-v3.md for full phase/step details. DECISIONS-reeval.md contains re-evaluation decisions (Q1-Q33) alongside the original DECISIONS.md. DECISIONS_BY_PHASE.md and decisions-phase-map.json map decisions to plan phases."
+  "d67_amendment": {
+    "DA-1": {
+      "change": "Insert Research & Discovery as Step 3 (between Skills #2 and Hooks, now #4)",
+      "total_steps": 22,
+      "total_ecosystems": 19,
+      "plan_location": ".planning/research-discovery-standard/",
+      "approved": "2026-03-25",
+      "session": 238
+    }
+  },
+  "updated": "2026-03-25T00:00:00.000Z",
+  "resume_instructions": "PLAN-v3.md is the active plan (approved, in execution). Phase 0 (Pre-Requisites) is in progress — Step 0.1 (/convergence-loop skill) complete. Steps 0.2-0.7 pending. After Phase 0, proceed to Phase 1 (CANON Foundation). D67 amended (DA-1): R&D inserted as Step 3, all subsequent steps +1. R&D deep-plan at .planning/research-discovery-standard/. See PLAN-v3.md for full phase/step details. DECISIONS-reeval.md contains re-evaluation decisions (Q1-Q33) alongside the original DECISIONS.md. DECISIONS_BY_PHASE.md and decisions-phase-map.json map decisions to plan phases."
 }

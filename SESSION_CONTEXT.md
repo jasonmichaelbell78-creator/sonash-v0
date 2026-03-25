@@ -1,9 +1,9 @@
 # Session Context
 
-**Document Version**: 8.8 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.9 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-24 (Session #237 — Passive-surfacing complete + CL-PROTOCOL + mid-audit
-PASS)
+2026-03-25 (Session #238 — R&D Standard deep-plan + SWS integration +
+permissions fix)
 
 ## Purpose
 
@@ -30,10 +30,11 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-24 **Branch**: `planning-32426` **Working On**:
-Session #237 — PS remediation complete, Wave 1b next
+**Last Checkpoint**: 2026-03-25 **Branch**: `planning-32426` **Working On**:
+Session #238 — R&D Standard deep-plan complete, permissions fixed
 
-**Uncommitted Work**: None (session-end commit pending)
+**Uncommitted Work**: R&D deep-plan artifacts, SWS integration, permissions
+cleanup
 
 ---
 
@@ -48,6 +49,28 @@ Session #237 — PS remediation complete, Wave 1b next
 ---
 
 ## Recent Session Summaries
+
+**Session #238** (R&D STANDARD DEEP-PLAN + SWS INTEGRATION + PERMISSIONS FIX):
+
+- **Branch**: `planning-32426`
+- **R&D Standard deep-plan COMPLETE**: 27 decisions across 23 discovery
+  questions in 4 batches. Full CANON ecosystem design: 4-tier research model
+  (T0-T3), unified confidence labels, hook-based research detection, CL-PROTOCOL
+  artifact persistence, Context7 deployment to 9 agents, health checker,
+  enforcement manifest. L1 research (18 agents) consumed as input.
+- **SWS integration**: DA-1 amendment to D67 sequence — R&D inserted as Step 3.2
+  (between Skills and Hooks). PLAN-v3.md fully renumbered (3.1-3.23, was
+  3.1-3.22). coordination.json updated. Plan orchestrator Step 17.5 added.
+  Forward findings captured for CANON Foundation.
+- **Permissions fix**: Root cause found — `settings.local.json` had `Bash(2)`
+  entry overriding project allow list. Cleaned: local emptied, project list
+  upgraded (35 entries, added Skill/mv/rm/touch/grep/rg/cd, removed redundant
+  Read/Agent), user-global cleaned from 42 one-time commands to 6 patterns.
+- **Permissions research**: Mini deep-research into Claude Code permission
+  system. 5 config layers documented, deny-wins merge behavior, session vs
+  permanent persistence rules.
+- **3 forward findings**: teams need research, CANON needs global enforcement
+  layer, retroactive compliance scanning should be CANON-global.
 
 **Session #237** (PASSIVE-SURFACING REMEDIATION + PR #466 R2-R3 + CL-PROTOCOL):
 
@@ -75,26 +98,23 @@ Session #237 — PS remediation complete, Wave 1b next
 - Wave 0 executed (S0 triage + repo cleanup). Agent-env all 5 phases complete.
   SWS hard gate cleared. 8 commits. PR #465 merged.
 
-**Session #235** (PLAN ORCHESTRATION RESEARCH — SCRAPPED, REDO NEEDED):
-
-- Redone in Session #236 with full compliance (22 agents, L3).
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                            | Status    | Progress                                             |
-| ------------------------------- | --------- | ---------------------------------------------------- |
-| **Plan Orchestration**          | EXECUTING | Steps 1-8 DONE, Wave 1b next (Step 9)                |
-| **Repo Cleanup**                | COMPLETE  | Wave 0 done                                          |
-| **Agent Environment Analysis**  | COMPLETE  | All 5 phases done (Session #236)                     |
-| **Passive Surfacing**           | COMPLETE  | 14 root causes, 46 sites, CL-verified (Session #237) |
-| **Propagation Patterns**        | NEXT      | File triage done, session-start.js unblocked by PS   |
-| **CLI Tools Implementation**    | UNBLOCKED | PS session-start.js done → CLI can proceed           |
-| **Custom Statusline**           | READY     | Go 1.23.6 installed, fully isolated, float work      |
-| **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1           |
+| Item                            | Status    | Progress                                                          |
+| ------------------------------- | --------- | ----------------------------------------------------------------- |
+| **Plan Orchestration**          | EXECUTING | Steps 1-8 DONE, Wave 1b next (Step 9)                             |
+| **Repo Cleanup**                | COMPLETE  | Wave 0 done                                                       |
+| **Agent Environment Analysis**  | COMPLETE  | All 5 phases done (Session #236)                                  |
+| **Passive Surfacing**           | COMPLETE  | 14 root causes, 46 sites, CL-verified (Session #237)              |
+| **Propagation Patterns**        | NEXT      | File triage done, session-start.js unblocked by PS                |
+| **CLI Tools Implementation**    | UNBLOCKED | PS session-start.js done → CLI can proceed                        |
+| **Custom Statusline**           | READY     | Go 1.23.6 installed, fully isolated, float work                   |
+| **R&D Standard**                | PLANNED   | Deep-plan complete, 27 decisions. Executes at SWS 3.2             |
+| **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1. DA-1: R&D as Step 3.2 |
 
 **Current Branch**: `planning-32426`
 
@@ -194,6 +214,7 @@ npm run docs:check   # Documentation linting
 | Version | Date | Changes |
 | ------- | ---- | ------- |
 
+| 8.9 | 2026-03-25 | Session #238 — R&D deep-plan + SWS DA-1 + permissions fix |
 | 8.8 | 2026-03-24 | Session #236 — Wave 0 + agent-env complete, SWS gate
 cleared | | 8.7 | 2026-03-24 | Session #235 — Plan orchestration research
 scrapped, redo needed | | 8.6 | 2026-03-23 | Session #234 — CLI tools +

@@ -14,7 +14,7 @@
 ## Summary
 
 This plan implements the System-Wide Standardization overhaul: a phased
-transformation of 18 ecosystems from their current maturity levels to target
+transformation of 19 ecosystems from their current maturity levels to target
 levels. SWS is a **meta-plan** — it coordinates two child plans (Tooling
 Infrastructure, Code Quality Overhaul) and defines the cross-cutting
 infrastructure, sequencing, and gates that bind them together. Data
@@ -29,7 +29,7 @@ content.
 | 0     | Pre-Requisites            | Skill builds, bug fixes, folder cleanup                       |
 | 1     | CANON Foundation          | Schemas, migration mechanics, testing, views                  |
 | 2     | Meta-Pipeline Execution   | 2 child plans (overlapping with gate) + integration deep-plan |
-| 3     | Ecosystem Standardization | 18 ecosystems in dependency order                             |
+| 3     | Ecosystem Standardization | 19 ecosystems in dependency order                             |
 | 4     | L4 Testing                | Comprehensive test coverage across all systems                |
 | 5     | Final Verification        | End-to-end convergence audit                                  |
 
@@ -330,7 +330,7 @@ the step's stated scope.
 | Phase 0 | 7 steps, ~7 "Done when" criteria   | quick    | No               |
 | Phase 1 | 6 steps, ~6 criteria + schemas     | standard | No               |
 | Phase 2 | 2 child plans, meta-pipeline gates | standard | After Step 2.1   |
-| Phase 3 | 18 ecosystems, 3 checkpoints       | thorough | At 3.7 and 3.12  |
+| Phase 3 | 19 ecosystems, 3 checkpoints       | thorough | At 3.7 and 3.12  |
 | Phase 4 | 3 steps, test coverage metrics     | standard | No               |
 | Phase 5 | Final audit — IS the convergence   | N/A      | N/A              |
 
@@ -356,11 +356,11 @@ proceeding.
 The phased structure defines checkpoints at:
 
 - **Phase 1 gate:** CANON schemas exist and validate — child plans can proceed
-- **Phase 3 Checkpoint 3.7:** Core infrastructure complete (6 ecosystems + CANON
+- **Phase 3 Checkpoint 3.8:** Core infrastructure complete (6 ecosystems + CANON
   pilot validated)
-- **Phase 3 Checkpoint 3.12:** Data infrastructure standardized (4 additional
+- **Phase 3 Checkpoint 3.13:** Data infrastructure standardized (4 additional
   ecosystems)
-- **Phase 5:** End-to-end convergence audit across all 18 ecosystems
+- **Phase 5:** End-to-end convergence audit across all 19 ecosystems
 
 See individual phase sections for specific metrics at each checkpoint.
 
@@ -560,7 +560,7 @@ Create `.canon/` at repo root with foundational schemas and configuration.
 **Ecosystem registry (D2, D22):**
 
 Create `.canon/ecosystems.jsonl` with one line per ecosystem. Populate with all
-18 ecosystems from the assessment table in DECISIONS.md (Section 4). Schema uses
+19 ecosystems from the assessment table in DECISIONS.md (Section 4). Schema uses
 extensible-core (D22) so new fields can be added without breaking changes.
 
 **Tenets — first CANON artifact (D32):**
@@ -638,7 +638,7 @@ generation system deserves explicit treatment as a Phase 1 deliverable.
 
 - `.canon/scripts/generate-tenets-md.js` (from Step 1.1 tenet work)
 - `.canon/scripts/generate-ecosystem-matrix.js` — cross-ecosystem maturity
-  matrix view showing all 18 ecosystems with current/target levels, status,
+  matrix view showing all 19 ecosystems with current/target levels, status,
   effort, and owner
 - `.canon/scripts/generate-changelog-md.js` — changelog human-readable view
 
@@ -673,9 +673,9 @@ Write CANON's self-assessment to `.canon/ecosystems/canon/assessment.jsonl`.
 | Version | Trigger                                    | Gate                         |
 | ------- | ------------------------------------------ | ---------------------------- |
 | 0.1.0   | Phase 1 complete (schemas + foundation)    | Phase 1 gate passes          |
-| 0.2.0   | Phase 3 Checkpoint 3.7 (CANON pilot valid) | PR Review reaches L5         |
-| 0.3.0   | Phase 3 Checkpoint 3.12 (data infra)       | Data-tier ecosystems at L3+  |
-| 0.4.0   | Phase 3 complete (all 18 ecosystems)       | All ecosystems at target     |
+| 0.2.0   | Phase 3 Checkpoint 3.8 (CANON pilot valid) | PR Review reaches L5         |
+| 0.3.0   | Phase 3 Checkpoint 3.13 (data infra)       | Data-tier ecosystems at L3+  |
+| 0.4.0   | Phase 3 complete (all 19 ecosystems)       | All ecosystems at target     |
 | 1.0.0   | Phase 5 (final verification)               | End-to-end convergence audit |
 
 Tag: `canon-v0.1.0` when Phase 1 is complete.
@@ -902,8 +902,9 @@ execution task.
 
 ## Section 7: Phase 3 — Ecosystem Standardization
 
-**Complexity:** XL | **Sessions:** 20-30 | **Waves:** 18 ecosystems in
-dependency order | **Deliverables:** 18 standardized ecosystems at L3+ maturity
+**Complexity:** XL | **Sessions:** 24-36 | **Waves:** 19 ecosystems in
+dependency order (per DA-1) | **Deliverables:** 19 standardized ecosystems at
+L3+ maturity
 
 Per T13 (plan_as_you_go) — each ecosystem gets its own deep-plan when sequenced.
 This phase defines the sequence, gates, and per-ecosystem scope. CANON Phases
@@ -946,7 +947,7 @@ Phase 1 schemas are in place.
 
 **CANON Phase 2: Declarations** (per Q19: G4 → P2)
 
-- Ecosystem lifecycle declarations for all 18 ecosystems — filed as each
+- Ecosystem lifecycle declarations for all 19 ecosystems — filed as each
   ecosystem completes standardization
 - Selective migration (per Q25): `tenets.jsonl` and `directives.jsonl` to
   `.canon/` (enforcement-relevant). `decisions.jsonl`, `ideas.jsonl`,
@@ -981,7 +982,7 @@ Phase 1 schemas are in place.
 
 ---
 
-### Priority Tier (Steps 3.1-3.7) — Core Infrastructure
+### Priority Tier (Steps 3.1-3.8) — Core Infrastructure
 
 ---
 
@@ -1033,7 +1034,65 @@ gate active, health checker passing. 16-item checklist scorecard reviewed.
 
 ---
 
-#### Step 3.2: Hooks (L3 → L4)
+#### Step 3.2: Research & Discovery (L1 → L3) — DA-1 Amendment
+
+**Effort:** L (4-6 sessions) | **CANON composite:** Complexity L, Sessions 4-6,
+Waves 4 phases, Deliverables: 3 protocol docs, T19 expansion, guardrail #15,
+hook detection, CL-PROTOCOL persistence, unified confidence labels, Context7
+deployment, health checker, enforcement manifest, tests **Depends on:** Step 3.1
+(Skills — skill conventions inform R&D protocol)
+
+Per DA-1 (Session #238): R&D inserted as Step 3 in D67 sequence. Deep-plan
+complete at `.planning/research-discovery-standard/` (27 decisions, L1 research
+from 18 agents).
+
+R&D spans 4 core skills (deep-research, deep-plan, CL-PROTOCOL,
+convergence-loop), 14+ non-core skills, agents, teams, and hooks. Early
+placement ensures all later ecosystems benefit from standardized research
+practices.
+
+**Pre-implementation:**
+
+1. Deep-plan COMPLETE — `.planning/research-discovery-standard/PLAN.md`
+2. Register ecosystem in `.canon/ecosystems.jsonl`
+
+**Implementation (4 phases):**
+
+- **Phase 1:** 3 protocol docs (RDS-PROTOCOL.md, RDS-TOOLS+TEAMS.md,
+  RDS-VERIFICATION+ENFORCEMENT.md) at `.canon/ecosystems/research-discovery/`.
+  T19 expansion. CLAUDE.md guardrail #15. Unified confidence labels across 4
+  core systems. CLAUDE.md Sections 7+8 updates.
+- **Phase 2:** Hook research detection (Priority 5.5 in user-prompt-handler.js).
+  CL-PROTOCOL artifact persistence (JSONL). Zod schemas for .research/ files.
+  Tests.
+- **Phase 3:** Context7 deployment to 9 agents. development-team.md
+  (experimental). research-plan-team T3 opus override. External resource
+  investigation. CL-PROTOCOL moved under R&D governance.
+- **Phase 4:** Health checker (7 checks + retroactive compliance scan).
+  Enforcement manifest (4 gates). CANON registration at L3. Tests. Forward
+  findings to SWS.
+
+**Key deliverable files:**
+
+- `.canon/ecosystems/research-discovery/RDS-PROTOCOL.md` (to create)
+- `.canon/ecosystems/research-discovery/RDS-TOOLS+TEAMS.md` (to create)
+- `.canon/ecosystems/research-discovery/RDS-VERIFICATION+ENFORCEMENT.md` (to
+  create)
+- `.canon/ecosystems/research-discovery/CL-PROTOCOL.md` (moved from
+  plan-orchestration)
+- `.canon/ecosystems/research-discovery/enforcement.jsonl` (to create)
+- `scripts/health/check-research-discovery.js` (to create)
+- `scripts/schemas/research-metadata.schema.ts` (to create)
+- `scripts/schemas/research-index.schema.ts` (to create)
+- `scripts/schemas/cl-runs.schema.ts` (to create)
+
+**Done when:** R&D at L3, health checker passing, enforcement manifest active,
+all 4 core systems using unified confidence labels, hook detection operational.
+16-item checklist scorecard reviewed.
+
+---
+
+#### Step 3.3: Hooks (L3 → L4)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: schemas, enforcement manifest, contracts, health
@@ -1077,7 +1136,7 @@ reviewed.
 
 ---
 
-#### Step 3.3: PR Review — CANON Pilot (L4 → L5)
+#### Step 3.4: PR Review — CANON Pilot (L4 → L5)
 
 **Effort:** S (1-2 sessions) | **CANON composite:** Complexity S, Sessions 1-2,
 Waves 1, Deliverables: L5 assessment, CANON validation report **Depends on:**
@@ -1106,7 +1165,7 @@ v0.2.0.
 
 ---
 
-#### Step 3.4: Docs (L2 → L3)
+#### Step 3.5: Docs (L2 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: folder standards, dependency system, born-compliant
@@ -1153,7 +1212,7 @@ canonized, born-compliant doc template established. 16-item checklist reviewed.
 
 ---
 
-#### Step 3.5: Testing (L3 → L4)
+#### Step 3.6: Testing (L3 → L4)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: enforcement manifest, test schemas, health checker
@@ -1198,7 +1257,7 @@ schemas validate test config. 16-item checklist reviewed.
 
 ---
 
-#### Step 3.6: Sessions (L1 → L3)
+#### Step 3.7: Sessions (L1 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: session schemas, lifecycle, state persistence, health
@@ -1247,7 +1306,7 @@ validated, OV items E1/E2 implemented. 16-item checklist reviewed.
 
 ---
 
-#### Step 3.7: Priority Tier Checkpoint
+#### Step 3.8: Priority Tier Checkpoint
 
 **CHECKPOINT: Core infrastructure complete** (D67, D49)
 
@@ -1295,11 +1354,11 @@ ecosystems with confidence.
 
 ---
 
-#### Step 3.8: TDMS Stage 1 (L2 → L3)
+#### Step 3.9: TDMS Stage 1 (L2 → L3)
 
 **Effort:** XL-partial (6-10 sessions for this stage) | **CANON composite:**
 Complexity XL-partial, Sessions 6-10, Waves TBD, Deliverables: schemas for all
-TDMS data, monitoring, race condition fix **Depends on:** Step 3.7 (Priority
+TDMS data, monitoring, race condition fix **Depends on:** Step 3.8 (Priority
 Tier Checkpoint passed)
 
 Per D34 and directive #19, TDMS is critical and targets L5 across three stages.
@@ -1338,7 +1397,7 @@ per D54).
 
 ---
 
-#### Step 3.9: Scripts (L2 → L3)
+#### Step 3.10: Scripts (L2 → L3)
 
 **Effort:** L (6-10 sessions — 300+ scripts) | **CANON composite:** Complexity
 L, Sessions 6-10, Waves TBD, Deliverables: script standards, dead code audit,
@@ -1381,7 +1440,7 @@ checklist reviewed.
 
 ---
 
-#### Step 3.10: CI/CD (L1 → L3)
+#### Step 3.11: CI/CD (L1 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: workflow catalog, schemas, health checker **Depends
@@ -1421,7 +1480,7 @@ D4 implemented. 16-item checklist reviewed.
 
 ---
 
-#### Step 3.11: Alerts (L2 → L4)
+#### Step 3.12: Alerts (L2 → L4)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: alert schemas, enforcement manifest, meta-health
@@ -1464,7 +1523,7 @@ manifest active. CAPTURE_MANIFEST Entry 1 items triaged and dispositioned.
 
 ---
 
-#### Step 3.12: Data Tier Checkpoint
+#### Step 3.13: Data Tier Checkpoint
 
 **CHECKPOINT: Data infrastructure standardized** (D67)
 
@@ -1499,11 +1558,11 @@ All of the following must pass:
 
 ---
 
-#### Step 3.13: Analytics (L1 → L3)
+#### Step 3.14: Analytics (L1 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: metric catalog, aggregation layer, dashboards **Depends
-on:** Step 3.12 (Data Tier Checkpoint passed)
+on:** Step 3.13 (Data Tier Checkpoint passed)
 
 Per D42, metrics and trend data are scattered across health checkers and audit
 outputs. No unified analytics layer.
@@ -1528,11 +1587,11 @@ operational, dashboards generated. 16-item checklist reviewed.
 
 ---
 
-#### Step 3.14: Agents (L2 → L3)
+#### Step 3.15: Agents (L2 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: agent schemas, lifecycle, invocation tracking **Depends
-on:** Step 3.12 (Data Tier Checkpoint — benefits from Skills L3)
+on:** Step 3.13 (Data Tier Checkpoint — benefits from Skills L3)
 
 Per D50, 35 agent definitions with structured patterns. Invocation tracking via
 JSONL exists.
@@ -1585,11 +1644,11 @@ checkpoint completed across 2 sessions.
 
 ---
 
-#### Step 3.15: Audits (L3 → L4+)
+#### Step 3.16: Audits (L3 → L4+)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: audit schemas, enforcement manifest, L5 pathway
-**Depends on:** Step 3.12 (Data Tier Checkpoint — audit agents benefit from
+**Depends on:** Step 3.13 (Data Tier Checkpoint — audit agents benefit from
 Agents L3)
 
 Per D51 and directive #26, Audits must reach L4 with L5 pathway designed in from
@@ -1624,11 +1683,11 @@ types, enforcement manifest active. 16-item checklist reviewed.
 
 ---
 
-#### Step 3.16: Archival/Rotation (L3 → L4)
+#### Step 3.17: Archival/Rotation (L3 → L4)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: archive schemas, enforcement manifest, lifecycle hooks
-**Depends on:** Step 3.12 (Data Tier Checkpoint — archival patterns from all
+**Depends on:** Step 3.13 (Data Tier Checkpoint — archival patterns from all
 data ecosystems)
 
 Per D48, archival patterns exist (JSONL rotation, review archival, state
@@ -1663,7 +1722,7 @@ reviewed.
 
 ---
 
-#### Step 3.17: TDMS Stage 2 (L3 → L4)
+#### Step 3.18: TDMS Stage 2 (L3 → L4)
 
 **Effort:** XL-partial (6-10 sessions) | **CANON composite:** Complexity
 XL-partial, Sessions 6-10, Waves TBD, Deliverables: enforcement manifest,
@@ -1692,7 +1751,7 @@ enforcement manifest and testing.
 
 ---
 
-#### Step 3.18: Roadmap & Execution (L2 → L3)
+#### Step 3.19: Roadmap & Execution (L2 → L3)
 
 **Effort:** L (6-10 sessions) | **CANON composite:** Complexity L, Sessions
 6-10, Waves TBD, Deliverables: input pipelines, dedupe automation, health
@@ -1740,7 +1799,7 @@ pipelines are missing (directive #21, Idea #26).
 
 ---
 
-#### Step 3.19: Frontend/App (L2 → L3)
+#### Step 3.20: Frontend/App (L2 → L3)
 
 **Effort:** M (3-5 sessions) | **CANON composite:** Complexity M, Sessions 3-5,
 Waves TBD, Deliverables: connection point contracts, boundary tests, health
@@ -1780,7 +1839,7 @@ in place. Adapted 16-item checklist reviewed.
 
 ---
 
-#### Step 3.20: Firebase/Backend (L1 → L3)
+#### Step 3.21: Firebase/Backend (L1 → L3)
 
 **Effort:** M-L (3-8 sessions) | **CANON composite:** Complexity M-L, Sessions
 3-8, Waves TBD, Deliverables: function catalog, API schemas, health checker
@@ -1819,13 +1878,13 @@ formalized, boundary tests in place. Adapted 16-item checklist reviewed.
 
 ---
 
-#### Step 3.21: Docs Verification Pass
+#### Step 3.22: Docs Verification Pass
 
 **Effort:** S (1-2 sessions) | **CANON composite:** Complexity S, Sessions 1-2,
 Waves 1, Deliverables: consistency audit, updated index **Depends on:** Step
-3.20 (all 18 ecosystems standardized)
+3.21 (all 19 ecosystems standardized)
 
-Per D67, this is a meta-check: are all 18 ecosystems' docs consistent? Staleness
+Per D67, this is a meta-check: are all 19 ecosystems' docs consistent? Staleness
 audit across all documentation produced during Steps 3.1-3.20.
 
 **Implementation:**
@@ -1841,7 +1900,7 @@ updated.
 
 ---
 
-#### Step 3.22: TDMS Stage 3 — Final Canonization (L4 → L5)
+#### Step 3.23: TDMS Stage 3 — Final Canonization (L4 → L5)
 
 **Effort:** XL-final (6-10 sessions) | **CANON composite:** Complexity XL-final,
 Sessions 6-10, Waves TBD, Deliverables: L5 canonization, full contract suite,
@@ -1874,9 +1933,9 @@ canonized.
 **Checkpoint #4 Validation — Overhaul Complete — Concrete Metrics:**
 
 Run comprehensive audit (D83): Tier 1 + Tier 2 + Tier 3 (summary) + Tier 4
-(full) across ALL 18 ecosystems. All of the following must pass:
+(full) across ALL 19 ecosystems. All of the following must pass:
 
-1. **Maturity targets met:** All 18 ecosystems at or above their target maturity
+1. **Maturity targets met:** All 19 ecosystems at or above their target maturity
    level as defined in DECISIONS.md assessment table.
 2. **Health universal green:** All 18 ecosystem health checkers passing.
 3. **Changelog completeness:** `.canon/changelog.jsonl` covers all steps,
@@ -1910,7 +1969,7 @@ overhaul completion validation (D83).
 
 ### Phase 3 Completion — CANON v0.4.0
 
-When Step 3.22 audit passes and all 18 ecosystems are at their target maturity
+When Step 3.22 audit passes and all 19 ecosystems are at their target maturity
 level: **promote CANON to v0.4.0** (D76). Tag `canon-v0.4.0`. Log in
 `.canon/changelog.jsonl`.
 
@@ -1926,7 +1985,7 @@ Per Q23 — L4 testing is an explicit planned phase with steps, deliverables, an
 done-when criteria. Not a vague future aspiration. L3 testing is handled during
 Code Quality (Phase 2 Step 2.2); this phase elevates all ecosystems to L4.
 
-**Entry gate:** Phase 3 (ecosystem standardization) complete. All 18 ecosystems
+**Entry gate:** Phase 3 (ecosystem standardization) complete. All 19 ecosystems
 at L3 test coverage or above. Meta-pipeline gates passed.
 
 ### Step 4.1: Test Infrastructure Audit
@@ -2010,7 +2069,7 @@ For each ecosystem (priority order):
   6. Record coverage delta in changelog
 ```
 
-**Done when:** All 18 ecosystems have L4 test coverage. CI runs the full suite.
+**Done when:** All 19 ecosystems have L4 test coverage. CI runs the full suite.
 No ecosystem has untested enforcement gates. Chaos tests cover all
 state-recovery scenarios identified in T9.
 
@@ -2085,7 +2144,7 @@ quantitative claim the plan makes.
 These are quantitative pass/fail gates. No subjective judgment. Each metric
 either passes or fails with specific evidence.
 
-1. **Maturity targets met:** All 18 ecosystems at or above their target maturity
+1. **Maturity targets met:** All 19 ecosystems at or above their target maturity
    level as defined in DECISIONS.md assessment table. Verified by running all 18
    health checkers and comparing output against target levels.
 
@@ -2337,7 +2396,7 @@ planning estimates, not commitments.
 | 0     | Prerequisites             | M          | 3-5        | 2       | /convergence-loop skill, folder consolidation, CLAUDE.md fixes, framework-repo archived, completed work verified                                                   |
 | 1     | CANON Foundation          | L          | 6-10       | 4       | CANON P1 schemas, P2 lifecycle declarations, P3 enforcement manifests, P4 governance rules, CANON v0.1.0                                                           |
 | 2     | Meta-Pipeline             | L          | 8-15       | 4+      | Integration deep-plan, Tooling plan executed (script audit, ratchet engine), CQ plan executed (L3 tests, patterns rationalized), 1 gate pass (DE already complete) |
-| 3     | Ecosystem Standardization | XL         | 20-30      | 18      | All 18 ecosystems at target maturity, per-ecosystem deep-plans, health checkers, enforcement manifests, CANON v0.2.0→v0.4.0, Checkpoints at 3.7 and 3.12           |
+| 3     | Ecosystem Standardization | XL         | 20-30      | 18      | All 19 ecosystems at target maturity, per-ecosystem deep-plans, health checkers, enforcement manifests, CANON v0.2.0→v0.4.0, Checkpoints at 3.7 and 3.12           |
 | 4     | L4 Testing                | L          | 6-10       | 3       | L4 test suite, coverage report, regression baseline, ratchet configuration, chaos/failure tests                                                                    |
 | 5     | Final Verification        | M          | 3-5        | 2       | Final audit report, maturity scorecard, CAPTURE_MANIFEST consumed, CANON v1.0.0                                                                                    |
 |       | **Total**                 |            | **~50-80** | **35+** |                                                                                                                                                                    |
@@ -2390,7 +2449,7 @@ flowchart TD
     end
 
     subgraph P3["Phase 3: Ecosystem Standardization"]
-        S3_eco["3.1-3.18: All 18 ecosystems"]
+        S3_eco["3.1-3.18: All 19 ecosystems"]
         S3_cp1["Checkpoint @ 3.7 — CANON v0.2.0"]
         S3_cp2["Checkpoint @ 3.12 — CANON v0.3.0"]
         S3_end["3.18 complete — CANON v0.4.0"]
@@ -2528,7 +2587,7 @@ All 16 material risks tracked and resolved:
 | ---- | ------------------------------------- | ---------------------------------------------------------------------- | ----------------------------- |
 | R1   | Cross-cutting impact map missing      | Forward-findings pipeline (Q30-Q31)                                    | Section 10                    |
 | R2   | Naming convention undefined           | Per-ecosystem deep-plan concern (T13)                                  | Phase 3 per-ecosystem         |
-| R3   | Pilot validation gate absent          | Step 3.3 (PR Review ecosystem) IS the pilot — Checkpoint 3.7 validates | Phase 3 Checkpoint 3.7        |
+| R3   | Pilot validation gate absent          | Step 3.4 (PR Review ecosystem) IS the pilot — Checkpoint 3.8 validates | Phase 3 Checkpoint 3.8        |
 | R4   | Room-for-growth gate undefined        | T6 enforcement via CANON Phase 3 enforcement manifests                 | Phase 1 Step 1.4              |
 | R5   | Health checker migration path unclear | Per-ecosystem during Phase 3 standardization                           | Phase 3 per-ecosystem         |
 | R6   | Audit skill integration undefined     | Step 3.15 (Audits ecosystem)                                           | Phase 3                       |
