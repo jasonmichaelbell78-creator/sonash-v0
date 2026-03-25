@@ -85,6 +85,7 @@ try {
 const cliArgs = new Set(process.argv.slice(2));
 const syncOnly = cliArgs.has("--sync-only");
 const validateOnly = cliArgs.has("--validate");
+const reconcileOnly = cliArgs.has("--reconcile");
 const renderOnly = cliArgs.has("--render");
 const dryRun = cliArgs.has("--dry-run");
 
@@ -805,15 +806,10 @@ function runReconcile() {
   }
 
   // Load both data sources
-  let metrics;
-  try {
-    metrics = readJsonl(REVIEW_METRICS_JSONL, { safe: true, quiet: true });
-  } catch (err) {
-    if (err && typeof err === "object" && err.code === "ENOENT") {
-      logStep("RECONCILE", "No review-metrics.jsonl found — nothing to reconcile");
-      return { deduped: 0, reconciled: 0, added: 0 };
-    }
-    logStep("RECONCILE", `Cannot read review-metrics.jsonl: ${sanitizeError(err)}`);
+  // safe: true makes readJsonl return [] on ENOENT (no separate catch needed)
+  const metrics = readJsonl(REVIEW_METRICS_JSONL, { safe: true, quiet: true });
+  if (metrics.length === 0) {
+    logStep("RECONCILE", "No metrics entries — nothing to reconcile");
     return { deduped: 0, reconciled: 0, added: 0 };
   }
 
@@ -865,6 +861,7 @@ function runReconcile() {
   }
 
   // ── Step 4: Write deduped + reconciled metrics file ───────────────────
+  // Dedup/reconcile already happened in-memory above; this guards the file write
   if (dedupedCount === 0 && reconciledCount === 0 && addedCount === 0) {
     logStep("RECONCILE", "Metrics already consistent — no changes needed");
     return { deduped: 0, reconciled: 0, added: 0 };
@@ -876,7 +873,7 @@ function runReconcile() {
   }
 
   // Sort by PR number for readability
-  dedupedEntries.sort((a, b) => (a.pr || 0) - (b.pr || 0));
+  dedupedEntries.sort((a, b) => (a.pr ?? 0) - (b.pr ?? 0));
 
   const output = dedupedEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
   try {
@@ -975,6 +972,11 @@ function main() {
       if (!result.valid) {
         process.exitCode = 1;
       }
+      return;
+    }
+
+    if (reconcileOnly) {
+      runReconcile();
       return;
     }
 
