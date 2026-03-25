@@ -161,3 +161,8 @@ functions/.next/
 # Deep Research intermediate artifacts
 .research/*/findings/
 .research/*/challenges/
+
+# Statusline Go binary (machine-specific compiled output)
+tools/statusline/sonash-statusline
+tools/statusline/sonash-statusline.exe
+tools/statusline/config.local.toml

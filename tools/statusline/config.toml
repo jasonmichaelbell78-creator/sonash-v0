@@ -1,0 +1,33 @@
+[general]
+separator = "│"
+lines = 3
+color_mode = "16"
+
+[weather]
+location = "Nashville,TN,US"
+units = "imperial"
+cache_ttl_minutes = 5
+
+[timezone]
+zone = "America/Chicago"
+format = "15:04 CST"
+
+[thresholds]
+context_yellow = 50
+context_orange = 65
+context_red = 80
+rate_limit_warning = 70
+rate_limit_critical = 90
+
+[cache]
+fetch_interval_minutes = 5
+retry_backoff = [1, 2, 5, 10]
+stale_indicator = "?"
+
+[placeholders]
+worktree = "wt:none"
+agent = "agent:none"
+task = "task:none"
+pr = "PR:none"
+ci = "CI:none"
+unavailable = "..."
