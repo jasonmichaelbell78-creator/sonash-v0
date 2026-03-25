@@ -2393,6 +2393,30 @@ had `*.state.json` blanket rule blocking new state files from being committed.
 
 ---
 
+### Review #500: PR #468 R2 — Mixed Gemini+Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** mixed (gemini+qodo)
+
+**Items:** 10 total (7 fixed, 0 deferred, 3 rejected)
+
+**Key Learnings:**
+
+1. **sanitizeError vs sanitizeInput for error logging** — Use
+   `sanitizeError(err)` (which redacts user paths) instead of
+   `sanitizeInput(err.message)`. The codebase has a dedicated error sanitizer —
+   always use it for catch blocks.
+
+2. **existsSync is a TOCTOU anti-pattern** — Never pre-check with `existsSync`
+   before reading. Wrap in try/catch and handle ENOENT. The file can disappear
+   between the existence check and the read.
+
+3. **Verify file references match implementation** — When documenting state file
+   paths, verify against the actual script that writes them. R1 fix introduced
+   wrong path for `lastCleared` (referenced `hook-warnings.json` but ack state
+   lives in `hook-warnings-ack.json`).
+
+---
+
 ### Review #499: PR #468 R1 — Qodo (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo

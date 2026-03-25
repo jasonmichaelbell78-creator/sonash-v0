@@ -228,6 +228,8 @@ function runAnalyze() {
   function suggestStderr(msg) {
     // Session-level dedup: each hint fires ONCE per 4-hour session window
     const dedupFile = path.join(HOOKS_DIR, ".suggest-dedup.json");
+    const WINDOW_MS = 4 * 60 * 60 * 1000;
+    const now = Date.now();
     let shown = {};
     try {
       shown = JSON.parse(fs.readFileSync(dedupFile, "utf8"));
@@ -235,11 +237,16 @@ function runAnalyze() {
       /* first run or corrupt file */
     }
 
+    // Prune stale entries to prevent unbounded growth
+    for (const [k, ts] of Object.entries(shown)) {
+      if (typeof ts !== "number" || now - ts > WINDOW_MS) delete shown[k];
+    }
+
     const key = msg.trim().substring(0, 60);
-    if (shown[key] && Date.now() - shown[key] < 4 * 60 * 60 * 1000) return;
+    if (shown[key] && now - shown[key] < WINDOW_MS) return;
 
     process.stderr.write(msg + "\n");
-    shown[key] = Date.now();
+    shown[key] = now;
 
     const tmpDedup = `${dedupFile}.tmp`;
     try {
@@ -253,7 +260,11 @@ function runAnalyze() {
       }
       fs.renameSync(tmpDedup, dedupFile);
     } catch (writeErr) {
-      process.stderr.write(`[suggest-dedup] State write failed: ${writeErr.code || "unknown"}\n`);
+      const errCode =
+        typeof writeErr === "object" && writeErr !== null && "code" in writeErr
+          ? String(writeErr.code)
+          : "unknown";
+      process.stderr.write(`[suggest-dedup] State write failed: ${errCode}\n`);
       try {
         fs.rmSync(tmpDedup, { force: true });
       } catch {
@@ -448,17 +459,14 @@ function runSessionEnd() {
     const SESSION_END_COOLDOWN_FILE = path.join(HOOKS_DIR, ".session-end-cooldown.json");
     const SESSION_END_COOLDOWN_MS = 60 * 60 * 1000;
     try {
-      if (
-        fs.existsSync(SESSION_END_COOLDOWN_FILE) &&
-        fs.lstatSync(SESSION_END_COOLDOWN_FILE).isSymbolicLink()
-      )
-        return;
+      const stat = fs.lstatSync(SESSION_END_COOLDOWN_FILE);
+      if (stat.isSymbolicLink()) return;
       const data = JSON.parse(fs.readFileSync(SESSION_END_COOLDOWN_FILE, "utf8"));
       const lastRun = Number(data?.lastRun);
       if (Number.isFinite(lastRun) && lastRun > 0 && Date.now() - lastRun < SESSION_END_COOLDOWN_MS)
         return;
     } catch {
-      /* no cooldown yet */
+      /* ENOENT on first run, or corrupt file — no cooldown */
     }
 
     // Stdout directive so Claude is aware of the suggestion

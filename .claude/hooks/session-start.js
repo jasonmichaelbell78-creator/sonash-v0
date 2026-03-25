@@ -62,6 +62,15 @@ if (/^\.\.(?:[/\\]|$)/.test(rel) || path.isAbsolute(rel)) {
 
 process.chdir(projectDir);
 
+// Early lazy-load sanitizeError for all error logging in this file
+if (!sanitizeError) {
+  try {
+    ({ sanitizeError } = require(path.join(projectDir, "scripts", "lib", "security-helpers.js")));
+  } catch {
+    sanitizeError = () => "error (details redacted)";
+  }
+}
+
 let warnings = 0;
 const runCommandFailures = [];
 
@@ -98,9 +107,7 @@ function readSessionState() {
     return JSON.parse(fs.readFileSync(SESSION_STATE_FILE, "utf8"));
   } catch (err) {
     if (err && err.code !== "ENOENT") {
-      console.error(
-        `session-start: failed to read session state: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
-      );
+      console.error(`session-start: failed to read session state: ${sanitizeError(err)}`);
     }
   }
   return null;
@@ -347,9 +354,7 @@ function saveRootHash() {
     } catch {
       /* cleanup */
     }
-    console.warn(
-      `session-start: failed to save root lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
-    );
+    console.warn(`session-start: failed to save root lockfile hash: ${sanitizeError(err)}`);
   }
 }
 
@@ -398,9 +403,7 @@ function saveFunctionsHash() {
     } catch {
       /* cleanup */
     }
-    console.warn(
-      `session-start: failed to save functions lockfile hash: ${sanitizeInput(err instanceof Error ? err.message : String(err))}`
-    );
+    console.warn(`session-start: failed to save functions lockfile hash: ${sanitizeError(err)}`);
   }
 }
 
@@ -545,8 +548,7 @@ if (runCommandFailures.length > 0) {
     }
   } catch (err) {
     console.error(
-      "session-start: failed to write session-start-failures.json: " +
-        sanitizeInput(err instanceof Error ? err.message : String(err))
+      "session-start: failed to write session-start-failures.json: " + sanitizeError(err)
     );
   }
 } else {
@@ -869,10 +871,7 @@ function writeWarningsFile(warningsPath, data) {
       throw renameErr;
     }
   } catch (err) {
-    console.error(
-      "session-start: failed to regenerate hook-warnings.json: " +
-        sanitizeInput(err instanceof Error ? err.message : String(err))
-    );
+    console.error("session-start: failed to regenerate hook-warnings.json: " + sanitizeError(err));
   }
 }
 
@@ -1048,7 +1047,7 @@ try {
   // Non-fatal: commit log sync failure doesn't block session start
   console.warn(
     "Commit log sync failed: " +
-      sanitizeInput(err instanceof Error ? err.message : String(err)) +
+      sanitizeError(err) +
       ". Fix: node scripts/seed-commit-log.js --sync"
   );
 }

@@ -211,8 +211,8 @@ failures (`.claude/state/session-start-failures.json`,
 `.claude/state/pending-test-registry.json`). `/alerts` reviews health trends
 from `.claude/hook-warnings.json` and other data sources. When called after
 session-begin in the same session, `/alerts` skips items already acknowledged by
-session-begin (uses `lastCleared` timestamp in `.claude/hook-warnings.json` as
-shared boundary).
+session-begin (uses `lastCleared` timestamp in
+`.claude/state/hook-warnings-ack.json` as shared boundary).
 
 **Convergence loops:** Phase 5 fix verification and Phase 2 trend data
 integrity. Not used for initial checker execution (deterministic, single-pass).
