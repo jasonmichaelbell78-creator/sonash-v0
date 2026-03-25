@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.106 **Created:** 2026-01-02 **Last Updated:**
-2026-03-21
+**Document Version:** 17.107 **Created:** 2026-01-02 **Last Updated:**
+2026-03-25
 
 ## Purpose
 
@@ -34,6 +34,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.107   | 2026-03-25               | Review #503: PR #469 R1 — Qodo. 8 fixes: timestamp-based recent metrics (ecosystem-integration.js), exit code post-reconcile logic, empty metrics bootstrap, PR key normalization, deterministic latest review selection, malformed record filter, dry-run compute, doc index row. 3 rejected (duplicate, orphan drop risk, structured logging inconsistency).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 17.106   | 2026-03-21               | Review #496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI). 16 fixes: getCollectionDocs allowlist+audit trail, isTrivialLine markdown bug, sanitizeMessage embedded secrets, useCallback meeting widgets (propagation), PLAN.md provenance/secrets/gitignore, negated condition, Array() constructor, replaceAll, Prettier. 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 17.105   | 2026-03-18               | Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud). 10 fixes: security scan exclusions for test files, symlink staged filter, deterministic error counting, safeAppend root containment, shared sanitizeError, CC extraction. 7 repeat-rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | 17.104   | 2026-03-18               | Review #488: PR #448 R3 — Mixed (Qodo+SonarCloud). 10 fixes: resolveLinkPath path traversal, options.stagedFiles validation, DOMPurify FORBID_CONTENTS, churn-tracker latest-index, numeric normalization, CC reductions, token redaction. 8 repeat-rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
@@ -1319,6 +1320,44 @@ deduplicated, non-overlapping ranges):
 - **Doc lint as automated quality gate:** Missing Purpose/Scope,
   Status/Progress, Version History sections were caught by CI doc lint. These
   sections should be included from the start in planning doc templates.
+
+---
+
+#### Review #503: PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling (2026-03-25)
+
+**Source:** Qodo (Bugs + Suggestions + Compliance) **PR/Branch:** PR #469 /
+planning-32426 **Suggestions:** 12 total (Critical: 0, Major: 3, Minor: 5,
+Trivial: 3)
+
+**Patterns Identified:**
+
+1. File-order assumption in consumers: reconcile sorts by PR number but health
+   checker assumed file-tail = most recent. Timestamp-based selection is
+   correct.
+   - Root cause: Consumer (ecosystem-integration.js) relied on implicit file
+     ordering that changed when reconcile was added
+   - Prevention: Any code reading JSONL should sort by timestamp, not file order
+2. Post-fix validation gap: VALIDATE runs before RECONCILE but exit code doesn't
+   account for auto-fixes.
+   - Root cause: Sequential pipeline where exit code was set from pre-fix state
+   - Prevention: Exit code should reflect post-remediation state
+3. Early-return blocks bootstrap path: empty metrics check prevented reconcile
+   from creating entries from reviews.jsonl source of truth.
+   - Root cause: Defensive guard was too aggressive for the bootstrap use case
+   - Prevention: Guard on both sources being empty, not just one
+
+**Resolution:**
+
+- Fixed: 8 items
+- Deferred: 0 items
+- Rejected: 3 items (1 duplicate, 1 orphan-drop risk, 1 logging inconsistency)
+
+**Key Learnings:**
+
+- When adding write-path changes (sort order, dedup), audit all read-path
+  consumers
+- Pipeline exit codes should reflect post-remediation state, not pre-fix
+  findings
 
 ---
 

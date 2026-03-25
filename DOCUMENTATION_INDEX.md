@@ -443,7 +443,7 @@ _TDMS tracking and management_
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
 | [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-24    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-24    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-25    |
 
 ### Templates (Tier 3)
 
@@ -1003,7 +1003,7 @@ _Uncategorized_
 | Document                                                                         | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Decision Record: Plan Orchestration](.planning/plan-orchestration/DECISIONS.md) | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Implementation Plan: Plan Orchestration](.planning/plan-orchestration/PLAN.md)  | Execute all 7 active plans in optimal sequence, maximizing p... | ↓0 ↑0      | 2026-03-24    |
+| [Implementation Plan: Plan Orchestration](.planning/plan-orchestration/PLAN.md)  | Execute all 7 active plans in optimal sequence, maximizing p... | ↓0 ↑0      | 2026-03-25    |
 | [Plan Execution CL Protocol](.planning/plan-orchestration/CL-PROTOCOL.md)        | Read files fully, catalog findings with exact line numbers a... | ↓0 ↑0      | 2026-03-24    |
 | [Plan Orchestration: DIAGNOSIS](.planning/plan-orchestration/DIAGNOSIS.md)       | -                                                               | ↓0 ↑0      | 2026-03-24    |
 
@@ -1104,7 +1104,7 @@ _Uncategorized_
 | [SWS Re-Evaluation — DIAGNOSIS v2](.planning/system-wide-standardization/DIAGNOSIS-v2.md)                        | <!-- prettier-ignore-start -->                                  | ↓2 ↑0      | 2026-03-14    |
 | [System-Wide Standardization — Implementation Plan](.planning/system-wide-standardization/PLAN.md)               | <!-- prettier-ignore-start -->                                  | ↓0 ↑1      | 2026-03-15    |
 | [System-Wide Standardization — Implementation Plan (v2)](.planning/system-wide-standardization/PLAN-v2.md)       | <!-- prettier-ignore-start -->                                  | ↓0 ↑2      | 2026-03-15    |
-| [System-Wide Standardization — Implementation Plan (v3)](.planning/system-wide-standardization/PLAN-v3.md)       | <!-- prettier-ignore-start -->                                  | ↓0 ↑3      | 2026-03-17    |
+| [System-Wide Standardization — Implementation Plan (v3)](.planning/system-wide-standardization/PLAN-v3.md)       | <!-- prettier-ignore-start -->                                  | ↓0 ↑3      | 2026-03-25    |
 | [System-Wide Standardization — Implementation Reference](.planning/system-wide-standardization/DECISIONS.md)     | > **Auto-generated** from JSONL source files by `generate-de... | ↓2 ↑0      | 2026-03-09    |
 
 ### .planning > system-wide-standardization > code-quality-overhaul (Tier 4)

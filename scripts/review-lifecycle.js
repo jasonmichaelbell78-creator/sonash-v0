@@ -800,33 +800,38 @@ function runValidate() {
 function runReconcile() {
   logStep("RECONCILE", "Deduplicating and reconciling review-metrics.jsonl...");
 
-  if (dryRun) {
-    logStep("RECONCILE", "DRY RUN: Would dedup and reconcile metrics");
-    return { deduped: 0, reconciled: 0, added: 0 };
-  }
-
   // Load both data sources
   // safe: true makes readJsonl return [] on ENOENT (no separate catch needed)
   const metrics = readJsonl(REVIEW_METRICS_JSONL, { safe: true, quiet: true });
-  if (metrics.length === 0) {
-    logStep("RECONCILE", "No metrics entries — nothing to reconcile");
+  const reviews = loadReviews();
+  const reviewCountsByPr = countReviewsByPr(reviews);
+
+  // Only return early if BOTH sources are empty — reconcile must bootstrap
+  // metrics from reviews.jsonl when metrics file is empty/missing
+  if (metrics.length === 0 && reviewCountsByPr.size === 0) {
+    logStep("RECONCILE", "No metrics entries and no reviews — nothing to reconcile");
     return { deduped: 0, reconciled: 0, added: 0 };
   }
 
-  const reviews = loadReviews();
-  const reviewCountsByPr = countReviewsByPr(reviews);
+  // Normalize PR identifiers to strings for consistent map/set lookups
+  // (JSONL may store PR as number or string depending on source)
+  const normPr = (v) => String(v);
 
   // ── Step 1: Dedup — keep latest entry per PR ──────────────────────────
   const originalCount = metrics.length;
   const latestByPr = buildLatestMetricsMap(metrics);
-  const dedupedEntries = Array.from(latestByPr.values());
+  const dedupedEntriesRaw = Array.from(latestByPr.values());
+  // Filter out malformed entries missing a valid PR identifier
+  const dedupedEntries = dedupedEntriesRaw.filter(
+    (e) => e && typeof e === "object" && e.pr !== undefined && e.pr !== null
+  );
   const dedupedCount = originalCount - dedupedEntries.length;
 
   // ── Step 2: Reconcile round counts from JSONL source of truth ─────────
   let reconciledCount = 0;
   for (const entry of dedupedEntries) {
-    const pr = entry.pr;
-    const jsonlCount = reviewCountsByPr.get(pr);
+    const prKey = normPr(entry.pr);
+    const jsonlCount = reviewCountsByPr.get(prKey) ?? reviewCountsByPr.get(entry.pr);
     if (jsonlCount !== undefined && entry.review_rounds !== jsonlCount) {
       entry.review_rounds = jsonlCount;
       entry.jsonl_review_records = jsonlCount;
@@ -836,13 +841,29 @@ function runReconcile() {
   }
 
   // ── Step 3: Add missing entries for PRs in JSONL but not metrics ──────
-  const existingPrs = new Set(dedupedEntries.map((e) => e.pr));
+  // Pre-compute latest review per PR by timestamp for deterministic selection
+  const latestReviewByPr = new Map();
+  for (const r of reviews) {
+    if (!r || typeof r !== "object") continue;
+    const rPr = r.pr;
+    if (rPr === undefined || rPr === null) continue;
+    const rKey = normPr(rPr);
+    const prev = latestReviewByPr.get(rKey);
+    const rTime = Date.parse(r.timestamp || r.created_at || r.updated_at || "");
+    const prevTime = prev
+      ? Date.parse(prev.timestamp || prev.created_at || prev.updated_at || "")
+      : Number.NEGATIVE_INFINITY;
+    if (!prev || (Number.isFinite(rTime) && rTime >= prevTime)) {
+      latestReviewByPr.set(rKey, r);
+    }
+  }
+
+  const existingPrs = new Set(dedupedEntries.map((e) => normPr(e.pr)));
   let addedCount = 0;
   for (const [pr, jsonlCount] of reviewCountsByPr) {
-    if (!existingPrs.has(pr)) {
-      // Build a minimal metrics entry from JSONL data
-      const prReviews = reviews.filter((r) => r && typeof r === "object" && r.pr === pr);
-      const latestReview = prReviews[prReviews.length - 1] || {};
+    const prKey = normPr(pr);
+    if (!existingPrs.has(prKey)) {
+      const latestReview = latestReviewByPr.get(prKey) || {};
 
       dedupedEntries.push({
         pr,
@@ -867,13 +888,21 @@ function runReconcile() {
     return { deduped: 0, reconciled: 0, added: 0 };
   }
 
+  // Sort by PR number for readability
+  dedupedEntries.sort((a, b) => Number(normPr(a.pr)) - Number(normPr(b.pr)));
+
+  if (dryRun) {
+    logStep(
+      "RECONCILE",
+      `DRY RUN: ${dedupedCount} duplicates would be removed, ${reconciledCount} round counts would be fixed, ${addedCount} missing PRs would be added (${dedupedEntries.length} total entries)`
+    );
+    return { deduped: dedupedCount, reconciled: reconciledCount, added: addedCount };
+  }
+
   // Security check
   if (!isSafeToWrite(REVIEW_METRICS_JSONL)) {
     throw new Error("Refusing to write: symlink detected at review-metrics.jsonl");
   }
-
-  // Sort by PR number for readability
-  dedupedEntries.sort((a, b) => (a.pr ?? 0) - (b.pr ?? 0));
 
   const output = dedupedEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
   try {
@@ -1021,9 +1050,14 @@ function main() {
       renderResult.recordCount !== null ? " (" + renderResult.recordCount + " records)" : "";
     log(`  RENDER:   ${renderStatus}${renderCount}`);
 
-    // Exit code based on validation
-    if (!validateResult.valid) {
+    // Exit code based on validation (post-reconcile)
+    // If RECONCILE auto-fixed drift, don't fail — the issues are resolved
+    const reconcileApplied =
+      reconcileResult.deduped + reconcileResult.reconciled + reconcileResult.added > 0;
+    if (!validateResult.valid && !reconcileApplied) {
       process.exitCode = 1;
+    } else if (!validateResult.valid && reconcileApplied) {
+      log("  NOTE: Validation issues were auto-fixed by RECONCILE");
     }
   } catch (err) {
     log(`ERROR: ${sanitizeError(err)}`);

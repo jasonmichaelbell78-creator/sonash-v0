@@ -29,10 +29,19 @@ function checkEcosystemIntegration() {
   // Review quality from review-metrics.jsonl
   const metricsPath = path.join(ROOT_DIR, ".claude", "state", "review-metrics.jsonl");
   const lines = safeReadLines(metricsPath);
-  const recent = lines
-    .slice(-5)
-    .map((l) => safeParse(l))
-    .filter(Boolean);
+  const allMetrics = lines.map((l) => safeParse(l)).filter(Boolean);
+
+  // Sort by timestamp descending to get genuinely recent entries
+  // (file may be sorted by PR number after reconcile, not by time)
+  allMetrics.sort((a, b) => {
+    const tA = Date.parse(a.timestamp || "");
+    const tB = Date.parse(b.timestamp || "");
+    if (Number.isFinite(tB) && Number.isFinite(tA)) return tB - tA;
+    if (Number.isFinite(tB)) return 1;
+    if (Number.isFinite(tA)) return -1;
+    return 0;
+  });
+  const recent = allMetrics.slice(0, 5);
 
   let avgFixRatio = 0;
   let avgRounds = 0;
