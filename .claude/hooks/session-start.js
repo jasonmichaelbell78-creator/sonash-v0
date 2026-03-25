@@ -419,7 +419,9 @@ function runCommand(description, command, timeoutMs = 120000) {
     console.log(`   ✓ ${description} complete`);
     return true;
   } catch (error) {
-    const reason = error.killed ? "timed out" : "failed";
+    const killed =
+      typeof error === "object" && error !== null && "killed" in error && error.killed === true;
+    const reason = killed ? "timed out" : "failed";
     const safeCmd = sanitizeInput(String(command));
     const fixCmd = `Fix: ${safeCmd}`;
     console.log(`   ⚠️ ${description} ${reason}. ${fixCmd}`);

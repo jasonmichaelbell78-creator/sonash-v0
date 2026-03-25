@@ -558,10 +558,15 @@ function appCheckValidator() {
   let appCheckEnabled = process.env.APP_CHECK_ENABLED === "true";
   if (!appCheckEnabled) {
     try {
-      const stateData = JSON.parse(fs.readFileSync(stateFile, "utf8"));
-      appCheckEnabled = stateData.appCheckEnabled === true;
+      const st = fs.lstatSync(stateFile);
+      if (!st.isSymbolicLink()) {
+        const parsed = JSON.parse(fs.readFileSync(stateFile, "utf8"));
+        const stateData =
+          parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : null;
+        appCheckEnabled = stateData?.appCheckEnabled === true;
+      }
     } catch {
-      // State file unavailable — App Check remains disabled
+      // State file unavailable/corrupt/symlink — App Check remains disabled
     }
   }
   if (!appCheckEnabled) return;
@@ -1070,7 +1075,15 @@ function testRegistryReminder() {
             } catch {
               /* best-effort */
             }
-            fs.renameSync(tmpPath, pendingRegistryPath);
+            try {
+              fs.renameSync(tmpPath, pendingRegistryPath);
+            } catch {
+              try {
+                fs.rmSync(tmpPath, { force: true });
+              } catch {
+                /* cleanup */
+              }
+            }
           }
         }
       } catch {

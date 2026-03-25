@@ -233,7 +233,7 @@ function runAnalyze() {
     let shown = {};
     try {
       const st = fs.lstatSync(dedupFile);
-      if (!st.isSymbolicLink()) {
+      if (!st.isSymbolicLink() && st.size <= 64 * 1024) {
         const parsed = JSON.parse(fs.readFileSync(dedupFile, "utf8"));
         if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) shown = parsed;
       }
@@ -577,9 +577,13 @@ function runPlanSuggestion() {
     const complexityKey = `multistep:${hasImpl ? "impl" : ""}:${complexityMatches.length}:${wordCount > 50 ? "long" : "short"}`;
     let multistepShown = {};
     try {
-      multistepShown = JSON.parse(fs.readFileSync(MULTISTEP_DEDUP_FILE, "utf8"));
+      const st = fs.lstatSync(MULTISTEP_DEDUP_FILE);
+      if (!st.isSymbolicLink()) {
+        const parsed = JSON.parse(fs.readFileSync(MULTISTEP_DEDUP_FILE, "utf8"));
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) multistepShown = parsed;
+      }
     } catch {
-      /* first run or corrupt file */
+      /* ENOENT on first run, corrupt file, or symlink — ignore */
     }
 
     const alreadyShown =

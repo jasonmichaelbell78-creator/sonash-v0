@@ -2393,6 +2393,25 @@ had `*.state.json` blanket rule blocking new state files from being committed.
 
 ---
 
+### Review #502: PR #468 R4 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+**Items:** 8 total (5 fixed, 0 deferred, 3 rejected)
+
+**Key Learnings:**
+
+1. **Symlink guard pattern must propagate to ALL state file reads** — R3 added
+   it to suggest-dedup and cooldown, but missed multistep-dedup and appCheck
+   state. Every new JSON state file read needs the lstat+object validation
+   pattern from the start.
+
+2. **Atomic write needs failure cleanup** — temp-file-and-rename without a catch
+   on rename leaves stale .tmp files. Always wrap renameSync in try/catch with
+   rmSync cleanup.
+
+---
+
 ### Review #501: PR #468 R3 — Qodo (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
