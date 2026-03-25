@@ -821,17 +821,18 @@ function runReconcile() {
   const originalCount = metrics.length;
   const latestByPr = buildLatestMetricsMap(metrics);
   const dedupedEntriesRaw = Array.from(latestByPr.values());
+  const dedupedCount = originalCount - dedupedEntriesRaw.length;
   // Filter out malformed entries missing a valid PR identifier
   const dedupedEntries = dedupedEntriesRaw.filter(
     (e) => e && typeof e === "object" && e.pr !== undefined && e.pr !== null
   );
-  const dedupedCount = originalCount - dedupedEntries.length;
+  const malformedCount = dedupedEntriesRaw.length - dedupedEntries.length;
 
   // ── Step 2: Reconcile round counts from JSONL source of truth ─────────
   let reconciledCount = 0;
   for (const entry of dedupedEntries) {
-    const prKey = normPr(entry.pr);
-    const jsonlCount = reviewCountsByPr.get(prKey) ?? reviewCountsByPr.get(entry.pr);
+    // countReviewsByPr keys are raw (numeric), so look up with raw key
+    const jsonlCount = reviewCountsByPr.get(entry.pr);
     if (jsonlCount !== undefined && entry.review_rounds !== jsonlCount) {
       entry.review_rounds = jsonlCount;
       entry.jsonl_review_records = jsonlCount;
@@ -894,7 +895,7 @@ function runReconcile() {
   if (dryRun) {
     logStep(
       "RECONCILE",
-      `DRY RUN: ${dedupedCount} duplicates would be removed, ${reconciledCount} round counts would be fixed, ${addedCount} missing PRs would be added (${dedupedEntries.length} total entries)`
+      `DRY RUN: ${dedupedCount} duplicates would be removed, ${malformedCount} malformed would be skipped, ${reconciledCount} round counts would be fixed, ${addedCount} missing PRs would be added (${dedupedEntries.length} total entries)`
     );
     return { deduped: dedupedCount, reconciled: reconciledCount, added: addedCount };
   }
@@ -913,7 +914,7 @@ function runReconcile() {
 
   logStep(
     "RECONCILE",
-    `Done: ${dedupedCount} duplicates removed, ${reconciledCount} round counts fixed, ${addedCount} missing PRs added (${dedupedEntries.length} total entries)`
+    `Done: ${dedupedCount} duplicates removed, ${malformedCount} malformed skipped, ${reconciledCount} round counts fixed, ${addedCount} missing PRs added (${dedupedEntries.length} total entries)`
   );
   return { deduped: dedupedCount, reconciled: reconciledCount, added: addedCount };
 }
@@ -1051,13 +1052,13 @@ function main() {
     log(`  RENDER:   ${renderStatus}${renderCount}`);
 
     // Exit code based on validation (post-reconcile)
-    // If RECONCILE auto-fixed drift, don't fail — the issues are resolved
-    const reconcileApplied =
-      reconcileResult.deduped + reconcileResult.reconciled + reconcileResult.added > 0;
-    if (!validateResult.valid && !reconcileApplied) {
+    // Only suppress exit code when reconcile actually fixed cross-db drift
+    // (reconciled > 0), not just deduped or added entries
+    const driftFixed = reconcileResult.reconciled > 0;
+    if (!validateResult.valid && !driftFixed) {
       process.exitCode = 1;
-    } else if (!validateResult.valid && reconcileApplied) {
-      log("  NOTE: Validation issues were auto-fixed by RECONCILE");
+    } else if (!validateResult.valid && driftFixed) {
+      log("  NOTE: Validation drift was auto-fixed by RECONCILE");
     }
   } catch (err) {
     log(`ERROR: ${sanitizeError(err)}`);
