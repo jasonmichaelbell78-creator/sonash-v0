@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.107 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.108 **Created:** 2026-01-02 **Last Updated:**
 2026-03-25
 
 ## Purpose
@@ -34,6 +34,7 @@ improvements made.
 
 | Version  | Date                     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | -------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 17.108   | 2026-03-25               | Review #504: PR #469 R2 — Mixed (SonarCloud+Qodo). 7 fixes: CC reduction (runReconcile 24→<15, main 16→<15) via 3 extracted helpers, normPr→String, normalized reviewCountsByPr map, revalidation after reconcile, timestamp NaN normalization, deterministic sort. 1 rejected (compliance duplicate of map normalization).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 | 17.107   | 2026-03-25               | Review #503: PR #469 R1 — Qodo. 8 fixes: timestamp-based recent metrics (ecosystem-integration.js), exit code post-reconcile logic, empty metrics bootstrap, PR key normalization, deterministic latest review selection, malformed record filter, dry-run compute, doc index row. 3 rejected (duplicate, orphan drop risk, structured logging inconsistency).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | 17.106   | 2026-03-21               | Review #496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI). 16 fixes: getCollectionDocs allowlist+audit trail, isTrivialLine markdown bug, sanitizeMessage embedded secrets, useCallback meeting widgets (propagation), PLAN.md provenance/secrets/gitignore, negated condition, Array() constructor, replaceAll, Prettier. 1 rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | 17.105   | 2026-03-18               | Review #489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud). 10 fixes: security scan exclusions for test files, symlink staged filter, deterministic error counting, safeAppend root containment, shared sanitizeError, CC extraction. 7 repeat-rejected.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -1358,6 +1359,39 @@ Trivial: 3)
   consumers
 - Pipeline exit codes should reflect post-remediation state, not pre-fix
   findings
+
+---
+
+#### Review #504: PR #469 R2 — CC Reduction, Map Normalization & Revalidation (2026-03-25)
+
+**Source:** Mixed (SonarCloud + Qodo Suggestions + Compliance) **PR/Branch:** PR
+#469 / planning-32426 **Suggestions:** 8 total (Critical: 0, Major: 3, Minor: 3,
+Trivial: 1)
+
+**Patterns Identified:**
+
+1. Cognitive complexity from inline helpers: `runReconcile` at CC 24 because
+   `buildLatestReviewByPr` and `bootstrapMissingEntries` were inline.
+   - Root cause: R1 fixes added logic without extracting helpers
+   - Prevention: Extract helpers during initial implementation, not as
+     afterthought
+2. Arrow function wrapper for built-in: `normPr = (v) => String(v)` adds
+   indirection for no benefit — `String` is already a function.
+   - Root cause: Habit of wrapping built-ins for "readability"
+   - Prevention: Use built-in functions directly when signature matches
+
+**Resolution:**
+
+- Fixed: 7 items
+- Deferred: 0 items
+- Rejected: 1 item (compliance duplicate of map normalization fix)
+
+**Key Learnings:**
+
+- Extract helpers during initial implementation to keep CC under control
+- Use built-in functions (`String`, `Number`) directly instead of arrow wrappers
+- Revalidation after auto-fix is more correct than heuristic exit code
+  suppression
 
 ---
 
