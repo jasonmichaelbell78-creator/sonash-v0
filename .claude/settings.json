@@ -1,4 +1,40 @@
 {
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Agent",
+      "Bash(git *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(node *)",
+      "Bash(bash *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(cat *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "Bash(sort *)",
+      "Bash(diff *)",
+      "Bash(cp *)",
+      "Bash(gh *)",
+      "Bash(jq *)",
+      "Bash(python3 *)",
+      "Bash(SKIP_* *)",
+      "Bash(echo *)",
+      "Bash(find *)",
+      "Bash(for *)",
+      "Bash(if *)",
+      "WebSearch",
+      "WebFetch",
+      "Skill(update-config)",
+      "mcp__sonarcloud",
+      "mcp__memory"
+    ],
+    "deny": ["Bash(git push *)", "Bash(git reset --hard *)", "Bash(rm -rf *)"]
+  },
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },

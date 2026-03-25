@@ -804,10 +804,10 @@ accumulate.
 
 ### Current Metrics
 
-| Metric         | Value          | Threshold | Action if Exceeded                       |
-| -------------- | -------------- | --------- | ---------------------------------------- |
-| Main log lines | ~2048          | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 20 (#360-#496) | 30        | Run `npm run reviews:archive -- --apply` |
+| Metric         | Value | Threshold | Action if Exceeded                       |
+| -------------- | ----- | --------- | ---------------------------------------- |
+| Main log lines | ~2048 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -1154,7 +1154,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-8: (untitled) (2026-03-22)
+### Review rev-8: PR #461 R3 — Mixed (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** mixed
 
@@ -1164,7 +1164,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-9: (untitled) (2026-03-22)
+### Review rev-9: PR #461 R4 — Qodo (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
 
@@ -1204,7 +1204,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-466-r1: (untitled) (2026-03-24)
+### Review review-466-r1: PR #466 R1 — Qodo (2026-03-24)
 
 > **Completeness:** partial **Missing fields:** patterns, learnings
 
@@ -1222,7 +1222,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-466-r2: (untitled) (2026-03-24)
+### Review review-466-r2: PR #466 R2 — Qodo (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
@@ -1238,7 +1238,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-466-r3: (untitled) (2026-03-24)
+### Review review-466-r3: PR #466 R3 — Qodo (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
@@ -1251,6 +1251,56 @@ deduplicated, non-overlapping ranges):
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
 | 0        | 1     | 6     | 2       |
+
+---
+
+### Review rev-10: PR #468 R1 — Qodo (2026-03-24) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 13    | 8     | 2        | 3        |
+
+---
+
+### Review rev-11: PR #468 R2 — Mixed Gemini+Qodo (2026-03-24) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 7     | 0        | 3        |
+
+---
+
+### Review rev-12: PR #468 R3 — Qodo (2026-03-24) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 4     | 0        | 4        |
+
+---
+
+### Review rev-13: PR #468 R4 — Qodo (2026-03-24) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 3        |
+
+---
+
+### Review 502: PR #468 R4 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 3        |
 
 ## Key Patterns
 

@@ -14,6 +14,9 @@
  *                  reviews-archive.jsonl (JSONL append, atomic)
  *   3. VALIDATE  - run check-review-archive.js against JSONL state;
  *                  if issues found -> structured output, exit non-zero
+ *   3b. RECONCILE - dedup review-metrics.jsonl & reconcile round counts
+ *                   from reviews.jsonl (source of truth). Auto-fixes
+ *                   cross-database drift detected in VALIDATE.
  *   4. RENDER    - run render-reviews-to-md.ts to regenerate markdown view
  *
  * Exit codes:
@@ -775,6 +778,120 @@ function runValidate() {
   return { valid: false, findings: allFindings };
 }
 
+// ── STEP 3b: RECONCILE ───────────────────────────────────────────────────
+
+/**
+ * RECONCILE step: dedup review-metrics.jsonl and reconcile round counts
+ * from reviews.jsonl (source of truth). Runs after VALIDATE so it can
+ * fix the cross-database mismatches that were just detected.
+ *
+ * Operations:
+ *   1. Dedup metrics — keep only the latest entry per PR (by timestamp)
+ *   2. Update review_rounds — set to actual JSONL record count per PR
+ *   3. Add missing entries — PRs in reviews.jsonl but not in metrics
+ *   4. Atomic rewrite of the metrics file
+ *
+ * Returns { deduped: number, reconciled: number, added: number }.
+ *
+ * Added: Session #238 — Fix cross-database drift between reviews.jsonl
+ *        and review-metrics.jsonl. reviews.jsonl is source of truth.
+ */
+function runReconcile() {
+  logStep("RECONCILE", "Deduplicating and reconciling review-metrics.jsonl...");
+
+  if (dryRun) {
+    logStep("RECONCILE", "DRY RUN: Would dedup and reconcile metrics");
+    return { deduped: 0, reconciled: 0, added: 0 };
+  }
+
+  // Load both data sources
+  let metrics;
+  try {
+    metrics = readJsonl(REVIEW_METRICS_JSONL, { safe: true, quiet: true });
+  } catch (err) {
+    if (err && typeof err === "object" && err.code === "ENOENT") {
+      logStep("RECONCILE", "No review-metrics.jsonl found — nothing to reconcile");
+      return { deduped: 0, reconciled: 0, added: 0 };
+    }
+    logStep("RECONCILE", `Cannot read review-metrics.jsonl: ${sanitizeError(err)}`);
+    return { deduped: 0, reconciled: 0, added: 0 };
+  }
+
+  const reviews = loadReviews();
+  const reviewCountsByPr = countReviewsByPr(reviews);
+
+  // ── Step 1: Dedup — keep latest entry per PR ──────────────────────────
+  const originalCount = metrics.length;
+  const latestByPr = buildLatestMetricsMap(metrics);
+  const dedupedEntries = Array.from(latestByPr.values());
+  const dedupedCount = originalCount - dedupedEntries.length;
+
+  // ── Step 2: Reconcile round counts from JSONL source of truth ─────────
+  let reconciledCount = 0;
+  for (const entry of dedupedEntries) {
+    const pr = entry.pr;
+    const jsonlCount = reviewCountsByPr.get(pr);
+    if (jsonlCount !== undefined && entry.review_rounds !== jsonlCount) {
+      entry.review_rounds = jsonlCount;
+      entry.jsonl_review_records = jsonlCount;
+      entry.reconciled_at = new Date().toISOString();
+      reconciledCount++;
+    }
+  }
+
+  // ── Step 3: Add missing entries for PRs in JSONL but not metrics ──────
+  const existingPrs = new Set(dedupedEntries.map((e) => e.pr));
+  let addedCount = 0;
+  for (const [pr, jsonlCount] of reviewCountsByPr) {
+    if (!existingPrs.has(pr)) {
+      // Build a minimal metrics entry from JSONL data
+      const prReviews = reviews.filter((r) => r && typeof r === "object" && r.pr === pr);
+      const latestReview = prReviews[prReviews.length - 1] || {};
+
+      dedupedEntries.push({
+        pr,
+        title: latestReview.title || `PR #${pr}`,
+        total_commits: 0,
+        fix_commits: 0,
+        fix_ratio: 0,
+        review_rounds: jsonlCount,
+        jsonl_review_records: jsonlCount,
+        timestamp: new Date().toISOString(),
+        reconciled_at: new Date().toISOString(),
+        source: "reconciled-from-jsonl",
+      });
+      addedCount++;
+    }
+  }
+
+  // ── Step 4: Write deduped + reconciled metrics file ───────────────────
+  if (dedupedCount === 0 && reconciledCount === 0 && addedCount === 0) {
+    logStep("RECONCILE", "Metrics already consistent — no changes needed");
+    return { deduped: 0, reconciled: 0, added: 0 };
+  }
+
+  // Security check
+  if (!isSafeToWrite(REVIEW_METRICS_JSONL)) {
+    throw new Error("Refusing to write: symlink detected at review-metrics.jsonl");
+  }
+
+  // Sort by PR number for readability
+  dedupedEntries.sort((a, b) => (a.pr || 0) - (b.pr || 0));
+
+  const output = dedupedEntries.map((e) => JSON.stringify(e)).join("\n") + "\n";
+  try {
+    safeAtomicWriteSync(REVIEW_METRICS_JSONL, output, { encoding: "utf8" });
+  } catch (err) {
+    throw new Error(`Failed to write reconciled review-metrics.jsonl: ${sanitizeError(err)}`);
+  }
+
+  logStep(
+    "RECONCILE",
+    `Done: ${dedupedCount} duplicates removed, ${reconciledCount} round counts fixed, ${addedCount} missing PRs added (${dedupedEntries.length} total entries)`
+  );
+  return { deduped: dedupedCount, reconciled: reconciledCount, added: addedCount };
+}
+
 // ── STEP 4: RENDER ────────────────────────────────────────────────────────
 
 /**
@@ -877,6 +994,9 @@ function main() {
     // Step 3: VALIDATE
     const validateResult = runValidate();
 
+    // Step 3b: RECONCILE (fix cross-db drift detected by VALIDATE)
+    const reconcileResult = runReconcile();
+
     // Step 4: RENDER
     const renderResult = runRender();
 
@@ -889,6 +1009,11 @@ function main() {
       ? "PASS"
       : "FAIL (" + validateResult.findings.length + " findings)";
     log(`  VALIDATE: ${validateMsg}`);
+    const reconcileMsg =
+      reconcileResult.deduped + reconcileResult.reconciled + reconcileResult.added > 0
+        ? `${reconcileResult.deduped} deduped, ${reconcileResult.reconciled} reconciled, ${reconcileResult.added} added`
+        : "OK (no changes)";
+    log(`  RECONCILE: ${reconcileMsg}`);
     const renderStatus = renderResult.success ? "OK" : "FAILED";
     const renderCount =
       renderResult.recordCount !== null ? " (" + renderResult.recordCount + " records)" : "";
@@ -921,6 +1046,8 @@ module.exports = {
   // New validation functions (Session #218)
   runCrossDbValidation,
   validateDispositions,
+  // Reconciliation (Session #238)
+  runReconcile,
   // Constants for testing
   ARCHIVE_THRESHOLD,
   KEEP_NEWEST,
