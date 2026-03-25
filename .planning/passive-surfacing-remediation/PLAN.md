@@ -59,7 +59,43 @@ D17)
 
 ---
 
-## Step 1: Fix session-start.js (7 violations)
+## Phase D: Pre-Execution Discovery CL
+
+Per **CL-PROTOCOL.md Phase D**. Before executing any fix steps, run the full
+discovery convergence loop to verify all violations against the current
+codebase.
+
+**D1: Parallel Discovery Agents** — 8 `general-purpose` (opus) agents, one per
+file group (per CL-PROTOCOL.md agent selection rules):
+
+1. `session-start.js` (plan expects 7 violations)
+2. `post-write-validator.js` (plan expects 9 violations, 1 compliant)
+3. `post-read-handler.js` (plan expects 3 violations)
+4. `user-prompt-handler.js` (plan expects 4 violations)
+5. `compact-restore.js` + `check-remote-session-context.js` +
+   `decision-save-prompt.js` (plan expects 3 violations)
+6. `.husky/pre-commit` (plan expects 1 violation)
+7. 6 scripts (plan expects 6 violations)
+8. 4 ecosystem audit skills (plan expects 0 existing categories)
+
+Each agent reads fully (no grep), catalogs findings with exact line numbers,
+code context, and confidence levels. Reports whether plan's fix is still valid.
+
+**D2: Synthesis** — Consolidate into verified inventory. Compare plan-expected
+vs discovered. Flag discrepancies.
+
+**D3: Contrarian Verification** — 2 separate `general-purpose` (opus) agents
+re-read all files. Check for false positives, missed violations, invalid fixes.
+
+**D4: Completeness Audit** — All files covered, counts stable, confidence
+distribution reasonable. Present final inventory to user before execution.
+
+**Done when:** User reviews and approves the verified inventory. **Depends on:**
+Nothing.
+
+---
+
+## Step 1: Fix session-start.js (7+ violations)
 
 Per D1 (pattern-level), D2 (tiered), D3 (session-begin gate), D6 (remove
 wallpaper), D8 (extend session-begin gate).
@@ -340,11 +376,35 @@ skill headers. **Depends on:** None
 
 ---
 
+## Phase V: Post-Execution Verification CL
+
+Per **CL-PROTOCOL.md Phase V**. After all fix steps (1-9) complete, run the full
+verification convergence loop before the audit checkpoint.
+
+**V1: Parallel Verification Agents** — 8 `general-purpose` (opus) agents (same
+grouping as Phase D). Each re-reads its files, confirms every violation is
+resolved, checks for side effects and regressions.
+
+**V2: Regression Check** — `npm run lint`, `npm test`, `npm run patterns:check`.
+All must pass.
+
+**V3: Contrarian Verification** — 2 separate `general-purpose` (opus) agents
+challenge that fixes actually work. Look for: fixes that appear correct but are
+unreachable, side effects creating new violations, incomplete propagation.
+
+**V4: Completeness Audit** — fixed + deferred + rejected = total from Phase D
+inventory. All modified files re-read. No untracked files.
+
+**Done when:** All V checks pass. Present verification report to user. **Depends
+on:** Steps 1-9.
+
+---
+
 ## Step 10: Audit Checkpoint
 
 Run code-reviewer on all modified files (~18 files).
 
-**Done when:** All findings addressed or tracked. **Depends on:** Steps 1-9
+**Done when:** All findings addressed or tracked. **Depends on:** Phase V pass
 
 ---
 
@@ -367,13 +427,22 @@ or tracked. **Depends on:** Steps 1-10
 
 ## Parallelization Guidance
 
+**Phase D** runs first (CL-PROTOCOL.md Phase D). D1 agents run in parallel (8
+agents, 4 concurrent). D2 synthesis inline. D3 contrarian agents in parallel (2
+agents). D4 completeness inline. User approves inventory.
+
 **Steps 1-7** can ALL run in parallel (different files, no dependencies). **Step
 8** depends on Steps 1-5 (needs to know what flags are written). **Step 9** can
-run in parallel with Steps 1-8 (different files). **Step 10** depends on Steps
-1-9. **Step 11** depends on Step 10.
+run in parallel with Steps 1-8 (different files).
 
-**Optimal execution:** Launch Steps 1-7 + Step 9 in parallel (8 agents). Then
-Step 8. Then Step 10. Then Step 11.
+**Phase V** runs after Steps 1-9 (CL-PROTOCOL.md Phase V). V1 agents in
+parallel. V2 automated. V3 contrarian agents in parallel. V4 inline.
+
+**Step 10** (code-reviewer) depends on Phase V pass. **Step 11** depends on
+Step 10.
+
+**Optimal execution:** Phase D → Steps 1-7 + 9 in parallel → Step 8 → Phase V →
+Step 10 → Step 11.
 
 ---
 

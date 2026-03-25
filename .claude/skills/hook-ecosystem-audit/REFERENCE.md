@@ -105,6 +105,7 @@ Hook Ecosystem Health: {grade} ({score}/100)  |  Trend: {sparkline} ({delta})
 │   Stage Ordering & Completeness │  {s}  │ {rating} │ {trend}      │
 │   Bypass & Override Controls    │  {s}  │ {rating} │ {trend}      │
 │   Gate Effectiveness            │  {s}  │ {rating} │ {trend}      │
+│   Passive Surfacing Compliance  │  {s}  │ {rating} │ {trend}      │
 ├─────────────────────────────────┼───────┼──────────┼──────────────┤
 │ D4: Functional Correctness      │       │          │              │
 │   Test Coverage                 │  {s}  │ {rating} │ {trend}      │
@@ -217,11 +218,12 @@ Stable:
 
 ### Domain 3: Pre-commit Pipeline (18% weight)
 
-| Category                      | What It Checks                                         |
-| ----------------------------- | ------------------------------------------------------ |
-| Stage Ordering & Completeness | All 11+ stages present, correct order, parallel safety |
-| Bypass & Override Controls    | SKIP_CHECKS inventory, SKIP_REASON validation          |
-| Gate Effectiveness            | Blocking gates reachable, non-blocking use warnings    |
+| Category                      | What It Checks                                                           |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| Stage Ordering & Completeness | All 11+ stages present, correct order, parallel safety                   |
+| Bypass & Override Controls    | SKIP_CHECKS inventory, SKIP_REASON validation                            |
+| Gate Effectiveness            | Blocking gates reachable, non-blocking use warnings                      |
+| Passive Surfacing Compliance  | Warnings have action paths, HIGH→state flags, MEDIUM→JSONL, no wallpaper |
 
 ### Domain 4: Functional Correctness (18% weight)
 
@@ -253,7 +255,7 @@ Stable:
 
 Internal benchmarks are defined in `scripts/lib/benchmarks.js`. Each category
 scores 0-100 with ratings: good (90+), average (70-89), poor (<70). The
-composite grade uses weighted average across all 19 categories with domain
+composite grade uses weighted average across all 20 categories with domain
 weights: D1=18%, D2=23%, D3=18%, D4=18%, D5=13%, D6=10%.
 
 ---

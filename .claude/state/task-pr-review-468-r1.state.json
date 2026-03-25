@@ -1,0 +1,38 @@
+{
+  "pr": 468,
+  "round": 1,
+  "review_number": 499,
+  "source": "qodo",
+  "total": 13,
+  "fixed": 8,
+  "deferred": 3,
+  "rejected": 2,
+  "severity": { "critical": 0, "major": 3, "minor": 8, "trivial": 2 },
+  "deferred_items": [
+    {
+      "id": "DEBT-45619",
+      "title": "Hook projectDir pattern lacks validation before execFileSync",
+      "severity": "S2",
+      "das": 6
+    },
+    {
+      "id": "DEBT-45620",
+      "title": "Auto-generated DOCUMENTATION_INDEX leaks machine-specific paths",
+      "severity": "S2",
+      "das": 4
+    }
+  ],
+  "rejected_items": [
+    {
+      "item": "#4 Path data in logs",
+      "reason": "File paths in hook output are intentional — needed for actionable Fix: messages. DAS 6/6."
+    },
+    {
+      "item": "#7 Create dedup directory",
+      "reason": "HOOKS_DIR (.claude/hooks/) always exists — parent directory creation unnecessary."
+    }
+  ],
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "completed_at": "2026-03-24T21:00:00Z"
+}

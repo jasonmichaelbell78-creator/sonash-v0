@@ -113,6 +113,7 @@ D6: Mid-Session Alert System
   Cooldown State Management               {s}   {rtg}   {trend}
   Warning Lifecycle Consistency           {s}   {rtg}   {trend}
   Score Degradation Detection             {s}   {rtg}   {trend}
+  Passive Surfacing Compliance            {s}   {rtg}   {trend}
 ```
 
 Rating badges: good = "Good", average = "Avg", poor = "Poor" Trend indicators:
@@ -240,11 +241,12 @@ Stable:
 
 ### Domain 6: Mid-Session Alert System (10% weight)
 
-| Category                      | What It Checks                                       |
-| ----------------------------- | ---------------------------------------------------- |
-| Cooldown State Management     | Write failures, loss of state, alert fatigue risk    |
-| Warning Lifecycle Consistency | Resolved warnings archival, stale detection          |
-| Score Degradation Detection   | Threshold calibration, accuracy of trend computation |
+| Category                      | What It Checks                                                           |
+| ----------------------------- | ------------------------------------------------------------------------ |
+| Cooldown State Management     | Write failures, loss of state, alert fatigue risk                        |
+| Warning Lifecycle Consistency | Resolved warnings archival, stale detection                              |
+| Score Degradation Detection   | Threshold calibration, accuracy of trend computation                     |
+| Passive Surfacing Compliance  | Warnings have action paths, HIGH→state flags, MEDIUM→JSONL, no wallpaper |
 
 ---
 
@@ -279,6 +281,7 @@ Stable:
 | Cooldown State Management     | healthy_pct           | 100%  | 80%  | 50%  | higher-is-better |
 | Warning Lifecycle Consistency | consistent_pct        | 100%  | 85%  | 60%  | higher-is-better |
 | Score Degradation Detection   | accurate_pct          | 100%  | 80%  | 50%  | higher-is-better |
+| Passive Surfacing Compliance  | compliant_pct         | 100%  | 80%  | 50%  | higher-is-better |
 
 Staleness guard: benchmarks.js uses `HMS_STALENESS_HOURS` env var (default: 24h)
 for CI result freshness (D#52).

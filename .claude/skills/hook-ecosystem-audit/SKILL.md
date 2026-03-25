@@ -1,7 +1,7 @@
 ---
 name: hook-ecosystem-audit
 description: >-
-  Comprehensive diagnostic of the hook ecosystem — 19 categories across 6
+  Comprehensive diagnostic of the hook ecosystem — 20 categories across 6
   domains with composite health scoring, trend tracking, patch suggestions, and
   interactive finding-by-finding walkthrough. Covers Claude Code hooks,
   pre-commit pipeline, AND CI/CD pipeline health.

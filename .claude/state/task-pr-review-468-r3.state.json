@@ -1,0 +1,32 @@
+{
+  "pr": 468,
+  "round": 3,
+  "review_number": 501,
+  "source": "qodo",
+  "total": 8,
+  "fixed": 4,
+  "deferred": 0,
+  "rejected": 4,
+  "severity": { "critical": 0, "major": 0, "minor": 3, "trivial": 1 },
+  "rejected_items": [
+    {
+      "item": "Untrusted path/projectDir",
+      "reason": "Cross-round dedup — already DEBT-45619 from R1"
+    },
+    {
+      "item": "Persistent raw messages in suggest-dedup",
+      "reason": "Keys are hardcoded suggestion strings, not user data"
+    },
+    {
+      "item": "Correct warnings source file path",
+      "reason": "hook-warnings.json is the correct cache view that /alerts reads"
+    },
+    {
+      "item": "Machine-specific paths in DOCUMENTATION_INDEX",
+      "reason": "Cross-round dedup — already DEBT-45620 from R1"
+    }
+  ],
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "completed_at": "2026-03-24T22:00:00Z"
+}

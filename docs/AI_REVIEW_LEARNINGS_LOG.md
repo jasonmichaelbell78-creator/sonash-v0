@@ -914,217 +914,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review 360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 14    | 0        | 6        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 12    | 7       |
-
-**Learnings:**
-
-- Fixed: 14 items across 8 files
-- Rejected: 6 items (3 cross-round dedup R4+R5, 1 architectural, 2
-- Set.has for tableContent (R4+R5 dedup — string.includes(), not array)
-- Set.has for antiPatternSection (R4+R5 dedup — string.includes(), not array)
-- Type-dependent design (R4+R5 dedup — simple boolean in 6-line function)
-- No JSONL schema validation (architectural — downstream has Number.isFinite and
-
----
-
-### Review 361: PR #431 R7 — Flagged Section Sanitization, TOCTOU & Diminishing Returns (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 6     | 0        | 11       |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 9     | 7       |
-
-**Learnings:**
-
-- Fixed: 6 items across 5 files
-- Rejected: 11 items (4 cross-round dedup R4-R6, 1 intentional TODO scaffold, 6
-- Set.has for tableContent (R4+R5+R6 dedup — string.includes())
-- Set.has for antiPatternSection (R4+R5+R6 dedup — string.includes())
-- Type-dependent design (R4+R5+R6 dedup — simple boolean)
-- OS temp dir for test (R3+R4 dedup — repo boundary needed)
-
----
-
-### Review 485: PR #436 R1 — Qodo + Gemini + CI (2026-03-15)
-
-**Date:** 2026-03-15 | **PR:** #436 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 2     | 0        | 5        |
-
----
-
-### Review 486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 49    | 47    | 0        | 2        |
-
----
-
-### Review 487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 488: PR #448 R3 — Mixed (Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 490: PR #448 R5 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review rev-1: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 49    | 47    | 0        | 2        |
-
-**Patterns:**
-
-- grep-false-positive
-- migration-silent-noop
-- timestamp-string-comparison
-- review_rounds-mutation-bug
-- semgrep-over-suppression
-- cc-extraction
-- path-traversal-fix
-- symlink-guard
-
-**Learnings:**
-
-- grep patterns must not match success messages
-- migration scripts must fail loudly on missing source
-- use Date.parse not string comparison for timestamps
-- semgrep pattern-not-inside with $X.map suppresses unrelated $ARR[0]
-
----
-
-### Review rev-2: PR #448 R2 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 19    | 0        | 8        |
-
-**Patterns:**
-
-- eslint-cjs-config
-- no-control-regex-block
-- cli-path-traversal
-- promise-allsettled
-- number-nan-convention
-- cc-extraction
-
-**Learnings:**
-
-- eslint-disable-next-line only covers one line
-- CJS files need sourceType commonjs for \_\_dirname
-- passthrough entries change test expectations
-
----
-
-### Review rev-3: PR #448 R3 — Mixed (Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 10    | 0        | 8        |
-
-**Patterns:**
-
-- path-traversal-resolution
-- dompurify-forbid-contents
-- dedup-index-latest
-- numeric-normalization
-- cc-extraction
-
-**Learnings:**
-
-- DOMPurify ALLOWED_TAGS:[] preserves script body — use FORBID_CONTENTS
-- dedup index must keep latest entry per key
-- path traversal guards at every entry point
-
----
-
-### Review rev-4: PR #448 R4 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 10    | 0        | 7        |
-
-**Patterns:**
-
-- security-scan-exclusions
-- symlink-staged-filter
-- deterministic-errors
-- safeappend-containment
-- shared-sanitize
-- cc-extraction
-
-**Learnings:**
-
-- security scan false-positives on test files asserting pattern strings
-- replaceAll propagation to test assertions
-
----
-
 ### Review rev-5: PR #448 R5 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
 
 **Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
@@ -1313,6 +1102,26 @@ deduplicated, non-overlapping ranges):
 
 ---
 
+### Review 497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 498: PR #461 R2 — Qodo (2026-03-22)
+
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
 ### Review rev-6: PR #460 R1 — logger redaction, CC extraction, brace-counting, type guards (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
@@ -1365,9 +1174,9 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 498: PR #461 R2 — Qodo (2026-03-22)
+### Review 499: PR #466 R1 — Qodo (2026-03-24)
 
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
@@ -1375,13 +1184,73 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
+### Review 500: PR #466 R2 — Qodo (2026-03-24)
 
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
+
+---
+
+### Review 501: PR #466 R3 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review review-466-r1: (untitled) (2026-03-24)
+
+> **Completeness:** partial **Missing fields:** patterns, learnings
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 4     | 8        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 8     | 2       |
+
+---
+
+### Review review-466-r2: (untitled) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 8     | 2        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 8     | 2       |
+
+---
+
+### Review review-466-r3: (untitled) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 5     | 4        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 1     | 6     | 2       |
 
 ## Key Patterns
 
@@ -2521,6 +2390,92 @@ intentionally stable across metadata changes.
 **Key Learning:** Reconstructed post-hoc — R1 session did not persist state
 file, JSONL record, or learning entry. Root cause: `.claude/state/.gitignore`
 had `*.state.json` blanket rule blocking new state files from being committed.
+
+---
+
+### Review #502: PR #468 R4 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+**Items:** 8 total (5 fixed, 0 deferred, 3 rejected)
+
+**Key Learnings:**
+
+1. **Symlink guard pattern must propagate to ALL state file reads** — R3 added
+   it to suggest-dedup and cooldown, but missed multistep-dedup and appCheck
+   state. Every new JSON state file read needs the lstat+object validation
+   pattern from the start.
+
+2. **Atomic write needs failure cleanup** — temp-file-and-rename without a catch
+   on rename leaves stale .tmp files. Always wrap renameSync in try/catch with
+   rmSync cleanup.
+
+---
+
+### Review #501: PR #468 R3 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+**Items:** 8 total (4 fixed, 0 deferred, 4 rejected)
+
+**Key Learnings:**
+
+1. **Symlink guard on state file reads** — Any file read from a state/dedup JSON
+   should check `lstatSync` for symlinks and validate the parsed result is a
+   plain object. Consistent with the cooldown pattern added in this PR.
+
+2. **Atomic write pattern consistency** — All state file writes in hooks should
+   use the temp-file-and-rename pattern. Inconsistency invites corruption bugs.
+
+---
+
+### Review #500: PR #468 R2 — Mixed Gemini+Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** mixed (gemini+qodo)
+
+**Items:** 10 total (7 fixed, 0 deferred, 3 rejected)
+
+**Key Learnings:**
+
+1. **sanitizeError vs sanitizeInput for error logging** — Use
+   `sanitizeError(err)` (which redacts user paths) instead of
+   `sanitizeInput(err.message)`. The codebase has a dedicated error sanitizer —
+   always use it for catch blocks.
+
+2. **existsSync is a TOCTOU anti-pattern** — Never pre-check with `existsSync`
+   before reading. Wrap in try/catch and handle ENOENT. The file can disappear
+   between the existence check and the read.
+
+3. **Verify file references match implementation** — When documenting state file
+   paths, verify against the actual script that writes them. R1 fix introduced
+   wrong path for `lastCleared` (referenced `hook-warnings.json` but ack state
+   lives in `hook-warnings-ack.json`).
+
+---
+
+### Review #499: PR #468 R1 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+**Items:** 13 total (8 fixed, 2 deferred, 3 rejected)
+
+**Key Learnings:**
+
+1. **process.execPath consistency** — New `execFileSync` calls used hardcoded
+   `"node"` while all existing calls in session-start.js use `process.execPath`.
+   Pattern: always grep for existing usage when adding new `execFileSync` calls.
+
+2. **Non-blocking exit code contract** — Changing exit code from 0 to 1 in
+   non-blocking mode breaks the caller contract even when the immediate caller
+   uses `|| true`. Preserve contracts; use output patterns for signal instead.
+
+3. **mkdirSync ordering matters** — Guard checks (`isSafeToWrite`) must come
+   AFTER directory creation, not before. Otherwise the guard may fail because
+   the parent directory doesn't exist yet.
+
+4. **Auto-generated files need generator fixes** — Machine-specific paths in
+   DOCUMENTATION_INDEX.md can't be fixed by editing the output; the generator
+   script (`npm run docs:index`) needs to sanitize paths.
 
 ---
 

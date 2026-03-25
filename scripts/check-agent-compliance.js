@@ -182,14 +182,15 @@ function main() {
       console.error("❌ BLOCKING: Run the recommended agents before committing");
       console.error("   Or use --no-verify to bypass (not recommended)");
     } else {
-      console.error("⚠️  WARNING: Consider running the recommended agents");
-      console.error("   This is currently non-blocking (Phase 1)");
+      console.error("Action: Run the recommended agents listed above before committing");
+      console.error("   Fix: invoke code-reviewer agent or run /code-reviewer");
+      console.error("   [Phase 1 — non-blocking]");
     }
 
     console.error("");
   }
 
-  process.exit(STRICT ? 1 : 0);
+  process.exit(STRICT && issues.length > 0 ? 1 : 0);
 }
 
 main();

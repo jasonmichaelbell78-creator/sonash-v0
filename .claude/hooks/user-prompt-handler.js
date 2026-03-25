@@ -226,7 +226,55 @@ function runAnalyze() {
     directiveEmitted = true;
   }
   function suggestStderr(msg) {
+    // Session-level dedup: each hint fires ONCE per 4-hour session window
+    const dedupFile = path.join(HOOKS_DIR, ".suggest-dedup.json");
+    const WINDOW_MS = 4 * 60 * 60 * 1000;
+    const now = Date.now();
+    let shown = {};
+    try {
+      const st = fs.lstatSync(dedupFile);
+      if (!st.isSymbolicLink() && st.size <= 64 * 1024) {
+        const parsed = JSON.parse(fs.readFileSync(dedupFile, "utf8"));
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) shown = parsed;
+      }
+    } catch {
+      /* ENOENT on first run, corrupt file, or symlink — ignore */
+    }
+
+    // Prune stale entries to prevent unbounded growth
+    for (const [k, ts] of Object.entries(shown)) {
+      if (typeof ts !== "number" || now - ts > WINDOW_MS) delete shown[k];
+    }
+
+    const key = msg.trim().substring(0, 60);
+    if (shown[key] && now - shown[key] < WINDOW_MS) return;
+
     process.stderr.write(msg + "\n");
+    shown[key] = now;
+
+    const tmpDedup = `${dedupFile}.tmp`;
+    try {
+      if (!isSafeToWrite(dedupFile)) return;
+      if (!isSafeToWrite(tmpDedup)) return;
+      fs.writeFileSync(tmpDedup, JSON.stringify(shown), "utf-8");
+      try {
+        fs.rmSync(dedupFile, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpDedup, dedupFile);
+    } catch (writeErr) {
+      const errCode =
+        typeof writeErr === "object" && writeErr !== null && "code" in writeErr
+          ? String(writeErr.code)
+          : "unknown";
+      process.stderr.write(`[suggest-dedup] State write failed: ${errCode}\n`);
+      try {
+        fs.rmSync(tmpDedup, { force: true });
+      } catch {
+        /* cleanup */
+      }
+    }
   }
 
   // Priority 1: Security
@@ -411,6 +459,25 @@ function runSessionEnd() {
     /^(?:thanks?|thx|ty|thank\s+you)\s*[!.]?$/i.test(requestLower) && requestLower.length < 15;
 
   if (END_PATTERNS.some((p) => p.test(requestLower)) || isThanksOnly) {
+    // Cooldown: fire once per 60 minutes
+    const SESSION_END_COOLDOWN_FILE = path.join(HOOKS_DIR, ".session-end-cooldown.json");
+    const SESSION_END_COOLDOWN_MS = 60 * 60 * 1000;
+    try {
+      const stat = fs.lstatSync(SESSION_END_COOLDOWN_FILE);
+      if (stat.isSymbolicLink()) return;
+      const data = JSON.parse(fs.readFileSync(SESSION_END_COOLDOWN_FILE, "utf8"));
+      const lastRun = Number(data?.lastRun);
+      if (Number.isFinite(lastRun) && lastRun > 0 && Date.now() - lastRun < SESSION_END_COOLDOWN_MS)
+        return;
+    } catch {
+      /* ENOENT on first run, or corrupt file — no cooldown */
+    }
+
+    // Stdout directive so Claude is aware of the suggestion
+    stdoutParts.push(
+      "SESSION ENDING: User may be wrapping up. Suggest /session-end if appropriate."
+    );
+
     console.error("");
     console.error("\ud83d\udccb  SESSION ENDING?");
     console.error("\u2501".repeat(20));
@@ -424,6 +491,27 @@ function runSessionEnd() {
     console.error("");
     console.error("Just say 'continue' if you have more work to do!");
     console.error("\u2501".repeat(20));
+
+    // Record cooldown
+    const tmpCooldown = `${SESSION_END_COOLDOWN_FILE}.tmp`;
+    try {
+      if (!isSafeToWrite(SESSION_END_COOLDOWN_FILE)) return; // Fail-open: banner may repeat next prompt
+      if (!isSafeToWrite(tmpCooldown)) return; // Fail-open: banner may repeat next prompt
+      fs.mkdirSync(path.dirname(SESSION_END_COOLDOWN_FILE), { recursive: true });
+      fs.writeFileSync(tmpCooldown, JSON.stringify({ lastRun: Date.now() }), "utf-8");
+      try {
+        fs.rmSync(SESSION_END_COOLDOWN_FILE, { force: true });
+      } catch {
+        /* best-effort */
+      }
+      fs.renameSync(tmpCooldown, SESSION_END_COOLDOWN_FILE);
+    } catch {
+      try {
+        fs.rmSync(tmpCooldown, { force: true });
+      } catch {
+        /* cleanup */
+      }
+    }
   }
 }
 
@@ -484,25 +572,71 @@ function runPlanSuggestion() {
   const shouldSuggest = hasImpl && (complexityMatches.length > 0 || wordCount > 50);
 
   if (shouldSuggest && !SIMPLE.some((p) => p.test(userPrompt))) {
-    console.error("");
-    console.error("\ud83d\udcdd  MULTI-STEP TASK DETECTED");
-    console.error("\u2501".repeat(28));
-    console.error("This looks like a complex task that might benefit from");
-    console.error("planning before implementation.");
-    console.error("");
-    console.error("Options:");
-    console.error("  \u2022 Plan mode - Quick planning (2-3 questions, then plan)");
-    console.error("  \u2022 /deep-plan - Exhaustive discovery (10-25 questions,");
-    console.error("    decision record, then detailed plan with approval gate)");
-    console.error("");
-    if (complexityMatches.length > 0)
-      console.error("Complexity detected: multiple items or broad scope");
-    if (wordCount > 50)
-      console.error(`Request length: ${wordCount} words (suggests multiple steps)`);
-    console.error("");
-    console.error('Say "continue without plan" to proceed directly.');
-    console.error('Say "/deep-plan" for thorough discovery-first planning.');
-    console.error("\u2501".repeat(28));
+    // Session-level dedup: fire once per unique complexity signature
+    const MULTISTEP_DEDUP_FILE = path.join(HOOKS_DIR, ".multistep-dedup.json");
+    const complexityKey = `multistep:${hasImpl ? "impl" : ""}:${complexityMatches.length}:${wordCount > 50 ? "long" : "short"}`;
+    let multistepShown = {};
+    try {
+      const st = fs.lstatSync(MULTISTEP_DEDUP_FILE);
+      if (!st.isSymbolicLink()) {
+        const parsed = JSON.parse(fs.readFileSync(MULTISTEP_DEDUP_FILE, "utf8"));
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) multistepShown = parsed;
+      }
+    } catch {
+      /* ENOENT on first run, corrupt file, or symlink — ignore */
+    }
+
+    const alreadyShown =
+      multistepShown[complexityKey] &&
+      Date.now() - multistepShown[complexityKey] < 4 * 60 * 60 * 1000;
+
+    if (!alreadyShown) {
+      // Stdout directive so Claude is aware of the suggestion
+      stdoutParts.push(
+        "MULTI-STEP TASK: Complex request detected. Consider suggesting Plan mode or /deep-plan to user."
+      );
+
+      console.error("");
+      console.error("\ud83d\udcdd  MULTI-STEP TASK DETECTED");
+      console.error("\u2501".repeat(28));
+      console.error("This looks like a complex task that might benefit from");
+      console.error("planning before implementation.");
+      console.error("");
+      console.error("Options:");
+      console.error("  \u2022 Plan mode - Quick planning (2-3 questions, then plan)");
+      console.error("  \u2022 /deep-plan - Exhaustive discovery (10-25 questions,");
+      console.error("    decision record, then detailed plan with approval gate)");
+      console.error("");
+      if (complexityMatches.length > 0)
+        console.error("Complexity detected: multiple items or broad scope");
+      if (wordCount > 50)
+        console.error(`Request length: ${wordCount} words (suggests multiple steps)`);
+      console.error("");
+      console.error('Say "continue without plan" to proceed directly.');
+      console.error('Say "/deep-plan" for thorough discovery-first planning.');
+      console.error("\u2501".repeat(28));
+
+      // Record dedup
+      multistepShown[complexityKey] = Date.now();
+      const tmpMultistep = `${MULTISTEP_DEDUP_FILE}.tmp`;
+      try {
+        if (!isSafeToWrite(MULTISTEP_DEDUP_FILE)) return; // Fail-open: banner may repeat next prompt
+        if (!isSafeToWrite(tmpMultistep)) return; // Fail-open: banner may repeat next prompt
+        fs.writeFileSync(tmpMultistep, JSON.stringify(multistepShown), "utf-8");
+        try {
+          fs.rmSync(MULTISTEP_DEDUP_FILE, { force: true });
+        } catch {
+          /* best-effort */
+        }
+        fs.renameSync(tmpMultistep, MULTISTEP_DEDUP_FILE);
+      } catch {
+        try {
+          fs.rmSync(tmpMultistep, { force: true });
+        } catch {
+          /* cleanup */
+        }
+      }
+    }
   }
 }
 
