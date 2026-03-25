@@ -2393,6 +2393,23 @@ had `*.state.json` blanket rule blocking new state files from being committed.
 
 ---
 
+### Review #501: PR #468 R3 — Qodo (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+
+**Items:** 8 total (4 fixed, 0 deferred, 4 rejected)
+
+**Key Learnings:**
+
+1. **Symlink guard on state file reads** — Any file read from a state/dedup JSON
+   should check `lstatSync` for symlinks and validate the parsed result is a
+   plain object. Consistent with the cooldown pattern added in this PR.
+
+2. **Atomic write pattern consistency** — All state file writes in hooks should
+   use the temp-file-and-rename pattern. Inconsistency invites corruption bugs.
+
+---
+
 ### Review #500: PR #468 R2 — Mixed Gemini+Qodo (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #468 | **Source:** mixed (gemini+qodo)

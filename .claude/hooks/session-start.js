@@ -420,7 +420,7 @@ function runCommand(description, command, timeoutMs = 120000) {
     return true;
   } catch (error) {
     const reason = error.killed ? "timed out" : "failed";
-    const safeCmd = sanitizeInput(command);
+    const safeCmd = sanitizeInput(String(command));
     const fixCmd = `Fix: ${safeCmd}`;
     console.log(`   ⚠️ ${description} ${reason}. ${fixCmd}`);
     runCommandFailures.push({
@@ -1045,10 +1045,9 @@ try {
   });
 } catch (err) {
   // Non-fatal: commit log sync failure doesn't block session start
+  const safeLine0 = sanitizeInput(String(sanitizeError(err)).split("\n")[0].replace(/\r$/, ""));
   console.warn(
-    "Commit log sync failed: " +
-      sanitizeError(err) +
-      ". Fix: node scripts/seed-commit-log.js --sync"
+    "Commit log sync failed: " + safeLine0 + ". Fix: node scripts/seed-commit-log.js --sync"
   );
 }
 

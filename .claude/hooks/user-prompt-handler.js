@@ -232,9 +232,13 @@ function runAnalyze() {
     const now = Date.now();
     let shown = {};
     try {
-      shown = JSON.parse(fs.readFileSync(dedupFile, "utf8"));
+      const st = fs.lstatSync(dedupFile);
+      if (!st.isSymbolicLink()) {
+        const parsed = JSON.parse(fs.readFileSync(dedupFile, "utf8"));
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) shown = parsed;
+      }
     } catch {
-      /* first run or corrupt file */
+      /* ENOENT on first run, corrupt file, or symlink — ignore */
     }
 
     // Prune stale entries to prevent unbounded growth

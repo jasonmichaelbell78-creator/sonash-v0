@@ -1062,7 +1062,16 @@ function testRegistryReminder() {
         pending.lastUpdated = new Date().toISOString();
         fs.mkdirSync(path.dirname(pendingRegistryPath), { recursive: true });
         if (isSafeToWrite(pendingRegistryPath)) {
-          fs.writeFileSync(pendingRegistryPath, JSON.stringify(pending, null, 2));
+          const tmpPath = `${pendingRegistryPath}.tmp`;
+          if (isSafeToWrite(tmpPath)) {
+            fs.writeFileSync(tmpPath, JSON.stringify(pending, null, 2));
+            try {
+              fs.rmSync(pendingRegistryPath, { force: true });
+            } catch {
+              /* best-effort */
+            }
+            fs.renameSync(tmpPath, pendingRegistryPath);
+          }
         }
       } catch {
         // State tracking failed — warning was still emitted
