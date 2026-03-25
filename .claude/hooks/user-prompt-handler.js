@@ -252,7 +252,8 @@ function runAnalyze() {
         /* best-effort */
       }
       fs.renameSync(tmpDedup, dedupFile);
-    } catch {
+    } catch (writeErr) {
+      process.stderr.write(`[suggest-dedup] State write failed: ${writeErr.code || "unknown"}\n`);
       try {
         fs.rmSync(tmpDedup, { force: true });
       } catch {

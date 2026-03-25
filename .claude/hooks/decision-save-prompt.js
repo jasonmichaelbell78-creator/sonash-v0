@@ -112,7 +112,7 @@ if (shouldPrompt) {
     const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
     const warningScript = path.join(projectDir, "scripts", "append-hook-warning.js");
     execFileSync(
-      "node",
+      process.execPath,
       [
         warningScript,
         "--hook=post-tool-use",

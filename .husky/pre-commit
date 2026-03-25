@@ -76,13 +76,13 @@ if [ -n "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "main" ] && [ "$BRANCH_NAME" != 
       node scripts/append-hook-warning.js --hook=pre-commit --type=pr-creep --severity=warning \
         --message="$COMMIT_COUNT commits on branch — PR strongly recommended" \
         --action="Create PR: gh pr create" \
-        || true
+        || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_WARN" ]; then
       echo "  📋 Branch has $COMMIT_COUNT commits — Action: create a PR with \`gh pr create\`" >&3
       node scripts/append-hook-warning.js --hook=pre-commit --type=pr-creep --severity=info \
         --message="$COMMIT_COUNT commits on branch" \
         --action="Create PR: gh pr create" \
-        || true
+        || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
     fi
   fi
 fi
@@ -386,7 +386,7 @@ if [ "$RUN_PATTERNS" -eq 1 ]; then
     node scripts/append-hook-warning.js --hook=pre-commit --type=pattern-error --severity=warning \
       --message="Pattern compliance check errored" \
       --action="Investigate: node scripts/check-pattern-compliance.js --staged" \
-      || true
+      || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
     echo "pattern-compliance|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
     # Exit 0: no critical violations (may have warnings)
@@ -587,7 +587,7 @@ else
       node scripts/append-hook-warning.js --hook=pre-commit --type=doc-index --severity=warning \
         --message="Documentation index generation failed" \
         --action="Run: npm run docs:index" \
-        || true
+        || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
       CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
       if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
       echo "doc-index|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"

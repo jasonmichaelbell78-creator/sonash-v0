@@ -268,7 +268,7 @@
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions         | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-10933 | Filesystem MCP server configured but noted as unused              | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (4715)
+## code-quality (4716)
 
 | ID         | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | ---------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -3443,6 +3443,7 @@
 | DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
 | DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | docs/technical-debt/logs/resolution-log.jsonl                                                                                                                               | 0    |
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
+| DEBT-45620 | Auto-generated DOCUMENTATION_INDEX leaks machine-specific...    | S2       | DOCUMENTATION_INDEX.md                                                                                                                                                      | 103  |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-0554  | Prefer `String#replaceAll()` over `String#replace()`.           | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555  | Visible, non-interactive elements with click handlers mus...    | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
@@ -7795,7 +7796,7 @@
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)  | S3       | package.json                                                                     | 142  |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest          | S3       | package.json                                                                     | 11   |
 
-## security (722)
+## security (723)
 
 | ID         | Title                                                          | Severity | File                                                                    | Line |
 | ---------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -8225,6 +8226,7 @@
 | DEBT-11320 | High Severity Findings (Security & Stability)                  | S2       | docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md               | 2    |
 | DEBT-11326 | ReDoS in credential sanitizer: alternation-inside-quantif...   | S2       | scripts/lib/sanitize-error.js                                           | 26   |
 | DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...   | S2       | .claude/override-log.jsonl                                              | 0    |
+| DEBT-45619 | Hook projectDir pattern lacks validation before execFileSync   | S2       | .claude/hooks/decision-save-prompt.js                                   | 112  |
 | DEBT-0774  | App Check disabled on Functions and client init disabled ...   | S3       | functions/src/index.ts                                                  | 0    |
 | DEBT-0800  | SonarCloud: Potentially hard-coded password pattern            | S3       | lib/utils/errors.ts                                                     | 69   |
 | DEBT-0801  | Math.random for visual effects                                 | S3       | components/celebrations/confetti-burst.tsx                              | 39   |

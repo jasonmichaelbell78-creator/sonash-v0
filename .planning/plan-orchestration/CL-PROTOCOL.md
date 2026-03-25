@@ -1,7 +1,7 @@
 # Plan Execution CL Protocol
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-03-24
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->

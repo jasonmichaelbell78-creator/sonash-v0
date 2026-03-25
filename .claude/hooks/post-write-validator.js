@@ -1060,8 +1060,8 @@ function testRegistryReminder() {
           pending.files.push(normalizedFilePath);
         }
         pending.lastUpdated = new Date().toISOString();
+        fs.mkdirSync(path.dirname(pendingRegistryPath), { recursive: true });
         if (isSafeToWrite(pendingRegistryPath)) {
-          fs.mkdirSync(path.dirname(pendingRegistryPath), { recursive: true });
           fs.writeFileSync(pendingRegistryPath, JSON.stringify(pending, null, 2));
         }
       } catch {

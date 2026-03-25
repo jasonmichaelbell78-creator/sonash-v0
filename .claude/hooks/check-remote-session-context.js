@@ -251,7 +251,7 @@ function main() {
       const warningScript = path.join(projectDir, "scripts", "append-hook-warning.js");
       const safeBranch = sanitizeInput(newerBranch);
       execFileSync(
-        "node",
+        process.execPath,
         [
           warningScript,
           "--hook=session-start",

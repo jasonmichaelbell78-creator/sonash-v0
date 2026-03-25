@@ -1405,7 +1405,7 @@
 | DEBT-45610 | Hook bypass threshold: reviewer overridden 15+ times in 1...  | reviewer                                                                                                                                           | 0    | process                  | E2        |
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...  | cross-doc-deps                                                                                                                                     | 0    | process                  | E2        |
 
-## S2 - Medium (3441)
+## S2 - Medium (3443)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4850,6 +4850,8 @@
 | DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...      | .claude/override-log.jsonl                                                                                                                                                  | 0         | security                 | E1        |
 | DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...      | docs/technical-debt/logs/resolution-log.jsonl                                                                                                                               | 0         | code-quality             | E1        |
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...      | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0         | code-quality             | E1        |
+| DEBT-45619 | Hook projectDir pattern lacks validation before execFileSync      | .claude/hooks/decision-save-prompt.js                                                                                                                                       | 112       | security                 | E1        |
+| DEBT-45620 | Auto-generated DOCUMENTATION_INDEX leaks machine-specific...      | DOCUMENTATION_INDEX.md                                                                                                                                                      | 103       | code-quality             | E1        |
 
 ## S3 - Low (3641)
 

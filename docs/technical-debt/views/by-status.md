@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2123)
+## NEW (2125)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -720,6 +720,8 @@
 | DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | security                 |
 | DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | code-quality             |
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | code-quality             |
+| DEBT-45619 | Hook projectDir pattern lacks validation before execFileSync    | S2       | security                 |
+| DEBT-45620 | Auto-generated DOCUMENTATION_INDEX leaks machine-specific...    | S2       | code-quality             |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
