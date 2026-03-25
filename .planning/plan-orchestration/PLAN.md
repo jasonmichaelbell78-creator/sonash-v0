@@ -393,15 +393,35 @@ Step 16.
 
 ---
 
-### Step 18: SWS C3 — First Ecosystems (Steps 4-7, ~12-20 sessions)
+### Step 17.5: SWS — Research & Discovery Ecosystem (Step 3, ~4-6 sessions)
 
-Execute SWS Steps 4-7. First 4 ecosystem standardizations.
+Execute SWS Step 3 (R&D). Per D67 amendment DA-1 (Session #238): R&D inserted
+between Skills (#2) and Hooks (now #4).
+
+**Plan:** `.planning/research-discovery-standard/PLAN.md` (27 decisions, 4
+phases, L effort). Covers: 3 protocol docs, T19 expansion, CLAUDE.md guardrail
+#15, hook detection, CL-PROTOCOL persistence, unified confidence labels,
+Context7 deployment, health checker, enforcement manifest, CANON registration at
+L3.
+
+**CL pre-verification:** Verify R&D current state against DIAGNOSIS.md claims.
+**CL post-verification:** Verify all deliverables meet CANON standards.
+
+**Done when:** R&D at L3 maturity. Health checker passing. **Depends on:** Step
+17 (SWS C2 Framework — Skills ecosystem complete).
+
+---
+
+### Step 18: SWS C3 — First Ecosystems (Steps 5-8, ~12-20 sessions)
+
+Execute SWS Steps 5-8 (was 4-7, shifted +1 per DA-1). First 4 post-R&D ecosystem
+standardizations.
 
 **CL pre-verification:** Before each ecosystem, verify its current state. **CL
 post-verification:** After each ecosystem, verify it meets CANON standards.
 
 **Done when:** 4 ecosystems at target maturity. Checkpoint #2 passed. **Depends
-on:** Step 17.
+on:** Step 17.5.
 
 ---
 

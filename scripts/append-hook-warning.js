@@ -266,7 +266,7 @@ function writeAuditTrail(entry) {
     const auditRecord = {
       ...entry,
       actor: "hook-system",
-      user: process.env.USER || process.env.USERNAME || "unknown",
+      user: "redacted",
       outcome: entry.severity === "error" ? "blocked" : "warned",
     };
     safeAppendFileSync(logPath, JSON.stringify(auditRecord) + "\n");

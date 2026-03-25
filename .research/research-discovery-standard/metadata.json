@@ -1,0 +1,31 @@
+{
+  "topic": "Research & Discovery Standard",
+  "slug": "research-discovery-standard",
+  "depth": "L1",
+  "date": "2026-03-24",
+  "status": "complete",
+  "agents_total": 18,
+  "agents_failed": 0,
+  "waves": 5,
+  "sub_questions": 10,
+  "findings_files": 14,
+  "challenge_files": 4,
+  "output_lines": 533,
+  "external_sources": "100+",
+  "confidence": {
+    "internal": "HIGH",
+    "external": "MEDIUM-HIGH",
+    "synthesis": "MEDIUM"
+  },
+  "challenge_impact": {
+    "strong_changes": 4,
+    "moderate_flags": 3,
+    "otb_supplement": 3,
+    "otb_inform": 4,
+    "otb_replace": 0
+  },
+  "key_decisions": 10,
+  "open_questions": 6,
+  "consumer_hint": "deep-plan",
+  "consumer_topic": "research-discovery-standard"
+}

@@ -156,8 +156,8 @@ function logOverride(check, reason) {
     timestamp: new Date().toISOString(),
     check,
     reason: reason || "No reason provided",
-    user: process.env.USER || process.env.USERNAME || "unknown",
-    cwd: process.cwd(),
+    user: "redacted",
+    cwd: "redacted",
     git_branch: getGitBranch(),
   };
 
