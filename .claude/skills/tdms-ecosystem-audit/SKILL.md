@@ -251,6 +251,6 @@ Critical invariant: MASTER_DEBT.jsonl == raw/deduped.jsonl
 
 | Version | Date       | Description                                          |
 | ------- | ---------- | ---------------------------------------------------- |
-| 1.0     | 2026-02-23 | Initial implementation                               |
 | 1.2     | 2026-03-25 | Extract shared patterns to \_shared/ecosystem-audit/ |
 | 1.1     | 2026-02-24 | Add compaction guard for progress persistence        |
+| 1.0     | 2026-02-23 | Initial implementation                               |

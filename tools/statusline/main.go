@@ -9,6 +9,12 @@ import (
 	"runtime"
 )
 
+// RateLimitBucket holds usage and reset info for a single rate-limit window.
+type RateLimitBucket struct {
+	UsedPercentage *float64        `json:"used_percentage"`
+	ResetsAt       json.RawMessage `json:"resets_at"`
+}
+
 // StdinData matches Claude Code's statusline JSON schema.
 type StdinData struct {
 	Model struct {
@@ -32,14 +38,8 @@ type StdinData struct {
 		TotalLinesRemoved int     `json:"total_lines_removed"`
 	} `json:"cost"`
 	RateLimits struct {
-		FiveHour struct {
-			UsedPercentage *float64        `json:"used_percentage"`
-			ResetsAt       json.RawMessage `json:"resets_at"`
-		} `json:"five_hour"`
-		SevenDay struct {
-			UsedPercentage *float64        `json:"used_percentage"`
-			ResetsAt       json.RawMessage `json:"resets_at"`
-		} `json:"seven_day"`
+		FiveHour RateLimitBucket `json:"five_hour"`
+		SevenDay RateLimitBucket `json:"seven_day"`
 	} `json:"rate_limits"`
 	Agent struct {
 		Name string `json:"name"`
@@ -92,9 +92,6 @@ func main() {
 	if err := json.Unmarshal(input, &data); err != nil {
 		return // silent fail on bad JSON
 	}
-
-	// Refresh API-backed caches if stale (weather, GitHub PR/CI)
-	refreshCacheIfStale(&cfg)
 
 	// Build widgets
 	widgets := buildAllWidgets(&data, &cfg)

@@ -62,6 +62,13 @@ const (
 	colorBlink   = "\x1b[5;31m"
 )
 
+// Repeated string constants (SonarCloud dedup).
+const (
+	hooksOK      = "\u2713 hooks"
+	dotClaude    = ".claude"
+	resetsPrefix = "resets "
+)
+
 // sanitize strips control characters and ANSI escapes, caps length.
 var (
 	csiRe = regexp.MustCompile("\x1b\\[[0-9;?]*[ -/]*[@-~]")
@@ -248,17 +255,17 @@ func widgetRateLimit7d(data *StdinData, cfg *Config) WidgetResult {
 func widgetRateLimitReset(data *StdinData, cfg *Config) WidgetResult {
 	raw := data.RateLimits.FiveHour.ResetsAt
 	if len(raw) == 0 || string(raw) == "null" {
-		return WidgetResult{Text: "resets " + cfg.Placeholders.Unavailable, Color: colorDim}
+		return WidgetResult{Text: resetsPrefix + cfg.Placeholders.Unavailable, Color: colorDim}
 	}
 	t := parseTimestamp(raw)
 	if t.IsZero() {
-		return WidgetResult{Text: "resets " + cfg.Placeholders.Unavailable, Color: colorDim}
+		return WidgetResult{Text: resetsPrefix + cfg.Placeholders.Unavailable, Color: colorDim}
 	}
 	loc, err := time.LoadLocation(cfg.Timezone.Zone)
 	if err != nil {
 		loc = time.Local
 	}
-	return WidgetResult{Text: "resets " + t.In(loc).Format("3:04pm"), Color: colorDim}
+	return WidgetResult{Text: resetsPrefix + t.In(loc).Format("3:04pm"), Color: colorDim}
 }
 
 // parseTimestamp handles both Unix timestamps (number) and RFC3339 strings.
@@ -333,10 +340,10 @@ func widgetHookHealth(data *StdinData) WidgetResult {
 	if dir == "" {
 		dir = data.Workspace.CurrentDir
 	}
-	hookFile := filepath.Join(dir, ".claude", "state", "hook-runs.jsonl")
+	hookFile := filepath.Join(dir, dotClaude, "state", "hook-runs.jsonl")
 	line := tailLastLine(hookFile)
 	if line == "" {
-		return WidgetResult{Text: "\u2713 hooks", Color: colorGreen}
+		return WidgetResult{Text: hooksOK, Color: colorGreen}
 	}
 
 	var entry struct {
@@ -344,10 +351,10 @@ func widgetHookHealth(data *StdinData) WidgetResult {
 		Outcome string `json:"outcome"`
 	}
 	if err := json.Unmarshal([]byte(line), &entry); err != nil {
-		return WidgetResult{Text: "\u2713 hooks", Color: colorGreen}
+		return WidgetResult{Text: hooksOK, Color: colorGreen}
 	}
 	if entry.Success || entry.Outcome == "pass" {
-		return WidgetResult{Text: "\u2713 hooks", Color: colorGreen}
+		return WidgetResult{Text: hooksOK, Color: colorGreen}
 	}
 	return WidgetResult{Text: "\u2717 hooks", Color: colorRed}
 }
@@ -357,7 +364,7 @@ func widgetUnackedWarnings(data *StdinData) WidgetResult {
 	if dir == "" {
 		dir = data.Workspace.CurrentDir
 	}
-	warnFile := filepath.Join(dir, ".claude", "state", "hook-warnings-log.jsonl")
+	warnFile := filepath.Join(dir, dotClaude, "state", "hook-warnings-log.jsonl")
 	count := countUnacked(warnFile)
 	if count == 0 {
 		return WidgetResult{Text: "\u26a0  0 unacked", Color: colorDim}
@@ -379,10 +386,40 @@ func widgetCurrentTask(data *StdinData, cfg *Config) WidgetResult {
 		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
 	}
 
-	todosDir := filepath.Join(home, ".claude", "todos")
-	entries, err := os.ReadDir(todosDir)
+	todosDir := filepath.Join(home, dotClaude, "todos")
+	todoFile := findLatestTodoFile(todosDir, session)
+	if todoFile == "" {
+		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+	}
+
+	// Path traversal guard
+	resolved, err := filepath.Abs(filepath.Join(todosDir, todoFile))
 	if err != nil {
 		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+	}
+	absDir, _ := filepath.Abs(todosDir)
+	if !strings.HasPrefix(resolved, absDir+string(filepath.Separator)) {
+		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+	}
+
+	raw, err := os.ReadFile(resolved)
+	if err != nil {
+		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+	}
+
+	task := findInProgressTask(raw)
+	if task == "" {
+		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+	}
+	return WidgetResult{Text: task, Color: colorBold}
+}
+
+// findLatestTodoFile returns the filename of the most recently modified
+// agent todo file matching the given session, or "" if none found.
+func findLatestTodoFile(todosDir, session string) string {
+	entries, err := os.ReadDir(todosDir)
+	if err != nil {
+		return ""
 	}
 
 	type fileInfo struct {
@@ -401,34 +438,23 @@ func widgetCurrentTask(data *StdinData, cfg *Config) WidgetResult {
 		}
 	}
 	if len(matches) == 0 {
-		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+		return ""
 	}
 	sort.Slice(matches, func(i, j int) bool {
 		return matches[i].mod.After(matches[j].mod)
 	})
+	return matches[0].name
+}
 
-	todoPath := filepath.Join(todosDir, matches[0].name)
-	// Path traversal guard
-	resolved, err := filepath.Abs(todoPath)
-	if err != nil {
-		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
-	}
-	absDir, _ := filepath.Abs(todosDir)
-	if !strings.HasPrefix(resolved, absDir+string(filepath.Separator)) {
-		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
-	}
-
-	raw, err := os.ReadFile(resolved)
-	if err != nil {
-		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
-	}
-
+// findInProgressTask parses a todo JSON array and returns the sanitized
+// activeForm of the first in-progress task, or "" if none found.
+func findInProgressTask(raw []byte) string {
 	var todos []struct {
 		Status     string `json:"status"`
 		ActiveForm string `json:"activeForm"`
 	}
 	if err := json.Unmarshal(raw, &todos); err != nil {
-		return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+		return ""
 	}
 	for _, t := range todos {
 		if t.Status == "in_progress" {
@@ -436,10 +462,10 @@ func widgetCurrentTask(data *StdinData, cfg *Config) WidgetResult {
 			if text == "" {
 				text = "(in progress)"
 			}
-			return WidgetResult{Text: text, Color: colorBold}
+			return text
 		}
 	}
-	return WidgetResult{Text: cfg.Placeholders.Task, Color: colorDim}
+	return ""
 }
 
 func widgetUptime() WidgetResult {
@@ -452,33 +478,46 @@ func widgetUptime() WidgetResult {
 	// Parse "Statistics since M/D/YYYY H:MM:SS AM/PM"
 	lines := strings.Split(string(out), "\n")
 	for _, line := range lines {
-		if strings.Contains(line, "Statistics since") {
-			parts := strings.SplitN(line, "since", 2)
-			if len(parts) < 2 {
-				continue
-			}
-			dateStr := strings.TrimSpace(parts[1])
-			// Try common Windows date formats
-			for _, layout := range []string{
-				"1/2/2006 3:04:05 PM",
-				"01/02/2006 3:04:05 PM",
-				"1/2/2006 15:04:05",
-				"2006-01-02 15:04:05",
-			} {
-				t, err := time.Parse(layout, dateStr)
-				if err == nil {
-					dur := time.Since(t)
-					days := int(dur.Hours() / 24)
-					hours := int(dur.Hours()) % 24
-					if days > 0 {
-						return WidgetResult{Text: fmt.Sprintf("Up %dd %dh", days, hours), Color: colorDim}
-					}
-					return WidgetResult{Text: fmt.Sprintf("Up %dh", hours), Color: colorDim}
-				}
-			}
+		if !strings.Contains(line, "Statistics since") {
+			continue
+		}
+		parts := strings.SplitN(line, "since", 2)
+		if len(parts) < 2 {
+			continue
+		}
+		dateStr := strings.TrimSpace(parts[1])
+		if dur, ok := parseUptimeDate(dateStr); ok {
+			return WidgetResult{Text: formatUptime(dur), Color: colorDim}
 		}
 	}
 	return WidgetResult{Text: "Up ...", Color: colorDim}
+}
+
+// parseUptimeDate tries common Windows date formats and returns the
+// duration since the parsed time, or false if no format matched.
+func parseUptimeDate(dateStr string) (time.Duration, bool) {
+	for _, layout := range []string{
+		"1/2/2006 3:04:05 PM",
+		"01/02/2006 3:04:05 PM",
+		"1/2/2006 15:04:05",
+		"2006-01-02 15:04:05",
+	} {
+		t, err := time.Parse(layout, dateStr)
+		if err == nil {
+			return time.Since(t), true
+		}
+	}
+	return 0, false
+}
+
+// formatUptime renders a duration as "Up Xd Yh" or "Up Xh".
+func formatUptime(dur time.Duration) string {
+	days := int(dur.Hours() / 24)
+	hours := int(dur.Hours()) % 24
+	if days > 0 {
+		return fmt.Sprintf("Up %dd %dh", days, hours)
+	}
+	return fmt.Sprintf("Up %dh", hours)
 }
 
 func widgetSessionCount(data *StdinData) WidgetResult {
@@ -486,7 +525,7 @@ func widgetSessionCount(data *StdinData) WidgetResult {
 	if err != nil {
 		return WidgetResult{Text: "Sessions today: ...", Color: colorDim}
 	}
-	cacheDir := filepath.Join(home, ".claude", "statusline")
+	cacheDir := filepath.Join(home, dotClaude, "statusline")
 	os.MkdirAll(cacheDir, 0755)
 	countFile := filepath.Join(cacheDir, "sessions-today.json")
 

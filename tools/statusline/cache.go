@@ -1,12 +1,24 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
+)
+
+// Cache filename constants.
+const (
+	cacheFileWeather  = "weather.json"
+	cacheFileGitHubPR = "github-pr.json"
+	cacheFileGitHubCI = "github-ci.json"
+	cacheFileBackoff  = "backoff.json"
 )
 
 // WeatherCache represents cached weather data.
@@ -92,12 +104,12 @@ func isCacheStale(fetchedAt string, ttlMinutes int) bool {
 
 func readBackoff() BackoffState {
 	var state BackoffState
-	readCacheFile("backoff.json", &state)
+	readCacheFile(cacheFileBackoff, &state)
 	return state
 }
 
 func writeBackoff(state BackoffState) {
-	writeCacheFile("backoff.json", state)
+	writeCacheFile(cacheFileBackoff, state)
 }
 
 func shouldRetry(entry BackoffEntry) bool {
@@ -137,40 +149,40 @@ func refreshCacheIfStale(cfg *Config) {
 
 	// Weather
 	var weather WeatherCache
-	readCacheFile("weather.json", &weather)
+	readCacheFile(cacheFileWeather, &weather)
 	if isCacheStale(weather.FetchedAt, ttl) && shouldRetry(backoff.Weather) {
 		if err := fetchWeather(cfg, &weather); err != nil {
 			recordFailure(&backoff.Weather, cfg.Cache.RetryBackoff)
 		} else {
 			recordSuccess(&backoff.Weather)
 			weather.FetchedAt = time.Now().Format(time.RFC3339)
-			writeCacheFile("weather.json", weather)
+			writeCacheFile(cacheFileWeather, weather)
 		}
 	}
 
 	// GitHub PR
 	var pr GitHubPRCache
-	readCacheFile("github-pr.json", &pr)
+	readCacheFile(cacheFileGitHubPR, &pr)
 	if isCacheStale(pr.FetchedAt, ttl) && shouldRetry(backoff.GitHubPR) {
 		if err := fetchGitHubPR(&pr); err != nil {
 			recordFailure(&backoff.GitHubPR, cfg.Cache.RetryBackoff)
 		} else {
 			recordSuccess(&backoff.GitHubPR)
 			pr.FetchedAt = time.Now().Format(time.RFC3339)
-			writeCacheFile("github-pr.json", pr)
+			writeCacheFile(cacheFileGitHubPR, pr)
 		}
 	}
 
 	// GitHub CI
 	var ci GitHubCICache
-	readCacheFile("github-ci.json", &ci)
+	readCacheFile(cacheFileGitHubCI, &ci)
 	if isCacheStale(ci.FetchedAt, ttl) && shouldRetry(backoff.GitHubCI) {
 		if err := fetchGitHubCI(&ci); err != nil {
 			recordFailure(&backoff.GitHubCI, cfg.Cache.RetryBackoff)
 		} else {
 			recordSuccess(&backoff.GitHubCI)
 			ci.FetchedAt = time.Now().Format(time.RFC3339)
-			writeCacheFile("github-ci.json", ci)
+			writeCacheFile(cacheFileGitHubCI, ci)
 		}
 	}
 
@@ -184,18 +196,30 @@ func fetchWeather(cfg *Config, cache *WeatherCache) error {
 	if key == "" || key == "YOUR_OPENWEATHERMAP_API_KEY" {
 		return fmt.Errorf("no weather API key configured")
 	}
-	url := fmt.Sprintf(
-		"https://api.openweathermap.org/data/2.5/weather?q=%s&units=%s&appid=%s",
-		cfg.Weather.Location, cfg.Weather.Units, key,
-	)
 
-	cmd := exec.Command("curl", "-sf", "--max-time", "5", url)
-	out, err := cmd.Output()
+	params := url.Values{}
+	params.Set("q", cfg.Weather.Location)
+	params.Set("units", cfg.Weather.Units)
+	params.Set("appid", key)
+	reqURL := "https://api.openweathermap.org/data/2.5/weather?" + params.Encode()
+
+	client := &http.Client{Timeout: 5 * time.Second}
+	resp, err := client.Get(reqURL)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("weather API returned status %d", resp.StatusCode)
+	}
+
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return err
 	}
 
-	var resp struct {
+	var parsed struct {
 		Main struct {
 			Temp    float64 `json:"temp"`
 			TempMax float64 `json:"temp_max"`
@@ -206,21 +230,23 @@ func fetchWeather(cfg *Config, cache *WeatherCache) error {
 			Icon string `json:"icon"`
 		} `json:"weather"`
 	}
-	if err := json.Unmarshal(out, &resp); err != nil {
+	if err := json.Unmarshal(body, &parsed); err != nil {
 		return err
 	}
 
-	cache.Temp = resp.Main.Temp
-	cache.High = resp.Main.TempMax
-	cache.Low = resp.Main.TempMin
-	if len(resp.Weather) > 0 {
-		cache.Condition = weatherIcon(resp.Weather[0].Icon)
+	cache.Temp = parsed.Main.Temp
+	cache.High = parsed.Main.TempMax
+	cache.Low = parsed.Main.TempMin
+	if len(parsed.Weather) > 0 {
+		cache.Condition = weatherIcon(parsed.Weather[0].Icon)
 	}
 	return nil
 }
 
 func fetchGitHubPR(cache *GitHubPRCache) error {
-	cmd := exec.Command("gh", "pr", "view", "--json", "number,statusCheckRollup,state")
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "gh", "pr", "view", "--json", "number,statusCheckRollup,state")
 	cmd.Stderr = nil
 	out, err := cmd.Output()
 	if err != nil {
@@ -254,7 +280,9 @@ func fetchGitHubPR(cache *GitHubPRCache) error {
 }
 
 func fetchGitHubCI(cache *GitHubCICache) error {
-	cmd := exec.Command("gh", "run", "list", "--limit", "1", "--json", "status,conclusion")
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "gh", "run", "list", "--limit", "1", "--json", "status,conclusion")
 	cmd.Stderr = nil
 	out, err := cmd.Output()
 	if err != nil {
@@ -307,7 +335,7 @@ func weatherIcon(icon string) string {
 
 func widgetWeatherCurrent(cfg *Config) WidgetResult {
 	var cache WeatherCache
-	if err := readCacheFile("weather.json", &cache); err != nil {
+	if err := readCacheFile(cacheFileWeather, &cache); err != nil {
 		return WidgetResult{Text: "weather:" + cfg.Placeholders.Unavailable, Color: colorDim}
 	}
 	stale := ""
@@ -320,7 +348,7 @@ func widgetWeatherCurrent(cfg *Config) WidgetResult {
 
 func widgetWeatherForecast(cfg *Config) WidgetResult {
 	var cache WeatherCache
-	if err := readCacheFile("weather.json", &cache); err != nil {
+	if err := readCacheFile(cacheFileWeather, &cache); err != nil {
 		return WidgetResult{Text: "forecast:" + cfg.Placeholders.Unavailable, Color: colorDim}
 	}
 	stale := ""
@@ -333,7 +361,7 @@ func widgetWeatherForecast(cfg *Config) WidgetResult {
 
 func widgetGitHubPR(cfg *Config) WidgetResult {
 	var cache GitHubPRCache
-	if err := readCacheFile("github-pr.json", &cache); err != nil {
+	if err := readCacheFile(cacheFileGitHubPR, &cache); err != nil {
 		return WidgetResult{Text: cfg.Placeholders.PR, Color: colorDim}
 	}
 	stale := ""
@@ -356,7 +384,7 @@ func widgetGitHubPR(cfg *Config) WidgetResult {
 
 func widgetCIPipeline(cfg *Config) WidgetResult {
 	var cache GitHubCICache
-	if err := readCacheFile("github-ci.json", &cache); err != nil {
+	if err := readCacheFile(cacheFileGitHubCI, &cache); err != nil {
 		return WidgetResult{Text: cfg.Placeholders.CI, Color: colorDim}
 	}
 	stale := ""

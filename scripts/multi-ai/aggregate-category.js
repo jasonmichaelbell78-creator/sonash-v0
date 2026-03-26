@@ -17,7 +17,7 @@
  */
 
 import { readFileSync, existsSync, readdirSync } from "node:fs";
-import { join, resolve, dirname, basename } from "node:path";
+import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { safeWriteFileSync } from "../lib/safe-fs.js";

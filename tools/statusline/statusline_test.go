@@ -8,6 +8,8 @@ import (
 	"testing"
 )
 
+const testModelName = "Opus 4.6"
+
 func TestDefaultConfig(t *testing.T) {
 	cfg := defaultConfig()
 	if cfg.General.Separator != "│" {
@@ -60,12 +62,12 @@ location = "Austin,TX,US"
 }
 
 func TestStdinParsing(t *testing.T) {
-	input := `{"model":{"display_name":"Opus 4.6"},"session_id":"test-1","context_window":{"used_percentage":42}}`
+	input := `{"model":{"display_name":"` + testModelName + `"},"session_id":"test-1","context_window":{"used_percentage":42}}`
 	var data StdinData
 	if err := json.Unmarshal([]byte(input), &data); err != nil {
 		t.Fatalf("failed to parse stdin: %v", err)
 	}
-	if data.Model.DisplayName != "Opus 4.6" {
+	if data.Model.DisplayName != testModelName {
 		t.Errorf("expected Opus 4.6, got %s", data.Model.DisplayName)
 	}
 	if data.ContextWindow.UsedPercentage == nil || *data.ContextWindow.UsedPercentage != 42 {
@@ -114,9 +116,9 @@ func TestWidgetModelName(t *testing.T) {
 		t.Errorf("expected default Claude, got %s", w.Text)
 	}
 
-	data.Model.DisplayName = "Opus 4.6"
+	data.Model.DisplayName = testModelName
 	w = widgetModelName(data)
-	if w.Text != "Opus 4.6" {
+	if w.Text != testModelName {
 		t.Errorf("expected Opus 4.6, got %s", w.Text)
 	}
 }
@@ -307,7 +309,7 @@ func TestPrepareLine(t *testing.T) {
 
 func TestJoinWidgets(t *testing.T) {
 	widgets := []WidgetResult{
-		{Text: "Opus 4.6", Color: colorDim},
+		{Text: testModelName, Color: colorDim},
 		{Text: "main", Color: colorCyan},
 		{Text: "", Color: ""},
 		{Text: "sonash-v0", Color: colorDim},
@@ -319,7 +321,7 @@ func TestJoinWidgets(t *testing.T) {
 	if strings.Contains(result, "│ │") {
 		t.Error("empty widgets should be skipped")
 	}
-	if !strings.Contains(result, "Opus 4.6") {
+	if !strings.Contains(result, testModelName) {
 		t.Error("should contain model name")
 	}
 	if !strings.Contains(result, "sonash-v0") {

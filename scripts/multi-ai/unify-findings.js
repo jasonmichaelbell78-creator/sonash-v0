@@ -16,7 +16,7 @@
  *   const { findings, summary } = await unifyFindings(sessionPath);
  */
 
-import { readFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
+import { existsSync, readdirSync, mkdirSync } from "node:fs";
 import { join, resolve, relative, isAbsolute, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";

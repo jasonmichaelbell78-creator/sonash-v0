@@ -10,7 +10,6 @@
  *   node scripts/planning/backfill-tenet-evidence.js [--dry-run]
  */
 
-import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";

@@ -50,7 +50,10 @@ try {
   if (existsSync(BASELINE_PATH)) {
     const raw = readFileSync(BASELINE_PATH, "utf8");
     const parsed = JSON.parse(raw);
-    baselineEntries = parsed.entries || [];
+    baselineEntries = Array.isArray(parsed.entries) ? parsed.entries : [];
+    if (parsed.entries && !Array.isArray(parsed.entries) && VERBOSE) {
+      console.warn("  ⚠ Baseline entries is not an array — treating as empty");
+    }
   }
 } catch {
   // Baseline load failure is non-fatal — treat as empty baseline
@@ -515,9 +518,12 @@ function checkKnownPatterns(changedPaths) {
 const { misses, total, patternWarnings } = analyze();
 
 // Filter out baselined violations
-const newMisses = misses.filter(
-  (m) => !m.missedIn.every((loc) => isBaselined("function", m.funcName, loc.file))
-);
+const newMisses = misses
+  .map((m) => ({
+    ...m,
+    missedIn: m.missedIn.filter((loc) => !isBaselined("function", m.funcName, loc.file)),
+  }))
+  .filter((m) => m.missedIn.length > 0);
 const newPatternWarnings = patternWarnings
   .map((pw) => ({
     ...pw,
@@ -525,8 +531,15 @@ const newPatternWarnings = patternWarnings
   }))
   .filter((pw) => pw.unchangedFiles.length > 0);
 
-const baselinedCount =
-  misses.length - newMisses.length + patternWarnings.length - newPatternWarnings.length;
+const suppressedMissesCount = misses.reduce((acc, m) => {
+  const isSuppressed = m.missedIn.every((loc) => isBaselined("function", m.funcName, loc.file));
+  return acc + (isSuppressed ? 1 : 0);
+}, 0);
+const suppressedPatternCount = patternWarnings.reduce((acc, pw) => {
+  const suppressed = pw.unchangedFiles.filter((f) => isBaselined("pattern", pw.rule, f)).length;
+  return acc + suppressed;
+}, 0);
+const baselinedCount = suppressedMissesCount + suppressedPatternCount;
 const hasPatternWarnings = newPatternWarnings.length > 0;
 
 if (newMisses.length === 0 && !hasPatternWarnings) {

@@ -532,7 +532,20 @@ function prefetchGitDates() {
   try {
     const result = execFileSync(
       "git",
-      ["log", "--format=%cI", "--name-only", "--diff-filter=ACMR", "HEAD"],
+      [
+        "log",
+        "--format=%cI",
+        "--name-only",
+        "--diff-filter=ACMR",
+        "HEAD",
+        "--",
+        "docs",
+        "app",
+        "components",
+        "lib",
+        "scripts",
+        ".claude",
+      ],
       { cwd: ROOT, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"], maxBuffer: 20 * 1024 * 1024 }
     );
     let currentDate = "";
@@ -541,8 +554,11 @@ function prefetchGitDates() {
       if (!trimmed) continue;
       if (/^\d{4}-\d{2}-\d{2}T/.test(trimmed)) {
         currentDate = trimmed.split("T")[0];
-      } else if (currentDate && !lastModifiedCache.has(trimmed)) {
-        lastModifiedCache.set(trimmed, currentDate);
+      } else {
+        const cacheKey = trimmed.replaceAll("\\", "/");
+        if (currentDate && cacheKey && !lastModifiedCache.has(cacheKey)) {
+          lastModifiedCache.set(cacheKey, currentDate);
+        }
       }
     }
   } catch {

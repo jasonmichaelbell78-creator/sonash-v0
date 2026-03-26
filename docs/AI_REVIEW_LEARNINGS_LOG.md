@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.109 **Created:** 2026-01-02 **Last Updated:**
-2026-03-25
+**Document Version:** 17.110 **Created:** 2026-01-02 **Last Updated:**
+2026-03-26
 
 ## Purpose
 
@@ -2702,5 +2702,43 @@ brackets or separate the enum values from the table.
   provenance for resume/audit
 - Rejected: `post-read-handler` console.warn — already has nosemgrep with
   documented rationale, developer-only diagnostics confirmed by Gemini
+
+---
+
+### Review #53 — PR #470 R1 (Mixed: Qodo + Gemini + SonarCloud)
+
+**Date:** 2026-03-26 **Items:** 32 (19 fixed, 2 rejected, 1 already fixed, 10
+deduped/merged)
+
+**Patterns:**
+
+- Synchronous network calls in statusline block rendering — always use
+  goroutines for I/O on the render path
+- API keys passed via `exec.Command` argv are visible in process listings — use
+  in-process `net/http` instead of `curl` subprocess
+- `parsed.entries || []` trusts structure without type validation — use
+  `Array.isArray()` for defensive JSON parsing
+- Cross-platform path normalization: git log outputs forward slashes but Windows
+  paths use backslashes — normalize cache keys with `replaceAll`
+- Version history tables: newest version must sort first (descending order)
+- SonarCloud first-scan on new Go files produces volume of "define constant"
+  items — batch by file for efficiency
+
+**Learnings:**
+
+- Go statusline: `refreshCacheIfStale` was called both synchronously in `main()`
+  AND as goroutine in `buildAllWidgets()` — removed redundant sync call
+- Weather fetch: replaced `curl` subprocess with `net/http.Client` — eliminates
+  API key exposure in argv and adds proper URL encoding via `net/url`
+- Added `context.WithTimeout(3s)` to `gh` CLI calls to prevent indefinite hangs
+- Cognitive complexity: extracted `findLatestTodoFile`, `findInProgressTask`,
+  `parseUptimeDate`, `formatUptime` helpers to bring widget functions under
+  threshold
+- Baseline filtering: per-location filtering (not whole-miss exclusion) ensures
+  non-baselined locations aren't silently suppressed
+- Rejected: "audit trails for session counting" — statusline is local diagnostic
+  tool, not compliance system
+- Rejected: "widgetUptime Windows-only" — both locales are Windows, graceful
+  fallback exists
 
 ---

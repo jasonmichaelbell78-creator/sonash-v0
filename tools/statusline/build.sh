@@ -9,16 +9,16 @@ BINARY_NAME="sonash-statusline"
 
 # Ensure Go is in PATH (Windows install location)
 if ! command -v go &>/dev/null; then
-  if [ -f "/c/Program Files/Go/bin/go" ]; then
+  if [[ -f "/c/Program Files/Go/bin/go" ]]; then
     export PATH="/c/Program Files/Go/bin:$PATH"
-  elif [ -f "C:/Program Files/Go/bin/go.exe" ]; then
+  elif [[ -f "C:/Program Files/Go/bin/go.exe" ]]; then
     export PATH="C:/Program Files/Go/bin:$PATH"
   fi
 fi
 
 # 1. Verify Go
 echo "Checking Go installation..."
-go version || { echo "ERROR: Go not found. Install Go first."; exit 1; }
+go version || { echo "ERROR: Go not found. Install Go first." >&2; exit 1; }
 
 # 2. Run tests
 echo ""
@@ -32,8 +32,8 @@ echo "Building binary..."
 GOOS=$(go env GOOS) GOARCH=$(go env GOARCH) go build -o "$BINARY_NAME" .
 
 # Add .exe extension on Windows
-if [ "$(go env GOOS)" = "windows" ]; then
-  if [ ! -f "${BINARY_NAME}.exe" ] && [ -f "$BINARY_NAME" ]; then
+if [[ "$(go env GOOS)" = "windows" ]]; then
+  if [[ ! -f "${BINARY_NAME}.exe" ]] && [[ -f "$BINARY_NAME" ]]; then
     mv "$BINARY_NAME" "${BINARY_NAME}.exe"
   fi
   BINARY_NAME="${BINARY_NAME}.exe"
@@ -46,7 +46,7 @@ mkdir -p "$INSTALL_DIR"
 cp "$BINARY_NAME" "$INSTALL_DIR/"
 
 # 5. Check for local config
-if [ ! -f "$SCRIPT_DIR/config.local.toml" ]; then
+if [[ ! -f "$SCRIPT_DIR/config.local.toml" ]]; then
   echo ""
   echo "NOTE: No config.local.toml found."
   echo "  Copy config.local.toml.example to config.local.toml"
@@ -55,14 +55,15 @@ fi
 
 # 6. Copy shared config to install dir
 cp "$SCRIPT_DIR/config.toml" "$INSTALL_DIR/"
-if [ -f "$SCRIPT_DIR/config.local.toml" ]; then
+if [[ -f "$SCRIPT_DIR/config.local.toml" ]]; then
   cp "$SCRIPT_DIR/config.local.toml" "$INSTALL_DIR/"
 fi
 
 # 7. Test render with sample JSON
 echo ""
 echo "Test render..."
-echo '{"model":{"display_name":"Opus 4.6"},"context_window":{"used_percentage":42,"remaining_percentage":58},"workspace":{"current_dir":"'"$(pwd)"'","project_dir":"'"$(pwd)"'"},"cost":{"total_duration_ms":5000000,"total_lines_added":124,"total_lines_removed":38},"session_id":"build-test"}' | "$INSTALL_DIR/$BINARY_NAME"
+pwd_json="$(pwd | sed 's/\\/\\\\/g; s/"/\\"/g')"
+echo '{"model":{"display_name":"Opus 4.6"},"context_window":{"used_percentage":42,"remaining_percentage":58},"workspace":{"current_dir":"'"$pwd_json"'","project_dir":"'"$pwd_json"'"},"cost":{"total_duration_ms":5000000,"total_lines_added":124,"total_lines_removed":38},"session_id":"build-test"}' | "$INSTALL_DIR/$BINARY_NAME"
 echo ""
 
 # 8. Summary
