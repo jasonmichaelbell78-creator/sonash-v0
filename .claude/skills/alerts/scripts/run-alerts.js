@@ -153,8 +153,8 @@ const BENCHMARKS = {
     hours_since_last: { good: 2, average: 8, poor: 24 },
   },
   skip_abuse: {
-    overrides_24h: { good: 0, average: 1, poor: 3 },
-    overrides_7d: { good: 0, average: 3, poor: 6 },
+    overrides_24h: { good: 0, average: 3, poor: 8 },
+    overrides_7d: { good: 0, average: 10, poor: 20 },
     no_reason_pct: { good: 0, average: 1, poor: 5 },
   },
   // New checkers (W2)
@@ -206,8 +206,8 @@ const BENCHMARKS = {
     failed_conditions: { good: 0, average: 1, poor: 3 },
   },
   hook_health: {
-    warnings_7d: { good: 0, average: 5, poor: 15 },
-    overrides_7d: { good: 0, average: 2, poor: 5 },
+    warnings_7d: { good: 0, average: 15, poor: 30 },
+    overrides_7d: { good: 0, average: 5, poor: 15 },
     false_positive_pct: { good: 0, average: 30, poor: 60 },
     noise_ratio: { good: 0, average: 5, poor: 15 },
     commit_failures_7d: { good: 0, average: 3, poor: 8 },

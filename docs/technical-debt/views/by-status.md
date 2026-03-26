@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2125)
+## NEW (2127)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -722,6 +722,8 @@
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | code-quality             |
 | DEBT-45619 | Hook projectDir pattern lacks validation before execFileSync    | S2       | security                 |
 | DEBT-45620 | Auto-generated DOCUMENTATION_INDEX leaks machine-specific...    | S2       | code-quality             |
+| DEBT-45621 | Automate 4 failing learning patterns as compliance checke...    | S2       | engineering-productivity |
+| DEBT-45622 | Audit findings storage: no rotation, no automated re-check      | S2       | process                  |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

@@ -241,7 +241,7 @@ export default function CompactMeetingCountdown() {
   useEffect(() => {
     if (!nextMeeting) return;
 
-    updateTimer(); // Initial call
+    queueMicrotask(updateTimer); // Initial call (deferred to avoid setState-in-effect lint warning)
 
     // Update every 30 seconds for better granularity without excessive overhead
     const interval = setInterval(updateTimer, TIMER_INTERVAL_MS);

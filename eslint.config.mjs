@@ -99,6 +99,17 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  // CJS files (.cjs) — Node.js globals + commonjs sourceType
+  {
+    files: ["scripts/**/*.cjs"],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: globals.node,
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
   // CJS scripts that use require() and __dirname natively (not via /* global */)
   {
     files: [

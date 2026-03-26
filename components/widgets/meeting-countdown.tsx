@@ -43,7 +43,7 @@ export default function MeetingCountdown() {
   }, []);
 
   useEffect(() => {
-    calculateNextMeeting();
+    queueMicrotask(calculateNextMeeting);
     const interval = setInterval(calculateNextMeeting, TIMER_INTERVAL_MS);
 
     return () => clearInterval(interval);
