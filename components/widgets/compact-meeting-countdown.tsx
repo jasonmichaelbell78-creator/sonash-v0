@@ -241,7 +241,7 @@ export default function CompactMeetingCountdown() {
   useEffect(() => {
     if (!nextMeeting) return;
 
-    queueMicrotask(updateTimer); // Initial call (deferred to avoid setState-in-effect lint warning)
+    updateTimer(); // eslint-disable-line react-hooks/set-state-in-effect
 
     // Update every 30 seconds for better granularity without excessive overhead
     const interval = setInterval(updateTimer, TIMER_INTERVAL_MS);

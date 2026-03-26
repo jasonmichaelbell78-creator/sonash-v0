@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.114 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.115 **Created:** 2026-01-02 **Last Updated:**
 2026-03-26
 
 ## Purpose
@@ -2650,6 +2650,33 @@ deduped/merged)
   round
 - Rejected 4th time: audit trails for session counting
 - Rejected: path traversal guard concern — todoFile from os.ReadDir is trusted
+
+---
+
+### Review #58 — PR #472 R1 (Qodo + SonarCloud + Gemini)
+
+**Date:** 2026-03-26 | **Items:** 13 (12 fixed, 1 rejected)
+
+**Key Learnings:**
+
+1. **RFC3339Nano for JS-generated timestamps:** Go's `time.RFC3339` rejects
+   milliseconds from JavaScript's `Date.toISOString()`. Always use
+   `time.RFC3339Nano` with RFC3339 fallback when consuming JS timestamps.
+
+2. **queueMicrotask is not cancel-safe in React effects:** Using
+   `queueMicrotask` to defer setState bypasses cleanup functions. Prefer
+   synchronous calls with targeted lint suppression over runtime behavior
+   changes.
+
+3. **GitHub Action SHA pinning must match actual tag:** The gitleaks-action SHA
+   didn't match the v2.3.9 tag, causing CI download failures. Always verify SHAs
+   with `gh api repos/.../tags`.
+
+4. **Bash(\*) permission is a security hole:** Even with a deny-list, `Bash(*)`
+   allows arbitrary command execution. Maintain granular per-command allowlist.
+
+5. **Data file dedup at scale:** dedup-log.jsonl had 5327 self-match/duplicate
+   entries (69% noise). Periodic dedup maintenance prevents metric inflation.
 
 ---
 

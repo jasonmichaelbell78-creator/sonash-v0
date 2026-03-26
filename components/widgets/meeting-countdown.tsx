@@ -43,7 +43,7 @@ export default function MeetingCountdown() {
   }, []);
 
   useEffect(() => {
-    queueMicrotask(calculateNextMeeting);
+    calculateNextMeeting(); // eslint-disable-line react-hooks/set-state-in-effect
     const interval = setInterval(calculateNextMeeting, TIMER_INTERVAL_MS);
 
     return () => clearInterval(interval);

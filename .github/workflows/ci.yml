@@ -208,7 +208,7 @@ jobs:
         run: node scripts/security-check.js --all
 
       - name: Gitleaks secret scan
-        uses: gitleaks/gitleaks-action@44c470ffc35caa81b8a8b2e75a06b4ec8e308688 # v2.3.9
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
         env:
           GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

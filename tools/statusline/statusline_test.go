@@ -279,28 +279,59 @@ func TestCountUnackedSince(t *testing.T) {
 	logFile := filepath.Join(dir, "warnings.jsonl")
 	ackFile := filepath.Join(dir, "ack.json")
 
-	// 3 entries: old, recent, recent
-	lines := `{"timestamp":"2026-03-20T10:00:00Z"}
-{"timestamp":"2026-03-25T10:00:00Z"}
-{"timestamp":"2026-03-26T10:00:00Z"}
+	// 3 entries with millisecond timestamps: old, recent, recent
+	lines := `{"timestamp":"2026-03-20T10:00:00.123Z"}
+{"timestamp":"2026-03-25T10:00:00.456Z"}
+{"timestamp":"2026-03-26T10:00:00.789Z"}
 `
-	os.WriteFile(logFile, []byte(lines), 0644)
+	if err := os.WriteFile(logFile, []byte(lines), 0644); err != nil {
+		t.Fatalf("write logFile: %v", err)
+	}
 
 	// No ack file — all 3 should be unacked
 	if got := countUnackedSince(logFile, ackFile); got != 3 {
 		t.Errorf("no ack file: expected 3 unacked, got %d", got)
 	}
 
-	// Ack file with lastCleared between old and recent — only 2 after
-	os.WriteFile(ackFile, []byte(`{"lastCleared":"2026-03-24T00:00:00Z"}`), 0644)
+	// Ack file with lastCleared (millis) between old and recent — only 2 after
+	if err := os.WriteFile(ackFile, []byte(`{"lastCleared":"2026-03-24T00:00:00.000Z"}`), 0644); err != nil {
+		t.Fatalf("write ackFile (partial): %v", err)
+	}
 	if got := countUnackedSince(logFile, ackFile); got != 2 {
 		t.Errorf("partial ack: expected 2 unacked, got %d", got)
 	}
 
 	// Ack file with lastCleared after all — 0 unacked
-	os.WriteFile(ackFile, []byte(`{"lastCleared":"2026-03-27T00:00:00Z"}`), 0644)
+	if err := os.WriteFile(ackFile, []byte(`{"lastCleared":"2026-03-27T00:00:00.000Z"}`), 0644); err != nil {
+		t.Fatalf("write ackFile (full): %v", err)
+	}
 	if got := countUnackedSince(logFile, ackFile); got != 0 {
 		t.Errorf("full ack: expected 0 unacked, got %d", got)
+	}
+
+	// Legacy format: acked field, no timestamp
+	legacyLines := `{"acked":false}
+{"acked":true}
+{"acked":false}
+`
+	if err := os.WriteFile(logFile, []byte(legacyLines), 0644); err != nil {
+		t.Fatalf("write logFile (legacy): %v", err)
+	}
+	os.Remove(ackFile) // clear ack
+	if got := countUnackedSince(logFile, ackFile); got != 2 {
+		t.Errorf("legacy format: expected 2 unacked, got %d", got)
+	}
+
+	// Malformed entries count as unacked
+	malformedLines := `{"timestamp":"2026-03-25T10:00:00Z"}
+not-json-at-all
+{"timestamp":"2026-03-26T10:00:00Z"}
+`
+	if err := os.WriteFile(logFile, []byte(malformedLines), 0644); err != nil {
+		t.Fatalf("write logFile (malformed): %v", err)
+	}
+	if got := countUnackedSince(logFile, ackFile); got != 3 {
+		t.Errorf("malformed entries: expected 3 unacked, got %d", got)
 	}
 }
 
