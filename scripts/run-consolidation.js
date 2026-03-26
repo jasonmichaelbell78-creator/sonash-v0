@@ -87,13 +87,7 @@ function log(msg, color = "") {
   console.log(color ? `${color}${msg}${c.reset}` : msg);
 }
 
-function sanitizeError(err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  return msg
-    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
-}
+const { sanitizeError } = require("./lib/sanitize-error.cjs");
 
 // =============================================================================
 // STATE: Read from JSON (single source of truth)

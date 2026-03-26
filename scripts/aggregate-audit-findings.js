@@ -21,11 +21,14 @@
 import { existsSync, readFileSync, mkdirSync, readdirSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { safeWriteFileSync } from "./lib/safe-fs.js";
 
 // ES module equivalent of __dirname (ESLint config expects this pattern)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
+const readJsonl = require("./lib/read-jsonl");
 
 // Resolve paths relative to repo root (Qodo Review #175)
 const REPO_ROOT = resolve(__dirname, "..");
@@ -241,42 +244,8 @@ function safeCell(value) {
     .replaceAll("\r", "");
 }
 
-/**
- * Parse a JSONL file with robust error handling (Qodo Review #175)
- */
-function parseJsonlFile(filePath) {
-  if (!existsSync(filePath)) {
-    console.warn(`Warning: File not found: ${filePath}`);
-    return [];
-  }
-
-  let content;
-  try {
-    content = readFileSync(filePath, "utf-8");
-  } catch (readError) {
-    // Race condition, permission, or encoding error after existsSync
-    const errType = readError instanceof Error ? readError.constructor.name : "Error";
-    console.warn(`Warning: ${errType} reading file ${filePath}`);
-    return [];
-  }
-
-  const lines = content.split("\n").filter((line) => line.trim());
-  const items = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    try {
-      // .trim() handles CRLF line endings on Windows (Qodo Review #176)
-      items.push(JSON.parse(lines[i].trim()));
-    } catch (error_) {
-      // S2486: Exception handled by logging and continuing to next line
-      // We intentionally skip invalid JSON lines rather than failing the entire parse
-      const errType = error_ instanceof SyntaxError ? "SyntaxError" : "Error";
-      console.warn(`Warning: ${errType} parsing JSON at line ${i + 1} in ${filePath}`);
-    }
-  }
-
-  return items;
-}
+// parseJsonlFile replaced by canonical readJsonl from scripts/lib/read-jsonl.js
+// (imported via createRequire above)
 
 /**
  * Parse markdown backlog to extract items with robust error handling (Qodo Review #175)
@@ -1204,7 +1173,7 @@ function parseSingleSessionAudits(allFindings, stats) {
 
   for (const category of singleSessionCategories) {
     const filePath = join(CONFIG.singleSessionDir, category, "audit-2026-01-17.jsonl");
-    const items = parseJsonlFile(filePath);
+    const items = readJsonl(filePath, { safe: true });
     console.log(`  - ${category}: ${items.length} items`);
 
     for (const item of items) {
@@ -1230,7 +1199,7 @@ function parseCanonFiles(allFindings, stats) {
 
   for (const canonFile of canonFiles) {
     const filePath = join(CONFIG.canonDir, canonFile);
-    const items = parseJsonlFile(filePath);
+    const items = readJsonl(filePath, { safe: true });
     console.log(`  - ${canonFile}: ${items.length} items`);
 
     for (const item of items) {

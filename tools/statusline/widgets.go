@@ -336,19 +336,20 @@ func widgetHookHealth(data *StdinData) WidgetResult {
 	hookFile := filepath.Join(dir, ".claude", "state", "hook-runs.jsonl")
 	line := tailLastLine(hookFile)
 	if line == "" {
-		return WidgetResult{Text: "\u2713hooks", Color: colorGreen}
+		return WidgetResult{Text: "\u2713 hooks", Color: colorGreen}
 	}
 
 	var entry struct {
-		Success bool `json:"success"`
+		Success bool   `json:"success"`
+		Outcome string `json:"outcome"`
 	}
 	if err := json.Unmarshal([]byte(line), &entry); err != nil {
-		return WidgetResult{Text: "\u2713hooks", Color: colorGreen}
+		return WidgetResult{Text: "\u2713 hooks", Color: colorGreen}
 	}
-	if entry.Success {
-		return WidgetResult{Text: "\u2713hooks", Color: colorGreen}
+	if entry.Success || entry.Outcome == "pass" {
+		return WidgetResult{Text: "\u2713 hooks", Color: colorGreen}
 	}
-	return WidgetResult{Text: "\u2717hooks", Color: colorRed}
+	return WidgetResult{Text: "\u2717 hooks", Color: colorRed}
 }
 
 func widgetUnackedWarnings(data *StdinData) WidgetResult {
@@ -359,13 +360,13 @@ func widgetUnackedWarnings(data *StdinData) WidgetResult {
 	warnFile := filepath.Join(dir, ".claude", "state", "hook-warnings-log.jsonl")
 	count := countUnacked(warnFile)
 	if count == 0 {
-		return WidgetResult{Text: "\u26a00 unacked", Color: colorDim}
+		return WidgetResult{Text: "\u26a0  0 unacked", Color: colorDim}
 	}
 	color := colorYellow
 	if count >= 5 {
 		color = colorRed
 	}
-	return WidgetResult{Text: fmt.Sprintf("\u26a0%d unacked", count), Color: color}
+	return WidgetResult{Text: fmt.Sprintf("\u26a0  %d unacked", count), Color: color}
 }
 
 func widgetCurrentTask(data *StdinData, cfg *Config) WidgetResult {

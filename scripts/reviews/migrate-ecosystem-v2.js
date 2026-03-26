@@ -41,25 +41,7 @@ const STATE_REVIEWS = path.join(ROOT, ".claude", "state", "reviews.jsonl");
 const ECO_V2_RETROS = path.join(ROOT, "data", "ecosystem-v2", "retros.jsonl");
 const STATE_RETROS = path.join(ROOT, ".claude", "state", "retros.jsonl");
 
-function readJsonl(filePath) {
-  try {
-    const content = fs.readFileSync(filePath, "utf8").trim();
-    if (!content) return [];
-    return content
-      .split("\n")
-      .map((line, idx) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          console.warn(`  Skipping malformed line ${idx + 1} in ${path.basename(filePath)}`);
-          return null;
-        }
-      })
-      .filter(Boolean);
-  } catch {
-    return [];
-  }
-}
+const readJsonl = require("../lib/read-jsonl");
 
 /**
  * Find source file, falling back to the latest .archived-* variant.
@@ -181,8 +163,10 @@ function migrateReviews(apply) {
     process.exit(1);
   }
   console.log(`  Source: ${path.basename(reviewSource)}`);
-  const ecoReviews = readJsonl(reviewSource);
-  const stateIds = new Set(readJsonl(STATE_REVIEWS).map((r) => String(r.id)));
+  const ecoReviews = readJsonl(reviewSource, { safe: true, quiet: true });
+  const stateIds = new Set(
+    readJsonl(STATE_REVIEWS, { safe: true, quiet: true }).map((r) => String(r.id))
+  );
 
   const candidates = ecoReviews.filter(
     (r) => hasRealData(r) && r.pr != null && !stateIds.has(String(r.id))
@@ -214,10 +198,10 @@ function migrateRetros(apply) {
     console.warn("  WARNING: No retro source file found — skipping");
     return 0;
   }
-  const ecoRetros = readJsonl(retroSource);
+  const ecoRetros = readJsonl(retroSource, { safe: true, quiet: true });
   let stateRetros = [];
   try {
-    stateRetros = readJsonl(STATE_RETROS);
+    stateRetros = readJsonl(STATE_RETROS, { safe: true, quiet: true });
   } catch {
     /* may not exist */
   }

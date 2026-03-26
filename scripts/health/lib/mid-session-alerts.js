@@ -44,30 +44,7 @@ const DEFAULT_PATHS = {
   appendHookWarningScript: join(PROJECT_ROOT, "scripts", "append-hook-warning.js"),
 };
 
-/**
- * Read JSONL file into array of parsed objects. Returns empty array on error.
- * @param {string} filePath
- * @returns {Array}
- */
-function readJsonl(filePath) {
-  try {
-    const content = readFileSync(filePath, "utf8").trim();
-    if (!content) return [];
-    return content
-      .split("\n")
-      .map((line) => {
-        if (!line) return null;
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
-  } catch {
-    return [];
-  }
-}
+const readJsonl = require("../../lib/read-jsonl");
 
 /**
  * Read cooldown state from JSON file.
@@ -180,7 +157,7 @@ function surfaceHookWarning(message, severity, opts) {
  */
 function checkDeferredAging(opts) {
   const deferredPath = opts.deferredPath || DEFAULT_PATHS.deferredPath;
-  const items = readJsonl(deferredPath);
+  const items = readJsonl(deferredPath, { safe: true, quiet: true });
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 30);
@@ -207,7 +184,7 @@ function checkDeferredAging(opts) {
  */
 function checkDuplicateDeferrals(opts) {
   const deferredPath = opts.deferredPath || DEFAULT_PATHS.deferredPath;
-  const items = readJsonl(deferredPath);
+  const items = readJsonl(deferredPath, { safe: true, quiet: true });
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - 7);
@@ -244,7 +221,7 @@ function checkDuplicateDeferrals(opts) {
  */
 function checkScoreDegradation(opts) {
   const healthLogPath = opts.healthLogPath || DEFAULT_PATHS.healthLogPath;
-  const entries = readJsonl(healthLogPath);
+  const entries = readJsonl(healthLogPath, { safe: true, quiet: true });
 
   if (entries.length < 2) return null;
 

@@ -11,6 +11,12 @@ backoff retry.
 **Decisions:** See DECISIONS.md (20 decisions) **Effort Estimate:** L (full
 build in one pass, then extensive testing)
 
+**Status:** DONE (Session #239). All 14 steps complete. Go binary built and
+rendering 3 lines in Claude Code. Weather widget pending API key activation
+(OpenWeatherMap 2hr delay). Minor fixes applied: icon spacing for Windows
+double-width Unicode, hook health widget reads `outcome` field, `padding: 2` in
+settings.json for multiline display.
+
 ---
 
 ## Files to Create/Modify

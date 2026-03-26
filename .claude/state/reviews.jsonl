@@ -23,3 +23,5 @@
 {"id":"rev-12","date":"2026-03-24","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"qodo"},"title":"PR #468 R3 — Qodo (2026-03-24)","pr":468,"source":"qodo","total":8,"fixed":4,"deferred":0,"rejected":4}
 {"id":"rev-13","date":"2026-03-24","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"qodo"},"title":"PR #468 R4 — Qodo (2026-03-24)","pr":468,"source":"qodo","total":8,"fixed":5,"deferred":0,"rejected":3}
 {"id":502,"date":"2026-03-24","title":"PR #468 R4 — Qodo","source":"qodo","pr":468,"patterns":[],"fixed":0,"deferred":0,"rejected":0,"total":8,"learnings":[]}
+{"id":503,"date":"2026-03-25","title":"PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling","source":"qodo","pr":469,"patterns":[],"fixed":8,"deferred":0,"rejected":3,"total":12,"learnings":[]}
+{"id":504,"date":"2026-03-25","title":"PR #469 R2 — CC Reduction, Map Normalization & Revalidation","source":"sonarcloud+qodo","pr":469,"patterns":[],"fixed":7,"deferred":0,"rejected":1,"total":8,"learnings":[]}

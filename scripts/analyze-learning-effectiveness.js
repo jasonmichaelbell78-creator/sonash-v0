@@ -39,16 +39,7 @@ const PATTERN_CHECKER = join(ROOT, "scripts", "check-pattern-compliance.js");
 const METRICS_FILE = join(ROOT, "docs", "LEARNING_METRICS.md");
 const TODO_FILE = join(ROOT, "docs", "LEARNING_TODO.md");
 
-/**
- * Simple error sanitizer (avoid ES module dependency)
- */
-function sanitizeError(error) {
-  const message = error instanceof Error ? error.message : String(error);
-  return message
-    .replace(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replace(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replace(/\/Users\/[^/\s]+/gi, "[HOME]");
-}
+const { sanitizeError } = require("./lib/sanitize-error.cjs");
 
 /**
  * Sanitize display strings from review content

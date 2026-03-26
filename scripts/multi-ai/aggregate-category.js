@@ -19,11 +19,14 @@
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, resolve, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
+const readJsonl = require("../lib/read-jsonl");
 const REPO_ROOT = resolve(__dirname, "../..");
 
 // Similarity threshold for title-based deduplication
@@ -116,39 +119,8 @@ function normalizeTitle(title) {
     .trim();
 }
 
-/**
- * Parse JSONL file and return findings array
- * @param {string} filePath - Path to JSONL file
- * @returns {object[]} - Array of findings
- */
-function parseJsonlFile(filePath) {
-  if (!existsSync(filePath)) {
-    console.warn(`File not found: ${filePath}`);
-    return [];
-  }
-
-  let content;
-  try {
-    content = readFileSync(filePath, "utf-8");
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.warn(`Cannot read file: ${filePath}`);
-    if (process.env.VERBOSE) console.warn(`  Reason: ${msg}`);
-    return [];
-  }
-  const lines = content.split("\n").filter((l) => l.trim());
-  const findings = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    try {
-      findings.push(JSON.parse(lines[i].trim()));
-    } catch {
-      console.warn(`${basename(filePath)} line ${i + 1}: Invalid JSON`);
-    }
-  }
-
-  return findings;
-}
+// parseJsonlFile replaced by canonical readJsonl from scripts/lib/read-jsonl.js
+// (imported via createRequire above)
 
 /**
  * Verify if a file exists in the repository
@@ -463,7 +435,7 @@ export async function aggregateCategory(sessionPath, category) {
 
   for (const file of files) {
     const sourceName = file.replace(`${category}-`, "").replace(/\.jsonl$/u, "");
-    const findings = parseJsonlFile(join(rawDir, file));
+    const findings = readJsonl(join(rawDir, file), { safe: true });
 
     sourceStats[sourceName] = findings.length;
 

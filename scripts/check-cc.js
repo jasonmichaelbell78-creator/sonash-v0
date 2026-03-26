@@ -44,19 +44,7 @@ const ROOT = join(__dirname, "..");
 const require_ = createRequire(import.meta.url);
 const { safeWriteFileSync } = require_("./lib/safe-fs");
 
-// ---------------------------------------------------------------------------
-// Sanitize error helper (inline to avoid import issues across CJS/ESM)
-// Pattern: sanitize-error.js — never log raw error.message
-// ---------------------------------------------------------------------------
-function sanitizeError(error) {
-  const message = error instanceof Error ? error.message : String(error);
-  return message
-    .replaceAll(/C:\\Users\\[^\\\s]+/gi, "[USER_PATH]")
-    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]")
-    .replaceAll(/\/[^\s]*\/[^\s]+/g, "[PATH]");
-}
+const { sanitizeError } = require_("./lib/sanitize-error.cjs");
 
 // ---------------------------------------------------------------------------
 // CLI argument parsing

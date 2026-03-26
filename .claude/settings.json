@@ -235,7 +235,8 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/statusline.js"
+    "command": "C:/Users/jason/Workspace/dev-projects/sonash-v0/tools/statusline/sonash-statusline.exe",
+    "padding": 2
   },
   "enabledPlugins": {
     "episodic-memory@superpowers-marketplace": true,

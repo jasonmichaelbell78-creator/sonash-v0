@@ -36,37 +36,10 @@ const DEFAULT_OUTPUT = path.join(
 );
 
 // ---------------------------------------------------------------------------
-// Read JSONL
+// Read JSONL (canonical implementation from scripts/lib/read-jsonl.js)
 // ---------------------------------------------------------------------------
 
-function readJsonl(filePath) {
-  let content;
-  try {
-    content = fs.readFileSync(filePath, "utf-8");
-  } catch (error) {
-    if (error.code === "ENOENT") return [];
-    throw new Error(`Failed to read ${path.basename(filePath)}: ${_sanitizeError(error)}`);
-  }
-
-  const entries = [];
-  const lines = content.split(/\r?\n/);
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    try {
-      entries.push(JSON.parse(line));
-    } catch (parseErr) {
-      const safeExcerpt = line.slice(0, 80).replaceAll(/[^\x20-\x7e]/g, "?");
-      const reason = _sanitizeError(parseErr);
-      console.warn(
-        `[JSONL] Skipping corrupt line ${i + 1} in ${path.basename(filePath)}: ${reason} (excerpt: "${safeExcerpt}")`
-      );
-    }
-  }
-
-  return entries;
-}
+const readJsonl = require("./lib/read-jsonl");
 
 // ---------------------------------------------------------------------------
 // Generate markdown
@@ -276,7 +249,7 @@ function run(options = {}) {
   const inputPath = options.input || DEFAULT_INPUT;
   const outputPath = options.output || DEFAULT_OUTPUT;
 
-  const entries = readJsonl(inputPath);
+  const entries = readJsonl(inputPath, { safe: true });
   if (entries.length === 0) {
     console.error("No entries found in lifecycle-scores.jsonl");
     return { success: false, entries: [] };

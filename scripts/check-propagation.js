@@ -19,15 +19,48 @@
  */
 
 import { execFileSync } from "node:child_process";
-import { lstatSync, readFileSync } from "node:fs";
-// No path.dirname import — it returns backslash paths on Windows even for POSIX inputs
+import { existsSync, lstatSync, readFileSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+// No path.dirname for file paths — it returns backslash paths on Windows even for POSIX inputs
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2 MB — skip huge files
-const SEARCH_DIRS = ["scripts/", ".claude/skills/", ".claude/hooks/"];
+const SEARCH_DIRS = [
+  "scripts/",
+  ".claude/skills/",
+  ".claude/hooks/",
+  "lib/",
+  "app/",
+  "components/",
+];
 const IGNORE_DIRS = ["node_modules", ".git", "docs/archive", "__tests__"];
 const VERBOSE = process.argv.includes("--verbose");
 const STAGED_ONLY = process.argv.includes("--staged");
 const BLOCKING = process.argv.includes("--blocking");
+
+// ---- Baseline support ----
+// Known violations that are baselined and should not trigger warnings.
+// Only NEW violations (not in baseline) will be reported.
+const BASELINE_PATH = join(__dirname, "config", "known-propagation-baseline.json");
+let baselineEntries = [];
+try {
+  if (existsSync(BASELINE_PATH)) {
+    const raw = readFileSync(BASELINE_PATH, "utf8");
+    const parsed = JSON.parse(raw);
+    baselineEntries = parsed.entries || [];
+  }
+} catch {
+  // Baseline load failure is non-fatal — treat as empty baseline
+}
+
+function isBaselined(type, key, file) {
+  return baselineEntries.some(
+    (e) => e.type === type && e.key === key && e.file === toPosixPath(file)
+  );
+}
 
 // ---- Known security/pattern propagation rules ----
 // These catch non-function patterns that historically cause multi-round review churn.
@@ -59,15 +92,7 @@ const KNOWN_PATTERN_RULES = [
     recommended:
       "Add isSafeToWrite(filePath) guard before writeFileSync, or use safe-fs.js helpers",
   },
-  {
-    name: "rmSync-usage",
-    searchPattern: String.raw`(^|[^[:alnum:]_$])rmSync[[:space:]]*\(`,
-    excludeFilePattern: null,
-    description:
-      "rmSync creates race condition risk with renameSync — prefer rename-only atomic patterns",
-    recommended:
-      "Use rename-only pattern or try { renameSync } catch { copyFileSync + unlinkSync } for cross-device",
-  },
+  // rmSync-usage rule REMOVED — ~95% false positive rate (propagation plan Wave 4, Step 12)
   {
     name: "escapeCell-inconsistency",
     searchPattern: String.raw`(^|[^[:alnum:]_$])writeFileSync[[:space:]]*\([^)]*\.md`,
@@ -76,15 +101,7 @@ const KNOWN_PATTERN_RULES = [
       "Markdown table write without escapeCell — pipe chars in data corrupt table formatting",
     recommended: "Use escapeCell() for all dynamic content inserted into markdown table cells",
   },
-  {
-    name: "truthy-filter-unsafe",
-    searchPattern: String.raw`\.filter[[:space:]]*\([[:space:]]*Boolean[[:space:]]*\)`,
-    excludeFilePattern: null,
-    description:
-      ".filter(Boolean) treats 0 and '' as falsy — unsafe for nullable numbers or empty strings",
-    recommended:
-      "Use .filter(x => x != null) or .filter(x => x !== undefined) for type-safe filtering",
-  },
+  // truthy-filter-unsafe rule REMOVED — ~95% false positive rate (propagation plan Wave 4, Step 12)
 ];
 
 /** Normalize path separators for cross-platform comparison */
@@ -497,23 +514,39 @@ function checkKnownPatterns(changedPaths) {
 // ---- Main ----
 const { misses, total, patternWarnings } = analyze();
 
-const hasPatternWarnings = patternWarnings.length > 0;
+// Filter out baselined violations
+const newMisses = misses.filter(
+  (m) => !m.missedIn.every((loc) => isBaselined("function", m.funcName, loc.file))
+);
+const newPatternWarnings = patternWarnings
+  .map((pw) => ({
+    ...pw,
+    unchangedFiles: pw.unchangedFiles.filter((f) => !isBaselined("pattern", pw.rule, f)),
+  }))
+  .filter((pw) => pw.unchangedFiles.length > 0);
 
-if (misses.length === 0 && !hasPatternWarnings) {
+const baselinedCount =
+  misses.length - newMisses.length + patternWarnings.length - newPatternWarnings.length;
+const hasPatternWarnings = newPatternWarnings.length > 0;
+
+if (newMisses.length === 0 && !hasPatternWarnings) {
   if (total > 0) {
-    console.log(`  ✅ Propagation check passed (${total} functions, no duplicates missed)`);
+    const baselineNote = baselinedCount > 0 ? `, ${baselinedCount} baselined` : "";
+    console.log(
+      `  ✅ Propagation check passed (${total} functions, no new duplicates missed${baselineNote})`
+    );
   } else {
     console.log("  ✅ Propagation check passed");
   }
   process.exit(0);
 }
 
-// Report function-level misses
-if (misses.length > 0) {
-  console.log(`  ⚠️ Propagation check: ${misses.length} potential miss(es) found`);
+// Report function-level misses (new only)
+if (newMisses.length > 0) {
+  console.log(`  ⚠️ Propagation check: ${newMisses.length} potential miss(es) found`);
   console.log("");
 
-  for (const miss of misses) {
+  for (const miss of newMisses) {
     console.log(`  Function: ${miss.funcName}`);
     console.log(`    Modified in: ${miss.changedIn.join(", ")}`);
     console.log(`    Also exists in (NOT modified):`);
@@ -528,12 +561,14 @@ if (misses.length > 0) {
   console.log("");
 }
 
-// Report pattern-based warnings
+// Report pattern-based warnings (new only)
 if (hasPatternWarnings) {
-  console.log(`  ⚠️ Known pattern propagation: ${patternWarnings.length} pattern(s) need review`);
+  console.log(
+    `  ⚠️ Known pattern propagation: ${newPatternWarnings.length} pattern(s) need review`
+  );
   console.log("");
 
-  for (const pw of patternWarnings) {
+  for (const pw of newPatternWarnings) {
     console.log(`  Pattern: ${pw.rule}`);
     console.log(`    ${pw.description}`);
     console.log(`    Files still using old pattern:`);
@@ -543,6 +578,11 @@ if (hasPatternWarnings) {
     console.log(`    Recommended: ${pw.recommended}`);
     console.log("");
   }
+}
+
+if (baselinedCount > 0 && VERBOSE) {
+  console.log(`  ℹ️ ${baselinedCount} known violation(s) suppressed by baseline`);
+  console.log("");
 }
 
 process.exit(BLOCKING ? 1 : 0);

@@ -93,6 +93,9 @@ func main() {
 		return // silent fail on bad JSON
 	}
 
+	// Refresh API-backed caches if stale (weather, GitHub PR/CI)
+	refreshCacheIfStale(&cfg)
+
 	// Build widgets
 	widgets := buildAllWidgets(&data, &cfg)
 
