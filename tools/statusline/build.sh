@@ -9,7 +9,7 @@ BINARY_NAME="sonash-statusline"
 
 # Ensure Go is in PATH (Windows install location)
 if ! command -v go &>/dev/null; then
-  if [[ -f "/c/Program Files/Go/bin/go" ]]; then
+  if [[ -f "/c/Program Files/Go/bin/go.exe" ]]; then
     export PATH="/c/Program Files/Go/bin:$PATH"
   elif [[ -f "C:/Program Files/Go/bin/go.exe" ]]; then
     export PATH="C:/Program Files/Go/bin:$PATH"

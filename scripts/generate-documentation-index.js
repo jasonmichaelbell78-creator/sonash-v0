@@ -550,12 +550,13 @@ function prefetchGitDates() {
     );
     let currentDate = "";
     for (const line of result.split("\n")) {
-      const trimmed = line.trim();
-      if (!trimmed) continue;
-      if (/^\d{4}-\d{2}-\d{2}T/.test(trimmed)) {
-        currentDate = trimmed.split("T")[0];
+      const stripped = line.trim();
+      if (!stripped) continue;
+      // ISO 8601 dates from --format=%cI always start with YYYY-MM-DDT; file paths never do
+      if (/^\d{4}-\d{2}-\d{2}T/.test(stripped)) {
+        currentDate = stripped.split("T")[0];
       } else {
-        const cacheKey = trimmed.replaceAll("\\", "/");
+        const cacheKey = line.trimEnd().replaceAll("\\", "/");
         if (currentDate && cacheKey && !lastModifiedCache.has(cacheKey)) {
           lastModifiedCache.set(cacheKey, currentDate);
         }

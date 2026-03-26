@@ -526,7 +526,9 @@ func widgetSessionCount(data *StdinData) WidgetResult {
 		return WidgetResult{Text: "Sessions today: ...", Color: colorDim}
 	}
 	cacheDir := filepath.Join(home, dotClaude, "statusline")
-	os.MkdirAll(cacheDir, 0755)
+	if err := os.MkdirAll(cacheDir, 0755); err != nil {
+		return WidgetResult{Text: "Sessions today: ...", Color: colorDim}
+	}
 	countFile := filepath.Join(cacheDir, "sessions-today.json")
 
 	today := time.Now().Format("2006-01-02")
@@ -539,7 +541,7 @@ func widgetSessionCount(data *StdinData) WidgetResult {
 
 	var state sessionState
 	if raw, err := os.ReadFile(countFile); err == nil {
-		json.Unmarshal(raw, &state)
+		_ = json.Unmarshal(raw, &state) // best-effort parse; invalid JSON resets to empty
 	}
 
 	// Reset if day changed
@@ -559,7 +561,7 @@ func widgetSessionCount(data *StdinData) WidgetResult {
 		if !found {
 			state.Sessions = append(state.Sessions, session)
 			if raw, err := json.Marshal(state); err == nil {
-				os.WriteFile(countFile, raw, 0644)
+				_ = os.WriteFile(countFile, raw, 0644) // best-effort persist
 			}
 		}
 	}

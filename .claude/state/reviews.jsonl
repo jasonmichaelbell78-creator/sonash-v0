@@ -26,3 +26,4 @@
 {"id":503,"date":"2026-03-25","title":"PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling","source":"qodo","pr":469,"patterns":[],"fixed":8,"deferred":0,"rejected":3,"total":12,"learnings":[]}
 {"id":504,"date":"2026-03-25","title":"PR #469 R2 — CC Reduction, Map Normalization & Revalidation","source":"sonarcloud+qodo","pr":469,"patterns":[],"fixed":7,"deferred":0,"rejected":1,"total":8,"learnings":[]}
 {"id":"rev-14","date":"2026-03-26","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"pr-review-skill"},"pr":470,"source":"mixed","total":32,"fixed":19,"deferred":0,"rejected":2}
+{"id":"rev-15","date":"2026-03-26","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"pr-review-skill"},"pr":470,"source":"mixed","total":7,"fixed":5,"deferred":0,"rejected":1}

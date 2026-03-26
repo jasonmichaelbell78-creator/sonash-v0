@@ -50,7 +50,17 @@ try {
   if (existsSync(BASELINE_PATH)) {
     const raw = readFileSync(BASELINE_PATH, "utf8");
     const parsed = JSON.parse(raw);
-    baselineEntries = Array.isArray(parsed.entries) ? parsed.entries : [];
+    const rawEntries = Array.isArray(parsed.entries) ? parsed.entries : [];
+    baselineEntries = rawEntries
+      .filter(
+        (e) =>
+          e &&
+          typeof e === "object" &&
+          typeof e.type === "string" &&
+          typeof e.key === "string" &&
+          typeof e.file === "string"
+      )
+      .map((e) => ({ ...e, file: toPosixPath(e.file) }));
     if (parsed.entries && !Array.isArray(parsed.entries) && VERBOSE) {
       console.warn("  ⚠ Baseline entries is not an array — treating as empty");
     }
@@ -532,8 +542,10 @@ const newPatternWarnings = patternWarnings
   .filter((pw) => pw.unchangedFiles.length > 0);
 
 const suppressedMissesCount = misses.reduce((acc, m) => {
-  const isSuppressed = m.missedIn.every((loc) => isBaselined("function", m.funcName, loc.file));
-  return acc + (isSuppressed ? 1 : 0);
+  const suppressed = m.missedIn.filter((loc) =>
+    isBaselined("function", m.funcName, loc.file)
+  ).length;
+  return acc + suppressed;
 }, 0);
 const suppressedPatternCount = patternWarnings.reduce((acc, pw) => {
   const suppressed = pw.unchangedFiles.filter((f) => isBaselined("pattern", pw.rule, f)).length;

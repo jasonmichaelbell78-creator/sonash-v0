@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.110 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.111 **Created:** 2026-01-02 **Last Updated:**
 2026-03-26
 
 ## Purpose
@@ -2740,5 +2740,28 @@ deduped/merged)
   tool, not compliance system
 - Rejected: "widgetUptime Windows-only" — both locales are Windows, graceful
   fallback exists
+
+---
+
+### Review #54 — PR #470 R2 (Qodo + SonarCloud)
+
+**Date:** 2026-03-26 **Items:** 7 (5 fixed, 1 rejected, 1 deduped)
+
+**Patterns:**
+
+- Ignored I/O errors (MkdirAll, WriteFile, Unmarshal) in statusline widgets —
+  explicitly acknowledge with `_ =` or check and return placeholder
+- Propagation: readJsonl CJS/ESM interop guard (`?.default ??`) must apply to
+  ALL ESM files using `createRequire`, not just the first one fixed
+- suppressedMissesCount should count suppressed locations not whole misses
+
+**Learnings:**
+
+- SonarCloud flagged `todosDir` variable names as "TODO comments" — false
+  positive on identifier naming
+- Baseline entry validation (shape check + toPosixPath normalization) prevents
+  silent comparison failures from malformed or Windows-path entries
+- Git log path whitespace: use `trimEnd()` not `trim()` on file paths to
+  preserve leading spaces (unlikely but defensive)
 
 ---

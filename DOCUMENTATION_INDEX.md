@@ -404,7 +404,7 @@ _Claude Code skills_
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared... | ↓0 ↑0      | 2026-03-10    |
 | [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T... | ↓1 ↑2      | 2026-03-16    |
 | [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context... | ↓0 ↑4      | 2026-03-24    |
-| [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ... | ↓0 ↑0      | 2026-03-25    |
+| [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ... | ↓0 ↑0      | 2026-03-26    |
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f... | ↓0 ↑0      | 2026-03-19    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                  | ↓2 ↑0      | 2026-03-05    |
 | [Shared Ecosystem Audit Library](.claude/skills/_shared/ecosystem-audit/README.md)                                                  | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-25    |
@@ -423,7 +423,7 @@ _Claude Code skills_
 | [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | - When the task doesn't match this skill's scope -- check re... | ↓0 ↑0      | 2026-02-24    |
 | [task-next](.claude/skills/task-next/SKILL.md)                                                                                      | Shows which tasks are ready to work on based on dependency r... | ↓0 ↑0      | 2026-02-24    |
 | [TDMS Integration (Step 6.5)](.claude/skills/pr-review/reference/TDMS_INTEGRATION.md)                                               | When items are deferred during PR review, they MUST be inges... | ↓1 ↑0      | 2026-02-14    |
-| [tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire Technical Debt Management Syst... | ↓0 ↑0      | 2026-03-25    |
+| [tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire Technical Debt Management Syst... | ↓0 ↑0      | 2026-03-26    |
 | [test-suite](.claude/skills/test-suite/SKILL.md)                                                                                    | Multi-phase UI testing orchestration for SoNash. Runs smoke ... | ↓0 ↑0      | 2026-02-24    |
 | [ui-design-system](.claude/skills/ui-design-system/SKILL.md)                                                                        | Professional toolkit for creating and maintaining scalable d... | ↓0 ↑0      | 2026-02-24    |
 | [using-superpowers](.claude/skills/using-superpowers/SKILL.md)                                                                      | - Use when starting any conversation - establishes how to fi... | ↓0 ↑0      | 2026-02-24    |
@@ -1332,7 +1332,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-03-19    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-25    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-03-26    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓3 ↑1      | 2026-03-12    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-02-23    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-03-19    |

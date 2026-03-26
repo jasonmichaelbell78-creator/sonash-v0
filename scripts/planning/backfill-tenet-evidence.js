@@ -18,7 +18,8 @@ import { safeWriteFileSync } from "../lib/safe-fs.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const require = createRequire(import.meta.url);
-const readJsonl = require("../lib/read-jsonl");
+const readJsonlModule = require("../lib/read-jsonl");
+const readJsonl = readJsonlModule?.default ?? readJsonlModule;
 
 const dryRun = process.argv.includes("--dry-run");
 
