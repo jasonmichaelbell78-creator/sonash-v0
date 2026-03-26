@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2127
+**Items Needing Verification:** 2126
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -720,7 +720,6 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | data/ecosystem-v2/invocations.jsonl                                              | 0         |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | .claude/agents/global/gsd-planner.md                                             | 0         |
 | DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
-| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | .claude/override-log.jsonl                                                       | 0         |
 | DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | docs/technical-debt/logs/resolution-log.jsonl                                    | 0         |
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
 | DEBT-45619 | Hook projectDir pattern lacks validation before execFileSync    | S2       | .claude/hooks/decision-save-prompt.js                                            | 112       |

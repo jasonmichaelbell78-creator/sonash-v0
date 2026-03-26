@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2127)
+## NEW (2126)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -717,7 +717,6 @@
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | code-quality             |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | code-quality             |
 | DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | code-quality             |
-| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | security                 |
 | DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | code-quality             |
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | code-quality             |
 | DEBT-45619 | Hook projectDir pattern lacks validation before execFileSync    | S2       | security                 |
@@ -7306,7 +7305,7 @@
 
 _No items_
 
-## RESOLVED (1115)
+## RESOLVED (1116)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -7682,6 +7681,7 @@ _No items_
 | DEBT-11294 | Create hook-ecosystem-audit skill (HIGH priority gap)           | S2       | engineering-productivity |
 | DEBT-11312 | Add JSONL schema validation to intake scripts                   | S2       | process                  |
 | DEBT-11330 | Auto-increment review numbers from JSONL max to prevent c...    | S2       | process                  |
+| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | security                 |
 | DEBT-0786  | Template docs located outside docs/templates/ directory         | S3       | code-quality             |
 | DEBT-0787  | Test count mismatch between DEVELOPMENT.md and actual tes...    | S3       | code-quality             |
 | DEBT-0848  | Unused dependencies remain in runtime dependencies (tool-...    | S3       | code-quality             |

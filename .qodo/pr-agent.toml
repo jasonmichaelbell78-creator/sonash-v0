@@ -112,6 +112,23 @@ When reviewing files in scripts/ or .claude/hooks/:
     on utility functions in scripts/lib/. These follow the project's
     established conventions for CLI helper libraries.
     (Rejected in PRs #432-#447 — project convention, not deficiency)
+
+19. Do NOT flag "audit trails for session counting" or "missing audit metadata"
+    on statusline session-tracking code (tools/statusline/). The statusline is
+    a local diagnostic tool, not a compliance system. Session count is
+    ephemeral display data, not a critical audit artifact.
+    (Rejected in PRs #470 R1, R2, R3, R4 — 4 consecutive rounds)
+
+20. Do NOT flag "API key in URL query parameter" for OpenWeatherMap API calls.
+    OpenWeatherMap only supports query-param auth (appid=) — there is no
+    header-based auth alternative. The key is a free-tier weather API key,
+    not a production secret.
+    (Rejected in PR #470 R3 — platform limitation, no alternative)
+
+21. Do NOT flag "path traversal guard bypass" on code that reads file names
+    from os.ReadDir() output (Go) or fs.readdirSync() (JS). Directory listing
+    returns trusted filenames from the filesystem, not user-controlled input.
+    (Rejected in PR #470 R4 — trusted source)
 """
 
 [pr_code_suggestions]
