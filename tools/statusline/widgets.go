@@ -362,7 +362,8 @@ func widgetUnackedWarnings(data *StdinData) WidgetResult {
 		dir = data.Workspace.CurrentDir
 	}
 	warnFile := filepath.Join(dir, dotClaude, "state", "hook-warnings-log.jsonl")
-	count := countUnacked(warnFile)
+	ackFile := filepath.Join(dir, dotClaude, "state", "hook-warnings-ack.json")
+	count := countUnackedSince(warnFile, ackFile)
 	if count == 0 {
 		return WidgetResult{Text: "\u26a0  0 unacked", Color: colorDim}
 	}
@@ -586,8 +587,24 @@ func tailLastLine(path string) string {
 	return lastLine
 }
 
-func countUnacked(path string) int {
-	f, err := os.Open(path)
+// countUnackedSince counts JSONL warning entries whose timestamp is after
+// the lastCleared time from the ack state file. This aligns with how
+// /alerts and append-hook-warning.js track acknowledgment.
+func countUnackedSince(logPath, ackPath string) int {
+	// Read lastCleared from ack state
+	var lastCleared time.Time
+	if raw, err := os.ReadFile(ackPath); err == nil {
+		var ack struct {
+			LastCleared string `json:"lastCleared"`
+		}
+		if err := json.Unmarshal(raw, &ack); err == nil && ack.LastCleared != "" {
+			if t, err := time.Parse(time.RFC3339, ack.LastCleared); err == nil {
+				lastCleared = t
+			}
+		}
+	}
+
+	f, err := os.Open(logPath)
 	if err != nil {
 		return 0
 	}
@@ -597,11 +614,16 @@ func countUnacked(path string) int {
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		line := scanner.Text()
+		if line == "" {
+			continue
+		}
 		var entry struct {
-			Acked bool `json:"acked"`
+			Timestamp string `json:"timestamp"`
 		}
 		if err := json.Unmarshal([]byte(line), &entry); err == nil {
-			if !entry.Acked {
+			if lastCleared.IsZero() {
+				count++ // no ack ever — all are unacked
+			} else if t, err := time.Parse(time.RFC3339, entry.Timestamp); err == nil && t.After(lastCleared) {
 				count++
 			}
 		}

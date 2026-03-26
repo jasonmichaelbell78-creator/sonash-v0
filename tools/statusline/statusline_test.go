@@ -274,18 +274,33 @@ func TestTailLastLine(t *testing.T) {
 	}
 }
 
-func TestCountUnacked(t *testing.T) {
+func TestCountUnackedSince(t *testing.T) {
 	dir := t.TempDir()
-	f := filepath.Join(dir, "warnings.jsonl")
+	logFile := filepath.Join(dir, "warnings.jsonl")
+	ackFile := filepath.Join(dir, "ack.json")
 
-	lines := `{"acked":false}
-{"acked":true}
-{"acked":false}
-{"acked":false}
+	// 3 entries: old, recent, recent
+	lines := `{"timestamp":"2026-03-20T10:00:00Z"}
+{"timestamp":"2026-03-25T10:00:00Z"}
+{"timestamp":"2026-03-26T10:00:00Z"}
 `
-	os.WriteFile(f, []byte(lines), 0644)
-	if got := countUnacked(f); got != 3 {
-		t.Errorf("expected 3 unacked, got %d", got)
+	os.WriteFile(logFile, []byte(lines), 0644)
+
+	// No ack file — all 3 should be unacked
+	if got := countUnackedSince(logFile, ackFile); got != 3 {
+		t.Errorf("no ack file: expected 3 unacked, got %d", got)
+	}
+
+	// Ack file with lastCleared between old and recent — only 2 after
+	os.WriteFile(ackFile, []byte(`{"lastCleared":"2026-03-24T00:00:00Z"}`), 0644)
+	if got := countUnackedSince(logFile, ackFile); got != 2 {
+		t.Errorf("partial ack: expected 2 unacked, got %d", got)
+	}
+
+	// Ack file with lastCleared after all — 0 unacked
+	os.WriteFile(ackFile, []byte(`{"lastCleared":"2026-03-27T00:00:00Z"}`), 0644)
+	if got := countUnackedSince(logFile, ackFile); got != 0 {
+		t.Errorf("full ack: expected 0 unacked, got %d", got)
 	}
 }
 
