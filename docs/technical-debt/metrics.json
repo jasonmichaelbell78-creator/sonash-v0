@@ -1,24 +1,24 @@
 {
-  "generated": "2026-03-26T02:12:29.253Z",
+  "generated": "2026-03-26T18:17:52.511Z",
   "generated_date": "2026-03-26",
   "summary": {
-    "total": 8470,
-    "open": 7281,
-    "resolved": 1115,
+    "total": 8472,
+    "open": 7282,
+    "resolved": 1116,
     "false_positives": 74,
     "resolution_rate_pct": 13
   },
   "by_status": {
-    "NEW": 2125,
+    "NEW": 2126,
     "VERIFIED": 5156,
     "IN_PROGRESS": 0,
-    "RESOLVED": 1115,
+    "RESOLVED": 1116,
     "FALSE_POSITIVE": 74
   },
   "by_severity": {
     "S0": 26,
     "S1": 1360,
-    "S2": 3443,
+    "S2": 3445,
     "S3": 3641
   },
   "by_category": {
@@ -27,8 +27,8 @@
     "performance": 179,
     "documentation": 982,
     "refactoring": 668,
-    "process": 726,
-    "engineering-productivity": 68,
+    "process": 727,
+    "engineering-productivity": 69,
     "enhancements": 154,
     "ai-optimization": 254
   },
@@ -37,7 +37,7 @@
     "sonarcloud": 2561,
     "review": 623,
     "audit": 2942,
-    "manual": 81,
+    "manual": 83,
     "intake": 64,
     "pr-review": 16,
     "pr-review-366-r2": 6,
@@ -186,6 +186,6 @@
     "avg_age_days": 41,
     "oldest_age_days": 55,
     "oldest_item_id": "DEBT-0002",
-    "verification_queue_size": 2125
+    "verification_queue_size": 2126
   }
 }

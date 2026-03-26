@@ -30,9 +30,9 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 8470  |
-| Open Items      | 7281  |
-| Resolved        | 1115  |
+| Total Items     | 8472  |
+| Open Items      | 7282  |
+| Resolved        | 1116  |
 | False Positives | 74    |
 | Resolution Rate | 13%   |
 
@@ -42,10 +42,10 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 2125  |
+| NEW            | 2126  |
 | VERIFIED       | 5156  |
 | IN_PROGRESS    | 0     |
-| RESOLVED       | 1115  |
+| RESOLVED       | 1116  |
 | FALSE_POSITIVE | 74    |
 
 ---
@@ -56,7 +56,7 @@ distribution.
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 26    | 0%         |
 | S1 (High)     | 1360  | 16%        |
-| S2 (Medium)   | 3443  | 41%        |
+| S2 (Medium)   | 3445  | 41%        |
 | S3 (Low)      | 3641  | 43%        |
 
 ---
@@ -67,13 +67,13 @@ distribution.
 | ------------------------ | ----- |
 | code-quality             | 4716  |
 | documentation            | 982   |
-| process                  | 726   |
+| process                  | 727   |
 | security                 | 723   |
 | refactoring              | 668   |
 | ai-optimization          | 254   |
 | performance              | 179   |
 | enhancements             | 154   |
-| engineering-productivity | 68    |
+| engineering-productivity | 69    |
 
 ---
 
@@ -132,7 +132,7 @@ _...and 1249 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 2125 items |
+| Verification Queue   | 2126 items |
 | Avg Age (Open Items) | 41 days    |
 | Oldest Item Age      | 55 days    |
 | Oldest Item          | DEBT-0002  |
@@ -151,7 +151,7 @@ _...and 1249 more S1 items_
 | sonarcloud-paste             | 286   |
 | context                      | 252   |
 | roadmap                      | 172   |
-| manual                       | 81    |
+| manual                       | 83    |
 | intake                       | 64    |
 | pr-deferred                  | 34    |
 | pr-review                    | 16    |

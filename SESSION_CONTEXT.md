@@ -88,18 +88,6 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 - **3548 tests pass, 0 fail**. All audit checkpoints pass.
 - **2 commits** on `plan-32526`.
 
-**Session #238** (R&D STANDARD DEEP-PLAN + SWS DA-1 + PERMISSIONS):
-
-- **Branch**: `planning-32426` → merged as PR #469
-- R&D Standard deep-plan (27 decisions, 4 phases). SWS DA-1 amendment.
-  Permissions consolidation (local → project, clear local + global).
-
-**Session #237** (PASSIVE-SURFACING REMEDIATION + CL-PROTOCOL):
-
-- **Branch**: `planning-32426`
-- Passive-surfacing COMPLETE. CL-PROTOCOL.md created. Wave 1a mid-audit PASS.
-  Plan orchestration Steps 7-8 complete.
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -126,16 +114,20 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Next Session Goals
 
-### Immediate Priority (Wave 1b — Step 9, last item)
+### Immediate Priority
 
-1. **CLI tools** — 25 steps, 8 phases. Only remaining Wave 1b work item. Plan:
+1. **`/deep-plan debt-runner expansion`** — consume research at
+   `.research/debt-runner-expansion/`, resolve 10 open questions in
+   `DECISIONS_PRE_PLAN.md`. Full scope: CLI expansion + web dashboard
+   `/dev/debt`
+   - all downstream fixes + integrations + discovery agent layer.
+
+### After Deep-Plan Complete
+
+2. **CLI tools** — 25 steps, 8 phases. Only remaining Wave 1b work item. Plan:
    `.planning/cli-tools-implementation/PLAN.md`
-
-### After CLI Tools Complete
-
-2. **Wave 1 Final Audit** (Step 10) — heavy CL verification, SWS gate confirm
-3. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions
-4. **Wave 2b: M1.6 feature work** (Step 14) — break the feature drought
+3. **Wave 1 Final Audit** (Step 10) — heavy CL verification, SWS gate confirm
+4. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions
 
 ---
 

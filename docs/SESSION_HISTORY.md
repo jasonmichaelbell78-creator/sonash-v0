@@ -27,6 +27,22 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #238 (2026-03-25)
+
+**Focus**: R&D Standard deep-plan + SWS DA-1 + permissions consolidation
+
+- Branch: `planning-32426` → merged as PR #469
+- R&D Standard deep-plan (27 decisions, 4 phases). SWS DA-1 amendment.
+- Permissions consolidation (local → project, clear local + global).
+
+### Session #237 (2026-03-25)
+
+**Focus**: Passive-surfacing remediation + CL-PROTOCOL
+
+- Branch: `planning-32426`
+- Passive-surfacing COMPLETE. CL-PROTOCOL.md created. Wave 1a mid-audit PASS.
+- Plan orchestration Steps 7-8 complete.
+
 ### Session #234 (2026-03-24)
 
 **Focus**: CLI tools + statusline research + plan housecleaning
