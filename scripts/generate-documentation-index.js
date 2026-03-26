@@ -525,36 +525,62 @@ function getCategory(filePath) {
 const lastModifiedCache = new Map();
 
 /**
+ * Pre-populate lastModifiedCache with a single batch git log call.
+ * Replaces hundreds of per-file git subprocess spawns with one call.
+ */
+function prefetchGitDates() {
+  try {
+    const result = execFileSync(
+      "git",
+      [
+        "log",
+        "--format=%cI",
+        "--name-only",
+        "--diff-filter=ACMR",
+        "HEAD",
+        "--",
+        "docs",
+        "app",
+        "components",
+        "lib",
+        "scripts",
+        ".claude",
+      ],
+      { cwd: ROOT, encoding: "utf-8", stdio: ["pipe", "pipe", "pipe"], maxBuffer: 20 * 1024 * 1024 }
+    );
+    let currentDate = "";
+    for (const line of result.split("\n")) {
+      const stripped = line.trim();
+      if (!stripped) continue;
+      // ISO 8601 dates from --format=%cI always start with YYYY-MM-DDT; file paths never do
+      if (/^\d{4}-\d{2}-\d{2}T/.test(stripped)) {
+        currentDate = stripped.split("T")[0];
+      } else {
+        const cacheKey = stripped.replaceAll("\\", "/").replace(/^\.\//u, "");
+        if (currentDate && cacheKey && !lastModifiedCache.has(cacheKey)) {
+          lastModifiedCache.set(cacheKey, currentDate);
+        }
+      }
+    }
+  } catch {
+    // Git failed — getLastModifiedDate will fall back to filesystem mtime
+  }
+}
+
+/**
  * Get the last git commit date for a file.
- * Uses committer date (%cI) to avoid date regressions from cherry-picks/rebases.
- * Falls back to filesystem mtime if git fails (e.g., untracked file).
+ * Uses pre-populated cache from prefetchGitDates(), falls back to filesystem mtime.
  */
 function getLastModifiedDate(filePath, fullPath) {
   const cacheKey = filePath.replaceAll("\\", "/");
   if (lastModifiedCache.has(cacheKey)) return lastModifiedCache.get(cacheKey);
 
   let lastModified;
-
   try {
-    const result = execFileSync("git", ["log", "--follow", "-1", "--format=%cI", "--", cacheKey], {
-      cwd: ROOT,
-      encoding: "utf-8",
-      stdio: ["pipe", "pipe", "pipe"],
-    }).trim();
-    if (result) {
-      lastModified = result.split("T")[0];
-    }
+    const stat = statSync(fullPath);
+    lastModified = stat.mtime.toISOString().split("T")[0];
   } catch {
-    // Git failed — fall back to filesystem mtime
-  }
-
-  if (!lastModified) {
-    try {
-      const stat = statSync(fullPath);
-      lastModified = stat.mtime.toISOString().split("T")[0];
-    } catch {
-      lastModified = "UNKNOWN";
-    }
+    lastModified = "UNKNOWN";
   }
 
   lastModifiedCache.set(cacheKey, lastModified);
@@ -1006,6 +1032,9 @@ function main() {
   log("🔍 Scanning for markdown files...");
   const { active: activeFiles, archived: archivedFiles } = findMarkdownFiles(ROOT);
   log(`   Found ${activeFiles.length} active files, ${archivedFiles.length} archived files`);
+
+  // Batch-fetch git dates in one call (replaces per-file git log spawns)
+  prefetchGitDates();
 
   // Process each active file (archived files just get listed, not processed)
   log("📄 Processing active files...");

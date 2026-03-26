@@ -58,6 +58,7 @@
       "Bash(fnm *)",
       "Bash(gitleaks *)",
       "Bash(firebase *)",
+      "Bash(go *)",
       "WebSearch",
       "WebFetch",
       "Skill",
@@ -235,7 +236,8 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/statusline.js"
+    "command": "./tools/statusline/sonash-statusline.exe",
+    "padding": 2
   },
   "enabledPlugins": {
     "episodic-memory@superpowers-marketplace": true,

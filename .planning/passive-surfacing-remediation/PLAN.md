@@ -1,7 +1,7 @@
 <!-- prettier-ignore-start -->
 **Document Version:** 1.0
 **Last Updated:** 2026-03-17
-**Status:** ACTIVE
+**Status:** DONE (Session #237)
 <!-- prettier-ignore-end -->
 
 # Implementation Plan: Passive Surfacing Remediation

@@ -10,6 +10,9 @@ HOOK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 CHECKS_TMPFILE=$(mktemp)
 add_exit_trap "rm -f '$CHECKS_TMPFILE'"
 
+# Record failure in hook-runs.jsonl if script crashes before normal recording
+add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ]; then write_hook_runs_jsonl "pre-push" "$CHECKS_TMPFILE" "0"; fi'
+
 _shared_init_fnm
 
 # --- SKIP_CHECKS consolidation (mirrors pre-commit pattern) ---

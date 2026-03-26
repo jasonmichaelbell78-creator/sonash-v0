@@ -34,21 +34,7 @@ try {
   };
 }
 
-/**
- * Sanitize error messages to prevent path/credential leakage
- * Pattern: #34 (relative path logging)
- *
- * @param {Error|string} error - Error to sanitize
- * @returns {string} Sanitized error message
- */
-function sanitizeError(error) {
-  const message = error instanceof Error ? error.message : String(error);
-  return message
-    .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
-}
+const { sanitizeError } = require("./sanitize-error.cjs");
 
 /**
  * Sanitize display strings (for logs, console output)

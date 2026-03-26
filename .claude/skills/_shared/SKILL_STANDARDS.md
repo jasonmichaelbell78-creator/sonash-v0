@@ -150,10 +150,11 @@ ordering required. Wave N+1 depends on Wave N completion.
 
 Common boilerplate lives in `.claude/skills/_shared/`:
 
-| Template             | Purpose                                  | Used by             |
-| -------------------- | ---------------------------------------- | ------------------- |
-| `AUDIT_TEMPLATE.md`  | Evidence, TDMS intake, review procedures | All audit-\* skills |
-| `SKILL_STANDARDS.md` | This file -- structural standards        | skill-creator       |
+| Template               | Purpose                                  | Used by                      |
+| ---------------------- | ---------------------------------------- | ---------------------------- |
+| `AUDIT_TEMPLATE.md`    | Evidence, TDMS intake, review procedures | All audit-\* skills          |
+| `SKILL_STANDARDS.md`   | This file -- structural standards        | skill-creator                |
+| `ecosystem-audit/*.md` | Shared ecosystem audit protocols         | All 8 ecosystem audit skills |
 
 Audit skills reference the shared template instead of duplicating boilerplate:
 
@@ -163,6 +164,13 @@ Audit skills reference the shared template instead of duplicating boilerplate:
 > Read `.claude/skills/_shared/AUDIT_TEMPLATE.md` for: Evidence Requirements,
 > Dual-Pass Verification, JSONL Output Format, MASTER_DEBT Cross-Reference,
 > Interactive Review, TDMS Intake & Commit, and Honesty Guardrails.
+```
+
+Ecosystem audit skills reference shared protocols:
+
+```markdown
+> Read `.claude/skills/_shared/ecosystem-audit/CRITICAL_RULES.md` and follow all
+> 8 rules.
 ```
 
 ---

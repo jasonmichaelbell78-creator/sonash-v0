@@ -206,8 +206,12 @@ jobs:
 
       - name: Security pattern check
         run: node scripts/security-check.js --all
-        # TODO: Remove continue-on-error once validated against full codebase (PR #457)
-        continue-on-error: true
+
+      - name: Gitleaks secret scan
+        uses: gitleaks/gitleaks-action@44c470ffc35caa81b8a8b2e75a06b4ec8e308688 # v2.3.9
+        env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Documentation check
         # Non-blocking: templates/stubs have expected issues, active docs are clean

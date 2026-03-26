@@ -41,72 +41,26 @@ checkers), this is a deep root-cause analysis across 18 categories.
 
 ## CRITICAL RULES (Read First)
 
-1. **CHECK for saved progress first** — resume from
-   `.claude/tmp/pr-audit-progress.json` if it exists and is < 2 hours old.
-2. **ALWAYS run the script first** — never generate findings without data
-3. **ALWAYS display the dashboard to the user** before starting the walkthrough
-4. **Present findings one at a time** using AskUserQuestion for decisions
-5. **Show patch suggestions inline** with each patchable finding
-6. **Create TDMS entries** for deferred findings via `/add-debt`
-7. **Save decisions** to session log for audit trail
+> Read `.claude/skills/_shared/ecosystem-audit/CRITICAL_RULES.md` and follow all
+> 8 rules. The rules below are summaries — the shared file is authoritative.
+
+1. **CHECK for saved progress first** (MUST)
+2. **ALWAYS run the script first** (MUST)
+3. **ALWAYS display the dashboard** (MUST)
+4. **Use conversational Q&A for decisions** (MUST) — NEVER use AskUserQuestion
+5. **SAVE progress after every decision** (MUST)
+6. **Show patch suggestions inline** (SHOULD)
+7. **Create TDMS entries** (MUST) for deferred findings
+8. **Save decisions** (MUST) to session log
 
 ---
 
 ## Compaction Guard
 
-Audits are long-running interactive workflows vulnerable to context compaction.
-To survive compaction, save progress after every decision and check for existing
-progress on startup.
+> Read `.claude/skills/_shared/ecosystem-audit/COMPACTION_GUARD.md` for the full
+> compaction guard protocol (state file schema, resume, save, cleanup).
 
-### State File
-
-Path: `.claude/tmp/pr-audit-progress.json`
-
-Schema:
-
-```json
-{
-  "auditTimestamp": "ISO timestamp of audit run",
-  "score": 85,
-  "grade": "B",
-  "totalFindings": 42,
-  "currentFindingIndex": 8,
-  "decisions": [
-    {
-      "findingIndex": 1,
-      "category": "skill_invocation_fidelity",
-      "message": "finding message",
-      "decision": "skip",
-      "note": "reason"
-    }
-  ],
-  "fixesApplied": ["description of fix"],
-  "findingsData": []
-}
-```
-
-### On Skill Start (Before Phase 1)
-
-1. Check if `.claude/tmp/pr-audit-progress.json` exists and is < 2 hours old
-2. If yes: **resume from saved position**
-   - Display the dashboard from saved data (skip re-running the audit script)
-   - Show: "Resuming audit from finding {n}/{total} ({n-1} already reviewed)"
-   - List prior decisions briefly: "{n} fixed, {n} skipped, {n} deferred"
-   - Continue the walkthrough from `currentFindingIndex`
-3. If no (or stale): proceed to Phase 1 normally
-
-### After Each Decision (During Phase 3)
-
-After each AskUserQuestion response, immediately save progress:
-
-1. Update `currentFindingIndex` to the next finding
-2. Append the decision to the `decisions` array
-3. If "Fix Now" was chosen, append to `fixesApplied`
-4. Write the updated JSON to `.claude/tmp/pr-audit-progress.json`
-
-### On Audit Completion (Phase 4)
-
-After the summary is presented, delete the progress file (audit is complete).
+State file path: `.claude/tmp/pr-audit-progress.json`
 
 ---
 
@@ -186,105 +140,26 @@ Then say: **"Found N findings to review. Walking through each one
 
 ## Phase 3: Finding-by-Finding Walkthrough
 
-Sort all findings by `impactScore` descending (highest impact first).
+> Read `.claude/skills/_shared/ecosystem-audit/FINDING_WALKTHROUGH.md` for the
+> full walkthrough protocol (finding card, decisions, patches, delegation,
+> batching).
 
-For each finding, present a context card:
+Sort findings by `impactScore` descending (highest impact first). DEBT entries
+use source_id: `review:pr-ecosystem-audit-{date}`.
 
-```
-━━━ Finding {n}/{total} ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-{SEVERITY}  |  {domainLabel}: {categoryLabel}  |  Impact: {impactScore}/100
-
-{message}
-
-Evidence:
-  {details}
-
-Benchmarks:
-  Internal: {metrics or trend info}
-  Industry: {industry benchmark if available}
-```
-
-If the finding has `patchable: true`, also show:
-
-```
-Patch Available:
-  Target: {patch.target}
-  Action: {patch.description}
-  Preview:
-    {patch.preview or patch.content}
-```
-
-Then use `AskUserQuestion` with options based on severity:
-
-**ERROR findings:**
-
-- Fix Now — execute the fix/patch immediately
-- Defer — add to deferred list, create DEBT entry
-- Suppress — suppress this finding type permanently
-
-**WARNING findings:**
-
-- Fix Now
-- Defer
-- Skip — acknowledge but don't track
-
-**INFO findings:**
-
-- Acknowledge
-- Defer for later
-
-### Handling Decisions
-
-**Fix Now:**
-
-1. If patch is available, apply it (edit file, run command, etc.)
-2. If no patch, provide guidance for manual fix
-3. Log decision to session file
-
-**Defer:**
-
-1. Create DEBT entry via `/add-debt` with:
-   - severity: S1 (errors) or S2 (warnings)
-   - category: engineering-productivity
-   - source_id: "review:pr-ecosystem-audit-{date}"
-2. Log decision to session file
-
-**Suppress:**
-
-1. Add to suppression list (not yet implemented — log for future)
-2. Log decision to session file
+**PR-specific:** Include industry benchmarks (DORA, Accelerate) in finding
+context cards where applicable.
 
 ---
 
 ## Phase 4: Summary & Actions
 
-After all findings are reviewed, present the summary:
+> Read `.claude/skills/_shared/ecosystem-audit/SUMMARY_AND_TRENDS.md` for the
+> summary template, trend report template, and verification re-run template.
 
-```
-━━━ Audit Summary ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Write report to `.claude/tmp/pr-audit-report-{YYYY-MM-DD}.md`.
 
-Composite: {grade} ({score}/100)  |  {trend}
-
-Decisions:
-  Fixed:      {count} findings
-  Deferred:   {count} findings → {count} DEBT entries created
-  Skipped:    {count} findings
-  Suppressed: {count} findings
-
-Patches Applied: {count}/{total patchable}
-
-Top 3 Impact Areas:
-  1. {category} — {brief description}
-  2. {category} — {brief description}
-  3. {category} — {brief description}
-
-Next Steps:
-  - {actionable recommendation based on worst categories}
-  - {actionable recommendation}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**Process verification:** Run `__tests__/` suite to confirm audit integrity:
+**Process verification:** Run `__tests__/` suite:
 
 ```bash
 node --test .claude/skills/pr-ecosystem-audit/scripts/__tests__/*.test.js
@@ -294,23 +169,9 @@ node --test .claude/skills/pr-ecosystem-audit/scripts/__tests__/*.test.js
 
 ## Phase 5: Trend Report (if previous runs exist)
 
-If the state file has previous entries, show improvement/regression:
+> Uses trend report template from `SUMMARY_AND_TRENDS.md`.
 
-```
-━━━ Trend Report ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Composite Trend: {sparkline}  {direction} ({delta})
-
-Improving:
-  {category}: {before} → {after} (+{delta})
-
-Declining:
-  {category}: {before} → {after} ({delta})
-
-Stable:
-  {category}: {score} (no change)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+History: `.claude/state/pr-ecosystem-audit-history.jsonl`
 
 ---
 
@@ -465,6 +326,7 @@ evidence is implicit.
 
 | Version | Date       | Description                                                                                                                               |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.3     | 2026-03-25 | Extract shared patterns to \_shared/ecosystem-audit/                                                                                      |
 | 1.2     | 2026-02-24 | Add Compaction Guard with progress file, resume-on-start, save-after-decision, and cleanup-on-completion                                  |
 | 1.1     | 2026-02-22 | Add Checker Development Guide with data source, JSONL schema, retro/review separation, markdown extraction, path, and calibration lessons |
 | 1.0     | 2026-02-20 | Initial implementation                                                                                                                    |

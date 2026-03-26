@@ -10,36 +10,13 @@
  */
 "use strict";
 
-const fs = require("node:fs");
 const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "../..");
 const RETROS = path.join(ROOT, ".claude/state/retros.jsonl");
 const REVIEWS = path.join(ROOT, ".claude/state/reviews.jsonl");
 
-function readJsonl(fp) {
-  try {
-    return fs
-      .readFileSync(fp, "utf-8")
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((l, idx) => {
-        try {
-          return JSON.parse(l);
-        } catch {
-          console.error(`  Warning: skipped malformed JSON at ${fp} line ${idx + 1}`);
-          return null;
-        }
-      })
-      .filter(Boolean);
-  } catch (err) {
-    console.error(
-      `  Warning: failed to read ${fp}: ${err instanceof Error ? err.message : String(err)}`
-    );
-    return [];
-  }
-}
+const readJsonl = require("../lib/read-jsonl");
 
 const args = process.argv.slice(2);
 const prIdx = args.indexOf("--pr");
@@ -50,8 +27,8 @@ if (prFilter !== null && Number.isNaN(prFilter)) {
   process.exit(1);
 }
 
-const retros = readJsonl(RETROS);
-const reviews = readJsonl(REVIEWS);
+const retros = readJsonl(RETROS, { safe: true });
+const reviews = readJsonl(REVIEWS, { safe: true });
 
 // Filter retros
 const filteredRetros = prFilter

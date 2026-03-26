@@ -14,22 +14,25 @@ sessions across all waves) **Research:**
 
 ## Progress (Session #237)
 
-| Step  | Description                     | Status                                                  |
-| ----- | ------------------------------- | ------------------------------------------------------- |
-| Pre   | Merge planning-32326 to main    | DONE (PR #465)                                          |
-| 1     | S0 Pre-Verification (CL agents) | DONE — 0 fixes needed, S0: 32→25                        |
-| 2     | Repo Cleanup                    | DONE — 5 orphans, 3 archives, 7 docs, 3 deps            |
-| 3     | S0 Fixes                        | DONE — no-op (all deferred/FP/resolved)                 |
-| 4     | S0 Post-Verification            | DONE — no-op                                            |
-| 5     | Wave 0 Audit                    | DONE — PASS, 7/7 checks                                 |
-| 6     | Wave 1 Pre-Verification         | DONE — all 5 plans verified                             |
-| 7     | Wave 1a (agent-env P4)          | DONE — 6 agents, 13 model fields, 2 teams, 2 new agents |
-| 7     | Wave 1a (agent-env P5)          | DONE — CLAUDE.md, skills, hooks, monitoring, tracking   |
-| 7     | Wave 1a (passive-surfacing)     | DONE — 14 root causes, 46 sites, CL-PROTOCOL Phase D+V  |
-| 8     | Wave 1a Mid-Audit               | DONE — PASS, 5/5 shared files clean, 3548 tests pass    |
-| 9     | Wave 1b (PR, CLI, SL)           | NOT YET                                                 |
-| 10    | Wave 1 Final Audit              | NOT YET                                                 |
-| 11-25 | Waves 2-3                       | NOT YET                                                 |
+| Step  | Description                     | Status                                                                      |
+| ----- | ------------------------------- | --------------------------------------------------------------------------- |
+| Pre   | Merge planning-32326 to main    | DONE (PR #465)                                                              |
+| 1     | S0 Pre-Verification (CL agents) | DONE — 0 fixes needed, S0: 32→25                                            |
+| 2     | Repo Cleanup                    | DONE — 5 orphans, 3 archives, 7 docs, 3 deps                                |
+| 3     | S0 Fixes                        | DONE — no-op (all deferred/FP/resolved)                                     |
+| 4     | S0 Post-Verification            | DONE — no-op                                                                |
+| 5     | Wave 0 Audit                    | DONE — PASS, 7/7 checks                                                     |
+| 6     | Wave 1 Pre-Verification         | DONE — all 5 plans verified                                                 |
+| 7     | Wave 1a (agent-env P4)          | DONE — 6 agents, 13 model fields, 2 teams, 2 new agents                     |
+| 7     | Wave 1a (agent-env P5)          | DONE — CLAUDE.md, skills, hooks, monitoring, tracking                       |
+| 7     | Wave 1a (passive-surfacing)     | DONE — 14 root causes, 46 sites, CL-PROTOCOL Phase D+V                      |
+| 8     | Wave 1a Mid-Audit               | DONE — PASS, 5/5 shared files clean, 3548 tests pass                        |
+| 9     | Wave 1b (PS)                    | DONE — completed in Wave 1a (Session #237)                                  |
+| 9     | Wave 1b (SL)                    | DONE — Go binary, 22 widgets, 3 lines, weather pending API key activation   |
+| 9     | Wave 1b (Propagation)           | DONE — 4 waves, 14 steps, doc-index 38s→0.9s, gitleaks CI, baseline support |
+| 9     | Wave 1b (CLI)                   | NOT YET                                                                     |
+| 10    | Wave 1 Final Audit              | NOT YET                                                                     |
+| 11-25 | Waves 2-3                       | NOT YET                                                                     |
 
 ## Files to Create/Modify
 

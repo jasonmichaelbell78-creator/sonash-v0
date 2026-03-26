@@ -16,14 +16,18 @@
  *   const { findings, summary } = await unifyFindings(sessionPath);
  */
 
-import { readFileSync, existsSync, readdirSync, mkdirSync } from "node:fs";
+import { existsSync, readdirSync, mkdirSync } from "node:fs";
 import { join, resolve, relative, isAbsolute, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
+const readJsonlModule = require("../lib/read-jsonl");
+const readJsonl = readJsonlModule?.default ?? readJsonlModule;
 const REPO_ROOT = resolve(__dirname, "../..");
 
 /**
@@ -53,37 +57,8 @@ const EFFORT_WEIGHTS = { E0: 0.5, E1: 1, E2: 2, E3: 4 };
 // Cross-cutting multiplier (increases priority for multi-category findings)
 const CROSS_CUTTING_MULTIPLIER_PER_CATEGORY = 0.5;
 
-/**
- * Parse JSONL file and return findings array
- * @param {string} filePath - Path to JSONL file
- * @returns {object[]} - Array of findings
- */
-function parseJsonlFile(filePath) {
-  if (!existsSync(filePath)) {
-    console.warn(`File not found: ${filePath}`);
-    return [];
-  }
-
-  let content;
-  try {
-    content = readFileSync(filePath, "utf-8");
-  } catch {
-    console.warn(`Cannot read file: ${filePath}`);
-    return [];
-  }
-  const lines = content.split("\n").filter((l) => l.trim());
-  const findings = [];
-
-  for (let i = 0; i < lines.length; i++) {
-    try {
-      findings.push(JSON.parse(lines[i].trim()));
-    } catch {
-      console.warn(`${basename(filePath)} line ${i + 1}: Invalid JSON`);
-    }
-  }
-
-  return findings;
-}
+// parseJsonlFile replaced by canonical readJsonl from scripts/lib/read-jsonl.js
+// (imported via createRequire above)
 
 /**
  * Extract normalized file paths from finding
@@ -554,7 +529,7 @@ export async function unifyFindings(sessionPath) {
 
   for (const file of canonFiles) {
     const category = file.replaceAll("CANON-", "").replaceAll(".jsonl", "").toLowerCase();
-    const findings = parseJsonlFile(join(canonDir, file));
+    const findings = readJsonl(join(canonDir, file), { safe: true });
 
     categoryStats[category] = {
       total: findings.length,

@@ -10,13 +10,16 @@
  *   node scripts/planning/backfill-tenet-evidence.js [--dry-run]
  */
 
-import { readFileSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
+const readJsonlModule = require("../lib/read-jsonl");
+const readJsonl = readJsonlModule?.default ?? readJsonlModule;
 
 const dryRun = process.argv.includes("--dry-run");
 
@@ -28,22 +31,8 @@ const TENETS_PATH = resolve(BASE_DIR, "tenets.jsonl");
 // Helpers
 // ---------------------------------------------------------------------------
 
-function parseJsonl(filePath) {
-  const content = readFileSync(filePath, "utf-8");
-  const results = [];
-  for (const line of content.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed === "" || trimmed.startsWith("//")) continue;
-    try {
-      results.push(JSON.parse(trimmed));
-    } catch (err) {
-      console.warn(
-        `Warning: skipping corrupt JSONL line in ${filePath}: ${err instanceof Error ? err.message : String(err)}`
-      );
-    }
-  }
-  return results;
-}
+// parseJsonl replaced by canonical readJsonl from scripts/lib/read-jsonl.js
+// (imported via createRequire above)
 
 function serializeJsonl(records) {
   return records.map((r) => JSON.stringify(r)).join("\n") + "\n";
@@ -63,8 +52,8 @@ function extractTenetId(raw) {
 // Main
 // ---------------------------------------------------------------------------
 
-const decisions = parseJsonl(DECISIONS_PATH);
-const tenets = parseJsonl(TENETS_PATH);
+const decisions = readJsonl(DECISIONS_PATH);
+const tenets = readJsonl(TENETS_PATH);
 
 // Build a map: tenetId -> Set of decision reference strings (e.g. "D55")
 const tenetToDecisions = new Map();

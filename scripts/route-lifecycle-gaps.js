@@ -30,27 +30,7 @@ try {
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const SCORES_PATH = path.join(PROJECT_ROOT, ".claude", "state", "lifecycle-scores.jsonl");
 
-function readJsonl(filePath) {
-  let content;
-  try {
-    content = fs.readFileSync(filePath, "utf-8");
-  } catch (error) {
-    if (error.code === "ENOENT") return [];
-    throw error;
-  }
-
-  const entries = [];
-  for (const line of content.split(/\r?\n/)) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    try {
-      entries.push(JSON.parse(trimmed));
-    } catch {
-      /* skip corrupt lines */
-    }
-  }
-  return entries;
-}
+const readJsonl = require("./lib/read-jsonl");
 
 function categorizeGap(entry) {
   // Determine learning type based on category
@@ -118,7 +98,7 @@ function buildLearning(gap) {
 }
 
 function run(options = {}) {
-  const entries = readJsonl(SCORES_PATH);
+  const entries = readJsonl(SCORES_PATH, { safe: true });
   if (entries.length === 0) {
     console.error("No lifecycle scores found");
     return { success: false, routed: 0 };

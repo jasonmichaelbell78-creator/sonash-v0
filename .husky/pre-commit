@@ -21,7 +21,7 @@ add_exit_trap "rm -f '$CHECKS_TMPFILE'"
 
 # Display log on failure so developers see what went wrong (Gemini review #379)
 # Capture exit code before chain runs; display log to stderr on failure
-add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ] && [ -f "$HOOK_OUTPUT_LOG" ]; then exec 1>/dev/null; printf "\n--- PRE-COMMIT HOOK FAILED ---\n" >&2; cat "$HOOK_OUTPUT_LOG" >&2; printf "--- END OF LOGS ---\n" >&2; fi'
+add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ]; then if [ -f "$HOOK_OUTPUT_LOG" ]; then exec 1>/dev/null; printf "\n--- PRE-COMMIT HOOK FAILED ---\n" >&2; cat "$HOOK_OUTPUT_LOG" >&2; printf "--- END OF LOGS ---\n" >&2; fi; write_hook_runs_jsonl "pre-commit" "$CHECKS_TMPFILE" "0"; fi'
 
 # --- SKIP_CHECKS consolidation ---
 # Single variable: SKIP_CHECKS="cross-doc,patterns" SKIP_REASON="reason" git commit ...

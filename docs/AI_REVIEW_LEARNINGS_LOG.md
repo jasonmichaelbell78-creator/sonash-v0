@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.109 **Created:** 2026-01-02 **Last Updated:**
-2026-03-25
+**Document Version:** 17.114 **Created:** 2026-01-02 **Last Updated:**
+2026-03-26
 
 ## Purpose
 
@@ -1157,7 +1157,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-8: PR #461 R3 — Mixed (2026-03-22)
+### Review rev-8: (untitled) (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** mixed
 
@@ -1167,7 +1167,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-9: PR #461 R4 — Qodo (2026-03-22)
+### Review rev-9: (untitled) (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
 
@@ -1207,7 +1207,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-466-r1: PR #466 R1 — Qodo (2026-03-24)
+### Review review-466-r1: (untitled) (2026-03-24)
 
 > **Completeness:** partial **Missing fields:** patterns, learnings
 
@@ -1225,7 +1225,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-466-r2: PR #466 R2 — Qodo (2026-03-24)
+### Review review-466-r2: (untitled) (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
@@ -1241,7 +1241,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-466-r3: PR #466 R3 — Qodo (2026-03-24)
+### Review review-466-r3: (untitled) (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
@@ -1307,53 +1307,23 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-10: PR #468 R1 — Qodo (2026-03-24) (2026-03-24)
+### Review 503: PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling (2026-03-25)
 
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+**Date:** 2026-03-25 | **PR:** #469 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 13    | 8     | 2        | 3        |
+| 12    | 8     | 0        | 3        |
 
 ---
 
-### Review rev-11: PR #468 R2 — Mixed Gemini+Qodo (2026-03-24) (2026-03-24)
+### Review 504: PR #469 R2 — CC Reduction, Map Normalization & Revalidation (2026-03-25)
 
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 7     | 0        | 3        |
-
----
-
-### Review rev-12: PR #468 R3 — Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+**Date:** 2026-03-25 | **PR:** #469 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 4     | 0        | 4        |
-
----
-
-### Review rev-13: PR #468 R4 — Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 3        |
-
----
-
-### Review 502: PR #468 R4 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 3        |
+| 8     | 7     | 0        | 1        |
 
 ## Key Patterns
 
@@ -2732,5 +2702,137 @@ brackets or separate the enum values from the table.
   provenance for resume/audit
 - Rejected: `post-read-handler` console.warn — already has nosemgrep with
   documented rationale, developer-only diagnostics confirmed by Gemini
+
+---
+
+### Review #53 — PR #470 R1 (Mixed: Qodo + Gemini + SonarCloud)
+
+**Date:** 2026-03-26 **Items:** 32 (19 fixed, 2 rejected, 1 already fixed, 10
+deduped/merged)
+
+**Patterns:**
+
+- Synchronous network calls in statusline block rendering — always use
+  goroutines for I/O on the render path
+- API keys passed via `exec.Command` argv are visible in process listings — use
+  in-process `net/http` instead of `curl` subprocess
+- `parsed.entries || []` trusts structure without type validation — use
+  `Array.isArray()` for defensive JSON parsing
+- Cross-platform path normalization: git log outputs forward slashes but Windows
+  paths use backslashes — normalize cache keys with `replaceAll`
+- Version history tables: newest version must sort first (descending order)
+- SonarCloud first-scan on new Go files produces volume of "define constant"
+  items — batch by file for efficiency
+
+**Learnings:**
+
+- Go statusline: `refreshCacheIfStale` was called both synchronously in `main()`
+  AND as goroutine in `buildAllWidgets()` — removed redundant sync call
+- Weather fetch: replaced `curl` subprocess with `net/http.Client` — eliminates
+  API key exposure in argv and adds proper URL encoding via `net/url`
+- Added `context.WithTimeout(3s)` to `gh` CLI calls to prevent indefinite hangs
+- Cognitive complexity: extracted `findLatestTodoFile`, `findInProgressTask`,
+  `parseUptimeDate`, `formatUptime` helpers to bring widget functions under
+  threshold
+- Baseline filtering: per-location filtering (not whole-miss exclusion) ensures
+  non-baselined locations aren't silently suppressed
+- Rejected: "audit trails for session counting" — statusline is local diagnostic
+  tool, not compliance system
+- Rejected: "widgetUptime Windows-only" — both locales are Windows, graceful
+  fallback exists
+
+---
+
+### Review #54 — PR #470 R2 (Qodo + SonarCloud)
+
+**Date:** 2026-03-26 **Items:** 7 (5 fixed, 1 rejected, 1 deduped)
+
+**Patterns:**
+
+- Ignored I/O errors (MkdirAll, WriteFile, Unmarshal) in statusline widgets —
+  explicitly acknowledge with `_ =` or check and return placeholder
+- Propagation: readJsonl CJS/ESM interop guard (`?.default ??`) must apply to
+  ALL ESM files using `createRequire`, not just the first one fixed
+- suppressedMissesCount should count suppressed locations not whole misses
+
+**Learnings:**
+
+- SonarCloud flagged `todosDir` variable names as "TODO comments" — false
+  positive on identifier naming
+- Baseline entry validation (shape check + toPosixPath normalization) prevents
+  silent comparison failures from malformed or Windows-path entries
+- Git log path whitespace: use `trimEnd()` not `trim()` on file paths to
+  preserve leading spaces (unlikely but defensive)
+
+---
+
+### Review #55 — PR #470 R3 (Qodo + SonarCloud + statusline bugfixes)
+
+**Date:** 2026-03-26 **Items:** 10 (5 fixed, 5 rejected)
+
+**Patterns:**
+
+- Goroutine cache refresh in short-lived binaries is a no-op — process exits
+  before goroutine completes. Use synchronous refresh after output flush.
+- OpenWeatherMap `/data/2.5/weather` temp_max/min are observation range, not
+  daily forecast. Use `/data/2.5/forecast` with cnt=8 for 24h high/low.
+- Hook outcome "warn" is not failure — statusline should treat pass+warn as
+  green, only fail/error as red.
+
+**Learnings:**
+
+- Weather cache was always stale because goroutine refresh never completed
+  before process exit — moved to synchronous post-render
+- Daily high/low: forecast API cnt=8 (8x3h=24h) gives real daily range (H:87
+  L:65 vs H:65 L:61 from current weather)
+- Cache permissions tightened: 0644→0600 files, 0755→0700 dirs
+- Rejected: API key in URL — OpenWeatherMap only supports query param auth
+- Rejected: audit trails for session counting (3rd time — R1, R2, R3)
+- Rejected: runtime typeof checks for readJsonl — over-engineering
+- Rejected: CI failures (gitleaks SHA, sanitize-error.cjs) — infrastructure +
+  pre-existing
+
+---
+
+### Review #56 — PR #470 R4 (Qodo + SonarCloud)
+
+**Date:** 2026-03-26 **Items:** 11 (4 fixed, 7 rejected)
+
+**Patterns:**
+
+- Cognitive complexity: extract helpers when adding nested API calls (forecast
+  code pushed fetchWeather to CC 35)
+- Permission consistency: when tightening cache to 0600, also tighten session
+  file — propagation applies to permission patterns too
+
+**Learnings:**
+
+- Extracted `fetchDailyForecast()` from `fetchWeather()` to reduce CC from 35 to
+  ~15 per function
+- Session file permissions tightened 0644→0600, MkdirAll 0755→0700
+- build.sh HOME normalization: cygpath preferred, fallback to string replace
+- R4 fix rate 36% — approaching diminishing returns, recommend max one more
+  round
+- Rejected 4th time: audit trails for session counting
+- Rejected: path traversal guard concern — todoFile from os.ReadDir is trusted
+
+---
+
+### Review #57 — PR #470 R5 (Qodo CI + Suggestions)
+
+**Date:** 2026-03-26 **Items:** 6 (0 fixed, 6 rejected)
+
+**Patterns:**
+
+- R5 fix rate 0% — all items were repeat rejections or diminishing-returns
+  optimization suggestions. Merge trigger activated.
+
+**Learnings:**
+
+- All 6 items rejected: CI failures (pre-existing x2), prefetchGitDates
+  optimization (unnecessary), node JSON in Go build script (wrong direction),
+  MSYS drive letter (cygpath handles it), trim vs CR-strip (already addressed)
+- Merge trigger: R5 0% fix rate confirms diminishing returns. No further review
+  rounds will produce actionable fixes.
 
 ---

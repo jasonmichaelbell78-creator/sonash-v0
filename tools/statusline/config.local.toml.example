@@ -1,0 +1,20 @@
+# Copy to config.local.toml and fill in your values.
+# This file is gitignored — machine-specific overrides only.
+#
+# Setup:
+#   1. cd tools/statusline
+#   2. cp config.local.toml.example config.local.toml
+#   3. Add your weather API key (free at openweathermap.org)
+#   4. bash build.sh
+#   5. Restart Claude Code — verify statusline renders
+#
+# After pulling changes on second machine:
+#   1. cd tools/statusline && bash build.sh
+#   2. (config.local.toml already exists from initial setup)
+
+[api_keys]
+weather_api_key = "YOUR_OPENWEATHERMAP_API_KEY"
+
+[paths]
+# Override if your binary install location differs
+binary_dir = "~/.claude/statusline"

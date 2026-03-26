@@ -34,38 +34,7 @@ const args = new Set(process.argv.slice(2));
 const applyMode = args.has("--apply");
 const jsonOutput = args.has("--json");
 
-/**
- * Read a JSONL file and return an array of parsed objects.
- * Skips blank lines. Wraps in try/catch per CLAUDE.md file-read rules.
- * @param {string} filePath
- * @returns {object[]}
- */
-function readJsonl(filePath) {
-  let raw;
-  try {
-    raw = fs.readFileSync(filePath, "utf8");
-  } catch {
-    const msg = `Failed to read ${path.basename(filePath)}`;
-    if (jsonOutput) {
-      process.stdout.write(JSON.stringify({ error: msg }) + "\n");
-    } else {
-      process.stderr.write(`Error: ${msg}\n`);
-    }
-    process.exit(2);
-  }
-  const lines = raw.split("\n");
-  const items = [];
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) continue;
-    try {
-      items.push(JSON.parse(trimmed));
-    } catch {
-      console.debug(`Skipping malformed JSONL line in ${path.basename(filePath)}`);
-    }
-  }
-  return items;
-}
+const readJsonl = require("../lib/read-jsonl");
 
 /**
  * Write an array of objects back to a JSONL file (one JSON per line, LF endings).

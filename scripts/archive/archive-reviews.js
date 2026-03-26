@@ -69,13 +69,7 @@ function log(msg) {
   if (!quiet) console.log(msg);
 }
 
-function sanitizeError(err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  return msg
-    .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-    .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
-    .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]");
-}
+const { sanitizeError } = require("../lib/sanitize-error.cjs");
 
 /**
  * Check if a path is a symlink (safe -- returns false on error)
