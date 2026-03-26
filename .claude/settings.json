@@ -58,6 +58,7 @@
       "Bash(fnm *)",
       "Bash(gitleaks *)",
       "Bash(firebase *)",
+      "Bash(go *)",
       "WebSearch",
       "WebFetch",
       "Skill",
