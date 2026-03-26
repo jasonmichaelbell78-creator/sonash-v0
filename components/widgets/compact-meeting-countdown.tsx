@@ -241,7 +241,7 @@ export default function CompactMeetingCountdown() {
   useEffect(() => {
     if (!nextMeeting) return;
 
-    updateTimer(); // Initial call
+    updateTimer(); // eslint-disable-line react-hooks/set-state-in-effect
 
     // Update every 30 seconds for better granularity without excessive overhead
     const interval = setInterval(updateTimer, TIMER_INTERVAL_MS);

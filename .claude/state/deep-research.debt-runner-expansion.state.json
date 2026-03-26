@@ -1,0 +1,28 @@
+{
+  "task": "Deep Research: debt-runner expansion",
+  "topic": "debt-runner-expansion",
+  "status": "complete",
+  "depth": "L1",
+  "sub_questions": 10,
+  "agents_total": 17,
+  "agents_completed": 17,
+  "waves": {
+    "wave_1": { "status": "complete", "agents": ["SQ1", "SQ2a", "SQ2b", "SQ3a", "SQ3b", "SQ4"] },
+    "wave_2": { "status": "complete", "agents": ["SQ5", "SQ6", "SQ7"] },
+    "wave_3": { "status": "complete", "agents": ["SQ8a", "SQ8b", "SQ9"] },
+    "synthesis": { "status": "complete" },
+    "challenges": { "status": "complete", "agents": ["contrarian", "otb"] },
+    "sq10_gap_fill": { "status": "complete", "agents": ["SQ10", "SQ10-verifier"] }
+  },
+  "challenge_adjustments": {
+    "weakened": [
+      "GAP-01 code-reviewer (CRITICAL->MODERATE)",
+      "GAP-09 npm audit (HIGH->MEDIUM)",
+      "DARK-01 known-debt-baseline (reframed)"
+    ],
+    "overturned": ["GAP-13 ecosystem audit Fix Now (correct design)"],
+    "upheld_bugs": ["BUG-01", "BUG-02 (severity weakened)", "BUG-03", "BUG-04 (low severity)"],
+    "sq10_corrections": ["9 dirs not 8", "2 agent types duplicate existing", "2 user gates not 1"]
+  },
+  "updated": "2026-03-26T14:00:00Z"
+}

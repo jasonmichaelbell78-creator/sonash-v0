@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.114 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.116 **Created:** 2026-01-02 **Last Updated:**
 2026-03-26
 
 ## Purpose
@@ -810,7 +810,7 @@ accumulate.
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
 | Main log lines | ~2048 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 20    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -917,247 +917,7 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review rev-5: PR #448 R5 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 11    | 0        | 7        |
-
-**Patterns:**
-
-- eslint-compiled-output
-- coerce-int-validation
-- bidirectional-crossdb
-- toctou-lstat
-- dedup-timestamp-fallback
-
-**Learnings:**
-
-- CI compiled output needs ESLint ignores
-- non-numeric coercion to 0 hides violations
-
----
-
-### Review 491: PR #453 R3 — Mixed (Qodo+SonarCloud+CI) (2026-03-19)
-
-**Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 23    | 22    | 0        | 1        |
-
-**Patterns:**
-
-- secret-redaction-global-regex
-- date-validation-nan-guard
-- atomic-write-backup-restore
-- section-heading-regex-robustness
-- memory-guard-large-files
-- fail-fast-missing-dependency
-- code-fence-language-aware-skip
-- dedup-key-completeness
-
-**Learnings:**
-
-- indexOf-based secret redaction only finds first occurrence per line — use
-  global regex
-- daysSince without date format validation propagates NaN silently
-- corrupted state files reported as missing hides data integrity issues
-- code block skipping should be language-aware to validate shell examples
-- large JSONL logs should use appendFileSync above 2MB to avoid memory blowup
-
----
-
-### Review 492: PR #453 R4 — Mixed (CI+SonarCloud+Qodo) (2026-03-19)
-
-**Date:** 2026-03-19 | **PR:** #453 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 16    | 11    | 0        | 5        |
-
-**Patterns:**
-
-- prettier-ci-formatting
-- cc-extraction-helper
-- code-fence-negated-condition
-- atomic-write-backup-hardening
-- validatePaths-defensive-guard
-- heading-vs-shell-comment
-
-**Learnings:**
-
-- R3 code-fence logic increased CC from 15 to 16 — extract helper to stay under
-  threshold
-- Prettier must be run after code edits
-- Qodo flip-flops between rounds — evaluate on merits
-- shouldSkipNpmLine # check must distinguish shell comments from Markdown
-  headings
-- R4 fix rate 69% — still productive
-
----
-
-### Review 493: PR #456 R1 — Mixed (Qodo + Gemini + CI) (2026-03-20)
-
-**Date:** 2026-03-20 | **PR:** #456 | **Source:** qodo+gemini+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 3     | 0        | 2        |
-
-**Patterns:**
-
-- runtime-version-propagation
-- prettier-cherry-pick
-
-**Learnings:**
-
-- Propagate runtime version to all config pins atomically
-- Cherry-picked release files need Prettier formatting
-
----
-
-### Review 494: PR #456 R2 — Mixed (CI + Qodo) (2026-03-20)
-
-**Date:** 2026-03-20 | **PR:** #456 | **Source:** ci+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 3     | 0        | 1        |
-
-**Patterns:**
-
-- docs-linter-autogen-exclusion
-- review-id-consistency
-
-**Learnings:**
-
-- Exclude auto-generated release-please files from docs linter
-- Review IDs must be sequential numeric, not string-based
-
----
-
-### Review 495: PR #457 R1 — Mixed (CI + Qodo) (2026-03-20)
-
-**Date:** 2026-03-20 | **PR:** #457 | **Source:** ci+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 7     | 0        | 1        |
-
-**Patterns:**
-
-- gitignored-build-artifacts
-- cli-flag-verification
-- cross-platform-test-assumptions
-
-**Learnings:**
-
-- scripts/reviews/dist/ must be built in CI
-- security-check.js --ci falls back to staged
-- case-sensitivity tests need FS detection
-- review-churn-tracker needs GH_TOKEN
-
----
-
-### Review 496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI) (2026-03-21)
-
-**Date:** 2026-03-21 | **PR:** #459 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Generic Firestore collection methods need allowlists even when callers are
-- `startsWith("*")` in line classifiers must be gated by file extension to avoid
-- Token redaction using word-split misses embedded secrets (e.g.,
-- Meeting widget `setInterval` handlers: define as `useCallback` before effect
-
-**Learnings:**
-
-- `getCollectionDocs` accepted arbitrary collection names — added allowlist +
-- `isTrivialLine` treated `* list item` as trivial in .md files — gated
-- `sanitizeMessage` split on whitespace then checked tokens — switched to regex
-- SonarCloud `replaceAll` suggestions: use `replaceAll()` with string args
-- `String.raw` template literals with single backslash cause parse errors in CJS
-- PLAN.md: raw research findings should be archived, not deleted, to preserve
-- Rejected: `post-read-handler` console.warn — already has nosemgrep with
-
----
-
-### Review review-496: PR #459 R1 — 16 review fixes (security, bugs, compliance, planning) (2026-03-21)
-
-**Date:** 2026-03-21 | **PR:** #459 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 16    | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 5     | 9     | 1       |
-
----
-
-### Review 497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 498: PR #461 R2 — Qodo (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review rev-6: PR #460 R1 — logger redaction, CC extraction, brace-counting, type guards (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 15    | 10    | 0        | 5        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 4     | 5     | 4       |
-
----
-
-### Review rev-7: PR #460 R2 — Sentry return, brace logic, low severity tier, block comments (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 2     | 2       |
-
----
-
-### Review rev-8: (untitled) (2026-03-22)
+### Review rev-8: PR #461 R1 — Mixed (2026-03-22) (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** mixed
 
@@ -1167,7 +927,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-9: (untitled) (2026-03-22)
+### Review rev-9: PR #461 R2 — Qodo (2026-03-22) (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
 
@@ -1207,53 +967,13 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-466-r1: (untitled) (2026-03-24)
+### Review 502: PR #468 R4 — Qodo (2026-03-24)
 
-> **Completeness:** partial **Missing fields:** patterns, learnings
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 4     | 8        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 8     | 2       |
-
----
-
-### Review review-466-r2: (untitled) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 8     | 2        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 8     | 2       |
-
----
-
-### Review review-466-r3: (untitled) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 5     | 4        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 6     | 2       |
+| 8     | 0     | 0        | 0        |
 
 ---
 
@@ -1297,13 +1017,53 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 502: PR #468 R4 — Qodo (2026-03-24)
+### Review review-466-r1: PR #466 R1 — Qodo (2026-03-24) (2026-03-24)
 
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
+> **Completeness:** partial **Missing fields:** patterns, learnings
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
+| 12    | 4     | 8        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 8     | 2       |
+
+---
+
+### Review review-466-r2: PR #466 R2 — Qodo (2026-03-24) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 8     | 2        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 8     | 2       |
+
+---
+
+### Review review-466-r3: PR #466 R3 — Qodo (2026-03-24) (2026-03-24)
+
+**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 5     | 4        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 1     | 6     | 2       |
 
 ---
 
@@ -1324,6 +1084,81 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 8     | 7     | 0        | 1        |
+
+---
+
+### Review rev-14: PR #470 R1 — Mixed Qodo+Gemini+SonarCloud (2026-03-26) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 32    | 19    | 0        | 13       |
+
+---
+
+### Review rev-15: PR #470 R2 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 5     | 0        | 2        |
+
+---
+
+### Review rev-16: PR #470 R3 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 5     | 0        | 5        |
+
+---
+
+### Review rev-17: PR #470 R4 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 4     | 0        | 7        |
+
+---
+
+### Review rev-18: PR #470 R5 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 0     | 0        | 6        |
+
+---
+
+### Review retro-bulk-448-470: Bulk retro PRs #448-#470 (13 PRs, 8 findings) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** bulk
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 0        |
+
+**Patterns:**
+
+- propagation-misses
+- repeat-rejection-churn
+- qodo-stale-head
+- cc-extraction-timing
+- diminishing-returns
+
+**Learnings:**
+
+- Add CC check after fixes in pr-review Step 4
+- 3 new reviewer suppression rules
+- DEBT-45615 resolved
+- Qodo stale diff note added to pr-review
 
 ## Key Patterns
 
@@ -2815,6 +2650,52 @@ deduped/merged)
   round
 - Rejected 4th time: audit trails for session counting
 - Rejected: path traversal guard concern — todoFile from os.ReadDir is trusted
+
+---
+
+### Review #59 — PR #472 R2 (Qodo)
+
+**Date:** 2026-03-26 | **Items:** 8 (6 fixed, 2 deferred)
+
+**Key Learnings:**
+
+1. **JSONL canonical formatting matters:** Python's `json.dumps` with default
+   settings pretty-prints, breaking downstream hash-based dedup. Always use
+   `separators=(',',':')` for minified JSONL output.
+
+2. **Fail open on scanner errors:** Returning 0 on `scanner.Err()` hides
+   already-counted warnings. Return accumulated count instead.
+
+3. **CRLF in JSONL on Windows:** `bufio.Scanner` preserves `\r` from CRLF line
+   endings. `strings.TrimSpace` before JSON parsing prevents silent parse
+   failures.
+
+---
+
+### Review #58 — PR #472 R1 (Qodo + SonarCloud + Gemini)
+
+**Date:** 2026-03-26 | **Items:** 13 (12 fixed, 1 rejected)
+
+**Key Learnings:**
+
+1. **RFC3339Nano for JS-generated timestamps:** Go's `time.RFC3339` rejects
+   milliseconds from JavaScript's `Date.toISOString()`. Always use
+   `time.RFC3339Nano` with RFC3339 fallback when consuming JS timestamps.
+
+2. **queueMicrotask is not cancel-safe in React effects:** Using
+   `queueMicrotask` to defer setState bypasses cleanup functions. Prefer
+   synchronous calls with targeted lint suppression over runtime behavior
+   changes.
+
+3. **GitHub Action SHA pinning must match actual tag:** The gitleaks-action SHA
+   didn't match the v2.3.9 tag, causing CI download failures. Always verify SHAs
+   with `gh api repos/.../tags`.
+
+4. **Bash(\*) permission is a security hole:** Even with a deny-list, `Bash(*)`
+   allows arbitrary command execution. Maintain granular per-command allowlist.
+
+5. **Data file dedup at scale:** dedup-log.jsonl had 5327 self-match/duplicate
+   entries (69% noise). Periodic dedup maintenance prevents metric inflation.
 
 ---
 

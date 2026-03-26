@@ -40,6 +40,14 @@
       "reason": "Root cause fixed (cross-doc-deps gitFilter:AD). Threshold of 2 unique types is too strict for legitimate overrides during bulk operations.",
       "suppressedAt": "2026-02-17T16:38:00.000Z",
       "expiresAt": null
+    },
+    {
+      "id": "suppress-2026-03-26-ci-failures",
+      "category": "github-actions",
+      "messagePattern": "CI failure",
+      "reason": "gitleaks-action SHA unavailable (upstream infrastructure issue, not PR code). ESLint CJS config fixed in Session #240. Suppress until CI stabilizes.",
+      "suppressedAt": "2026-03-26T15:30:00.000Z",
+      "expiresAt": "2026-04-26T15:30:00.000Z"
     }
   ]
 }

@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2125
+**Items Needing Verification:** 2126
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -720,11 +720,12 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45606 | Invocations file tracks skills only, not agents                 | S2       | data/ecosystem-v2/invocations.jsonl                                              | 0         |
 | DEBT-45607 | Duplicate GSD agents in global/ directory with divergent ...    | S2       | .claude/agents/global/gsd-planner.md                                             | 0         |
 | DEBT-45613 | Structured dedup-log reason fields (reason_code + line_info)    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
-| DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | .claude/override-log.jsonl                                                       | 0         |
 | DEBT-45616 | Add actor/user ID and outcome fields to resolution-log en...    | S2       | docs/technical-debt/logs/resolution-log.jsonl                                    | 0         |
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
 | DEBT-45619 | Hook projectDir pattern lacks validation before execFileSync    | S2       | .claude/hooks/decision-save-prompt.js                                            | 112       |
 | DEBT-45620 | Auto-generated DOCUMENTATION_INDEX leaks machine-specific...    | S2       | DOCUMENTATION_INDEX.md                                                           | 103       |
+| DEBT-45621 | Automate 4 failing learning patterns as compliance checke...    | S2       | scripts/check-pattern-compliance.js                                              | 1         |
+| DEBT-45622 | Audit findings storage: no rotation, no automated re-check      | S2       | scripts/verify-enforcement.js                                                    | 1         |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |

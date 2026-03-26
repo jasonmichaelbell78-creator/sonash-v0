@@ -362,7 +362,8 @@ func widgetUnackedWarnings(data *StdinData) WidgetResult {
 		dir = data.Workspace.CurrentDir
 	}
 	warnFile := filepath.Join(dir, dotClaude, "state", "hook-warnings-log.jsonl")
-	count := countUnacked(warnFile)
+	ackFile := filepath.Join(dir, dotClaude, "state", "hook-warnings-ack.json")
+	count := countUnackedSince(warnFile, ackFile)
 	if count == 0 {
 		return WidgetResult{Text: "\u26a0  0 unacked", Color: colorDim}
 	}
@@ -586,8 +587,71 @@ func tailLastLine(path string) string {
 	return lastLine
 }
 
-func countUnacked(path string) int {
-	f, err := os.Open(path)
+// parseFlexTimestamp parses RFC3339 timestamps with or without fractional seconds.
+func parseFlexTimestamp(s string) (time.Time, bool) {
+	if t, err := time.Parse(time.RFC3339Nano, s); err == nil {
+		return t, true
+	}
+	if t, err := time.Parse(time.RFC3339, s); err == nil {
+		return t, true
+	}
+	return time.Time{}, false
+}
+
+// readLastCleared reads the lastCleared timestamp from the ack state file.
+func readLastCleared(ackPath string) time.Time {
+	raw, err := os.ReadFile(ackPath)
+	if err != nil {
+		return time.Time{}
+	}
+	var ack struct {
+		LastCleared string `json:"lastCleared"`
+	}
+	if err := json.Unmarshal(raw, &ack); err != nil || ack.LastCleared == "" {
+		return time.Time{}
+	}
+	t, ok := parseFlexTimestamp(strings.TrimSpace(ack.LastCleared))
+	if !ok {
+		return time.Time{}
+	}
+	return t
+}
+
+// isEntryUnacked determines if a single log entry is unacked given lastCleared.
+func isEntryUnacked(line string, lastCleared time.Time) bool {
+	var entry struct {
+		Timestamp string `json:"timestamp"`
+		Acked     *bool  `json:"acked"`
+	}
+	if err := json.Unmarshal([]byte(line), &entry); err != nil {
+		return true // malformed entries count as unacked
+	}
+
+	// Legacy format: has acked field but no timestamp
+	if entry.Timestamp == "" {
+		if entry.Acked != nil {
+			return !*entry.Acked
+		}
+		return true // no timestamp, no acked field — count it
+	}
+
+	// Timestamp-based format
+	if lastCleared.IsZero() {
+		return true // no ack ever — all are unacked
+	}
+	t, ok := parseFlexTimestamp(entry.Timestamp)
+	if !ok {
+		return true // unparseable timestamp — count as unacked
+	}
+	return t.After(lastCleared)
+}
+
+// countUnackedSince counts JSONL warning entries whose timestamp is after
+// the lastCleared time from the ack state file.
+func countUnackedSince(logPath, ackPath string) int {
+	lastCleared := readLastCleared(ackPath)
+
+	f, err := os.Open(logPath)
 	if err != nil {
 		return 0
 	}
@@ -595,16 +659,16 @@ func countUnacked(path string) int {
 
 	count := 0
 	scanner := bufio.NewScanner(f)
+	scanner.Buffer(make([]byte, 0, 64*1024), 2*1024*1024)
 	for scanner.Scan() {
-		line := scanner.Text()
-		var entry struct {
-			Acked bool `json:"acked"`
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
 		}
-		if err := json.Unmarshal([]byte(line), &entry); err == nil {
-			if !entry.Acked {
-				count++
-			}
+		if isEntryUnacked(line, lastCleared) {
+			count++
 		}
 	}
+	// Fail open: return count so far rather than hiding warnings on scan error
 	return count
 }

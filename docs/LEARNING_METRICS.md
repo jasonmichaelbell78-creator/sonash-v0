@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-03-22
+**Last Updated:** 2026-03-26
 
 ---
 
@@ -27,17 +27,17 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #353 - #361 (8 reviews) **Analysis Date:** 2026-03-22
+**Review Range:** #353 - #504 (10 reviews) **Analysis Date:** 2026-03-26
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 90.8% |
-| Patterns Learned          | 367   |
-| Patterns Automated        | 36    |
+| Learning Effectiveness    | 89.9% |
+| Patterns Learned          | 362   |
+| Patterns Automated        | 37    |
 | Patterns Failing          | 4     |
-| Critical Pattern Success  | 97.2% |
+| Critical Pattern Success  | 96.6% |
 | Automation Coverage       | 15.8% |
 | Total Documented Patterns | 444   |
 | Total Automated Patterns  | 70    |
@@ -56,11 +56,11 @@ This is a **Tier 2 metrics document** - reference during:
    - Recurred 3 times after documentation \(Reviews: 353, 357, 358\)
    - Action: Add pattern to check\-pattern\-compliance.js
 
-4. **[Documentation]** Improve documentation for "Atomic file writes"
+4. **[Documentation]** Improve documentation for "Git option injection"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-5. **[Documentation]** Improve documentation for "Secure file permissions"
+5. **[Documentation]** Improve documentation for "git add \-A prohibition"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
@@ -70,9 +70,9 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 367   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 36    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 37    | Pattern recurred 1-2 times - needs attention |
+| ✅ LEARNED   | 362   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 37    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 41    | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 4     | Pattern recurred 3+ times - needs automation |
 
 ---
@@ -81,4 +81,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-03-22 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-03-26 | Rewritten to focus on Claude's learning effectiveness |

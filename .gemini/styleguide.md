@@ -144,6 +144,15 @@ cycles:
   style complaints (e.g., "R-style naming", "unconventional parameter patterns")
   on utility functions in `scripts/lib/`. These follow the project's established
   conventions for CLI helper libraries.
+- **Statusline audit trails** — Do NOT flag "audit trails" or "missing audit
+  metadata" on statusline session-tracking code (`tools/statusline/`). The
+  statusline is a local diagnostic tool. (Rejected 4 rounds in PR #470)
+- **OpenWeatherMap API key in URL** — Do NOT flag API key in query parameter for
+  OpenWeatherMap calls. No header-based auth alternative exists. (Rejected PR
+  #470 R3)
+- **os.ReadDir path traversal** — Do NOT flag path traversal concerns on code
+  reading filenames from `os.ReadDir()` or `fs.readdirSync()`. Directory listing
+  returns trusted filenames. (Rejected PR #470 R4)
 
 ## Code Standards
 

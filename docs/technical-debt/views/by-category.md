@@ -5976,7 +5976,7 @@
 | DEBT-10727 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-11038 | CANON system uses JSONL output model — templates referenc...   | S3       | docs/templates/CANON_QUICK_REFERENCE.md                            | 1    |
 
-## engineering-productivity (68)
+## engineering-productivity (69)
 
 | ID         | Title                                                        | Severity | File                                        | Line      |
 | ---------- | ------------------------------------------------------------ | -------- | ------------------------------------------- | --------- |
@@ -6026,6 +6026,7 @@
 | DEBT-11342 | Alerts blind spot: no checker for Node.js version compati... | S2       | .claude/skills/alerts/scripts/run-alerts.js | 0         |
 | DEBT-45519 | Pre-push SonarCloud lint script for new files                | S2       | scripts/                                    | 0         |
 | DEBT-45522 | Pre-push SonarCloud lint script for new files                | S2       | scripts/                                    | 0         |
+| DEBT-45621 | Automate 4 failing learning patterns as compliance checke... | S2       | scripts/check-pattern-compliance.js         | 1         |
 | DEBT-2430  | Archive reviews #285-334 to reduce learnings log from 340... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md             | 0         |
 | DEBT-2431  | Refresh Quick Pattern Index with recent patterns from rev... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md             | 0         |
 | DEBT-7534  | 96-101 npm scripts with no grouping, no help, no discover... | S3       | package.json                                | 0         |
@@ -6392,7 +6393,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (726)
+## process (727)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6762,6 +6763,7 @@
 | DEBT-45528 | log-override.js generates duplicate DEBT entries with cas...  | S2       | scripts/log-override.js                                                 | 0    |
 | DEBT-45530 | 3 learning-route entries have \_repair_needed due to missi... | S2       | .claude/state/learning-routes.jsonl                                     | 1    |
 | DEBT-45531 | Learning routes with \_repair_needed: missing enforcement ... | S2       | .claude/state/learning-routes.jsonl                                     | 1    |
+| DEBT-45622 | Audit findings storage: no rotation, no automated re-check    | S2       | scripts/verify-enforcement.js                                           | 1    |
 | DEBT-0811  | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812  | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813  | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |

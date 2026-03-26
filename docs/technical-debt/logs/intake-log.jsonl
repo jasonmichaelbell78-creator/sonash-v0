@@ -76,3 +76,5 @@
 {"timestamp":"2026-03-24T21:15:46.297Z","action":"intake-pr-deferred","pr_number":466,"item_id":"DEBT-45618","file":"scripts/debt/dedup-multi-pass.js","severity":"S3"}
 {"timestamp":"2026-03-24T23:59:19.312Z","action":"intake-pr-deferred","pr_number":468,"item_id":"DEBT-45619","file":".claude/hooks/decision-save-prompt.js","severity":"S2"}
 {"timestamp":"2026-03-24T23:59:25.030Z","action":"intake-pr-deferred","pr_number":468,"item_id":"DEBT-45620","file":"DOCUMENTATION_INDEX.md","severity":"S2"}
+{"timestamp":"2026-03-26T15:33:52.938Z","action":"intake-manual","item_id":"DEBT-45621","file":"scripts/check-pattern-compliance.js","severity":"S2","category":"engineering-productivity"}
+{"timestamp":"2026-03-26T15:33:55.042Z","action":"intake-manual","item_id":"DEBT-45622","file":"scripts/verify-enforcement.js","severity":"S2","category":"process"}

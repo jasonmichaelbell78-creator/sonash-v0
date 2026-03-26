@@ -1,0 +1,67 @@
+{
+  "topic": "debt-runner-expansion",
+  "depth": "L1",
+  "questionType": "codebase-analysis",
+  "domain": "technical-debt-management",
+  "startedAt": "2026-03-26T00:00:00Z",
+  "completedAt": "2026-03-26T18:00:00Z",
+  "agents_used": 17,
+  "sub_questions": 10,
+  "total_claims": 79,
+  "source_count": 60,
+  "confidence_distribution": {
+    "HIGH": 68,
+    "MEDIUM": 2,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
+  "bugs_found": 6,
+  "gaps_catalogued": 26,
+  "themes_identified": [
+    "Intake coverage — most debt-producing paths are disconnected from TDMS",
+    "Critical bugs in verification and resolution pipeline",
+    "Shadow debt stores (known-debt-baseline.json, override-log.jsonl, deferred-items.jsonl)",
+    "Zero-visibility external sources (Semgrep, CodeQL, npm audit)",
+    "Interactive design patterns — 3-level max depth, delegation spectrum",
+    "Defer-path inconsistency — same word means different things in different skills",
+    "Status lifecycle gaps — IN_PROGRESS unimplemented, verification queue unmanaged",
+    "Consumption gaps — statusline, roadmap view, trend visualization all missing"
+  ],
+  "consumer_hints": {
+    "deep_plan_ready": true,
+    "recommended_next": "/deep-plan debt-runner expansion",
+    "pre_expansion_bugs_to_fix": [
+      "BUG-01: debt-health.js lowercase status filter",
+      "BUG-02: dedup-multi-pass.js missing --dry-run flag",
+      "BUG-03: resolve-bulk.js missing sync-deduped.js call",
+      "BUG-04: TRIAGED in ELIGIBLE_STATUSES but not in schema",
+      "BUG-05: unplaced-items.md permanently stale",
+      "BUG-06: resolve-debt.yml missing reconcile-roadmap.js step"
+    ],
+    "key_decisions_needed": [
+      "Menu hierarchy depth — how many new modes to add to the flat menu (6 proposed: intake, sources, roadmap, triage, review-needed, dark-debt)",
+      "New mode list — confirm the 6 proposed new modes against user priority",
+      "Integration priority order — which of the 8 MUST-HAVE gaps to address first",
+      "Debt refresh workflow design — whether 'full refresh' is a mode or a guided workflow",
+      "Discovery agent layer — how AI-driven debt discovery integrates (9 agent types, 7 net-new)",
+      "Guided vs expert mode — outcome language for non-developer vs script-level for expert",
+      "SQLite timing — expand on JSONL now or wait for SQLite migration?",
+      "Bug-fix-first sequencing — fix 6 bugs in pre-expansion PR before any new modes?",
+      "Statusline widget — add S0/S1 count to Go statusline as immediate visibility win",
+      "known-debt-baseline.json bridge — sync-baseline-debt.js script design",
+      "SonarCloud CI auto-trigger — sonarcloud.yml workflow modification approval",
+      "code-reviewer TDMS path — selective defer option, not auto-routing"
+    ],
+    "hasStackClaims": false,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 2,
+    "immediate_wins": [
+      "Fix BUG-01 (debt-health.js lowercase filter) — trivial, improves health metrics accuracy immediately",
+      "Fix BUG-03 (resolve-bulk.js missing sync-deduped.js) — low effort, prevents data drift after every CI resolution",
+      "Add sonarcloud.yml sync step — trivial, closes highest-impact external source gap",
+      "Add S0 widget to Go statusline — real-time critical debt visibility"
+    ]
+  }
+}

@@ -177,6 +177,10 @@ rejections, auto-detect repeat items (same rule ID + file = repeat-rejected).
 4. Validate critical claims via `git log --all --grep` / `git log --follow`
 5. Stale HEAD check — if reviewer is 2+ commits behind, batch-reject
 
+**Qodo stale diff note:** Qodo reviews the original PR diff, not the current
+HEAD after fix commits. Expect stale items on R2+ that were already fixed in
+prior rounds. Cross-round dedup (Step 2) handles this automatically.
+
 **Input validation:** If zero items parsed, warn and ask user to verify content.
 
 **SonarCloud enrichment:** Auto-fetch code snippets when `javascript:S####` rule
@@ -301,6 +305,11 @@ grep -rc "PATTERN" scripts/ .claude/hooks/ tests/ --include="*.js" --include="*.
 
 **Verify (MUST):** Re-read modified files, `npm run lint`, `npm run test`,
 `npm run patterns:check`, cross-reference original items.
+
+**CC check (SHOULD):** After applying fixes that add logic, run
+`node scripts/check-cc.js --staged` before committing. If any function exceeds
+CC 15, extract helpers in the same commit. This prevents avoidable R2 rounds
+where R1 fixes push CC over threshold. (Source: retro PRs #448, #469, #470)
 
 **Mid-review checkpoint (20+ items):** After critical+major batch: "Completed
 C+M fixes. N remaining. Continue?" Progress: every 5 fixes show "N of M (X%)."

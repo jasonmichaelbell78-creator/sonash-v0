@@ -2,7 +2,7 @@
 
 **Document Version**: 8.9 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-25 (Session #239)
+2026-03-26 (Session #240)
 
 ## Purpose
 
@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-25 **Branch**: `plan-32526` **Working On**: Session
-#239 — propagation remediation, statusline fixes, ecosystem shared-lib
+**Last Checkpoint**: 2026-03-26 **Branch**: `plan-32626` **Working On**: Session
+#241 — debt-runner expansion deep-research
 
-**Uncommitted Work**: None (session-end commit pending)
+**Uncommitted Work**: None (committed with research artifacts)
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 239 (since Jan 1, 2026)
+**Current Session Count**: 241 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +47,29 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 ---
 
 ## Recent Session Summaries
+
+**Session #241** (DEBT-RUNNER EXPANSION DEEP-RESEARCH):
+
+- **Branch**: `plan-32626`
+- **Deep-research COMPLETE**: 17 agents, 10 sub-questions, 79 claims, 607-line
+  report at `.research/debt-runner-expansion/RESEARCH_OUTPUT.md`
+- **Key findings**: 6 verified bugs in TDMS pipeline, 26 intake gaps catalogued,
+  18 defer-path locations audited (6 working, 5 aspirational, 1 broken, 2
+  missing), 9 discovery agent types identified for AI-driven debt finding
+- **Architecture decision**: Hybrid CLI+web approach — web dashboard at
+  `/dev/debt` for browse/filter/trends (read side), CLI skill for AI operations
+  (write side)
+- **Challenge adjustments**: 3 claims weakened, 1 overturned, all bugs upheld
+- **NEXT**: `/deep-plan debt-runner expansion` — full scope: CLI expansion + web
+  dashboard + all downstream fixes + integrations + discovery agent layer
+- **Research artifacts committed**: findings/, challenges/, claims.jsonl,
+  sources.jsonl, metadata.json, RESEARCH_OUTPUT.md (normally gitignored findings
+  force-added for cross-locale handoff)
+
+**Session #240** (ALERTS + ESLINT + HOOKS + REVIEW LEARNINGS):
+
+- **Branch**: `plan-32626`
+- ESLint CJS config fix, React hooks fix, threshold tuning, bulk PR retro
 
 **Session #239** (PROPAGATION REMEDIATION + STATUSLINE + ECOSYSTEM SHARED-LIB):
 
@@ -65,36 +88,25 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 - **3548 tests pass, 0 fail**. All audit checkpoints pass.
 - **2 commits** on `plan-32526`.
 
-**Session #238** (R&D STANDARD DEEP-PLAN + SWS DA-1 + PERMISSIONS):
-
-- **Branch**: `planning-32426` → merged as PR #469
-- R&D Standard deep-plan (27 decisions, 4 phases). SWS DA-1 amendment.
-  Permissions consolidation (local → project, clear local + global).
-
-**Session #237** (PASSIVE-SURFACING REMEDIATION + CL-PROTOCOL):
-
-- **Branch**: `planning-32426`
-- Passive-surfacing COMPLETE. CL-PROTOCOL.md created. Wave 1a mid-audit PASS.
-  Plan orchestration Steps 7-8 complete.
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                            | Status    | Progress                                             |
-| ------------------------------- | --------- | ---------------------------------------------------- |
-| **Plan Orchestration**          | EXECUTING | Steps 1-9 DONE (PS/SL/Prop), CLI remaining (Step 9)  |
-| **Repo Cleanup**                | COMPLETE  | Wave 0 done                                          |
-| **Agent Environment Analysis**  | COMPLETE  | All 5 phases done (Session #236)                     |
-| **Passive Surfacing**           | COMPLETE  | 14 root causes, 46 sites, CL-verified (Session #237) |
-| **Propagation Patterns**        | COMPLETE  | 4 waves, 14 steps done (Session #239)                |
-| **Custom Statusline**           | COMPLETE  | Go binary, 22 widgets, 3 lines (Session #239)        |
-| **CLI Tools Implementation**    | NEXT      | 25 steps, 8 phases — only Wave 1b item remaining     |
-| **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1           |
+| Item                            | Status        | Progress                                             |
+| ------------------------------- | ------------- | ---------------------------------------------------- |
+| **Plan Orchestration**          | EXECUTING     | Steps 1-9 DONE (PS/SL/Prop), CLI remaining (Step 9)  |
+| **Repo Cleanup**                | COMPLETE      | Wave 0 done                                          |
+| **Agent Environment Analysis**  | COMPLETE      | All 5 phases done (Session #236)                     |
+| **Passive Surfacing**           | COMPLETE      | 14 root causes, 46 sites, CL-verified (Session #237) |
+| **Propagation Patterns**        | COMPLETE      | 4 waves, 14 steps done (Session #239)                |
+| **Custom Statusline**           | COMPLETE      | Go binary, 22 widgets, 3 lines (Session #239)        |
+| **debt-runner Expansion**       | RESEARCH DONE | 17 agents, hybrid CLI+web, /deep-plan next           |
+| **CLI Tools Implementation**    | NEXT          | 25 steps, 8 phases — only Wave 1b item remaining     |
+| **System-Wide Standardization** | BLOCKED       | SWS hard gate cleared, Wave 2 after Wave 1           |
 
-**Current Branch**: `plan-32526`
+**Current Branch**: `plan-32626`
 
 **Test Status**: 3548 tests pass, 0 fail
 
@@ -102,16 +114,20 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Next Session Goals
 
-### Immediate Priority (Wave 1b — Step 9, last item)
+### Immediate Priority
 
-1. **CLI tools** — 25 steps, 8 phases. Only remaining Wave 1b work item. Plan:
+1. **`/deep-plan debt-runner expansion`** — consume research at
+   `.research/debt-runner-expansion/`, resolve 10 open questions in
+   `DECISIONS_PRE_PLAN.md`. Full scope: CLI expansion + web dashboard
+   `/dev/debt`
+   - all downstream fixes + integrations + discovery agent layer.
+
+### After Deep-Plan Complete
+
+2. **CLI tools** — 25 steps, 8 phases. Only remaining Wave 1b work item. Plan:
    `.planning/cli-tools-implementation/PLAN.md`
-
-### After CLI Tools Complete
-
-2. **Wave 1 Final Audit** (Step 10) — heavy CL verification, SWS gate confirm
-3. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions
-4. **Wave 2b: M1.6 feature work** (Step 14) — break the feature drought
+3. **Wave 1 Final Audit** (Step 10) — heavy CL verification, SWS gate confirm
+4. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions
 
 ---
 
