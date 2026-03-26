@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.115 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.116 **Created:** 2026-01-02 **Last Updated:**
 2026-03-26
 
 ## Purpose
@@ -2650,6 +2650,25 @@ deduped/merged)
   round
 - Rejected 4th time: audit trails for session counting
 - Rejected: path traversal guard concern — todoFile from os.ReadDir is trusted
+
+---
+
+### Review #59 — PR #472 R2 (Qodo)
+
+**Date:** 2026-03-26 | **Items:** 8 (6 fixed, 2 deferred)
+
+**Key Learnings:**
+
+1. **JSONL canonical formatting matters:** Python's `json.dumps` with default
+   settings pretty-prints, breaking downstream hash-based dedup. Always use
+   `separators=(',',':')` for minified JSONL output.
+
+2. **Fail open on scanner errors:** Returning 0 on `scanner.Err()` hides
+   already-counted warnings. Return accumulated count instead.
+
+3. **CRLF in JSONL on Windows:** `bufio.Scanner` preserves `\r` from CRLF line
+   endings. `strings.TrimSpace` before JSON parsing prevents silent parse
+   failures.
 
 ---
 

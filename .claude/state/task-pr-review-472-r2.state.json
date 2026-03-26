@@ -1,0 +1,14 @@
+{
+  "pr": 472,
+  "round": 2,
+  "review_number": 59,
+  "source": "qodo",
+  "total": 8,
+  "fixed": 6,
+  "deferred": 2,
+  "rejected": 0,
+  "severity": { "critical": 0, "major": 1, "minor": 4, "trivial": 3 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "completed_at": "2026-03-26T17:10:00Z"
+}

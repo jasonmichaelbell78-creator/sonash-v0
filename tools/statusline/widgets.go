@@ -610,7 +610,10 @@ func readLastCleared(ackPath string) time.Time {
 	if err := json.Unmarshal(raw, &ack); err != nil || ack.LastCleared == "" {
 		return time.Time{}
 	}
-	t, _ := parseFlexTimestamp(ack.LastCleared)
+	t, ok := parseFlexTimestamp(strings.TrimSpace(ack.LastCleared))
+	if !ok {
+		return time.Time{}
+	}
 	return t
 }
 
@@ -658,7 +661,7 @@ func countUnackedSince(logPath, ackPath string) int {
 	scanner := bufio.NewScanner(f)
 	scanner.Buffer(make([]byte, 0, 64*1024), 2*1024*1024)
 	for scanner.Scan() {
-		line := scanner.Text()
+		line := strings.TrimSpace(scanner.Text())
 		if line == "" {
 			continue
 		}
@@ -666,8 +669,6 @@ func countUnackedSince(logPath, ackPath string) int {
 			count++
 		}
 	}
-	if scanner.Err() != nil {
-		return 0
-	}
+	// Fail open: return count so far rather than hiding warnings on scan error
 	return count
 }
