@@ -7,7 +7,12 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # Ensure HOME is set (Windows may only have USERPROFILE)
 if [[ -z "${HOME:-}" ]]; then
   if [[ -n "${USERPROFILE:-}" ]]; then
-    HOME="$USERPROFILE"
+    if command -v cygpath &>/dev/null; then
+      HOME="$(cygpath -u "$USERPROFILE")"
+    else
+      HOME="${USERPROFILE//\\//}"
+    fi
+    export HOME
   else
     echo "ERROR: HOME is not set (and USERPROFILE is not set); cannot determine install dir." >&2
     exit 1

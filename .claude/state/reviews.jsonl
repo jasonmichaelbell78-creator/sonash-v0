@@ -28,3 +28,4 @@
 {"id":"rev-14","date":"2026-03-26","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"pr-review-skill"},"pr":470,"source":"mixed","total":32,"fixed":19,"deferred":0,"rejected":2}
 {"id":"rev-15","date":"2026-03-26","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"pr-review-skill"},"pr":470,"source":"mixed","total":7,"fixed":5,"deferred":0,"rejected":1}
 {"id":"rev-16","date":"2026-03-26","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"pr-review-skill"},"pr":470,"source":"mixed","total":10,"fixed":5,"deferred":0,"rejected":5}
+{"id":"rev-17","date":"2026-03-26","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review","tool":"pr-review-skill"},"pr":470,"source":"mixed","total":11,"fixed":4,"deferred":0,"rejected":7}

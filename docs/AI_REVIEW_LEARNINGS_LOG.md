@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.112 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.113 **Created:** 2026-01-02 **Last Updated:**
 2026-03-26
 
 ## Purpose
@@ -2791,5 +2791,29 @@ deduped/merged)
 - Rejected: runtime typeof checks for readJsonl — over-engineering
 - Rejected: CI failures (gitleaks SHA, sanitize-error.cjs) — infrastructure +
   pre-existing
+
+---
+
+### Review #56 — PR #470 R4 (Qodo + SonarCloud)
+
+**Date:** 2026-03-26 **Items:** 11 (4 fixed, 7 rejected)
+
+**Patterns:**
+
+- Cognitive complexity: extract helpers when adding nested API calls (forecast
+  code pushed fetchWeather to CC 35)
+- Permission consistency: when tightening cache to 0600, also tighten session
+  file — propagation applies to permission patterns too
+
+**Learnings:**
+
+- Extracted `fetchDailyForecast()` from `fetchWeather()` to reduce CC from 35 to
+  ~15 per function
+- Session file permissions tightened 0644→0600, MkdirAll 0755→0700
+- build.sh HOME normalization: cygpath preferred, fallback to string replace
+- R4 fix rate 36% — approaching diminishing returns, recommend max one more
+  round
+- Rejected 4th time: audit trails for session counting
+- Rejected: path traversal guard concern — todoFile from os.ReadDir is trusted
 
 ---

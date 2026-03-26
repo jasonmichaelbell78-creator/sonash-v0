@@ -241,47 +241,60 @@ func fetchWeather(cfg *Config, cache *WeatherCache) error {
 		cache.Condition = weatherIcon(parsed.Weather[0].Icon)
 	}
 
-	// Fetch daily forecast for actual high/low
-	forecastParams := url.Values{}
-	forecastParams.Set("q", cfg.Weather.Location)
-	forecastParams.Set("units", cfg.Weather.Units)
-	forecastParams.Set("appid", key)
-	forecastParams.Set("cnt", "8") // 8 x 3-hour periods = 24 hours
-	forecastURL := "https://api.openweathermap.org/data/2.5/forecast?" + forecastParams.Encode()
-
-	forecastResp, err := client.Get(forecastURL)
-	if err == nil {
-		defer forecastResp.Body.Close()
-		if forecastResp.StatusCode == http.StatusOK {
-			forecastBody, err := io.ReadAll(forecastResp.Body)
-			if err == nil {
-				var forecast struct {
-					List []struct {
-						Main struct {
-							TempMax float64 `json:"temp_max"`
-							TempMin float64 `json:"temp_min"`
-						} `json:"main"`
-					} `json:"list"`
-				}
-				if err := json.Unmarshal(forecastBody, &forecast); err == nil && len(forecast.List) > 0 {
-					high := forecast.List[0].Main.TempMax
-					low := forecast.List[0].Main.TempMin
-					for _, item := range forecast.List {
-						if item.Main.TempMax > high {
-							high = item.Main.TempMax
-						}
-						if item.Main.TempMin < low {
-							low = item.Main.TempMin
-						}
-					}
-					cache.High = high
-					cache.Low = low
-				}
-			}
-		}
-	}
+	// Override high/low with actual daily forecast range
+	fetchDailyForecast(cfg, client, cache)
 
 	return nil
+}
+
+// fetchDailyForecast fetches the 24-hour forecast and updates cache high/low.
+// Best-effort: if this fails, the current weather's temp_max/min remain.
+func fetchDailyForecast(cfg *Config, client *http.Client, cache *WeatherCache) {
+	params := url.Values{}
+	params.Set("q", cfg.Weather.Location)
+	params.Set("units", cfg.Weather.Units)
+	params.Set("appid", cfg.APIKeys.WeatherAPIKey)
+	params.Set("cnt", "8") // 8 x 3-hour periods = 24 hours
+
+	resp, err := client.Get("https://api.openweathermap.org/data/2.5/forecast?" + params.Encode())
+	if err != nil {
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return
+	}
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return
+	}
+
+	var forecast struct {
+		List []struct {
+			Main struct {
+				TempMax float64 `json:"temp_max"`
+				TempMin float64 `json:"temp_min"`
+			} `json:"main"`
+		} `json:"list"`
+	}
+	if err := json.Unmarshal(body, &forecast); err != nil || len(forecast.List) == 0 {
+		return
+	}
+
+	high := forecast.List[0].Main.TempMax
+	low := forecast.List[0].Main.TempMin
+	for _, item := range forecast.List {
+		if item.Main.TempMax > high {
+			high = item.Main.TempMax
+		}
+		if item.Main.TempMin < low {
+			low = item.Main.TempMin
+		}
+	}
+	cache.High = high
+	cache.Low = low
 }
 
 func fetchGitHubPR(cache *GitHubPRCache) error {

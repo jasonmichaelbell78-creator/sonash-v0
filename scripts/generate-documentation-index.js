@@ -556,7 +556,7 @@ function prefetchGitDates() {
       if (/^\d{4}-\d{2}-\d{2}T/.test(stripped)) {
         currentDate = stripped.split("T")[0];
       } else {
-        const cacheKey = stripped.replaceAll("\\", "/");
+        const cacheKey = stripped.replaceAll("\\", "/").replace(/^\.\//u, "");
         if (currentDate && cacheKey && !lastModifiedCache.has(cacheKey)) {
           lastModifiedCache.set(cacheKey, currentDate);
         }
