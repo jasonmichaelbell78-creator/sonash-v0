@@ -1,0 +1,15 @@
+{
+  "pr": 470,
+  "round": 3,
+  "review_number": 55,
+  "source": "mixed",
+  "total": 10,
+  "fixed": 5,
+  "deferred": 0,
+  "rejected": 5,
+  "severity": { "critical": 0, "major": 0, "minor": 3, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": "5617ee3d",
+  "completed_at": "2026-03-26T07:50:00-05:00"
+}
