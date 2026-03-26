@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-25 **Branch**: `plan-32526` **Working On**: Session
-#239 — propagation remediation, statusline fixes, ecosystem shared-lib
+**Last Checkpoint**: 2026-03-26 **Branch**: `plan-32626` **Working On**: Session
+#241 — debt-runner expansion deep-research
 
-**Uncommitted Work**: None (session-end commit pending)
+**Uncommitted Work**: None (committed with research artifacts)
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 240 (since Jan 1, 2026)
+**Current Session Count**: 241 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +47,29 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 ---
 
 ## Recent Session Summaries
+
+**Session #241** (DEBT-RUNNER EXPANSION DEEP-RESEARCH):
+
+- **Branch**: `plan-32626`
+- **Deep-research COMPLETE**: 17 agents, 10 sub-questions, 79 claims, 607-line
+  report at `.research/debt-runner-expansion/RESEARCH_OUTPUT.md`
+- **Key findings**: 6 verified bugs in TDMS pipeline, 26 intake gaps catalogued,
+  18 defer-path locations audited (6 working, 5 aspirational, 1 broken, 2
+  missing), 9 discovery agent types identified for AI-driven debt finding
+- **Architecture decision**: Hybrid CLI+web approach — web dashboard at
+  `/dev/debt` for browse/filter/trends (read side), CLI skill for AI operations
+  (write side)
+- **Challenge adjustments**: 3 claims weakened, 1 overturned, all bugs upheld
+- **NEXT**: `/deep-plan debt-runner expansion` — full scope: CLI expansion + web
+  dashboard + all downstream fixes + integrations + discovery agent layer
+- **Research artifacts committed**: findings/, challenges/, claims.jsonl,
+  sources.jsonl, metadata.json, RESEARCH_OUTPUT.md (normally gitignored findings
+  force-added for cross-locale handoff)
+
+**Session #240** (ALERTS + ESLINT + HOOKS + REVIEW LEARNINGS):
+
+- **Branch**: `plan-32626`
+- ESLint CJS config fix, React hooks fix, threshold tuning, bulk PR retro
 
 **Session #239** (PROPAGATION REMEDIATION + STATUSLINE + ECOSYSTEM SHARED-LIB):
 
@@ -83,16 +106,17 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Quick Status
 
-| Item                            | Status    | Progress                                             |
-| ------------------------------- | --------- | ---------------------------------------------------- |
-| **Plan Orchestration**          | EXECUTING | Steps 1-9 DONE (PS/SL/Prop), CLI remaining (Step 9)  |
-| **Repo Cleanup**                | COMPLETE  | Wave 0 done                                          |
-| **Agent Environment Analysis**  | COMPLETE  | All 5 phases done (Session #236)                     |
-| **Passive Surfacing**           | COMPLETE  | 14 root causes, 46 sites, CL-verified (Session #237) |
-| **Propagation Patterns**        | COMPLETE  | 4 waves, 14 steps done (Session #239)                |
-| **Custom Statusline**           | COMPLETE  | Go binary, 22 widgets, 3 lines (Session #239)        |
-| **CLI Tools Implementation**    | NEXT      | 25 steps, 8 phases — only Wave 1b item remaining     |
-| **System-Wide Standardization** | BLOCKED   | SWS hard gate cleared, Wave 2 after Wave 1           |
+| Item                            | Status        | Progress                                             |
+| ------------------------------- | ------------- | ---------------------------------------------------- |
+| **Plan Orchestration**          | EXECUTING     | Steps 1-9 DONE (PS/SL/Prop), CLI remaining (Step 9)  |
+| **Repo Cleanup**                | COMPLETE      | Wave 0 done                                          |
+| **Agent Environment Analysis**  | COMPLETE      | All 5 phases done (Session #236)                     |
+| **Passive Surfacing**           | COMPLETE      | 14 root causes, 46 sites, CL-verified (Session #237) |
+| **Propagation Patterns**        | COMPLETE      | 4 waves, 14 steps done (Session #239)                |
+| **Custom Statusline**           | COMPLETE      | Go binary, 22 widgets, 3 lines (Session #239)        |
+| **debt-runner Expansion**       | RESEARCH DONE | 17 agents, hybrid CLI+web, /deep-plan next           |
+| **CLI Tools Implementation**    | NEXT          | 25 steps, 8 phases — only Wave 1b item remaining     |
+| **System-Wide Standardization** | BLOCKED       | SWS hard gate cleared, Wave 2 after Wave 1           |
 
 **Current Branch**: `plan-32626`
 

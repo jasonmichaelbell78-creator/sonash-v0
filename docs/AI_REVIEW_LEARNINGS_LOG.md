@@ -1135,6 +1135,31 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 6     | 0     | 0        | 6        |
 
+---
+
+### Review retro-bulk-448-470: Bulk retro PRs #448-#470 (13 PRs, 8 findings) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** bulk
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 0        |
+
+**Patterns:**
+
+- propagation-misses
+- repeat-rejection-churn
+- qodo-stale-head
+- cc-extraction-timing
+- diminishing-returns
+
+**Learnings:**
+
+- Add CC check after fixes in pr-review Step 4
+- 3 new reviewer suppression rules
+- DEBT-45615 resolved
+- Qodo stale diff note added to pr-review
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
