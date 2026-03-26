@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.111 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.112 **Created:** 2026-01-02 **Last Updated:**
 2026-03-26
 
 ## Purpose
@@ -2763,5 +2763,33 @@ deduped/merged)
   silent comparison failures from malformed or Windows-path entries
 - Git log path whitespace: use `trimEnd()` not `trim()` on file paths to
   preserve leading spaces (unlikely but defensive)
+
+---
+
+### Review #55 — PR #470 R3 (Qodo + SonarCloud + statusline bugfixes)
+
+**Date:** 2026-03-26 **Items:** 10 (5 fixed, 5 rejected)
+
+**Patterns:**
+
+- Goroutine cache refresh in short-lived binaries is a no-op — process exits
+  before goroutine completes. Use synchronous refresh after output flush.
+- OpenWeatherMap `/data/2.5/weather` temp_max/min are observation range, not
+  daily forecast. Use `/data/2.5/forecast` with cnt=8 for 24h high/low.
+- Hook outcome "warn" is not failure — statusline should treat pass+warn as
+  green, only fail/error as red.
+
+**Learnings:**
+
+- Weather cache was always stale because goroutine refresh never completed
+  before process exit — moved to synchronous post-render
+- Daily high/low: forecast API cnt=8 (8x3h=24h) gives real daily range (H:87
+  L:65 vs H:65 L:61 from current weather)
+- Cache permissions tightened: 0644→0600 files, 0755→0700 dirs
+- Rejected: API key in URL — OpenWeatherMap only supports query param auth
+- Rejected: audit trails for session counting (3rd time — R1, R2, R3)
+- Rejected: runtime typeof checks for readJsonl — over-engineering
+- Rejected: CI failures (gitleaks SHA, sanitize-error.cjs) — infrastructure +
+  pre-existing
 
 ---

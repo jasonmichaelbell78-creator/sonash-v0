@@ -133,9 +133,6 @@ func buildAllWidgets(data *StdinData, cfg *Config) *AllWidgets {
 	w.H2 = widgetGitHubPR(cfg)
 	w.H3 = widgetCIPipeline(cfg)
 
-	// Kick background cache refresh if needed
-	go refreshCacheIfStale(cfg)
-
 	return w
 }
 
@@ -353,7 +350,7 @@ func widgetHookHealth(data *StdinData) WidgetResult {
 	if err := json.Unmarshal([]byte(line), &entry); err != nil {
 		return WidgetResult{Text: hooksOK, Color: colorGreen}
 	}
-	if entry.Success || entry.Outcome == "pass" {
+	if entry.Success || entry.Outcome == "pass" || entry.Outcome == "warn" {
 		return WidgetResult{Text: hooksOK, Color: colorGreen}
 	}
 	return WidgetResult{Text: "\u2717 hooks", Color: colorRed}

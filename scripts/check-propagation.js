@@ -66,7 +66,9 @@ try {
     }
   }
 } catch {
-  // Baseline load failure is non-fatal — treat as empty baseline
+  if (VERBOSE) {
+    console.warn("  ⚠ Failed to load propagation baseline — treating as empty");
+  }
 }
 
 function isBaselined(type, key, file) {

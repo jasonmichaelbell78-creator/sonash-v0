@@ -4,6 +4,16 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# Ensure HOME is set (Windows may only have USERPROFILE)
+if [[ -z "${HOME:-}" ]]; then
+  if [[ -n "${USERPROFILE:-}" ]]; then
+    HOME="$USERPROFILE"
+  else
+    echo "ERROR: HOME is not set (and USERPROFILE is not set); cannot determine install dir." >&2
+    exit 1
+  fi
+fi
+
 INSTALL_DIR="$HOME/.claude/statusline"
 BINARY_NAME="sonash-statusline"
 

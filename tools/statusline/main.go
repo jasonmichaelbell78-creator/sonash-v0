@@ -98,4 +98,8 @@ func main() {
 
 	// Render output (writes directly to stdout per-line with flush)
 	renderLines(widgets, &cfg)
+
+	// Refresh API-backed caches synchronously after render
+	// (goroutine approach failed — process exits before goroutine completes)
+	refreshCacheIfStale(&cfg)
 }

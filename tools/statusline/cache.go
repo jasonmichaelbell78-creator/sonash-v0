@@ -63,7 +63,7 @@ func cacheDir() string {
 		return ""
 	}
 	dir := filepath.Join(home, ".claude", "statusline", "cache")
-	os.MkdirAll(dir, 0755)
+	os.MkdirAll(dir, 0700)
 	return dir
 }
 
@@ -88,7 +88,7 @@ func writeCacheFile(name string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filepath.Join(dir, name), raw, 0644)
+	return os.WriteFile(filepath.Join(dir, name), raw, 0600)
 }
 
 func isCacheStale(fetchedAt string, ttlMinutes int) bool {
@@ -142,7 +142,7 @@ func recordSuccess(entry *BackoffEntry) {
 }
 
 // refreshCacheIfStale checks all API-backed caches and refreshes if stale.
-// Called as a goroutine — the main process doesn't wait for this.
+// Called synchronously after render output is flushed.
 func refreshCacheIfStale(cfg *Config) {
 	ttl := cfg.Cache.FetchIntervalMinutes
 	backoff := readBackoff()
@@ -240,6 +240,47 @@ func fetchWeather(cfg *Config, cache *WeatherCache) error {
 	if len(parsed.Weather) > 0 {
 		cache.Condition = weatherIcon(parsed.Weather[0].Icon)
 	}
+
+	// Fetch daily forecast for actual high/low
+	forecastParams := url.Values{}
+	forecastParams.Set("q", cfg.Weather.Location)
+	forecastParams.Set("units", cfg.Weather.Units)
+	forecastParams.Set("appid", key)
+	forecastParams.Set("cnt", "8") // 8 x 3-hour periods = 24 hours
+	forecastURL := "https://api.openweathermap.org/data/2.5/forecast?" + forecastParams.Encode()
+
+	forecastResp, err := client.Get(forecastURL)
+	if err == nil {
+		defer forecastResp.Body.Close()
+		if forecastResp.StatusCode == http.StatusOK {
+			forecastBody, err := io.ReadAll(forecastResp.Body)
+			if err == nil {
+				var forecast struct {
+					List []struct {
+						Main struct {
+							TempMax float64 `json:"temp_max"`
+							TempMin float64 `json:"temp_min"`
+						} `json:"main"`
+					} `json:"list"`
+				}
+				if err := json.Unmarshal(forecastBody, &forecast); err == nil && len(forecast.List) > 0 {
+					high := forecast.List[0].Main.TempMax
+					low := forecast.List[0].Main.TempMin
+					for _, item := range forecast.List {
+						if item.Main.TempMax > high {
+							high = item.Main.TempMax
+						}
+						if item.Main.TempMin < low {
+							low = item.Main.TempMin
+						}
+					}
+					cache.High = high
+					cache.Low = low
+				}
+			}
+		}
+	}
+
 	return nil
 }
 
