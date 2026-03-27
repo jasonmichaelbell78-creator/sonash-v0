@@ -39,6 +39,12 @@ produces structured output with downstream routing.
    = sub-questions. Always assess scope size (file count, plan count, lines to
    read) and present: "Formula suggests N. Scope has X. I recommend Y.
    Override?" User decides final count.
+8. **Context exhaustion = immediate re-spawn.** If any agent completes without
+   writing its findings file (or writes only a header), it ran out of context.
+   Never accept partial output. Immediately re-spawn the work across 2+ smaller
+   agents that split the original scope. Each replacement agent must produce a
+   complete findings file. If the scope cannot be split, re-spawn with a more
+   focused prompt that reads fewer files.
 
 ## When to Use / When NOT to Use
 
@@ -106,8 +112,21 @@ PHASE 1: Parallel Research (searcher agents)
 PHASE 2: Synthesis (synthesizer agent)
   Writes: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json
 
+PHASE 2.5: Verification (mandatory, scales with depth)
+  Spawn verification agents to test claims against filesystem.
+  L1: 2 agents, L2: 2, L3: 3, L4: 4+. Split claims across agents.
+  Context exhaustion = re-spawn per Critical Rule 8.
+
 PHASE 3: Challenges (contrarian + OTB in parallel)
   Cross-model (Gemini CLI) + CL verification. Re-synthesize if >20% changed.
+
+PHASE 3.5: Dispute Resolution (mandatory when conflicts exist)
+  Spawn resolution agents for conflicting claims from verification + challenges.
+  1 agent per 5 disputes. Produces findings/dispute-resolutions.md.
+
+PHASE 3.9: Post-Challenge Re-Synthesis (if >20% changed)
+  Incorporate verification corrections, challenge adjustments, dispute
+  resolutions into RESEARCH_OUTPUT.md. CL-standard on re-synthesized report.
 
 PHASE 4: Self-Audit (inline, tiered by depth)
 
@@ -172,6 +191,23 @@ Verify: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json.
 
 ---
 
+## Phase 2.5: Verification (mandatory)
+
+Spawn dedicated verification agents that test claims against the actual
+filesystem. These agents read the synthesized report, extract testable claims,
+and verify each by reading the referenced files.
+
+**Agent count scales with depth:** L1 (2 agents), L2 (2), L3 (3), L4 (4+).
+**Split claims across agents** to avoid context exhaustion (e.g., V1 checks
+codebase claims, V2 checks data claims, V3 checks cross-claim consistency).
+**Context exhaustion = re-spawn** per Critical Rule 8 — split further if needed.
+
+Each verification agent writes to `findings/V<N>-<scope>.md` with per-claim
+verdict: VERIFIED (with file:line evidence) or REFUTED (with what's actually
+there).
+
+---
+
 ## Phase 3: Mandatory Challenges
 
 Contrarian and OTB agents **run in parallel**. Scale: L1-L2 (1+1), L3 (2+2), L4
@@ -179,6 +215,32 @@ Contrarian and OTB agents **run in parallel**. Scale: L1-L2 (1+1), L3 (2+2), L4
 Cross-model + CL verification: REFERENCE.md Sections 13-14. Re-synthesize if
 
 > 20% claims changed.
+
+---
+
+## Phase 3.5: Dispute Resolution (mandatory when conflicts exist)
+
+When verification agents or challenge agents surface conflicting claims, spawn
+resolution agents to produce definitive answers with evidence.
+
+**Scale:** 1 agent for ≤5 disputes, 2 agents for 6-10, 3 for 11+. Each dispute
+gets: RESOLUTION, RATIONALE, IMPACT (what changes in the report), CONFIDENCE.
+
+Resolution agents write to `findings/dispute-resolutions.md`. If multiple
+agents, split into `dispute-resolutions-1.md`, `dispute-resolutions-2.md`.
+
+**Context exhaustion = re-spawn** per Critical Rule 8.
+
+---
+
+## Phase 3.9: Post-Challenge Re-Synthesis
+
+If verification corrections + challenge adjustments + dispute resolutions change
+more than 20% of claims, spawn a re-synthesis agent to rewrite
+RESEARCH_OUTPUT.md incorporating all corrections. Apply CL-standard to the
+re-synthesized report.
+
+If ≤20% changed, apply corrections inline (no re-synthesis agent needed).
 
 ---
 
@@ -253,11 +315,12 @@ REFERENCE.md Section 19.
 
 ## Version History
 
-| Version | Date       | Description                                                     |
-| ------- | ---------- | --------------------------------------------------------------- |
-| 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override |
-| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)        |
-| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation        |
-| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing    |
-| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles      |
-| 1.0     | 2026-03-22 | Initial implementation                                          |
+| Version | Date       | Description                                                                                     |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| 1.6     | 2026-03-27 | Add Rules 8-10: context exhaustion re-spawn, mandatory verification + dispute resolution phases |
+| 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override                                 |
+| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)                                        |
+| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation                                        |
+| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing                                    |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles                                      |
+| 1.0     | 2026-03-22 | Initial implementation                                                                          |
