@@ -1,8 +1,6 @@
 # Findings: What does the debt-runner skill currently do?
 
-**Searcher:** deep-research-searcher
-**Profile:** codebase
-**Date:** 2026-03-26
+**Searcher:** deep-research-searcher **Profile:** codebase **Date:** 2026-03-26
 **Sub-Question IDs:** SQ-001
 
 ---
@@ -16,6 +14,7 @@ artifact. It does NOT write to `MASTER_DEBT.jsonl` directly — all mutations go
 through staging files first, then through existing scripts.
 
 **Skill files:**
+
 - `.claude/skills/debt-runner/SKILL.md` (v1.1, 2026-03-15)
 - `.claude/skills/debt-runner/REFERENCE.md` (v1.0, 2026-03-15)
 
@@ -40,12 +39,14 @@ No-args invocation enters the interactive menu.
 ### Warm-up (mandatory before menu)
 
 Before presenting the menu, the skill presents:
+
 1. Current debt stats (S0-S3 counts, derived from `generate-metrics.js`)
 2. Effort estimates per mode (see below)
 3. Resume status if state file has an incomplete mode
 4. Pending staging files if any exist in `docs/technical-debt/staging/`
 
 **Effort estimates defined in SKILL.md:**
+
 - verify: ~10min S0, ~30min all
 - sync: ~5min + CL
 - plan: ~15min
@@ -130,12 +131,12 @@ node scripts/debt/sync-deduped.js
 
 ### CL domain slicing (from REFERENCE.md)
 
-| Slice | Content | Preset |
-|-------|---------|--------|
+| Slice   | Content                  | Preset                                                        |
+| ------- | ------------------------ | ------------------------------------------------------------- |
 | Slice 1 | S0 items (typically <50) | thorough — critical, false positives waste emergency response |
-| Slice 2 | S1 items (~1300) | standard — split by category, check file + issue presence |
-| Slice 3 | S2 items | standard — split by category |
-| Slice 4 | S3 items | standard — split by category |
+| Slice 2 | S1 items (~1300)         | standard — split by category, check file + issue presence     |
+| Slice 3 | S2 items                 | standard — split by category                                  |
+| Slice 4 | S3 items                 | standard — split by category                                  |
 
 ### Data flows
 
@@ -183,6 +184,7 @@ node scripts/debt/sync-deduped.js
 ### sync-sonarcloud.js capabilities (script-level)
 
 The underlying script supports:
+
 - `--project <key>`, `--org <name>` — SonarCloud targeting
 - `--severity <list>` — filter by BLOCKER,CRITICAL,MAJOR,MINOR,INFO
 - `--type <list>` — filter by BUG,VULNERABILITY,CODE_SMELL
@@ -194,11 +196,11 @@ The underlying script supports:
 
 ### CL domain slicing (sync mode)
 
-| Slice | Content |
-|-------|---------|
-| Slice 1 | SonarCloud BLOCKER/CRITICAL → verify S0 classification |
-| Slice 2 | SonarCloud MAJOR → verify S1 classification |
-| Slice 3 | SonarCloud MINOR/INFO → verify S2/S3 classification |
+| Slice   | Content                                                                 |
+| ------- | ----------------------------------------------------------------------- |
+| Slice 1 | SonarCloud BLOCKER/CRITICAL → verify S0 classification                  |
+| Slice 2 | SonarCloud MAJOR → verify S1 classification                             |
+| Slice 3 | SonarCloud MINOR/INFO → verify S2/S3 classification                     |
 | Slice 4 | Cross-check all new items against existing MASTER_DEBT for missed dupes |
 
 ### Data flows
@@ -246,6 +248,7 @@ Sync complete, CL verified, sync check passed.
 Path: `docs/technical-debt/plans/resolution-YYYY-MM-DD.jsonl`
 
 First line = plan metadata:
+
 ```json
 {
   "plan_id": "PLAN-2026-03-15",
@@ -258,8 +261,19 @@ First line = plan metadata:
 ```
 
 Subsequent lines = ordered items:
+
 ```json
-{"order": 1, "id": "DEBT-0042", "severity": "S0", "effort": "E0", "file": "src/auth.ts", "title": "SQL injection in query builder", "depends_on": [], "cluster": "auth-module", "fix_guidance": "Use parameterized queries"}
+{
+  "order": 1,
+  "id": "DEBT-0042",
+  "severity": "S0",
+  "effort": "E0",
+  "file": "src/auth.ts",
+  "title": "SQL injection in query builder",
+  "depends_on": [],
+  "cluster": "auth-module",
+  "fix_guidance": "Use parameterized queries"
+}
 ```
 
 ### Delegation rule
@@ -298,11 +312,13 @@ node scripts/health/checkers/debt-health.js
 ### generate-metrics.js behavior
 
 Reads `MASTER_DEBT.jsonl`. Outputs:
+
 - `docs/technical-debt/metrics.json` — machine-readable JSON
 - `docs/technical-debt/METRICS.md` — human-readable dashboard
 - Appends to `docs/technical-debt/logs/metrics-log.jsonl`
 
 **metrics.json structure:**
+
 ```json
 {
   "generated": "<ISO timestamp>",
@@ -321,16 +337,16 @@ Reads `MASTER_DEBT.jsonl`. Outputs:
 Reads `docs/technical-debt/metrics.json` and `MASTER_DEBT.jsonl` directly.
 Computes scored metrics against benchmarks:
 
-| Metric | Good | Average | Poor |
-|--------|------|---------|------|
-| s0_count | 0 | 0 | 1+ |
-| s1_count | 0 | 5 | 10+ |
-| total_open | 10 | 30 | 60+ |
-| avg_age_days | 30 | 90 | 180+ |
-| resolution_rate | 50% | 30% | 10% |
-| intake_30d | 5 | 15 | 30+ |
-| resolved_30d | 10 | 5 | 0 |
-| net_flow | -5 | 0 | +10 |
+| Metric          | Good | Average | Poor |
+| --------------- | ---- | ------- | ---- |
+| s0_count        | 0    | 0       | 1+   |
+| s1_count        | 0    | 5       | 10+  |
+| total_open      | 10   | 30      | 60+  |
+| avg_age_days    | 30   | 90      | 180+ |
+| resolution_rate | 50%  | 30%     | 10%  |
+| intake_30d      | 5    | 15      | 30+  |
+| resolved_30d    | 10   | 5       | 0    |
+| net_flow        | -5   | 0       | +10  |
 
 ### Dashboard presented to user
 
@@ -380,6 +396,7 @@ node scripts/debt/sync-deduped.js
 ### dedup-multi-pass.js passes
 
 The script runs 6 deduplication passes in sequence:
+
 - **Pass 0 — Parametric match:** Same file + title differing only in numeric
   literals
 - **Pass 1 — Exact match:** Same `content_hash`
@@ -387,10 +404,10 @@ The script runs 6 deduplication passes in sequence:
 - **Pass 3 — Semantic match:** Same file + very similar title
 - **Pass 4 — Cross-source match:** SonarCloud rule → audit finding correlation
 - **Pass 5 — Systemic pattern grouper:** Annotate items with same title across
-  >=3 files
+  > =3 files
 
-Reads `docs/technical-debt/raw/normalized-all.jsonl`.
-Outputs:
+Reads `docs/technical-debt/raw/normalized-all.jsonl`. Outputs:
+
 - `docs/technical-debt/raw/deduped.jsonl` — unique items
 - `docs/technical-debt/logs/dedup-log.jsonl` — merge history
 - `docs/technical-debt/raw/review-needed.jsonl` — uncertain matches
@@ -398,6 +415,7 @@ Outputs:
 ### consolidate-all.js pipeline
 
 Runs these steps in sequence:
+
 1. `extract-audits.js`
 2. `extract-reviews.js`
 3. `normalize-all.js`
@@ -409,9 +427,9 @@ replaced by `sync-sonarcloud.js` for live API sync)
 
 ### CL domain slicing (dedup mode)
 
-Each cluster = items with content_hash similarity >80%.
-Slice per cluster: verify items are truly duplicate, not just similar.
-Agent checks: same file? Same issue? Different manifestation?
+Each cluster = items with content_hash similarity >80%. Slice per cluster:
+verify items are truly duplicate, not just similar. Agent checks: same file?
+Same issue? Different manifestation?
 
 ### Staging schema
 
@@ -461,6 +479,7 @@ node scripts/debt/sync-deduped.js
 
 Reads from `scripts/config/audit-schema.json` for the schema definition.
 Validates each item in `MASTER_DEBT.jsonl` against:
+
 - Required fields: `id`, `source_id`, `title`, `severity`, `category`, `status`
 - Valid severities: S0, S1, S2, S3
 - Valid statuses: NEW, VERIFIED, FALSE_POSITIVE, IN_PROGRESS, RESOLVED
@@ -478,12 +497,13 @@ Options: `--strict` (fail on warnings), `--quiet` (errors only), `--file <path>`
 ### verify-resolutions.js behavior
 
 Audits item statuses — combines three checks:
+
 - Step 3: Verify NEW items (promote to VERIFIED if file exists)
 - Step 4: Audit RESOLVED items (confirm or flag as possibly unresolved)
 - Step 5: Audit FALSE_POSITIVE items (confirm or flag as possibly misclassified)
 
-Reads from both `MASTER_DEBT.jsonl` and `raw/deduped.jsonl`.
-Options: `--dry-run` (default), `--write` (apply), `--verbose`
+Reads from both `MASTER_DEBT.jsonl` and `raw/deduped.jsonl`. Options:
+`--dry-run` (default), `--write` (apply), `--verbose`
 
 ### Staging schema
 
@@ -537,6 +557,7 @@ node scripts/debt/generate-metrics.js
   new items, appends to `MASTER_DEBT.jsonl`
 
 **Outputs:**
+
 - `docs/technical-debt/INDEX.md`
 - `docs/technical-debt/views/by-severity.md`
 - `docs/technical-debt/views/by-category.md`
@@ -625,7 +646,8 @@ Schema from REFERENCE.md:
 **Staging files** survive compaction because they are written to disk at
 `docs/technical-debt/staging/`.
 
-**Resume command:** `/debt-runner resume` reads state file, skips completed steps.
+**Resume command:** `/debt-runner resume` reads state file, skips completed
+steps.
 
 ---
 
@@ -661,9 +683,8 @@ Flag for `/security-auditor` before resolution.
 
 ### Script progress reporting (mandatory)
 
-Before each script call: print `"Running \`[script]\`..."`.
-After completion: print result summary. Prevents user uncertainty during long
-operations.
+Before each script call: print `"Running \`[script]\`..."`. After completion:
+print result summary. Prevents user uncertainty during long operations.
 
 ### Retro prompt (on session exit only, not per-mode)
 
@@ -676,18 +697,19 @@ Captured in state file `process_feedback`.
 
 Every mode uses the `/convergence-loop` skill. Presets used per mode:
 
-| Mode | CL Preset | Passes | Rationale |
-|------|-----------|--------|-----------|
-| verify | standard | 3 | source-check → verification → fresh-eyes |
-| sync | standard | 3 | same |
-| plan | standard | 3 | verify plan claims |
-| health | quick | 2 | verification → verification, lightweight |
-| dedup | standard | 3 | merge cluster verification |
-| validate | standard | 3 | schema + staleness verification |
-| cleanup | standard | 3 | spot-check code for resolved items |
-| sync check | quick | 2 | count match + spot-check |
+| Mode       | CL Preset | Passes | Rationale                                |
+| ---------- | --------- | ------ | ---------------------------------------- |
+| verify     | standard  | 3      | source-check → verification → fresh-eyes |
+| sync       | standard  | 3      | same                                     |
+| plan       | standard  | 3      | verify plan claims                       |
+| health     | quick     | 2      | verification → verification, lightweight |
+| dedup      | standard  | 3      | merge cluster verification               |
+| validate   | standard  | 3      | schema + staleness verification          |
+| cleanup    | standard  | 3      | spot-check code for resolved items       |
+| sync check | quick     | 2      | count match + spot-check                 |
 
 The convergence-loop skill requires:
+
 - Minimum 2 passes
 - T20 tally every pass (Confirmed / Corrected / Extended / New counts)
 - User gate before convergence declaration
@@ -700,17 +722,18 @@ The convergence-loop skill requires:
 
 ### Neighboring skills (do NOT use debt-runner for these)
 
-| Task | Use instead | Why |
-|------|-------------|-----|
-| Adding a single debt item | `/add-debt` | Lightweight, targeted |
-| SonarCloud deep dive | `/sonarcloud --interactive` | Full SonarCloud UX |
-| TDMS system health | `/tdms-ecosystem-audit` | Ecosystem-level diagnostic |
-| Debt in PR context | `/pr-review` | PR-scoped |
+| Task                      | Use instead                 | Why                        |
+| ------------------------- | --------------------------- | -------------------------- |
+| Adding a single debt item | `/add-debt`                 | Lightweight, targeted      |
+| SonarCloud deep dive      | `/sonarcloud --interactive` | Full SonarCloud UX         |
+| TDMS system health        | `/tdms-ecosystem-audit`     | Ecosystem-level diagnostic |
+| Debt in PR context        | `/pr-review`                | PR-scoped                  |
 
 ### Script ecosystem not directly called by debt-runner
 
 These scripts exist in `scripts/debt/` but are **not referenced** in
 debt-runner's SKILL.md or REFERENCE.md:
+
 - `assign-roadmap-refs.js`
 - `backfill-hashes.js`
 - `check-phase-status.js`
@@ -738,6 +761,7 @@ debt-runner's SKILL.md or REFERENCE.md:
 ### Auto-triggered by resolve-bulk.js (discovery, not in skill spec)
 
 When `resolve-bulk.js` runs, it automatically:
+
 1. Calls `generate-views.js`
 2. Calls `reconcile-roadmap.js --write`
 3. Scans `ROADMAP_FUTURE.md`, `ROADMAP_LOG.md`,
@@ -750,19 +774,19 @@ When `resolve-bulk.js` runs, it automatically:
 
 From `docs/technical-debt/metrics.json` (generated 2026-03-26):
 
-| Metric | Value |
-|--------|-------|
-| Total items | 8,470 |
-| Open | 7,281 |
-| Resolved | 1,115 |
-| False positives | 74 |
-| Resolution rate | 13% |
-| S0 (Critical) | 26 total, 11 open alerts |
-| S1 (High) | 1,360 total, 1,259 open alerts |
-| S2 (Medium) | 3,443 |
-| S3 (Low) | 3,641 |
-| NEW status | 2,125 |
-| VERIFIED status | 5,156 |
+| Metric          | Value                          |
+| --------------- | ------------------------------ |
+| Total items     | 8,470                          |
+| Open            | 7,281                          |
+| Resolved        | 1,115                          |
+| False positives | 74                             |
+| Resolution rate | 13%                            |
+| S0 (Critical)   | 26 total, 11 open alerts       |
+| S1 (High)       | 1,360 total, 1,259 open alerts |
+| S2 (Medium)     | 3,443                          |
+| S3 (Low)        | 3,641                          |
+| NEW status      | 2,125                          |
+| VERIFIED status | 5,156                          |
 
 **Sources:** sonarcloud (2,561), audit (2,942), unknown (766), review (623),
 roadmap (172), dec-2025-report (641), sonarcloud-paste (286), context (252),
@@ -807,8 +831,8 @@ The following are absent from debt-runner's current scope:
    but there is no mechanism to capture actual effort spent vs estimated.
 
 9. **No category-level prioritization in plan mode:** Plan mode generates
-   resolution order by severity then effort, but has no mode for "prioritize
-   by category" (e.g., "fix all security items across all severities first").
+   resolution order by severity then effort, but has no mode for "prioritize by
+   category" (e.g., "fix all security items across all severities first").
 
 10. **No CI integration mode:** `resolve-bulk.js` supports `--output-json` for
     CI consumption, but debt-runner has no mode for "generate CI-consumable debt
@@ -826,25 +850,25 @@ The following are absent from debt-runner's current scope:
 
 ## Sources
 
-| # | Path | Type | Trust | Notes |
-|---|------|------|-------|-------|
-| 1 | `.claude/skills/debt-runner/SKILL.md` | Skill definition | HIGH | Primary source, v1.1 |
-| 2 | `.claude/skills/debt-runner/REFERENCE.md` | Skill reference | HIGH | Primary source, v1.0 |
-| 3 | `scripts/debt/generate-metrics.js` | Script source | HIGH | Full read |
-| 4 | `scripts/debt/resolve-bulk.js` | Script source | HIGH | Full read |
-| 5 | `scripts/debt/sync-sonarcloud.js` | Script source | HIGH | Partial read (header) |
-| 6 | `scripts/debt/dedup-multi-pass.js` | Script source | HIGH | Partial read |
-| 7 | `scripts/debt/validate-schema.js` | Script source | HIGH | Full read |
-| 8 | `scripts/debt/verify-resolutions.js` | Script source | HIGH | Partial read |
-| 9 | `scripts/debt/sync-deduped.js` | Script source | HIGH | Full read |
-| 10 | `scripts/debt/consolidate-all.js` | Script source | HIGH | Full read |
-| 11 | `scripts/debt/generate-views.js` | Script source | HIGH | Partial read |
-| 12 | `scripts/health/checkers/debt-health.js` | Script source | HIGH | Full read |
-| 13 | `scripts/config/audit-schema.json` | Config | HIGH | Full read |
-| 14 | `docs/technical-debt/metrics.json` | Live data | HIGH | As of 2026-03-26 |
-| 15 | `docs/technical-debt/MASTER_DEBT.jsonl` | Canonical data | HIGH | 8,470 lines |
-| 16 | `.claude/skills/add-debt/SKILL.md` | Neighbor skill | HIGH | Full read |
-| 17 | `.claude/skills/convergence-loop/SKILL.md` | Dependency skill | HIGH | Partial read |
+| #   | Path                                       | Type             | Trust | Notes                 |
+| --- | ------------------------------------------ | ---------------- | ----- | --------------------- |
+| 1   | `.claude/skills/debt-runner/SKILL.md`      | Skill definition | HIGH  | Primary source, v1.1  |
+| 2   | `.claude/skills/debt-runner/REFERENCE.md`  | Skill reference  | HIGH  | Primary source, v1.0  |
+| 3   | `scripts/debt/generate-metrics.js`         | Script source    | HIGH  | Full read             |
+| 4   | `scripts/debt/resolve-bulk.js`             | Script source    | HIGH  | Full read             |
+| 5   | `scripts/debt/sync-sonarcloud.js`          | Script source    | HIGH  | Partial read (header) |
+| 6   | `scripts/debt/dedup-multi-pass.js`         | Script source    | HIGH  | Partial read          |
+| 7   | `scripts/debt/validate-schema.js`          | Script source    | HIGH  | Full read             |
+| 8   | `scripts/debt/verify-resolutions.js`       | Script source    | HIGH  | Partial read          |
+| 9   | `scripts/debt/sync-deduped.js`             | Script source    | HIGH  | Full read             |
+| 10  | `scripts/debt/consolidate-all.js`          | Script source    | HIGH  | Full read             |
+| 11  | `scripts/debt/generate-views.js`           | Script source    | HIGH  | Partial read          |
+| 12  | `scripts/health/checkers/debt-health.js`   | Script source    | HIGH  | Full read             |
+| 13  | `scripts/config/audit-schema.json`         | Config           | HIGH  | Full read             |
+| 14  | `docs/technical-debt/metrics.json`         | Live data        | HIGH  | As of 2026-03-26      |
+| 15  | `docs/technical-debt/MASTER_DEBT.jsonl`    | Canonical data   | HIGH  | 8,470 lines           |
+| 16  | `.claude/skills/add-debt/SKILL.md`         | Neighbor skill   | HIGH  | Full read             |
+| 17  | `.claude/skills/convergence-loop/SKILL.md` | Dependency skill | HIGH  | Partial read          |
 
 ---
 
@@ -853,11 +877,10 @@ The following are absent from debt-runner's current scope:
 **None identified.** SKILL.md and REFERENCE.md are consistent with each other
 and with the actual scripts. One discrepancy worth noting:
 
-- SKILL.md cleanup mode says "Apply via existing scripts" for archival, but
-  no archive script is listed in the REFERENCE.md script sequence. The script
-  sequence for cleanup only includes `sync-deduped.js`, `generate-views.js`,
-  and `generate-metrics.js`. No item is physically removed from
-  MASTER_DEBT.jsonl.
+- SKILL.md cleanup mode says "Apply via existing scripts" for archival, but no
+  archive script is listed in the REFERENCE.md script sequence. The script
+  sequence for cleanup only includes `sync-deduped.js`, `generate-views.js`, and
+  `generate-metrics.js`. No item is physically removed from MASTER_DEBT.jsonl.
 
 ---
 
@@ -876,18 +899,18 @@ and with the actual scripts. One discrepancy worth noting:
 
 ## Serendipity
 
-- **resolve-bulk.js auto-triggers:** The script calls `reconcile-roadmap.js
-  --write` and scans plan files for DEBT ID references after every bulk
-  resolution. This behavior is not documented in SKILL.md — it is a
-  script-level side effect that debt-runner inherits when it invokes
+- **resolve-bulk.js auto-triggers:** The script calls
+  `reconcile-roadmap.js --write` and scans plan files for DEBT ID references
+  after every bulk resolution. This behavior is not documented in SKILL.md — it
+  is a script-level side effect that debt-runner inherits when it invokes
   resolve-bulk.js.
-- **consolidate-all.js marks extract-sonarcloud.js as DEPRECATED:** The
-  inline comment says "use sync-sonarcloud.js for live API sync." This means
-  the old SonarCloud extraction path (file-based) is dead; the live API path
-  is canonical.
-- **MASTER_DEBT.jsonl is large:** 8,470 items, 7,281 open. The 13%
-  resolution rate and the 2,125 NEW-status items (pending verification) suggest
-  significant opportunity for verify-mode work. S0 has 11 open alerts.
+- **consolidate-all.js marks extract-sonarcloud.js as DEPRECATED:** The inline
+  comment says "use sync-sonarcloud.js for live API sync." This means the old
+  SonarCloud extraction path (file-based) is dead; the live API path is
+  canonical.
+- **MASTER_DEBT.jsonl is large:** 8,470 items, 7,281 open. The 13% resolution
+  rate and the 2,125 NEW-status items (pending verification) suggest significant
+  opportunity for verify-mode work. S0 has 11 open alerts.
 
 ---
 

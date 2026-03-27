@@ -1,21 +1,20 @@
 # Findings: Comprehensive Intake Gap Matrix — All Disconnected and Partial Paths
 
-**Searcher:** deep-research-searcher
-**Profile:** codebase
-**Date:** 2026-03-26T17:13:50Z
-**Sub-Question IDs:** SQ-8a
+**Searcher:** deep-research-searcher **Profile:** codebase **Date:**
+2026-03-26T17:13:50Z **Sub-Question IDs:** SQ-8a
 
 ---
 
 ## Overview
 
 This document synthesizes findings from SQ1 through SQ7 to produce a complete
-gap matrix. Every source of technical debt findings in the sonash-v0 codebase was
-catalogued across prior waves. This document maps each non-integrated path to:
-what findings it produces, where they currently land, what integration would look
-like, effort level, and dashboard priority.
+gap matrix. Every source of technical debt findings in the sonash-v0 codebase
+was catalogued across prior waves. This document maps each non-integrated path
+to: what findings it produces, where they currently land, what integration would
+look like, effort level, and dashboard priority.
 
 **Scale context from live data (2026-03-26):**
+
 - MASTER_DEBT.jsonl: 8,470 items total (7,281 open, 13% resolution rate)
 - S0 open alerts: 11 | S1 open alerts: 1,259
 - Verification queue (NEW status): 2,125 items
@@ -32,6 +31,7 @@ These sources produce findings that NEVER reach TDMS under any current path.
 ### GAP-01: code-reviewer Agent
 
 **What findings are produced:**
+
 - Code review violations, anti-pattern detections, pre-existing architectural
   issues identified during PR review
 - Format: inline review checklist text in the agent response, no JSONL output
@@ -39,6 +39,7 @@ These sources produce findings that NEVER reach TDMS under any current path.
   change (per CLAUDE.md Section 7 POST-TASK triggers)
 
 **Where findings currently land:**
+
 - In the Claude conversation context only — no file is written
 - If the reviewer blocks (e.g., on a critical pattern), the commit is blocked
   but no debt record is created
@@ -46,6 +47,7 @@ These sources produce findings that NEVER reach TDMS under any current path.
   responsibility to route — but no caller infrastructure exists to do that
 
 **What integration would look like:**
+
 - Option A (minimal): Add a TDMS routing step to code-reviewer SKILL.md — after
   completing review, present unfixable/deferred items to user with "defer to
   TDMS?" choice, invoke `/add-debt` for each accepted item
@@ -60,39 +62,43 @@ These sources produce findings that NEVER reach TDMS under any current path.
 reuse `docs/templates/JSONL_SCHEMA_STANDARD.md`). No new scripts needed.
 
 **Priority:** MUST-HAVE. The code-reviewer is triggered on every code change and
-produces the highest-volume operational finding stream. Its complete disconnection
-from TDMS is the largest single coverage gap in the system.
+produces the highest-volume operational finding stream. Its complete
+disconnection from TDMS is the largest single coverage gap in the system.
 
 ---
 
 ### GAP-02: gh-fix-ci Skill — Systemic CI Failures
 
 **What findings are produced:**
+
 - Root cause analysis of CI failures (TypeScript errors, ESLint failures, test
   failures, hook failures)
-- Specifically: the difference between "fix the symptom" and "record the systemic
-  debt that caused it"
+- Specifically: the difference between "fix the symptom" and "record the
+  systemic debt that caused it"
 - Format: plan in Claude context, changes applied to files directly
 - Volume estimate: low frequency (CI failures), but each event often reveals
   pre-existing debt that was merely hidden
 
 **Where findings currently land:**
+
 - Fix is applied; the underlying debt cause is lost
 - No `/add-debt` reference anywhere in gh-fix-ci SKILL.md
 - There is no "systemic issue" classification step in the skill
 
 **What integration would look like:**
-- Add a post-fix classification step: "Was this CI failure caused by a pre-existing
-  pattern? [A] One-time error, no debt [B] Systemic issue — create DEBT entry"
+
+- Add a post-fix classification step: "Was this CI failure caused by a
+  pre-existing pattern? [A] One-time error, no debt [B] Systemic issue — create
+  DEBT entry"
 - Option B invokes `/add-debt` with the root cause as the finding
 - Alternatively: add a "Systemic failures" section at skill closure that mirrors
   the pattern from pre-commit-fixer's Step 7 closure
 
 **Effort:** Trivial — SKILL.md change only, no new scripts
 
-**Priority:** Nice-to-have. Low event frequency. The "fix it and move on" pattern
-is appropriate for most CI failures. Only systemic patterns benefit from TDMS
-tracking. Pre-commit-fixer already handles similar pre-existing errors more
+**Priority:** Nice-to-have. Low event frequency. The "fix it and move on"
+pattern is appropriate for most CI failures. Only systemic patterns benefit from
+TDMS tracking. Pre-commit-fixer already handles similar pre-existing errors more
 comprehensively.
 
 ---
@@ -100,6 +106,7 @@ comprehensively.
 ### GAP-03: convergence-loop Skill — Verification Results Not Tracked
 
 **What findings are produced:**
+
 - Verified claims: Confirmed / Corrected / Extended / New (T20 tally per pass)
 - Specifically: "New" findings discovered during verification that weren't in
   the original scope — these are net-new debt discovered during CL execution
@@ -107,15 +114,18 @@ comprehensively.
 - Volume estimate: 0-10 net-new findings per CL session (the "New" category)
 
 **Where findings currently land:**
+
 - CL output is consumed by the calling skill (e.g., debt-runner verify mode)
 - "New" findings flow into staging files for the calling skill
-- No direct TDMS path for CL-discovered items that are outside the caller's scope
+- No direct TDMS path for CL-discovered items that are outside the caller's
+  scope
 
 **What integration would look like:**
+
 - CL itself does not need TDMS integration — that responsibility belongs to its
   callers (debt-runner, etc.)
-- The gap is in callers that use CL but don't have a TDMS routing step for
-  "New" findings surfaced during verification
+- The gap is in callers that use CL but don't have a TDMS routing step for "New"
+  findings surfaced during verification
 - The debt-runner's convergence loop integration correctly routes these through
   staging files — the gap is in non-debt-runner CL callers (e.g., skills that
   use CL for their own verification but don't process the "New" bucket)
@@ -130,16 +140,19 @@ The gap is theoretical for non-debt-runner callers.
 ### GAP-04: quick-fix Skill
 
 **What findings are produced:**
+
 - Pre-commit pattern compliance violations and suggestions
 - Format: text recommendations; may apply auto-fixes
 - Volume estimate: low-medium (triggered by hooks when failures occur)
 
 **Where findings currently land:**
+
 - Fixes applied or dismissed; no TDMS record
 - quick-fix (v1.0, 2026-02-25, no updates) appears to predate the TDMS system's
   current design
 
 **What integration would look like:**
+
 - quick-fix overlaps significantly with pre-commit-fixer, which already has TDMS
   routing
 - Preferred path: deprecate quick-fix in favor of pre-commit-fixer, which has
@@ -156,12 +169,14 @@ pre-commit-fixer instead.
 ### GAP-05: SonarCloud CI Workflow (sonarcloud.yml)
 
 **What findings are produced:**
+
 - Full SonarCloud static analysis on every push/PR to main
 - All issues types: BUG, VULNERABILITY, CODE_SMELL
 - All severities: BLOCKER/CRITICAL (S0), MAJOR (S1), MINOR/INFO (S2/S3)
 - Volume estimate: hundreds to thousands of findings per analysis run
 
 **Where findings currently land:**
+
 - SonarCloud cloud dashboard only — findings accumulate there but are never
   automatically synced to TDMS
 - The gap: `sonarcloud.yml` does not invoke `sync-sonarcloud.js` after analysis
@@ -169,10 +184,13 @@ pre-commit-fixer instead.
   requires deliberate invocation by the user
 
 **What integration would look like:**
+
 - Add a post-analysis step to `sonarcloud.yml`:
   ```yaml
   - name: Sync new findings to TDMS
-    run: node scripts/debt/sync-sonarcloud.js --force --severity BLOCKER,CRITICAL,MAJOR
+    run:
+      node scripts/debt/sync-sonarcloud.js --force --severity
+      BLOCKER,CRITICAL,MAJOR
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   ```
@@ -194,21 +212,25 @@ sync to TDMS is the most impactful automated integration gap.
 ### GAP-06: Pattern Compliance CI (pattern-compliance-audit.yml)
 
 **What findings are produced:**
+
 - Weekly full-repo pattern compliance scan results
 - Creates GitHub Issues with label `pattern-compliance` / `tech-debt` when:
   blocking violations > 0 OR warning threshold > 75
 - Format: GitHub Issues (not JSONL, not TDMS)
 
 **Where findings currently land:**
+
 - GitHub Issues only — these are completely invisible to TDMS
 - `source_id` patterns in MASTER_DEBT show no `github-issue:` prefix
 - TDMS has no GitHub Issues sync in either direction
 
 **What integration would look like:**
+
 - Option A: Change `pattern-compliance-audit.yml` to call `intake-manual.js`
   instead of creating a GitHub Issue. Script can use the JSON output of
   `check-pattern-compliance.js` to produce structured items
-- Option B: Add a GitHub Issues → TDMS sync script (more complex, general-purpose)
+- Option B: Add a GitHub Issues → TDMS sync script (more complex,
+  general-purpose)
 - Option C: Keep GitHub Issues creation but also call intake-manual.js for each
   violation batch
 - Recommended: Option A — change the terminal output of the workflow to call
@@ -227,31 +249,33 @@ GitHub Issues suggests this was intended to be part of the debt tracking system.
 ### GAP-07: Semgrep Findings (GitHub Code Scanning)
 
 **What findings are produced:**
+
 - Custom rule violations from `.semgrep/rules/`
 - Runs on push/PR to main + weekly schedule
 - SARIF format uploaded to GitHub Security tab
 - Volume estimate: unknown (requires GitHub API to query)
 
 **Where findings currently land:**
+
 - GitHub Security tab (`/security/code-scanning`) only
 - No SARIF file saved to the repo; no local artifact produced
 - The workflow uses `|| true`, making all findings informational (non-blocking)
 - Completely invisible to TDMS
 
 **What integration would look like:**
+
 - Use the GitHub Code Scanning REST API:
   `GET /repos/{owner}/{repo}/code-scanning/alerts?tool_name=Semgrep&state=open`
 - A new script `scripts/debt/sync-code-scanning.js` could be built on the same
-  pattern as `sync-sonarcloud.js`:
-  fetch alerts → deduplicate by alert number/rule → assign DEBT IDs → append via
-  `appendMasterDebtSync`
+  pattern as `sync-sonarcloud.js`: fetch alerts → deduplicate by alert
+  number/rule → assign DEBT IDs → append via `appendMasterDebtSync`
 - Severity mapping: critical → S0, high → S1, medium → S2, low → S3
 - Run on schedule (weekly, same as semgrep.yml) via new CI workflow step or
   manual invocation
 
-**Effort:** Significant — requires new script (GitHub Security API vs. SonarCloud
-API, different auth model using `GITHUB_TOKEN`), new severity mapping, new
-source_id prefix convention (`semgrep:alert-{number}`)
+**Effort:** Significant — requires new script (GitHub Security API vs.
+SonarCloud API, different auth model using `GITHUB_TOKEN`), new severity
+mapping, new source_id prefix convention (`semgrep:alert-{number}`)
 
 **Priority:** Nice-to-have. The custom `.semgrep/rules/` are specifically for
 this project's patterns. Low priority until the higher-impact gaps (SonarCloud
@@ -262,17 +286,20 @@ auto-sync, code-reviewer) are addressed.
 ### GAP-08: CodeQL Findings (GitHub Code Scanning)
 
 **What findings are produced:**
+
 - JavaScript/TypeScript security and quality analysis
 - Runs on push/PR to main + weekly Monday schedule
 - SARIF uploaded to GitHub Security tab
 - Volume estimate: unknown (requires API)
 
 **Where findings currently land:**
+
 - GitHub Security tab only (same as Semgrep)
 - No SARIF file saved to repo; no local artifact
 - Completely invisible to TDMS
 
 **What integration would look like:**
+
 - Same `sync-code-scanning.js` script as GAP-07 can handle both Semgrep and
   CodeQL by filtering by `tool_name`
 - CodeQL findings tend to be higher precision (fewer but more reliable) than
@@ -288,6 +315,7 @@ GAP-07.
 ### GAP-09: npm audit Vulnerabilities
 
 **What findings are produced:**
+
 - Dependency vulnerability findings from the npm advisory database
 - Severity levels: critical, high, moderate, low, info
 - Format: `npm audit --json` produces structured JSON
@@ -296,12 +324,14 @@ GAP-07.
 - Volume estimate: currently unknown (requires live run)
 
 **Where findings currently land:**
-- In `security.js` health checker as aggregate counts (critical_vulns, high_vulns)
-  for the composite health score only — no per-vulnerability records
+
+- In `security.js` health checker as aggregate counts (critical_vulns,
+  high_vulns) for the composite health score only — no per-vulnerability records
 - Not a blocking CI check (omitted from `ci.yml`)
 - No TDMS path exists
 
 **What integration would look like:**
+
 - New script `scripts/debt/sync-npm-audit.js`:
   - Runs `npm audit --json`
   - Maps each advisory to a TDMS item: `source_id: "npm-audit:{advisory-id}"`,
@@ -322,18 +352,21 @@ counts) but discards the per-vulnerability data is a clear gap.
 ### GAP-10: Dependabot Vulnerabilities
 
 **What findings are produced:**
+
 - Security vulnerability PRs (when Dependabot detects advisories requiring
   version bumps above configured minor/patch ranges)
 - Dependabot creates PRs, not TDMS items
 
 **Where findings currently land:**
-- GitHub PRs — auto-merged when CI passes (for minor/patch via `auto-merge-
-  dependabot.yml`), or left open for major version bumps
+
+- GitHub PRs — auto-merged when CI passes (for minor/patch via
+  `auto-merge- dependabot.yml`), or left open for major version bumps
 - No TDMS visibility into what vulnerabilities Dependabot is tracking
 - When a Dependabot PR merges, `resolve-debt.yml` runs but finds no
   `Resolves: DEBT-XXXX` lines in the PR body (Dependabot doesn't add these)
 
 **What integration would look like:**
+
 - Option A: Add a workflow step to `auto-merge-dependabot.yml` that, for
   security-type Dependabot PRs (not just routine version bumps), calls
   `intake-manual.js` with the advisory details before auto-merging and then
@@ -352,6 +385,7 @@ keeps dependencies current, which limits risk accumulation.
 ### GAP-11: ESLint Warn-Level Violations in scripts/ and .claude/hooks/
 
 **What findings are produced:**
+
 - All warn-level ESLint rules in `scripts/**` and `.claude/hooks/**` are
   suppressed via zero-warning overrides (`reportUnusedDisableDirectives: "off"`)
 - The `--max-warnings 0` CI check passes despite any number of warn-level
@@ -359,11 +393,13 @@ keeps dependencies current, which limits risk accumulation.
 - Volume estimate: unknown (suppressed, invisible by design)
 
 **Where findings currently land:**
+
 - Nowhere — completely suppressed
 - The `known-debt-baseline.json` tracks complexity violations (a subset) but not
   the broader warn-level ESLint category
 
 **What integration would look like:**
+
 - Option A: Run ESLint separately on scripts/ and .claude/hooks/ with warnings
   NOT suppressed, capture the output, ingest via `intake-manual.js` batch calls
 - Option B: Restore warn-level visibility in these directories (removing the
@@ -371,8 +407,8 @@ keeps dependencies current, which limits risk accumulation.
 - The core issue is that the override was intentional — to allow the production
   CI `--max-warnings 0` check to pass despite known issues in tooling code
 
-**Effort:** Significant (if addressing the underlying design decision) / Moderate
-(if building a parallel ESLint-for-tooling-code scan job)
+**Effort:** Significant (if addressing the underlying design decision) /
+Moderate (if building a parallel ESLint-for-tooling-code scan job)
 
 **Priority:** Low. The suppression is a deliberate architectural choice.
 Restoring visibility requires policy change, not just tooling.
@@ -382,11 +418,13 @@ Restoring visibility requires policy change, not just tooling.
 ### GAP-12: CodeRabbit, Qodo, Gemini PR Comments
 
 **What findings are produced:**
+
 - AI code review comments on every PR: CodeRabbit, Qodo, and Gemini Code Assist
 - Format: GitHub PR comments in markdown (not machine-readable JSONL)
 - Volume estimate: 5-40 comment threads per PR across all three tools
 
 **Where findings currently land:**
+
 - GitHub PR comments only
 - They enter TDMS ONLY when a user manually invokes `/pr-review`, pastes in the
   AI review feedback, and then defers specific items via `/add-debt`
@@ -395,10 +433,11 @@ Restoring visibility requires policy change, not just tooling.
   accumulated learning that the AI tools flag issues that aren't real
 
 **What integration would look like:**
+
 - These tools produce markdown-formatted text comments — there is no structured
   API for bulk intake
-- The pr-review skill is the correct integration point: it is already designed to
-  process CodeRabbit/Qodo/Gemini output when the user pastes it in
+- The pr-review skill is the correct integration point: it is already designed
+  to process CodeRabbit/Qodo/Gemini output when the user pastes it in
 - A more automated path would require scraping GitHub PR comments via the GitHub
   API and parsing markdown — fragile and low-value
 - **The current design (manual paste into /pr-review) is appropriate** given the
@@ -422,6 +461,7 @@ These sources have SOME path to TDMS but findings regularly fall through gaps.
 ### GAP-13: Ecosystem Audits — "Fix Now" Findings Invisible to TDMS
 
 **What findings are produced:**
+
 - All 8 ecosystem audits + data-effectiveness-audit present findings in
   interactive walkthrough mode
 - Three dispositions exist: Fix Now, Defer, Skip
@@ -429,28 +469,30 @@ These sources have SOME path to TDMS but findings regularly fall through gaps.
 - "Fix Now" findings are silently resolved with no TDMS audit trail
 
 **Where findings currently land:**
-- Fixed findings: the fix was applied but there is no MASTER_DEBT record
-  that (a) the issue existed, (b) it was fixed, and (c) when
+
+- Fixed findings: the fix was applied but there is no MASTER_DEBT record that
+  (a) the issue existed, (b) it was fixed, and (c) when
 - The category `engineering-productivity` is hardcoded for ALL deferred items
-  regardless of finding domain — hook latency findings, JSONL sync issues,
-  and dead skills all land in the same category, distorting TDMS category
+  regardless of finding domain — hook latency findings, JSONL sync issues, and
+  dead skills all land in the same category, distorting TDMS category
   distribution
 
 **What integration would look like:**
+
 - Option A (minimal): After "Fix Now", still create a TDMS entry with
-  `status: RESOLVED` and `resolution.type: "immediate-fix"` so fixed items
-  have an audit trail
+  `status: RESOLVED` and `resolution.type: "immediate-fix"` so fixed items have
+  an audit trail
 - Option B: Allow ecosystem audits to write JSONL output files (like single-
   session audits) so `extract-reviews.js` can pick them up during consolidation
 - The FINDING_WALKTHROUGH.md shared template could be updated to add a
-  post-walkthrough step that writes all findings (not just deferred) to a
-  JSONL file
-- Also: the hardcoded `engineering-productivity` category assignment should
-  be made dynamic — hook audits should map to `process`, JSONL sync issues to
+  post-walkthrough step that writes all findings (not just deferred) to a JSONL
+  file
+- Also: the hardcoded `engineering-productivity` category assignment should be
+  made dynamic — hook audits should map to `process`, JSONL sync issues to
   `code-quality`, etc.
 
-**Effort:** Moderate — shared FINDING_WALKTHROUGH.md template update +
-JSONL output format addition
+**Effort:** Moderate — shared FINDING_WALKTHROUGH.md template update + JSONL
+output format addition
 
 **Priority:** Must-have for audit trail completeness. The 13% resolution rate
 data is misleading if a large portion of fixes are "Fix Now" choices that never
@@ -461,6 +503,7 @@ appear as resolved items in TDMS.
 ### GAP-14: pr-retro Skill — Actively Discourages TDMS Routing
 
 **What findings are produced:**
+
 - Retrospective insights from PR review patterns: what went wrong, what can be
   improved
 - Two types: immediate implementation items (most common) and systemic issues
@@ -469,18 +512,20 @@ appear as resolved items in TDMS.
   explicitly requests it. Do not offer 'defer to DEBT' as a choice."
 
 **Where findings currently land:**
+
 - Immediate items → SESSION_CONTEXT.md or ROADMAP.md (not TDMS)
-- Systemic items → TDMS only if user explicitly says "defer", "create DEBT",
-  or "add to TDMS"
+- Systemic items → TDMS only if user explicitly says "defer", "create DEBT", or
+  "add to TDMS"
 - The anti-TDMS stance is a deliberate design choice, not an oversight
 
 **What integration would look like:**
+
 - The design intent is correct for immediate action items
 - The gap is "systemic issues" that never get flagged as debt because the user
   doesn't know to explicitly request it
-- A targeted fix: add a step at pr-retro closure that presents a summary of
-  any findings classified as "Systemic" and asks "Should any of these become
-  DEBT items?" — without making it the default path
+- A targeted fix: add a step at pr-retro closure that presents a summary of any
+  findings classified as "Systemic" and asks "Should any of these become DEBT
+  items?" — without making it the default path
 - This preserves the "implementation over filing" philosophy while closing the
   systemic-gap
 
@@ -496,26 +541,29 @@ that could be fixed immediately.
 ### GAP-15: alerts Skill — "Defer" Is Suggestion, Not Enforcement
 
 **What findings are produced:**
+
 - Debt-related alerts from three checkers: debt-metrics, debt-intake,
   debt-resolution
-- Plus pending-refinements checker (items surfaced 3+ times auto-escalate to
-  "S1 DEBT candidate")
+- Plus pending-refinements checker (items surfaced 3+ times auto-escalate to "S1
+  DEBT candidate")
 - Format: alert objects with severity, message, context
-- When a user chooses "Defer" for an alert, the REFERENCE.md says
-  "Log, suggest /add-debt" — but this is SUGGESTED, not enforced
+- When a user chooses "Defer" for an alert, the REFERENCE.md says "Log, suggest
+  /add-debt" — but this is SUGGESTED, not enforced
 
 **Where findings currently land:**
+
 - Deferred alerts: session carry-forward notes only; `/add-debt` is suggested
   but not invoked
-- The pending-refinements path is the strongest: items surfaced 3+ times get
-  an explicit "Create S1 DEBT item via /add-debt" instruction — but still
-  requires user action
+- The pending-refinements path is the strongest: items surfaced 3+ times get an
+  explicit "Create S1 DEBT item via /add-debt" instruction — but still requires
+  user action
 
 **What integration would look like:**
-- Change "suggest /add-debt" to "invoke /add-debt" for the Defer path in
-  Phase 5 of the alerts skill
-- For pending-refinements items that have already been surfaced 3+ times and
-  hit the escalation threshold, make the TDMS creation mandatory (not optional)
+
+- Change "suggest /add-debt" to "invoke /add-debt" for the Defer path in Phase 5
+  of the alerts skill
+- For pending-refinements items that have already been surfaced 3+ times and hit
+  the escalation threshold, make the TDMS creation mandatory (not optional)
 - The MUST language from ecosystem audit CRITICAL_RULES.md Rule 7 should be
   adapted here: "For items escalated to S1 DEBT candidate status, create TDMS
   entry via /add-debt (MUST)"
@@ -531,24 +579,27 @@ sessions without resolution are definitionally systemic debt.
 ### GAP-16: session-end Skill — Consolidation Without New Intake
 
 **What findings are produced:**
+
 - session-end runs `consolidate-all.js` (step 7d) and `generate-metrics.js`
   (step 7e) on every session end
-- `consolidate-all.js` processes existing JSONL files (audits, reviews) — it
-  is a maintenance step, not a new-finding intake step
-- Any findings discovered DURING the session (in Claude context) that were
-  not written to a JSONL file or routed through `/add-debt` before session-end
-  are silently lost
+- `consolidate-all.js` processes existing JSONL files (audits, reviews) — it is
+  a maintenance step, not a new-finding intake step
+- Any findings discovered DURING the session (in Claude context) that were not
+  written to a JSONL file or routed through `/add-debt` before session-end are
+  silently lost
 
 **Where findings currently land:**
+
 - "Work done this session" context notes: SESSION_CONTEXT.md
 - In-session code issues that weren't formally tracked: lost
 
 **What integration would look like:**
+
 - Option A: Add a "Debt discovered this session?" step to session-end that
   offers the user a structured intake path — similar to audit-process's per-
   stage intake
-- Option B: session-end already runs `consolidate-all.js` — if code-reviewer
-  is updated to write JSONL files (GAP-01, Option B), those files would be
+- Option B: session-end already runs `consolidate-all.js` — if code-reviewer is
+  updated to write JSONL files (GAP-01, Option B), those files would be
   automatically picked up here
 - The minimal fix is Option A: a single "Any debt to log before we end the
   session?" prompt with `/add-debt` as the path
@@ -563,13 +614,14 @@ session; the gap is behavioral (reminder), not technical.
 ### GAP-17: pre-commit-fixer — Defer to known-debt-baseline.json vs TDMS
 
 **What findings are produced:**
+
 - Pre-existing pattern violations, complexity violations
-- The skill offers three explicit choices:
-  (a) Fix now
-  (b) Defer to `known-debt-baseline.json` (shadow store)
-  (c) Skip with SKIP_REASON (override log)
+- The skill offers three explicit choices: (a) Fix now (b) Defer to
+  `known-debt-baseline.json` (shadow store) (c) Skip with SKIP_REASON (override
+  log)
 
 **Where findings currently land:**
+
 - Option b: `known-debt-baseline.json` — a shadow store with no DEBT-XXXX IDs,
   no severity, no roadmap_ref, no status. Items tracked here are COMPLETELY
   INVISIBLE to TDMS even though they represent acknowledged technical debt
@@ -577,11 +629,13 @@ session; the gap is behavioral (reminder), not technical.
 - Option a (fix now): properly resolved, no TDMS record needed
 
 **What integration would look like:**
+
 - The `known-debt-baseline.json` file has a clear schema: filename → threshold
   (for complexity violations). A new script `scripts/debt/sync-baseline-debt.js`
   could:
   1. Read `known-debt-baseline.json`
-  2. Cross-reference each file with MASTER_DEBT to find matching complexity items
+  2. Cross-reference each file with MASTER_DEBT to find matching complexity
+     items
   3. For items without a matching MASTER_DEBT entry, create a DEBT item via
      `intake-manual.js`
 - The pre-commit-fixer SKILL.md "defer to baseline" option could be changed to:
@@ -600,26 +654,29 @@ cyclomatic-complexity violations that have no DEBT-XXXX IDs.
 ### GAP-18: Hook Warnings — hook-warnings.json Not Monitored for TDMS Escalation
 
 **What findings are produced:**
+
 - Pre-commit and pre-push hooks log advisory warnings to
   `.claude/hooks/hook-warnings.json` via `append-hook-warning.js`
 - Categories: pattern compliance (advisory), propagation warnings, skill
   validation warnings, cross-doc deps warnings, doc headers, cognitive
   complexity (CC), cyclomatic CC, trigger checks
 - Volume estimate: multiple warnings per commit session
-- CLAUDE.md guardrail #13 instructs the AI to present hook warnings after
-  each commit, but this is behavioral (not automated)
+- CLAUDE.md guardrail #13 instructs the AI to present hook warnings after each
+  commit, but this is behavioral (not automated)
 
 **Where findings currently land:**
+
 - `hook-warnings.json` — ephemeral per-session log
 - `hook-warnings-log.jsonl` (persistent, append-only)
-- The `/alerts` skill's D5 statusline widget shows unacked warning COUNT but
-  not warning content
+- The `/alerts` skill's D5 statusline widget shows unacked warning COUNT but not
+  warning content
 - No automated TDMS intake from either file
 
 **What integration would look like:**
-- Option A: Add a hook warning → TDMS escalation rule to `/alerts`:
-  "Warnings that recur >= 3 sessions without acknowledgment are S2 DEBT
-  candidates; create DEBT item via /add-debt"
+
+- Option A: Add a hook warning → TDMS escalation rule to `/alerts`: "Warnings
+  that recur >= 3 sessions without acknowledgment are S2 DEBT candidates; create
+  DEBT item via /add-debt"
 - Option B: `run-alerts.js` already has a `checkDeferredItemsStaleness()`
   function — add a parallel `checkHookWarningRecurrence()` that reads
   `hook-warnings-log.jsonl` and flags recurrent warnings for TDMS intake
@@ -629,32 +686,35 @@ cyclomatic-complexity violations that have no DEBT-XXXX IDs.
 **Effort:** Moderate — new checker function in `run-alerts.js` + SKILL.md update
 
 **Priority:** Must-have. Hook warnings that recur across sessions are
-definitionally systemic debt. The infrastructure to detect recurrence (the
-log file) already exists; only the intake trigger is missing.
+definitionally systemic debt. The infrastructure to detect recurrence (the log
+file) already exists; only the intake trigger is missing.
 
 ---
 
 ### GAP-19: system-test Skill — "Skip Sync" Option Loses Findings
 
 **What findings are produced:**
+
 - 23-domain interactive system test produces JSONL findings files per domain
-- Domain 20 has a dedicated TDMS Sync phase: Preview count → deduplicate →
-  user chooses Sync all / Preview diff / S0+S1 only / Skip sync
+- Domain 20 has a dedicated TDMS Sync phase: Preview count → deduplicate → user
+  chooses Sync all / Preview diff / S0+S1 only / Skip sync
 
 **Where findings currently land:**
+
 - When user chooses "Skip sync": ALL findings remain in per-domain JSONL files
   only, never reaching MASTER_DEBT
 - The "Preview diff first" and "S0+S1 only" options are partial — some findings
   reach TDMS, others don't
 
 **What integration would look like:**
+
 - The skip option is intentional and should remain (some test runs are
   exploratory; not every finding warrants TDMS)
-- The gap is the lack of a default: findings from a completed system-test
-  should have a "default sync after 48h unless explicitly dismissed" mechanism
-- Alternatively: change the "Skip sync" framing to "Remind me next session"
-  and store skipped findings in a session-carry-forward file for the next
-  session's `/alerts` to surface
+- The gap is the lack of a default: findings from a completed system-test should
+  have a "default sync after 48h unless explicitly dismissed" mechanism
+- Alternatively: change the "Skip sync" framing to "Remind me next session" and
+  store skipped findings in a session-carry-forward file for the next session's
+  `/alerts` to surface
 
 **Effort:** Moderate — workflow change + carry-forward file mechanism
 
@@ -672,11 +732,12 @@ connection to MASTER_DEBT whatsoever.
 
 ### DARK-01: known-debt-baseline.json (Shadow Debt Store)
 
-**Location:** `.claude/state/known-debt-baseline.json`
-**Volume:** 29 cognitive-complexity violations + 16 cyclomatic-complexity
-violations = 45+ file-level entries (ranges: CC from 16 to 189, cyc from 16 to 102)
+**Location:** `.claude/state/known-debt-baseline.json` **Volume:** 29
+cognitive-complexity violations + 16 cyclomatic-complexity violations = 45+
+file-level entries (ranges: CC from 16 to 189, cyc from 16 to 102)
 
 **Why it's dark:** Items in the baseline have:
+
 - No DEBT-XXXX IDs
 - No severity, category, or roadmap_ref fields
 - No status lifecycle (no NEW/VERIFIED/RESOLVED)
@@ -691,13 +752,14 @@ pre-existing issues.
 
 ### DARK-02: override-log.jsonl (Skipped Check History)
 
-**Location:** `.claude/override-log.jsonl`
-**Volume:** Unknown (not inspected in prior waves)
+**Location:** `.claude/override-log.jsonl` **Volume:** Unknown (not inspected in
+prior waves)
 
 **Why it's dark:** Every `SKIP_CHECKS=... SKIP_REASON="..."` override is logged
 here. These represent acknowledged failures — the AI and user explicitly agreed
-that a check was pre-existing and could be skipped. But these are not debt items:
-they are skip acknowledgments. The risk is:
+that a check was pre-existing and could be skipped. But these are not debt
+items: they are skip acknowledgments. The risk is:
+
 - Skips that were meant to be temporary (one-time workarounds) accumulate
   silently with no aging, no review, and no TDMS escalation
 - The `validate-skip-reason.js` enforces reason format but not reason validity
@@ -711,9 +773,8 @@ candidates (similar to the pending-refinements escalation pattern).
 
 ### DARK-03: data/ecosystem-v2/deferred-items.jsonl (Ecosystem Deferral Queue)
 
-**Location:** `data/ecosystem-v2/deferred-items.jsonl`
-**Volume:** Monitored by alerts (`checkDeferredItemsStaleness()` triggers when
-unresolved count > 20)
+**Location:** `data/ecosystem-v2/deferred-items.jsonl` **Volume:** Monitored by
+alerts (`checkDeferredItemsStaleness()` triggers when unresolved count > 20)
 
 **Why it's partially dark:** Items here are deferred ecosystem review findings.
 They become TDMS items ONLY when `escalate-deferred.js` runs (manual) AND only
@@ -733,8 +794,8 @@ findings. Add a periodic CI step or `/session-begin` check that invokes
 
 **Why it's dark:** The zero-warning override in `eslint.config.mjs` means no
 warn-level violation in scripts/ or .claude/hooks/ is ever reported. Unlike the
-other dark debt stores which have a file that can be read, this dark debt doesn't
-exist as data anywhere — it's pre-suppressed.
+other dark debt stores which have a file that can be read, this dark debt
+doesn't exist as data anywhere — it's pre-suppressed.
 
 **Remediation path:** See GAP-11. This requires a policy decision to remove the
 override, not just a script addition.
@@ -757,14 +818,14 @@ would bridge this.
 
 ### DARK-06: FALSE_POSITIVES.jsonl — Under-Populated (Invisible True FPs)
 
-**Location:** `docs/technical-debt/FALSE_POSITIVES.jsonl`
-**Volume:** Only 6 entries, but estimated true FP rate is ~52% based on
-`reverify-resolved.js` data (32 false alarms out of 62 audited "possibly
-unresolved" items)
+**Location:** `docs/technical-debt/FALSE_POSITIVES.jsonl` **Volume:** Only 6
+entries, but estimated true FP rate is ~52% based on `reverify-resolved.js` data
+(32 false alarms out of 62 audited "possibly unresolved" items)
 
 **Why it's dark:** The system has ~2,125 NEW items in the verification queue.
 Many are likely false positives (items pointing to files/lines that have been
 refactored away). These never get classified as FP because:
+
 - No automated FP detection process runs
 - The keyword-proximity method in `verify-resolutions.js` has a 52% false
   positive rate on its own FP detection
@@ -784,33 +845,33 @@ review loop.
 
 ## Part 4: Gap Matrix Summary Table
 
-| Gap ID | Path | Type | What Findings | Current Landing | Integration Script | Effort | Priority |
-|--------|------|------|---------------|-----------------|-------------------|--------|---------|
-| GAP-01 | code-reviewer agent | DISCONNECTED | Code review violations, arch issues | Nowhere | Write JSONL to docs/reviews/ → extract-reviews.js | Moderate | MUST-HAVE |
-| GAP-02 | gh-fix-ci | DISCONNECTED | Systemic CI failure root causes | Nowhere | SKILL.md classification step + /add-debt | Trivial | Nice-to-have |
-| GAP-03 | convergence-loop | DISCONNECTED | Net-new findings during verification | CL state only | Caller responsibility (not CL itself) | Low | Low |
-| GAP-04 | quick-fix | DISCONNECTED | Pattern violations | Nowhere | Deprecate; use pre-commit-fixer instead | Trivial | Low |
-| GAP-05 | sonarcloud.yml CI | DISCONNECTED | Full SonarCloud analysis (all severities) | SonarCloud dashboard | Add sync-sonarcloud.js step to sonarcloud.yml | Trivial | MUST-HAVE |
-| GAP-06 | pattern-compliance-audit.yml | DISCONNECTED | Pattern violations (weekly) | GitHub Issues only | Add intake-manual.js calls to workflow | Moderate | Must-have |
-| GAP-07 | Semgrep (Code Scanning) | DISCONNECTED | Custom rule violations | GitHub Security tab | New sync-code-scanning.js | Significant | Nice-to-have |
-| GAP-08 | CodeQL (Code Scanning) | DISCONNECTED | JS/TS security analysis | GitHub Security tab | Bundle with GAP-07 | Bundled | Nice-to-have |
-| GAP-09 | npm audit | DISCONNECTED | Dependency vulnerabilities | Health metric only | New sync-npm-audit.js | Moderate | Must-have |
-| GAP-10 | Dependabot | DISCONNECTED | Security update PRs | GitHub PRs only | Workflow step + intake | Moderate | Low-nice-to-have |
-| GAP-11 | ESLint warn-level (scripts/) | DISCONNECTED | Warn-level violations in tooling code | Suppressed entirely | Policy decision + new CI job | Significant | Low |
-| GAP-12 | CodeRabbit/Qodo/Gemini | DISCONNECTED | AI PR review comments | GitHub PR comments | Manual paste to /pr-review is correct | Trivial | Low |
-| GAP-13 | Ecosystem audit "Fix Now" | PARTIAL (leaky) | Fixed issues with no audit trail | Nowhere | FINDING_WALKTHROUGH.md update; write RESOLVED items | Moderate | Must-have |
-| GAP-14 | pr-retro systemic findings | PARTIAL (leaky) | Process systemic issues | SESSION_CONTEXT only | Add optional closure step to SKILL.md | Trivial | Nice-to-have |
-| GAP-15 | alerts "Defer" suggestion | PARTIAL (leaky) | Alert items user defers | Suggestion only | Change suggest→enforce for escalated items | Trivial | Must-have |
-| GAP-16 | session-end context findings | PARTIAL (leaky) | In-session discoveries | Lost | Add "any debt?" step to session-end | Trivial | Nice-to-have |
-| GAP-17 | known-debt-baseline.json | PARTIAL (leaky) | Complexity violations (45+ entries) | Shadow store | New sync-baseline-debt.js | Moderate | Must-have |
-| GAP-18 | Hook warnings recurrence | PARTIAL (leaky) | Recurring hook warnings | hook-warnings-log.jsonl | New checkHookWarningRecurrence() in run-alerts.js | Moderate | Must-have |
-| GAP-19 | system-test "Skip sync" | PARTIAL (leaky) | Domain JSONL findings when skipped | Per-domain JSONL only | Carry-forward mechanism | Moderate | Nice-to-have |
-| DARK-01 | known-debt-baseline.json | DARK DEBT | 45+ acknowledged complexity violations | Shadow store | sync-baseline-debt.js (see GAP-17) | Moderate | Must-have |
-| DARK-02 | override-log.jsonl | DARK DEBT | Skipped checks (aging) | Override log only | /alerts aging checker | Moderate | Nice-to-have |
-| DARK-03 | deferred-items.jsonl | DARK DEBT | Single-deferred ecosystem findings | Ecosystem queue | Lower escalation threshold; periodic auto-run | Trivial | Must-have |
-| DARK-04 | ESLint suppressed (scripts/) | DARK DEBT | Warn-level tooling violations | Nowhere | Policy decision required | Significant | Low |
-| DARK-05 | GitHub Code Scanning | DARK DEBT | Semgrep + CodeQL alerts | GitHub Security tab | sync-code-scanning.js | Significant | Nice-to-have |
-| DARK-06 | FALSE_POSITIVES.jsonl | DARK DEBT | Incorrectly counted FPs | Inflated open counts | FP triage mode in debt-runner | Moderate | Must-have |
+| Gap ID  | Path                         | Type            | What Findings                             | Current Landing         | Integration Script                                  | Effort      | Priority         |
+| ------- | ---------------------------- | --------------- | ----------------------------------------- | ----------------------- | --------------------------------------------------- | ----------- | ---------------- |
+| GAP-01  | code-reviewer agent          | DISCONNECTED    | Code review violations, arch issues       | Nowhere                 | Write JSONL to docs/reviews/ → extract-reviews.js   | Moderate    | MUST-HAVE        |
+| GAP-02  | gh-fix-ci                    | DISCONNECTED    | Systemic CI failure root causes           | Nowhere                 | SKILL.md classification step + /add-debt            | Trivial     | Nice-to-have     |
+| GAP-03  | convergence-loop             | DISCONNECTED    | Net-new findings during verification      | CL state only           | Caller responsibility (not CL itself)               | Low         | Low              |
+| GAP-04  | quick-fix                    | DISCONNECTED    | Pattern violations                        | Nowhere                 | Deprecate; use pre-commit-fixer instead             | Trivial     | Low              |
+| GAP-05  | sonarcloud.yml CI            | DISCONNECTED    | Full SonarCloud analysis (all severities) | SonarCloud dashboard    | Add sync-sonarcloud.js step to sonarcloud.yml       | Trivial     | MUST-HAVE        |
+| GAP-06  | pattern-compliance-audit.yml | DISCONNECTED    | Pattern violations (weekly)               | GitHub Issues only      | Add intake-manual.js calls to workflow              | Moderate    | Must-have        |
+| GAP-07  | Semgrep (Code Scanning)      | DISCONNECTED    | Custom rule violations                    | GitHub Security tab     | New sync-code-scanning.js                           | Significant | Nice-to-have     |
+| GAP-08  | CodeQL (Code Scanning)       | DISCONNECTED    | JS/TS security analysis                   | GitHub Security tab     | Bundle with GAP-07                                  | Bundled     | Nice-to-have     |
+| GAP-09  | npm audit                    | DISCONNECTED    | Dependency vulnerabilities                | Health metric only      | New sync-npm-audit.js                               | Moderate    | Must-have        |
+| GAP-10  | Dependabot                   | DISCONNECTED    | Security update PRs                       | GitHub PRs only         | Workflow step + intake                              | Moderate    | Low-nice-to-have |
+| GAP-11  | ESLint warn-level (scripts/) | DISCONNECTED    | Warn-level violations in tooling code     | Suppressed entirely     | Policy decision + new CI job                        | Significant | Low              |
+| GAP-12  | CodeRabbit/Qodo/Gemini       | DISCONNECTED    | AI PR review comments                     | GitHub PR comments      | Manual paste to /pr-review is correct               | Trivial     | Low              |
+| GAP-13  | Ecosystem audit "Fix Now"    | PARTIAL (leaky) | Fixed issues with no audit trail          | Nowhere                 | FINDING_WALKTHROUGH.md update; write RESOLVED items | Moderate    | Must-have        |
+| GAP-14  | pr-retro systemic findings   | PARTIAL (leaky) | Process systemic issues                   | SESSION_CONTEXT only    | Add optional closure step to SKILL.md               | Trivial     | Nice-to-have     |
+| GAP-15  | alerts "Defer" suggestion    | PARTIAL (leaky) | Alert items user defers                   | Suggestion only         | Change suggest→enforce for escalated items          | Trivial     | Must-have        |
+| GAP-16  | session-end context findings | PARTIAL (leaky) | In-session discoveries                    | Lost                    | Add "any debt?" step to session-end                 | Trivial     | Nice-to-have     |
+| GAP-17  | known-debt-baseline.json     | PARTIAL (leaky) | Complexity violations (45+ entries)       | Shadow store            | New sync-baseline-debt.js                           | Moderate    | Must-have        |
+| GAP-18  | Hook warnings recurrence     | PARTIAL (leaky) | Recurring hook warnings                   | hook-warnings-log.jsonl | New checkHookWarningRecurrence() in run-alerts.js   | Moderate    | Must-have        |
+| GAP-19  | system-test "Skip sync"      | PARTIAL (leaky) | Domain JSONL findings when skipped        | Per-domain JSONL only   | Carry-forward mechanism                             | Moderate    | Nice-to-have     |
+| DARK-01 | known-debt-baseline.json     | DARK DEBT       | 45+ acknowledged complexity violations    | Shadow store            | sync-baseline-debt.js (see GAP-17)                  | Moderate    | Must-have        |
+| DARK-02 | override-log.jsonl           | DARK DEBT       | Skipped checks (aging)                    | Override log only       | /alerts aging checker                               | Moderate    | Nice-to-have     |
+| DARK-03 | deferred-items.jsonl         | DARK DEBT       | Single-deferred ecosystem findings        | Ecosystem queue         | Lower escalation threshold; periodic auto-run       | Trivial     | Must-have        |
+| DARK-04 | ESLint suppressed (scripts/) | DARK DEBT       | Warn-level tooling violations             | Nowhere                 | Policy decision required                            | Significant | Low              |
+| DARK-05 | GitHub Code Scanning         | DARK DEBT       | Semgrep + CodeQL alerts                   | GitHub Security tab     | sync-code-scanning.js                               | Significant | Nice-to-have     |
+| DARK-06 | FALSE_POSITIVES.jsonl        | DARK DEBT       | Incorrectly counted FPs                   | Inflated open counts    | FP triage mode in debt-runner                       | Moderate    | Must-have        |
 
 ---
 
@@ -821,38 +882,38 @@ review loop.
 These gaps produce the most significant distortion in the current dashboard.
 Fixing them changes what the dashboard shows, not just what it covers.
 
-| Gap | Why critical |
-|-----|-------------|
-| GAP-05: SonarCloud CI auto-sync | Single line of CI config captures hundreds of findings automatically; script already written |
-| GAP-01: code-reviewer JSONL output | Highest-volume operational source; completely invisible today |
-| GAP-17 + DARK-01: known-debt-baseline.json | 45+ confirmed, acknowledged debt items with zero TDMS visibility |
-| DARK-06: FALSE_POSITIVES under-populated | True S0/S1 count is unknown; dashboard inflated by FPs |
-| GAP-13: Ecosystem audit "Fix Now" trail | Fixed items have no resolved audit trail; resolution rate is understated |
-| GAP-15: alerts Defer enforcement | The pending-refinements escalation path is the intended behavioral circuit-breaker; it must enforce, not suggest |
-| DARK-03: deferred-items.jsonl threshold | First-time deferrals are dark debt; threshold-1 escalation is trivial |
+| Gap                                        | Why critical                                                                                                     |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| GAP-05: SonarCloud CI auto-sync            | Single line of CI config captures hundreds of findings automatically; script already written                     |
+| GAP-01: code-reviewer JSONL output         | Highest-volume operational source; completely invisible today                                                    |
+| GAP-17 + DARK-01: known-debt-baseline.json | 45+ confirmed, acknowledged debt items with zero TDMS visibility                                                 |
+| DARK-06: FALSE_POSITIVES under-populated   | True S0/S1 count is unknown; dashboard inflated by FPs                                                           |
+| GAP-13: Ecosystem audit "Fix Now" trail    | Fixed items have no resolved audit trail; resolution rate is understated                                         |
+| GAP-15: alerts Defer enforcement           | The pending-refinements escalation path is the intended behavioral circuit-breaker; it must enforce, not suggest |
+| DARK-03: deferred-items.jsonl threshold    | First-time deferrals are dark debt; threshold-1 escalation is trivial                                            |
 
 ### Tier 2 — Must-have for Completeness (Moderate Effort, Significant Coverage)
 
-| Gap | Why important |
-|-----|--------------|
-| GAP-09: npm audit | Security vulnerabilities are the highest-severity debt category; completely untracked |
-| GAP-06: Pattern compliance → TDMS | Weekly CI already runs the scan; the GitHub Issues destination is wrong |
-| GAP-18: Hook warning recurrence | Recurring warnings are systemic debt by definition; the log file already exists |
+| Gap                               | Why important                                                                         |
+| --------------------------------- | ------------------------------------------------------------------------------------- |
+| GAP-09: npm audit                 | Security vulnerabilities are the highest-severity debt category; completely untracked |
+| GAP-06: Pattern compliance → TDMS | Weekly CI already runs the scan; the GitHub Issues destination is wrong               |
+| GAP-18: Hook warning recurrence   | Recurring warnings are systemic debt by definition; the log file already exists       |
 
 ### Tier 3 — Nice-to-have (Lower ROI or Intentional Design Decisions)
 
-| Gap | Note |
-|-----|------|
-| GAP-07 + GAP-08: Code Scanning sync | Significant effort; lower precision than SonarCloud |
-| GAP-10: Dependabot | Routine bumps are not debt; security-only path is edge case |
-| GAP-14: pr-retro systemic findings | Design philosophy is reasonable; only add optional step |
-| GAP-16: session-end context | Behavioral reminder, not a technical gap |
-| GAP-19: system-test skip | Low frequency; skip is intentional |
-| DARK-02: override-log aging | Useful hygiene but low urgency |
-| GAP-02: gh-fix-ci | Low event frequency; pre-commit-fixer covers most cases |
-| GAP-12: AI PR review tools | Manual paste to /pr-review is correct by design |
-| GAP-04: quick-fix deprecation | Maintenance task |
-| GAP-11: ESLint warn suppression | Policy decision; not a script gap |
+| Gap                                 | Note                                                        |
+| ----------------------------------- | ----------------------------------------------------------- |
+| GAP-07 + GAP-08: Code Scanning sync | Significant effort; lower precision than SonarCloud         |
+| GAP-10: Dependabot                  | Routine bumps are not debt; security-only path is edge case |
+| GAP-14: pr-retro systemic findings  | Design philosophy is reasonable; only add optional step     |
+| GAP-16: session-end context         | Behavioral reminder, not a technical gap                    |
+| GAP-19: system-test skip            | Low frequency; skip is intentional                          |
+| DARK-02: override-log aging         | Useful hygiene but low urgency                              |
+| GAP-02: gh-fix-ci                   | Low event frequency; pre-commit-fixer covers most cases     |
+| GAP-12: AI PR review tools          | Manual paste to /pr-review is correct by design             |
+| GAP-04: quick-fix deprecation       | Maintenance task                                            |
+| GAP-11: ESLint warn suppression     | Policy decision; not a script gap                           |
 
 ---
 
@@ -860,19 +921,19 @@ Fixing them changes what the dashboard shows, not just what it covers.
 
 Scripts that would need to be created (not just SKILL.md changes):
 
-| Script | Calls | Template | Effort |
-|--------|-------|----------|--------|
-| `scripts/debt/sync-baseline-debt.js` | known-debt-baseline.json → intake-manual.js | sync-sonarcloud.js pattern | Moderate |
-| `scripts/debt/sync-npm-audit.js` | `npm audit --json` → appendMasterDebtSync | sync-sonarcloud.js pattern | Moderate |
-| `scripts/debt/sync-code-scanning.js` | GitHub Security API → appendMasterDebtSync | sync-sonarcloud.js pattern | Significant |
-| `scripts/debt/intake-pattern-violations.js` | pattern-compliance JSON → intake-manual.js | intake-audit.js pattern | Moderate |
+| Script                                      | Calls                                       | Template                   | Effort      |
+| ------------------------------------------- | ------------------------------------------- | -------------------------- | ----------- |
+| `scripts/debt/sync-baseline-debt.js`        | known-debt-baseline.json → intake-manual.js | sync-sonarcloud.js pattern | Moderate    |
+| `scripts/debt/sync-npm-audit.js`            | `npm audit --json` → appendMasterDebtSync   | sync-sonarcloud.js pattern | Moderate    |
+| `scripts/debt/sync-code-scanning.js`        | GitHub Security API → appendMasterDebtSync  | sync-sonarcloud.js pattern | Significant |
+| `scripts/debt/intake-pattern-violations.js` | pattern-compliance JSON → intake-manual.js  | intake-audit.js pattern    | Moderate    |
 
 Scripts that need modification (not new):
 
-| Script | Change | Effort |
-|--------|--------|--------|
-| `.claude/skills/alerts/scripts/run-alerts.js` | Add checkHookWarningRecurrence() | Moderate |
-| `.github/workflows/sonarcloud.yml` | Add sync-sonarcloud.js step | Trivial |
+| Script                                           | Change                                                  | Effort   |
+| ------------------------------------------------ | ------------------------------------------------------- | -------- |
+| `.claude/skills/alerts/scripts/run-alerts.js`    | Add checkHookWarningRecurrence()                        | Moderate |
+| `.github/workflows/sonarcloud.yml`               | Add sync-sonarcloud.js step                             | Trivial  |
 | `.github/workflows/pattern-compliance-audit.yml` | Replace GitHub Issues with intake-pattern-violations.js | Moderate |
 
 ---
@@ -889,10 +950,10 @@ all deferred items; pr-retro says TDMS is NOT an option unless explicitly
 requested. These are not contradictions per se — they serve different purposes —
 but they create an inconsistent user experience across the review lifecycle.
 
-**ESLint zero-warning design:** The suppression of warn-level rules in
-scripts/ is deliberate to allow `--max-warnings 0` to pass on production code.
-The effect is that tooling code (which often contains the highest-complexity,
-highest-CC files) has zero linting visibility. This is a tradeoff, not a bug.
+**ESLint zero-warning design:** The suppression of warn-level rules in scripts/
+is deliberate to allow `--max-warnings 0` to pass on production code. The effect
+is that tooling code (which often contains the highest-complexity, highest-CC
+files) has zero linting visibility. This is a tradeoff, not a bug.
 
 ---
 
@@ -902,8 +963,8 @@ highest-CC files) has zero linting visibility. This is a tradeoff, not a bug.
    `.claude/override-log.jsonl` was not checked in prior waves. The actual
    volume of aging skips is unknown.
 
-2. **GitHub Code Scanning alert count unknown:** The number of open Semgrep
-   and CodeQL alerts in the GitHub Security tab requires API access to enumerate.
+2. **GitHub Code Scanning alert count unknown:** The number of open Semgrep and
+   CodeQL alerts in the GitHub Security tab requires API access to enumerate.
 
 3. **npm audit current vulnerability count:** Not run live in prior research
    waves. Current vulnerability count is unknown.
@@ -914,52 +975,51 @@ highest-CC files) has zero linting visibility. This is a tradeoff, not a bug.
 
 5. **hook-warnings-log.jsonl recurrence analysis:** The actual recurrence
    frequency of specific warning types was not analyzed. GAP-18 remediation
-   effort is estimated as Moderate but depends on how much recurrence data
-   is already in the log.
+   effort is estimated as Moderate but depends on how much recurrence data is
+   already in the log.
 
 ---
 
 ## Serendipity
 
 **The escalate-deferred.js threshold is the model for systemic escalation:**
-This script already implements the pattern that every "dark debt" needs —
-count occurrences, escalate when threshold exceeded, invoke intake script.
-The same pattern should be applied to hook-warning-log.jsonl, pending-
-refinements.jsonl, and override-log.jsonl. One common escalation library
-could serve all three.
+This script already implements the pattern that every "dark debt" needs — count
+occurrences, escalate when threshold exceeded, invoke intake script. The same
+pattern should be applied to hook-warning-log.jsonl, pending- refinements.jsonl,
+and override-log.jsonl. One common escalation library could serve all three.
 
 **resolve-debt.yml proves CI CAN write to TDMS:** This workflow already
 demonstrates that a GitHub Actions workflow can successfully call
-`resolve-bulk.js` and commit changes to `docs/technical-debt/`. The same
-pattern (install Node, run script, commit) applies to all the CI gaps
-identified above (SonarCloud sync, npm audit sync). The architectural path
-is proven.
+`resolve-bulk.js` and commit changes to `docs/technical-debt/`. The same pattern
+(install Node, run script, commit) applies to all the CI gaps identified above
+(SonarCloud sync, npm audit sync). The architectural path is proven.
 
-**The pr-retro anti-TDMS stance reveals a real tension:** The skill's note
-that "filing into TDMS where it gets lost is NOT a default option" is an
-honest statement about the current TDMS health (13% resolution rate, F-grade
-health, 7,281 open items). Until TDMS is a system where items actually get
-resolved, forcing more intake may worsen the signal-to-noise ratio. The
-debt-runner expansion should prioritize resolution rate improvement alongside
-intake improvement — not just add more items.
+**The pr-retro anti-TDMS stance reveals a real tension:** The skill's note that
+"filing into TDMS where it gets lost is NOT a default option" is an honest
+statement about the current TDMS health (13% resolution rate, F-grade health,
+7,281 open items). Until TDMS is a system where items actually get resolved,
+forcing more intake may worsen the signal-to-noise ratio. The debt-runner
+expansion should prioritize resolution rate improvement alongside intake
+improvement — not just add more items.
 
-**The statusline has zero debt widgets:** The Go statusline has 22 widgets
-but none show S0 count, total open, or resolution rate. This is the most
-visible dashboard gap — an always-on indicator that S0 items exist would be
-the highest-impact UX change. A single `D6: S0 count` widget reading
-`metrics.json` would take trivial effort and provide persistent visibility.
+**The statusline has zero debt widgets:** The Go statusline has 22 widgets but
+none show S0 count, total open, or resolution rate. This is the most visible
+dashboard gap — an always-on indicator that S0 items exist would be the
+highest-impact UX change. A single `D6: S0 count` widget reading `metrics.json`
+would take trivial effort and provide persistent visibility.
 
 ---
 
 ## Confidence Assessment
 
-- HIGH claims: 24 (all derived from direct synthesis of SQ1-SQ7 filesystem reads)
+- HIGH claims: 24 (all derived from direct synthesis of SQ1-SQ7 filesystem
+  reads)
 - MEDIUM claims: 0
 - LOW claims: 2 (volume estimates for GAP-07, GAP-08, GAP-10 where API access
   was not performed in prior waves)
 - UNVERIFIED claims: 0
 - Overall confidence: HIGH
 
-All findings are derived from direct codebase inspection across SQ1-SQ7.
-No training data was used. Every gap claim is anchored to specific files and
+All findings are derived from direct codebase inspection across SQ1-SQ7. No
+training data was used. Every gap claim is anchored to specific files and
 line-level evidence from prior research waves.

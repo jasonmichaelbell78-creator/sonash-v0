@@ -26,3 +26,4 @@
 {"timestamp":"2026-03-26T18:08:32.647Z","check":"doc-header","reason":"usually gitignored","user":"redacted","cwd":"redacted","git_branch":"plan-32626"}
 {"timestamp":"2026-03-26T18:10:02.559Z","check":"doc-header","reason":"usually gitignored","user":"redacted","cwd":"redacted","git_branch":"plan-32626"}
 {"timestamp":"2026-03-26T19:40:29.146Z","check":"doc-header","reason":"usually gitignored","user":"redacted","cwd":"redacted","git_branch":"plan-32626"}
+{"timestamp":"2026-03-27T12:04:21.453Z","check":"reviewer","reason":"known code-reviewer recognition issue  reviewer ran in subagent but pre-push hook doesn't detect it","user":"redacted","cwd":"redacted","git_branch":"plan-32626"}
