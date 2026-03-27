@@ -35,3 +35,11 @@
 {"agent":"explore","description":"V3a: Consistency checks 1-5","sessionId":"session-1774618914560","timestamp":"2026-03-27T14:13:15.380Z"}
 {"agent":"explore","description":"V3b: Consistency checks 6-10","sessionId":"session-1774618914560","timestamp":"2026-03-27T14:13:27.396Z"}
 {"agent":"general-purpose","description":"Resolve disputed claims","sessionId":"session-1774618914560","timestamp":"2026-03-27T14:13:46.121Z"}
+{"agent":"claude-code-guide","description":"Research custom loading messages","sessionId":"session-1774618914560","timestamp":"2026-03-27T14:32:45.529Z"}
+{"agent":"claude-code-guide","description":"Find spinner verb configuration","sessionId":"session-1774618914560","timestamp":"2026-03-27T14:33:51.731Z"}
+{"agent":"explore","description":"Audit admin vs dev page content","sessionId":"session-1774622185275","timestamp":"2026-03-27T15:11:52.423Z"}
+{"agent":"explore","description":"Inventory skill data sources","sessionId":"session-1774622185275","timestamp":"2026-03-27T15:12:00.145Z"}
+{"agent":"explore","description":"Skill data inventory part 1","sessionId":"session-1774622185275","timestamp":"2026-03-27T15:53:42.333Z"}
+{"agent":"explore","description":"Skill data inventory part 2","sessionId":"session-1774622185275","timestamp":"2026-03-27T15:53:49.383Z"}
+{"agent":"explore","description":"State file inventory only","sessionId":"session-1774622185275","timestamp":"2026-03-27T16:00:33.990Z"}
+{"agent":"explore","description":"Data directory inventory only","sessionId":"session-1774622185275","timestamp":"2026-03-27T16:00:38.549Z"}
