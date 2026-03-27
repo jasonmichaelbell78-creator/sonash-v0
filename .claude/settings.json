@@ -160,7 +160,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/track-agent-invocation.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/track-agent-invocation.js",
             "statusMessage": "Tracking agent invocation..."
           }
         ]
