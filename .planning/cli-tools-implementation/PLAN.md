@@ -1,14 +1,28 @@
 # Plan: CLI Tools Implementation
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-23
-**Status:** APPROVED
+**Document Version:** 1.1
+**Last Updated:** 2026-03-26
+**Status:** EXECUTING (home locale complete)
 <!-- prettier-ignore-end -->
 
 **Effort:** XL (multi-session) **Decisions:** [DECISIONS.md](./DECISIONS.md) (41
 decisions) **Research:**
 [.research/cli-tools/RESEARCH_OUTPUT.md](../../.research/cli-tools/RESEARCH_OUTPUT.md)
+
+## Progress (Session #242)
+
+| Phase                 | Steps | Status                                                              |
+| --------------------- | ----- | ------------------------------------------------------------------- |
+| 1: Configure existing | 1-3   | DONE — oxlint type-aware rules, next experimental-analyze confirmed |
+| 2: Infrastructure     | 4-7   | DONE — tool-configs/, manifest, install + setup scripts             |
+| 3: Install (home)     | 8-15  | DONE — all 14 tools + tsgo installed via winget/cargo/go            |
+| 4: Install (work)     | 16    | NOT YET — separate session at work locale                           |
+| 5: AI integration     | 17-19 | DONE — CLAUDE.md prefs, session-start hook, ntfy hook               |
+| 6: Verification       | 20-21 | DONE — 3548 tests pass, code-reviewer ran, all tools verified       |
+| 7: User guide         | 22    | DONE — docs/CLI_USER_GUIDE.md (850 lines)                           |
+| 8: Ship               | 23-24 | DONE — committed c921e019 + a99ec213, pushed                        |
+| 8: Other locale       | 25    | NOT YET — after work locale install                                 |
 
 ---
 
