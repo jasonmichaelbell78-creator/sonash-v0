@@ -46,3 +46,8 @@
 {"pr":471,"title":"chore(deps): bump picomatch in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-27T14:28:16.690Z"}
 {"pr":472,"title":"feat: Sessions #240-241 — bulk retro, alerts fixes, debt-runner expansion research","total_commits":9,"fix_commits":5,"fix_ratio":0.56,"review_rounds":2,"timestamp":"2026-03-27T14:28:15.427Z","jsonl_review_records":2,"reconciled_at":"2026-03-27T14:36:25.751Z"}
 {"pr":473,"title":"chore(deps): bump node-forge from 1.3.3 to 1.4.0 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-27T14:28:14.213Z"}
+{"pr":474,"title":"chore(deps): bump brace-expansion from 1.1.12 to 1.1.13 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-27T17:08:14.255Z"}
+{"pr":473,"title":"chore(deps): bump node-forge from 1.3.3 to 1.4.0 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-27T17:08:15.405Z"}
+{"pr":472,"title":"feat: Sessions #240-241 — bulk retro, alerts fixes, debt-runner expansion research","total_commits":9,"fix_commits":5,"fix_ratio":0.56,"review_rounds":1,"timestamp":"2026-03-27T17:08:16.541Z"}
+{"pr":471,"title":"chore(deps): bump picomatch in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-27T17:08:17.637Z"}
+{"pr":470,"title":"feat: Wave 1b — propagation, statusline, ecosystem shared-lib (Session #239)","total_commits":13,"fix_commits":9,"fix_ratio":0.69,"review_rounds":1,"timestamp":"2026-03-27T17:08:18.876Z"}
