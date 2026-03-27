@@ -191,7 +191,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "C:/Users/jbell/.local/bin/sonash-v0/tools/statusline/sonash-statusline.exe",
+    "command": "./tools/statusline/sonash-statusline.exe",
     "padding": 2
   },
   "enabledPlugins": {
