@@ -12,7 +12,7 @@ Steps 2-21 with checkpoint gates (Wave 3).
 sessions across all waves) **Research:**
 `.research/plan-orchestration/RESEARCH_OUTPUT.md` (22-agent L3)
 
-## Progress (Session #242)
+## Progress (Session #243)
 
 | Step  | Description                     | Status                                                                      |
 | ----- | ------------------------------- | --------------------------------------------------------------------------- |
@@ -30,9 +30,9 @@ sessions across all waves) **Research:**
 | 9     | Wave 1b (PS)                    | DONE — completed in Wave 1a (Session #237)                                  |
 | 9     | Wave 1b (SL)                    | DONE — Go binary, 22 widgets, 3 lines, weather pending API key activation   |
 | 9     | Wave 1b (Propagation)           | DONE — 4 waves, 14 steps, doc-index 38s→0.9s, gitleaks CI, baseline support |
-| 9     | Wave 1b (CLI)                   | DONE (home) — 14 tools + tsgo, AI integration, user guide (Session #242)    |
-| 10    | Wave 1 Final Audit              | NOT YET — all Wave 1b items done, audit next                                |
-| 11-25 | Waves 2-3                       | NOT YET                                                                     |
+| 9     | Wave 1b (CLI)                   | DONE — both locales, 13 tools + tsgo, AI integration, user guide            |
+| 10    | Wave 1 Final Audit              | DONE — PASS, all checks (Session #243)                                      |
+| 11-25 | Waves 2-3                       | NOT YET — debt-runner expansion first                                       |
 
 ## Files to Create/Modify
 

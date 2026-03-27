@@ -57,7 +57,7 @@ download_github_release() {
   local repo="$1" binary="$2" pattern="$3"
   echo "  Downloading from GitHub: $repo..."
   local url
-  url=$(curl -sL "https://api.github.com/repos/$repo/releases/latest" \
+  url=$(curl --proto '=https' --tlsv1.2 -sL "https://api.github.com/repos/$repo/releases/latest" \
     | grep -o "https://[^\"]*$pattern" | head -1)
   if [ -z "$url" ]; then
     echo "  ERROR: Could not find release matching pattern: $pattern"
@@ -75,20 +75,28 @@ download_github_release() {
   fi
 
   if [[ "$url" == *.zip ]]; then
-    (cd "$tmp" && unzip -o download >/dev/null 2>&1)
+    (cd "$tmp" && unzip -o download >/dev/null 2>&1) || { echo "  ERROR: unzip failed"; rm -rf "$tmp"; return 1; }
     local found
     found=$(find "$tmp" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
     if [ -n "$found" ]; then
       cp "$found" "$BIN_DIR/$target_name"
       chmod +x "$BIN_DIR/$target_name"
+    else
+      echo "  ERROR: binary not found in archive"
+      rm -rf "$tmp"
+      return 1
     fi
   elif [[ "$url" == *.tar.gz || "$url" == *.tgz ]]; then
-    (cd "$tmp" && tar xzf download 2>/dev/null)
+    (cd "$tmp" && tar xzf download 2>/dev/null) || { echo "  ERROR: tar extract failed"; rm -rf "$tmp"; return 1; }
     local found
     found=$(find "$tmp" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
     if [ -n "$found" ]; then
       cp "$found" "$BIN_DIR/$target_name"
       chmod +x "$BIN_DIR/$target_name"
+    else
+      echo "  ERROR: binary not found in archive"
+      rm -rf "$tmp"
+      return 1
     fi
   else
     # Bare binary download (e.g. yq .exe)
@@ -164,7 +172,6 @@ declare -A GITHUB_RENAMES=(
 # Process each tool from manifest
 for tool in fzf bat fd delta zoxide eza starship yazi lazygit yq gron htmlq difft; do
   check_cmd="$tool --version"
-  [ "$tool" = "difft" ] && check_cmd="difft --version"
 
   if check_tool "$tool" "$check_cmd" 2>/dev/null; then
     already=$((already + 1))

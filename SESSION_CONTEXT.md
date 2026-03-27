@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.10 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.11 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-26 (Session #242)
+2026-03-27 (Session #243)
 
 ## Purpose
 
@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-26 **Branch**: `plan-32626` **Working On**: Session
-#242 — CLI tools ecosystem + PR review + statusline fixes
+**Last Checkpoint**: 2026-03-27 **Branch**: `plan-32626` **Working On**: Session
+#243 — Wave 1 Final Audit + CLI work locale + statusline + debt-runner pivot
 
-**Uncommitted Work**: None
+**Uncommitted Work**: Code review fixes, plan/doc updates
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 242 (since Jan 1, 2026)
+**Current Session Count**: 243 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,21 +48,27 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Recent Session Summaries
 
+**Session #243** (WAVE 1 AUDIT + CLI WORK LOCALE + STATUSLINE):
+
+- **Branch**: `plan-32626`
+- **Wave 1 Final Audit COMPLETE**: All checks pass — 3549 tests, patterns, tsc,
+  oxlint, agent-env (5 phases verified), session-start, pre-commit, propagation
+  shared-lib, statusline build+tests, CLI tools functional. SWS gate confirmed.
+- **CLI tools work locale DONE**: 13 tools installed via GitHub releases (winget
+  broken, no admin). Install script updated with fallback patterns for all
+  tools. Code-reviewed, 3 findings fixed.
+- **Statusline fixes**: Rebuilt binary for jbell locale, corrected path, removed
+  agent/task widgets, moved context gauge to line 1.
+- **Bash(\*) restored**: CLI tools commit (home locale) had silently reverted
+  the permission simplification. Root cause: branch fork before Bash(\*) change
+  — classic revert hazard.
+- **node-forge vulnerability fixed**: npm audit fix (high severity).
+
 **Session #242** (CLI TOOLS + PR REVIEW + STATUSLINE):
 
 - **Branch**: `plan-32626`
-- **CLI tools DONE (home locale)**: 14 tools installed (fzf, bat, fd, delta,
-  zoxide, eza, starship, yazi, lazygit, yq, gron, htmlq, difftastic) + tsgo. AI
-  integration layer (CLAUDE.md prefs, session-start hook, ntfy). User guide
-  written (850 lines). Work locale install remaining.
-- **PR #472 R1+R2 complete**: 21 items total (18 fixed, 2 deferred, 1 rejected).
-  Critical: Bash(\*) permission removed. Major: RFC3339Nano timestamps,
-  microtask race, gitleaks CI SHA. Data: 8356 JSONL duplicates cleaned.
-- **Statusline fixes**: Context gauge moved to line 1, agent/task widgets
-  removed, stale indicator removed from weather, PR widget finds open PRs
-  repo-wide, countUnackedSince refactored (RFC3339Nano, legacy compat, scanner
-  hardening). Settings switched to absolute path for binary.
-- **Git sync**: All branches synced with remote, stale stashes dropped.
+- CLI tools DONE (home locale), PR #472 R1+R2 complete, statusline fixes, git
+  sync. See SESSION_HISTORY.md for details.
 
 **Session #241** (DEBT-RUNNER EXPANSION DEEP-RESEARCH):
 
@@ -112,19 +118,19 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 | Item                            | Status        | Progress                                             |
 | ------------------------------- | ------------- | ---------------------------------------------------- |
-| **Plan Orchestration**          | EXECUTING     | Steps 1-9 DONE (PS/SL/Prop), CLI remaining (Step 9)  |
+| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Wave 1 Final Audit PASS (#243)      |
 | **Repo Cleanup**                | COMPLETE      | Wave 0 done                                          |
 | **Agent Environment Analysis**  | COMPLETE      | All 5 phases done (Session #236)                     |
 | **Passive Surfacing**           | COMPLETE      | 14 root causes, 46 sites, CL-verified (Session #237) |
 | **Propagation Patterns**        | COMPLETE      | 4 waves, 14 steps done (Session #239)                |
-| **Custom Statusline**           | COMPLETE      | Go binary, 22 widgets, 3 lines + R1/R2 fixes (#242)  |
+| **Custom Statusline**           | COMPLETE      | Go binary, 20 widgets, 3 lines + R1/R2 fixes (#243)  |
 | **debt-runner Expansion**       | RESEARCH DONE | 17 agents, hybrid CLI+web, /deep-plan next           |
-| **CLI Tools Implementation**    | DONE (home)   | 14 tools + tsgo, AI integration, user guide (#242)   |
-| **System-Wide Standardization** | BLOCKED       | SWS hard gate cleared, Wave 2 after Wave 1           |
+| **CLI Tools Implementation**    | COMPLETE      | Both locales, 13 tools + tsgo, user guide (#243)     |
+| **System-Wide Standardization** | READY         | SWS gate cleared, Wave 2 after debt-runner           |
 
 **Current Branch**: `plan-32626`
 
-**Test Status**: 3548 tests pass, 0 fail
+**Test Status**: 3549 tests pass, 0 fail
 
 ---
 
@@ -137,12 +143,9 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
    `DECISIONS_PRE_PLAN.md`. Full scope: CLI expansion + web dashboard
    `/dev/debt` + all downstream fixes + integrations + discovery agent layer.
 
-### After Deep-Plan Complete
+### After Debt-Runner
 
-2. **Wave 1 Final Audit** (Step 10) — heavy CL verification, SWS gate confirm.
-   All Wave 1b items now complete (CLI last piece done Session #242).
-3. **CLI tools work locale install** (Step 16) — run install + setup scripts
-4. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions
+2. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions. SWS gate cleared (#243).
 
 ---
 
