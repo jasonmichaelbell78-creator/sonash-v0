@@ -30,9 +30,10 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-27 **Branch**: `plan-32626` **Working On**: Session
-#243 — Wave 1 Final Audit + CLI work locale + statusline + debt-runner pivot
+#243 — COMPLETE. Wave 1 audit, CLI install, debt-runner v2 research, dev
+dashboard planning
 
-**Uncommitted Work**: Code review fixes, plan/doc updates
+**Uncommitted Work**: None (session-end commit pending)
 
 ---
 
@@ -48,20 +49,30 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ## Recent Session Summaries
 
-**Session #243** (WAVE 1 AUDIT + CLI WORK LOCALE + STATUSLINE):
+**Session #243** (WAVE 1 AUDIT + DEBT-RUNNER v2 + DEV DASHBOARD PLANNING):
 
-- **Branch**: `plan-32626`
+- **Branch**: `plan-32626` (7 commits)
 - **Wave 1 Final Audit COMPLETE**: All checks pass — 3549 tests, patterns, tsc,
   oxlint, agent-env (5 phases verified), session-start, pre-commit, propagation
   shared-lib, statusline build+tests, CLI tools functional. SWS gate confirmed.
 - **CLI tools work locale DONE**: 13 tools installed via GitHub releases (winget
   broken, no admin). Install script updated with fallback patterns for all
   tools. Code-reviewed, 3 findings fixed.
-- **Statusline fixes**: Rebuilt binary for jbell locale, corrected path, removed
-  agent/task widgets, moved context gauge to line 1.
-- **Bash(\*) restored**: CLI tools commit (home locale) had silently reverted
-  the permission simplification. Root cause: branch fork before Bash(\*) change
-  — classic revert hazard.
+- **Statusline fixes**: Rebuilt binary for jbell locale, relative path for
+  cross-locale portability, removed agent/task widgets, moved context gauge to
+  line 1.
+- **Agent tracking hook FIXED**: PostToolUse hook was reading dead $ARGUMENTS
+  shell variable instead of stdin. Code-reviewer pre-push gate now works.
+- **Bash(\*) restored**: Reverted by CLI tools commit on home locale.
+- **Deep-research v2 COMPLETE** (debt-runner hybrid): 23 agents, 941-line
+  report, hybrid fetch architecture (API in dev, static JSON in prod), SQLite
+  deferred, 3 discovery agents, guided mode default, 4-phase implementation.
+- **Deep-research skill v1.6**: Added Rule 8 (context exhaustion re-spawn),
+  Phase 2.5 (verification agents), Phase 3.5 (dispute resolution agents).
+- **Dev dashboard scope expansion**: Admin audit (14 real tabs), data landscape
+  inventory (67 files, 27 HIGH relevance), research plan approved (38-47
+  agents). Lighthouse moves to admin. Tab selection discovery-first, not
+  pre-decided.
 - **node-forge vulnerability fixed**: npm audit fix (high severity).
 
 **Session #242** (CLI TOOLS + PR REVIEW + STATUSLINE):
@@ -124,9 +135,10 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 | **Passive Surfacing**           | COMPLETE      | 14 root causes, 46 sites, CL-verified (Session #237) |
 | **Propagation Patterns**        | COMPLETE      | 4 waves, 14 steps done (Session #239)                |
 | **Custom Statusline**           | COMPLETE      | Go binary, 20 widgets, 3 lines + R1/R2 fixes (#243)  |
-| **debt-runner Expansion**       | RESEARCH DONE | 17 agents, hybrid CLI+web, /deep-plan next           |
+| **debt-runner Expansion**       | RESEARCH v2   | 23 agents, hybrid CLI+web, 941-line report (#243)    |
+| **Dev Dashboard**               | PLAN APPROVED | 38-47 agent research plan, discovery-first (#243)    |
 | **CLI Tools Implementation**    | COMPLETE      | Both locales, 13 tools + tsgo, user guide (#243)     |
-| **System-Wide Standardization** | READY         | SWS gate cleared, Wave 2 after debt-runner           |
+| **System-Wide Standardization** | READY         | SWS gate cleared, after dev dashboard                |
 
 **Current Branch**: `plan-32626`
 
@@ -138,14 +150,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 ### Immediate Priority
 
-1. **`/deep-plan debt-runner expansion`** — consume research at
-   `.research/debt-runner-expansion/`, resolve 10 open questions in
-   `DECISIONS_PRE_PLAN.md`. Full scope: CLI expansion + web dashboard
-   `/dev/debt` + all downstream fixes + integrations + discovery agent layer.
+1. **Execute dev dashboard `/deep-research`** — 38-47 agents, discovery-first.
+   Research plan at `.research/dev-dashboard/RESEARCH_PLAN.md`. Wave 1 discovers
+   all skills/data/processes, Wave 2 proposes tab groupings, USER CHECKPOINT
+   decides tabs, Wave 3+ deep-dives each tab. Integrates debt-runner research.
+2. **After research: `/deep-plan` for dev dashboard** — consume unified research
+   into implementation plan(s). Debt tab is one component of the larger plan.
 
-### After Debt-Runner
+### After Dev Dashboard
 
-2. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions. SWS gate cleared (#243).
+3. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions. SWS gate cleared (#243).
 
 ---
 
