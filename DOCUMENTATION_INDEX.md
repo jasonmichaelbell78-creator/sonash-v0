@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-03-26 **Active Documents:** 685 **Archived Documents:** 104
+**Generated:** 2026-03-27 **Active Documents:** 685 **Archived Documents:** 104
 
 ---
 
@@ -145,7 +145,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓6 ↑9      | 2026-03-25    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓6 ↑9      | 2026-03-27    |
 | [Changelog](CHANGELOG.md)                               | - generate-views.js no longer overwrites MASTER_DEBT.jsonl.      | ↓0 ↑0      | 2026-03-22    |
 | [Code of Conduct](CODE_OF_CONDUCT.md)                   | This document establishes the standards of behavior expected...  | ↓1 ↑0      | 2026-03-20    |
 | [Contributing to SoNash](CONTRIBUTING.md)               | Guidelines for contributing to SoNash. We welcome bug report...  | ↓0 ↑8      | 2026-03-19    |
@@ -1434,7 +1434,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-03-26    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-03-27    |
 
 ### scripts (Tier 4)
 
@@ -2908,7 +2908,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-03-26 | Auto-generated from codebase scan |
+| Auto    | 2026-03-27 | Auto-generated from codebase scan |
 
 ---
 

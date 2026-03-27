@@ -232,11 +232,21 @@
         ]
       }
     ],
-    "Notification": []
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -d \"Claude Code needs your attention\" ntfy.sh/sonash-claude",
+            "continueOnError": true
+          }
+        ]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",
-    "command": "./tools/statusline/sonash-statusline.exe",
+    "command": "C:/Users/jason/Workspace/dev-projects/sonash-v0/tools/statusline/sonash-statusline.exe",
     "padding": 2
   },
   "enabledPlugins": {

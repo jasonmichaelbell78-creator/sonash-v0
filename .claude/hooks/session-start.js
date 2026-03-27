@@ -1175,6 +1175,32 @@ try {
   );
 }
 
+// CLI tool detection from tool-manifest.json
+try {
+  const manifestPath = path.join(projectDir, ".claude", "tool-manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const missing = [];
+  for (const [name, info] of Object.entries(manifest.tools || {})) {
+    const parts = info.check.split(/\s+/);
+    if (!/^[\w.-]+$/.test(parts[0])) {
+      continue; // skip entries with unsafe binary names
+    }
+    try {
+      execFileSync(parts[0], parts.slice(1), { stdio: "pipe", timeout: 3000 });
+    } catch {
+      missing.push(sanitizeInput(String(name)));
+    }
+  }
+  if (missing.length > 0) {
+    console.log(
+      `   ⚠️ CLI tools missing: ${missing.join(", ")}. Fix: bash scripts/install-cli-tools.sh`
+    );
+    warnings++;
+  }
+} catch {
+  // Non-fatal — tool manifest may not exist or be unreadable
+}
+
 console.log("");
 if (warnings === 0) {
   console.log("✅ SessionStart complete");
