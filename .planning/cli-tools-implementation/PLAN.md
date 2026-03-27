@@ -3,7 +3,7 @@
 <!-- prettier-ignore-start -->
 **Document Version:** 1.1
 **Last Updated:** 2026-03-26
-**Status:** EXECUTING (home locale complete)
+**Status:** EXECUTING (both locales complete, Step 25 pending merge)
 <!-- prettier-ignore-end -->
 
 **Effort:** XL (multi-session) **Decisions:** [DECISIONS.md](./DECISIONS.md) (41
@@ -17,7 +17,7 @@ decisions) **Research:**
 | 1: Configure existing | 1-3   | DONE — oxlint type-aware rules, next experimental-analyze confirmed |
 | 2: Infrastructure     | 4-7   | DONE — tool-configs/, manifest, install + setup scripts             |
 | 3: Install (home)     | 8-15  | DONE — all 14 tools + tsgo installed via winget/cargo/go            |
-| 4: Install (work)     | 16    | NOT YET — separate session at work locale                           |
+| 4: Install (work)     | 16    | DONE — 13 tools via GitHub releases (winget broken, no admin)       |
 | 5: AI integration     | 17-19 | DONE — CLAUDE.md prefs, session-start hook, ntfy hook               |
 | 6: Verification       | 20-21 | DONE — 3548 tests pass, code-reviewer ran, all tools verified       |
 | 7: User guide         | 22    | DONE — docs/CLI_USER_GUIDE.md (850 lines)                           |

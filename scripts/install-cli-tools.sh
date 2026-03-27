@@ -67,25 +67,33 @@ download_github_release() {
   tmp=$(mktemp -d)
   curl --proto '=https' --tlsv1.2 -sL "$url" -o "$tmp/download"
 
+  # Check for rename rule (e.g. yq_windows_amd64.exe -> yq.exe)
+  local rename_rule="${GITHUB_RENAMES[$binary]:-}"
+  local target_name="${binary}.exe"
+  if [ -n "$rename_rule" ]; then
+    target_name="${rename_rule#*:}"
+  fi
+
   if [[ "$url" == *.zip ]]; then
     (cd "$tmp" && unzip -o download >/dev/null 2>&1)
     local found
     found=$(find "$tmp" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
     if [ -n "$found" ]; then
-      cp "$found" "$BIN_DIR/"
-      chmod +x "$BIN_DIR/$(basename "$found")"
+      cp "$found" "$BIN_DIR/$target_name"
+      chmod +x "$BIN_DIR/$target_name"
     fi
   elif [[ "$url" == *.tar.gz || "$url" == *.tgz ]]; then
     (cd "$tmp" && tar xzf download 2>/dev/null)
     local found
     found=$(find "$tmp" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
     if [ -n "$found" ]; then
-      cp "$found" "$BIN_DIR/"
-      chmod +x "$BIN_DIR/$(basename "$found")"
+      cp "$found" "$BIN_DIR/$target_name"
+      chmod +x "$BIN_DIR/$target_name"
     fi
   else
-    cp "$tmp/download" "$BIN_DIR/$binary.exe"
-    chmod +x "$BIN_DIR/$binary.exe"
+    # Bare binary download (e.g. yq .exe)
+    cp "$tmp/download" "$BIN_DIR/$target_name"
+    chmod +x "$BIN_DIR/$target_name"
   fi
   rm -rf "$tmp"
 }
@@ -117,13 +125,40 @@ declare -A WINGET_IDS=(
 )
 
 declare -A GITHUB_REPOS=(
+  [fzf]="junegunn/fzf"
+  [bat]="sharkdp/bat"
+  [fd]="sharkdp/fd"
+  [delta]="dandavison/delta"
+  [zoxide]="ajeetdsouza/zoxide"
+  [eza]="eza-community/eza"
+  [starship]="starship/starship"
+  [yazi]="sxyazi/yazi"
+  [lazygit]="jesseduffield/lazygit"
+  [yq]="mikefarah/yq"
   [gron]="tomnomnom/gron"
   [htmlq]="mgdm/htmlq"
+  [difft]="Wilfred/difftastic"
 )
 
 declare -A GITHUB_PATTERNS=(
-  [gron]="windows-amd64.*\\.exe"
-  [htmlq]="x86_64-pc-windows.*\\.zip"
+  [fzf]="windows_amd64\\.zip"
+  [bat]="x86_64-pc-windows-msvc\\.zip"
+  [fd]="x86_64-pc-windows-msvc\\.zip"
+  [delta]="x86_64-pc-windows-msvc\\.zip"
+  [zoxide]="x86_64-pc-windows-msvc\\.zip"
+  [eza]="x86_64-pc-windows-gnu\\.zip"
+  [starship]="x86_64-pc-windows-msvc\\.zip"
+  [yazi]="x86_64-pc-windows-msvc\\.zip"
+  [lazygit]="windows_x86_64\\.zip"
+  [yq]="yq_windows_amd64\\.exe"
+  [gron]="windows-amd64.*\\.zip"
+  [htmlq]="x86_64-windows\\.zip"
+  [difft]="x86_64-pc-windows-msvc\\.zip"
+)
+
+# yq downloads as a bare .exe with a non-standard name — needs rename
+declare -A GITHUB_RENAMES=(
+  [yq]="yq_windows_amd64.exe:yq.exe"
 )
 
 # Process each tool from manifest

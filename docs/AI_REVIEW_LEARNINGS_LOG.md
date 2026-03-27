@@ -1160,6 +1160,26 @@ deduplicated, non-overlapping ranges):
 - DEBT-45615 resolved
 - Qodo stale diff note added to pr-review
 
+---
+
+### Review rev-19: (untitled) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #472 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 13    | 12    | 0        | 1        |
+
+---
+
+### Review rev-20: (untitled) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #472 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 6     | 2        | 0        |
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
