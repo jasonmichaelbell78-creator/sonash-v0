@@ -2737,3 +2737,37 @@ deduped/merged)
   rounds will produce actionable fixes.
 
 ---
+
+### Review #58 — PR #477 R1 (Mixed: Doc Lint CI + SonarCloud + Qodo + Gemini + CI)
+
+**Date:** 2026-03-28 **Items:** 21 (14 fixed, 0 deferred, 7 rejected)
+
+**Patterns:**
+
+- SonarCloud first-scan on new bash scripts: 20 items across 5 pattern
+  categories (`[` vs `[[`, stderr redirection, explicit returns, nested ifs,
+  constant extraction). All pattern-based — propagation sweep fixed all
+  instances in one pass.
+- Qodo bugs correctly identified real issues: eval in check_tool (security),
+  manifest drift (rg missing from hardcoded list), unvalidated manifest check
+  field (reliability).
+- Gemini caught path traversal edge case in binary name regex (`.`/`..`
+  allowed).
+- CI caught knip failure: `@typescript/native-preview` is a CLI tool, not
+  imported — added to knip ignoreDependencies.
+- Editor backup binary `.exe~` and duplicate `statusline.exe` committed (10MB
+  each). Removed from tracking + gitignored.
+
+**Learnings:**
+
+- Bash scripts need `[[` from the start — SonarCloud flags every `[` as Major.
+- `eval` in bash scripts is always flagged — use direct execution `"$@"`
+  pattern.
+- Tool manifest should be the source of truth for installer loop, not a
+  hardcoded list.
+- Binary artifacts (`.exe~`) must be caught before commit — add gitignore rules
+  proactively.
+- Bash(\*) in settings.json generates security noise every PR — acknowledged as
+  intentional, deny list is the actual boundary.
+
+---

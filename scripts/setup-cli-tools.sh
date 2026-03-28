@@ -31,7 +31,7 @@ fi
 if command -v starship &>/dev/null; then
   STARSHIP_DIR="$HOME/.config"
   mkdir -p "$STARSHIP_DIR"
-  if [ ! -f "$STARSHIP_DIR/starship.toml" ] || [ "$CONFIG_DIR/starship.toml" -nt "$STARSHIP_DIR/starship.toml" ]; then
+  if [[ ! -f "$STARSHIP_DIR/starship.toml" ]] || [[ "$CONFIG_DIR/starship.toml" -nt "$STARSHIP_DIR/starship.toml" ]]; then
     echo "[starship] Deploying config..."
     cp "$CONFIG_DIR/starship.toml" "$STARSHIP_DIR/starship.toml"
     echo "[starship] Done"

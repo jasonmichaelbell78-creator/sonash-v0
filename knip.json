@@ -20,7 +20,8 @@
     "react-hook-form",
     "isomorphic-dompurify",
     "vaul",
-    "@modelcontextprotocol/server-memory"
+    "@modelcontextprotocol/server-memory",
+    "@typescript/native-preview"
   ],
   "ignoreBinaries": ["report", "vitest", "gitleaks"],
   "next": {

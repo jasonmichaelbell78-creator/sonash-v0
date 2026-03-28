@@ -1,7 +1,13 @@
 # Findings: Interactive Skill Patterns — Menu Design, Navigation, and UX Conventions
 
-**Searcher:** deep-research-searcher **Profile:** codebase **Date:** 2026-03-26
-**Sub-Question IDs:** SQ-009
+**Document Version:** 1.0 **Last Updated:** 2026-03-26 **Searcher:**
+deep-research-searcher **Profile:** codebase **Sub-Question IDs:** SQ-009
+
+## Purpose
+
+Deep-research findings for SQ-009: survey of interactive skill patterns across
+13 skills covering menu design, navigation, delegation, state persistence, and
+UX conventions. Informs the debt dashboard's interaction model.
 
 ---
 
@@ -677,3 +683,11 @@ powerful single-statement delegation pattern.
 
 All claims are grounded in direct filesystem reads of SKILL.md files. No
 training-data inference was used. The source files are the ground truth.
+
+---
+
+## Version History
+
+| Version | Date       | Description                  |
+| ------- | ---------- | ---------------------------- |
+| 1.0     | 2026-03-26 | Initial findings from SQ-009 |

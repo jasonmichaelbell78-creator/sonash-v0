@@ -1181,9 +1181,14 @@ try {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   const missing = [];
   for (const [name, info] of Object.entries(manifest.tools || {})) {
-    const parts = info.check.split(/\s+/);
-    if (!/^[\w.-]+$/.test(parts[0])) {
-      continue; // skip entries with unsafe binary names
+    const check = typeof info?.check === "string" ? info.check.trim() : "";
+    if (!check) {
+      missing.push(sanitizeInput(String(name)));
+      continue;
+    }
+    const parts = check.split(/\s+/);
+    if (!/^(?!\.\\.?$)[\w.-]+$/.test(parts[0])) {
+      continue; // skip entries with unsafe binary names (including . and ..)
     }
     try {
       execFileSync(parts[0], parts.slice(1), { stdio: "pipe", timeout: 3000 });
