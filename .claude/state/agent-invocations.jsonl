@@ -43,3 +43,10 @@
 {"agent":"explore","description":"Skill data inventory part 2","sessionId":"session-1774622185275","timestamp":"2026-03-27T15:53:49.383Z"}
 {"agent":"explore","description":"State file inventory only","sessionId":"session-1774622185275","timestamp":"2026-03-27T16:00:33.990Z"}
 {"agent":"explore","description":"Data directory inventory only","sessionId":"session-1774622185275","timestamp":"2026-03-27T16:00:38.549Z"}
+{"agent":"Explore","description":"Find spinner verbs locally","sessionId":"session-1774738230139","timestamp":"2026-03-29T00:29:23.063Z"}
+{"agent":"general-purpose","description":"Investigate 3 roadmap items","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:03:05.778Z"}
+{"agent":"Explore","description":"Compare CLI tools across locales","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:14:36.147Z"}
+{"agent":"Explore","description":"Verify font and CLI tools status","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:22:51.523Z"}
+{"agent":"Explore","description":"Investigate trigger warning gap","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:25:44.830Z"}
+{"agent":"general-purpose","description":"Research grep usage and alternatives","sessionId":"session-1774785564690","timestamp":"2026-03-29T12:12:41.807Z"}
+{"agent":"general-purpose","description":"Research Claude Code hook \"if\" conditions","sessionId":"session-1774785564690","timestamp":"2026-03-29T12:13:04.329Z"}

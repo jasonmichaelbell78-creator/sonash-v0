@@ -10,7 +10,7 @@
  *   - skill_validation: Skill files modified
  *
  * Usage:
- *   node scripts/check-triggers.js [--blocking-only]
+ *   node scripts/check-triggers.js [--blocking-only] [--json]
  *
  * Exit codes:
  *   0 - No blocking triggers, safe to proceed
@@ -294,6 +294,7 @@ function checkReviewSyncTrigger() {
 function main() {
   const args = process.argv.slice(2);
   const blockingOnly = args.includes("--blocking-only");
+  const jsonOutput = args.includes("--json");
 
   // Check for SKIP_TRIGGERS override (documented in SKILL_AGENT_POLICY.md)
   if (process.env.SKIP_TRIGGERS === "1") {
@@ -328,20 +329,28 @@ function main() {
     process.exit(0);
   }
 
-  console.log("🔍 Checking event-based triggers...\n");
+  if (!jsonOutput) console.log("🔍 Checking event-based triggers...\n");
 
   const files = getStagedFiles();
 
   // Fail-closed: if we can't determine changed files, block the push
   if (files === null) {
-    console.log("❌ ERROR: Could not determine changed files (git commands failed)");
-    console.log("   This blocks push to prevent bypassing security checks.");
-    console.log("   Use SKIP_TRIGGERS=1 to override if this is expected.\n");
+    if (jsonOutput) {
+      console.log(JSON.stringify({ error: true, message: "Could not determine changed files" }));
+    } else {
+      console.log("❌ ERROR: Could not determine changed files (git commands failed)");
+      console.log("   This blocks push to prevent bypassing security checks.");
+      console.log("   Use SKIP_TRIGGERS=1 to override if this is expected.\n");
+    }
     process.exit(1);
   }
 
   if (files.length === 0) {
-    console.log("   No files to check.\n");
+    if (jsonOutput) {
+      console.log(JSON.stringify({ filesChecked: 0, blocking: [], warnings: [], triggered: [] }));
+    } else {
+      console.log("   No files to check.\n");
+    }
     process.exit(0);
   }
 
@@ -354,10 +363,43 @@ function main() {
     checkReviewSyncTrigger()
   );
 
-  // Filter and display results
+  // Filter results
   const triggered = results.filter((r) => r.triggered);
   const blocking = triggered.filter((r) => r.severity === "blocking");
   const warnings = triggered.filter((r) => r.severity === "warning");
+
+  // JSON output mode: structured data for machine consumption
+  if (jsonOutput) {
+    console.log(
+      JSON.stringify(
+        {
+          filesChecked: files.length,
+          blocking: blocking.map((t) => ({
+            name: t.name,
+            description: t.description,
+            action: t.action,
+            details: t.details || null,
+          })),
+          warnings: warnings.map((t) => ({
+            name: t.name,
+            description: t.description,
+            action: t.action,
+            details: t.details || null,
+          })),
+          triggered: triggered.map((t) => ({
+            name: t.name,
+            severity: t.severity,
+            description: t.description,
+            action: t.action,
+            details: t.details || null,
+          })),
+        },
+        null,
+        2
+      )
+    );
+    process.exit(blocking.length > 0 ? 1 : 0);
+  }
 
   if (triggered.length === 0) {
     console.log("   ✅ No triggers activated\n");

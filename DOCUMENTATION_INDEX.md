@@ -148,7 +148,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓6 ↑9      | 2026-03-28    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓6 ↑9      | 2026-03-29    |
 | [Changelog](CHANGELOG.md)                               | - generate-views.js no longer overwrites MASTER_DEBT.jsonl.      | ↓0 ↑0      | 2026-03-22    |
 | [Code of Conduct](CODE_OF_CONDUCT.md)                   | This document establishes the standards of behavior expected...  | ↓1 ↑0      | 2026-03-20    |
 | [Contributing to SoNash](CONTRIBUTING.md)               | Guidelines for contributing to SoNash. We welcome bug report...  | ↓0 ↑8      | 2026-03-19    |
@@ -168,7 +168,7 @@ _Foundation technical reference_
 | [App Check Setup Guide](docs/APPCHECK_SETUP.md)                                                            | This guide covers Firebase App Check configuration for the S... | ↓2 ↑1      | 2026-03-19    |
 | [Automation Gap Closure — Design Spec](docs/superpowers/specs/2026-03-14-automation-gap-closure-design.md) | Design specification for closing automation gaps identified ... | ↓0 ↑0      | 2026-03-19    |
 | [Automation Gap Closure Implementation Plan](docs/superpowers/plans/2026-03-14-automation-gap-closure.md)  | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-19    |
-| [CLI User Guide](docs/CLI_USER_GUIDE.md)                                                                   | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-26    |
+| [CLI User Guide](docs/CLI_USER_GUIDE.md)                                                                   | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-03-28    |
 | [Firebase Change Policy](docs/FIREBASE_CHANGE_POLICY.md)                                                   | This document defines the mandatory security review process ... | ↓2 ↑6      | 2026-03-19    |
 | [GitHub Repository Guide](docs/GITHUB_GUIDE.md)                                                            | Comprehensive guide to GitHub features, integrations, and wo... | ↓0 ↑0      | 2026-03-18    |
 | [Global Security Standards](docs/GLOBAL_SECURITY_STANDARDS.md)                                             | This document defines **mandatory security standards** that ... | ↓10 ↑0     | 2026-03-19    |
@@ -362,7 +362,7 @@ _Claude Code skills_
 | [Deep Plan Reference](.claude/skills/deep-plan/REFERENCE.md)                                                                        | Question categories, example questions, output templates, an... | ↓1 ↑0      | 2026-03-17    |
 | [Deep Research Reference](.claude/skills/deep-research/REFERENCE.md)                                                                | Output templates, question type classification, source evalu... | ↓1 ↑0      | 2026-03-22    |
 | [deep-plan](.claude/skills/deep-plan/SKILL.md)                                                                                      | Structured discovery-first planning that produces high-quali... | ↓0 ↑1      | 2026-03-24    |
-| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa... | ↓0 ↑1      | 2026-03-27    |
+| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa... | ↓0 ↑1      | 2026-03-28    |
 | [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)                                              | Reject obviously invalid input at API boundary                  | ↓0 ↑0      | 2026-01-12    |
 | [developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod... | ↓0 ↑0      | 2026-02-24    |
 | [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)                                                                  | Deep diagnostic of the entire documentation ecosystem — docu... | ↓0 ↑0      | 2026-03-26    |
@@ -458,9 +458,9 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-27    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-03-28    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-27    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-03-28    |
 
 ### Templates (Tier 3)
 
@@ -999,7 +999,7 @@ _Uncategorized_
 | -------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
 | [Decisions: CLI Tools Implementation](.planning/cli-tools-implementation/DECISIONS.md) | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-24    |
 | [Diagnosis: CLI Tools Implementation](.planning/cli-tools-implementation/DIAGNOSIS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-24    |
-| [Plan: CLI Tools Implementation](.planning/cli-tools-implementation/PLAN.md)           | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-28    |
+| [Plan: CLI Tools Implementation](.planning/cli-tools-implementation/PLAN.md)           | <!-- prettier-ignore-start --> | ↓0 ↑2      | 2026-03-29    |
 
 ### .planning > custom-statusline (Tier 4)
 
@@ -1038,7 +1038,7 @@ _Uncategorized_
 | Document                                                                         | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Decision Record: Plan Orchestration](.planning/plan-orchestration/DECISIONS.md) | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Implementation Plan: Plan Orchestration](.planning/plan-orchestration/PLAN.md)  | Execute all 7 active plans in optimal sequence, maximizing p... | ↓0 ↑0      | 2026-03-28    |
+| [Implementation Plan: Plan Orchestration](.planning/plan-orchestration/PLAN.md)  | Execute all 7 active plans in optimal sequence, maximizing p... | ↓0 ↑0      | 2026-03-29    |
 | [Plan Execution CL Protocol](.planning/plan-orchestration/CL-PROTOCOL.md)        | Read files fully, catalog findings with exact line numbers a... | ↓0 ↑0      | 2026-03-25    |
 | [Plan Orchestration: DIAGNOSIS](.planning/plan-orchestration/DIAGNOSIS.md)       | -                                                               | ↓0 ↑0      | 2026-03-24    |
 
@@ -1210,9 +1210,9 @@ _Uncategorized_
 
 | Document                                                                                                                                       | Description | References | Last Modified |
 | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Dev Dashboard Cross-Tab Synergies Report](.research/debt-runner-expansion/SYNERGIES.md)                                                       | -           | ↓0 ↑0      | 2026-03-28    |
+| [Dev Dashboard Cross-Tab Synergies Report](.research/debt-runner-expansion/SYNERGIES.md)                                                       | -           | ↓0 ↑0      | 2026-03-29    |
 | [Pre-Plan Decisions: debt-runner Expansion](.research/debt-runner-expansion/DECISIONS_PRE_PLAN.md)                                             | -           | ↓0 ↑0      | 2026-03-26    |
-| [Research Report: debt-runner Hybrid Expansion — CLI Write-Side + Web Dashboard Read-Side](.research/debt-runner-expansion/RESEARCH_OUTPUT.md) | -           | ↓0 ↑0      | 2026-03-28    |
+| [Research Report: debt-runner Hybrid Expansion — CLI Write-Side + Web Dashboard Read-Side](.research/debt-runner-expansion/RESEARCH_OUTPUT.md) | -           | ↓0 ↑0      | 2026-03-29    |
 
 ### .research > debt-runner-expansion > challenges-v1 (Tier 4)
 
@@ -1220,9 +1220,9 @@ _Uncategorized_
 
 | Document                                                                                                                | Description | References | Last Modified |
 | ----------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Contrarian Challenge: debt-runner Expansion Research](.research/debt-runner-expansion/challenges-v1/contrarian.md)     | -           | ↓0 ↑0      | 2026-03-28    |
-| [Outside-the-Box Challenge Analysis: debt-runner Expansion](.research/debt-runner-expansion/challenges-v1/otb.md)       | -           | ↓0 ↑0      | 2026-03-28    |
-| [SQ10 Verification: AI-Driven Debt Discovery Layer](.research/debt-runner-expansion/challenges-v1/sq10-verification.md) | -           | ↓0 ↑0      | 2026-03-28    |
+| [Contrarian Challenge: debt-runner Expansion Research](.research/debt-runner-expansion/challenges-v1/contrarian.md)     | -           | ↓0 ↑0      | 2026-03-29    |
+| [Outside-the-Box Challenge Analysis: debt-runner Expansion](.research/debt-runner-expansion/challenges-v1/otb.md)       | -           | ↓0 ↑0      | 2026-03-29    |
+| [SQ10 Verification: AI-Driven Debt Discovery Layer](.research/debt-runner-expansion/challenges-v1/sq10-verification.md) | -           | ↓0 ↑0      | 2026-03-29    |
 
 ### .research > debt-runner-expansion > findings (Tier 4)
 
@@ -1230,8 +1230,8 @@ _Uncategorized_
 
 | Document                                                                                                    | Description                                                     | References | Last Modified |
 | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Data Directory Inventory](.research/debt-runner-expansion/findings/data-dir-inventory.md)                  | \| filepath \| line_count \| data_type \| web_relevance \|      | ↓0 ↑0      | 2026-03-28    |
-| [State File Inventory — `.claude/state/`](.research/debt-runner-expansion/findings/state-file-inventory.md) | > Generated: 2026-03-27. Excludes task-_.json, deep-plan._.j... | ↓0 ↑0      | 2026-03-28    |
+| [Data Directory Inventory](.research/debt-runner-expansion/findings/data-dir-inventory.md)                  | \| filepath \| line_count \| data_type \| web_relevance \|      | ↓0 ↑0      | 2026-03-29    |
+| [State File Inventory — `.claude/state/`](.research/debt-runner-expansion/findings/state-file-inventory.md) | > Generated: 2026-03-27. Excludes task-_.json, deep-plan._.j... | ↓0 ↑0      | 2026-03-29    |
 
 ### .research > debt-runner-expansion > findings-v1 (Tier 4)
 
@@ -1239,19 +1239,19 @@ _Uncategorized_
 
 | Document                                                                                                                                                      | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Findings: AI-Driven Debt Discovery Layer for Debt-Runner](.research/debt-runner-expansion/findings-v1/SQ10-discovery-layer.md)                               | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: Comprehensive Intake Gap Matrix — All Disconnected and Partial Paths](.research/debt-runner-expansion/findings-v1/SQ8a-intake-gaps.md)             | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: Debt Data Consumption and Reporting Map](.research/debt-runner-expansion/findings-v1/SQ6-consumption-reporting.md)                                 | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: Defer-to-TDMS Path Audit — Every Location Where a User Can Defer to TDMS](.research/debt-runner-expansion/findings-v1/SQ8b-defer-path-audit.md)    | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: External Sources of Technical Debt and TDMS Integration Status](.research/debt-runner-expansion/findings-v1/SQ5-external-sources.md)               | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: How Every AUDIT Skill Routes Findings to TDMS](.research/debt-runner-expansion/findings-v1/SQ3a-audit-skill-intake.md)                             | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: How Every Operational Skill Routes Findings to TDMS](.research/debt-runner-expansion/findings-v1/SQ3b-operational-skill-intake.md)                 | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: Interactive Skill Patterns — Menu Design, Navigation, and UX Conventions](.research/debt-runner-expansion/findings-v1/SQ9-interactive-patterns.md) | Deep-research findings for SQ-009: survey of interactive ski... | ↓0 ↑0      | 2026-03-28    |
-| [Findings: Script, Hook, and CI Debt Intake Mapping](.research/debt-runner-expansion/findings-v1/SQ4-script-hook-ci-intake.md)                                | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: TDMS Scripts 16-30 — Detailed Documentation](.research/debt-runner-expansion/findings-v1/SQ2b-scripts-16-30.md)                                    | Final ingest step for a pre-cleaned intake batch file. Reads... | ↓0 ↑0      | 2026-03-28    |
-| [Findings: TDMS Scripts Documentation (scripts/debt/ — Scripts 1–15)](.research/debt-runner-expansion/findings-v1/SQ2a-scripts-1-15.md)                       | Bulk-assigns `roadmap_ref` values to every item in              | ↓0 ↑0      | 2026-03-28    |
-| [Findings: Verification and Resolution Systems for Technical Debt](.research/debt-runner-expansion/findings-v1/SQ7-verification-resolution.md)                | -                                                               | ↓0 ↑0      | 2026-03-28    |
-| [Findings: What does the debt-runner skill currently do?](.research/debt-runner-expansion/findings-v1/SQ1-debt-runner-current.md)                             | Verify current debt items accurately reflect codebase realit... | ↓0 ↑0      | 2026-03-28    |
+| [Findings: AI-Driven Debt Discovery Layer for Debt-Runner](.research/debt-runner-expansion/findings-v1/SQ10-discovery-layer.md)                               | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: Comprehensive Intake Gap Matrix — All Disconnected and Partial Paths](.research/debt-runner-expansion/findings-v1/SQ8a-intake-gaps.md)             | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: Debt Data Consumption and Reporting Map](.research/debt-runner-expansion/findings-v1/SQ6-consumption-reporting.md)                                 | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: Defer-to-TDMS Path Audit — Every Location Where a User Can Defer to TDMS](.research/debt-runner-expansion/findings-v1/SQ8b-defer-path-audit.md)    | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: External Sources of Technical Debt and TDMS Integration Status](.research/debt-runner-expansion/findings-v1/SQ5-external-sources.md)               | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: How Every AUDIT Skill Routes Findings to TDMS](.research/debt-runner-expansion/findings-v1/SQ3a-audit-skill-intake.md)                             | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: How Every Operational Skill Routes Findings to TDMS](.research/debt-runner-expansion/findings-v1/SQ3b-operational-skill-intake.md)                 | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: Interactive Skill Patterns — Menu Design, Navigation, and UX Conventions](.research/debt-runner-expansion/findings-v1/SQ9-interactive-patterns.md) | Deep-research findings for SQ-009: survey of interactive ski... | ↓0 ↑0      | 2026-03-29    |
+| [Findings: Script, Hook, and CI Debt Intake Mapping](.research/debt-runner-expansion/findings-v1/SQ4-script-hook-ci-intake.md)                                | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: TDMS Scripts 16-30 — Detailed Documentation](.research/debt-runner-expansion/findings-v1/SQ2b-scripts-16-30.md)                                    | Final ingest step for a pre-cleaned intake batch file. Reads... | ↓0 ↑0      | 2026-03-29    |
+| [Findings: TDMS Scripts Documentation (scripts/debt/ — Scripts 1–15)](.research/debt-runner-expansion/findings-v1/SQ2a-scripts-1-15.md)                       | Bulk-assigns `roadmap_ref` values to every item in              | ↓0 ↑0      | 2026-03-29    |
+| [Findings: Verification and Resolution Systems for Technical Debt](.research/debt-runner-expansion/findings-v1/SQ7-verification-resolution.md)                | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Findings: What does the debt-runner skill currently do?](.research/debt-runner-expansion/findings-v1/SQ1-debt-runner-current.md)                             | Verify current debt items accurately reflect codebase realit... | ↓0 ↑0      | 2026-03-29    |
 
 ### .research > dev-dashboard (Tier 4)
 
@@ -1259,8 +1259,8 @@ _Uncategorized_
 
 | Document                                                                                                  | Description | References | Last Modified |
 | --------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Pre-Research Decisions: Dev Dashboard Command Center](.research/dev-dashboard/DECISIONS_PRE_RESEARCH.md) | -           | ↓0 ↑0      | 2026-03-28    |
-| [Research Plan: Dev Dashboard Command Center](.research/dev-dashboard/RESEARCH_PLAN.md)                   | -           | ↓0 ↑0      | 2026-03-28    |
+| [Pre-Research Decisions: Dev Dashboard Command Center](.research/dev-dashboard/DECISIONS_PRE_RESEARCH.md) | -           | ↓0 ↑0      | 2026-03-29    |
+| [Research Plan: Dev Dashboard Command Center](.research/dev-dashboard/RESEARCH_PLAN.md)                   | -           | ↓0 ↑0      | 2026-03-29    |
 
 ### .research > dev-dashboard > findings (Tier 4)
 
@@ -1268,8 +1268,8 @@ _Uncategorized_
 
 | Document                                                                                                   | Description | References | Last Modified |
 | ---------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Admin vs Dev Dashboard Audit](.research/dev-dashboard/findings/admin-audit.md)                            | -           | ↓0 ↑0      | 2026-03-28    |
-| [Reframing Analysis: Debt-Runner Research v1 → v2](.research/dev-dashboard/findings/reframing-analysis.md) | -           | ↓0 ↑0      | 2026-03-28    |
+| [Admin vs Dev Dashboard Audit](.research/dev-dashboard/findings/admin-audit.md)                            | -           | ↓0 ↑0      | 2026-03-29    |
+| [Reframing Analysis: Debt-Runner Research v1 → v2](.research/dev-dashboard/findings/reframing-analysis.md) | -           | ↓0 ↑0      | 2026-03-29    |
 
 ### .research > plan-orchestration (Tier 4)
 
@@ -1466,7 +1466,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-03-28    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-03-29    |
 
 ### scripts (Tier 4)
 
@@ -1515,11 +1515,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-27    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-27    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-27    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-28    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-28    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-28    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-27    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-03-28    |
 
 ---
 

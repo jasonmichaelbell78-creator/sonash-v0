@@ -2292,7 +2292,22 @@ function main() {
 
   const files = getFilesToCheck();
   if (files.length === 0) {
-    if (!JSON_OUTPUT) {
+    if (JSON_OUTPUT) {
+      console.log(
+        JSON.stringify(
+          {
+            filesChecked: 0,
+            patternsChecked: 0,
+            severityCounts: { critical: 0, high: 0, medium: 0, low: 0 },
+            warnings: [],
+            blocks: [],
+            violations: [],
+          },
+          null,
+          2
+        )
+      );
+    } else {
       console.log("No files to check. Use --all to scan entire repo or specify files.");
     }
     process.exit(0);
