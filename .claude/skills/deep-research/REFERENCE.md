@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.4
+**Document Version:** 1.5
 **Last Updated:** 2026-03-29
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -34,7 +34,7 @@ deep-research skill.
 18. [Management Sub-Commands](#18-management-sub-commands)
 19. [State File Schema](#19-state-file-schema)
 20. [Phase Details (moved from SKILL.md)](#20-phase-details-moved-from-skillmd)
-21. [Extracted Phase Detail](#21-extracted-phase-detail)
+21. [Phase Detail: Disputes, Re-Synthesis, Guard Rails, Compaction](#21-phase-detail-disputes-re-synthesis-guard-rails-compaction)
 22. [Gap Pursuit, Verification, and Final Re-Synthesis](#22-gap-pursuit-verification-and-final-re-synthesis)
 
 ---
@@ -375,6 +375,19 @@ Budget allocation (not a constraint, a guardrail):
 - 10% -- gap pursuit + gap verification + final re-synthesis (Phases 3.95-3.97)
 - 10% -- overhead (Phases 0, 4, 5)
 
+### Approximate Time Allocation
+
+| Phase           | Allocation | Activities                                        |
+| --------------- | ---------- | ------------------------------------------------- |
+| Phase 0         | 10%        | Decomposition, Q&A, strategy selection            |
+| Phase 1         | 35%        | Parallel searcher agent execution                 |
+| Phase 2         | 5%         | Initial synthesis                                 |
+| Phase 2.5       | 10%        | Verification agents                               |
+| Phase 3         | 15%        | Contrarian + OTB challenges                       |
+| Phase 3.5-3.9   | 5%         | Dispute resolution, post-challenge re-synthesis   |
+| Phase 3.95-3.97 | 15%        | Gap pursuit, gap verification, final re-synthesis |
+| Phase 4-5       | 5%         | Presentation, cleanup, index updates              |
+
 Gap-pursuit agents add ~15-25% to total agent count when actionable gaps exist.
 When no actionable gaps are found, Phases 3.95-3.97 cost near zero (scan only).
 
@@ -533,6 +546,21 @@ Write your insights to: .research/<topic>/challenges/OUTSIDE_THE_BOX.md
   "gapSources": []
 }
 ```
+
+### Output Verification Criteria
+
+After synthesis (Phase 2) and final re-synthesis (Phase 3.97), verify all 4
+artifacts exist and are non-empty:
+
+1. `RESEARCH_OUTPUT.md` exists and is >100 lines
+2. `claims.jsonl` exists and has >0 entries
+3. `metadata.json` is valid JSON with required fields: `topic`, `depth`,
+   `questionType`, `domain`, `startedAt`, `agentCount`, `claimCount`,
+   `confidenceDistribution`
+4. `sources.jsonl` exists and has >0 entries
+
+If any check fails, halt and report the missing/invalid artifact before
+proceeding to the next phase.
 
 ---
 
@@ -790,73 +818,69 @@ what changed between versions.
 
 Location: `.claude/state/deep-research.<topic-slug>.state.json`
 
+> **Note on schema vs reality (D32):** Actual state files in production use a
+> flat structure with inconsistent naming conventions (e.g., `slug` vs
+> `topicSlug`, `phase` vs `status`, `started_at` vs `startedAt`). The schema
+> below is the **canonical target** -- new state file writes SHOULD conform to
+> this structure. Existing state files may use legacy flat formats and should be
+> accepted on read. Key reality observations from 4 production state files:
+> `slug`/`topicSlug` used interchangeably, `phase` used as string phase name
+> instead of `status` enum, `waves` tracked as per-wave status objects,
+> `qa_decisions`/`decisions` used for Q&A round outputs, `post_challenge` used
+> for challenge outcome summary.
+
 ```json
 {
-  "version": 1,
   "topic": "string -- original research question",
-  "topicSlug": "string -- kebab-case slug",
-  "status": "planning | researching | synthesizing | verifying | complete | failed",
+  "slug": "string -- kebab-case slug (alias: topicSlug)",
+  "phase": "string -- current phase (0 | 1-research | synthesis | verification | presentation | complete | failed)",
   "depth": "L1 | L2 | L3 | L4",
-  "depthLabel": "Exhaustive | Comprehensive | Investigation | Deep Investigation",
-  "createdAt": "ISO 8601",
-  "updatedAt": "ISO 8601",
-  "plan": {
-    "questionType": "factual | descriptive | comparative | evaluative | exploratory | investigative | predictive | relational",
-    "domain": "string",
-    "domainConfidence": "number 0-1",
-    "subQuestions": [
-      {
-        "id": "SQ-001",
-        "question": "string",
-        "searchProfile": "web | docs | codebase | academic",
-        "status": "pending | assigned | complete | failed",
-        "agentId": "string",
-        "findingsPath": "string"
-      }
-    ],
-    "approved": "boolean",
-    "approvedAt": "ISO 8601 | null",
-    "decompositionState": {
-      "qaRounds": [
-        {
-          "round": 1,
-          "questions": ["string"],
-          "answers": ["string"],
-          "subQuestionCandidates": ["string"]
-        }
-      ]
-    }
-  },
-  "agents": {
-    "searchers": [
-      {
-        "id": "searcher-1",
-        "subQuestions": ["SQ-001"],
-        "status": "pending | running | complete | failed | timeout",
-        "findingsPaths": ["string"],
-        "startedAt": "ISO 8601 | null",
-        "completedAt": "ISO 8601 | null"
-      }
-    ],
-    "synthesizer": {
-      "status": "pending | running | complete | failed",
-      "outputPath": "string | null"
-    }
-  },
-  "output": {
-    "researchOutputPath": "string | null",
-    "claimsPath": "string | null",
-    "sourcesPath": "string | null",
-    "metadataPath": "string | null",
-    "rawArtifacts": "kept | archived"
-  },
-  "verification": {
-    "contrarian": { "status": "pending | complete | skipped", "passCount": 0 },
-    "outsideTheBox": {
-      "status": "pending | complete | skipped",
-      "passCount": 0
+  "domain": "string -- detected research domain",
+  "startedAt": "ISO 8601 (alias: started_at, created_at)",
+  "updatedAt": "ISO 8601 (alias: updated, lastUpdated)",
+  "totalAgentsSpawned": 0,
+  "plannedAgentCount": 0,
+  "subQuestions": ["string -- SQ IDs or descriptions (alias: sub_questions)"],
+  "waves": {
+    "wave_1": { "status": "pending | complete", "agents": ["SQ1", "SQ2"] },
+    "wave_N": { "status": "pending | complete", "agents": ["..."] },
+    "synthesis": { "status": "pending | in-progress | complete" },
+    "verification": { "status": "pending | complete", "agents": ["V1", "V2"] },
+    "challenges": {
+      "status": "pending | complete",
+      "agents": ["contrarian-1", "otb-1"]
     },
-    "selfAudit": { "status": "pending | complete", "result": "string | null" }
+    "post_challenge": {
+      "status": "pending | complete",
+      "agents": ["re-synthesis", "final-cl"]
+    }
+  },
+  "agentsCompleted": 0,
+  "agentsFailed": 0,
+  "findingsFiles": 0,
+  "challengeFiles": 0,
+  "synthesisComplete": false,
+  "challengesComplete": false,
+  "resynthesized": false,
+  "decisions": {
+    "key": "value -- Q&A round decisions (alias: qa_decisions)"
+  },
+  "outputs": {
+    "report": ".research/<slug>/RESEARCH_OUTPUT.md",
+    "claims": ".research/<slug>/claims.jsonl",
+    "sources": ".research/<slug>/sources.jsonl",
+    "metadata": ".research/<slug>/metadata.json",
+    "contrarian": ".research/<slug>/challenges/contrarian.md",
+    "otb": ".research/<slug>/challenges/otb.md"
+  },
+  "postChallenge": {
+    "claimsChangedPct": 0,
+    "resynthesisTriggered": false,
+    "gradeChange": "string | null",
+    "overturned": 0,
+    "weakened": 0,
+    "newFindings": 0,
+    "newCategories": 0
   },
   "gapPursuit": {
     "status": "pending | scanning | spawning | complete | skipped",
@@ -869,6 +893,20 @@ Location: `.claude/state/deep-research.<topic-slug>.state.json`
       "challenges": 0,
       "low-claims": 0,
       "unresolved": 0
+    },
+    "scanResults": {
+      "sources": [
+        "findings",
+        "serendipity",
+        "refuted",
+        "challenges",
+        "low-claims",
+        "unresolved"
+      ],
+      "dedupCount": 0,
+      "actionableGaps": [
+        "string -- gap descriptions that passed actionability filter"
+      ]
     },
     "agentsSpawned": 0,
     "agentsComplete": 0,
@@ -886,10 +924,21 @@ Location: `.claude/state/deep-research.<topic-slug>.state.json`
     "claimsModified": 0,
     "sourcesAdded": 0
   },
-  "errors": [],
-  "resumePoint": "string -- phase + step identifier for resume"
+  "version": "number -- state file schema version (optional, for future migrations)",
+  "priorVersion": "string -- path to prior findings if v2+ research (optional)"
 }
 ```
+
+### Agent Count Tracking
+
+The `totalAgentsSpawned` and `plannedAgentCount` fields track actual vs planned
+agent usage. In Phase 5 presentation, display the delta:
+
+```
+Agents: 18 spawned / 15 planned (delta: +3, from gap pursuit)
+```
+
+This helps calibrate the allocation formula `D + 3 + floor(D/5)` over time.
 
 ### Resume Protocol
 
@@ -902,6 +951,13 @@ state file, skips completed phases, resumes from `resumePoint`.
 ---
 
 ## 20. Phase Details (moved from SKILL.md)
+
+### Phase 0.2: Strategy Log Reader
+
+Read `.research/strategy-log.jsonl` for detected domain. If prior strategy data
+exists, use top-performing search profiles (highest `highConfidenceRate` for the
+matching `domain` and `questionType`). If file missing, skip -- it will be
+created during Phase 5 of this session (create-if-missing).
 
 ### Phase 1 Spawn Prompt Example
 
@@ -984,7 +1040,7 @@ Update state file to `complete`.
 
 ---
 
-## 21. Extracted Phase Detail
+## 21. Phase Detail: Disputes, Re-Synthesis, Guard Rails, Compaction
 
 Detail extracted from SKILL.md during condensing. SKILL.md contains brief
 summaries with pointers to these subsections.
@@ -1017,6 +1073,25 @@ dispute resolutions, organized by dispute.
 completing all assigned disputes, re-spawn per Critical Rule 8 -- split
 remaining disputes across 2+ smaller agents. Each replacement writes to the same
 `findings/dispute-resolutions.md` file (append, not overwrite).
+
+### 21.1.1 Dispute Resolution Agent Prompt Template
+
+```
+You are a dispute resolution agent. Resolve conflicting claims with evidence.
+
+## Disputes to resolve
+[List each dispute with both sides -- the original claim + source, and the
+challenging claim + source. Include claim IDs and file references.]
+
+## For each dispute, produce:
+- **RESOLUTION:** ORIGINAL UPHELD | CHALLENGER UPHELD | REVISED | INCONCLUSIVE
+- **RATIONALE:** Why this resolution, citing specific evidence from both sides
+- **IMPACT:** What changes in the research output (claim confidence, section
+  rewrite, recommendation change)
+- **CONFIDENCE:** HIGH | MEDIUM | LOW in the resolution itself
+
+Write to: .research/<topic>/findings/dispute-resolutions.md
+```
 
 ### 21.2 Phase 3.9 Post-Challenge Re-Synthesis
 
@@ -1163,7 +1238,7 @@ would change at least one claim's confidence level or add a new claim.
 | Depth | Max Gap Agents |
 | ----- | -------------- |
 | L1    | 4              |
-| L2    | 3              |
+| L2    | 4              |
 | L3    | 6              |
 | L4    | 10             |
 
@@ -1272,14 +1347,59 @@ Update metadata.json:
 This is the **truly final** output. Apply CL-standard (convergence-loop
 verification) to the final report.
 
+### 22.6 Gap Verification Agent Scaling
+
+Gap verification agents scale with depth to match Phase 2.5 scaling:
+
+| Depth | Gap Verification Agents |
+| ----- | ----------------------- |
+| L1    | 2                       |
+| L2    | 2                       |
+| L3    | 3                       |
+| L4    | 4                       |
+
+### 22.7 Agent Prompt Quality Checklist
+
+Every agent prompt MUST include all 5 elements:
+
+1. **Scope** -- what the agent is responsible for investigating or verifying
+2. **Output path + naming convention** -- exact file path and naming pattern
+   (e.g., `findings/G<N>-<scope>.md`)
+3. **Output format with required sections** -- the expected markdown structure
+   with section headers (e.g., `## Summary`, `## Detailed Findings`, `## Gaps`)
+4. **Context exhaustion instructions** -- per Critical Rule 8, what to do if the
+   agent runs out of context (re-spawn strategy, file splitting, append
+   behavior)
+5. **Depth-appropriate detail level** -- how much detail is expected given the
+   current depth level (L1 vs L4 expectations differ significantly)
+
+Review all prompts in Sections 8, 9, 20, 21, and 22 against this checklist when
+modifying them.
+
+### 22.8 CL-Standard Definition
+
+"CL-standard" means convergence-loop verification using the `research-claims`
+preset (Section 14) with the following operational requirements:
+
+- **Minimum passes:** 2 (the loop runs at least twice regardless of initial
+  agreement)
+- **Behaviors:** All 6 research-claims behaviors active (verify-sources,
+  cross-reference, temporal-check, completeness-audit, bias-check,
+  synthesis-fidelity)
+- **T20 tally threshold:** >=80% Confirmed before proceeding (if <80%, run
+  additional passes until threshold is met or 4 passes reached)
+- **On 4-pass failure:** Surface the unconfirmed items to the user with
+  confidence levels and let them decide whether to proceed
+
 ---
 
 ## Version History
 
-| Version | Date       | Description                                                           |
-| ------- | ---------- | --------------------------------------------------------------------- |
-| 1.4     | 2026-03-29 | S21-22: extracted phase detail, gap pursuit/verification/re-synthesis |
-| 1.3     | 2026-03-22 | Skill-audit: state schema, phase details, ToC, spawn example          |
-| 1.2     | 2026-03-22 | P3: management commands, strategy log, reputation                     |
-| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles                   |
-| 1.0     | 2026-03-22 | Initial implementation                                                |
+| Version | Date       | Description                                                               |
+| ------- | ---------- | ------------------------------------------------------------------------- |
+| 1.5     | 2026-03-29 | Skill-audit decisions: D7/D11/D13/D18/D24/D25/D30/D31/D32/D35/D37/D39/D42 |
+| 1.4     | 2026-03-29 | S21-22: extracted phase detail, gap pursuit/verification/re-synthesis     |
+| 1.3     | 2026-03-22 | Skill-audit: state schema, phase details, ToC, spawn example              |
+| 1.2     | 2026-03-22 | P3: management commands, strategy log, reputation                         |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles                       |
+| 1.0     | 2026-03-22 | Initial implementation                                                    |

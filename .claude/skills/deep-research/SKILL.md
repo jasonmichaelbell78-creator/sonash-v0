@@ -3,13 +3,13 @@ name: deep-research
 description: >-
   Multi-agent research engine that decomposes questions, dispatches parallel
   searcher agents, synthesizes findings with citations and confidence levels,
-  runs mandatory contrarian/OTB challenges and cross-model verification via
-  Gemini CLI, and produces structured output with downstream adapters, research
-  index, and management commands.
+  runs mandatory contrarian/OTB challenges, gap-pursuit verification, and
+  cross-model verification via Gemini CLI, and produces structured output with
+  downstream adapters, research index, and management commands.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.7
+**Document Version:** 1.8
 **Last Updated:** 2026-03-29
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -35,16 +35,11 @@ produces structured output with downstream routing.
 5. **State file updated after every state-changing event** -- enables resume.
 6. **Research writes ONLY to `.research/<topic-slug>/`** -- never to
    consumer-owned artifacts.
-7. **Agent allocation: `D + 3 + floor(D/5)` is the FLOOR, not the answer** -- D
-   = sub-questions. Always assess scope size (file count, plan count, lines to
-   read) and present: "Formula suggests N. Scope has X. I recommend Y.
-   Override?" User decides final count.
-8. **Context exhaustion = immediate re-spawn.** If any agent completes without
-   writing its findings file (or writes only a header), it ran out of context.
-   Never accept partial output. Immediately re-spawn the work across 2+ smaller
-   agents that split the original scope. Each replacement agent must produce a
-   complete findings file. If the scope cannot be split, re-spawn with a more
-   focused prompt that reads fewer files.
+7. **Agent allocation: `D + 3 + floor(D/5)` is the FLOOR** -- D = sub-questions.
+   Assess scope, present formula vs recommendation, user decides final count.
+8. **Context exhaustion = immediate re-spawn.** If any agent fails to write
+   complete findings, re-spawn across 2+ smaller agents splitting the scope.
+   Never accept partial output.
 9. **Gap pursuit is mandatory scan, conditional execution.** After challenges +
    disputes, scan all findings for gaps. Spawn gap agents only if actionable
    gaps exist. **One round only** — gap agents' own gaps do NOT trigger
@@ -104,7 +99,7 @@ PHASE 0: Interactive Decomposition (inline)
        escalate to C if multi-domain/8+ dimensions). Persist after each round.
   0.5: Generate MECE sub-questions + internal overlap/gap verification
   0.6: Apply allocation formula
-  0.7: Present plan with "Estimated: ~N min" (L1~5-10, L2~3-5, L3~10-20, L4~20-40)
+  0.7: Present plan with "Estimated: ~N min" (L1~15-25, L2~10-15, L3~25-40, L4~40-60+)
   0.8: Approve / modify / abort (--auto skips)
   0.9: Create state file
 
@@ -151,6 +146,9 @@ PHASE 5: Presentation + Routing
 
 Phase markers: `========== PHASE N: [NAME] ==========`
 
+After each phase, report: "Phase N complete (X of 12 phases). ~Y% of estimated
+duration elapsed."
+
 ---
 
 ## Phase 0: Interactive Decomposition
@@ -172,15 +170,17 @@ user requests, or 8+ sub-dimensions. **Fast-path:** 1 round for simple
 well-scoped topics. Persist Q&A state after each round (compaction resilience).
 
 **0.5 MECE.** Generate sub-questions with search profiles (web/docs/codebase/
-academic). MECE verification: check overlaps + gaps, fix before presenting.
+academic). MECE verification: check overlaps + gaps, fix before presenting. **CL
+quick-pass (MUST):** After generating sub-questions, run convergence-loop quick
+preset to verify coverage -- are there blind spots? overlaps? Missing angles?
+Fix before presenting plan.
 
-**0.6 Allocation.** Compute floor: `D + 3 + floor(D/5)`. Then assess scope size
-(files, plans, lines to read). Present both: "Formula floor: N. Scope: X
-files/plans. Recommended: Y agents." User approves final count. The formula
-underestimates for large codebase tasks where agents need to read contextually
-(not just grep).
+**0.6 Allocation.** Floor: `D + 3 + floor(D/5)`. Assess scope, present formula
+vs recommendation, user approves. Formula underestimates for large codebases.
 
-**0.7 Plan.** Include estimated duration. `--auto` skips approval.
+**0.7 Plan.** Include estimated duration (L1: ~15-25 min, L2: ~10-15, L3:
+~25-40, L4: ~40-60+. Add ~10-15 min if gap pursuit activates). `--auto` skips
+approval.
 
 **0.8-0.9 State.** Create `.claude/state/deep-research.<slug>.state.json`
 (schema: REFERENCE.md Section 19).
@@ -197,6 +197,12 @@ Respect 4-agent concurrency. Wave progress after each wave. **Timeout:** 5 min
 per searcher -- mark failed, inform user. **User checkpoint:** if any failed,
 ask proceed or re-run. **L4:** TeamCreate for interdependent sub-questions.
 
+Each agent returns: sub-questions addressed, source count, confidence
+distribution summary, gaps identified count, findings file path.
+
+**Post-research summary:** Before synthesis, present: sub-questions answered,
+source count, top themes. Proceed to synthesis?
+
 ---
 
 ## Phase 2: Synthesis
@@ -208,18 +214,10 @@ Verify: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json.
 
 ## Phase 2.5: Verification (mandatory)
 
-Spawn dedicated verification agents that test claims against the actual
-filesystem. These agents read the synthesized report, extract testable claims,
-and verify each by reading the referenced files.
-
-**Agent count scales with depth:** L1 (2 agents), L2 (2), L3 (3), L4 (4+).
-**Split claims across agents** to avoid context exhaustion (e.g., V1 checks
-codebase claims, V2 checks data claims, V3 checks cross-claim consistency).
-**Context exhaustion = re-spawn** per Critical Rule 8 — split further if needed.
-
-Each verification agent writes to `findings/V<N>-<scope>.md` with per-claim
-verdict: VERIFIED (with file:line evidence) or REFUTED (with what's actually
-there).
+Verification agents test claims against filesystem. Agent count: L1 (2), L2 (2),
+L3 (3), L4 (4+). Split claims across agents to avoid context exhaustion.
+Re-spawn per Critical Rule 8. Each writes `findings/V<N>-<scope>.md` with
+per-claim verdict: VERIFIED or REFUTED with evidence.
 
 ---
 
@@ -228,8 +226,9 @@ there).
 Contrarian and OTB agents **run in parallel**. Scale: L1-L2 (1+1), L3 (2+2), L4
 (3+3 + red team + pre-mortem). Templates: REFERENCE.md Sections 8-9.
 Cross-model + CL verification: REFERENCE.md Sections 13-14. Re-synthesize if
-
-> 20% claims changed.
+more than 20% of claims changed. If `gemini` CLI unavailable or fails more than
+50% of calls, proceed with independent assessment. Record "cross-model:
+unavailable" in metadata.json.
 
 ---
 
@@ -245,67 +244,39 @@ REFERENCE.md Section 21.
 Re-synthesize if >20% of claims changed by verification + challenges + disputes.
 Otherwise apply corrections inline. Details: REFERENCE.md Section 21.
 
+**User checkpoint:** Post-challenge report ready. Scan for gaps? [Y / skip to
+self-audit]
+
 ---
 
 ## Phase 3.95: Gap Pursuit (mandatory scan, conditional execution)
 
-After all synthesis, verification, challenges, and disputes are complete, scan
-ALL findings files for reported gaps and actionable discoveries. Six sources
-scanned in priority order:
+Scan ALL findings for gaps and actionable discoveries across 6 source types
+(D-agent gaps, serendipity items, REFUTED claims, challenge misses,
+LOW/UNVERIFIED claims, unresolved questions). Deduplicate by keyword overlap,
+filter for actionability. Formula: `ceil(G/2)` gap agents, capped by depth (L1:
+4, L2: 4, L3: 6, L4: 10). **One round only** (Critical Rule 9) -- no recursive
+gap chasing. Skip Phases 3.96-3.97 if 0 actionable gaps.
 
-1. Findings `## Gaps identified:` sections (D-agent, V-agent, challenge files)
-2. Actionable `## Serendipity` items (not just observations — items that imply
-   missing research)
-3. Verification REFUTED claims that need follow-up investigation
-4. Challenge "what the research missed" items
-5. LOW/UNVERIFIED claims in claims.jsonl
-6. RESEARCH_OUTPUT.md unresolved questions section
+If 50%+ gap agents fail, present options: proceed with partial findings,
+re-spawn failed agents, or skip to self-audit.
 
-**Deduplication:** Same gap appearing in multiple sources counts once.
-**Actionability filter:** Skip scope-limitation notes ("we did not read X
-because out of scope"). Only pursue gaps that could change findings or add
-value.
-
-**Agent count:** `ceil(G/2)` where G = actionable gaps, capped by depth (L1: max
-4, L2: 3, L3: 6, L4: 10). Cluster related gaps by theme when count exceeds cap.
-Each agent writes to `findings/G<N>-<scope>.md`. Critical Rule 8 applies.
-
-**One round only** (Critical Rule 9). Gap agents' own `## Gaps` sections do NOT
-trigger another pursuit cycle. Update state file after scan and after each
-agent.
-
-**If no actionable gaps:** Skip Phases 3.96-3.97. Log "Gap scan: 0 actionable"
-to state file.
-
-Details: REFERENCE.md Section 22.
+Details: REFERENCE.md Section 22 (source list, dedup/actionability rules).
 
 ---
 
 ## Phase 3.96: Gap Verification (mandatory if gap agents spawned)
 
-Same pattern as Phase 2.5. Spawn verification agents to test gap-pursuit
-findings against filesystem ground truth. Minimum 2 agents. Each writes to
-`findings/GV<N>-<scope>.md` with per-claim verdicts.
-
-Split by scope: GV1 checks gap-pursuit codebase claims, GV2 checks cross-claim
-consistency between gap findings and original findings. Context exhaustion =
-re-spawn per Critical Rule 8.
-
-Details: REFERENCE.md Section 22.
+Same pattern as Phase 2.5. Agent count: L1 (2), L2 (2), L3 (3), L4 (4). Each
+writes `findings/GV<N>-<scope>.md`. Details: REFERENCE.md Section 22.
 
 ---
 
 ## Phase 3.97: Final Re-Synthesis (mandatory if gap agents spawned)
 
-Single synthesizer agent (reuse `deep-research-synthesizer` type). Reads ALL
-findings: original D-agents + V-agents + challenges + disputes + G-agents +
-GV-agents. **Edits** RESEARCH_OUTPUT.md — does not rewrite from scratch.
-
-Updates: claims.jsonl (new claims use `C-G*` IDs), sources.jsonl, metadata.json
-(adds `gapFillRounds`, `gapAgentCount`, `totalClaimsPostGap`). Apply CL-standard
-to the final report. This is the **truly final** output.
-
-Details: REFERENCE.md Section 22.
+Single synthesizer **edits** RESEARCH_OUTPUT.md (not rewrite) with all findings.
+Updates claims.jsonl (`C-G*` IDs), sources.jsonl, metadata.json. CL-standard on
+final report. Details: REFERENCE.md Section 22.
 
 ---
 
@@ -316,14 +287,19 @@ distribution, source diversity, contradictions, challenges. T2 (L2+): source
 span, calibration. T3 (L3+): temporal validity, bias, actionability. T4 (L4):
 8-dimension + adversarial. Default: summary. `--audit-details`: full report.
 
+If checks reveal issues: present findings, ask "Fix and re-audit? [Y / present
+as-is]"
+
 ---
 
 ## Phase 5: Presentation + Downstream Routing
 
 Terminal summary, then menu: (1) deepen, (2) /deep-plan, (3) /skill-creator, (4)
 GSD, (5) /convergence-loop for LOW claims, (6) save to memory, (7) view report,
-(8) done. Post-menu: cleanup, index entry, strategy log, source reputation, MCP
-memory. Details: REFERENCE.md Sections 16-17, 20.
+(8) done. If metadata.json `hasDebtCandidates: true`, present: "Research
+identified N debt candidates. Route to `/add-debt`? [Y/review/skip]" Post-menu:
+cleanup, index entry, strategy log, source reputation, MCP memory. Details:
+REFERENCE.md Sections 16-17, 20.
 
 ---
 
@@ -333,18 +309,29 @@ memory. Details: REFERENCE.md Sections 16-17, 20.
 intermediates) and `RESEARCH_OUTPUT.md`, `claims.jsonl`, `sources.jsonl`,
 `metadata.json` (retained). Schemas: REFERENCE.md Section 11.
 
+**Naming:** D-agents `D<N>-<scope>.md`, V-agents `V<N>-<scope>.md`, G-agents
+`G<N>-<scope>.md`, GV-agents `GV<N>-<scope>.md`.
+
+**Claims:** `C-001` sequential. Gap claims: `C-G001` sequential.
+
 ---
 
 ## Guard Rails
 
-Budget, scope explosion, failure cascade, timeout, disengagement rules. Details:
-REFERENCE.md Section 21.
+Key limits: budget checkpoints (70/85/95/100% of allocated agents), scope
+explosion (more than 15 sub-questions requires user re-approval), failure
+cascade (50%+ agents fail = stop and present options), timeout (5 min/agent),
+gap recursion (1 round only). Details: REFERENCE.md Section 21.
 
 ---
 
 ## Compaction Resilience
 
-State file + disk artifacts as checkpoints. Schema: REFERENCE.md Section 19.
+On resume: read state file, validate JSON, skip completed phases. If state file
+missing or corrupted, check for disk artifacts (`findings/`,
+`RESEARCH_OUTPUT.md`) to determine resumption point. State file validation:
+try-catch parse, check required fields (`status`, `phase`, `topic`). Fall back
+to artifact-based recovery on corruption. Schema: REFERENCE.md Section 19.
 
 ---
 
@@ -352,9 +339,8 @@ State file + disk artifacts as checkpoints. Schema: REFERENCE.md Section 19.
 
 - **Neighbors:** `/deep-plan`, `/convergence-loop`, `/skill-creator`,
   `/gsd:research-phase`, `/skill-audit`, `/superpowers`
-- **Team config:** `.claude/teams/research-plan-team.md` — when `/deep-research`
-  is followed by `/deep-plan` on the same topic, the research-plan-team can
-  coordinate the handoff (researcher → planner → verifier pipeline)
+- **Team config:** `.claude/teams/research-plan-team.md` — spawned via skill
+  triggers when research complexity is L/XL, not invoked directly
 - **References:** [REFERENCE.md](./REFERENCE.md) (templates, schemas, prompts,
   domains, management commands)
 - **Consumers:** claims.jsonl + sources.jsonl + metadata.json via adapters
@@ -366,6 +352,7 @@ State file + disk artifacts as checkpoints. Schema: REFERENCE.md Section 19.
 
 | Version | Date       | Description                                                                                                     |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| 1.8     | 2026-03-29 | Skill-audit: 20 decisions — UX, guard rails, output, compaction, CL, TDMS, scalability, extraction              |
 | 1.7     | 2026-03-29 | Add Phases 3.95-3.97: gap pursuit, gap verification, final re-synthesis. Rule 9. Extract detail to REFERENCE.md |
 | 1.6     | 2026-03-27 | Add Rules 8-10: context exhaustion re-spawn, mandatory verification + dispute resolution phases                 |
 | 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override                                                 |
