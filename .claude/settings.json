@@ -87,6 +87,28 @@
             "statusMessage": "Checking env file protection..."
           }
         ]
+      },
+      {
+        "matcher": "^(?i)(write|edit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Write(.claude/settings.json)|Edit(.claude/settings.json)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/settings-guardian.js",
+            "statusMessage": "Validating settings.json integrity..."
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)(write|edit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Write(**/firestore.rules)|Edit(**/firestore.rules)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/firestore-rules-guard.js",
+            "statusMessage": "Checking firestore rules integrity..."
+          }
+        ]
       }
     ],
     "PreCompact": [
@@ -172,6 +194,18 @@
             "statusMessage": "Tracking agent invocation..."
           }
         ]
+      },
+      {
+        "matcher": "^(?i)(write|edit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Write(CLAUDE.md)|Edit(CLAUDE.md)|Write(.claude/settings.json)|Edit(.claude/settings.json)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/governance-logger.js",
+            "statusMessage": "Logging governance change...",
+            "continueOnError": true
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -191,6 +225,20 @@
           {
             "type": "command",
             "command": "curl -s -d \"Claude Code needs your attention\" ntfy.sh/sonash-claude",
+            "continueOnError": true
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "^(?i)bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(npm run build *)|Bash(npm test *)|Bash(npx tsc *)|Bash(npm run lint *)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/loop-detector.js",
+            "statusMessage": "Checking for error loops...",
             "continueOnError": true
           }
         ]
