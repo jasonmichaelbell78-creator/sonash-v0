@@ -1,4 +1,6 @@
 {
-  "acknowledged": {},
-  "lastCleared": "2026-03-26T15:16:31.379Z"
+  "acknowledged": {
+    "settings-guardian": "2026-03-29T16:41:18.433Z"
+  },
+  "lastCleared": "2026-03-29T16:41:18.433Z"
 }
