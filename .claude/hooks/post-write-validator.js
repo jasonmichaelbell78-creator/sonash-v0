@@ -758,6 +758,80 @@ function repositoryPatternCheck() {
 // suggestions WITH dedup, state tracking, and phased rollout. checkRequirements
 // was fire-and-forget with no acknowledgment gate (Guardrail #6 violation).
 
+// ─── Validator 12: markdownFenceCheck (WARN) ────────────────────────────────
+
+function markdownFenceCheck() {
+  if (!isMarkdownFile) return;
+
+  const content = getContent();
+  if (!content) return;
+
+  const lines = content.split("\n");
+  let fenceCount = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (/^```/.test(lines[i].trimStart())) {
+      fenceCount++;
+    }
+  }
+
+  if (fenceCount % 2 !== 0) {
+    console.error("");
+    console.error("\u26a0\ufe0f  MARKDOWN FENCE WARNING");
+    console.error("\u2501".repeat(28));
+    console.error(`File: ${filePath}`);
+    console.error(`Found ${fenceCount} code fence marker(s) (odd count).`);
+    console.error("");
+    console.error("Unclosed code fence detected. This may break markdown rendering.");
+    console.error("  Fix: Add a closing ``` to close the unclosed code fence");
+    console.error("\u2501".repeat(28));
+  }
+}
+
+// ─── Validator 13: jsonSyntaxCheck (WARN) ───────────────────────────────────
+
+function jsonSyntaxCheck() {
+  if (!isConfigFile && ext !== ".json") return;
+  if (ext !== ".json") return;
+
+  const content = getContent();
+  if (!content || !content.trim()) return;
+
+  // First try parsing as-is (valid JSON passes silently)
+  try {
+    JSON.parse(content);
+    return;
+  } catch {
+    // Not valid JSON as-is — try stripping trailing commas
+  }
+
+  // Strip trailing commas before ] or } (handles tsconfig.json JSONC-style trailing commas)
+  const stripped = content.replace(/,\s*([}\]])/g, "$1");
+  try {
+    JSON.parse(stripped);
+    // Parsed after stripping trailing commas — valid JSONC, no warning
+    return;
+  } catch {
+    // Still fails — genuine syntax error
+  }
+
+  // Report the original parse error (not the stripped one) for accurate messaging
+  try {
+    JSON.parse(content);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("");
+    console.error("\u26a0\ufe0f  JSON SYNTAX WARNING");
+    console.error("\u2501".repeat(25));
+    console.error(`File: ${filePath}`);
+    console.error("");
+    console.error(`JSON syntax error: ${sanitizeInput(message)}`);
+    console.error("");
+    console.error("  Fix: Check for missing commas, brackets, or invalid values");
+    console.error("  Fix: Use a JSON validator to identify the exact location");
+    console.error("\u2501".repeat(25));
+  }
+}
+
 // ─── Validator 10: agentTriggerEnforcer (SUGGEST) ────────────────────────────
 
 /**
@@ -1017,6 +1091,8 @@ runValidator("componentSizeCheck", componentSizeCheck);
 runValidator("appCheckValidator", appCheckValidator);
 runValidator("typescriptStrictCheck", typescriptStrictCheck);
 runValidator("repositoryPatternCheck", repositoryPatternCheck);
+runValidator("markdownFenceCheck", markdownFenceCheck);
+runValidator("jsonSyntaxCheck", jsonSyntaxCheck);
 
 // SUGGEST validators (checkRequirements removed — redundant with agentTriggerEnforcer)
 runValidator("agentTriggerEnforcer", agentTriggerEnforcer);

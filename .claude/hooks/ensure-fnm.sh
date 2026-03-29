@@ -7,6 +7,11 @@ if [ $# -eq 0 ]; then
   exit 2
 fi
 
+# Fast-path: if node is already available, skip fnm (saves ~140ms per call)
+if command -v node >/dev/null 2>&1; then
+  exec "$@"
+fi
+
 if ! command -v fnm >/dev/null 2>&1; then
   echo "ensure-fnm.sh: fnm is not installed or not on PATH" >&2
   exit 1

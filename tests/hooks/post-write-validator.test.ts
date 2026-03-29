@@ -8,6 +8,8 @@
  *   - typescriptStrictCheck (WARN)
  *   - componentSizeCheck (WARN)
  *   - repositoryPatternCheck (WARN)
+ *   - markdownFenceCheck (WARN)
+ *   - jsonSyntaxCheck (WARN)
  *   - path security checks
  */
 
@@ -270,5 +272,141 @@ describe("checkAnyType: TypeScript strict check", () => {
     const content = "// This is a comment: any type here\nconst x = 1;\n";
     const violations = checkAnyType(content, "src/util.ts");
     assert.equal(violations.length, 0, "Should skip comment lines");
+  });
+});
+
+// --- markdownFenceCheck logic ---
+function checkMarkdownFences(content: string, filePath: string): boolean {
+  if (!filePath.toLowerCase().endsWith(".md")) return false;
+
+  const lines = content.split("\n");
+  let fenceCount = 0;
+  for (const line of lines) {
+    if (/^```/.test(line.trimStart())) {
+      fenceCount++;
+    }
+  }
+
+  return fenceCount % 2 !== 0;
+}
+
+// --- jsonSyntaxCheck logic ---
+function checkJsonSyntax(content: string, filePath: string): string | null {
+  if (!/\.json$/.test(filePath)) return null;
+  if (!content || !content.trim()) return null;
+
+  // Try parsing as-is
+  try {
+    JSON.parse(content);
+    return null;
+  } catch {
+    // Not valid JSON as-is
+  }
+
+  // Strip trailing commas (JSONC style like tsconfig.json)
+  const stripped = content.replace(/,\s*([}\]])/g, "$1");
+  try {
+    JSON.parse(stripped);
+    return null;
+  } catch {
+    // Still fails
+  }
+
+  // Return original parse error
+  try {
+    JSON.parse(content);
+    return null;
+  } catch (err) {
+    return err instanceof Error ? err.message : String(err);
+  }
+}
+
+describe("checkMarkdownFences: unclosed code fence detection", () => {
+  test("detects unclosed code fence (odd count = 1)", () => {
+    const content = "# Title\n\n```js\nconst x = 1;\n";
+    assert.equal(checkMarkdownFences(content, "docs/README.md"), true);
+  });
+
+  test("detects unclosed code fence (odd count = 3)", () => {
+    const content = "```js\ncode\n```\n\ntext\n\n```ts\ncode\n```\n\n```py\ncode\n";
+    assert.equal(checkMarkdownFences(content, "docs/guide.md"), true);
+  });
+
+  test("passes with even count (properly closed fences)", () => {
+    const content = "# Title\n\n```js\nconst x = 1;\n```\n\nDone.\n";
+    assert.equal(checkMarkdownFences(content, "docs/README.md"), false);
+  });
+
+  test("passes with zero fences", () => {
+    const content = "# Title\n\nJust text, no code blocks.\n";
+    assert.equal(checkMarkdownFences(content, "docs/README.md"), false);
+  });
+
+  test("does not flag non-markdown files", () => {
+    const content = "```\nunclosed fence\n";
+    assert.equal(checkMarkdownFences(content, "src/util.ts"), false);
+  });
+
+  test("handles fences with leading whitespace (indented fences)", () => {
+    const content = "# Title\n\n  ```js\n  const x = 1;\n";
+    assert.equal(checkMarkdownFences(content, "docs/README.md"), true);
+  });
+
+  test("passes with multiple properly closed fences", () => {
+    const content = "```js\ncode1\n```\n\n```ts\ncode2\n```\n\n```py\ncode3\n```\n";
+    assert.equal(checkMarkdownFences(content, "docs/README.md"), false);
+  });
+});
+
+describe("checkJsonSyntax: JSON syntax validation", () => {
+  test("passes valid JSON silently", () => {
+    const content = '{"name": "test", "version": "1.0.0"}';
+    assert.equal(checkJsonSyntax(content, "package.json"), null);
+  });
+
+  test("detects invalid JSON (missing closing brace)", () => {
+    const content = '{"name": "test"';
+    const error = checkJsonSyntax(content, "config.json");
+    assert.ok(error !== null, "Should detect syntax error");
+  });
+
+  test("detects invalid JSON (missing comma)", () => {
+    const content = '{"name": "test" "version": "1.0.0"}';
+    const error = checkJsonSyntax(content, "config.json");
+    assert.ok(error !== null, "Should detect missing comma");
+  });
+
+  test("handles trailing commas gracefully (tsconfig.json style)", () => {
+    const content =
+      '{\n  "compilerOptions": {\n    "strict": true,\n    "target": "es2020",\n  },\n}';
+    assert.equal(
+      checkJsonSyntax(content, "tsconfig.json"),
+      null,
+      "Trailing commas should NOT trigger warnings"
+    );
+  });
+
+  test("handles trailing commas in arrays", () => {
+    const content = '{\n  "include": [\n    "src",\n    "tests",\n  ]\n}';
+    assert.equal(
+      checkJsonSyntax(content, "tsconfig.json"),
+      null,
+      "Trailing commas in arrays should NOT trigger warnings"
+    );
+  });
+
+  test("does not flag non-json files", () => {
+    const content = "not json at all {{{";
+    assert.equal(checkJsonSyntax(content, "src/util.ts"), null);
+  });
+
+  test("passes empty/whitespace-only JSON files silently", () => {
+    assert.equal(checkJsonSyntax("", "empty.json"), null);
+    assert.equal(checkJsonSyntax("   \n  ", "whitespace.json"), null);
+  });
+
+  test("passes valid JSON arrays", () => {
+    const content = '[{"id": 1}, {"id": 2}]';
+    assert.equal(checkJsonSyntax(content, "data.json"), null);
   });
 });

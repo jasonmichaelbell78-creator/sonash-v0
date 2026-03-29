@@ -45,12 +45,6 @@
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/check-remote-session-context.js",
             "statusMessage": "Checking remote branches for session context...",
             "continueOnError": true
-          },
-          {
-            "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/gsd-check-update.js",
-            "statusMessage": "Checking for GSD updates...",
-            "continueOnError": true
           }
         ]
       },
@@ -80,6 +74,17 @@
             "if": "Bash(git commit *)",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/pre-commit-agent-compliance.js",
             "statusMessage": "Checking agent compliance..."
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)write$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Write(.env.local.encrypted)",
+            "command": "bash -c 'echo \"[env-guard] BLOCKED: .env.local.encrypted must not be overwritten by AI agents\" >&2 && node scripts/append-hook-warning.js --hook=pre-tool --type=env-guard --severity=error --message=\"Blocked write to .env.local.encrypted\" 2>/dev/null; exit 2'",
+            "statusMessage": "Checking env file protection..."
           }
         ]
       }
