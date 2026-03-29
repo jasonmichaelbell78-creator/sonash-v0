@@ -48,7 +48,10 @@ const projectDir =
   process.env.CLAUDE_PROJECT_DIR ||
   (() => {
     try {
-      return execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
+      return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+        encoding: "utf8",
+        timeout: 5000,
+      }).trim();
     } catch {
       return process.cwd();
     }
