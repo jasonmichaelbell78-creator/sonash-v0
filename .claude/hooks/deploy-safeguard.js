@@ -44,7 +44,15 @@ try {
 
 // --- Constants ---
 
-const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+const projectDir =
+  process.env.CLAUDE_PROJECT_DIR ||
+  (() => {
+    try {
+      return execFileSync("git", ["rev-parse", "--show-toplevel"], { encoding: "utf8" }).trim();
+    } catch {
+      return process.cwd();
+    }
+  })();
 
 /** Source directories to check for freshness comparison */
 const SOURCE_DIRS = ["app", "lib", "components"];
