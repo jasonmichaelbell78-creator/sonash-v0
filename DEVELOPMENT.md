@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.9 **Last Updated:** 2026-03-29 **Status:** Active
+**Document Version:** 3.0 **Last Updated:** 2026-03-29 **Status:** Active
 
 ---
 
@@ -681,13 +681,15 @@ initialization when needed. Saves ~140ms per hook invocation.
 
 **PreToolUse Hooks:**
 
-| Hook                           | Condition                           | Action | Purpose                                                              |
-| ------------------------------ | ----------------------------------- | ------ | -------------------------------------------------------------------- |
-| block-push-to-main.js          | `Bash(git push *)`                  | Block  | Block direct pushes to main branch                                   |
-| pre-commit-agent-compliance.js | `Bash(git commit *)`                | Warn   | Warn on commit without agent code review                             |
-| _(inline)_                     | `Write(.env.local.encrypted)`       | Block  | Block writes to encrypted env secrets file                           |
-| settings-guardian.js           | `Write/Edit(.claude/settings.json)` | Block  | Validate JSON, critical hooks, self-removal                          |
-| firestore-rules-guard.js       | `Write/Edit(**/firestore.rules)`    | Block  | Block removal of write-block patterns. `ALLOW_RULES_EDIT=1` override |
+| Hook                           | Condition                               | Action | Purpose                                                                            |
+| ------------------------------ | --------------------------------------- | ------ | ---------------------------------------------------------------------------------- |
+| block-push-to-main.js          | `Bash(git push *)`                      | Block  | Block direct pushes to main branch                                                 |
+| pre-commit-agent-compliance.js | `Bash(git commit *)`                    | Warn   | Warn on commit without agent code review                                           |
+| _(inline)_                     | `Write(.env.local.encrypted)`           | Block  | Block writes to encrypted env secrets file                                         |
+| settings-guardian.js           | `Write/Edit(.claude/settings.json)`     | Block  | Validate JSON, critical hooks, self-removal                                        |
+| firestore-rules-guard.js       | `Write/Edit(**/firestore.rules)`        | Block  | Block removal of write-block patterns. `ALLOW_RULES_EDIT=1` override               |
+| deploy-safeguard.js            | `Bash(firebase deploy *)`               | Block  | Block deploy if build stale, env missing, or tests failed. `SKIP_GATES=1` override |
+| large-file-gate.js             | `Read(*.jsonl\|*.log\|*.csv\|*.ndjson)` | Block  | Block reads >5MB, warn >500KB. `SKIP_GATES=1` override                             |
 
 **PostToolUse Hooks (Write/Edit):**
 
@@ -709,9 +711,10 @@ initialization when needed. Saves ~140ms per hook invocation.
 
 **PostToolUse Hooks (Bash):**
 
-| Hook              | Action | Purpose                         |
-| ----------------- | ------ | ------------------------------- |
-| commit-tracker.js | Track  | Log git commits to JSONL (#138) |
+| Hook              | Condition                    | Action | Purpose                                                |
+| ----------------- | ---------------------------- | ------ | ------------------------------------------------------ |
+| commit-tracker.js | `Bash(git commit *)`         | Track  | Log git commits to JSONL (#138)                        |
+| test-tracker.js   | `Bash(npm test *\|vitest *)` | Track  | Track test results to test-runs.jsonl, warn on failure |
 
 **PostToolUse Hooks (Task):**
 
@@ -752,9 +755,10 @@ initialization when needed. Saves ~140ms per hook invocation.
 | state-utils.js     | Shared `loadJson()`/`saveJson()` with atomic writes |
 
 > **BLOCKING hooks**: firestore-write-block.js, test-mocking-validator.js,
-> settings-guardian.js, firestore-rules-guard.js, and the .env.local.encrypted
-> inline block will prevent operations that violate security patterns. All other
-> hooks provide warnings/guidance but don't block.
+> settings-guardian.js, firestore-rules-guard.js, .env.local.encrypted inline
+> block, deploy-safeguard.js, and large-file-gate.js will prevent operations
+> that violate security patterns. All other hooks provide warnings/guidance but
+> don't block.
 
 **See:** `docs/archive/HOOKIFY_STRATEGY.md` for full hook documentation.
 
@@ -1320,6 +1324,7 @@ summary command; full dashboard is larger scope.
 
 | Version | Date       | Changes                                                                                                                                                                                                                    |
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.0     | 2026-03-29 | Wave 3 hooks: deploy-safeguard (PreToolUse deploy gate), test-tracker (PostToolUse test result JSONL), large-file-gate (PreToolUse large data file block)                                                                  |
 | 2.9     | 2026-03-29 | Wave 1-2 hooks: ensure-fnm.sh wrapper, PreToolUse gates (settings-guardian, firestore-rules-guard, .env.local.encrypted), governance-logger, loop-detector, test:gates harness, MD/JSON validators in post-write-validator |
 | 2.8     | 2026-02-17 | Added CC gate to pre-commit hook table (PR #371 retro action item)                                                                                                                                                         |
 | 2.7     | 2026-02-11 | Updated pre-commit hook table: doc index auto-fix with Prettier, doc headers, agent/debt checks (#150)                                                                                                                     |

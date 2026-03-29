@@ -74,6 +74,12 @@
             "if": "Bash(git commit *)",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/pre-commit-agent-compliance.js",
             "statusMessage": "Checking agent compliance..."
+          },
+          {
+            "type": "command",
+            "if": "Bash(firebase deploy *)|Bash(npx firebase deploy *)|Bash(npm run deploy *)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/deploy-safeguard.js",
+            "statusMessage": "Running pre-deploy checks..."
           }
         ]
       },
@@ -107,6 +113,17 @@
             "if": "Write(**/firestore.rules)|Edit(**/firestore.rules)",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/firestore-rules-guard.js",
             "statusMessage": "Checking firestore rules integrity..."
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)read$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Read(*.jsonl)|Read(*.log)|Read(*.csv)|Read(*.ndjson)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/large-file-gate.js",
+            "statusMessage": "Checking file size..."
           }
         ]
       }
@@ -181,6 +198,18 @@
             "if": "Bash(git commit *)|Bash(git cherry-pick *)|Bash(git merge *)|Bash(git revert *)",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/commit-tracker.js $ARGUMENTS",
             "statusMessage": "Tracking commits...",
+            "continueOnError": true
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(npm test *)|Bash(npm test)|Bash(npx vitest *)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/test-tracker.js",
+            "statusMessage": "Tracking test results...",
             "continueOnError": true
           }
         ]

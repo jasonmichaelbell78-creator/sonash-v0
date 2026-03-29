@@ -1,6 +1,6 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
-**Project**: SoNash Recovery Notebook **Document Version**: 1.8 **Created**:
+**Project**: SoNash Recovery Notebook **Document Version**: 1.9 **Created**:
 2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-03-29
 
 ---
@@ -63,13 +63,13 @@ repository. This document serves as:
 | ------------------------ | ----- | --------- | ------ | ------ |
 | GitHub Actions (CI/CD)   | 5     | ✅        | -      | Active |
 | Pre-Commit Hooks         | 1     | ✅        | -      | Active |
-| Session Hooks            | 21    | ✅        | -      | Active |
+| Session Hooks            | 24    | ✅        | -      | Active |
 | npm Scripts              | 8     | Semi      | ✅     | Active |
 | Automation Scripts       | 6     | -         | ✅     | Active |
 | Documentation Directives | 12+   | -         | ✅     | Active |
 | Anti-Pattern Checks      | 35+   | ✅        | -      | Active |
 
-**Total Enforcement Points**: 81+
+**Total Enforcement Points**: 84+
 
 ---
 
@@ -596,27 +596,30 @@ feedback on code quality, security, and best practices.
 
 ### Hooks Implemented
 
-| Hook                            | Trigger                   | Action  | Purpose                                         |
-| ------------------------------- | ------------------------- | ------- | ----------------------------------------------- |
-| ensure-fnm.sh                   | (wrapper)                 | Exec    | Fast-path node check, skips fnm if on PATH      |
-| session-start.js                | SessionStart              | Setup   | Deps, builds, patterns, TDMS check              |
-| check-mcp-servers.js            | SessionStart              | Report  | Check MCP server availability                   |
-| check-remote-session-context.js | SessionStart              | Warn    | Detect newer SESSION_CONTEXT on remote branches |
-| compact-restore.js              | SessionStart:compact      | Restore | Output recovery context after compaction (#138) |
-| block-push-to-main.js           | PreToolUse (Bash)         | Block   | Block direct pushes to main branch              |
-| pre-commit-agent-compliance.js  | PreToolUse (Bash)         | Warn    | Warn on commit without agent code review        |
-| _(inline)_                      | PreToolUse (Write)        | Block   | Block writes to .env.local.encrypted            |
-| settings-guardian.js            | PreToolUse (Write/Edit)   | Block   | Validate settings.json integrity                |
-| firestore-rules-guard.js        | PreToolUse (Write/Edit)   | Block   | Block removal of write-block patterns in rules  |
-| pre-compaction-save.js          | PreCompact                | Save    | Full state snapshot before compaction (#138)    |
-| post-write-validator.js         | Write/Edit                | Warn    | Schema, lint, MD/JSON, pattern validation       |
-| post-read-handler.js            | Read                      | Track   | Context tracking, auto-save, handoff            |
-| commit-tracker.js               | Bash                      | Track   | Log git commits to JSONL (#138)                 |
-| governance-logger.js            | PostToolUse (Write/Edit)  | Log     | Log governance changes with git diff to JSONL   |
-| track-agent-invocation.js       | Task                      | Track   | Record agent invocations for compliance (#101)  |
-| decision-save-prompt.js         | AskQuestion               | Prompt  | Remind to document decisions                    |
-| user-prompt-handler.js          | UserPromptSubmit          | Process | Process user prompts                            |
-| loop-detector.js                | PostToolUseFailure (Bash) | Warn    | Detect 3+ identical errors in 20 min window     |
+| Hook                            | Trigger                   | Action  | Purpose                                                |
+| ------------------------------- | ------------------------- | ------- | ------------------------------------------------------ |
+| ensure-fnm.sh                   | (wrapper)                 | Exec    | Fast-path node check, skips fnm if on PATH             |
+| session-start.js                | SessionStart              | Setup   | Deps, builds, patterns, TDMS check                     |
+| check-mcp-servers.js            | SessionStart              | Report  | Check MCP server availability                          |
+| check-remote-session-context.js | SessionStart              | Warn    | Detect newer SESSION_CONTEXT on remote branches        |
+| compact-restore.js              | SessionStart:compact      | Restore | Output recovery context after compaction (#138)        |
+| block-push-to-main.js           | PreToolUse (Bash)         | Block   | Block direct pushes to main branch                     |
+| pre-commit-agent-compliance.js  | PreToolUse (Bash)         | Warn    | Warn on commit without agent code review               |
+| _(inline)_                      | PreToolUse (Write)        | Block   | Block writes to .env.local.encrypted                   |
+| settings-guardian.js            | PreToolUse (Write/Edit)   | Block   | Validate settings.json integrity                       |
+| firestore-rules-guard.js        | PreToolUse (Write/Edit)   | Block   | Block removal of write-block patterns in rules         |
+| pre-compaction-save.js          | PreCompact                | Save    | Full state snapshot before compaction (#138)           |
+| post-write-validator.js         | Write/Edit                | Warn    | Schema, lint, MD/JSON, pattern validation              |
+| post-read-handler.js            | Read                      | Track   | Context tracking, auto-save, handoff                   |
+| commit-tracker.js               | Bash                      | Track   | Log git commits to JSONL (#138)                        |
+| governance-logger.js            | PostToolUse (Write/Edit)  | Log     | Log governance changes with git diff to JSONL          |
+| track-agent-invocation.js       | Task                      | Track   | Record agent invocations for compliance (#101)         |
+| decision-save-prompt.js         | AskQuestion               | Prompt  | Remind to document decisions                           |
+| user-prompt-handler.js          | UserPromptSubmit          | Process | Process user prompts                                   |
+| loop-detector.js                | PostToolUseFailure (Bash) | Warn    | Detect 3+ identical errors in 20 min window            |
+| deploy-safeguard.js             | PreToolUse (Bash)         | Block   | Block deploy if build stale, env missing, tests failed |
+| test-tracker.js                 | PostToolUse (Bash)        | Track   | Track test results to test-runs.jsonl, warn on failure |
+| large-file-gate.js              | PreToolUse (Read)         | Block   | Block reads >5MB, warn >500KB on large data files      |
 
 ### Verification
 
@@ -633,7 +636,7 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 - ✅ **Automated**: Runs automatically after tool use
 - ⚠️ **Blocking hooks**: firestore-write-block.js, test-mocking-validator.js,
   settings-guardian.js, firestore-rules-guard.js, .env.local.encrypted inline
-  block
+  block, deploy-safeguard.js, large-file-gate.js
 - ✅ **Warning hooks**: All others (inform but don't block)
 
 ---
@@ -1331,6 +1334,7 @@ sufficient coverage. Revisit if doc drift becomes a problem._
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                   | Author |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.9     | 2026-03-29 | Wave 3 hooks: deploy-safeguard (PreToolUse block on stale build/env/tests), test-tracker (PostToolUse test result tracking to JSONL), large-file-gate (PreToolUse block on large data file reads). Hook count 21 → 24                                     | Claude |
 | 1.8     | 2026-03-29 | Wave 2 hooks: settings-guardian, governance-logger, firestore-rules-guard, loop-detector, test-hook-gates harness, .env.local.encrypted inline block. Wave 1: ensure-fnm.sh wrapper, removed duplicate GSD check, post-write-validator MD/JSON validators | Claude |
 | 1.7     | 2026-01-27 | Add DOCUMENTATION_INDEX.md staleness check (BLOCKING)                                                                                                                                                                                                     | Claude |
 | 1.6     | 2026-01-26 | Add Agent compliance check (non-blocking)                                                                                                                                                                                                                 | Claude |
