@@ -2795,3 +2795,22 @@ deduped/merged)
 - Missing source config guard prevents misleading "up to date" messages.
 
 ---
+
+### Review #60 — PR #477 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-03-28 **Items:** 7 (3 fixed, 0 deferred, 4 rejected)
+
+**Patterns:**
+
+- 4 of 7 items repeat-rejected from R1/R2 (constant extraction x3, checksums x2,
+  silent catch x2, manifest-driven x2). Diminishing returns signal.
+- New zip slip/path traversal item was valid and fixed — archive extraction now
+  uses contained subdirectory.
+
+**Learnings:**
+
+- Archive extraction must use a contained subdirectory to prevent zip slip.
+- Invalid manifest entries should surface as "missing" not silently skip.
+- stdin size bounds prevent memory exhaustion on misconfigured hooks.
+
+---

@@ -1193,11 +1193,14 @@ try {
     }
     const [bin, ...args] = argv;
     if (!/^(?!\.\.?$)[\w.-]+$/.test(bin)) {
-      continue; // skip entries with unsafe binary names (including . and ..)
+      missing.push(sanitizeInput(String(name)));
+      continue; // unsafe binary name
     }
+    const joined = argv.join(" ");
     // eslint-disable-next-line no-control-regex -- intentional: reject control chars in manifest args
-    if (args.length > 8 || argv.join(" ").length > 200 || /[\x00-\x1f\x7f]/.test(argv.join(" "))) {
-      continue; // reject excessive or control-char-tainted arguments
+    if (args.length > 8 || joined.length > 200 || /[\x00-\x1f\x7f]/.test(joined)) {
+      missing.push(sanitizeInput(String(name)));
+      continue; // invalid arguments
     }
     try {
       execFileSync(bin, args, { stdio: "pipe", timeout: 3000 });

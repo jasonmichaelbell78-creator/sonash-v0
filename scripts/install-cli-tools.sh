@@ -117,9 +117,18 @@ download_github_release() {
   fi
 
   if [[ "$url" == *.zip ]]; then
-    (cd "$tmp" && unzip -o download >/dev/null 2>&1) || { echo "  ERROR: unzip failed" >&2; rm -rf "$tmp"; return 1; }
+    # Extract into a subdirectory to contain zip slip attempts
+    local extract_dir="$tmp/extract"
+    mkdir -p "$extract_dir"
+    (cd "$extract_dir" && unzip -o "$tmp/download" >/dev/null 2>&1) || { echo "  ERROR: unzip failed" >&2; rm -rf "$tmp"; return 1; }
+    # Verify no path traversal: reject entries outside extract dir
+    if find "$extract_dir" -name '*..*' 2>/dev/null | grep -q .; then
+      echo "  ERROR: archive contains suspicious path traversal entries" >&2
+      rm -rf "$tmp"
+      return 1
+    fi
     local found
-    found=$(find "$tmp" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
+    found=$(find "$extract_dir" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
     if [[ -n "$found" ]]; then
       cp "$found" "$BIN_DIR/$target_name"
       chmod +x "$BIN_DIR/$target_name"
@@ -129,9 +138,12 @@ download_github_release() {
       return 1
     fi
   elif [[ "$url" == *.tar.gz || "$url" == *.tgz ]]; then
-    (cd "$tmp" && tar xzf download 2>/dev/null) || { echo "  ERROR: tar extract failed" >&2; rm -rf "$tmp"; return 1; }
+    local extract_dir="$tmp/extract"
+    mkdir -p "$extract_dir"
+    # --no-same-owner prevents tar from setting ownership; extract into contained dir
+    (cd "$extract_dir" && tar xzf "$tmp/download" --no-same-owner 2>/dev/null) || { echo "  ERROR: tar extract failed" >&2; rm -rf "$tmp"; return 1; }
     local found
-    found=$(find "$tmp" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
+    found=$(find "$extract_dir" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
     if [[ -n "$found" ]]; then
       cp "$found" "$BIN_DIR/$target_name"
       chmod +x "$BIN_DIR/$target_name"

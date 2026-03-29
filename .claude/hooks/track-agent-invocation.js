@@ -66,7 +66,12 @@ if (isOutsideBase) {
 let stdinData = "";
 try {
   if (!process.stdin.isTTY) {
-    stdinData = fs.readFileSync(0, "utf-8").trim();
+    const raw = fs.readFileSync(0, "utf-8");
+    if (raw.length > 128_000) {
+      console.log("ok");
+      process.exit(0);
+    }
+    stdinData = raw.trim();
   }
 } catch {
   /* stdin not available */
