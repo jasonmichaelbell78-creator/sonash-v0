@@ -2771,3 +2771,27 @@ deduped/merged)
   intentional, deny list is the actual boundary.
 
 ---
+
+### Review #59 — PR #477 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-03-28 **Items:** 12 (4 fixed, 0 deferred, 8 rejected)
+
+**Patterns:**
+
+- 6 of 12 items were repeat-rejections from R1 (Bash\*, checksums, audit trail,
+  unstructured logging, silent catch, constant extraction). Cross-round dedup
+  working.
+- 1 stale item (manifest-driven execution) already fixed in R1.
+- Qodo suggestions on R2 were higher quality than R1 compliance items —
+  actionable hardening rather than compliance noise.
+
+**Learnings:**
+
+- Manifest check parsing hardened: array-style support, arg count bounds (>8),
+  total length bounds (>200), control character rejection.
+- GitHub release download: single API call, URL validation (must be github.com
+  releases/download path), better grep fallback.
+- PATH check for $HOME/bin ensures tools are discoverable after install.
+- Missing source config guard prevents misleading "up to date" messages.
+
+---

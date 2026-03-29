@@ -31,7 +31,9 @@ fi
 if command -v starship &>/dev/null; then
   STARSHIP_DIR="$HOME/.config"
   mkdir -p "$STARSHIP_DIR"
-  if [[ ! -f "$STARSHIP_DIR/starship.toml" ]] || [[ "$CONFIG_DIR/starship.toml" -nt "$STARSHIP_DIR/starship.toml" ]]; then
+  if [[ ! -f "$CONFIG_DIR/starship.toml" ]]; then
+    echo "[starship] ERROR: Missing repo config at $CONFIG_DIR/starship.toml — skipping" >&2
+  elif [[ ! -f "$STARSHIP_DIR/starship.toml" ]] || [[ "$CONFIG_DIR/starship.toml" -nt "$STARSHIP_DIR/starship.toml" ]]; then
     echo "[starship] Deploying config..."
     cp "$CONFIG_DIR/starship.toml" "$STARSHIP_DIR/starship.toml"
     echo "[starship] Done"

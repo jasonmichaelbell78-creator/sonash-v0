@@ -9,6 +9,19 @@ BIN_DIR="$HOME/bin"
 
 mkdir -p "$BIN_DIR"
 
+# Ensure BIN_DIR is on PATH so installed tools are discoverable
+if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
+  echo "WARNING: $BIN_DIR is not on PATH; installed tools may not be discoverable."
+  BASHRC_PATH="$HOME/.bashrc"
+  touch "$BASHRC_PATH"
+  if ! grep -q 'export PATH="$HOME/bin:$PATH"' "$BASHRC_PATH" 2>/dev/null; then
+    echo "" >> "$BASHRC_PATH"
+    echo '# SoNash CLI tools' >> "$BASHRC_PATH"
+    echo 'export PATH="$HOME/bin:$PATH"' >> "$BASHRC_PATH"
+    echo "Added PATH export to ~/.bashrc (restart shell to apply)."
+  fi
+fi
+
 # Parse --verify flag
 VERIFY_ONLY=false
 if [[ "${1:-}" == "--verify" ]]; then
@@ -69,16 +82,27 @@ install_with_go() {
 download_github_release() {
   local repo="$1" binary="$2" pattern="$3"
   echo "  Downloading from GitHub: $repo..."
-  local url
+  local api_json url
+  api_json=$(curl --proto '=https' --tlsv1.2 -fsSL "https://api.github.com/repos/$repo/releases/latest") || {
+    echo "  ERROR: Failed to fetch release info for $repo" >&2
+    return 1
+  }
   if command -v jq &>/dev/null; then
-    url=$(curl --proto '=https' --tlsv1.2 -sL "https://api.github.com/repos/$repo/releases/latest" \
+    url=$(printf '%s' "$api_json" \
       | jq -r --arg p "$pattern" '.assets[].browser_download_url | select(test($p))' | head -1)
   else
-    url=$(curl --proto '=https' --tlsv1.2 -sL "https://api.github.com/repos/$repo/releases/latest" \
-      | grep -o "https://[^\"]*$pattern" | head -1)
+    url=$(printf '%s' "$api_json" \
+      | tr '"' '\n' \
+      | grep -E '^https://github\.com/.+/releases/download/.+' \
+      | grep -E "$pattern" \
+      | head -1)
   fi
   if [[ -z "$url" ]]; then
     echo "  ERROR: Could not find release matching pattern: $pattern" >&2
+    return 1
+  fi
+  if [[ ! "$url" =~ ^https://github\.com/.+/releases/download/ ]]; then
+    echo "  ERROR: Refusing non-GitHub release URL" >&2
     return 1
   fi
   local tmp

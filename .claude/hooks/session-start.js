@@ -1181,17 +1181,26 @@ try {
   const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
   const missing = [];
   for (const [name, info] of Object.entries(manifest.tools || {})) {
-    const check = typeof info?.check === "string" ? info.check.trim() : "";
-    if (!check) {
+    const checkRaw = info?.check;
+    const argv = Array.isArray(checkRaw)
+      ? checkRaw.map((v) => String(v))
+      : typeof checkRaw === "string" && checkRaw.trim()
+        ? checkRaw.trim().split(/\s+/)
+        : [];
+    if (argv.length === 0) {
       missing.push(sanitizeInput(String(name)));
       continue;
     }
-    const parts = check.split(/\s+/);
-    if (!/^(?!\.\\.?$)[\w.-]+$/.test(parts[0])) {
+    const [bin, ...args] = argv;
+    if (!/^(?!\.\.?$)[\w.-]+$/.test(bin)) {
       continue; // skip entries with unsafe binary names (including . and ..)
     }
+    // eslint-disable-next-line no-control-regex -- intentional: reject control chars in manifest args
+    if (args.length > 8 || argv.join(" ").length > 200 || /[\x00-\x1f\x7f]/.test(argv.join(" "))) {
+      continue; // reject excessive or control-char-tainted arguments
+    }
     try {
-      execFileSync(parts[0], parts.slice(1), { stdio: "pipe", timeout: 3000 });
+      execFileSync(bin, args, { stdio: "pipe", timeout: 3000 });
     } catch {
       missing.push(sanitizeInput(String(name)));
     }
