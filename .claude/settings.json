@@ -3,62 +3,7 @@
     "allow": [
       "Edit",
       "Write",
-      "Bash(git *)",
-      "Bash(npm *)",
-      "Bash(npx *)",
-      "Bash(node *)",
-      "Bash(bash *)",
-      "Bash(ls *)",
-      "Bash(mkdir *)",
-      "Bash(cat *)",
-      "Bash(head *)",
-      "Bash(tail *)",
-      "Bash(wc *)",
-      "Bash(sort *)",
-      "Bash(diff *)",
-      "Bash(cp *)",
-      "Bash(mv *)",
-      "Bash(rm *)",
-      "Bash(touch *)",
-      "Bash(gh *)",
-      "Bash(jq *)",
-      "Bash(python3 *)",
-      "Bash(grep *)",
-      "Bash(rg *)",
-      "Bash(echo *)",
-      "Bash(find *)",
-      "Bash(for *)",
-      "Bash(if *)",
-      "Bash(cd *)",
-      "Bash(SKIP_* *)",
-      "Bash(curl *)",
-      "Bash(du *)",
-      "Bash(awk *)",
-      "Bash(sed *)",
-      "Bash(tee *)",
-      "Bash(printf *)",
-      "Bash(chmod *)",
-      "Bash(xargs *)",
-      "Bash(export *)",
-      "Bash(test *)",
-      "Bash(while *)",
-      "Bash(do *)",
-      "Bash(then *)",
-      "Bash(else *)",
-      "Bash(done)",
-      "Bash(fi)",
-      "Bash(dir *)",
-      "Bash(findstr *)",
-      "Bash(powershell *)",
-      "Bash(cmd.exe *)",
-      "Bash(where *)",
-      "Bash(winget *)",
-      "Bash(taskkill *)",
-      "Bash(claude *)",
-      "Bash(fnm *)",
-      "Bash(gitleaks *)",
-      "Bash(firebase *)",
-      "Bash(go *)",
+      "Bash(*)",
       "WebSearch",
       "WebFetch",
       "Skill",
@@ -215,7 +160,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/track-agent-invocation.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/track-agent-invocation.js",
             "statusMessage": "Tracking agent invocation..."
           }
         ]
@@ -232,7 +177,17 @@
         ]
       }
     ],
-    "Notification": []
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -d \"Claude Code needs your attention\" ntfy.sh/sonash-claude",
+            "continueOnError": true
+          }
+        ]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",

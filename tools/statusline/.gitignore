@@ -1,4 +1,6 @@
 config.local.toml
 sonash-statusline
 sonash-statusline.exe
+statusline.exe
+*.exe~
 cache/

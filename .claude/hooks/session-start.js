@@ -1175,6 +1175,49 @@ try {
   );
 }
 
+// CLI tool detection from tool-manifest.json
+try {
+  const manifestPath = path.join(projectDir, ".claude", "tool-manifest.json");
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+  const missing = [];
+  for (const [name, info] of Object.entries(manifest.tools || {})) {
+    const checkRaw = info?.check;
+    const argv = Array.isArray(checkRaw)
+      ? checkRaw.map((v) => String(v))
+      : typeof checkRaw === "string" && checkRaw.trim()
+        ? checkRaw.trim().split(/\s+/)
+        : [];
+    if (argv.length === 0) {
+      missing.push(sanitizeInput(String(name)));
+      continue;
+    }
+    const [bin, ...args] = argv;
+    if (!/^(?!\.\.?$)[\w.-]+$/.test(bin)) {
+      missing.push(sanitizeInput(String(name)));
+      continue; // unsafe binary name
+    }
+    const joined = argv.join(" ");
+    // eslint-disable-next-line no-control-regex -- intentional: reject control chars in manifest args
+    if (args.length > 8 || joined.length > 200 || /[\x00-\x1f\x7f]/.test(joined)) {
+      missing.push(sanitizeInput(String(name)));
+      continue; // invalid arguments
+    }
+    try {
+      execFileSync(bin, args, { stdio: "pipe", timeout: 3000 });
+    } catch {
+      missing.push(sanitizeInput(String(name)));
+    }
+  }
+  if (missing.length > 0) {
+    console.log(
+      `   ⚠️ CLI tools missing: ${missing.join(", ")}. Fix: bash scripts/install-cli-tools.sh`
+    );
+    warnings++;
+  }
+} catch {
+  // Non-fatal — tool manifest may not exist or be unreadable
+}
+
 console.log("");
 if (warnings === 0) {
   console.log("✅ SessionStart complete");

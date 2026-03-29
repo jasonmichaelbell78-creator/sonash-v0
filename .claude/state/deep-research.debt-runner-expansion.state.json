@@ -1,28 +1,37 @@
 {
-  "task": "Deep Research: debt-runner expansion",
+  "task": "Deep Research: debt-runner hybrid expansion (v2)",
   "topic": "debt-runner-expansion",
-  "status": "complete",
+  "status": "phase1-in-progress",
   "depth": "L1",
-  "sub_questions": 10,
-  "agents_total": 17,
-  "agents_completed": 17,
+  "sub_questions": 11,
+  "agents_total": 23,
+  "agents_completed": 0,
+  "version": 2,
+  "prior_version": "findings-v1/",
   "waves": {
-    "wave_1": { "status": "complete", "agents": ["SQ1", "SQ2a", "SQ2b", "SQ3a", "SQ3b", "SQ4"] },
-    "wave_2": { "status": "complete", "agents": ["SQ5", "SQ6", "SQ7"] },
-    "wave_3": { "status": "complete", "agents": ["SQ8a", "SQ8b", "SQ9"] },
-    "synthesis": { "status": "complete" },
-    "challenges": { "status": "complete", "agents": ["contrarian", "otb"] },
-    "sq10_gap_fill": { "status": "complete", "agents": ["SQ10", "SQ10-verifier"] }
+    "wave_1": { "status": "complete", "agents": ["SQ1a", "SQ1b", "SQ2", "SQ3"] },
+    "wave_2": { "status": "complete", "agents": ["SQ4a", "SQ4b", "SQ5", "SQ6"] },
+    "wave_3": { "status": "complete", "agents": ["SQ7", "SQ8", "SQ9", "SQ10"] },
+    "wave_4": { "status": "complete", "agents": ["SQ11"] },
+    "synthesis": { "status": "in-progress" },
+    "verification": { "status": "pending", "agents": ["V1", "V2", "V3"] },
+    "challenges": {
+      "status": "pending",
+      "agents": ["contrarian-1", "contrarian-2", "otb-1", "otb-2"]
+    },
+    "post_challenge": { "status": "pending", "agents": ["re-synthesis", "final-cl"] }
   },
-  "challenge_adjustments": {
-    "weakened": [
-      "GAP-01 code-reviewer (CRITICAL->MODERATE)",
-      "GAP-09 npm audit (HIGH->MEDIUM)",
-      "DARK-01 known-debt-baseline (reframed)"
-    ],
-    "overturned": ["GAP-13 ecosystem audit Fix Now (correct design)"],
-    "upheld_bugs": ["BUG-01", "BUG-02 (severity weakened)", "BUG-03", "BUG-04 (low severity)"],
-    "sq10_corrections": ["9 dirs not 8", "2 agent types duplicate existing", "2 user gates not 1"]
+  "qa_decisions": {
+    "data_store": "JSONL canonical write + SQLite read mirror at data/tdms.db",
+    "web_refresh": "Manual button, no auto-sync, no Firebase",
+    "single_source": "MASTER_DEBT houses everything, schema may expand",
+    "prod_support": "Works in both dev and production builds",
+    "desktop_only": true,
+    "charting": "Options during discovery, not pre-decided",
+    "web_capabilities": "UBER — maximum power, sorting, filtering, handoff to CLI",
+    "synergies": "Cross-tab opportunities between debt and other dev dashboard tabs",
+    "verification": "3 dedicated verification agents + CL at every phase",
+    "challenges": "Doubled: 2 contrarian + 2 OTB"
   },
-  "updated": "2026-03-26T14:00:00Z"
+  "updated": "2026-03-27T12:45:00Z"
 }

@@ -12,12 +12,12 @@ import (
 func renderLines(w *AllWidgets, cfg *Config) string {
 	sep := " " + cfg.General.Separator + " "
 
-	// Line 1: Identity & Workspace
-	line1Parts := []WidgetResult{w.A1, w.B1, w.B3, w.B2, w.A4, w.A6, w.E1}
+	// Line 1: Identity & Workspace + Context
+	line1Parts := []WidgetResult{w.A1, w.B1, w.B3, w.B2, w.A4, w.C1}
 	line1 := joinWidgets(line1Parts, sep)
 
 	// Line 2: Health & Metrics
-	line2Parts := []WidgetResult{w.D1, w.D5, w.H2, w.H3, w.C8, w.C1}
+	line2Parts := []WidgetResult{w.D1, w.D5, w.H2, w.H3, w.C8}
 	line2 := joinWidgets(line2Parts, sep)
 	rateCluster := colorize(w.C5) + " " + colorize(w.C7)
 	line2 = line2 + sep + rateCluster + sep + colorize(w.C6)

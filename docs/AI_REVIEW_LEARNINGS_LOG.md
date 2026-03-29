@@ -1160,6 +1160,26 @@ deduplicated, non-overlapping ranges):
 - DEBT-45615 resolved
 - Qodo stale diff note added to pr-review
 
+---
+
+### Review rev-19: (untitled) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #472 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 13    | 12    | 0        | 1        |
+
+---
+
+### Review rev-20: (untitled) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #472 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 6     | 2        | 0        |
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
@@ -2715,5 +2735,82 @@ deduped/merged)
   MSYS drive letter (cygpath handles it), trim vs CR-strip (already addressed)
 - Merge trigger: R5 0% fix rate confirms diminishing returns. No further review
   rounds will produce actionable fixes.
+
+---
+
+### Review #58 — PR #477 R1 (Mixed: Doc Lint CI + SonarCloud + Qodo + Gemini + CI)
+
+**Date:** 2026-03-28 **Items:** 21 (14 fixed, 0 deferred, 7 rejected)
+
+**Patterns:**
+
+- SonarCloud first-scan on new bash scripts: 20 items across 5 pattern
+  categories (`[` vs `[[`, stderr redirection, explicit returns, nested ifs,
+  constant extraction). All pattern-based — propagation sweep fixed all
+  instances in one pass.
+- Qodo bugs correctly identified real issues: eval in check_tool (security),
+  manifest drift (rg missing from hardcoded list), unvalidated manifest check
+  field (reliability).
+- Gemini caught path traversal edge case in binary name regex (`.`/`..`
+  allowed).
+- CI caught knip failure: `@typescript/native-preview` is a CLI tool, not
+  imported — added to knip ignoreDependencies.
+- Editor backup binary `.exe~` and duplicate `statusline.exe` committed (10MB
+  each). Removed from tracking + gitignored.
+
+**Learnings:**
+
+- Bash scripts need `[[` from the start — SonarCloud flags every `[` as Major.
+- `eval` in bash scripts is always flagged — use direct execution `"$@"`
+  pattern.
+- Tool manifest should be the source of truth for installer loop, not a
+  hardcoded list.
+- Binary artifacts (`.exe~`) must be caught before commit — add gitignore rules
+  proactively.
+- Bash(\*) in settings.json generates security noise every PR — acknowledged as
+  intentional, deny list is the actual boundary.
+
+---
+
+### Review #59 — PR #477 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-03-28 **Items:** 12 (4 fixed, 0 deferred, 8 rejected)
+
+**Patterns:**
+
+- 6 of 12 items were repeat-rejections from R1 (Bash\*, checksums, audit trail,
+  unstructured logging, silent catch, constant extraction). Cross-round dedup
+  working.
+- 1 stale item (manifest-driven execution) already fixed in R1.
+- Qodo suggestions on R2 were higher quality than R1 compliance items —
+  actionable hardening rather than compliance noise.
+
+**Learnings:**
+
+- Manifest check parsing hardened: array-style support, arg count bounds (>8),
+  total length bounds (>200), control character rejection.
+- GitHub release download: single API call, URL validation (must be github.com
+  releases/download path), better grep fallback.
+- PATH check for $HOME/bin ensures tools are discoverable after install.
+- Missing source config guard prevents misleading "up to date" messages.
+
+---
+
+### Review #60 — PR #477 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-03-28 **Items:** 7 (3 fixed, 0 deferred, 4 rejected)
+
+**Patterns:**
+
+- 4 of 7 items repeat-rejected from R1/R2 (constant extraction x3, checksums x2,
+  silent catch x2, manifest-driven x2). Diminishing returns signal.
+- New zip slip/path traversal item was valid and fixed — archive extraction now
+  uses contained subdirectory.
+
+**Learnings:**
+
+- Archive extraction must use a contained subdirectory to prevent zip slip.
+- Invalid manifest entries should surface as "missing" not silently skip.
+- stdin size bounds prevent memory exhaustion on misconfigured hooks.
 
 ---

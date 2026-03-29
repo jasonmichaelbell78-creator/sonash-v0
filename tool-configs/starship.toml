@@ -1,0 +1,32 @@
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$package\
+$cmd_duration\
+$line_break\
+$character"""
+
+[directory]
+truncation_length = 3
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+
+[nodejs]
+format = "[$symbol($version)]($style) "
+
+[package]
+disabled = true
+
+[cmd_duration]
+min_time = 2000
+format = "[$duration]($style) "
+
+[character]
+success_symbol = "[>](bold green)"
+error_symbol = "[>](bold red)"

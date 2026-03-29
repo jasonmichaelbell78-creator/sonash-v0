@@ -61,20 +61,37 @@ if (isOutsideBase) {
   process.exit(0);
 }
 
-// Parse arguments - expecting JSON with Task tool parameters
-const arg = process.argv[2] || "";
-if (!arg) {
+// Parse stdin — Claude Code PostToolUse hooks receive JSON via stdin:
+// { "tool_name": "Agent", "tool_input": { "subagent_type": "...", "description": "...", ... } }
+let stdinData = "";
+try {
+  if (!process.stdin.isTTY) {
+    const raw = fs.readFileSync(0, "utf-8");
+    if (raw.length > 128_000) {
+      console.log("ok");
+      process.exit(0);
+    }
+    stdinData = raw.trim();
+  }
+} catch {
+  /* stdin not available */
+}
+// Fallback to argv for manual testing
+if (!stdinData) stdinData = process.argv[2] || "";
+if (!stdinData) {
   console.log("ok");
   process.exit(0);
 }
 
-// Extract subagent_type from JSON
+// Extract subagent_type from stdin JSON
 let subagentType = "";
 let description = "";
 try {
-  const parsed = JSON.parse(arg);
-  subagentType = parsed.subagent_type || "";
-  description = parsed.description || "";
+  const parsed = JSON.parse(stdinData);
+  // PostToolUse format: { tool_input: { subagent_type, description } }
+  const input = parsed.tool_input || parsed;
+  subagentType = input.subagent_type || "";
+  description = input.description || "";
 } catch {
   console.log("ok");
   process.exit(0);

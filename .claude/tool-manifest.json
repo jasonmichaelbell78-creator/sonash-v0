@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "tools": {
+    "fzf": { "check": "fzf --version", "prefer_over": null, "category": "search" },
+    "bat": { "check": "bat --version", "prefer_over": "cat", "category": "view" },
+    "fd": { "check": "fd --version", "prefer_over": "find", "category": "search" },
+    "delta": { "check": "delta --version", "prefer_over": null, "category": "git" },
+    "zoxide": { "check": "zoxide --version", "prefer_over": "cd", "category": "nav" },
+    "eza": { "check": "eza --version", "prefer_over": "ls", "category": "view" },
+    "rg": { "check": "rg --version", "prefer_over": "grep", "category": "search" },
+    "starship": { "check": "starship --version", "prefer_over": null, "category": "prompt" },
+    "yazi": { "check": "yazi --version", "prefer_over": null, "category": "filemanager" },
+    "lazygit": { "check": "lazygit --version", "prefer_over": null, "category": "git" },
+    "yq": { "check": "yq --version", "prefer_over": null, "category": "data" },
+    "gron": { "check": "gron --version", "prefer_over": null, "category": "data" },
+    "htmlq": { "check": "htmlq --version", "prefer_over": null, "category": "data" },
+    "difft": { "check": "difft --version", "prefer_over": null, "category": "git" }
+  }
+}

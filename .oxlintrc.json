@@ -3,7 +3,10 @@
   "rules": {
     "no-unused-vars": "warn",
     "no-unassigned-vars": "warn",
-    "unicorn/no-new-array": "warn"
+    "unicorn/no-new-array": "warn",
+    "typescript/no-unnecessary-type-assertion": "warn",
+    "typescript/no-misused-promises": "warn",
+    "typescript/no-floating-promises": "warn"
   },
   "ignorePatterns": [
     "node_modules",

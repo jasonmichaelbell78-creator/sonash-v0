@@ -1,67 +1,179 @@
 {
-  "topic": "debt-runner-expansion",
-  "depth": "L1",
-  "questionType": "codebase-analysis",
+  "topic": "debt-runner hybrid expansion — CLI write-side + web dashboard read-side for Technical Debt Management System",
+  "depth": "L3",
+  "questionType": "codebase-analysis + architecture",
   "domain": "technical-debt-management",
   "startedAt": "2026-03-26T00:00:00Z",
-  "completedAt": "2026-03-26T18:00:00Z",
-  "agents_used": 17,
-  "sub_questions": 10,
-  "total_claims": 79,
-  "source_count": 60,
-  "confidence_distribution": {
-    "HIGH": 68,
-    "MEDIUM": 2,
-    "LOW": 0,
+  "completedAt": "2026-03-27T14:00:00Z",
+  "revisedAt": "2026-03-27T18:00:00Z",
+  "revisionReason": "post-challenge re-synthesis: 2 verification agents, 4 challenge reviewers, 15 factual corrections applied",
+  "agentCount": 19,
+  "searchRounds": 14,
+  "verificationRounds": 2,
+  "challengeRounds": 4,
+  "sourceCount": 55,
+  "claimCount": 44,
+  "subQuestionCount": 11,
+  "confidenceDistribution": {
+    "HIGH": 38,
+    "MEDIUM": 4,
+    "LOW": 2,
     "UNVERIFIED": 0
   },
-  "bugs_found": 6,
-  "gaps_catalogued": 26,
-  "themes_identified": [
-    "Intake coverage — most debt-producing paths are disconnected from TDMS",
-    "Critical bugs in verification and resolution pipeline",
-    "Shadow debt stores (known-debt-baseline.json, override-log.jsonl, deferred-items.jsonl)",
-    "Zero-visibility external sources (Semgrep, CodeQL, npm audit)",
-    "Interactive design patterns — 3-level max depth, delegation spectrum",
-    "Defer-path inconsistency — same word means different things in different skills",
-    "Status lifecycle gaps — IN_PROGRESS unimplemented, verification queue unmanaged",
-    "Consumption gaps — statusline, roadmap view, trend visualization all missing"
+  "bugsConfirmed": 6,
+  "gapsCatalogued": 26,
+  "mustHaveGaps": 6,
+  "contradictionsFound": 5,
+  "verificationResults": {
+    "V1_codebase": {
+      "total": 14,
+      "verified": 12,
+      "partial": 2,
+      "refuted": 0
+    },
+    "V2_data": {
+      "total": 14,
+      "verified": 12,
+      "partial": 0,
+      "refuted": 2
+    }
+  },
+  "challengeResults": {
+    "contrarian1_architectural": {
+      "majorFindings": 5,
+      "adopted": [
+        "hybrid_fetch_strategy",
+        "field_stripping_required",
+        "discovery_agents_reduced_to_3",
+        "guided_mode_as_default",
+        "clipboard_repositioned_as_v1"
+      ],
+      "deferred": ["websocket_bridge_for_v2"]
+    },
+    "contrarian2_frontend": {
+      "highItems": 3,
+      "adopted": [
+        "recharts_must_be_added_not_exists",
+        "field_stripping_to_2mb",
+        "sqlite_optional_on_windows",
+        "minisearch_replaces_fusejs"
+      ],
+      "deferred": ["nuqs_skipped_for_v1"]
+    },
+    "otb1_creative": {
+      "ideasEvaluated": 8,
+      "incorporated": [
+        "pre_generated_ai_summaries_phase3",
+        "debt_heat_map_phase4",
+        "diff_view_phase4",
+        "statusline_s0_widget_phase1"
+      ],
+      "deferred": ["gamification", "webhook_thresholds"],
+      "rejected": ["electron_tauri_standalone_app"]
+    },
+    "otb2_product_strategy": {
+      "criticalFindings": 5,
+      "adopted": [
+        "4_phase_implementation_plan",
+        "bug_fixes_first_phase1_gate",
+        "discovery_agents_reduced_scope",
+        "cross_tab_synergies_deferred",
+        "sqlite_defer_considered"
+      ],
+      "notes": "SQLite kept as optional (not fully deferred) because CLI query benefits are real; main constraint is making it non-required for web path"
+    }
+  },
+  "factualCorrectionsApplied": [
+    "Recharts and shadcn chart NOT installed — must be ADDED",
+    "known-debt-baseline.json has ~40 entries (not 45+)",
+    "cluster_primary is sparse (2% coverage, 172/8,472) — must be nullable",
+    "useTabRefresh scoped to AdminTabId not DevTabId — needs generalization",
+    "Static JSON for all fields = 7.6 MB — field stripping to ~2 MB required",
+    "Hybrid fetch (dev API + prod static) is now PRIMARY strategy",
+    "Pre-generated AI summaries added as Phase 3 build-time capability",
+    "Discovery agents reduced from 7 to 3 with resolution-rate gate",
+    "4-phase implementation plan added with stop points",
+    "Guided mode changed from optional to DEFAULT",
+    "MiniSearch added as replacement for Fuse.js",
+    "better-sqlite3 Windows compilation risk documented; SQLite made optional",
+    "Debt heat map / file tree added as Phase 4 future capability",
+    "Diff view between time points added as Phase 4 future capability",
+    "Statusline S0 widget added as Phase 1 quick win"
   ],
-  "consumer_hints": {
-    "deep_plan_ready": true,
-    "recommended_next": "/deep-plan debt-runner expansion",
-    "pre_expansion_bugs_to_fix": [
-      "BUG-01: debt-health.js lowercase status filter",
-      "BUG-02: dedup-multi-pass.js missing --dry-run flag",
-      "BUG-03: resolve-bulk.js missing sync-deduped.js call",
-      "BUG-04: TRIAGED in ELIGIBLE_STATUSES but not in schema",
-      "BUG-05: unplaced-items.md permanently stale",
-      "BUG-06: resolve-debt.yml missing reconcile-roadmap.js step"
-    ],
-    "key_decisions_needed": [
-      "Menu hierarchy depth — how many new modes to add to the flat menu (6 proposed: intake, sources, roadmap, triage, review-needed, dark-debt)",
-      "New mode list — confirm the 6 proposed new modes against user priority",
-      "Integration priority order — which of the 8 MUST-HAVE gaps to address first",
-      "Debt refresh workflow design — whether 'full refresh' is a mode or a guided workflow",
-      "Discovery agent layer — how AI-driven debt discovery integrates (9 agent types, 7 net-new)",
-      "Guided vs expert mode — outcome language for non-developer vs script-level for expert",
-      "SQLite timing — expand on JSONL now or wait for SQLite migration?",
-      "Bug-fix-first sequencing — fix 6 bugs in pre-expansion PR before any new modes?",
-      "Statusline widget — add S0/S1 count to Go statusline as immediate visibility win",
-      "known-debt-baseline.json bridge — sync-baseline-debt.js script design",
-      "SonarCloud CI auto-trigger — sonarcloud.yml workflow modification approval",
-      "code-reviewer TDMS path — selective defer option, not auto-routing"
-    ],
-    "hasStackClaims": false,
+  "themesIdentified": [
+    "Static export is the load-bearing constraint — but dev mode has an escape hatch",
+    "Hybrid fetch strategy eliminates staleness during actual development usage",
+    "Field-stripped build-time JSON closes the production gap (~2 MB not 7.6 MB)",
+    "Two bugs must be fixed before web development starts (BUG-01, BUG-06)",
+    "The table layer determines web usability at 8,472 records",
+    "MiniSearch (inverted index) replaces Fuse.js brute-force for client-side search",
+    "Start with 3 discovery agents — resolution-rate gate before expanding to 7",
+    "Pre-generated AI summaries transform dashboard from numbers to insights",
+    "metrics.json as dashboard hub data source; cross-tab synergies deferred until tabs exist",
+    "4-phase implementation with independent value at each stop point"
+  ],
+  "architecturalDecision": "Hybrid: API route (dev mode, live MASTER_DEBT.jsonl) + static JSON fallback (production, field-stripped to ~2 MB); SQLite optional on Windows",
+  "keyConstraint": "next.config.mjs output:export eliminates API routes in production; dev mode has full API route support",
+  "selfAuditResult": {
+    "allFindingsFilesRead": true,
+    "findingsDeduped": true,
+    "themesExtracted": true,
+    "inlineCitationsPresent": true,
+    "contradictionsSurfaced": true,
+    "executiveSummaryStandalone": true,
+    "challengesIncorporated": true,
+    "factualCorrectionsApplied": true,
+    "correctionsVerified": true
+  },
+  "consumerHints": {
+    "hasStackClaims": true,
     "hasPitfallClaims": true,
     "hasDebtCandidates": true,
     "hasMemoryCandidates": true,
     "lowConfidenceCount": 2,
-    "immediate_wins": [
-      "Fix BUG-01 (debt-health.js lowercase filter) — trivial, improves health metrics accuracy immediately",
-      "Fix BUG-03 (resolve-bulk.js missing sync-deduped.js) — low effort, prevents data drift after every CI resolution",
-      "Add sonarcloud.yml sync step — trivial, closes highest-impact external source gap",
-      "Add S0 widget to Go statusline — real-time critical debt visibility"
+    "deepPlanReady": true,
+    "recommendedNext": "/deep-plan debt-runner-expansion",
+    "primaryDataStrategy": "hybrid-fetch: /api/debt-data in dev, /debt-data.json in production",
+    "productionJsonSizeTarget": "~2 MB (field-stripped from 7.6 MB full-field)",
+    "sqliteStatus": "optional — must not be required dependency for web path or build pipeline",
+    "rechartStatus": "must be ADDED via 'npx shadcn@latest add chart' — not currently installed",
+    "searchLibrary": "MiniSearch (replaces Fuse.js recommendation)",
+    "discoveryAgentCount": 3,
+    "discoveryAgentGate": "open < 7,000 OR resolution rate > 20% before expanding",
+    "guidedModeDefault": true,
+    "implementationPhases": 4,
+    "phase1Scope": "Bug fixes (BUG-01 through BUG-06) + statusline S0 widget",
+    "phase2Scope": "CLI expansion: guided mode, 3 discovery agents, intake scan, dark debt review",
+    "phase3Scope": "Minimal web dashboard: hybrid fetch, KPI cards, 1 trend chart, sortable table",
+    "phase4Scope": "Power features: MiniSearch, filter panel, 5 more charts, diff view, heat map, discovery expansion",
+    "preExpansionBugFixes": [
+      "BUG-01: normalize status strings — debt-health.js line 65 uses lowercase vs uppercase in MASTER_DEBT",
+      "BUG-06: expand logMetricsGeneration() to include by_source and by_category (lines 335-356)",
+      "BUG-03: add sync-deduped.js call after resolve-bulk.js bulk resolution",
+      "BUG-04: add TRIAGED to MASTER_DEBT schema enum",
+      "BUG-02: add --dry-run flag to resolve-debt.js and resolve-bulk.js",
+      "BUG-05: fix shallow promotion object clone in resolve-debt.js"
+    ],
+    "criticalVerifiedFacts": {
+      "masterDebtLineCount": 8472,
+      "metricsLogEntries": 113,
+      "resolutionLogEntries": 14,
+      "knownDebtBaselineEntries": "~40 across 3 categories (not 45+ flat list)",
+      "clusterPrimaryCoverage": "~2% (172/8,472 items) — must be nullable",
+      "chartingLibrariesInstalled": "none",
+      "rechartInstalled": false,
+      "useTabRefreshScope": "AdminTabId only — not applicable to DevTabId without generalization",
+      "sqliteInstalled": false
+    },
+    "nuqsValidationRequired": false,
+    "nuqsDecision": "skipped for v1 — use useState instead",
+    "openQuestionsCount": 10,
+    "aiInsightsCapability": "Phase 3 — build-time Claude API call; requires API key; ~$0.01-0.03 per build",
+    "futureCapabilities": [
+      "Debt heat map / file tree sidebar (Phase 4, after GAP-04 fix)",
+      "Diff view between time points (Phase 4, simple metric-level first)",
+      "Webhook threshold triggers via ntfy.sh (opportunistic)",
+      "WebSocket bridge for one-click dev→CLI handoff (V2)"
     ]
   }
 }
