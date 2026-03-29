@@ -1,0 +1,68 @@
+{
+  "topic": "dev-dashboard-command-center",
+  "created": "2026-03-27",
+  "completed": "2026-03-29",
+  "session": 245,
+  "depth": "L3",
+  "agents": {
+    "total": 36,
+    "wave1": 9,
+    "wave2": 4,
+    "wave3": 12,
+    "wave4": 7,
+    "wave5": 4
+  },
+  "claims": {
+    "total": 100,
+    "high": 97,
+    "medium": 3,
+    "low": 0
+  },
+  "sources": {
+    "total": 90
+  },
+  "findings_files": 39,
+  "confidence": "HIGH",
+  "key_decisions": {
+    "D1": "Lighthouse tab moves to /admin post-M1.6",
+    "D4": "Admin = app + users; Dev = build pipeline + dev process",
+    "D7": "Every tab gets web-to-CLI handoff clipboard commands",
+    "D9": "Desktop only",
+    "tab_structure": "6 tabs + 1 header widget: Health, Debt, Reviews, Pipeline, Governance, Planning"
+  },
+  "pre_work_required": [
+    "BUG-01: Fix lowercase status strings in debt-health.js before any dashboard code",
+    "Install: recharts (via npx shadcn@latest add chart), @tanstack/react-table, @tanstack/react-virtual, minisearch",
+    "Install missing shadcn components: badge, table, tooltip, dropdown-menu, checkbox",
+    "scripts/build-dashboard-data.js needs to be created and wired as prebuild",
+    "All public/*.json output files must be gitignored",
+    "scripts/health/ack-warning.js and scripts/health/suppress-alert.js need to be created",
+    "scripts/tasks/mark-done.js needs to be created for Tab 6 sprint board primary action",
+    "npm run health:audit alias missing — add to package.json"
+  ],
+  "confirmed_working": [
+    "resolve-dependencies.js --json works today — no pre-work needed for sprint board",
+    "Recharts 3.x supports React 19.2.4 with no overrides",
+    "override-log.jsonl is at .claude/override-log.jsonl (NOT .claude/state/)",
+    "metrics-log.jsonl 6-field schema is intentional design, not a bug",
+    "type-check pre-push check (renamed from tsc) is passing"
+  ],
+  "broken_data_sources": [
+    "velocity-log.jsonl: items_completed=0 universally (sessions #148-#243) — show 'data unavailable'",
+    "commit-log.jsonl: all 634 records seeded, daily count only — no branch/file breakdown",
+    "reviews-archive.jsonl: fixed/deferred/total counts are 0 in most records — pattern frequency only",
+    "SonarCloud health: null in virtually every health-score-log entry"
+  ],
+  "key_schema_surprises": [
+    "Two independent health systems: technical health (D/67 ecosystem-health-log) vs process health (B/87 health-score-log)",
+    "reviews.jsonl has 3 incompatible schemas requiring schema_version branching",
+    "review-needed.jsonl is 27 dedup pairs, not 27 individual items",
+    "hook and pr ecosystem audit history files have schema drift mid-file",
+    "enforcement-manifest.jsonl upgraded from MEDIUM to HIGH relevance (17% automated gate coverage signal)"
+  ],
+  "data_coverage": {
+    "high_relevance_files_covered": 36,
+    "high_relevance_files_total": 36,
+    "coverage_pct": 100
+  }
+}
