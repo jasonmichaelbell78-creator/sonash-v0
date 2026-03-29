@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.3
-**Last Updated:** 2026-03-22
+**Document Version:** 1.4
+**Last Updated:** 2026-03-29
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -34,6 +34,8 @@ deep-research skill.
 18. [Management Sub-Commands](#18-management-sub-commands)
 19. [State File Schema](#19-state-file-schema)
 20. [Phase Details (moved from SKILL.md)](#20-phase-details-moved-from-skillmd)
+21. [Extracted Phase Detail](#21-extracted-phase-detail)
+22. [Gap Pursuit, Verification, and Final Re-Synthesis](#22-gap-pursuit-verification-and-final-re-synthesis)
 
 ---
 
@@ -367,10 +369,21 @@ inter-batch synthesis, mid-discovery check). Escalate when:
 
 Budget allocation (not a constraint, a guardrail):
 
-- 60% -- search (Phase 1)
-- 20% -- verification (Phase 3)
+- 50% -- search (Phase 1)
+- 20% -- verification + challenges (Phases 2.5, 3, 3.5)
 - 10% -- synthesis (Phase 2)
+- 10% -- gap pursuit + gap verification + final re-synthesis (Phases 3.95-3.97)
 - 10% -- overhead (Phases 0, 4, 5)
+
+Gap-pursuit agents add ~15-25% to total agent count when actionable gaps exist.
+When no actionable gaps are found, Phases 3.95-3.97 cost near zero (scan only).
+
+| Depth | Gap Agent Cap | Typical Gap Agents | Est. Additional Tokens |
+| ----- | ------------- | ------------------ | ---------------------- |
+| L1    | 4             | 1-2                | 30K-80K                |
+| L2    | 3             | 1-2                | 25K-60K                |
+| L3    | 6             | 2-4                | 60K-150K               |
+| L4    | 10            | 3-6                | 100K-250K              |
 
 ---
 
@@ -510,7 +523,14 @@ Write your insights to: .research/<topic>/challenges/OUTSIDE_THE_BOX.md
     "hasDebtCandidates": false,
     "hasMemoryCandidates": false,
     "lowConfidenceCount": 0
-  }
+  },
+  "gapFillRounds": 0,
+  "gapAgentCount": 0,
+  "gapClaimsAdded": 0,
+  "gapVerificationAgentCount": 0,
+  "finalReSynthesisPerformed": false,
+  "totalClaimsPostGap": 0,
+  "gapSources": []
 }
 ```
 
@@ -838,6 +858,34 @@ Location: `.claude/state/deep-research.<topic-slug>.state.json`
     },
     "selfAudit": { "status": "pending | complete", "result": "string | null" }
   },
+  "gapPursuit": {
+    "status": "pending | scanning | spawning | complete | skipped",
+    "gapsFound": 0,
+    "gapsActionable": 0,
+    "gapsBySource": {
+      "findings": 0,
+      "serendipity": 0,
+      "refuted": 0,
+      "challenges": 0,
+      "low-claims": 0,
+      "unresolved": 0
+    },
+    "agentsSpawned": 0,
+    "agentsComplete": 0,
+    "agentsFailed": 0
+  },
+  "gapVerification": {
+    "status": "pending | complete | skipped",
+    "agentsSpawned": 0,
+    "claimsVerified": 0,
+    "claimsRefuted": 0
+  },
+  "finalReSynthesis": {
+    "status": "pending | complete | skipped",
+    "claimsAdded": 0,
+    "claimsModified": 0,
+    "sourcesAdded": 0
+  },
   "errors": [],
   "resumePoint": "string -- phase + step identifier for resume"
 }
@@ -936,11 +984,302 @@ Update state file to `complete`.
 
 ---
 
+## 21. Extracted Phase Detail
+
+Detail extracted from SKILL.md during condensing. SKILL.md contains brief
+summaries with pointers to these subsections.
+
+### 21.1 Phase 3.5 Dispute Resolution
+
+Spawn resolution agents when verification and challenge phases produce
+conflicting claims (e.g., a V-agent marks a claim REFUTED while the original
+D-agent and synthesizer treated it as HIGH confidence, or contrarian and OTB
+agents disagree).
+
+**Agent scaling:** 1 agent per 5 disputes, 2 agents for 6-10 disputes, 3 agents
+for 11+ disputes.
+
+**Per-dispute output format:**
+
+```
+## Dispute: [claim ID or summary]
+**RESOLUTION:** [ORIGINAL UPHELD | CHALLENGER UPHELD | REVISED | INCONCLUSIVE]
+**RATIONALE:** [Why this resolution, citing specific evidence from both sides]
+**IMPACT:** [How this changes the research output -- claim confidence change,
+  section rewrite needed, recommendation affected]
+**CONFIDENCE:** [HIGH | MEDIUM | LOW in the resolution itself]
+```
+
+**Output file:** `findings/dispute-resolutions.md` -- one file containing all
+dispute resolutions, organized by dispute.
+
+**Context exhaustion:** If a resolution agent runs out of context before
+completing all assigned disputes, re-spawn per Critical Rule 8 -- split
+remaining disputes across 2+ smaller agents. Each replacement writes to the same
+`findings/dispute-resolutions.md` file (append, not overwrite).
+
+### 21.2 Phase 3.9 Post-Challenge Re-Synthesis
+
+**Trigger:** Re-synthesize if >20% of claims were changed by the combined effect
+of verification (Phase 2.5), challenges (Phase 3), and dispute resolution (Phase
+3.5). "Changed" means confidence level shifted, claim was REFUTED, or claim text
+was materially altered.
+
+**When triggered (>20% changed):** Full re-synthesis using CL-standard
+(convergence-loop verification on the re-synthesized report). The synthesizer
+reads ALL findings, verification results, challenge outputs, and dispute
+resolutions. Produces an updated RESEARCH_OUTPUT.md, claims.jsonl,
+sources.jsonl, and metadata.json.
+
+**When NOT triggered (<=20% changed):** Apply inline corrections only. Update
+individual claim confidence levels in claims.jsonl. Add correction footnotes to
+affected RESEARCH_OUTPUT.md sections. No full re-synthesis needed.
+
+### 21.3 Output Structure
+
+Full directory listing for a completed research session:
+
+```
+.research/<topic-slug>/
+  RESEARCH_OUTPUT.md          # Final report (retained)
+  claims.jsonl                # Structured claims (retained)
+  sources.jsonl               # Source registry (retained)
+  metadata.json               # Session metadata (retained)
+  findings/                   # Intermediate artifacts (gitignored)
+    D1-<scope>.md             # Searcher agent findings
+    D2-<scope>.md
+    ...
+    V1-<scope>.md             # Verification agent findings
+    V2-<scope>.md
+    ...
+    dispute-resolutions.md    # Dispute resolution output
+    G1-<scope>.md             # Gap-pursuit agent findings
+    G2-<scope>.md
+    ...
+    GV1-<scope>.md            # Gap-verification agent findings
+    GV2-<scope>.md
+    ...
+  challenges/                 # Challenge artifacts (gitignored)
+    CONTRARIAN.md
+    OUTSIDE_THE_BOX.md
+```
+
+**Gitignore rationale:** `findings/` and `challenges/` are intermediate working
+artifacts. They are kept on disk for resume and audit provenance but gitignored
+to avoid bloating the repository. The four retained files (RESEARCH_OUTPUT.md,
+claims.jsonl, sources.jsonl, metadata.json) contain all final outputs and are
+committed.
+
+### 21.4 Guard Rails
+
+**Budget monitoring:**
+
+- Warn at 70% of estimated token budget ("70% budget used, N agents remaining")
+- Warn at 85% ("Approaching budget limit -- consider reducing remaining scope")
+- Warn at 95% ("Budget nearly exhausted -- completing current agents only")
+- Force-stop at 100% -- complete in-flight agents, skip remaining, synthesize
+  from available findings. Never exceed budget silently.
+
+**Scope explosion:** If decomposition produces >15 sub-questions, flag for user
+review. Suggest clustering related sub-questions to reduce agent count. User
+decides whether to proceed at full scope or reduce.
+
+**Failure cascade:** If 50%+ of searcher agents fail (timeout, context
+exhaustion without successful re-spawn, empty findings), halt the session.
+Present failure summary to user with options: retry failed agents, proceed with
+partial findings, or abort.
+
+**Timeout:** 5 minutes per agent. If an agent exceeds timeout, mark it failed in
+the state file and inform the user. Do not silently wait.
+
+**Disengagement:** If at any point the user says "stop", "abort", or "cancel",
+immediately halt all agent spawning. Complete any in-flight agents (they cannot
+be interrupted), then present current state and options.
+
+### 21.5 Compaction Resilience
+
+**State file as checkpoint:** The state file
+(`.claude/state/deep-research.<slug>.state.json`) is updated after every
+state-changing event. After compaction, the state file survives and enables
+resume from the last completed step.
+
+**Resume protocol:** On session start, check for incomplete state files. If
+found, offer to resume. On re-invocation with the same topic, detect existing
+state and skip completed phases.
+
+**Artifacts as checkpoints:** Each agent writes its findings to disk before
+reporting success. If compaction occurs mid-session, completed findings files
+survive. The synthesizer reads from disk, not from conversation context.
+
+**Phase 0 Q&A persistence:** After each Q&A round, persist the questions and
+answers to the state file (`plan.decompositionState.qaRounds`). After
+compaction, Q&A history is recoverable from the state file without re-asking the
+user.
+
+---
+
+## 22. Gap Pursuit, Verification, and Final Re-Synthesis
+
+Detailed reference for Phases 3.95, 3.96, and 3.97. SKILL.md contains the
+operational summaries; this section provides algorithm detail, agent prompt
+templates, and scaling rules.
+
+### 22.1 Gap Detection Algorithm
+
+Scan 6 sources in priority order:
+
+1. **Findings `## Gaps identified:` sections** -- from D-agent findings, V-agent
+   findings, and challenge files. These are explicit gaps the agents themselves
+   identified during their work.
+2. **Actionable `## Serendipity` items** -- not just observations, but items
+   that imply missing research (e.g., "discovered X uses Y internally -- this
+   was not investigated").
+3. **V-agent REFUTED claims needing follow-up** -- claims marked REFUTED during
+   verification that suggest the research missed something fundamental, not just
+   got a detail wrong.
+4. **Challenge "what the research missed" items** -- from contrarian and OTB
+   agents, specifically their notes on gaps in coverage.
+5. **LOW/UNVERIFIED claims in claims.jsonl** -- claims that never achieved
+   sufficient evidence. Gap pursuit can attempt to find the missing evidence or
+   confirm the claim should be dropped.
+6. **RESEARCH_OUTPUT.md unresolved questions** -- from the "Unresolved
+   Questions" section of the synthesized report.
+
+**Deduplication:** Match by keyword overlap. If two gap descriptions share >60%
+of their significant terms (excluding stop words), they are the same gap. Keep
+the higher-priority source's version (lower number in the list above).
+
+**Actionability filter:** Skip items tagged as "out of scope" or
+scope-limitation notes. Only pursue gaps that could change findings, add missing
+evidence, or reveal overlooked dimensions. A gap is actionable if addressing it
+would change at least one claim's confidence level or add a new claim.
+
+### 22.2 Gap Agent Scaling
+
+**Formula:** `ceil(G/2)` where G = actionable gap count.
+
+**Depth caps:**
+
+| Depth | Max Gap Agents |
+| ----- | -------------- |
+| L1    | 4              |
+| L2    | 3              |
+| L3    | 6              |
+| L4    | 10             |
+
+**When G exceeds cap:** Cluster related gaps by theme (e.g., all
+performance-related gaps go to one agent, all security-related gaps to another).
+Assign each cluster to a single agent. Each agent may investigate multiple
+related gaps.
+
+**Each agent writes to:** `findings/G<N>-<scope>.md` where N is the agent number
+and scope is a brief theme descriptor (e.g., `G1-performance.md`,
+`G2-security-auth.md`).
+
+**Concurrency:** Respect the 4-agent concurrency limit. If more gap agents are
+needed, process in waves. Report wave progress after each wave completes.
+
+### 22.3 Gap-Pursuit Agent Prompt Template
+
+Based on the G1-G6 prompts from Session #244:
+
+```
+You are a gap-pursuit agent. Your task is to investigate gaps identified during
+the main research phase.
+
+## Gap(s) to investigate
+[List of assigned gaps with source references]
+
+## Context
+Read .research/<topic>/RESEARCH_OUTPUT.md for the current state of findings.
+Read the specific findings files referenced in each gap.
+
+## Required research
+[Gap-specific investigation steps -- e.g., "Search for evidence on X",
+"Read files Y and Z to verify claim W", "Find community discussion on topic T"]
+
+## Output
+Write to: .research/<topic>/findings/G<N>-<scope>.md
+Format:
+  ## Summary
+  [Brief summary of what was investigated and found]
+
+  ## Detailed Findings
+  [Findings with citations, organized by gap]
+
+  ## Gaps
+  [Your own gaps -- these will NOT trigger another cycle per Critical Rule 9]
+
+  ## Serendipity
+  [Unexpected discoveries worth noting]
+
+Repo at [project root]
+```
+
+### 22.4 Gap-Verification Agent Prompt Template
+
+```
+You are a gap-verification agent. Check gap-pursuit findings against ground
+truth.
+
+## Scope: [codebase claims | cross-claim consistency]
+Read .research/<topic>/findings/G<N>-*.md files.
+
+For each claim:
+  VERIFIED (with file:line evidence) or REFUTED (with what's actually there).
+
+Cross-check gap findings against original findings for consistency. Flag any
+contradictions between gap-pursuit findings and the original research.
+
+Write to: .research/<topic>/findings/GV<N>-<scope>.md
+```
+
+**Minimum 2 agents:** GV1 checks gap-pursuit codebase claims against filesystem.
+GV2 checks cross-claim consistency between gap findings and original findings.
+
+### 22.5 Final Re-Synthesis Agent Prompt Template
+
+```
+You are a final re-synthesis agent. Incorporate gap-pursuit findings into the
+research output.
+
+Read ALL files in .research/<topic>/findings/ (original D-agents + V-agents +
+challenges + disputes + G-agents + GV-agents).
+Read the current .research/<topic>/RESEARCH_OUTPUT.md.
+
+EDIT the report -- do not rewrite from scratch. Specifically:
+- Add new sections for gap-pursuit discoveries that introduce new themes
+- Update existing claims with new evidence from gap pursuit
+- Incorporate gap-verification corrections (REFUTED gap claims should be noted,
+  not silently dropped)
+- Add new sources discovered during gap pursuit
+- Update confidence levels where gap pursuit provided additional evidence
+
+Update claims.jsonl:
+- New claims from gap pursuit use C-G* IDs (e.g., C-G01, C-G02)
+- Modified existing claims retain their original IDs with updated confidence
+
+Update sources.jsonl with any new sources discovered.
+
+Update metadata.json:
+- Set gapFillRounds to 1
+- Set gapAgentCount to [number of gap agents spawned]
+- Set gapClaimsAdded to [count of new C-G* claims]
+- Set totalClaimsPostGap to [total claims after incorporation]
+- Set gapSources to [array of which source types produced actionable gaps]
+```
+
+This is the **truly final** output. Apply CL-standard (convergence-loop
+verification) to the final report.
+
+---
+
 ## Version History
 
-| Version | Date       | Description                                                  |
-| ------- | ---------- | ------------------------------------------------------------ |
-| 1.3     | 2026-03-22 | Skill-audit: state schema, phase details, ToC, spawn example |
-| 1.2     | 2026-03-22 | P3: management commands, strategy log, reputation            |
-| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles          |
-| 1.0     | 2026-03-22 | Initial implementation                                       |
+| Version | Date       | Description                                                           |
+| ------- | ---------- | --------------------------------------------------------------------- |
+| 1.4     | 2026-03-29 | S21-22: extracted phase detail, gap pursuit/verification/re-synthesis |
+| 1.3     | 2026-03-22 | Skill-audit: state schema, phase details, ToC, spawn example          |
+| 1.2     | 2026-03-22 | P3: management commands, strategy log, reputation                     |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, profiles                   |
+| 1.0     | 2026-03-22 | Initial implementation                                                |

@@ -9,8 +9,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.5
-**Last Updated:** 2026-03-23
+**Document Version:** 1.7
+**Last Updated:** 2026-03-29
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -45,6 +45,10 @@ produces structured output with downstream routing.
    agents that split the original scope. Each replacement agent must produce a
    complete findings file. If the scope cannot be split, re-spawn with a more
    focused prompt that reads fewer files.
+9. **Gap pursuit is mandatory scan, conditional execution.** After challenges +
+   disputes, scan all findings for gaps. Spawn gap agents only if actionable
+   gaps exist. **One round only** — gap agents' own gaps do NOT trigger
+   recursion.
 
 ## When to Use / When NOT to Use
 
@@ -127,6 +131,17 @@ PHASE 3.5: Dispute Resolution (mandatory when conflicts exist)
 PHASE 3.9: Post-Challenge Re-Synthesis (if >20% changed)
   Incorporate verification corrections, challenge adjustments, dispute
   resolutions into RESEARCH_OUTPUT.md. CL-standard on re-synthesized report.
+
+PHASE 3.95: Gap Pursuit (mandatory scan, conditional execution)
+  Scan ALL findings for gaps/serendipity. Spawn gap agents if actionable.
+  One round only — no recursive gap chasing. Critical Rule 9.
+
+PHASE 3.96: Gap Verification (mandatory if gap agents spawned)
+  Verify gap-pursuit findings against filesystem. Min 2 agents.
+
+PHASE 3.97: Final Re-Synthesis (mandatory if gap agents spawned)
+  Single synthesizer edits RESEARCH_OUTPUT.md with gap findings.
+  Updates claims.jsonl, sources.jsonl, metadata.json. Truly final output.
 
 PHASE 4: Self-Audit (inline, tiered by depth)
 
@@ -220,27 +235,77 @@ Cross-model + CL verification: REFERENCE.md Sections 13-14. Re-synthesize if
 
 ## Phase 3.5: Dispute Resolution (mandatory when conflicts exist)
 
-When verification agents or challenge agents surface conflicting claims, spawn
-resolution agents to produce definitive answers with evidence.
-
-**Scale:** 1 agent for ≤5 disputes, 2 agents for 6-10, 3 for 11+. Each dispute
-gets: RESOLUTION, RATIONALE, IMPACT (what changes in the report), CONFIDENCE.
-
-Resolution agents write to `findings/dispute-resolutions.md`. If multiple
-agents, split into `dispute-resolutions-1.md`, `dispute-resolutions-2.md`.
-
-**Context exhaustion = re-spawn** per Critical Rule 8.
+Spawn resolution agents for conflicting claims. 1 agent per 5 disputes. Details:
+REFERENCE.md Section 21.
 
 ---
 
 ## Phase 3.9: Post-Challenge Re-Synthesis
 
-If verification corrections + challenge adjustments + dispute resolutions change
-more than 20% of claims, spawn a re-synthesis agent to rewrite
-RESEARCH_OUTPUT.md incorporating all corrections. Apply CL-standard to the
-re-synthesized report.
+Re-synthesize if >20% of claims changed by verification + challenges + disputes.
+Otherwise apply corrections inline. Details: REFERENCE.md Section 21.
 
-If ≤20% changed, apply corrections inline (no re-synthesis agent needed).
+---
+
+## Phase 3.95: Gap Pursuit (mandatory scan, conditional execution)
+
+After all synthesis, verification, challenges, and disputes are complete, scan
+ALL findings files for reported gaps and actionable discoveries. Six sources
+scanned in priority order:
+
+1. Findings `## Gaps identified:` sections (D-agent, V-agent, challenge files)
+2. Actionable `## Serendipity` items (not just observations — items that imply
+   missing research)
+3. Verification REFUTED claims that need follow-up investigation
+4. Challenge "what the research missed" items
+5. LOW/UNVERIFIED claims in claims.jsonl
+6. RESEARCH_OUTPUT.md unresolved questions section
+
+**Deduplication:** Same gap appearing in multiple sources counts once.
+**Actionability filter:** Skip scope-limitation notes ("we did not read X
+because out of scope"). Only pursue gaps that could change findings or add
+value.
+
+**Agent count:** `ceil(G/2)` where G = actionable gaps, capped by depth (L1: max
+4, L2: 3, L3: 6, L4: 10). Cluster related gaps by theme when count exceeds cap.
+Each agent writes to `findings/G<N>-<scope>.md`. Critical Rule 8 applies.
+
+**One round only** (Critical Rule 9). Gap agents' own `## Gaps` sections do NOT
+trigger another pursuit cycle. Update state file after scan and after each
+agent.
+
+**If no actionable gaps:** Skip Phases 3.96-3.97. Log "Gap scan: 0 actionable"
+to state file.
+
+Details: REFERENCE.md Section 22.
+
+---
+
+## Phase 3.96: Gap Verification (mandatory if gap agents spawned)
+
+Same pattern as Phase 2.5. Spawn verification agents to test gap-pursuit
+findings against filesystem ground truth. Minimum 2 agents. Each writes to
+`findings/GV<N>-<scope>.md` with per-claim verdicts.
+
+Split by scope: GV1 checks gap-pursuit codebase claims, GV2 checks cross-claim
+consistency between gap findings and original findings. Context exhaustion =
+re-spawn per Critical Rule 8.
+
+Details: REFERENCE.md Section 22.
+
+---
+
+## Phase 3.97: Final Re-Synthesis (mandatory if gap agents spawned)
+
+Single synthesizer agent (reuse `deep-research-synthesizer` type). Reads ALL
+findings: original D-agents + V-agents + challenges + disputes + G-agents +
+GV-agents. **Edits** RESEARCH_OUTPUT.md — does not rewrite from scratch.
+
+Updates: claims.jsonl (new claims use `C-G*` IDs), sources.jsonl, metadata.json
+(adds `gapFillRounds`, `gapAgentCount`, `totalClaimsPostGap`). Apply CL-standard
+to the final report. This is the **truly final** output.
+
+Details: REFERENCE.md Section 22.
 
 ---
 
@@ -264,38 +329,22 @@ memory. Details: REFERENCE.md Sections 16-17, 20.
 
 ## Output Structure
 
-```
-.research/<topic-slug>/
-  findings/              # gitignored -- intermediate
-  challenges/            # gitignored -- intermediate
-  RESEARCH_OUTPUT.md     # retained -- report
-  claims.jsonl           # retained -- machine-parseable
-  sources.jsonl          # retained -- source registry
-  metadata.json          # retained -- metadata + consumer hints
-```
-
-**Gitignore rationale:** Intermediate artifacts (findings/, challenges/) are
-gitignored. Conclusion artifacts retained for decision provenance and
-cross-session recall. Schemas: REFERENCE.md Section 11.
+`.research/<topic-slug>/` with `findings/`, `challenges/` (gitignored
+intermediates) and `RESEARCH_OUTPUT.md`, `claims.jsonl`, `sources.jsonl`,
+`metadata.json` (retained). Schemas: REFERENCE.md Section 11.
 
 ---
 
 ## Guard Rails
 
-- **Budget:** Design targets, not hard limits. Use agent/round count as proxies
-  if token tracking unavailable. Warn 70/85/95%. At 100%: force synthesis.
-- **Scope explosion:** >15 sub-questions = pause, offer continue/reduce/split.
-- **Failure cascade:** 50%+ agents fail = stop, present options.
-- **Timeout:** 5 min/searcher. Mark failed, present to user.
-- **Disengagement:** Save state, present completed vs remaining.
+Budget, scope explosion, failure cascade, timeout, disengagement rules. Details:
+REFERENCE.md Section 21.
 
 ---
 
 ## Compaction Resilience
 
-State file updated after every event. Resume: read state, skip completed. Disk
-artifacts persist as checkpoints. Phase 0 Q&A persisted incrementally. Schema:
-REFERENCE.md Section 19.
+State file + disk artifacts as checkpoints. Schema: REFERENCE.md Section 19.
 
 ---
 
@@ -315,12 +364,13 @@ REFERENCE.md Section 19.
 
 ## Version History
 
-| Version | Date       | Description                                                                                     |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------- |
-| 1.6     | 2026-03-27 | Add Rules 8-10: context exhaustion re-spawn, mandatory verification + dispute resolution phases |
-| 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override                                 |
-| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)                                        |
-| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation                                        |
-| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing                                    |
-| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles                                      |
-| 1.0     | 2026-03-22 | Initial implementation                                                                          |
+| Version | Date       | Description                                                                                                     |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| 1.7     | 2026-03-29 | Add Phases 3.95-3.97: gap pursuit, gap verification, final re-synthesis. Rule 9. Extract detail to REFERENCE.md |
+| 1.6     | 2026-03-27 | Add Rules 8-10: context exhaustion re-spawn, mandatory verification + dispute resolution phases                 |
+| 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override                                                 |
+| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)                                                        |
+| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation                                                        |
+| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing                                                    |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles                                                      |
+| 1.0     | 2026-03-22 | Initial implementation                                                                                          |
