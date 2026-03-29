@@ -83,7 +83,7 @@
           {
             "type": "command",
             "if": "Write(.env.local.encrypted)",
-            "command": "bash -c 'echo \"[env-guard] BLOCKED: .env.local.encrypted must not be overwritten by AI agents\" >&2 && node scripts/append-hook-warning.js --hook=pre-tool --type=env-guard --severity=error --message=\"Blocked write to .env.local.encrypted\" 2>/dev/null; exit 2'",
+            "command": "bash -c 'echo \"[env-guard] BLOCKED: .env.local.encrypted must not be overwritten by AI agents\" >&2 && bash .claude/hooks/ensure-fnm.sh node scripts/append-hook-warning.js --hook=pre-tool --type=env-guard --severity=error --message=\"Blocked write to .env.local.encrypted\" 2>/dev/null; exit 2'",
             "statusMessage": "Checking env file protection..."
           }
         ]

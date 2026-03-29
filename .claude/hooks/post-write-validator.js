@@ -790,7 +790,6 @@ function markdownFenceCheck() {
 // ─── Validator 13: jsonSyntaxCheck (WARN) ───────────────────────────────────
 
 function jsonSyntaxCheck() {
-  if (!isConfigFile && ext !== ".json") return;
   if (ext !== ".json") return;
 
   const content = getContent();
