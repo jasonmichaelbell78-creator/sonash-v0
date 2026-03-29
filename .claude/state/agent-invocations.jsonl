@@ -50,3 +50,33 @@
 {"agent":"Explore","description":"Investigate trigger warning gap","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:25:44.830Z"}
 {"agent":"general-purpose","description":"Research grep usage and alternatives","sessionId":"session-1774785564690","timestamp":"2026-03-29T12:12:41.807Z"}
 {"agent":"general-purpose","description":"Research Claude Code hook \"if\" conditions","sessionId":"session-1774785564690","timestamp":"2026-03-29T12:13:04.329Z"}
+{"agent":"deep-research-searcher","description":"D1: if field specification","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:04:20.440Z"}
+{"agent":"deep-research-searcher","description":"D2: current hook inventory","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:05:16.191Z"}
+{"agent":"deep-research-searcher","description":"D9: risks and anti-patterns","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:08:13.154Z"}
+{"agent":"deep-research-searcher","description":"D7: performance baseline","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:08:53.124Z"}
+{"agent":"deep-research-searcher","description":"D3: existing hook optimization","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:12:50.080Z"}
+{"agent":"deep-research-searcher","description":"D8: cross-locale impact","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:16:39.805Z"}
+{"agent":"deep-research-searcher","description":"D5: new security/deploy hooks","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:17:45.829Z"}
+{"agent":"deep-research-searcher","description":"D4: GSD context monitor deep-dive","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:19:33.999Z"}
+{"agent":"deep-research-searcher","description":"D3-S: if field tool compatibility","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:22:45.947Z"}
+{"agent":"deep-research-searcher","description":"D6: new validation/config hooks","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:24:25.379Z"}
+{"agent":"deep-research-searcher","description":"D7-S: ensure-fnm overhead analysis","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:29:04.300Z"}
+{"agent":"deep-research-searcher","description":"D5-S: GSD matcher scoping","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:31:16.770Z"}
+{"agent":"deep-research-synthesizer","description":"Synthesize all findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:40:21.030Z"}
+{"agent":"general-purpose","description":"V2: verify codebase claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:43:16.687Z"}
+{"agent":"general-purpose","description":"V1: verify spec claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:43:46.545Z"}
+{"agent":"general-purpose","description":"V3: verify performance claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:45:05.928Z"}
+{"agent":"general-purpose","description":"V4: verify cross-claim consistency","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:45:25.024Z"}
+{"agent":"general-purpose","description":"Contrarian 2: challenge methodology","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:49:07.943Z"}
+{"agent":"general-purpose","description":"OTB 2: if conditions as architecture","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:50:47.083Z"}
+{"agent":"general-purpose","description":"Contrarian 1: challenge core claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:51:00.695Z"}
+{"agent":"general-purpose","description":"OTB 1: unconventional if uses","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:51:20.858Z"}
+{"agent":"general-purpose","description":"G4: OTB triage and feasibility","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:04:00.481Z"}
+{"agent":"deep-research-searcher","description":"G3: PreToolUse prevention gates","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:04:25.037Z"}
+{"agent":"general-purpose","description":"G2: Windows path if live test","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:08:41.783Z"}
+{"agent":"general-purpose","description":"G1: Gemini CLI cross-model check","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:13:59.536Z"}
+{"agent":"general-purpose","description":"G6: compound command bypass test","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:17:53.904Z"}
+{"agent":"general-purpose","description":"G5: GSD template syntax test","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:19:03.497Z"}
+{"agent":"general-purpose","description":"GV2: verify G4-G6 findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:22:20.260Z"}
+{"agent":"general-purpose","description":"GV1: verify G1-G3 findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:22:36.872Z"}
+{"agent":"deep-research-synthesizer","description":"Re-synthesize with gap-fill findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:36:42.382Z"}
