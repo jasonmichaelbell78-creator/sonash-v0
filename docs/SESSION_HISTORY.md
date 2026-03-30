@@ -27,6 +27,52 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-03 Sessions
 
+### Session #243 (2026-03-27)
+
+**Focus**: Wave 1 audit + CLI tools work locale + debt-runner v2 research + dev
+dashboard planning
+
+- Branch: `plan-32626` (7 commits)
+- Wave 1 Final Audit COMPLETE (3549 tests, all checks pass)
+- CLI tools work locale DONE (13 tools via GitHub releases)
+- Statusline rebuilt for jbell locale, relative path portability
+- Deep-research v2 (debt-runner hybrid): 23 agents, 941-line report
+- Dev dashboard scope expansion: 14 tabs, 67 data files, discovery-first
+
+### Session #242 (2026-03-27)
+
+**Focus**: CLI tools home locale + PR review + statusline fixes
+
+- Branch: `plan-32626`
+- CLI tools DONE (home locale), PR #472 R1+R2 complete, statusline fixes
+
+### Session #241 (2026-03-26)
+
+**Focus**: Debt-runner expansion deep-research
+
+- Branch: `plan-32626`
+- Deep-research COMPLETE: 17 agents, 79 claims, 607-line report
+- Architecture decision: Hybrid CLI+web approach
+
+### Session #240 (2026-03-26)
+
+**Focus**: Alerts + ESLint + hooks + review learnings
+
+- Branch: `plan-32626`
+- ESLint CJS config fix, React hooks fix, threshold tuning, bulk PR retro
+
+### Session #239 (2026-03-25)
+
+**Focus**: Propagation remediation + statusline + ecosystem shared-lib
+
+- Branch: `plan-32526` (2 commits)
+- Propagation plan COMPLETE (14 steps, 4 waves)
+- Custom statusline COMPLETE (Go binary, 20 widgets)
+- Ecosystem audit shared-lib: 6 modules, 5 skills updated, ~750-1000 lines
+  deduped
+- GitHub branch protection: Added Validate & Compliance as required check
+- 3548 tests pass, 0 fail
+
 ### Session #238 (2026-03-25)
 
 **Focus**: R&D Standard deep-plan + SWS DA-1 + permissions consolidation

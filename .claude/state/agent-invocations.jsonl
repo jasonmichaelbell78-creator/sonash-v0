@@ -166,3 +166,5 @@
 {"agent":"fullstack-developer","description":"Layer 2: Refactor pre-push propagation","sessionId":"session-1774891152421","timestamp":"2026-03-30T18:26:28.143Z"}
 {"agent":"fullstack-developer","description":"Layer 1: Refactor pre-commit propagation","sessionId":"session-1774891152421","timestamp":"2026-03-30T18:26:31.311Z"}
 {"agent":"code-reviewer","description":"Code review propagation scripts","sessionId":"session-1774891152421","timestamp":"2026-03-30T19:57:49.483Z"}
+{"agent":"explore","description":"Compare session-start vs session-begin","sessionId":"session-1774891152421","timestamp":"2026-03-30T20:09:48.239Z"}
+{"agent":"Explore","description":"Find research/planning aggregate docs","sessionId":"session-1774891152421","timestamp":"2026-03-30T20:33:00.335Z"}
