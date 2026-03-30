@@ -2,3 +2,9 @@
 {"source_plan":"hook-system-overhaul","finding_type":"canon-artifact","pattern":"scripts/config/hook-checks.json is a CANON artifact (D14) — must be registered in .canon/ecosystems.jsonl when Phase 1 Step 1.1 creates the ecosystem registry","severity":"S2","target_ecosystem":"hooks","timestamp":"2026-03-17T00:00:00.000Z"}
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"rev-348\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-18T18:06:04.303Z"}
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"rev-auto\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-18T18:06:04.303Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"499\" appears 3 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-30T15:38:07.457Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"500\" appears 3 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-30T15:38:07.457Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"501\" appears 3 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-30T15:38:07.457Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"502\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-30T15:38:07.457Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"503\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-30T15:38:07.457Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"504\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-03-30T15:38:07.457Z"}

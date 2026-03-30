@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2127)
+## NEW (2126)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -2139,9 +2139,8 @@
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | code-quality             |
 | DEBT-45614 | Add event_id and run_id to dedup-log records                    | S3       | code-quality             |
 | DEBT-45618 | Skip logging self-matches where kept === removed in dedup...    | S3       | code-quality             |
-| DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 
-## VERIFIED (5156)
+## VERIFIED (5150)
 
 | ID         | Title                                                             | Severity | Category                 |
 | ---------- | ----------------------------------------------------------------- | -------- | ------------------------ |
@@ -7291,22 +7290,16 @@
 | DEBT-11064 | Complete the task associated to this "TODO" comment.              | S3       | code-quality             |
 | DEBT-11200 | Add limit(50) to queries in lib/db/meetings.ts                    | S3       | security                 |
 | DEBT-11201 | Massive Context Provider (God Object)                             | S3       | refactoring              |
-| DEBT-4400  | Review this potentially hard-coded password.                      | S0       | security                 |
-| DEBT-4401  | Review this potentially hard-coded password.                      | S0       | security                 |
-| DEBT-4402  | Review this potentially hard-coded password.                      | S0       | security                 |
 | DEBT-9290  | App Check disabled on all production Cloud Functions              | S0       | security                 |
 | DEBT-9292  | App Check disabled on all Cloud Functions and client init...      | S0       | security                 |
 | DEBT-9301  | Re-enable App Check on Cloud Functions                            | S0       | security                 |
-| DEBT-11124 | Review this potentially hard-coded password.                      | S0       | security                 |
-| DEBT-11125 | Review this potentially hard-coded password.                      | S0       | security                 |
-| DEBT-11126 | Make sure that executing this OS command is safe here.            | S0       | security                 |
 | DEBT-45612 | Review this potentially hard-coded password.                      | S0       | security                 |
 
 ## IN_PROGRESS (0)
 
 _No items_
 
-## RESOLVED (1116)
+## RESOLVED (1123)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -8418,6 +8411,9 @@ _No items_
 | DEBT-0860  | Close legacy journalEntries write path                          | S0       | security                 |
 | DEBT-0865  | Close legacy journalEntries write path                          | S0       | security                 |
 | DEBT-2121  | Security: Potential command injection in resolve-item.js ...    | S0       | process                  |
+| DEBT-4400  | Review this potentially hard-coded password.                    | S0       | security                 |
+| DEBT-4401  | Review this potentially hard-coded password.                    | S0       | security                 |
+| DEBT-4402  | Review this potentially hard-coded password.                    | S0       | security                 |
 | DEBT-7544  | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 | DEBT-9286  | Legacy journalEntries collection allows direct client wri...    | S0       | security                 |
 | DEBT-9291  | Legacy journalEntries collection allows direct client wri...    | S0       | security                 |
@@ -8426,6 +8422,10 @@ _No items_
 | DEBT-9296  | Re-enable App Check on Cloud Functions                          | S0       | security                 |
 | DEBT-9297  | Close legacy journalEntries write path                          | S0       | security                 |
 | DEBT-9302  | Close legacy journalEntries write path                          | S0       | security                 |
+| DEBT-11124 | Review this potentially hard-coded password.                    | S0       | security                 |
+| DEBT-11125 | Review this potentially hard-coded password.                    | S0       | security                 |
+| DEBT-11126 | Make sure that executing this OS command is safe here.          | S0       | security                 |
+| DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | security                 |
 
 ## FALSE_POSITIVE (74)
 
