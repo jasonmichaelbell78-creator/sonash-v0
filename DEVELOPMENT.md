@@ -1,6 +1,6 @@
 # Development Guide
 
-**Document Version:** 2.7 **Last Updated:** 2026-02-11 **Status:** Active
+**Document Version:** 3.0 **Last Updated:** 2026-03-29 **Status:** Active
 
 ---
 
@@ -665,6 +665,12 @@ Non-blocking warning - reports issues but doesn't prevent push.
 Claude Code hooks provide real-time feedback during AI-assisted development.
 Configured in `.claude/settings.json`.
 
+**Hook Wrapper:**
+
+All hooks run through `ensure-fnm.sh`, a lean wrapper that checks if `node` is
+already on PATH (fast-path `exec "$@"`) and only falls back to fnm
+initialization when needed. Saves ~140ms per hook invocation.
+
 **SessionStart Hooks:**
 
 | Hook                     | Action    | Purpose                                            |
@@ -673,11 +679,23 @@ Configured in `.claude/settings.json`.
 | session-start.js         | Setup     | Verify dependencies, build functions, run tests    |
 | check-mcp-servers.js     | Check     | Verify MCP server availability                     |
 
+**PreToolUse Hooks:**
+
+| Hook                           | Condition                               | Action | Purpose                                                                            |
+| ------------------------------ | --------------------------------------- | ------ | ---------------------------------------------------------------------------------- |
+| block-push-to-main.js          | `Bash(git push *)`                      | Block  | Block direct pushes to main branch                                                 |
+| pre-commit-agent-compliance.js | `Bash(git commit *)`                    | Warn   | Warn on commit without agent code review                                           |
+| _(inline)_                     | `Write(.env.local.encrypted)`           | Block  | Block writes to encrypted env secrets file                                         |
+| settings-guardian.js           | `Write/Edit(.claude/settings.json)`     | Block  | Validate JSON, critical hooks, self-removal                                        |
+| firestore-rules-guard.js       | `Write/Edit(**/firestore.rules)`        | Block  | Block removal of write-block patterns. `ALLOW_RULES_EDIT=1` override               |
+| deploy-safeguard.js            | `Bash(firebase deploy *)`               | Block  | Block deploy if build stale, env missing, or tests failed. `SKIP_GATES=1` override |
+| large-file-gate.js             | `Read(*.jsonl\|*.log\|*.csv\|*.ndjson)` | Block  | Block reads >5MB, warn >500KB. `SKIP_GATES=1` override                             |
+
 **PostToolUse Hooks (Write/Edit):**
 
-| Hook                    | Action | Purpose                          |
-| ----------------------- | ------ | -------------------------------- |
-| post-write-validator.js | Warn   | Schema, lint, pattern validation |
+| Hook                    | Action | Purpose                                   |
+| ----------------------- | ------ | ----------------------------------------- |
+| post-write-validator.js | Warn   | Schema, lint, MD/JSON, pattern validation |
 
 **PostToolUse Hooks (Read):**
 
@@ -685,11 +703,18 @@ Configured in `.claude/settings.json`.
 | -------------------- | ------ | ------------------------------------ |
 | post-read-handler.js | Track  | Context tracking, auto-save, handoff |
 
+**PostToolUse Hooks (Write/Edit — governance):**
+
+| Hook                 | Condition                                      | Action | Purpose                                       |
+| -------------------- | ---------------------------------------------- | ------ | --------------------------------------------- |
+| governance-logger.js | `Write/Edit(CLAUDE.md\|.claude/settings.json)` | Log    | Log governance changes with git diff to JSONL |
+
 **PostToolUse Hooks (Bash):**
 
-| Hook              | Action | Purpose                         |
-| ----------------- | ------ | ------------------------------- |
-| commit-tracker.js | Track  | Log git commits to JSONL (#138) |
+| Hook              | Condition                    | Action | Purpose                                                |
+| ----------------- | ---------------------------- | ------ | ------------------------------------------------------ |
+| commit-tracker.js | `Bash(git commit *)`         | Track  | Log git commits to JSONL (#138)                        |
+| test-tracker.js   | `Bash(npm test *\|vitest *)` | Track  | Track test results to test-runs.jsonl, warn on failure |
 
 **PostToolUse Hooks (Task):**
 
@@ -715,6 +740,12 @@ Configured in `.claude/settings.json`.
 | ---------------------- | ------- | -------------------- |
 | user-prompt-handler.js | Process | Process user prompts |
 
+**PostToolUseFailure Hooks:**
+
+| Hook             | Condition                                     | Action | Purpose                                     |
+| ---------------- | --------------------------------------------- | ------ | ------------------------------------------- |
+| loop-detector.js | `Bash(npm run build/test, npx tsc, npm lint)` | Warn   | Detect 3+ identical errors in 20 min window |
+
 **Shared Libraries (`hooks/lib/`):**
 
 | Module             | Purpose                                             |
@@ -723,18 +754,21 @@ Configured in `.claude/settings.json`.
 | inline-patterns.js | Shared `INLINE_PATTERNS` + `checkInlinePatterns()`  |
 | state-utils.js     | Shared `loadJson()`/`saveJson()` with atomic writes |
 
-> **BLOCKING hooks**: firestore-write-block.js and test-mocking-validator.js
-> will prevent operations that violate security patterns. All other hooks
-> provide warnings/guidance but don't block.
+> **BLOCKING hooks**: firestore-write-block.js, test-mocking-validator.js,
+> settings-guardian.js, firestore-rules-guard.js, .env.local.encrypted inline
+> block, deploy-safeguard.js, and large-file-gate.js will prevent operations
+> that violate security patterns. All other hooks provide warnings/guidance but
+> don't block.
 
 **See:** `docs/archive/HOOKIFY_STRATEGY.md` for full hook documentation.
 
 **Hook Health Infrastructure (Session #91):**
 
-| Command                | Purpose                             |
-| ---------------------- | ----------------------------------- |
-| `npm run hooks:test`   | Run test suite on all hooks         |
-| `npm run hooks:health` | Check hook syntax and session state |
+| Command                | Purpose                                       |
+| ---------------------- | --------------------------------------------- |
+| `npm run hooks:test`   | Run test suite on all hooks                   |
+| `npm run hooks:health` | Check hook syntax and session state           |
+| `npm run test:gates`   | Test harness for PreToolUse/PostToolUse gates |
 
 The hook health infrastructure includes:
 
@@ -743,6 +777,8 @@ The hook health infrastructure includes:
 - **Syntax validation**: Verifies all hooks parse correctly
 - **Session state tracking**: Tracks begin/end counts in
   `.claude/hooks/.session-state.json`
+- **Gate test harness**: `scripts/test-hook-gates.js` simulates hook stdin and
+  invokes gate scripts directly for testing without session restarts
 
 ### CI/CD Workflows
 
@@ -1286,15 +1322,17 @@ summary command; full dashboard is larger scope.
 
 ## 🗓️ Version History
 
-| Version | Date       | Changes                                                                                                     |
-| ------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
-| 2.8     | 2026-02-17 | Added CC gate to pre-commit hook table (PR #371 retro action item)                                          |
-| 2.7     | 2026-02-11 | Updated pre-commit hook table: doc index auto-fix with Prettier, doc headers, agent/debt checks (#150)      |
-| 2.6     | 2026-02-08 | Added Agile Process and Process & Tooling Improvements sections (moved from ROADMAP.md v3.22, Session #142) |
-| 2.5     | 2026-02-02 | Added Claude Code settings sync commands and cross-platform setup reference                                 |
-| 2.4     | 2026-01-24 | Previous version                                                                                            |
-| 2.3     | 2026-01-16 | Updated pre-commit hook: lint-staged auto-formats staged files (Session #70)                                |
-| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder)                                 |
-| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                                                     |
-| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                |
-| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                                                            |
+| Version | Date       | Changes                                                                                                                                                                                                                    |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 3.0     | 2026-03-29 | Wave 3 hooks: deploy-safeguard (PreToolUse deploy gate), test-tracker (PostToolUse test result JSONL), large-file-gate (PreToolUse large data file block)                                                                  |
+| 2.9     | 2026-03-29 | Wave 1-2 hooks: ensure-fnm.sh wrapper, PreToolUse gates (settings-guardian, firestore-rules-guard, .env.local.encrypted), governance-logger, loop-detector, test:gates harness, MD/JSON validators in post-write-validator |
+| 2.8     | 2026-02-17 | Added CC gate to pre-commit hook table (PR #371 retro action item)                                                                                                                                                         |
+| 2.7     | 2026-02-11 | Updated pre-commit hook table: doc index auto-fix with Prettier, doc headers, agent/debt checks (#150)                                                                                                                     |
+| 2.6     | 2026-02-08 | Added Agile Process and Process & Tooling Improvements sections (moved from ROADMAP.md v3.22, Session #142)                                                                                                                |
+| 2.5     | 2026-02-02 | Added Claude Code settings sync commands and cross-platform setup reference                                                                                                                                                |
+| 2.4     | 2026-01-24 | Previous version                                                                                                                                                                                                           |
+| 2.3     | 2026-01-16 | Updated pre-commit hook: lint-staged auto-formats staged files (Session #70)                                                                                                                                               |
+| 2.2     | 2026-01-13 | Updated pre-commit hook table (pattern compliance, learning entry reminder)                                                                                                                                                |
+| 2.1     | 2026-01-04 | Added Developer Tooling section (Prettier, madge, knip)                                                                                                                                                                    |
+| 2.0     | 2026-01-02 | Standardized structure per Phase 3 migration                                                                                                                                                                               |
+| 1.0     | 2025-12-19 | Initial guide consolidated from multiple sources                                                                                                                                                                           |

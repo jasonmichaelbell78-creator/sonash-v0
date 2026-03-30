@@ -43,3 +43,106 @@
 {"agent":"explore","description":"Skill data inventory part 2","sessionId":"session-1774622185275","timestamp":"2026-03-27T15:53:49.383Z"}
 {"agent":"explore","description":"State file inventory only","sessionId":"session-1774622185275","timestamp":"2026-03-27T16:00:33.990Z"}
 {"agent":"explore","description":"Data directory inventory only","sessionId":"session-1774622185275","timestamp":"2026-03-27T16:00:38.549Z"}
+{"agent":"Explore","description":"Find spinner verbs locally","sessionId":"session-1774738230139","timestamp":"2026-03-29T00:29:23.063Z"}
+{"agent":"general-purpose","description":"Investigate 3 roadmap items","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:03:05.778Z"}
+{"agent":"Explore","description":"Compare CLI tools across locales","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:14:36.147Z"}
+{"agent":"Explore","description":"Verify font and CLI tools status","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:22:51.523Z"}
+{"agent":"Explore","description":"Investigate trigger warning gap","sessionId":"session-1774781135107","timestamp":"2026-03-29T11:25:44.830Z"}
+{"agent":"general-purpose","description":"Research grep usage and alternatives","sessionId":"session-1774785564690","timestamp":"2026-03-29T12:12:41.807Z"}
+{"agent":"general-purpose","description":"Research Claude Code hook \"if\" conditions","sessionId":"session-1774785564690","timestamp":"2026-03-29T12:13:04.329Z"}
+{"agent":"deep-research-searcher","description":"D1: if field specification","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:04:20.440Z"}
+{"agent":"deep-research-searcher","description":"D2: current hook inventory","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:05:16.191Z"}
+{"agent":"deep-research-searcher","description":"D9: risks and anti-patterns","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:08:13.154Z"}
+{"agent":"deep-research-searcher","description":"D7: performance baseline","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:08:53.124Z"}
+{"agent":"deep-research-searcher","description":"D3: existing hook optimization","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:12:50.080Z"}
+{"agent":"deep-research-searcher","description":"D8: cross-locale impact","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:16:39.805Z"}
+{"agent":"deep-research-searcher","description":"D5: new security/deploy hooks","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:17:45.829Z"}
+{"agent":"deep-research-searcher","description":"D4: GSD context monitor deep-dive","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:19:33.999Z"}
+{"agent":"deep-research-searcher","description":"D3-S: if field tool compatibility","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:22:45.947Z"}
+{"agent":"deep-research-searcher","description":"D6: new validation/config hooks","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:24:25.379Z"}
+{"agent":"deep-research-searcher","description":"D7-S: ensure-fnm overhead analysis","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:29:04.300Z"}
+{"agent":"deep-research-searcher","description":"D5-S: GSD matcher scoping","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:31:16.770Z"}
+{"agent":"deep-research-synthesizer","description":"Synthesize all findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:40:21.030Z"}
+{"agent":"general-purpose","description":"V2: verify codebase claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:43:16.687Z"}
+{"agent":"general-purpose","description":"V1: verify spec claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:43:46.545Z"}
+{"agent":"general-purpose","description":"V3: verify performance claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:45:05.928Z"}
+{"agent":"general-purpose","description":"V4: verify cross-claim consistency","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:45:25.024Z"}
+{"agent":"general-purpose","description":"Contrarian 2: challenge methodology","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:49:07.943Z"}
+{"agent":"general-purpose","description":"OTB 2: if conditions as architecture","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:50:47.083Z"}
+{"agent":"general-purpose","description":"Contrarian 1: challenge core claims","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:51:00.695Z"}
+{"agent":"general-purpose","description":"OTB 1: unconventional if uses","sessionId":"session-1774785564690","timestamp":"2026-03-29T13:51:20.858Z"}
+{"agent":"general-purpose","description":"G4: OTB triage and feasibility","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:04:00.481Z"}
+{"agent":"deep-research-searcher","description":"G3: PreToolUse prevention gates","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:04:25.037Z"}
+{"agent":"general-purpose","description":"G2: Windows path if live test","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:08:41.783Z"}
+{"agent":"general-purpose","description":"G1: Gemini CLI cross-model check","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:13:59.536Z"}
+{"agent":"general-purpose","description":"G6: compound command bypass test","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:17:53.904Z"}
+{"agent":"general-purpose","description":"G5: GSD template syntax test","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:19:03.497Z"}
+{"agent":"general-purpose","description":"GV2: verify G4-G6 findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:22:20.260Z"}
+{"agent":"general-purpose","description":"GV1: verify G1-G3 findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:22:36.872Z"}
+{"agent":"deep-research-synthesizer","description":"Re-synthesize with gap-fill findings","sessionId":"session-1774785564690","timestamp":"2026-03-29T14:36:42.382Z"}
+{"agent":"general-purpose","description":"Step 1: lean ensure-fnm.sh wrapper","sessionId":"session-1774785564690","timestamp":"2026-03-29T15:11:12.706Z"}
+{"agent":"general-purpose","description":"Step 4: env.local.encrypted block","sessionId":"session-1774785564690","timestamp":"2026-03-29T15:11:25.170Z"}
+{"agent":"general-purpose","description":"Step 2+3: GSD matcher + remove dupe","sessionId":"session-1774785564690","timestamp":"2026-03-29T15:11:28.818Z"}
+{"agent":"general-purpose","description":"Step 5: activate monolith validators","sessionId":"session-1774785564690","timestamp":"2026-03-29T15:13:45.569Z"}
+{"agent":"code-reviewer","description":"Wave 1 code review","sessionId":"session-1774797344251","timestamp":"2026-03-29T15:23:36.016Z"}
+{"agent":"general-purpose","description":"Step 7: gate test harness","sessionId":"session-1774797344251","timestamp":"2026-03-29T15:42:07.517Z"}
+{"agent":"general-purpose","description":"Step 8: settings.json PreToolUse guardian","sessionId":"session-1774797344251","timestamp":"2026-03-29T15:45:50.749Z"}
+{"agent":"general-purpose","description":"Step 9: governance change logger","sessionId":"session-1774797344251","timestamp":"2026-03-29T15:46:08.194Z"}
+{"agent":"general-purpose","description":"Step 10: firestore rules guard","sessionId":"session-1774797344251","timestamp":"2026-03-29T15:56:02.883Z"}
+{"agent":"general-purpose","description":"Step 11: loop detector","sessionId":"session-1774797344251","timestamp":"2026-03-29T16:14:50.696Z"}
+{"agent":"general-purpose","description":"Update TRIGGERS.md and DEVELOPMENT.md","sessionId":"session-1774797344251","timestamp":"2026-03-29T16:39:33.777Z"}
+{"agent":"general-purpose","description":"Step 15: large file read gate","sessionId":"session-1774797344251","timestamp":"2026-03-29T17:07:37.070Z"}
+{"agent":"general-purpose","description":"Step 14: test-runner tracking","sessionId":"session-1774797344251","timestamp":"2026-03-29T17:12:27.067Z"}
+{"agent":"general-purpose","description":"Step 13: pre-deploy safeguard","sessionId":"session-1774797344251","timestamp":"2026-03-29T17:29:27.331Z"}
+{"agent":"general-purpose","description":"Update docs for Wave 3 hooks","sessionId":"session-1774797344251","timestamp":"2026-03-29T17:32:43.450Z"}
+{"agent":"Explore","description":"Explore deep-research skill structure","sessionId":"session-1774797344251","timestamp":"2026-03-29T18:18:57.351Z"}
+{"agent":"Plan","description":"Plan gap-pursuit phase design","sessionId":"session-1774797344251","timestamp":"2026-03-29T18:30:31.631Z"}
+{"agent":"general-purpose","description":"Steps 5-8: REFERENCE.md updates","sessionId":"session-1774797344251","timestamp":"2026-03-29T18:39:13.351Z"}
+{"agent":"general-purpose","description":"Implement REFERENCE.md decisions","sessionId":"session-1774797344251","timestamp":"2026-03-29T19:32:54.366Z"}
+{"agent":"general-purpose","description":"Implement SKILL.md decisions","sessionId":"session-1774797344251","timestamp":"2026-03-29T19:34:16.800Z"}
+{"agent":"Explore","description":"Analyze current agent definitions","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:19:28.817Z"}
+{"agent":"Explore","description":"Find prior agent design research","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:20:54.891Z"}
+{"agent":"deep-research-searcher","description":"SQ1-web: Agent definition best practices","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:37:16.452Z"}
+{"agent":"deep-research-searcher","description":"SQ2-web: Multi-agent orchestration patterns","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:37:24.799Z"}
+{"agent":"deep-research-searcher","description":"SQ3-local: Inventory of local agents","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:37:39.120Z"}
+{"agent":"deep-research-searcher","description":"SQ3-global: Inventory of global agents","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:37:46.414Z"}
+{"agent":"deep-research-searcher","description":"SQ1-docs: Agent format from official docs","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:49:29.115Z"}
+{"agent":"deep-research-searcher","description":"SQ2-academic: Orchestration research papers","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:49:41.326Z"}
+{"agent":"deep-research-searcher","description":"SQ3-cross: Cross-cutting agent analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:49:58.424Z"}
+{"agent":"deep-research-searcher","description":"SQ4-web: Model selection strategies","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:50:15.298Z"}
+{"agent":"deep-research-searcher","description":"SQ4-docs: Model selection from Anthropic","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:03:46.136Z"}
+{"agent":"deep-research-searcher","description":"SQ5-skills: Workflow gaps in skills","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:04.148Z"}
+{"agent":"deep-research-searcher","description":"SQ5-hooks: Workflow gaps in hooks","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:16.235Z"}
+{"agent":"deep-research-searcher","description":"SQ6-overrides: Current custom override eval","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:28.114Z"}
+{"agent":"deep-research-searcher","description":"SQ6-system: System agent catalog analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:45.261Z"}
+{"agent":"deep-research-searcher","description":"SQ5-pipelines: Deploy/CI/test gaps","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:27.959Z"}
+{"agent":"deep-research-searcher","description":"SQ6-gaps: Override gap synthesis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:39.544Z"}
+{"agent":"deep-research-searcher","description":"SQ7-stubs: Stub agent elevation analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:55.122Z"}
+{"agent":"deep-research-searcher","description":"SQ7-redundancy: Redundancy deep analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:16:11.398Z"}
+{"agent":"code-reviewer","description":"Review deploy-safeguard.js fix - APPROVED","sessionId":"session-1774822733641939500","timestamp":"2026-03-29T22:18:53.000Z"}
+{"agent":"deep-research-searcher","description":"SQ7-consolidation: Merge D7a+D7b conflicts","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:23:50.922Z"}
+{"agent":"deep-research-searcher","description":"SQ8-web: Adversarial agent patterns","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:24:10.433Z"}
+{"agent":"deep-research-searcher","description":"SQ8-internal: Deep-research pipeline analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:24:26.138Z"}
+{"agent":"deep-research-searcher","description":"SQ9-web: Pipeline agent patterns","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:27:59.118Z"}
+{"agent":"deep-research-searcher","description":"SQ9-internal: Current pipeline implementation","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:28:27.273Z"}
+{"agent":"deep-research-searcher","description":"SQ10-github: Net-new agents from GitHub","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:13.138Z"}
+{"agent":"deep-research-searcher","description":"SQ10-community: Agents from skill.sh/community","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:26.032Z"}
+{"agent":"deep-research-searcher","description":"SQ10-internal: Internal gap-fill agents","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:41.273Z"}
+{"agent":"deep-research-searcher","description":"SQ11-web: Agent team patterns external","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:42:41.792Z"}
+{"agent":"deep-research-searcher","description":"SQ11-internal: Current teams analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:42:54.908Z"}
+{"agent":"deep-research-searcher","description":"SQ12-web: Agent quality validation","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:43:06.995Z"}
+{"agent":"deep-research-searcher","description":"SQ12-internal: Current quality processes","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:43:17.798Z"}
+{"agent":"deep-research-synthesizer","description":"Phase 2: Synthesize all 29 findings","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:50:03.148Z"}
+{"agent":"deep-research-searcher","description":"V1: Verify claims 1-50 vs filesystem","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:04:36.861Z"}
+{"agent":"deep-research-searcher","description":"V2: Verify claims 51-100 vs filesystem","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:04:39.931Z"}
+{"agent":"deep-research-searcher","description":"Phase 2.7a: Compare vs agent-env analysis","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:05:03.081Z"}
+{"agent":"deep-research-searcher","description":"Phase 2.7b: Compare vs archived research","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:05:13.224Z"}
+{"agent":"deep-research-searcher","description":"Contrarian 1: Challenge consolidation claims","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:29:39.938Z"}
+{"agent":"deep-research-searcher","description":"Contrarian 2: Challenge new agent claims","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:29:59.398Z"}
+{"agent":"deep-research-searcher","description":"OTB 1: Alternative approaches missed","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:30:19.579Z"}
+{"agent":"deep-research-searcher","description":"OTB 2: Systemic blind spots","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:30:40.606Z"}
+{"agent":"deep-research-searcher","description":"Phase 3.5: Resolve all disputes","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:39:06.444Z"}
+{"agent":"deep-research-synthesizer","description":"Phase 3.9: Re-synthesize with corrections","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:45:35.873Z"}
+{"agent":"fullstack-developer","description":"Fix CRITICAL+MAJOR hook bugs","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:23:23.801Z"}
+{"agent":"fullstack-developer","description":"Fix ensure-fnm + pre-commit + test harness","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:23:39.923Z"}
+{"agent":"fullstack-developer","description":"Fix MINOR+TRIVIAL review items","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:24:07.517Z"}

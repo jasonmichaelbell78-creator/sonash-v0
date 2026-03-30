@@ -1,7 +1,7 @@
 # TRIGGERS.md - Automation & Enforcement Reference
 
-**Project**: SoNash Recovery Notebook **Document Version**: 1.7 **Created**:
-2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-01-27
+**Project**: SoNash Recovery Notebook **Document Version**: 1.9 **Created**:
+2026-01-02 **Status**: ACTIVE **Last Updated**: 2026-03-29
 
 ---
 
@@ -63,13 +63,13 @@ repository. This document serves as:
 | ------------------------ | ----- | --------- | ------ | ------ |
 | GitHub Actions (CI/CD)   | 5     | ✅        | -      | Active |
 | Pre-Commit Hooks         | 1     | ✅        | -      | Active |
-| Session Hooks            | 15    | ✅        | -      | Active |
+| Session Hooks            | 24    | ✅        | -      | Active |
 | npm Scripts              | 8     | Semi      | ✅     | Active |
 | Automation Scripts       | 6     | -         | ✅     | Active |
 | Documentation Directives | 12+   | -         | ✅     | Active |
 | Anti-Pattern Checks      | 35+   | ✅        | -      | Active |
 
-**Total Enforcement Points**: 81+
+**Total Enforcement Points**: 84+
 
 ---
 
@@ -596,22 +596,30 @@ feedback on code quality, security, and best practices.
 
 ### Hooks Implemented
 
-| Hook                            | Trigger              | Action  | Purpose                                         |
-| ------------------------------- | -------------------- | ------- | ----------------------------------------------- |
-| session-start.js                | SessionStart         | Setup   | Deps, builds, patterns, TDMS check              |
-| check-mcp-servers.js            | SessionStart         | Report  | Check MCP server availability                   |
-| check-remote-session-context.js | SessionStart         | Warn    | Detect newer SESSION_CONTEXT on remote branches |
-| global/gsd-check-update.js      | SessionStart         | Check   | Check for GSD package updates                   |
-| compact-restore.js              | SessionStart:compact | Restore | Output recovery context after compaction (#138) |
-| block-push-to-main.js           | PreToolUse (Bash)    | Block   | Block direct pushes to main branch              |
-| pre-commit-agent-compliance.js  | PreToolUse (Bash)    | Warn    | Warn on commit without agent code review        |
-| pre-compaction-save.js          | PreCompact           | Save    | Full state snapshot before compaction (#138)    |
-| post-write-validator.js         | Write/Edit           | Warn    | Schema, lint, pattern validation                |
-| post-read-handler.js            | Read                 | Track   | Context tracking, auto-save, handoff            |
-| commit-tracker.js               | Bash                 | Track   | Log git commits to JSONL (#138)                 |
-| track-agent-invocation.js       | Task                 | Track   | Record agent invocations for compliance (#101)  |
-| decision-save-prompt.js         | AskQuestion          | Prompt  | Remind to document decisions                    |
-| user-prompt-handler.js          | UserPromptSubmit     | Process | Process user prompts                            |
+| Hook                            | Trigger                   | Action  | Purpose                                                |
+| ------------------------------- | ------------------------- | ------- | ------------------------------------------------------ |
+| ensure-fnm.sh                   | (wrapper)                 | Exec    | Fast-path node check, skips fnm if on PATH             |
+| session-start.js                | SessionStart              | Setup   | Deps, builds, patterns, TDMS check                     |
+| check-mcp-servers.js            | SessionStart              | Report  | Check MCP server availability                          |
+| check-remote-session-context.js | SessionStart              | Warn    | Detect newer SESSION_CONTEXT on remote branches        |
+| compact-restore.js              | SessionStart:compact      | Restore | Output recovery context after compaction (#138)        |
+| block-push-to-main.js           | PreToolUse (Bash)         | Block   | Block direct pushes to main branch                     |
+| pre-commit-agent-compliance.js  | PreToolUse (Bash)         | Warn    | Warn on commit without agent code review               |
+| _(inline)_                      | PreToolUse (Write)        | Block   | Block writes to .env.local.encrypted                   |
+| settings-guardian.js            | PreToolUse (Write/Edit)   | Block   | Validate settings.json integrity                       |
+| firestore-rules-guard.js        | PreToolUse (Write/Edit)   | Block   | Block removal of write-block patterns in rules         |
+| pre-compaction-save.js          | PreCompact                | Save    | Full state snapshot before compaction (#138)           |
+| post-write-validator.js         | Write/Edit                | Warn    | Schema, lint, MD/JSON, pattern validation              |
+| post-read-handler.js            | Read                      | Track   | Context tracking, auto-save, handoff                   |
+| commit-tracker.js               | Bash                      | Track   | Log git commits to JSONL (#138)                        |
+| governance-logger.js            | PostToolUse (Write/Edit)  | Log     | Log governance changes with git diff to JSONL          |
+| track-agent-invocation.js       | Task                      | Track   | Record agent invocations for compliance (#101)         |
+| decision-save-prompt.js         | AskQuestion               | Prompt  | Remind to document decisions                           |
+| user-prompt-handler.js          | UserPromptSubmit          | Process | Process user prompts                                   |
+| loop-detector.js                | PostToolUseFailure (Bash) | Warn    | Detect 3+ identical errors in 20 min window            |
+| deploy-safeguard.js             | PreToolUse (Bash)         | Block   | Block deploy if build stale, env missing, tests failed |
+| test-tracker.js                 | PostToolUse (Bash)        | Track   | Track test results to test-runs.jsonl, warn on failure |
+| large-file-gate.js              | PreToolUse (Read)         | Block   | Block reads >5MB, warn >500KB on large data files      |
 
 ### Verification
 
@@ -626,7 +634,9 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 ### Compliance Status
 
 - ✅ **Automated**: Runs automatically after tool use
-- ⚠️ **Blocking hooks**: firestore-write-block.js, test-mocking-validator.js
+- ⚠️ **Blocking hooks**: firestore-write-block.js, test-mocking-validator.js,
+  settings-guardian.js, firestore-rules-guard.js, .env.local.encrypted inline
+  block, deploy-safeguard.js, large-file-gate.js
 - ✅ **Warning hooks**: All others (inform but don't block)
 
 ---
@@ -654,7 +664,36 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 
 ---
 
-## 3.4 Hook Health Infrastructure (Session #91)
+## 3.4 PostToolUseFailure Hooks
+
+| Attribute     | Value                         |
+| ------------- | ----------------------------- |
+| **Location**  | `.claude/hooks/*.js`          |
+| **Trigger**   | After a tool invocation fails |
+| **Execution** | Automatic                     |
+
+### Hooks Implemented
+
+| Hook             | Condition                                                      | Action | Purpose                                     |
+| ---------------- | -------------------------------------------------------------- | ------ | ------------------------------------------- |
+| loop-detector.js | `Bash(npm run build *\|npm test *\|npx tsc *\|npm run lint *)` | Warn   | Detect 3+ identical errors in 20 min window |
+
+### Description
+
+PostToolUseFailure hooks fire when a tool invocation exits with an error.
+`loop-detector.js` hashes error output (stripping line numbers and timestamps
+for fuzzy matching) and maintains a rolling window in
+`.claude/state/error-loop-tracker.json`. When the same error hash appears 3+
+times within 20 minutes, it warns Claude to try a different approach.
+
+### Compliance Status
+
+- ✅ **Automated**: Runs automatically on tool failure
+- ✅ **Non-blocking**: Warns but does not block (continueOnError: true)
+
+---
+
+## 3.5 Hook Health Infrastructure (Session #91)
 
 | Attribute     | Value                                                   |
 | ------------- | ------------------------------------------------------- |
@@ -664,10 +703,11 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 
 ### Scripts Available
 
-| Command                | Purpose                                |
-| ---------------------- | -------------------------------------- |
-| `npm run hooks:test`   | Run test suite on all hooks (47 tests) |
-| `npm run hooks:health` | Check hook syntax and session state    |
+| Command                | Purpose                                       |
+| ---------------------- | --------------------------------------------- |
+| `npm run hooks:test`   | Run test suite on all hooks (47 tests)        |
+| `npm run hooks:health` | Check hook syntax and session state           |
+| `npm run test:gates`   | Test harness for PreToolUse/PostToolUse gates |
 
 ### Features
 
@@ -676,10 +716,13 @@ cat .claude/settings.json | jq '.hooks.PostToolUse'
 - **Syntax validation**: Verifies all hooks parse correctly
 - **Session state tracking**: Tracks begin/end counts in
   `.claude/hooks/.session-state.json`
+- **Gate test harness**: `scripts/test-hook-gates.js` simulates PreToolUse/
+  PostToolUse stdin and invokes gate scripts directly, enabling testing without
+  Claude Code session restarts
 
 ---
 
-## 3.5 Serena Dashboard Termination Hook (Session #90)
+## 3.6 Serena Dashboard Termination Hook (Session #90)
 
 | Attribute     | Value                                               |
 | ------------- | --------------------------------------------------- |
@@ -1289,16 +1332,18 @@ sufficient coverage. Revisit if doc drift becomes a problem._
 
 ## 🗓️ VERSION HISTORY
 
-| Version | Date       | Changes                                               | Author |
-| ------- | ---------- | ----------------------------------------------------- | ------ |
-| 1.7     | 2026-01-27 | Add DOCUMENTATION_INDEX.md staleness check (BLOCKING) | Claude |
-| 1.6     | 2026-01-26 | Add Agent compliance check (non-blocking)             | Claude |
-| 1.5     | 2026-01-24 | Add Audit S0/S1 validation check (BLOCKING)           | Claude |
-| 1.4     | 2026-01-16 | Cross-doc dependency check now BLOCKING (Session #69) | Claude |
-| 1.3     | 2026-01-02 | Resolved Gap 4, added security linting                | Claude |
-| 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy   | Claude |
-| 1.1     | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow              | Claude |
-| 1.0     | 2026-01-02 | Initial document created                              | Claude |
+| Version | Date       | Changes                                                                                                                                                                                                                                                   | Author |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
+| 1.9     | 2026-03-29 | Wave 3 hooks: deploy-safeguard (PreToolUse block on stale build/env/tests), test-tracker (PostToolUse test result tracking to JSONL), large-file-gate (PreToolUse block on large data file reads). Hook count 21 → 24                                     | Claude |
+| 1.8     | 2026-03-29 | Wave 2 hooks: settings-guardian, governance-logger, firestore-rules-guard, loop-detector, test-hook-gates harness, .env.local.encrypted inline block. Wave 1: ensure-fnm.sh wrapper, removed duplicate GSD check, post-write-validator MD/JSON validators | Claude |
+| 1.7     | 2026-01-27 | Add DOCUMENTATION_INDEX.md staleness check (BLOCKING)                                                                                                                                                                                                     | Claude |
+| 1.6     | 2026-01-26 | Add Agent compliance check (non-blocking)                                                                                                                                                                                                                 | Claude |
+| 1.5     | 2026-01-24 | Add Audit S0/S1 validation check (BLOCKING)                                                                                                                                                                                                               | Claude |
+| 1.4     | 2026-01-16 | Cross-doc dependency check now BLOCKING (Session #69)                                                                                                                                                                                                     | Claude |
+| 1.3     | 2026-01-02 | Resolved Gap 4, added security linting                                                                                                                                                                                                                    | Claude |
+| 1.2     | 2026-01-02 | Resolved Gap 3, added pre-push hook and team policy                                                                                                                                                                                                       | Claude |
+| 1.1     | 2026-01-02 | Resolved Gap 1 & 2, added to CI workflow                                                                                                                                                                                                                  | Claude |
+| 1.0     | 2026-01-02 | Initial document created                                                                                                                                                                                                                                  | Claude |
 
 ---
 

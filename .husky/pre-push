@@ -130,7 +130,11 @@ if [ -z "$_base_ref" ]; then
   # No base ref — run check unconditionally (safer than skipping)
   _app_code_changed="forced"
 else
-  _app_code_changed=$(git diff --name-only --diff-filter=ACMR "$_base_ref"...HEAD 2>/dev/null | grep -E '^(lib/|components/|app/).*\.(ts|tsx|js|jsx)$' | head -1)
+  _app_code_changed=$(git diff --name-only --diff-filter=ACMR "$_base_ref"...HEAD -- \
+    'lib/**/*.ts' 'lib/**/*.tsx' 'lib/**/*.js' 'lib/**/*.jsx' \
+    'components/**/*.ts' 'components/**/*.tsx' 'components/**/*.js' 'components/**/*.jsx' \
+    'app/**/*.ts' 'app/**/*.tsx' 'app/**/*.js' 'app/**/*.jsx' \
+    2>/dev/null | head -1)
 fi
 if [ -z "$_app_code_changed" ]; then
   echo "  ⏭️ Circular deps skipped (no app code in push diff)"
@@ -166,25 +170,29 @@ else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Checking pattern compliance (push diff only)..."
 set +e
-push_diff_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '\.(js|mjs)$' | head -30)
+push_diff_files=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD -- '*.js' '*.mjs' 2>/dev/null | head -30)
 set -e
 
 if [ -n "${push_diff_files:-}" ]; then
-  # Pass files as positional args to check-pattern-compliance.js
+  # Pass files as positional args to check-pattern-compliance.js (JSON output for structured parsing)
   set +e
-  pattern_output=$(printf '%s\n' "$push_diff_files" | xargs -r node scripts/check-pattern-compliance.js 2>&1)
+  pattern_output=$(printf '%s\n' "$push_diff_files" | xargs -r node scripts/check-pattern-compliance.js --json 2>&1)
   pattern_exit=$?
   set -e
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
   if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
   if [ "$pattern_exit" -ne 0 ]; then
     echo "  ⚠️ Pattern compliance issues in pushed files:"
-    printf '%s\n' "$pattern_output" | grep -E "❌|⚠️|BLOCK|WARN" | head -10
+    # Parse structured JSON output
+    _pat_critical=$(printf '%s' "$pattern_output" | jq -r '.severityCounts.critical // 0' 2>/dev/null || echo "?")
+    _pat_high=$(printf '%s' "$pattern_output" | jq -r '.severityCounts.high // 0' 2>/dev/null || echo "?")
+    echo "    ${_pat_critical} critical, ${_pat_high} high"
+    printf '%s' "$pattern_output" | jq -r '.violations[:5][] | "    \(if .severity == "critical" then "❌" else "⚠️" end) \(.file):\(.line) — \(.message)"' 2>/dev/null | head -5
     echo ""
     echo "  Fix issues or run: npm run patterns:check"
-    # C2-G1: Extract top 3 affected files for enriched warning
-    _pat_files=$(printf '%s\n' "$pattern_output" | grep -oE '📄 [^ ]+' | sed 's/📄 //' | head -3 | tr '\n' ',' | sed 's/,$//')
-    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance issues in pushed files" --action="npm run patterns:check" --files="${_pat_files:-unknown}" --pattern="check-pattern-compliance" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: pattern compliance" >&2
+    # Extract top 3 affected files from JSON
+    _pat_files=$(printf '%s' "$pattern_output" | jq -r '[.violations[].file] | unique[:3] | join(",")' 2>/dev/null || echo "unknown")
+    node scripts/append-hook-warning.js --hook=pre-push --type=patterns --severity=warning --message="Pattern compliance: ${_pat_critical} critical, ${_pat_high} high" --action="npm run patterns:check" --files="${_pat_files:-unknown}" --pattern="check-pattern-compliance" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: pattern compliance" >&2
     echo "pattern-compliance-push|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
     echo "  ✅ Pattern compliance passed (push diff)"
@@ -205,7 +213,7 @@ else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 echo "  ▶ Checking code-reviewer coverage for script changes..."
 set +e
-script_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^(scripts/|\.claude/hooks/|\.husky/)' | head -5)
+script_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD -- 'scripts/' '.claude/hooks/' '.husky/' 2>/dev/null | head -5)
 set -e
 
 if [ -n "${script_changes:-}" ]; then
@@ -259,7 +267,7 @@ if [ "$_REBASE_ONLY" = "1" ]; then
   echo "propagation|skip|0" >> "$CHECKS_TMPFILE"
 else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
-_scripts_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^scripts/.*\.js$' | head -1)
+_scripts_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD -- 'scripts/**/*.js' 2>/dev/null | head -1)
 if [ -z "$_scripts_in_diff" ]; then
   echo "  ⏭️ Propagation check skipped (no scripts in push diff)"
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
@@ -313,7 +321,7 @@ if [ "$_REBASE_ONLY" = "1" ]; then
 else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 set +e
-hook_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD 2>/dev/null | grep -E '^\.claude/hooks/.*\.js$' | head -10)
+hook_changes=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD -- '.claude/hooks/**/*.js' 2>/dev/null | head -10)
 set -e
 
 if [ -n "${hook_changes:-}" ]; then
@@ -447,7 +455,7 @@ if [ -z "$_tsc_base_ref" ]; then
   # No base ref — run check unconditionally (safer than skipping)
   _ts_in_diff="forced"
 else
-  _ts_in_diff=$(git diff --name-only --diff-filter=ACMR "$_tsc_base_ref"...HEAD 2>/dev/null | grep -E '\.(ts|tsx)$' | head -1)
+  _ts_in_diff=$(git diff --name-only --diff-filter=ACMR "$_tsc_base_ref"...HEAD -- '*.ts' '*.tsx' 2>/dev/null | head -1)
 fi
 _tsc_skip=0
 if [ -z "$_ts_in_diff" ]; then
@@ -588,29 +596,32 @@ if [ "${SKIP_TRIGGERS:-}" = "1" ]; then
   node scripts/log-override.js --check=triggers --reason="$SKIP_REASON" 2>/dev/null || true
   echo "triggers|skip|0" >> "$CHECKS_TMPFILE"
 else
-  triggers_output=$(npm run triggers:check 2>&1)
+  triggers_output=$(node scripts/check-triggers.js --json 2>&1)
   triggers_exit=$?
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
   if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
   if [ "$triggers_exit" -eq 1 ]; then
     echo "  ❌ Blocking trigger(s) activated"
-    printf '%s\n' "$triggers_output" | grep -E "^🚫|^❌|^   Action:|^   Files:" | head -20
+    # Parse structured JSON for display
+    printf '%s' "$triggers_output" | jq -r '.blocking[] | "    ❌ \(.description)\n       Action: \(.action)"' 2>/dev/null | head -20
     echo ""
     echo "  Complete required actions or use: SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push"
     echo "triggers|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     exit 1
   elif [ "$triggers_exit" -eq 0 ]; then
-    # Show warnings but don't block
-    if echo "$triggers_output" | grep -q "⚠️"; then
-      printf '%s\n' "$triggers_output" | grep -E "^⚠️|^   Action:" | head -10
-      # Extract first warning message for the alert
-      first_warning=$(printf '%s\n' "$triggers_output" | grep "^⚠️" | head -1 | sed 's/^⚠️ *//')
-      # Review #322: Normalize warning message to single line to prevent parsing issues
-      first_warning_one_line=$(printf '%s' "$first_warning" | tr '\n\r' '  ' | sed 's/[[:space:]]\{1,\}/ /g; s/^ *//; s/ *$//')
-      # Review #214: Only create alert if we have a non-empty message
-      if [ -n "$first_warning_one_line" ]; then
-        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=info --message="$first_warning_one_line" >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: trigger warning" >&2
-      fi
+    # Check for warnings in JSON output
+    _warn_count=$(printf '%s' "$triggers_output" | jq -r '.warnings | length' 2>/dev/null || echo "0")
+    if [ "$_warn_count" -gt 0 ]; then
+      # Display warnings
+      printf '%s' "$triggers_output" | jq -r '.warnings[] | "    ⚠️  \(.description)\n       Action: \(.action)"' 2>/dev/null | head -10
+      # Log each warning individually with structured data
+      printf '%s' "$triggers_output" | jq -r '.warnings[] | "\(.description)\t\(.action)"' 2>/dev/null | while IFS=$'\t' read -r warning_msg warning_action; do
+        action_arg=""
+        if [ -n "$warning_action" ] && [ "$warning_action" != "null" ]; then
+          action_arg="--action=$warning_action"
+        fi
+        node scripts/append-hook-warning.js --hook=pre-push --type=trigger --severity=warning --message="$warning_msg" $action_arg >> "$HOOK_OUTPUT_LOG" 2>&1 || echo "⚠️ Warning write failed: trigger warning" >&2
+      done
       echo "triggers|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
     else
       echo "  ✅ No blocking triggers"
@@ -619,7 +630,7 @@ else
   else
     # Fail closed: unexpected exit code means something went wrong
     echo "  ❌ Triggers check failed (exit $triggers_exit)"
-    printf '%s\n' "$triggers_output" | tail -20
+    printf '%s' "$triggers_output" | jq -r '.message // empty' 2>/dev/null || printf '%s\n' "$triggers_output" | tail -20
     echo ""
     echo "  Fix the triggers checker error or use: SKIP_REASON=\"reason\" SKIP_TRIGGERS=1 git push"
     echo "triggers|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"

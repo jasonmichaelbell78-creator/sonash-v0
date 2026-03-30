@@ -7,6 +7,43 @@ if [ $# -eq 0 ]; then
   exit 2
 fi
 
+# Fast-path: only skip fnm if the current node matches the repo-pinned version
+if command -v node >/dev/null 2>&1; then
+  repo_root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+  if [[ -f "$repo_root/.nvmrc" ]]; then
+    expected="$(tr -d ' \t\r\n' < "$repo_root/.nvmrc")"
+    current="$(node -v 2>/dev/null | tr -d ' \t\r\n')"
+    expected_clean="${expected#v}"
+    current_clean="${current#v}"
+    # If .nvmrc pins a full semver (e.g. 22.12.0), require exact match
+    case "$expected_clean" in
+      *.*.*)
+        if [[ "$expected_clean" = "$current_clean" ]]; then
+          exec "$@"
+        fi
+        ;;
+      *.*)
+        # MAJOR.MINOR pin (e.g. "22.12") — require matching prefix
+        if [[ "$current_clean" = "$expected_clean".* ]]; then
+          exec "$@"
+        fi
+        ;;
+      *)
+        # Major-only comparison (e.g. "22" or "v22") — numeric majors only
+        if [[ "$expected_clean" =~ ^[0-9]+(\.|$) ]]; then
+          expected_major="${expected_clean%%.*}"
+          current_major="${current_clean%%.*}"
+          if [[ "$expected_major" = "$current_major" ]]; then
+            exec "$@"
+          fi
+        fi
+        ;;
+    esac
+  else
+    exec "$@"
+  fi
+fi
+
 if ! command -v fnm >/dev/null 2>&1; then
   echo "ensure-fnm.sh: fnm is not installed or not on PATH" >&2
   exit 1

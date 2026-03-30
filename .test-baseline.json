@@ -399,6 +399,46 @@
     {
       "path": "scripts/verify-enforcement.js",
       "lines": 552
+    },
+    {
+      "path": ".claude/hooks/deploy-safeguard.js",
+      "lines": 381,
+      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/firestore-rules-guard.js",
+      "lines": 259,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/governance-logger.js",
+      "lines": 284,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/large-file-gate.js",
+      "lines": 169,
+      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/loop-detector.js",
+      "lines": 308,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/settings-guardian.js",
+      "lines": 187,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/test-tracker.js",
+      "lines": 238,
+      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": "scripts/test-hook-gates.js",
+      "lines": 390,
+      "note": "Hook gate test harness — meta-test tool, not unit-tested itself"
     }
   ]
 }

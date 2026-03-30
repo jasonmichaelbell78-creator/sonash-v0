@@ -2814,3 +2814,94 @@ deduped/merged)
 - stdin size bounds prevent memory exhaustion on misconfigured hooks.
 
 ---
+
+### Review 59
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 27    | 24    | 0        | 3        |
+
+**Key learnings:**
+
+- Hook shared-lib imports (`isSafeToWrite`) must use the same path as
+  `safeAppendFileSync` — `./lib/symlink-guard` doesn't exist; `safe-fs.js`
+  exports both.
+- Logger hooks should fail-open (`isSafeToWrite = () => true`), not fail-closed
+  — a broken guard disabling all logging is worse than a theoretical symlink.
+- `spawn()` does not support `timeout` option — only `execFile`/`exec` do. Use
+  manual `setTimeout` + `child.kill()`.
+- Deploy safeguards must scope to hosting deploys —
+  rules/indexes/storage/functions deploys don't need `.next/` or `.env.local`.
+- Stderr must be separated from JSON stdout in hooks — `2>&1` corrupts
+  structured output parsed by `jq`.
+- Research source citations should redact token values even when tokens are
+  revoked — SonarCloud flags literal PAT strings regardless of validity.
+
+---
+
+### Review 60
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 6     | 0        | 2        |
+
+**Key learnings:**
+
+- Variable declarations must appear before any `setTimeout` callbacks that
+  reference them — hoisting doesn't apply to `let`/`const`.
+- When extracting complex logic to reduce CC, extract helper functions rather
+  than inlining — test files get CC-checked too.
+- Bash conditional tests should use `[[` over `[` for safety and feature parity.
+- `.nvmrc` path resolution needs repo root, not cwd — hooks may run from
+  subdirectories.
+- `path.isAbsolute(rel)` IS needed on Windows — `path.relative()` can return
+  absolute paths across drive boundaries (R1 overcorrection).
+- Unused speculative dependencies (added for planned features) should not be
+  committed until code imports them — CI knip gate catches them.
+
+---
+
+### Review 61
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Key learnings:**
+
+- CC extraction needs to be aggressive enough — extracting one helper may not be
+  sufficient if the remaining function still exceeds the threshold.
+- REVERTED: `./lib/rotate-state.js` path was actually correct — file exists at
+  `.claude/hooks/lib/rotate-state.js`. R3 fix was wrong; verify file existence
+  before accepting reviewer suggestions about paths.
+- `fs.realpathSync` before path traversal checks prevents symlink bypass.
+- Non-numeric `.nvmrc` aliases (e.g. `lts/*`) need guards in version comparison
+  code.
+
+---
+
+### Review 62
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 2     | 0        | 1        |
+
+**Key learnings:**
+
+- Always verify file existence before accepting reviewer claims about broken
+  paths — `./lib/rotate-state.js` existed but reviewer said it didn't. R3
+  incorrectly changed a working path. R4 reverted it.
+- CC reduction by extracting one function may leave the extracted function
+  itself over threshold — extract sub-helpers from the helper too.
+- `.nvmrc` MAJOR.MINOR pins (e.g. `22.12`) need a separate case branch from
+  major-only pins.
+
+---
