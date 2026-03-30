@@ -292,9 +292,9 @@ function checkReviewSyncTrigger() {
 
 // Main execution
 function main() {
-  const args = process.argv.slice(2);
-  const blockingOnly = args.includes("--blocking-only");
-  const jsonOutput = args.includes("--json");
+  const argSet = new Set(process.argv.slice(2));
+  const blockingOnly = argSet.has("--blocking-only");
+  const jsonOutput = argSet.has("--json");
 
   // Check for SKIP_TRIGGERS override (documented in SKILL_AGENT_POLICY.md)
   if (process.env.SKIP_TRIGGERS === "1") {

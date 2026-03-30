@@ -7,9 +7,22 @@ if [ $# -eq 0 ]; then
   exit 2
 fi
 
-# Fast-path: if node is already available, skip fnm (saves ~140ms per call)
+# Fast-path: only skip fnm if the current node matches the repo-pinned version
 if command -v node >/dev/null 2>&1; then
-  exec "$@"
+  if [ -f .nvmrc ]; then
+    expected="$(tr -d ' \t\r\n' < .nvmrc)"
+    current="$(node -v 2>/dev/null | tr -d ' \t\r\n')"
+    # Compare major version (strip 'v' prefix, get first number before '.')
+    expected_major="${expected#v}"
+    expected_major="${expected_major%%.*}"
+    current_major="${current#v}"
+    current_major="${current_major%%.*}"
+    if [ "$expected_major" = "$current_major" ]; then
+      exec "$@"
+    fi
+  else
+    exec "$@"
+  fi
 fi
 
 if ! command -v fnm >/dev/null 2>&1; then

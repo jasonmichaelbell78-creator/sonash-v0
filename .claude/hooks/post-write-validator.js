@@ -803,8 +803,35 @@ function jsonSyntaxCheck() {
     // Not valid JSON as-is — try stripping trailing commas
   }
 
-  // Strip trailing commas before ] or } (handles tsconfig.json JSONC-style trailing commas)
-  const stripped = content.replace(/,\s*([}\]])/g, "$1");
+  // Strip trailing commas — context-aware (skips string literals)
+  let stripped = "";
+  let inStr = false,
+    escaped = false;
+  for (let i = 0; i < content.length; i++) {
+    const ch = content[i];
+    if (inStr) {
+      stripped += ch;
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === '"') {
+        inStr = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inStr = true;
+      stripped += ch;
+      continue;
+    }
+    if (ch === ",") {
+      let j = i + 1;
+      while (j < content.length && /\s/.test(content[j])) j++;
+      if (content[j] === "}" || content[j] === "]") continue; // skip trailing comma
+    }
+    stripped += ch;
+  }
   try {
     JSON.parse(stripped);
     // Parsed after stripping trailing commas — valid JSONC, no warning
@@ -817,13 +844,13 @@ function jsonSyntaxCheck() {
   try {
     JSON.parse(content);
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
+    const message = err instanceof Error ? err.constructor.name : typeof err;
     console.error("");
     console.error("\u26a0\ufe0f  JSON SYNTAX WARNING");
     console.error("\u2501".repeat(25));
     console.error(`File: ${filePath}`);
     console.error("");
-    console.error(`JSON syntax error: ${sanitizeInput(message)}`);
+    console.error(`JSON syntax error detected (${sanitizeInput(message)})`);
     console.error("");
     console.error("  Fix: Check for missing commas, brackets, or invalid values");
     console.error("  Fix: Use a JSON validator to identify the exact location");

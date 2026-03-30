@@ -2814,3 +2814,29 @@ deduped/merged)
 - stdin size bounds prevent memory exhaustion on misconfigured hooks.
 
 ---
+
+### Review 59
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 27    | 24    | 0        | 3        |
+
+**Key learnings:**
+
+- Hook shared-lib imports (`isSafeToWrite`) must use the same path as
+  `safeAppendFileSync` — `./lib/symlink-guard` doesn't exist; `safe-fs.js`
+  exports both.
+- Logger hooks should fail-open (`isSafeToWrite = () => true`), not fail-closed
+  — a broken guard disabling all logging is worse than a theoretical symlink.
+- `spawn()` does not support `timeout` option — only `execFile`/`exec` do. Use
+  manual `setTimeout` + `child.kill()`.
+- Deploy safeguards must scope to hosting deploys —
+  rules/indexes/storage/functions deploys don't need `.next/` or `.env.local`.
+- Stderr must be separated from JSON stdout in hooks — `2>&1` corrupts
+  structured output parsed by `jq`.
+- Research source citations should redact token values even when tokens are
+  revoked — SonarCloud flags literal PAT strings regardless of validity.
+
+---

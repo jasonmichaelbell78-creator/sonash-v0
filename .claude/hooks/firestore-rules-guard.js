@@ -73,7 +73,9 @@ function hasWriteBlock(content, collectionInfo) {
 
   // Skip past the match path (which contains braces like {userId}, {entryId})
   // Start scanning for the rule block's opening { AFTER the regex match
-  const afterMatchPath = content.slice(matchResult.index + matchResult[0].length);
+  const afterMatchPath = content
+    .slice(matchResult.index + matchResult[0].length)
+    .replace(/\/\/.*$/gm, "");
 
   // Find the rule block: first { after the match path opens it
   let depth = 0;
@@ -114,8 +116,10 @@ function appendWarningJsonl(message, collections) {
     const stateDir = path.join(__dirname, "..", "state");
     const logPath = path.join(stateDir, "hook-warnings-log.jsonl");
 
-    if (!fs.existsSync(stateDir)) {
+    try {
       fs.mkdirSync(stateDir, { recursive: true });
+    } catch {
+      // directory may already exist or be non-creatable; best-effort
     }
     if (!isSafeToWrite(logPath)) return;
 

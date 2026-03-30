@@ -320,8 +320,20 @@ process.stdin.on("data", (chunk) => {
 });
 process.stdin.on("end", () => {
   try {
-    // Parse stdin but we don't need the command -- the if-condition already filtered
-    JSON.parse(input);
+    // Parse stdin to check for non-hosting deploys
+    const parsed = JSON.parse(input);
+
+    // Check if this is a non-hosting deploy (rules, indexes, storage, functions)
+    const command = (parsed.tool_input && parsed.tool_input.command) || "";
+    const onlyMatch = command.match(/--only\s+(\S+)/);
+    if (onlyMatch) {
+      const targets = onlyMatch[1].split(",");
+      const hostingTargets = targets.filter((t) => t === "hosting" || t.startsWith("hosting:"));
+      // If --only is specified but doesn't include hosting, skip all checks
+      if (hostingTargets.length === 0) {
+        process.exit(0);
+      }
+    }
 
     // Run all three checks
     const buildResult = checkBuildFreshness();

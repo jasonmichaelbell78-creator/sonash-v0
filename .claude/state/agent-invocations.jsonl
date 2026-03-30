@@ -143,3 +143,6 @@
 {"agent":"deep-research-searcher","description":"OTB 2: Systemic blind spots","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:30:40.606Z"}
 {"agent":"deep-research-searcher","description":"Phase 3.5: Resolve all disputes","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:39:06.444Z"}
 {"agent":"deep-research-synthesizer","description":"Phase 3.9: Re-synthesize with corrections","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:45:35.873Z"}
+{"agent":"fullstack-developer","description":"Fix CRITICAL+MAJOR hook bugs","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:23:23.801Z"}
+{"agent":"fullstack-developer","description":"Fix ensure-fnm + pre-commit + test harness","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:23:39.923Z"}
+{"agent":"fullstack-developer","description":"Fix MINOR+TRIVIAL review items","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:24:07.517Z"}

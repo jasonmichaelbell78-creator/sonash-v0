@@ -27,19 +27,14 @@ const crypto = require("node:crypto");
 
 // --- Safe imports with fallbacks ---
 
-let safeAppendFileSync;
+let safeAppendFileSync, isSafeToWrite;
 try {
-  ({ safeAppendFileSync } = require(path.join(__dirname, "..", "..", "scripts", "lib", "safe-fs")));
+  ({ safeAppendFileSync, isSafeToWrite } = require(
+    path.join(__dirname, "..", "..", "scripts", "lib", "safe-fs")
+  ));
 } catch {
-  // Fallback: direct append (no symlink guard)
   safeAppendFileSync = (filePath, data) => fs.appendFileSync(filePath, data);
-}
-
-let isSafeToWrite;
-try {
-  ({ isSafeToWrite } = require("./lib/symlink-guard"));
-} catch {
-  isSafeToWrite = () => false;
+  isSafeToWrite = () => true;
 }
 
 let sanitizeError;

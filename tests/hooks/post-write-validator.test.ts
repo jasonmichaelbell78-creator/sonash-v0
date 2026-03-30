@@ -282,7 +282,7 @@ function checkMarkdownFences(content: string, filePath: string): boolean {
   const lines = content.split("\n");
   let fenceCount = 0;
   for (const line of lines) {
-    if (/^```/.test(line.trimStart())) {
+    if (line.trimStart().startsWith("```")) {
       fenceCount++;
     }
   }
@@ -292,7 +292,7 @@ function checkMarkdownFences(content: string, filePath: string): boolean {
 
 // --- jsonSyntaxCheck logic ---
 function checkJsonSyntax(content: string, filePath: string): string | null {
-  if (!/\.json$/.test(filePath)) return null;
+  if (!filePath.endsWith(".json")) return null;
   if (!content || !content.trim()) return null;
 
   // Try parsing as-is
@@ -303,8 +303,35 @@ function checkJsonSyntax(content: string, filePath: string): string | null {
     // Not valid JSON as-is
   }
 
-  // Strip trailing commas (JSONC style like tsconfig.json)
-  const stripped = content.replace(/,\s*([}\]])/g, "$1");
+  // Strip trailing commas — context-aware (skips string literals)
+  let stripped = "";
+  let inStr = false,
+    escaped = false;
+  for (let i = 0; i < content.length; i++) {
+    const ch = content[i];
+    if (inStr) {
+      stripped += ch;
+      if (escaped) {
+        escaped = false;
+      } else if (ch === "\\") {
+        escaped = true;
+      } else if (ch === '"') {
+        inStr = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inStr = true;
+      stripped += ch;
+      continue;
+    }
+    if (ch === ",") {
+      let j = i + 1;
+      while (j < content.length && /\s/.test(content[j])) j++;
+      if (content[j] === "}" || content[j] === "]") continue; // skip trailing comma
+    }
+    stripped += ch;
+  }
   try {
     JSON.parse(stripped);
     return null;

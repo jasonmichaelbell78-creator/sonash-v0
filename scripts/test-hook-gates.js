@@ -185,8 +185,17 @@ function runHook(hookPath, stdinPayload, extraEnv) {
         ...extraEnv,
       },
       stdio: ["pipe", "pipe", "pipe"],
-      timeout: 15000,
     });
+
+    const timeoutMs = 15000;
+    const timer = setTimeout(() => {
+      try {
+        child.kill("SIGKILL");
+      } catch {
+        /* ignore */
+      }
+      stderr += "\n[harness] Hook timed out after 15000ms";
+    }, timeoutMs);
 
     let stdout = "";
     let stderr = "";
@@ -205,6 +214,7 @@ function runHook(hookPath, stdinPayload, extraEnv) {
     });
 
     child.on("close", (code) => {
+      clearTimeout(timer);
       resolve({
         exitCode: code === null ? 1 : code,
         stdout: stdout.trimEnd(),
@@ -227,7 +237,10 @@ function runHook(hookPath, stdinPayload, extraEnv) {
  */
 function printResult(result) {
   const exitLabel = EXIT_LABELS[result.exitCode] || "ERROR";
-  const exitColor = result.exitCode === 0 ? C.green : result.exitCode === 2 ? C.yellow : C.red;
+  let exitColor;
+  if (result.exitCode === 0) exitColor = C.green;
+  else if (result.exitCode === 2) exitColor = C.yellow;
+  else exitColor = C.red;
 
   console.log("");
   console.log(`${C.bold}${C.cyan}Hook:${C.reset}      ${result.hook}`);
@@ -374,7 +387,10 @@ async function main() {
   });
 
   // Exit with the hook's exit code (clamped to 0/1/2 per CODE_PATTERNS.md)
-  const exitCode = result.exitCode === 0 ? 0 : result.exitCode === 2 ? 2 : 1;
+  let exitCode;
+  if (result.exitCode === 0) exitCode = 0;
+  else if (result.exitCode === 2) exitCode = 2;
+  else exitCode = 1;
   process.exit(exitCode);
 }
 

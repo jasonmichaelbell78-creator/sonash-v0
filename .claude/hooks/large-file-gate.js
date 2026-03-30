@@ -125,7 +125,14 @@ process.stdin.on("end", () => {
     }
 
     // Resolve to absolute path
-    const absPath = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+    const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+    const absPath = path.isAbsolute(filePath) ? filePath : path.resolve(projectDir, filePath);
+
+    // Security: path traversal guard
+    const rel = path.relative(projectDir, absPath);
+    if (/^\.\.(?:[\\/]|$)/.test(rel)) {
+      process.exit(0);
+    }
 
     // Check file existence -- if missing, let Read tool handle the error
     let stat;

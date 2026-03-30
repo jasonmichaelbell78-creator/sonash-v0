@@ -319,7 +319,7 @@ SKILLS_PID=""
 if [ "$RUN_PATTERNS" -eq 1 ]; then
   (
     _start=$(date +%s%N 2>/dev/null || date +%s)
-    node scripts/check-pattern-compliance.js --staged --json > "$PATTERNS_TMP" 2>&1
+    node scripts/check-pattern-compliance.js --staged --json > "$PATTERNS_TMP" 2>"${PATTERNS_TMP}.err"
     echo $? > "${PATTERNS_TMP}.rc"
     _end=$(date +%s%N 2>/dev/null || date +%s)
     if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${PATTERNS_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${PATTERNS_TMP}.dur"; fi
@@ -385,6 +385,7 @@ if [ "$RUN_PATTERNS" -eq 1 ]; then
     echo "  ⚠️ Pattern compliance check errored (non-blocking)"
     # Error case — JSON may not be valid, show raw output
     tail -5 "$PATTERNS_TMP"
+    [ -s "${PATTERNS_TMP}.err" ] && tail -3 "${PATTERNS_TMP}.err"
     node scripts/append-hook-warning.js --hook=pre-commit --type=pattern-error --severity=warning \
       --message="Pattern compliance check errored" \
       --action="Investigate: node scripts/check-pattern-compliance.js --staged" \

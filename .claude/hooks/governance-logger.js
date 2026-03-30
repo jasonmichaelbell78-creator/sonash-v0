@@ -21,39 +21,34 @@ const { execFileSync } = require("node:child_process");
 
 // ─── Shared helper imports (best-effort) ────────────────────────────────────
 
-let projectDir;
-try {
-  ({ projectDir } = require("./lib/git-utils.js"));
-} catch {
-  projectDir = process.cwd();
-}
-
-let isSafeToWrite;
-try {
-  ({ isSafeToWrite } = require("./lib/symlink-guard"));
-} catch {
-  isSafeToWrite = () => false;
-}
-
-let safeAppendFileSync;
-try {
-  ({ safeAppendFileSync } = require(path.resolve(projectDir, "scripts", "lib", "safe-fs.js")));
-} catch {
-  // Fallback: plain appendFileSync with symlink guard
-  safeAppendFileSync = (filePath, data) => {
-    const absPath = path.resolve(filePath);
-    if (!isSafeToWrite(absPath)) {
-      throw new Error(`Refusing to append to symlinked path: ${path.basename(absPath)}`);
+const projectDir =
+  process.env.CLAUDE_PROJECT_DIR ||
+  (() => {
+    try {
+      return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+        encoding: "utf8",
+        timeout: 5000,
+      }).trim();
+    } catch {
+      return process.cwd();
     }
-    fs.appendFileSync(absPath, data);
-  };
+  })();
+
+let safeAppendFileSync, isSafeToWrite;
+try {
+  ({ safeAppendFileSync, isSafeToWrite } = require(
+    path.resolve(projectDir, "scripts", "lib", "safe-fs.js")
+  ));
+} catch {
+  safeAppendFileSync = (filePath, data) => fs.appendFileSync(filePath, data);
+  isSafeToWrite = () => true;
 }
 
 let sanitizeError;
 try {
   ({ sanitizeError } = require(path.resolve(projectDir, "scripts", "lib", "sanitize-error.cjs")));
 } catch {
-  sanitizeError = (err) => (err instanceof Error ? err.message : String(err)).slice(0, 200);
+  sanitizeError = (err) => (err instanceof Error ? err.constructor.name : typeof err);
 }
 
 // ─── Governance files we track ──────────────────────────────────────────────
