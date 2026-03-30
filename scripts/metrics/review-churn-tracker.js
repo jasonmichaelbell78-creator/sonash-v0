@@ -324,6 +324,7 @@ function appendMetrics(entries) {
   const toAppend = [];
 
   const existingIndexByPr = buildExistingIndex(existing);
+  const pendingAppendIndexByPr = new Map();
 
   for (const newEntry of entries) {
     const prNum = Number(newEntry.pr);
@@ -337,7 +338,13 @@ function appendMetrics(entries) {
       needsRewrite = true;
       console.log(`  PR #${prKey}: updated existing entry (upsert)`);
     } else {
-      toAppend.push(normalizedEntry);
+      const pendingIdx = pendingAppendIndexByPr.get(prKey);
+      if (pendingIdx != null) {
+        toAppend[pendingIdx] = normalizedEntry;
+      } else {
+        pendingAppendIndexByPr.set(prKey, toAppend.length);
+        toAppend.push(normalizedEntry);
+      }
     }
   }
 

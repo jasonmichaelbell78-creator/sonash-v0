@@ -196,28 +196,33 @@ function loadReviews() {
 }
 
 function getPendingReviews(allReviews, lastConsolidated) {
-  // Accept both numeric and string IDs. For numeric IDs, use the existing
-  // watermark comparison. For string IDs (rev-*, backfill-*, retro-bulk-*),
-  // use date-based comparison: include if date > last consolidated record's date.
   const lastConsolidatedNum = typeof lastConsolidated === "number" ? lastConsolidated : 0;
 
-  // Find the date of the last consolidated record for string-ID comparison
-  const lastConsolidatedRecord = allReviews.find(
-    (r) => typeof r.id === "number" && r.id === lastConsolidatedNum
-  );
-  const lastConsolidatedDate = lastConsolidatedRecord ? lastConsolidatedRecord.date : "1970-01-01";
+  const dateScore = (d) => {
+    if (typeof d !== "string") return -Infinity;
+    if (!/^\d{4}-\d{2}-\d{2}/.test(d)) return -Infinity;
+    const t = Date.parse(d);
+    return Number.isFinite(t) ? t : -Infinity;
+  };
+
+  // Find max valid date among numeric IDs up to the watermark
+  let lastConsolidatedDateScore = -Infinity;
+  for (const r of allReviews) {
+    if (!r || typeof r !== "object") continue;
+    if (typeof r.id !== "number") continue;
+    if (r.id > lastConsolidatedNum) continue;
+    lastConsolidatedDateScore = Math.max(lastConsolidatedDateScore, dateScore(r.date));
+  }
 
   return allReviews
     .filter((r) => {
-      if (typeof r.id === "number") {
-        return r.id > lastConsolidatedNum;
-      }
-      // String IDs: include if date is after the last consolidated record's date
-      return r.date > lastConsolidatedDate;
+      if (typeof r.id === "number") return r.id > lastConsolidatedNum;
+      return dateScore(r.date) > lastConsolidatedDateScore;
     })
     .sort((a, b) => {
-      // Sort by date first, then by ID for stability
-      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      const aScore = dateScore(a.date);
+      const bScore = dateScore(b.date);
+      if (aScore !== bScore) return aScore - bScore;
       return String(a.id) < String(b.id) ? -1 : 1;
     });
 }

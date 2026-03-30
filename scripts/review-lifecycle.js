@@ -138,11 +138,13 @@ function buildCompositeKeys(records) {
   const composites = new Set();
   for (const rec of records) {
     if (!rec || typeof rec !== "object") continue;
-    if (typeof rec.pr === "number" && rec.pr > 0) {
+    const prNum = Number(rec.pr);
+    if (!Number.isFinite(prNum) || prNum <= 0) continue;
+    {
       // Extract round from title (e.g. "PR #472 R1 ..." -> "R1")
       const roundMatch = /R(\d+)/i.exec(rec.title || "");
       if (roundMatch) {
-        composites.add(`${rec.pr}:R${roundMatch[1]}`);
+        composites.add(`${prNum}:R${roundMatch[1]}`);
       }
     }
   }
@@ -170,7 +172,7 @@ function parseMarkdownReviews(content) {
   let inFence = false;
 
   // Non-review headers that start with "Review" but are section headers
-  const excludedSuffixes = ["Sources", "Cycle"];
+  const excludedSuffixes = new Set(["Sources", "Cycle"]);
 
   for (const line of lines) {
     if (line.trim().startsWith("```")) {
@@ -185,7 +187,7 @@ function parseMarkdownReviews(content) {
     if (headerMatch) {
       // Guard: skip non-review section headers like "Review Sources", "Review Cycle Summary"
       const candidateId = headerMatch[1];
-      if (excludedSuffixes.includes(candidateId)) continue;
+      if (excludedSuffixes.has(candidateId)) continue;
 
       if (current) reviews.push(current);
 
