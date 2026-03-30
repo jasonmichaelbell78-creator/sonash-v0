@@ -63,8 +63,10 @@ function appendWarningJsonl(message, severity, filePath, sizeBytes) {
     const stateDir = path.join(__dirname, "..", "state");
     const logPath = path.join(stateDir, "hook-warnings-log.jsonl");
 
-    if (!fs.existsSync(stateDir)) {
+    try {
       fs.mkdirSync(stateDir, { recursive: true });
+    } catch {
+      /* best-effort */
     }
     if (!isSafeToWrite(logPath)) return;
 
@@ -128,8 +130,16 @@ process.stdin.on("end", () => {
     const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
     const absPath = path.isAbsolute(filePath) ? filePath : path.resolve(projectDir, filePath);
 
+    // Resolve symlinks before traversal check
+    let realPath = absPath;
+    try {
+      realPath = fs.realpathSync(absPath);
+    } catch {
+      /* fail-open */
+    }
+
     // Security: path traversal guard
-    const rel = path.relative(projectDir, absPath);
+    const rel = path.relative(projectDir, realPath);
     if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
       process.exit(0);
     }

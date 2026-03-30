@@ -323,35 +323,32 @@ function stripTrailingCommas(text: string): string {
   return result;
 }
 
-// --- jsonSyntaxCheck logic ---
-function checkJsonSyntax(content: string, filePath: string): string | null {
-  if (!filePath.endsWith(".json")) return null;
-  if (!content || !content.trim()) return null;
-
-  // Try parsing as-is
+// --- JSON parse helpers (extracted to reduce CC) ---
+function tryParseJson(text: string): boolean {
   try {
-    JSON.parse(content);
-    return null;
+    JSON.parse(text);
+    return true;
   } catch {
-    // Not valid JSON as-is
+    return false;
   }
+}
 
-  // Try with trailing commas stripped
-  const stripped = stripTrailingCommas(content);
+function getParseError(text: string): string | null {
   try {
-    JSON.parse(stripped);
-    return null;
-  } catch {
-    // Still fails
-  }
-
-  // Return original parse error
-  try {
-    JSON.parse(content);
+    JSON.parse(text);
     return null;
   } catch (err) {
     return err instanceof Error ? err.message : String(err);
   }
+}
+
+// --- jsonSyntaxCheck logic ---
+function checkJsonSyntax(content: string, filePath: string): string | null {
+  if (!filePath.endsWith(".json")) return null;
+  if (!content?.trim()) return null;
+  if (tryParseJson(content)) return null;
+  if (tryParseJson(stripTrailingCommas(content))) return null;
+  return getParseError(content);
 }
 
 describe("checkMarkdownFences: unclosed code fence detection", () => {

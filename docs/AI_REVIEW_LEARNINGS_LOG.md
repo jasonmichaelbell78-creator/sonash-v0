@@ -2864,3 +2864,23 @@ deduped/merged)
   committed until code imports them — CI knip gate catches them.
 
 ---
+
+### Review 61
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Key learnings:**
+
+- CC extraction needs to be aggressive enough — extracting one helper may not be
+  sufficient if the remaining function still exceeds the threshold.
+- Broken require paths in try/catch silently fail — `./lib/rotate-state.js`
+  didn't exist at that relative path, so log rotation was silently disabled.
+- `fs.realpathSync` before path traversal checks prevents symlink bypass.
+- Non-numeric `.nvmrc` aliases (e.g. `lts/*`) need guards in version comparison
+  code.
+
+---

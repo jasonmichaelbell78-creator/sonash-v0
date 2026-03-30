@@ -23,11 +23,13 @@ if command -v node >/dev/null 2>&1; then
         fi
         ;;
       *)
-        # Major-only comparison (e.g. "22" or "v22")
-        expected_major="${expected_clean%%.*}"
-        current_major="${current_clean%%.*}"
-        if [[ "$expected_major" = "$current_major" ]]; then
-          exec "$@"
+        # Major-only comparison (e.g. "22" or "v22") — numeric majors only
+        if [[ "$expected_clean" =~ ^[0-9]+(\.|$) ]]; then
+          expected_major="${expected_clean%%.*}"
+          current_major="${current_clean%%.*}"
+          if [[ "$expected_major" = "$current_major" ]]; then
+            exec "$@"
+          fi
         fi
         ;;
     esac

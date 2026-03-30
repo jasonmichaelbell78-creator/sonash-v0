@@ -200,7 +200,7 @@ function appendGovernanceLog(entry) {
  */
 function rotateLog() {
   try {
-    const { rotateJsonl } = require("./lib/rotate-state.js");
+    const { rotateJsonl } = require(path.resolve(projectDir, "scripts", "lib", "rotate-state.js"));
     const result = rotateJsonl(GOVERNANCE_LOG, 200, 100);
     if (result.rotated) {
       console.error(`  Governance log rotated: ${result.before} -> ${result.after} entries`);
