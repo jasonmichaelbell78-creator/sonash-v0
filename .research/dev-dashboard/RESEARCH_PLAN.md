@@ -1,7 +1,8 @@
 # Research Plan: Dev Dashboard Command Center
 
-**Created:** 2026-03-27 (Session #243) **Status:** APPROVED — awaiting execution
-**Prior research:** `.research/debt-runner-expansion/` (consumed as input)
+**Created:** 2026-03-27 (Session #243) **Updated:** 2026-03-29 (Session #245)
+**Status:** APPROVED — executing **Prior research:**
+`.research/debt-runner-expansion/` (consumed as input)
 
 ## Vision
 
@@ -83,16 +84,45 @@ Present grouping options. User decides:
 | SQ7a  | Debt research integration: reconcile 941-line report into unified plan             |
 | SQ7b  | Debt research integration: verify debt-tab decisions still hold in unified context |
 
+### Wave 5: Gap Hunting + Investigation (5-7 agents)
+
+Runs after Wave 4, before Synthesis. Catches what Waves 1-4 missed.
+
+| Agent | Type     | Purpose                                                                                                                                                |
+| ----- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GAP-1 | Searcher | **Coverage audit** — cross-reference all Wave 1-4 findings against data landscape (70+ files, 50+ skills). Flag HIGH-relevance items no agent examined |
+| GAP-2 | Searcher | **Decision completeness** — check D1-D10 and DD1-DD10 against findings. Flag invalidated or unaddressed decisions                                      |
+| GAP-3 | Searcher | **Cross-wave consistency** — compare Wave 1 discovery claims vs Wave 3 deep-dive claims. Flag contradictions                                           |
+| INV-1 | Searcher | **Open question resolver** — collect all "needs investigation" / "unclear" / "TBD" items from findings, investigate by reading source files            |
+| INV-2 | Searcher | **Open question resolver** — second cluster of open questions (if >8 open items from GAP agents)                                                       |
+
+INV-2 through INV-4 are conditional — spawn only if GAP agents surface >8 open
+questions. Cap at 4 investigation agents.
+
 ### Post-Research Phases
 
 | Phase                             | Agents    |
 | --------------------------------- | --------- |
 | Synthesis                         | 2         |
-| Verification (L1)                 | 3         |
+| Verification (L1 + L2)            | 5-6       |
 | Challenges (2 contrarian + 2 OTB) | 4         |
 | Dispute resolution                | 2         |
 | Re-synthesis (if >20% changed)    | 1         |
-| **Total**                         | **38-47** |
+| **Total**                         | **49-61** |
+
+#### Verification Breakdown (L1 + L2)
+
+| Agent    | Focus                                                                                                             |
+| -------- | ----------------------------------------------------------------------------------------------------------------- |
+| V1       | **Codebase claims** — verify file paths, component names, imports cited in report exist                           |
+| V2       | **Data format claims** — for each data source recommended for web, confirm file exists, format, field names       |
+| V3       | **Dependency claims** — confirm install status of every library mentioned (Recharts, TanStack, MiniSearch etc)    |
+| V4       | **CLI handoff claims** — for each tab's proposed CLI commands, verify target skill/script exists and accepts args |
+| V5       | **Decision consistency** — verify final report honors all D1-D10 and DD1-DD10 decisions                           |
+| V6 (opt) | **Size/performance claims** — verify bundle size estimates, record counts, parse time claims                      |
+
+V6 is optional — spawn only if synthesis contains >5 quantitative performance
+claims.
 
 ## Output
 
