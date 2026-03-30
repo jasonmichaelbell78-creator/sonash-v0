@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2122)
+## NEW (2127)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -154,6 +154,11 @@
 | DEBT-45609 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | process                  |
 | DEBT-45610 | Hook bypass threshold: reviewer overridden 15+ times in 1...    | S1       | process                  |
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | process                  |
+| DEBT-45624 | Propagation miss: sanitize-error pattern in hooks               | S1       | security                 |
+| DEBT-45625 | Propagation miss: lstat-symlink pattern in hooks                | S1       | security                 |
+| DEBT-45626 | Propagation miss: validate-path pattern in hooks (20 files)     | S1       | security                 |
+| DEBT-45627 | Propagation miss: path-traversal pattern in hooks               | S1       | security                 |
+| DEBT-45628 | Propagation miss: refuse-symlink pattern in hooks (32 files)    | S1       | security                 |
 | DEBT-2132  | Untitled finding                                                | S2       | code-quality             |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | enhancements             |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | enhancements             |

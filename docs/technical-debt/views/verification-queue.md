@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2122
+**Items Needing Verification:** 2127
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -157,6 +157,11 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45609 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | cross-doc-deps                                                                   | 0         |
 | DEBT-45610 | Hook bypass threshold: reviewer overridden 15+ times in 1...    | S1       | reviewer                                                                         | 0         |
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | cross-doc-deps                                                                   | 0         |
+| DEBT-45624 | Propagation miss: sanitize-error pattern in hooks               | S1       | .claude/hooks/session-start.js                                                   | 1         |
+| DEBT-45625 | Propagation miss: lstat-symlink pattern in hooks                | S1       | .claude/hooks/check-mcp-servers.js                                               | 1         |
+| DEBT-45626 | Propagation miss: validate-path pattern in hooks (20 files)     | S1       | .claude/hooks/check-mcp-servers.js                                               | 1         |
+| DEBT-45627 | Propagation miss: path-traversal pattern in hooks               | S1       | .claude/hooks/check-mcp-servers.js                                               | 1         |
+| DEBT-45628 | Propagation miss: refuse-symlink pattern in hooks (32 files)    | S1       | .claude/hooks/block-push-to-main.js                                              | 1         |
 | DEBT-2132  | Untitled finding                                                | S2       | N/A                                                                              | 0         |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | src/components                                                                   | 0         |

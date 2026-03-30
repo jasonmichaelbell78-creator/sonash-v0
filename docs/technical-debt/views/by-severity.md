@@ -40,7 +40,7 @@
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v... | package-lock.json              | 0    | security | E1     |
 | DEBT-45612 | Review this potentially hard-coded password.                 | lib/utils/errors.ts            | 71   | security | E0     |
 
-## S1 - High (1360)
+## S1 - High (1365)
 
 | ID         | Title                                                         | File                                                                                                                                               | Line | Category                 | Effort    |
 | ---------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | --------- |
@@ -1404,6 +1404,11 @@
 | DEBT-45609 | Hook bypass threshold: cross-doc-deps overridden 15+ time...  | cross-doc-deps                                                                                                                                     | 0    | process                  | E2        |
 | DEBT-45610 | Hook bypass threshold: reviewer overridden 15+ times in 1...  | reviewer                                                                                                                                           | 0    | process                  | E2        |
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...  | cross-doc-deps                                                                                                                                     | 0    | process                  | E2        |
+| DEBT-45624 | Propagation miss: sanitize-error pattern in hooks             | .claude/hooks/session-start.js                                                                                                                     | 1    | security                 | E1        |
+| DEBT-45625 | Propagation miss: lstat-symlink pattern in hooks              | .claude/hooks/check-mcp-servers.js                                                                                                                 | 1    | security                 | E1        |
+| DEBT-45626 | Propagation miss: validate-path pattern in hooks (20 files)   | .claude/hooks/check-mcp-servers.js                                                                                                                 | 1    | security                 | E1        |
+| DEBT-45627 | Propagation miss: path-traversal pattern in hooks             | .claude/hooks/check-mcp-servers.js                                                                                                                 | 1    | security                 | E1        |
+| DEBT-45628 | Propagation miss: refuse-symlink pattern in hooks (32 files)  | .claude/hooks/block-push-to-main.js                                                                                                                | 1    | security                 | E1        |
 
 ## S2 - Medium (3446)
 
