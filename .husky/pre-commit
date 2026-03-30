@@ -378,7 +378,7 @@ fi
 if [ "$RUN_CC" -eq 1 ]; then
   (
     _start=$(date +%s%N 2>/dev/null || date +%s)
-    node scripts/check-cc.js --staged > "$CC_TMP" 2>&1
+    node scripts/check-cc.js --staged $STAGED_JS_CC > "$CC_TMP" 2>&1
     echo $? > "${CC_TMP}.rc"
     _end=$(date +%s%N 2>/dev/null || date +%s)
     if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${CC_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${CC_TMP}.dur"; fi

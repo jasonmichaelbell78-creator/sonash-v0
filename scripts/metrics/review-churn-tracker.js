@@ -300,7 +300,7 @@ function buildExistingIndex(existing) {
   const index = new Map();
   for (let i = 0; i < existing.length; i++) {
     const e = existing[i];
-    if (!e || e.pr === undefined || e.pr === null) continue;
+    if (e?.pr == null) continue;
     const prNum = Number(e.pr);
     const prKey = Number.isFinite(prNum) ? prNum : e.pr;
     const tRaw = e.timestamp ? new Date(e.timestamp).getTime() : Number.NaN;
@@ -328,15 +328,16 @@ function appendMetrics(entries) {
   for (const newEntry of entries) {
     const prNum = Number(newEntry.pr);
     const prKey = Number.isFinite(prNum) ? prNum : newEntry.pr;
+    const normalizedEntry = { ...newEntry, pr: prKey };
     const existingInfo = existingIndexByPr.get(prKey);
 
     if (existingInfo) {
       // Upsert: always update existing entry for this PR
-      existing[existingInfo.idx] = newEntry;
+      existing[existingInfo.idx] = normalizedEntry;
       needsRewrite = true;
-      console.log(`  PR #${newEntry.pr}: updated existing entry (upsert)`);
+      console.log(`  PR #${prKey}: updated existing entry (upsert)`);
     } else {
-      toAppend.push(newEntry);
+      toAppend.push(normalizedEntry);
     }
   }
 

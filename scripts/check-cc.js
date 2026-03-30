@@ -120,14 +120,23 @@ function getChangedFiles() {
   }
 
   if (CHECK_STAGED) {
-    // Return only staged (added/copied/modified) .js/.mjs files
+    // Accept file args from CLI (pre-commit hook passes the already-computed list)
+    const fileArgs = args.filter((arg) => !arg.startsWith("--"));
+    if (fileArgs.length > 0) {
+      return fileArgs.filter((f) => f.endsWith(".js") || f.endsWith(".mjs"));
+    }
+    // Fallback: query git for staged (added/copied/modified) .js/.mjs files
     try {
       const output = execFileSync("git", ["diff", "--cached", "--name-only", "--diff-filter=ACM"], {
         encoding: "utf-8",
         timeout: 10000,
         cwd: ROOT,
       });
-      return output.trim().split("\n").filter(Boolean);
+      return output
+        .trim()
+        .split("\n")
+        .filter(Boolean)
+        .filter((f) => f.endsWith(".js") || f.endsWith(".mjs"));
     } catch (err) {
       console.error("[check-cc] Failed to list staged files:", sanitizeError(err));
       return [];

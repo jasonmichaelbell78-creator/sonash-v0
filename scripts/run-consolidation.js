@@ -196,9 +196,30 @@ function loadReviews() {
 }
 
 function getPendingReviews(allReviews, lastConsolidated) {
+  // Accept both numeric and string IDs. For numeric IDs, use the existing
+  // watermark comparison. For string IDs (rev-*, backfill-*, retro-bulk-*),
+  // use date-based comparison: include if date > last consolidated record's date.
+  const lastConsolidatedNum = typeof lastConsolidated === "number" ? lastConsolidated : 0;
+
+  // Find the date of the last consolidated record for string-ID comparison
+  const lastConsolidatedRecord = allReviews.find(
+    (r) => typeof r.id === "number" && r.id === lastConsolidatedNum
+  );
+  const lastConsolidatedDate = lastConsolidatedRecord ? lastConsolidatedRecord.date : "1970-01-01";
+
   return allReviews
-    .filter((r) => typeof r.id === "number" && r.id > lastConsolidated)
-    .sort((a, b) => a.id - b.id);
+    .filter((r) => {
+      if (typeof r.id === "number") {
+        return r.id > lastConsolidatedNum;
+      }
+      // String IDs: include if date is after the last consolidated record's date
+      return r.date > lastConsolidatedDate;
+    })
+    .sort((a, b) => {
+      // Sort by date first, then by ID for stability
+      if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+      return String(a.id) < String(b.id) ? -1 : 1;
+    });
 }
 
 // =============================================================================

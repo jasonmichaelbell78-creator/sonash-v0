@@ -185,7 +185,7 @@ function parseMarkdownReviews(content) {
     if (headerMatch) {
       // Guard: skip non-review section headers like "Review Sources", "Review Cycle Summary"
       const candidateId = headerMatch[1];
-      if (excludedSuffixes.some((suffix) => candidateId === suffix)) continue;
+      if (excludedSuffixes.includes(candidateId)) continue;
 
       if (current) reviews.push(current);
 
@@ -370,14 +370,30 @@ function runSync() {
   const allRecords = [...existingRecords, ...archivedRecords];
   const existingComposites = buildCompositeKeys(allRecords);
 
+  // Build content-based dedup set: "pr|date|total|fixed|rejected" for all existing records.
+  // This catches duplicates where the same review exists under different ID formats
+  // (e.g., numeric "59" in markdown vs "rev-21" in JSONL for the same PR #480 review).
+  const contentKeys = new Set();
+  for (const rec of allRecords) {
+    if (rec.pr && rec.date && typeof rec.total === "number") {
+      contentKeys.add(`${rec.pr}|${rec.date}|${rec.total}|${rec.fixed || 0}|${rec.rejected || 0}`);
+    }
+  }
+
   // Filter to reviews not already in JSONL or archive.
-  // Uses composite key (pr:round) to resolve ID collisions — when the same numeric
-  // ID exists for a different PR, it's treated as a new entry with a disambiguated ID.
-  const missing = mdReviews.filter((r) => {
+  // Uses three dedup layers: (1) ID match, (2) content-key match, (3) composite PR:round match.
+  const missing = mdReviews.flatMap((r) => {
     const idStr = String(r.id);
     const idExists = existingIds.has(idStr) || archivedIds.has(idStr);
 
-    if (!idExists) return true;
+    if (!idExists) {
+      // Secondary check: content-based dedup (same PR + date + counts = same review)
+      if (r.pr && r.date && typeof r.total === "number") {
+        const contentKey = `${r.pr}|${r.date}|${r.total}|${r.fixed || 0}|${r.rejected || 0}`;
+        if (contentKeys.has(contentKey)) return []; // Already exists under a different ID
+      }
+      return [r];
+    }
 
     // ID already exists — check if this is a collision (same ID, different PR)
     if (typeof r.pr === "number" && r.pr > 0) {
@@ -386,12 +402,11 @@ function runSync() {
         const composite = `${r.pr}:R${roundMatch[1]}`;
         if (!existingComposites.has(composite)) {
           // Same review number but different PR — disambiguate the ID
-          r.id = `${r.id}-pr${r.pr}`;
-          return true;
+          return [{ ...r, id: `${r.id}-pr${r.pr}` }];
         }
       }
     }
-    return false;
+    return [];
   });
 
   logStep(
@@ -576,6 +591,27 @@ function countReviewsByPr(reviews) {
   return counts;
 }
 
+/** Coerce a PR value to a number when possible, otherwise return as-is. */
+function normalizePrKey(pr) {
+  const prNum = Number(pr);
+  return Number.isFinite(prNum) ? prNum : pr;
+}
+
+/** Parse a timestamp string into a comparable score (-Infinity for invalid). */
+function parseTimestampScore(timestamp) {
+  if (typeof timestamp !== "string") return -Infinity;
+  const t = Date.parse(timestamp);
+  return Number.isFinite(t) ? t : -Infinity;
+}
+
+/** Return true if the new entry should replace the existing one by timestamp. */
+function shouldReplaceEntry(existing, entryScore) {
+  if (!existing) return true;
+  const existingScore = parseTimestampScore(existing.timestamp);
+  // last-wins tiebreaker when both timestamps are invalid
+  return entryScore > existingScore || (entryScore === -Infinity && existingScore === -Infinity);
+}
+
 /** Build map of PR -> latest metrics entry by timestamp.
  *  Normalizes PR keys: coerces string PR values to numbers where possible
  *  so that entries created by bootstrapMissingEntries (which uses string keys)
@@ -586,28 +622,10 @@ function buildLatestMetricsMap(metrics) {
   for (const entry of metrics) {
     if (!entry || typeof entry !== "object") continue;
     if (entry.pr === undefined || entry.pr === null) continue;
-    // Normalize: coerce string PR values to numbers when possible
-    const prNum = Number(entry.pr);
-    const prKey = Number.isFinite(prNum) ? prNum : entry.pr;
-    const existing = latestByPr.get(prKey);
-    const entryTime =
-      typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : Number.NaN;
-    const existingTime =
-      existing && typeof existing.timestamp === "string"
-        ? Date.parse(existing.timestamp)
-        : Number.NaN;
-    const entryScore = Number.isFinite(entryTime) ? entryTime : -Infinity;
-    const existingScore = Number.isFinite(existingTime) ? existingTime : -Infinity;
-
-    // last-wins tiebreaker when both timestamps are invalid
-    if (
-      !existing ||
-      entryScore > existingScore ||
-      (entryScore === -Infinity && existingScore === -Infinity)
-    ) {
-      // Normalize the pr field to a number for consistency
-      const normalized = { ...entry, pr: prKey };
-      latestByPr.set(prKey, normalized);
+    const prKey = normalizePrKey(entry.pr);
+    const entryScore = parseTimestampScore(entry.timestamp);
+    if (shouldReplaceEntry(latestByPr.get(prKey), entryScore)) {
+      latestByPr.set(prKey, { ...entry, pr: prKey });
     }
   }
   return latestByPr;
