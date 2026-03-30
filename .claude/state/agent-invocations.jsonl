@@ -110,3 +110,36 @@
 {"agent":"deep-research-searcher","description":"SQ2-academic: Orchestration research papers","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:49:41.326Z"}
 {"agent":"deep-research-searcher","description":"SQ3-cross: Cross-cutting agent analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:49:58.424Z"}
 {"agent":"deep-research-searcher","description":"SQ4-web: Model selection strategies","sessionId":"session-1774813256317","timestamp":"2026-03-29T21:50:15.298Z"}
+{"agent":"deep-research-searcher","description":"SQ4-docs: Model selection from Anthropic","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:03:46.136Z"}
+{"agent":"deep-research-searcher","description":"SQ5-skills: Workflow gaps in skills","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:04.148Z"}
+{"agent":"deep-research-searcher","description":"SQ5-hooks: Workflow gaps in hooks","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:16.235Z"}
+{"agent":"deep-research-searcher","description":"SQ6-overrides: Current custom override eval","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:28.114Z"}
+{"agent":"deep-research-searcher","description":"SQ6-system: System agent catalog analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:45.261Z"}
+{"agent":"deep-research-searcher","description":"SQ5-pipelines: Deploy/CI/test gaps","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:27.959Z"}
+{"agent":"deep-research-searcher","description":"SQ6-gaps: Override gap synthesis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:39.544Z"}
+{"agent":"deep-research-searcher","description":"SQ7-stubs: Stub agent elevation analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:55.122Z"}
+{"agent":"deep-research-searcher","description":"SQ7-redundancy: Redundancy deep analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:16:11.398Z"}
+{"agent":"code-reviewer","description":"Review deploy-safeguard.js fix - APPROVED","sessionId":"session-1774822733641939500","timestamp":"2026-03-29T22:18:53.000Z"}
+{"agent":"deep-research-searcher","description":"SQ7-consolidation: Merge D7a+D7b conflicts","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:23:50.922Z"}
+{"agent":"deep-research-searcher","description":"SQ8-web: Adversarial agent patterns","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:24:10.433Z"}
+{"agent":"deep-research-searcher","description":"SQ8-internal: Deep-research pipeline analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:24:26.138Z"}
+{"agent":"deep-research-searcher","description":"SQ9-web: Pipeline agent patterns","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:27:59.118Z"}
+{"agent":"deep-research-searcher","description":"SQ9-internal: Current pipeline implementation","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:28:27.273Z"}
+{"agent":"deep-research-searcher","description":"SQ10-github: Net-new agents from GitHub","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:13.138Z"}
+{"agent":"deep-research-searcher","description":"SQ10-community: Agents from skill.sh/community","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:26.032Z"}
+{"agent":"deep-research-searcher","description":"SQ10-internal: Internal gap-fill agents","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:41.273Z"}
+{"agent":"deep-research-searcher","description":"SQ11-web: Agent team patterns external","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:42:41.792Z"}
+{"agent":"deep-research-searcher","description":"SQ11-internal: Current teams analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:42:54.908Z"}
+{"agent":"deep-research-searcher","description":"SQ12-web: Agent quality validation","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:43:06.995Z"}
+{"agent":"deep-research-searcher","description":"SQ12-internal: Current quality processes","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:43:17.798Z"}
+{"agent":"deep-research-synthesizer","description":"Phase 2: Synthesize all 29 findings","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:50:03.148Z"}
+{"agent":"deep-research-searcher","description":"V1: Verify claims 1-50 vs filesystem","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:04:36.861Z"}
+{"agent":"deep-research-searcher","description":"V2: Verify claims 51-100 vs filesystem","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:04:39.931Z"}
+{"agent":"deep-research-searcher","description":"Phase 2.7a: Compare vs agent-env analysis","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:05:03.081Z"}
+{"agent":"deep-research-searcher","description":"Phase 2.7b: Compare vs archived research","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:05:13.224Z"}
+{"agent":"deep-research-searcher","description":"Contrarian 1: Challenge consolidation claims","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:29:39.938Z"}
+{"agent":"deep-research-searcher","description":"Contrarian 2: Challenge new agent claims","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:29:59.398Z"}
+{"agent":"deep-research-searcher","description":"OTB 1: Alternative approaches missed","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:30:19.579Z"}
+{"agent":"deep-research-searcher","description":"OTB 2: Systemic blind spots","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:30:40.606Z"}
+{"agent":"deep-research-searcher","description":"Phase 3.5: Resolve all disputes","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:39:06.444Z"}
+{"agent":"deep-research-synthesizer","description":"Phase 3.9: Re-synthesize with corrections","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:45:35.873Z"}

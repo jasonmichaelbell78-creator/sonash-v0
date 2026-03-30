@@ -45,8 +45,8 @@
 {"pr":470,"title":"feat: Wave 1b — propagation, statusline, ecosystem shared-lib (Session #239)","total_commits":13,"fix_commits":9,"fix_ratio":0.69,"review_rounds":6,"timestamp":"2026-03-27T17:08:18.876Z","jsonl_review_records":6,"reconciled_at":"2026-03-29T10:49:13.115Z"}
 {"pr":471,"title":"chore(deps): bump picomatch in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-27T17:08:17.637Z"}
 {"pr":472,"title":"feat: Sessions #240-241 — bulk retro, alerts fixes, debt-runner expansion research","total_commits":9,"fix_commits":5,"fix_ratio":0.56,"review_rounds":2,"timestamp":"2026-03-27T17:08:16.541Z","jsonl_review_records":2,"reconciled_at":"2026-03-29T10:49:13.116Z"}
-{"pr":473,"title":"chore(deps): bump node-forge from 1.3.3 to 1.4.0 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T17:29:57.270Z"}
-{"pr":474,"title":"chore(deps): bump brace-expansion from 1.1.12 to 1.1.13 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T17:29:56.522Z"}
-{"pr":475,"title":"chore(deps): bump path-to-regexp from 8.3.0 to 8.4.0 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T17:29:55.783Z"}
-{"pr":476,"title":"chore(deps): bump path-to-regexp from 0.1.12 to 0.1.13 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T17:29:55.040Z"}
-{"pr":477,"title":"feat: Sessions #242-243 — CLI tools ecosystem, deep-research v2, dev dashboard research","total_commits":18,"fix_commits":6,"fix_ratio":0.33,"review_rounds":1,"timestamp":"2026-03-29T17:29:54.302Z"}
+{"pr":473,"title":"chore(deps): bump node-forge from 1.3.3 to 1.4.0 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T21:55:40.684Z"}
+{"pr":474,"title":"chore(deps): bump brace-expansion from 1.1.12 to 1.1.13 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T21:55:39.820Z"}
+{"pr":475,"title":"chore(deps): bump path-to-regexp from 8.3.0 to 8.4.0 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T21:55:38.844Z"}
+{"pr":476,"title":"chore(deps): bump path-to-regexp from 0.1.12 to 0.1.13 in /functions","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-03-29T21:55:38.043Z"}
+{"pr":477,"title":"feat: Sessions #242-243 — CLI tools ecosystem, deep-research v2, dev dashboard research","total_commits":18,"fix_commits":6,"fix_ratio":0.33,"review_rounds":1,"timestamp":"2026-03-29T21:55:37.151Z"}
