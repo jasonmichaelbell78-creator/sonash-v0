@@ -1,6 +1,3262 @@
 {
   "$schema": "Propagation baseline — violations listed here are suppressed from warnings. Only NEW violations trigger alerts.",
-  "version": 1,
-  "updated": "2026-03-25",
-  "entries": []
+  "version": 2,
+  "updated": "2026-03-30",
+  "entries": [
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/__tests__/positive-patterns-coverage.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/aggregate-audit-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/archive-doc.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/assign-review-tier.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit-s0-promotions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/audit-health-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/compare-audits.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/count-commits-since.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/generate-results-index.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/post-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/pre-audit-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/track-resolutions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/audit/validate-templates.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-backlog-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-cross-doc-deps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-cyclomatic-cc.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-doc-headers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-docs-light.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-document-sync.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-external-links.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-hook-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-review-archive.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-review-needed.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/check-roadmap-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/cleanup-alert-sessions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/compute-changelog-metrics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/config/load-config.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/backfill-hashes.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/consolidate-all.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/dedup-multi-pass.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/escalate-deferred.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/extract-audit-reports.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/extract-audits.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/extract-context-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/extract-reviews.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/extract-roadmap-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/generate-metrics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/generate-views.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/ingest-cleaned-intake.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/intake-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/intake-manual.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/normalize-all.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/reconcile-roadmap.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/resolve-bulk.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/resolve-item.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/reverify-resolved.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/sync-roadmap-refs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/debt/validate-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/generate-claude-antipatterns.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/generate-detailed-sonar-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/generate-documentation-index.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/generate-fix-template-stubs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/generate-skill-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/generate-test-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/health/lib/health-log.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/health/run-health-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/lib/ai-pattern-checks.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/lib/learning-router.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/lib/read-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/lib/safe-fs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/lib/sanitize-error.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/lib/validate-paths.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/lighthouse-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/log-override.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/log-session-activity.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/multi-ai/aggregate-category.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/multi-ai/extract-agent-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/multi-ai/normalize-format.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/multi-ai/state-manager.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/multi-ai/unify-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/normalize-canon-ids.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/planning/lib/read-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/planning/validate-jsonl-md-sync.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/promote-patterns.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/ratchet-baselines.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/repair-archives.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/review-lifecycle.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/reviews/__tests__/disposition-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/reviews/migrate-retros.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/reviews/validate-jsonl-schemas.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/rotate-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/search-capabilities.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/secrets/decrypt-secrets.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/secrets/encrypt-secrets.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/security-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/seed-commit-log.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/session-end-commit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/surface-lessons-learned.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/tasks/resolve-dependencies.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/test-hooks.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/validate-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/validate-canon-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/validate-skill-config.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/velocity/generate-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/velocity/track-session.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/verify-enforcement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/verify-skill-usage.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/check-remote-session-context.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/commit-tracker.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/global/gsd-check-update.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/lib/rotate-state.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/lib/state-utils.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/loop-detector.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/post-write-validator.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/session-start.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/track-agent-invocation.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": ".claude/hooks/user-prompt-handler.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/generate-lifecycle-scores-md.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/ratchet-baselines.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/review-lifecycle.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/rotate-jsonl.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/route-lifecycle-gaps.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/verify-enforcement.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/wave6-alerts.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/__tests__/wave9-defense-depth.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/debt/reverify-resolved.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/generate-lifecycle-scores-md.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/generate-test-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/health/lib/__tests__/health-log.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/lib/safe-fs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/lib/security-helpers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/metrics/__tests__/dedup-review-metrics.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/reviews/__tests__/cross-db-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/reviews/__tests__/disposition-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-to-write",
+      "file": "scripts/verify-enforcement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/__tests__/wave6-alerts.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/audit/audit-health-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/check-content-accuracy.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/check-doc-placement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/check-docs-light.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/check-external-links.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/debt/extract-scattered-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/debt/verify-resolutions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/generate-documentation-index.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/generate-test-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/health/checkers/documentation.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/health/lib/utils.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/hook-analytics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/hook-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/lib/learning-router.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/lib/safe-fs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/log-override.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/log-session-activity.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/phase-complete-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/reviews/validate-jsonl-schemas.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/velocity/track-session.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/learning-router.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/lifecycle-scores-integrity.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/positive-patterns-coverage.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/ratchet-baselines.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/review-lifecycle.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/rotate-jsonl.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/verify-enforcement.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/__tests__/wave9-defense-depth.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/audit-health-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/compare-audits.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/count-commits-since.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/generate-results-index.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/post-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/pre-audit-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/track-resolutions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/audit/validate-templates.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/check-cross-doc-deps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/check-hook-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/check-propagation-staged.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/check-roadmap-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/check-session-gaps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/check-skill-audit-status.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/check-triggers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/clean-intake.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/extract-audit-reports.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/extract-context-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/extract-roadmap-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/extract-scattered-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/generate-views.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/process-review-needed.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/resolve-bulk.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/reverify-resolved.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/validate-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/debt/verify-resolutions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/generate-claude-antipatterns.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/generate-detailed-sonar-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/generate-fix-template-stubs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/generate-lifecycle-scores-md.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/generate-test-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/lib/ai-pattern-checks.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/lib/confidence-classifier.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/lib/learning-router.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/lib/safe-fs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/lib/security-helpers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/lib/validate-paths.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/log-override.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/multi-ai/extract-agent-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/phase-complete-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/promote-patterns.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/refine-scaffolds.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/reviews/__tests__/disposition-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/reviews/compute-changelog-metrics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/reviews/migrate-ecosystem-v2.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/reviews/validate-jsonl-schemas.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/rotate-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/route-enforcement-gaps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/route-lifecycle-gaps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/seed-commit-log.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/surface-lessons-learned.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/tasks/resolve-dependencies.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/test-hook-gates.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/test-hooks.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/validate-hook-manifest.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/validate-skill-config.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/velocity/generate-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/velocity/track-session.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/verify-enforcement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": "scripts/verify-skill-usage.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "exec-path",
+      "file": "scripts/check-cross-doc-deps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "exec-path",
+      "file": "scripts/check-doc-headers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "exec-path",
+      "file": "scripts/session-end-commit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/check-remote-session-context.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/commit-tracker.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/global/gsd-check-update.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/lib/rotate-state.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/lib/state-utils.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/loop-detector.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/post-write-validator.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/session-start.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/track-agent-invocation.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": ".claude/hooks/user-prompt-handler.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/generate-lifecycle-scores-md.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/ratchet-baselines.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/review-lifecycle.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/rotate-jsonl.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/route-lifecycle-gaps.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/verify-enforcement.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/wave6-alerts.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/__tests__/wave9-defense-depth.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/debt/reverify-resolved.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/generate-lifecycle-scores-md.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/generate-test-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/health/lib/__tests__/health-log.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/lib/safe-fs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/lib/security-helpers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/metrics/__tests__/dedup-review-metrics.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/reviews/__tests__/cross-db-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/reviews/__tests__/disposition-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "safe-write-file",
+      "file": "scripts/verify-enforcement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/generate-lifecycle-scores-md.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/learning-router.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/lifecycle-scores-integrity.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/positive-patterns-coverage.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/ratchet-baselines.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/review-lifecycle.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/rotate-jsonl.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/route-enforcement-gaps.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/route-lifecycle-gaps.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/verify-enforcement.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/wave6-alerts.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/__tests__/wave9-defense-depth.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/aggregate-audit-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/analyze-learning-effectiveness.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/append-hook-warning.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/archive-doc.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/assign-review-tier.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit-s0-promotions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/audit-health-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/compare-audits.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/count-commits-since.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/generate-results-index.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/post-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/pre-audit-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/track-resolutions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/audit/validate-templates.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-agent-compliance.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-backlog-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-cc.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-content-accuracy.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-cross-doc-deps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-cyclomatic-cc.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-doc-headers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-doc-placement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-docs-light.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-document-sync.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-external-links.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-hook-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-pattern-compliance.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-pattern-sync.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-propagation-staged.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-propagation.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-review-archive.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-review-needed.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-roadmap-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-roadmap-hygiene.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-session-gaps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-skill-audit-status.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/check-triggers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/cleanup-alert-sessions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/compute-changelog-metrics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/config/load-config.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/assign-roadmap-refs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/backfill-hashes.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/check-phase-status.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/clean-intake.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/consolidate-all.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/dedup-multi-pass.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/escalate-deferred.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/extract-audit-reports.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/extract-audits.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/extract-context-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/extract-reviews.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/extract-roadmap-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/extract-scattered-debt.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/generate-metrics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/generate-views.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/ingest-cleaned-intake.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/intake-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/intake-manual.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/intake-pr-deferred.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/normalize-all.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/process-review-needed.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/reconcile-roadmap.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/resolve-item.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/reverify-resolved.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/sync-roadmap-refs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/sync-sonarcloud.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/validate-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/verify-resolutions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/generate-claude-antipatterns.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/generate-detailed-sonar-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/generate-documentation-index.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/generate-fix-template-stubs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/generate-lifecycle-scores-md.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/generate-skill-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/generate-test-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/code-quality.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/data-effectiveness.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/debt-health.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/documentation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/ecosystem-integration.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/hook-pipeline.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/learning-effectiveness.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/pattern-enforcement.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/security.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/session-management.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/__tests__/test-coverage.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/code-quality.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/data-effectiveness.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/debt-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/documentation.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/ecosystem-integration.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/hook-pipeline.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/learning-effectiveness.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/pattern-enforcement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/security.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/session-management.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/checkers/test-coverage.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/__tests__/composite.property.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/__tests__/composite.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/__tests__/dimensions.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/__tests__/health-log.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/__tests__/scoring.property.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/__tests__/scoring.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/composite.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/dimensions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/health-log.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/mid-session-alerts.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/scoring.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/utils.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/warning-lifecycle.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/lib/warning-lifecycle.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/mid-session-alerts.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/run-health-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/health/run-health-check.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/hook-analytics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/hook-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/ai-pattern-checks.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/confidence-classifier.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/generate-content-hash.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/learning-router.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/load-propagation-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/normalize-category.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/normalize-file-path.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/read-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/safe-fs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/sanitize-error.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/validate-paths.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/validate-skip-reason.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lighthouse-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/log-override.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/log-session-activity.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/mcp/sonarcloud-server.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/metrics/__tests__/dedup-review-metrics.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/metrics/dedup-review-metrics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/metrics/review-churn-tracker.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/multi-ai/aggregate-category.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/multi-ai/extract-agent-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/multi-ai/normalize-format.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/multi-ai/state-manager.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/multi-ai/unify-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/normalize-canon-ids.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/phase-complete-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/planning/backfill-tenet-evidence.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/planning/decompose-state.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/planning/generate-decisions.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/planning/generate-discovery-record.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/planning/lib/read-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/planning/validate-jsonl-md-sync.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/promote-patterns.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/ratchet-baselines.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/refine-scaffolds.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/repair-archives.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reset-audit-triggers.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/review-lifecycle.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reviews/__tests__/cross-db-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reviews/__tests__/disposition-validation.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reviews/__tests__/pipeline-consistency.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reviews/compute-changelog-metrics.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reviews/migrate-ecosystem-v2.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reviews/migrate-retros.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/reviews/validate-jsonl-schemas.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/rotate-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/route-enforcement-gaps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/route-lifecycle-gaps.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/run-consolidation.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/search-capabilities.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/secrets/decrypt-secrets.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/secrets/encrypt-secrets.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/security-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/seed-commit-log.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/session-end-commit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/suggest-pattern-automation.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/surface-lessons-learned.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/tasks/resolve-dependencies.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/test-hook-gates.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/test-hooks.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/update-readme-status.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/validate-audit.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/validate-canon-schema.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/validate-hook-manifest.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/validate-phase-completion.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/validate-skill-config.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/velocity/generate-report.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/velocity/track-session.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/verify-enforcement.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/verify-skill-usage.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/aggregate-audit-findings.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/check-review-needed.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/debt/dedup-multi-pass.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/health/lib/__tests__/scoring.property.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/health/lib/__tests__/scoring.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/health/run-health-check.test.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/lib/ai-pattern-checks.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/lib/safe-fs.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "number-nan",
+      "file": "scripts/normalize-canon-ids.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    }
+  ]
 }

@@ -530,6 +530,45 @@
       "added": "2026-03-16"
     },
     {
+      "id": "propagation-staged",
+      "name": "Propagation Staged Check",
+      "description": "When staged files contain registry patterns, scans codebase for propagation misses. BLOCK/WARN per-pattern severity.",
+      "hook": "pre-commit",
+      "wave": 13,
+      "command": "node scripts/check-propagation-staged.js --blocking",
+      "flags": ["--blocking", "--json"],
+      "blocking": "block",
+      "escalation_blocking": false,
+      "skip_flag": "SKIP_PROPAGATION_STAGED",
+      "exit_codes": {
+        "0": "pass (may have WARN-severity warnings)",
+        "2": "BLOCK-severity propagation miss detected"
+      },
+      "condition": null,
+      "parallel_group": null,
+      "timeout_ms": 5000,
+      "dependencies": {
+        "binary": null,
+        "fallback_on_missing": null
+      },
+      "writes_to": [],
+      "reads_from": [
+        "scripts/config/propagation-patterns.json",
+        "scripts/config/known-propagation-baseline.json"
+      ],
+      "warning_type": "propagation-staged",
+      "actions": {
+        "investigate": "node scripts/check-propagation-staged.js --blocking --verbose",
+        "fix": null,
+        "defer": "node scripts/debt/intake-audit.js --source=hook --check=propagation-staged"
+      },
+      "category": "quality",
+      "owner": "pre-commit",
+      "test_command": "node scripts/check-propagation-staged.js",
+      "sws_tenets": ["T8", "T11"],
+      "added": "2026-03-30"
+    },
+    {
       "id": "circular-deps",
       "name": "Circular Dependency Check",
       "description": "Detects circular dependencies in the codebase using madge",

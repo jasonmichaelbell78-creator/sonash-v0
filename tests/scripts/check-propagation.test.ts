@@ -1,161 +1,133 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { spawnSync } from "node:child_process";
 
-// Re-implements core logic from scripts/check-propagation.js
+const PROJECT_ROOT = fs.existsSync(path.resolve(__dirname, "../../package.json"))
+  ? path.resolve(__dirname, "../..")
+  : path.resolve(__dirname, "../../..");
 
-function toPosixPath(filePath: string): string {
-  return String(filePath).replaceAll("\\", "/");
-}
+const SCRIPT_PATH = path.resolve(PROJECT_ROOT, "scripts/check-propagation.js");
 
-function posixDirname(filePath: string): string {
-  const s = toPosixPath(filePath).replace(/\/+$/, "");
-  const idx = s.lastIndexOf("/");
-  if (idx === -1) return ".";
-  if (idx === 0) return "/";
-  return s.slice(0, idx);
-}
-
-function parsePropagationArgs(argv: string[]): {
-  verbose: boolean;
-  stagedOnly: boolean;
-  blocking: boolean;
-} {
+function runScript(
+  args: string[] = [],
+  options: { env?: Record<string, string> } = {}
+): { stdout: string; stderr: string; exitCode: number } {
+  const result = spawnSync("node", [SCRIPT_PATH, ...args], {
+    cwd: PROJECT_ROOT,
+    encoding: "utf-8",
+    timeout: 30000,
+    maxBuffer: 5 * 1024 * 1024,
+    env: { ...process.env, ...options.env, NODE_ENV: "test" },
+  });
   return {
-    verbose: argv.includes("--verbose"),
-    stagedOnly: argv.includes("--staged"),
-    blocking: argv.includes("--blocking"),
+    stdout: result.stdout || "",
+    stderr: result.stderr || "",
+    exitCode: result.status ?? 1,
   };
 }
 
-describe("check-propagation: toPosixPath", () => {
-  it("converts backslashes to forward slashes", () => {
-    assert.strictEqual(toPosixPath(String.raw`scripts\lib\utils.js`), "scripts/lib/utils.js");
+describe("check-propagation.js", () => {
+  describe("script loads and runs", () => {
+    it("exits 0 when no changes detected", () => {
+      const result = runScript(["--staged"]);
+      assert.equal(result.exitCode, 0);
+    });
   });
 
-  it("leaves forward slashes unchanged", () => {
-    assert.strictEqual(toPosixPath("scripts/lib/utils.js"), "scripts/lib/utils.js");
+  describe("SKIP_PROPAGATION env var", () => {
+    it("exits 0 when SKIP_PROPAGATION is set", () => {
+      const result = runScript([], { env: { SKIP_PROPAGATION: "1" } });
+      assert.equal(result.exitCode, 0);
+      const combined = result.stdout + result.stderr;
+      assert.ok(
+        combined.toLowerCase().includes("skip"),
+        `Expected skip message, got: ${combined.slice(0, 200)}`
+      );
+    });
   });
 
-  it("handles mixed separators", () => {
-    assert.strictEqual(toPosixPath(String.raw`scripts\lib/utils.js`), "scripts/lib/utils.js");
+  describe("--json output", () => {
+    it("produces valid JSON with required fields", () => {
+      const result = runScript(["--staged", "--json"]);
+      const json = JSON.parse(result.stdout);
+      assert.ok(json.modeA !== undefined, "Expected modeA field");
+      assert.ok(json.modeB !== undefined, "Expected modeB field");
+      assert.equal(typeof json.blocked, "boolean");
+      assert.equal(typeof json.duration_ms, "number");
+    });
   });
 
-  it("handles empty string", () => {
-    assert.strictEqual(toPosixPath(""), "");
-  });
-});
+  describe("registry integration", () => {
+    it("registry file exists and is valid JSON", () => {
+      const registryPath = path.join(PROJECT_ROOT, "scripts/config/propagation-patterns.json");
+      assert.ok(fs.existsSync(registryPath));
+      const content = fs.readFileSync(registryPath, "utf8");
+      const parsed = JSON.parse(content);
+      assert.ok(Array.isArray(parsed.patterns));
+      assert.ok(
+        parsed.patterns.length >= 10,
+        `Expected >= 10 patterns, got ${parsed.patterns.length}`
+      );
+    });
 
-describe("check-propagation: posixDirname", () => {
-  it("returns directory of file path", () => {
-    assert.strictEqual(posixDirname("scripts/lib/utils.js"), "scripts/lib");
-  });
-
-  it("returns . for top-level file", () => {
-    assert.strictEqual(posixDirname("utils.js"), ".");
-  });
-
-  it("returns / for root file", () => {
-    assert.strictEqual(posixDirname("/utils.js"), "/");
-  });
-
-  it("strips trailing slashes", () => {
-    assert.strictEqual(posixDirname("scripts/lib/"), "scripts");
-  });
-});
-
-describe("check-propagation: KNOWN_PATTERN_RULES validation", () => {
-  const KNOWN_PATTERN_RULES = [
-    { name: "statSync-without-lstat", description: "statSync without symlink check" },
-    {
-      name: "path-resolve-without-containment",
-      description: "path.resolve() without path containment guard",
-    },
-    {
-      name: "writeFileSync-without-symlink-guard",
-      description: "writeFileSync without symlink check",
-    },
-    { name: "rmSync-usage", description: "rmSync creates race condition risk" },
-    { name: "escapeCell-inconsistency", description: "Markdown table write without escapeCell" },
-    { name: "truthy-filter-unsafe", description: ".filter(Boolean) unsafe for nullable numbers" },
-  ];
-
-  it("contains statSync pattern rule", () => {
-    assert.ok(KNOWN_PATTERN_RULES.some((r) => r.name === "statSync-without-lstat"));
+    it("baseline file exists and is valid JSON", () => {
+      const baselinePath = path.join(
+        PROJECT_ROOT,
+        "scripts/config/known-propagation-baseline.json"
+      );
+      assert.ok(fs.existsSync(baselinePath));
+      const content = fs.readFileSync(baselinePath, "utf8");
+      const parsed = JSON.parse(content);
+      assert.ok(Array.isArray(parsed.entries));
+    });
   });
 
-  it("contains writeFileSync symlink guard rule", () => {
-    assert.ok(KNOWN_PATTERN_RULES.some((r) => r.name === "writeFileSync-without-symlink-guard"));
-  });
+  describe("shared loader module", () => {
+    it("loads registry with all expected patterns", () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { loadRegistry } = require(
+        path.join(PROJECT_ROOT, "scripts/lib/load-propagation-registry.js")
+      );
+      const patterns = loadRegistry({ verbose: true });
+      assert.ok(patterns.length >= 10);
+      const ids = patterns.map((p: { id: string }) => p.id);
+      assert.ok(ids.includes("sanitize-error"));
+      assert.ok(ids.includes("safe-to-write"));
+      assert.ok(ids.includes("lstat-symlink"));
+      assert.ok(ids.includes("path-traversal"));
+    });
 
-  it("contains truthy filter rule", () => {
-    assert.ok(KNOWN_PATTERN_RULES.some((r) => r.name === "truthy-filter-unsafe"));
-  });
+    it("matchPatterns finds patterns in diff lines", () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { loadRegistry, matchPatterns } = require(
+        path.join(PROJECT_ROOT, "scripts/lib/load-propagation-registry.js")
+      );
+      const registry = loadRegistry();
+      const lines = ["+  const result = sanitizeError(err);"];
+      const triggered = matchPatterns(lines, registry);
+      assert.ok(triggered.includes("sanitize-error"));
+    });
 
-  it("has descriptions for all rules", () => {
-    for (const rule of KNOWN_PATTERN_RULES) {
-      assert.ok(rule.description.length > 0, `Rule ${rule.name} has empty description`);
-    }
-  });
-});
+    it("matchPatterns returns empty for unrelated diff", () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { loadRegistry, matchPatterns } = require(
+        path.join(PROJECT_ROOT, "scripts/lib/load-propagation-registry.js")
+      );
+      const registry = loadRegistry();
+      const lines = ["+  const x = 42;"];
+      const triggered = matchPatterns(lines, registry);
+      assert.deepEqual(triggered, []);
+    });
 
-describe("check-propagation: argument parsing", () => {
-  it("parses --verbose flag", () => {
-    assert.strictEqual(parsePropagationArgs(["--verbose"]).verbose, true);
-  });
-
-  it("parses --staged flag", () => {
-    assert.strictEqual(parsePropagationArgs(["--staged"]).stagedOnly, true);
-  });
-
-  it("parses --blocking flag", () => {
-    assert.strictEqual(parsePropagationArgs(["--blocking"]).blocking, true);
-  });
-
-  it("returns false for all flags when none provided", () => {
-    const result = parsePropagationArgs([]);
-    assert.strictEqual(result.verbose, false);
-    assert.strictEqual(result.stagedOnly, false);
-    assert.strictEqual(result.blocking, false);
-  });
-});
-
-describe("check-propagation: SEARCH_DIRS and IGNORE_DIRS", () => {
-  const SEARCH_DIRS = new Set(["scripts/", ".claude/skills/", ".claude/hooks/"]);
-  const IGNORE_DIRS = new Set(["node_modules", ".git", "docs/archive", "__tests__"]);
-
-  it("searches in scripts directory", () => {
-    assert.ok(SEARCH_DIRS.has("scripts/"));
-  });
-
-  it("searches in hooks directory", () => {
-    assert.ok(SEARCH_DIRS.has(".claude/hooks/"));
-  });
-
-  it("ignores node_modules", () => {
-    assert.ok(IGNORE_DIRS.has("node_modules"));
-  });
-
-  it("ignores .git directory", () => {
-    assert.ok(IGNORE_DIRS.has(".git"));
-  });
-});
-
-describe("check-propagation: MAX_FILE_SIZE guard", () => {
-  const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-
-  function shouldSkipFile(sizeBytes: number): boolean {
-    return sizeBytes > MAX_FILE_SIZE;
-  }
-
-  it("skips files larger than 2MB", () => {
-    assert.strictEqual(shouldSkipFile(3 * 1024 * 1024), true);
-  });
-
-  it("processes files smaller than 2MB", () => {
-    assert.strictEqual(shouldSkipFile(1 * 1024 * 1024), false);
-  });
-
-  it("processes files exactly at the limit", () => {
-    assert.strictEqual(shouldSkipFile(MAX_FILE_SIZE), false);
+    it("loadBaseline returns array", () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { loadBaseline } = require(
+        path.join(PROJECT_ROOT, "scripts/lib/load-propagation-registry.js")
+      );
+      const baseline = loadBaseline();
+      assert.ok(Array.isArray(baseline));
+    });
   });
 });

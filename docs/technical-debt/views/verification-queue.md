@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2126
+**Items Needing Verification:** 2122
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -131,14 +131,10 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-11324 | BUG: .replace("-", " ") only replaces first dash in entry...    | S1       | components/journal/entry-feed.tsx                                                | 352       |
 | DEBT-11325 | SSRF bypass: bracketed IPv6 link-local addresses not dete...    | S1       | scripts/check-external-links.js                                                  | 140       |
 | DEBT-11331 | SQLite migration for TDMS pipeline — research + implement...    | S1       | scripts/debt/                                                                    | 0         |
-| DEBT-11335 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | scripts/check-propagation.js                                                     | 0         |
 | DEBT-11336 | Cyclomatic complexity violations in run-alerts.js: 10 fun...    | S1       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
-| DEBT-11339 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | scripts/check-propagation.js                                                     | 0         |
 | DEBT-11340 | Cyclomatic complexity violations in run-alerts.js: 10 fun...    | S1       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
 | DEBT-45521 | Hook bypass threshold: cc overridden 29+ times in 14 days       | S1       | scripts/log-override.js                                                          | 0         |
 | DEBT-45523 | Hook bypass threshold: cc overridden 29+ times in 14 days       | S1       | scripts/log-override.js                                                          | 0         |
-| DEBT-45524 | Hook bypass threshold: propagation overridden 31+ times i...    | S1       | propagation                                                                      | 0         |
-| DEBT-45525 | Hook bypass threshold: propagation overridden 33+ times i...    | S1       | propagation                                                                      | 0         |
 | DEBT-45526 | Hook bypass threshold: cc overridden 30+ times in 14 days       | S1       | cc                                                                               | 0         |
 | DEBT-45527 | Hook bypass threshold: cc overridden 31+ times in 14 days       | S1       | cc                                                                               | 0         |
 | DEBT-45556 | Orphaned: zero CLAUDE.md triggers, skill refs, or invocat...    | S1       | .claude/agents/backend-architect.md                                              | 0         |

@@ -1,0 +1,110 @@
+{
+  "_meta": {
+    "version": 1,
+    "updated": "2026-03-30",
+    "description": "Canonical registry of patterns requiring propagation sweeps. When a staged/pushed diff touches one of these patterns, sibling files matching searchGlob are scanned for the antiPattern (bad version). Consumed by check-propagation-staged.js and check-propagation.js.",
+    "howToAdd": "Add a new entry to the 'patterns' array below. Required fields: id (kebab-case), description, pattern (regex for correct usage), antiPattern (regex for incorrect usage, or null for import-check), searchGlob (array of globs), severity (BLOCK or WARN), missDetection (antiPattern or patternAbsence), source (PR/retro reference). AI: during /pr-retro, when a propagation miss is identified, propose adding it here."
+  },
+  "patterns": [
+    {
+      "id": "sanitize-error",
+      "description": "Error sanitization — use sanitizeError() instead of raw error.message",
+      "pattern": "\\bsanitizeError\\s*\\(",
+      "antiPattern": "\\berr(?:or)?\\.message\\b(?!.*sanitizeError)",
+      "searchGlob": ["scripts/**/*.js"],
+      "severity": "BLOCK",
+      "missDetection": "antiPattern",
+      "source": "PR #431, #448 — 6x recurrence"
+    },
+    {
+      "id": "safe-to-write",
+      "description": "Symlink guard before writes — use isSafeToWrite()",
+      "pattern": "\\bisSafeToWrite\\s*\\(",
+      "antiPattern": "\\bwriteFileSync\\s*\\((?!.*isSafeToWrite|.*safeWriteFileSync|.*isSymbolicLink|.*lstatSync|.*refuseSymlink)",
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
+      "severity": "BLOCK",
+      "missDetection": "antiPattern",
+      "source": "PR #368, #374, #397 — 6x recurrence"
+    },
+    {
+      "id": "lstat-symlink",
+      "description": "TOCTOU guard — use lstatSync + isSymbolicLink, not bare statSync",
+      "pattern": "\\blstatSync\\s*\\(",
+      "antiPattern": "(?:^|[^A-Za-z0-9_$])statSync\\s*\\((?!.*isSymbolicLink)",
+      "searchGlob": ["scripts/**/*.js"],
+      "severity": "BLOCK",
+      "missDetection": "antiPattern",
+      "source": "PR #388, #397 — 6x recurrence"
+    },
+    {
+      "id": "validate-path",
+      "description": "Path containment — use validatePathInDir() after path.resolve()",
+      "pattern": "\\bvalidatePathInDir\\s*\\(",
+      "antiPattern": "\\bpath\\.resolve\\s*\\((?!.*validatePathInDir)",
+      "searchGlob": ["scripts/**/*.js"],
+      "severity": "BLOCK",
+      "missDetection": "antiPattern",
+      "source": "PR #374, #388, #389, #448 — 6x recurrence"
+    },
+    {
+      "id": "escape-cell",
+      "description": "Markdown injection — use escapeCell() for dynamic content in table cells",
+      "pattern": "\\bescapeCell\\s*\\(",
+      "antiPattern": "\\bwriteFileSync\\s*\\([^)]*\\.md(?!.*escapeCell)",
+      "searchGlob": ["scripts/**/*.js"],
+      "severity": "WARN",
+      "missDetection": "antiPattern",
+      "source": "PR #415 — 6x recurrence, 3-round chain"
+    },
+    {
+      "id": "exec-path",
+      "description": "Node executable — use process.execPath, not hardcoded 'node'",
+      "pattern": "process\\.execPath",
+      "antiPattern": "execFileSync\\s*\\(\\s*['\"]node['\"]",
+      "searchGlob": ["scripts/**/*.js"],
+      "severity": "WARN",
+      "missDetection": "antiPattern",
+      "source": "PR #420 — 4x recurrence"
+    },
+    {
+      "id": "safe-write-file",
+      "description": "Safe filesystem writes — use safeWriteFileSync() with symlink guard",
+      "pattern": "\\bsafeWriteFileSync\\s*\\(",
+      "antiPattern": "\\bwriteFileSync\\s*\\((?!.*safeWriteFileSync|.*isSafeToWrite|.*isSymbolicLink|.*lstatSync)",
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
+      "severity": "BLOCK",
+      "missDetection": "antiPattern",
+      "source": "PR #368, #374 — BLOCK security pattern"
+    },
+    {
+      "id": "path-traversal",
+      "description": "Path traversal check — use regex test, not startsWith('..')",
+      "pattern": "/\\^\\\\\\.\\\\\\.\\(\\?:\\[\\\\\\\\\\\\//\\]\\|\\$\\)/\\.test",
+      "antiPattern": "startsWith\\s*\\(\\s*['\"]\\.\\.(?:['\"]|[/\\\\\\\\])",
+      "searchGlob": ["scripts/**/*.js"],
+      "severity": "BLOCK",
+      "missDetection": "antiPattern",
+      "source": "PR #374, #389 — CLAUDE.md Section 5 enforced pattern"
+    },
+    {
+      "id": "refuse-symlink",
+      "description": "Symlink rejection — use refuseSymlink() helpers",
+      "pattern": "\\brefuseSymlink\\w*\\s*\\(",
+      "antiPattern": null,
+      "searchGlob": ["scripts/**/*.js"],
+      "severity": "BLOCK",
+      "missDetection": "patternAbsence",
+      "source": "PR #397 — symlink guard propagation"
+    },
+    {
+      "id": "number-nan",
+      "description": "Use Number.NaN instead of bare NaN for explicitness",
+      "pattern": "Number\\.NaN",
+      "antiPattern": "(?:^|[^.])\\bNaN\\b(?!\\.)",
+      "searchGlob": ["scripts/**/*.js", "lib/**/*.ts"],
+      "severity": "WARN",
+      "missDetection": "antiPattern",
+      "source": "PR #448 R2 — 7 instances across 4 files"
+    }
+  ]
+}
