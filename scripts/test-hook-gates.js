@@ -187,6 +187,9 @@ function runHook(hookPath, stdinPayload, extraEnv) {
       stdio: ["pipe", "pipe", "pipe"],
     });
 
+    let stdout = "";
+    let stderr = "";
+
     const timeoutMs = 15000;
     const timer = setTimeout(() => {
       try {
@@ -196,9 +199,6 @@ function runHook(hookPath, stdinPayload, extraEnv) {
       }
       stderr += "\n[harness] Hook timed out after 15000ms";
     }, timeoutMs);
-
-    let stdout = "";
-    let stderr = "";
 
     child.stdout.on("data", (chunk) => {
       stdout += chunk.toString();

@@ -22,3 +22,4 @@
 {"id":"rev-19","date":"2026-03-26","schema_version":2,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":472,"source":"mixed","total":13,"fixed":12,"deferred":0,"rejected":1}
 {"id":"rev-20","date":"2026-03-26","schema_version":2,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":472,"source":"qodo","total":8,"fixed":6,"deferred":2,"rejected":0}
 {"id":"rev-21","date":"2026-03-30","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":480,"source":"mixed","total":27,"fixed":24,"deferred":0,"rejected":3}
+{"id":"rev-22","date":"2026-03-30","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"pr-review"},"pr":480,"source":"mixed","total":8,"fixed":6,"deferred":0,"rejected":2}

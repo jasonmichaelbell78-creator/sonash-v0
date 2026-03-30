@@ -290,6 +290,39 @@ function checkMarkdownFences(content: string, filePath: string): boolean {
   return fenceCount % 2 !== 0;
 }
 
+// --- Trailing comma stripper (extracted to reduce CC) ---
+function stripTrailingCommas(text: string): string {
+  let result = "";
+  let inStr = false;
+  let esc = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (inStr) {
+      result += ch;
+      if (esc) {
+        esc = false;
+      } else if (ch === "\\") {
+        esc = true;
+      } else if (ch === '"') {
+        inStr = false;
+      }
+      continue;
+    }
+    if (ch === '"') {
+      inStr = true;
+      result += ch;
+      continue;
+    }
+    if (ch === ",") {
+      let j = i + 1;
+      while (j < text.length && /\s/.test(text[j])) j++;
+      if (text[j] === "}" || text[j] === "]") continue;
+    }
+    result += ch;
+  }
+  return result;
+}
+
 // --- jsonSyntaxCheck logic ---
 function checkJsonSyntax(content: string, filePath: string): string | null {
   if (!filePath.endsWith(".json")) return null;
@@ -303,35 +336,8 @@ function checkJsonSyntax(content: string, filePath: string): string | null {
     // Not valid JSON as-is
   }
 
-  // Strip trailing commas — context-aware (skips string literals)
-  let stripped = "";
-  let inStr = false,
-    escaped = false;
-  for (let i = 0; i < content.length; i++) {
-    const ch = content[i];
-    if (inStr) {
-      stripped += ch;
-      if (escaped) {
-        escaped = false;
-      } else if (ch === "\\") {
-        escaped = true;
-      } else if (ch === '"') {
-        inStr = false;
-      }
-      continue;
-    }
-    if (ch === '"') {
-      inStr = true;
-      stripped += ch;
-      continue;
-    }
-    if (ch === ",") {
-      let j = i + 1;
-      while (j < content.length && /\s/.test(content[j])) j++;
-      if (content[j] === "}" || content[j] === "]") continue; // skip trailing comma
-    }
-    stripped += ch;
-  }
+  // Try with trailing commas stripped
+  const stripped = stripTrailingCommas(content);
   try {
     JSON.parse(stripped);
     return null;

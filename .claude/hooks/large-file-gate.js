@@ -130,7 +130,7 @@ process.stdin.on("end", () => {
 
     // Security: path traversal guard
     const rel = path.relative(projectDir, absPath);
-    if (/^\.\.(?:[\\/]|$)/.test(rel)) {
+    if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
       process.exit(0);
     }
 

@@ -9,17 +9,28 @@ fi
 
 # Fast-path: only skip fnm if the current node matches the repo-pinned version
 if command -v node >/dev/null 2>&1; then
-  if [ -f .nvmrc ]; then
-    expected="$(tr -d ' \t\r\n' < .nvmrc)"
+  repo_root="${CLAUDE_PROJECT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}"
+  if [[ -f "$repo_root/.nvmrc" ]]; then
+    expected="$(tr -d ' \t\r\n' < "$repo_root/.nvmrc")"
     current="$(node -v 2>/dev/null | tr -d ' \t\r\n')"
-    # Compare major version (strip 'v' prefix, get first number before '.')
-    expected_major="${expected#v}"
-    expected_major="${expected_major%%.*}"
-    current_major="${current#v}"
-    current_major="${current_major%%.*}"
-    if [ "$expected_major" = "$current_major" ]; then
-      exec "$@"
-    fi
+    expected_clean="${expected#v}"
+    current_clean="${current#v}"
+    # If .nvmrc pins a full semver (e.g. 22.12.0), require exact match
+    case "$expected_clean" in
+      *.*.*)
+        if [[ "$expected_clean" = "$current_clean" ]]; then
+          exec "$@"
+        fi
+        ;;
+      *)
+        # Major-only comparison (e.g. "22" or "v22")
+        expected_major="${expected_clean%%.*}"
+        current_major="${current_clean%%.*}"
+        if [[ "$expected_major" = "$current_major" ]]; then
+          exec "$@"
+        fi
+        ;;
+    esac
   else
     exec "$@"
   fi

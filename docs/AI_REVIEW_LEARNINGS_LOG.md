@@ -2840,3 +2840,27 @@ deduped/merged)
   revoked — SonarCloud flags literal PAT strings regardless of validity.
 
 ---
+
+### Review 60
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 6     | 0        | 2        |
+
+**Key learnings:**
+
+- Variable declarations must appear before any `setTimeout` callbacks that
+  reference them — hoisting doesn't apply to `let`/`const`.
+- When extracting complex logic to reduce CC, extract helper functions rather
+  than inlining — test files get CC-checked too.
+- Bash conditional tests should use `[[` over `[` for safety and feature parity.
+- `.nvmrc` path resolution needs repo root, not cwd — hooks may run from
+  subdirectories.
+- `path.isAbsolute(rel)` IS needed on Windows — `path.relative()` can return
+  absolute paths across drive boundaries (R1 overcorrection).
+- Unused speculative dependencies (added for planned features) should not be
+  committed until code imports them — CI knip gate catches them.
+
+---
