@@ -364,9 +364,9 @@ _Claude Code skills_
 | [debt-runner](.claude/skills/debt-runner/SKILL.md)                                                                                  | Interactive orchestrator for the Technical Debt Management S... | ↓0 ↑0      | 2026-03-15    |
 | [decrypt-secrets](.claude/skills/decrypt-secrets/SKILL.md)                                                                          | Decrypt your encrypted MCP tokens at the start of a remote s... | ↓0 ↑0      | 2026-02-24    |
 | [Deep Plan Reference](.claude/skills/deep-plan/REFERENCE.md)                                                                        | Question categories, example questions, output templates, an... | ↓1 ↑0      | 2026-03-17    |
-| [Deep Research Reference](.claude/skills/deep-research/REFERENCE.md)                                                                | Output templates, question type classification, source evalu... | ↓1 ↑0      | 2026-03-29    |
+| [Deep Research Reference](.claude/skills/deep-research/REFERENCE.md)                                                                | Output templates, question type classification, source evalu... | ↓1 ↑0      | 2026-03-30    |
 | [deep-plan](.claude/skills/deep-plan/SKILL.md)                                                                                      | Structured discovery-first planning that produces high-quali... | ↓0 ↑1      | 2026-03-24    |
-| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa... | ↓0 ↑1      | 2026-03-29    |
+| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa... | ↓0 ↑1      | 2026-03-30    |
 | [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)                                              | Reject obviously invalid input at API boundary                  | ↓0 ↑0      | 2026-01-12    |
 | [developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod... | ↓0 ↑0      | 2026-02-24    |
 | [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)                                                                  | Deep diagnostic of the entire documentation ecosystem — docu... | ↓0 ↑0      | 2026-03-26    |
@@ -1544,7 +1544,7 @@ _Reference_
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-01-24    |
 | [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-03-26    |
 | [Slash Commands & Skills Reference](docs/SLASH_COMMANDS_REFERENCE.md)             | Comprehensive reference for all slash commands and skills av...   | ↓1 ↑2      | 2026-03-19    |
-| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-03-29    |
+| [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-03-30    |
 
 ### Decisions (Tier 4)
 

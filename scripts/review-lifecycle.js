@@ -129,11 +129,38 @@ function loadExistingIds(records) {
   return ids;
 }
 
+/**
+ * Build composite keys (pr:round) from review records for collision detection.
+ * Handles duplicate numeric IDs that refer to different PRs.
+ * Returns Set of "PR:ROUND" strings (e.g. "472:R1", "477:R1").
+ */
+function buildCompositeKeys(records) {
+  const composites = new Set();
+  for (const rec of records) {
+    if (!rec || typeof rec !== "object") continue;
+    if (typeof rec.pr === "number" && rec.pr > 0) {
+      // Extract round from title (e.g. "PR #472 R1 ..." -> "R1")
+      const roundMatch = /R(\d+)/i.exec(rec.title || "");
+      if (roundMatch) {
+        composites.add(`${rec.pr}:R${roundMatch[1]}`);
+      }
+    }
+  }
+  return composites;
+}
+
 // ── STEP 1: SYNC ──────────────────────────────────────────────────────────
 
 /**
  * Simplified markdown parser for transition period.
- * Extracts Review #N entries from AI_REVIEW_LEARNINGS_LOG.md.
+ * Extracts review entries from AI_REVIEW_LEARNINGS_LOG.md.
+ * Handles all header formats:
+ *   ### Review #N: ...              (old numeric with #)
+ *   ### Review rev-N: ...           (JSONL-era rev-N)
+ *   ### Review #N — ...             (intermediate, uses — not :)
+ *   ### Review N                    (bare number, no #)
+ *   ### Review review-466-r1: ...   (compound ID)
+ *   ### Review retro-bulk-448-470:  (retro entries)
  * Returns array of review objects.
  */
 function parseMarkdownReviews(content) {
@@ -142,6 +169,9 @@ function parseMarkdownReviews(content) {
   let current = null;
   let inFence = false;
 
+  // Non-review headers that start with "Review" but are section headers
+  const excludedSuffixes = ["Sources", "Cycle"];
+
   for (const line of lines) {
     if (line.trim().startsWith("```")) {
       inFence = !inFence;
@@ -149,12 +179,18 @@ function parseMarkdownReviews(content) {
     }
     if (inFence) continue;
 
-    // Match #### Review #N or ### Review #N or ## Review #N
-    const headerMatch = /^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/.exec(line);
+    // Match all review header formats:
+    // Captures the ID portion (with optional #) and everything after the separator
+    const headerMatch = /^#{2,4}\s+Review\s+#?([^\s:—]+)[\s:—]*(.*)/.exec(line);
     if (headerMatch) {
+      // Guard: skip non-review section headers like "Review Sources", "Review Cycle Summary"
+      const candidateId = headerMatch[1];
+      if (excludedSuffixes.some((suffix) => candidateId === suffix)) continue;
+
       if (current) reviews.push(current);
 
-      const id = Number.parseInt(headerMatch[1], 10);
+      // Preserve numeric IDs as numbers, keep string IDs as strings
+      const id = /^\d+$/.test(candidateId) ? Number.parseInt(candidateId, 10) : candidateId;
       const titleAndDate = headerMatch[2].trim();
       const dateMatch = /\((\d{4}-\d{2}-\d{2})\)\s*$/.exec(titleAndDate);
       const date = dateMatch ? dateMatch[1] : "unknown";
@@ -329,10 +365,34 @@ function runSync() {
   }
   const archivedIds = loadExistingIds(archivedRecords);
 
-  // Filter to reviews not already in JSONL or archive (compare as strings for type safety)
-  const missing = mdReviews.filter(
-    (r) => !existingIds.has(String(r.id)) && !archivedIds.has(String(r.id))
-  );
+  // Build composite keys (pr:round) to detect ID collisions across different PRs.
+  // Example: Review #58 for PR #472 R1 and Review #58 for PR #477 R1 are distinct.
+  const allRecords = [...existingRecords, ...archivedRecords];
+  const existingComposites = buildCompositeKeys(allRecords);
+
+  // Filter to reviews not already in JSONL or archive.
+  // Uses composite key (pr:round) to resolve ID collisions — when the same numeric
+  // ID exists for a different PR, it's treated as a new entry with a disambiguated ID.
+  const missing = mdReviews.filter((r) => {
+    const idStr = String(r.id);
+    const idExists = existingIds.has(idStr) || archivedIds.has(idStr);
+
+    if (!idExists) return true;
+
+    // ID already exists — check if this is a collision (same ID, different PR)
+    if (typeof r.pr === "number" && r.pr > 0) {
+      const roundMatch = /R(\d+)/i.exec(r.title || "");
+      if (roundMatch) {
+        const composite = `${r.pr}:R${roundMatch[1]}`;
+        if (!existingComposites.has(composite)) {
+          // Same review number but different PR — disambiguate the ID
+          r.id = `${r.id}-pr${r.pr}`;
+          return true;
+        }
+      }
+    }
+    return false;
+  });
 
   logStep(
     "SYNC",
@@ -1115,6 +1175,7 @@ module.exports = {
   parseMarkdownReviews,
   loadReviews,
   loadExistingIds,
+  buildCompositeKeys,
   runSync,
   runArchive,
   runValidate,
