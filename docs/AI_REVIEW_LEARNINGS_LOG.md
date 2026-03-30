@@ -366,6 +366,17 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#16)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-24
+- **Recurring patterns:**
+  - qodo (14x)
+  - sonarcloud (12x)
+  - gemini (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#15)</summary>
 
 - **Date:** 2026-03-22
@@ -939,27 +950,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 503: PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling (2026-03-25)
-
-**Date:** 2026-03-25 | **PR:** #469 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
 | 12    | 8     | 0        | 3        |
-
----
-
-### Review 504: PR #469 R2 — CC Reduction, Map Normalization & Revalidation (2026-03-25)
-
-**Date:** 2026-03-25 | **PR:** #469 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
 
 ---
 

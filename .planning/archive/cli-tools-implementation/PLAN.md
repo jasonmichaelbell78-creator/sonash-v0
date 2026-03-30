@@ -3,7 +3,7 @@
 <!-- prettier-ignore-start -->
 **Document Version:** 1.1
 **Last Updated:** 2026-03-26
-**Status:** EXECUTING (both locales complete, Step 25 pending merge)
+**Status:** COMPLETE (all code/artifacts shipped; Step 25 locale-sync is live ops)
 <!-- prettier-ignore-end -->
 
 **Effort:** XL (multi-session) **Decisions:** [DECISIONS.md](./DECISIONS.md) (41
