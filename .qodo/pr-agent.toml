@@ -1,6 +1,6 @@
 # Qodo PR-Agent Configuration
 # Created: 2026-02-17
-# Updated: 2026-03-18 (PR #447 retro — add CJS, repeat-rejection, .claude config, R-style suppressions)
+# Updated: 2026-03-30 (PR #477 retro — add Bash(*), constant extraction, audit trail, catch block, checksum suppressions)
 # Purpose: Suppress recurring false-positive review items that add noise
 # without actionable value. Each suppression has evidence from PR retros.
 
@@ -129,6 +129,39 @@ When reviewing files in scripts/ or .claude/hooks/:
     from os.ReadDir() output (Go) or fs.readdirSync() (JS). Directory listing
     returns trusted filenames from the filesystem, not user-controlled input.
     (Rejected in PR #470 R4 — trusted source)
+
+22. Do NOT flag "Bash(*) wildcard permission" or "overly permissive tool access"
+    for Bash(*) entries in .claude/settings.json or similar permission config
+    files. The wildcard allows the AI agent to run shell commands, which is the
+    intended operational model for this project. Not a security misconfiguration.
+    (Rejected across PRs #448-#477 — repeat noise every PR touching settings)
+
+23. Do NOT flag "extract constants" or "magic strings/numbers" in bash scripts,
+    shell scripts, or Node.js CLI scripts under scripts/ or .claude/hooks/.
+    These are self-contained CLI tools where inline values are clearer than
+    indirection through a constants file.
+    (Rejected across PRs #448-#470 — repeat-rejected across multiple PRs)
+
+24. Do NOT flag "missing audit trail" or "audit logging required" on local CLI
+    tools and dev automation scripts under scripts/, tools/, or .claude/hooks/.
+    These are offline developer tools, not production services. Audit trails
+    are only required for Cloud Functions and client-facing code.
+    (Rejected across PRs #448-#477 — repeat compliance noise on CLI tools)
+
+25. Do NOT flag "silent catch" or "swallowed exception" on intentional
+    fail-open catch blocks in .claude/hooks/ or scripts/. This extends beyond
+    JSONL parsing (rule 5) — hooks and scripts intentionally use empty or
+    minimal catch blocks for non-critical operations (e.g., telemetry, state
+    persistence, optional file reads) where crashing would be worse than
+    skipping.
+    (Rejected across PRs #448-#477 — broadened from JSONL-only suppression)
+
+26. Do NOT flag "missing checksum verification" or "integrity check required"
+    on binary downloads in scripts or tools. Binary integrity is verified
+    through version-pinned URLs and git-tracked checksums where appropriate.
+    Suggesting per-download checksum verification on known-source binaries
+    (e.g., GitHub releases) adds ceremony without security value.
+    (Rejected across PRs #448-#470 — repeat noise on binary download scripts)
 """
 
 [pr_code_suggestions]
@@ -203,4 +236,10 @@ When checking compliance for files under scripts/, .claude/hooks/, scripts/debt/
      injection risk — binary is hardcoded, not user-controlled.
    - Do NOT flag "PATH binary hijacking" for hardcoded binary names.
    (Rejected in PRs #392-#396, 10+ rounds with same rationale)
+
+8. For "Integrity Verification":
+   - Do NOT flag "missing checksum verification" on binary downloads from
+     version-pinned GitHub release URLs. Version-pinned URLs with HTTPS
+     are COMPLIANT for dev tooling.
+   (Rejected across PRs #448-#470)
 """

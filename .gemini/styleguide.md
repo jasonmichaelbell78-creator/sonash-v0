@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-03-18
+**Document Version:** 1.2
+**Last Updated:** 2026-03-30
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -153,6 +153,27 @@ cycles:
 - **os.ReadDir path traversal** — Do NOT flag path traversal concerns on code
   reading filenames from `os.ReadDir()` or `fs.readdirSync()`. Directory listing
   returns trusted filenames. (Rejected PR #470 R4)
+- **Bash(\*) permission in settings** — Do NOT flag `Bash(*)` wildcard
+  permission entries in `.claude/settings.json` or agent config files as
+  security risks. The wildcard is the intended operational model for AI-assisted
+  development. (Rejected across PRs #448-#477)
+- **Constant extraction in scripts** — Do NOT flag "extract constants" or "magic
+  strings/numbers" in bash scripts or Node.js CLI scripts under `scripts/` or
+  `.claude/hooks/`. Inline values are clearer than constants files for
+  self-contained CLI tools. (Rejected across PRs #448-#470)
+- **Audit trails on CLI tools** — Do NOT flag "missing audit trail" or "audit
+  logging required" on local dev tools under `scripts/`, `tools/`, or
+  `.claude/hooks/`. These are offline developer tools, not production services.
+  (Rejected across PRs #448-#477)
+- **Fail-open catch blocks in hooks** — Do NOT flag "silent catch" or "swallowed
+  exception" on intentional fail-open catch blocks in `.claude/hooks/` or
+  `scripts/`. Beyond JSONL parsing, hooks use empty catch blocks for
+  non-critical operations (telemetry, state persistence) where crashing is worse
+  than skipping. (Rejected across PRs #448-#477)
+- **Checksum verification on downloads** — Do NOT flag "missing checksum
+  verification" on binary downloads from version-pinned URLs in scripts or
+  tools. Version-pinned HTTPS URLs from known sources (e.g., GitHub releases)
+  are acceptable for dev tooling. (Rejected across PRs #448-#470)
 
 ## Code Standards
 

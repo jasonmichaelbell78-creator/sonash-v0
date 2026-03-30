@@ -273,7 +273,8 @@ fi
 PATTERNS_TMP=$(mktemp)
 AUDIT_TMP=$(mktemp)
 SKILLS_TMP=$(mktemp)
-add_exit_trap "rm -f '$PATTERNS_TMP' '${PATTERNS_TMP}.rc' '${PATTERNS_TMP}.dur' '$AUDIT_TMP' '${AUDIT_TMP}.rc' '${AUDIT_TMP}.dur' '$SKILLS_TMP' '${SKILLS_TMP}.rc' '${SKILLS_TMP}.dur'"
+CC_TMP=$(mktemp)
+add_exit_trap "rm -f '$PATTERNS_TMP' '${PATTERNS_TMP}.rc' '${PATTERNS_TMP}.dur' '$AUDIT_TMP' '${AUDIT_TMP}.rc' '${AUDIT_TMP}.dur' '$SKILLS_TMP' '${SKILLS_TMP}.rc' '${SKILLS_TMP}.dur' '$CC_TMP' '${CC_TMP}.rc' '${CC_TMP}.dur'"
 
 # --- Determine which compliance checks to run vs skip/skip-condition ---
 
@@ -309,12 +310,22 @@ else
   echo "skill-validation|skip|0" >> "$CHECKS_TMPFILE"
 fi
 
+# Cognitive complexity: conditional on JS/MJS files staged (advisory, non-blocking)
+RUN_CC=0
+STAGED_JS_CC=$(git diff --cached --name-only --diff-filter=ACM -- '*.js' '*.mjs' 2>/dev/null | grep -vE 'node_modules|\.next/|dist/' || true)
+if [ -n "$STAGED_JS_CC" ]; then
+  RUN_CC=1
+else
+  echo "cognitive-complexity|skip|0" >> "$CHECKS_TMPFILE"
+fi
+
 # --- Launch parallel checks ---
 echo "  ▶ Running compliance checks (parallel)..."
 
 PATTERNS_PID=""
 AUDIT_PID=""
 SKILLS_PID=""
+CC_PID=""
 
 if [ "$RUN_PATTERNS" -eq 1 ]; then
   (
@@ -364,10 +375,22 @@ if [ "$RUN_SKILLS" -eq 1 ]; then
   SKILLS_PID=$!
 fi
 
+if [ "$RUN_CC" -eq 1 ]; then
+  (
+    _start=$(date +%s%N 2>/dev/null || date +%s)
+    node scripts/check-cc.js --staged > "$CC_TMP" 2>&1
+    echo $? > "${CC_TMP}.rc"
+    _end=$(date +%s%N 2>/dev/null || date +%s)
+    if [ ${#_start} -gt 10 ]; then echo $(( (_end - _start) / 1000000 )) > "${CC_TMP}.dur"; else echo $(( (_end - _start) * 1000 )) > "${CC_TMP}.dur"; fi
+  ) &
+  CC_PID=$!
+fi
+
 # Wait for all launched checks
 [ -n "$PATTERNS_PID" ] && wait $PATTERNS_PID 2>/dev/null || true
 [ -n "$AUDIT_PID" ] && wait $AUDIT_PID 2>/dev/null || true
 [ -n "$SKILLS_PID" ] && wait $SKILLS_PID 2>/dev/null || true
+[ -n "$CC_PID" ] && wait $CC_PID 2>/dev/null || true
 
 # --- Process pattern-compliance results ---
 if [ "$RUN_PATTERNS" -eq 1 ]; then
@@ -461,6 +484,27 @@ if [ "$RUN_SKILLS" -eq 1 ]; then
   else
     echo "  ✅ Skill validation passed"
     echo "skill-validation|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  fi
+fi
+
+# --- Process cognitive-complexity results (advisory, never blocks) ---
+if [ "$RUN_CC" -eq 1 ]; then
+  CC_EXIT=$(cat "${CC_TMP}.rc" 2>/dev/null || echo "0")
+  CHECK_DURATION_MS=$(cat "${CC_TMP}.dur" 2>/dev/null || echo "0")
+  if [ "$CC_EXIT" -eq 1 ]; then
+    echo "  ⚠️ Cognitive complexity: functions exceed CC 15 (advisory)"
+    grep "FAIL" "$CC_TMP" 2>/dev/null | head -10
+    node scripts/append-hook-warning.js --hook=pre-commit --type=cognitive-complexity --severity=warning \
+      --message="Functions exceed cognitive complexity threshold (CC > 15)" \
+      --action="Refactor: node scripts/check-cc.js --staged --verbose" \
+      || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
+    echo "cognitive-complexity|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  elif [ "$CC_EXIT" -ge 2 ]; then
+    echo "  ⚠️ Cognitive complexity check errored (non-blocking)"
+    echo "cognitive-complexity|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+  else
+    echo "  ✅ Cognitive complexity passed"
+    echo "cognitive-complexity|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   fi
 fi
 

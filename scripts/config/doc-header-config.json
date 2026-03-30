@@ -10,6 +10,7 @@
     { "source": "^\\.git/", "flags": "" },
     { "source": "^\\.claude/", "flags": "" },
     { "source": "^\\.planning/", "flags": "" },
+    { "source": "^\\.research/", "flags": "" },
     { "source": "^docs/audits/", "flags": "" },
     { "source": "DOCUMENTATION_INDEX\\.md$", "flags": "" },
     { "source": "(?:^|\\/)archive(?:\\/|$)", "flags": "i" },

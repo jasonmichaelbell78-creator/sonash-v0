@@ -656,7 +656,7 @@ _Uncategorized_
 
 | Document                                                | Description                                                     | References | Last Modified |
 | ------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [SoNash Code Review Style Guide](.gemini/styleguide.md) | This guide defines coding standards and review expectations ... | ↓0 ↑0      | 2026-03-27    |
+| [SoNash Code Review Style Guide](.gemini/styleguide.md) | This guide defines coding standards and review expectations ... | ↓0 ↑0      | 2026-03-30    |
 
 ### .github (Tier 4)
 

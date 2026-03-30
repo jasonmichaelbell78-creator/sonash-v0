@@ -576,12 +576,20 @@ function countReviewsByPr(reviews) {
   return counts;
 }
 
-/** Build map of PR -> latest metrics entry by timestamp. */
+/** Build map of PR -> latest metrics entry by timestamp.
+ *  Normalizes PR keys: coerces string PR values to numbers where possible
+ *  so that entries created by bootstrapMissingEntries (which uses string keys)
+ *  are properly deduped against numeric-keyed entries from the churn tracker.
+ */
 function buildLatestMetricsMap(metrics) {
   const latestByPr = new Map();
   for (const entry of metrics) {
-    if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") continue;
-    const existing = latestByPr.get(entry.pr);
+    if (!entry || typeof entry !== "object") continue;
+    if (entry.pr === undefined || entry.pr === null) continue;
+    // Normalize: coerce string PR values to numbers when possible
+    const prNum = Number(entry.pr);
+    const prKey = Number.isFinite(prNum) ? prNum : entry.pr;
+    const existing = latestByPr.get(prKey);
     const entryTime =
       typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : Number.NaN;
     const existingTime =
@@ -597,7 +605,9 @@ function buildLatestMetricsMap(metrics) {
       entryScore > existingScore ||
       (entryScore === -Infinity && existingScore === -Infinity)
     ) {
-      latestByPr.set(entry.pr, entry);
+      // Normalize the pr field to a number for consistency
+      const normalized = { ...entry, pr: prKey };
+      latestByPr.set(prKey, normalized);
     }
   }
   return latestByPr;
@@ -885,15 +895,27 @@ function buildLatestReviewByPr(reviews) {
 /**
  * Bootstrap metrics entries for PRs present in reviews but absent from metrics.
  * Mutates dedupedEntries in place; returns the count of entries added.
+ *
+ * Uses numeric PR keys when possible to stay consistent with buildLatestMetricsMap
+ * normalization — prevents string/number key mismatches that cause phantom duplicates.
  */
 function bootstrapMissingEntries(dedupedEntries, reviewCountsNorm, latestReviewByPr) {
-  const existingPrs = new Set(dedupedEntries.map((e) => String(e.pr)));
+  // Build lookup using the same normalization as buildLatestMetricsMap
+  const existingPrs = new Set(
+    dedupedEntries.map((e) => {
+      const n = Number(e.pr);
+      return Number.isFinite(n) ? n : String(e.pr);
+    })
+  );
   let addedCount = 0;
   for (const [prKey, jsonlCount] of reviewCountsNorm) {
-    if (!existingPrs.has(prKey)) {
+    // Normalize the lookup key the same way
+    const prNum = Number(prKey);
+    const normalizedKey = Number.isFinite(prNum) ? prNum : prKey;
+    if (!existingPrs.has(normalizedKey)) {
       const latestReview = latestReviewByPr.get(prKey) || {};
       dedupedEntries.push({
-        pr: prKey,
+        pr: normalizedKey,
         title: latestReview.title || `PR #${prKey}`,
         total_commits: 0,
         fix_commits: 0,
@@ -904,6 +926,7 @@ function bootstrapMissingEntries(dedupedEntries, reviewCountsNorm, latestReviewB
         reconciled_at: new Date().toISOString(),
         source: "reconciled-from-jsonl",
       });
+      existingPrs.add(normalizedKey);
       addedCount++;
     }
   }
