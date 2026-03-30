@@ -3257,6 +3257,125 @@
       "file": "scripts/normalize-canon-ids.js",
       "addedAt": "2026-03-30",
       "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "findPatternMatches",
+      "file": "scripts/check-pattern-compliance.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadRegistry",
+      "file": ".claude/skills/health-ecosystem-audit/scripts/checkers/coverage-completeness.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadBaseline",
+      "file": ".claude/skills/alerts/scripts/run-alerts.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadBaseline",
+      "file": ".claude/skills/doc-ecosystem-audit/scripts/lib/state-manager.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadBaseline",
+      "file": ".claude/skills/health-ecosystem-audit/scripts/lib/state-manager.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadBaseline",
+      "file": ".claude/skills/hook-ecosystem-audit/scripts/lib/state-manager.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadBaseline",
+      "file": ".claude/skills/script-ecosystem-audit/scripts/lib/state-manager.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadBaseline",
+      "file": ".claude/skills/skill-ecosystem-audit/scripts/lib/state-manager.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "loadBaseline",
+      "file": "scripts/generate-test-registry.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/archive/run-consolidation.v1.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/archive/sync-reviews-to-jsonl.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "sanitize-error",
+      "file": "scripts/archive/sync-reviews-to-jsonl.v1.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "path-traversal",
+      "file": "scripts/assign-review-tier.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "path-traversal",
+      "file": "scripts/check-docs-light.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "path-traversal",
+      "file": "scripts/check-document-sync.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "path-traversal",
+      "file": "scripts/check-hook-health.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "pattern",
+      "key": "path-traversal",
+      "file": "scripts/security-check.js",
+      "addedAt": "2026-03-30",
+      "reason": "pre-existing at enforcement rollout"
     }
   ]
 }
