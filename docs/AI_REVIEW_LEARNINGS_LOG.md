@@ -366,6 +366,28 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#21)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-27
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#20)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-26
+- **Recurring patterns:**
+  - qodo (16x)
+  - sonarcloud (14x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#19)</summary>
 
 - **Date:** 2026-03-30
@@ -1164,6 +1186,26 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 25    | 22    | 0        | 3        |
+
+---
+
+### Review rev-26: PR #482 R2 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 5     | 0        | 2        |
+
+---
+
+### Review rev-27: PR #482 R3 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 4     | 0        | 3        |
 
 ## Key Patterns
 
@@ -2809,6 +2851,26 @@ deduped/merged)
 - Archive extraction must use a contained subdirectory to prevent zip slip.
 - Invalid manifest entries should surface as "missing" not silently skip.
 - stdin size bounds prevent memory exhaustion on misconfigured hooks.
+
+---
+
+### Review #63 — PR #482 R3 (Mixed: Qodo + SonarCloud)
+
+**Date:** 2026-03-30 **Items:** 7 (4 fixed, 0 deferred, 3 rejected)
+
+**Patterns:**
+
+- ReDoS rejected 3rd time — registry is checked-in config, not user input.
+- Fail-open git diff addressed with fallback to file reading.
+- Symlink guards added to loadRegistry and loadBaseline config readers.
+
+**Learnings:**
+
+- Config file readers (registry, baseline) need symlink guards same as data file
+  readers — defense in depth for checked-in JSON.
+- Fail-safe: when git diff fails, fall back to reading staged file contents
+  rather than returning empty (which disables enforcement).
+- Always reset regex.lastIndex before test() in loops for defensive safety.
 
 ---
 

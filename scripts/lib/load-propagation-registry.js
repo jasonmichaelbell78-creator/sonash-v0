@@ -91,6 +91,10 @@ function loadRegistry(options = {}) {
   const verbose = options.verbose || false;
 
   try {
+    if (lstatSync(filePath).isSymbolicLink()) {
+      if (verbose) console.warn("[propagation-registry] Refusing to load registry from symlink");
+      return [];
+    }
     const raw = readFileSync(filePath, "utf8");
     const parsed = JSON.parse(raw);
 
@@ -134,6 +138,7 @@ function matchPatterns(diffLines, registry) {
 
     for (const line of diffLines) {
       const content = line.startsWith("+") ? line.slice(1) : line;
+      regex.lastIndex = 0;
       if (regex.test(content)) {
         triggered.add(entry.id);
         break; // One match per pattern is enough
@@ -172,6 +177,14 @@ function isMiss(content, checkRegex, mode) {
  * @param {boolean} [options.verbose] - Log warnings
  * @returns {Array<{file: string, mode: string}>} Array of files with misses
  */
+const MAX_FILE_SIZE = 2 * 1024 * 1024;
+
+function safeReadFile(filePath) {
+  const st = lstatSync(filePath);
+  if (st.isSymbolicLink() || st.size > MAX_FILE_SIZE) return null;
+  return readFileSync(filePath, "utf8");
+}
+
 function findMisses(patternEntry, files, options = {}) {
   const verbose = options.verbose || false;
   const misses = [];
@@ -186,9 +199,8 @@ function findMisses(patternEntry, files, options = {}) {
 
   for (const filePath of files) {
     try {
-      const st = lstatSync(filePath);
-      if (st.isSymbolicLink()) continue;
-      const content = readFileSync(filePath, "utf8");
+      const content = safeReadFile(filePath);
+      if (content === null) continue;
       if (isMiss(content, checkRegex, mode)) {
         misses.push({ file: filePath, mode });
       }
@@ -216,6 +228,10 @@ function loadBaseline(options = {}) {
   const verbose = options.verbose || false;
 
   try {
+    if (lstatSync(filePath).isSymbolicLink()) {
+      if (verbose) console.warn("[propagation-baseline] Refusing to load baseline from symlink");
+      return [];
+    }
     const raw = readFileSync(filePath, "utf8");
     const parsed = JSON.parse(raw);
     const rawEntries = Array.isArray(parsed.entries) ? parsed.entries : [];

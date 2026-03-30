@@ -223,7 +223,7 @@ function getDiffAddedLines(stagedFiles, baseDir) {
       .map((line) => line.slice(1)); // Strip leading +
   } catch (err) {
     console.warn(`[propagation-staged] git diff -U0 failed: ${sanitizeError(err)}`);
-    return [];
+    return readOverrideFilesAsLines(stagedFiles, baseDir);
   }
 }
 
