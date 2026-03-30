@@ -1,5 +1,11 @@
 # Decisions: Dev Dashboard Command Center
 
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Last Updated:** 2026-03-29
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
+
 **Date:** 2026-03-29 (Session #245) **Questions asked:** 42 **Decisions
 captured:** 43 **Prior research:** `.research/dev-dashboard/RESEARCH_OUTPUT.md`
 (42 agents)
