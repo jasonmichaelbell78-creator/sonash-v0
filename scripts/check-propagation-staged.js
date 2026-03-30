@@ -222,7 +222,7 @@ function getDiffAddedLines(stagedFiles, baseDir) {
       .filter((line) => line.startsWith("+") && !line.startsWith("+++"))
       .map((line) => line.slice(1)); // Strip leading +
   } catch (err) {
-    if (VERBOSE) console.warn(`[propagation-staged] git diff -U0 failed: ${sanitizeError(err)}`);
+    console.warn(`[propagation-staged] git diff -U0 failed: ${sanitizeError(err)}`);
     return [];
   }
 }

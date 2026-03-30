@@ -122,7 +122,7 @@ function loadRegistry(options = {}) {
  * @returns {string[]} Array of triggered pattern IDs
  */
 function matchPatterns(diffLines, registry) {
-  const triggered = [];
+  const triggered = new Set();
 
   for (const entry of registry) {
     let regex;
@@ -133,16 +133,15 @@ function matchPatterns(diffLines, registry) {
     }
 
     for (const line of diffLines) {
-      // Strip the leading + from diff lines
       const content = line.startsWith("+") ? line.slice(1) : line;
       if (regex.test(content)) {
-        triggered.push(entry.id);
+        triggered.add(entry.id);
         break; // One match per pattern is enough
       }
     }
   }
 
-  return triggered;
+  return [...triggered];
 }
 
 function compileMissRegex(patternEntry, mode, verbose) {

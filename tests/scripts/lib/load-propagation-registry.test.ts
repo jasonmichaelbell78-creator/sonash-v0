@@ -112,7 +112,7 @@ describe("load-propagation-registry", () => {
         const entry = {
           id: "test",
           pattern: "sanitizeError",
-          antiPattern: "error\\.message",
+          antiPattern: String.raw`error\.message`,
           missDetection: "antiPattern",
         };
         const misses = findMisses(entry, [tmp]);
@@ -197,7 +197,7 @@ describe("load-propagation-registry", () => {
 
     it("normalizes backslashes", () => {
       const baseline = [{ type: "pattern", key: "test", file: "scripts/foo.js" }];
-      assert.ok(isBaselined(baseline, "pattern", "test", "scripts\\foo.js"));
+      assert.ok(isBaselined(baseline, "pattern", "test", String.raw`scripts\foo.js`));
     });
   });
 });

@@ -366,6 +366,28 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#19)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-25
+- **Recurring patterns:**
+  - qodo (15x)
+  - sonarcloud (13x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#18)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-25
+- **Recurring patterns:**
+  - qodo (15x)
+  - sonarcloud (13x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#17)</summary>
 
 - **Date:** 2026-03-30
@@ -1133,12 +1155,34 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 3     | 2     | 0        | 1        |
 
+---
+
+### Review rev-25: PR #482 R1 — Mixed SonarCloud+Qodo+Gemini+CI (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 25    | 22    | 0        | 3        |
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
-  `aggregate-audit-findings.js` L1950 had "10-level nested instanceof
-  corruption" — verified false against actual codebase. AI-generated planning
-  docs must be verified before accepting claims about code state.
+
+---
+
+### Review rev-25: PR #482 R1 — Mixed SonarCloud+Qodo+Gemini+CI (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 25    | 22    | 0        | 3        |
+
+`aggregate-audit-findings.js` L1950 had "10-level nested instanceof corruption"
+— verified false against actual codebase. AI-generated planning docs must be
+verified before accepting claims about code state.
+
 - **Forward-referencing non-existent software:** Plan referenced "ESLint v10
   Migration" with `npm install eslint@^10.0.0`, but DIAGNOSIS.md in the same set
   correctly noted v10 doesn't exist (v9.39.4 is stable). Plans must not assume
@@ -2765,6 +2809,25 @@ deduped/merged)
 - Archive extraction must use a contained subdirectory to prevent zip slip.
 - Invalid manifest entries should surface as "missing" not silently skip.
 - stdin size bounds prevent memory exhaustion on misconfigured hooks.
+
+---
+
+### Review #62 — PR #482 R2 (Mixed: Qodo + SonarCloud)
+
+**Date:** 2026-03-30 **Items:** 7 (5 fixed, 0 deferred, 2 rejected)
+
+**Patterns:**
+
+- 2 of 7 items repeat-rejected from R1 (ReDoS, --blocking exit code).
+- Silent error suppression in git diff catch blocks — always log failures in
+  pre-commit gates to avoid false negatives.
+
+**Learnings:**
+
+- Pre-commit diff failures must always warn (not just verbose) — silent empty
+  returns cause false negatives in propagation enforcement.
+- Use Set for dedup in pattern matching to prevent duplicate triggered IDs.
+- Use String.raw for regex strings in TypeScript tests.
 
 ---
 

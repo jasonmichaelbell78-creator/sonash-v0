@@ -529,7 +529,12 @@ function detectTriggeredPatterns() {
     });
     const addedLines = rawDiff.split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++"));
     return matchPatterns(addedLines, registry);
-  } catch {
+  } catch (err) {
+    if (VERBOSE) {
+      console.warn(
+        `  [trigger-detect] git diff failed; skipping pattern triggers: ${sanitizeError(err)}`
+      );
+    }
     return [];
   }
 }
