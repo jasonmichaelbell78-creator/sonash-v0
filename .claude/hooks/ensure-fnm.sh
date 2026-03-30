@@ -22,6 +22,12 @@ if command -v node >/dev/null 2>&1; then
           exec "$@"
         fi
         ;;
+      *.*)
+        # MAJOR.MINOR pin (e.g. "22.12") — require matching prefix
+        if [[ "$current_clean" = "$expected_clean".* ]]; then
+          exec "$@"
+        fi
+        ;;
       *)
         # Major-only comparison (e.g. "22" or "v22") — numeric majors only
         if [[ "$expected_clean" =~ ^[0-9]+(\.|$) ]]; then

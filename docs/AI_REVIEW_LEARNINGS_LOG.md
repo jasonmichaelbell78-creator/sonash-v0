@@ -2877,10 +2877,31 @@ deduped/merged)
 
 - CC extraction needs to be aggressive enough — extracting one helper may not be
   sufficient if the remaining function still exceeds the threshold.
-- Broken require paths in try/catch silently fail — `./lib/rotate-state.js`
-  didn't exist at that relative path, so log rotation was silently disabled.
+- REVERTED: `./lib/rotate-state.js` path was actually correct — file exists at
+  `.claude/hooks/lib/rotate-state.js`. R3 fix was wrong; verify file existence
+  before accepting reviewer suggestions about paths.
 - `fs.realpathSync` before path traversal checks prevents symlink bypass.
 - Non-numeric `.nvmrc` aliases (e.g. `lts/*`) need guards in version comparison
   code.
+
+---
+
+### Review 62
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 2     | 0        | 1        |
+
+**Key learnings:**
+
+- Always verify file existence before accepting reviewer claims about broken
+  paths — `./lib/rotate-state.js` existed but reviewer said it didn't. R3
+  incorrectly changed a working path. R4 reverted it.
+- CC reduction by extracting one function may leave the extracted function
+  itself over threshold — extract sub-helpers from the helper too.
+- `.nvmrc` MAJOR.MINOR pins (e.g. `22.12`) need a separate case branch from
+  major-only pins.
 
 ---

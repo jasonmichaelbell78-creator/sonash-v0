@@ -290,7 +290,20 @@ function checkMarkdownFences(content: string, filePath: string): boolean {
   return fenceCount % 2 !== 0;
 }
 
-// --- Trailing comma stripper (extracted to reduce CC) ---
+// --- Trailing comma stripper helpers (extracted to reduce CC) ---
+function isTrailingComma(text: string, pos: number): boolean {
+  let j = pos + 1;
+  while (j < text.length && /\s/.test(text[j])) j++;
+  return text[j] === "}" || text[j] === "]";
+}
+
+function processStringChar(ch: string, esc: boolean): { inStr: boolean; esc: boolean } {
+  if (esc) return { inStr: true, esc: false };
+  if (ch === "\\") return { inStr: true, esc: true };
+  if (ch === '"') return { inStr: false, esc: false };
+  return { inStr: true, esc: false };
+}
+
 function stripTrailingCommas(text: string): string {
   let result = "";
   let inStr = false;
@@ -299,13 +312,7 @@ function stripTrailingCommas(text: string): string {
     const ch = text[i];
     if (inStr) {
       result += ch;
-      if (esc) {
-        esc = false;
-      } else if (ch === "\\") {
-        esc = true;
-      } else if (ch === '"') {
-        inStr = false;
-      }
+      ({ inStr, esc } = processStringChar(ch, esc));
       continue;
     }
     if (ch === '"') {
@@ -313,11 +320,7 @@ function stripTrailingCommas(text: string): string {
       result += ch;
       continue;
     }
-    if (ch === ",") {
-      let j = i + 1;
-      while (j < text.length && /\s/.test(text[j])) j++;
-      if (text[j] === "}" || text[j] === "]") continue;
-    }
+    if (ch === "," && isTrailingComma(text, i)) continue;
     result += ch;
   }
   return result;
