@@ -238,12 +238,13 @@ function readExistingMetrics() {
 /**
  * Append metrics to JSONL file with dedup guard.
  *
- * Before appending, checks if each PR already has a recent entry (within 1 hour).
- * If so, updates the existing entry in-place instead of appending a duplicate.
+ * Before appending, checks if each PR already has an existing entry.
+ * If so, updates the existing entry in-place (upsert) instead of appending a duplicate.
  *
  * Version History:
  *   v1.0 2026-02-26 - Initial implementation (blind append)
  *   v2.0 2026-03-18 - Add dedup guard: update-in-place for recent entries (retro item #8)
+ *   v3.0 2026-03-30 - Always upsert by PR (remove 1-hour window that still caused dupes)
  */
 /** Validate state directory and metrics file are safe to write. Returns false if unsafe. */
 function validateWriteTarget() {
@@ -293,17 +294,20 @@ function writeMetrics(existing, toAppend, needsRewrite) {
   }
 }
 
-/** Build PR → {idx, time} index from existing entries, keeping only the latest per PR. */
+/** Build PR → {idx, time} index from existing entries, keeping only the latest per PR.
+ *  Normalizes PR keys: coerces string values to numbers where possible. */
 function buildExistingIndex(existing) {
   const index = new Map();
   for (let i = 0; i < existing.length; i++) {
     const e = existing[i];
-    if (!e || typeof e.pr !== "number") continue;
+    if (e?.pr == null) continue;
+    const prNum = Number(e.pr);
+    const prKey = Number.isFinite(prNum) ? prNum : e.pr;
     const tRaw = e.timestamp ? new Date(e.timestamp).getTime() : Number.NaN;
     const t = Number.isFinite(tRaw) ? tRaw : 0;
-    const prev = index.get(e.pr);
+    const prev = index.get(prKey);
     if (!prev || t > prev.time) {
-      index.set(e.pr, { idx: i, time: t });
+      index.set(prKey, { idx: i, time: t });
     }
   }
   return index;
@@ -312,27 +316,35 @@ function buildExistingIndex(existing) {
 function appendMetrics(entries) {
   if (!validateWriteTarget()) return;
 
-  // Dedup guard: read existing entries and check for recent duplicates
-  const ONE_HOUR_MS = 60 * 60 * 1000;
+  // Upsert guard: always update existing entries for the same PR in-place
+  // rather than appending duplicates. Previous v2.0 used a 1-hour window
+  // which still caused duplicates across session-starts hours apart.
   const existing = readExistingMetrics();
   let needsRewrite = false;
   const toAppend = [];
 
   const existingIndexByPr = buildExistingIndex(existing);
+  const pendingAppendIndexByPr = new Map();
 
   for (const newEntry of entries) {
-    const newTimeRaw = newEntry.timestamp ? new Date(newEntry.timestamp).getTime() : Number.NaN;
-    const newTime = Number.isFinite(newTimeRaw) ? newTimeRaw : Date.now();
+    const prNum = Number(newEntry.pr);
+    const prKey = Number.isFinite(prNum) ? prNum : newEntry.pr;
+    const normalizedEntry = { ...newEntry, pr: prKey };
+    const existingInfo = existingIndexByPr.get(prKey);
 
-    const existingInfo = existingIndexByPr.get(newEntry.pr);
-    const isRecentDuplicate = existingInfo && Math.abs(newTime - existingInfo.time) < ONE_HOUR_MS;
-
-    if (isRecentDuplicate) {
-      existing[existingInfo.idx] = newEntry;
+    if (existingInfo) {
+      // Upsert: always update existing entry for this PR
+      existing[existingInfo.idx] = normalizedEntry;
       needsRewrite = true;
-      console.log(`  PR #${newEntry.pr}: updated existing entry (dedup guard)`);
+      console.log(`  PR #${prKey}: updated existing entry (upsert)`);
     } else {
-      toAppend.push(newEntry);
+      const pendingIdx = pendingAppendIndexByPr.get(prKey);
+      if (pendingIdx != null) {
+        toAppend[pendingIdx] = normalizedEntry;
+      } else {
+        pendingAppendIndexByPr.set(prKey, toAppend.length);
+        toAppend.push(normalizedEntry);
+      }
     }
   }
 

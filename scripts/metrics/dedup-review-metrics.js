@@ -102,16 +102,27 @@ function shouldReplaceEntry(existing, entry) {
 
 function dedupMetrics(metricsEntries, reviewCountsByPr) {
   // Group by PR, keeping only the latest entry (by timestamp)
+  // Normalizes PR keys: coerces string values to numbers where possible
+  // so that entries from bootstrapMissingEntries (string keys) are properly
+  // deduped against churn-tracker entries (numeric keys).
   const latestByPr = new Map();
   const passthrough = [];
 
   for (const entry of metricsEntries) {
-    if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") {
+    if (!entry || typeof entry !== "object") {
       if (entry) passthrough.push(entry);
       continue;
     }
-    if (shouldReplaceEntry(latestByPr.get(entry.pr), entry)) {
-      latestByPr.set(entry.pr, { ...entry });
+    if (entry.pr === undefined || entry.pr === null) {
+      passthrough.push(entry);
+      continue;
+    }
+    // Normalize: coerce string PR values to numbers when possible
+    const prNum = Number(entry.pr);
+    const prKey = Number.isFinite(prNum) ? prNum : entry.pr;
+    const normalized = { ...entry, pr: prKey };
+    if (shouldReplaceEntry(latestByPr.get(prKey), normalized)) {
+      latestByPr.set(prKey, normalized);
     }
   }
 

@@ -1,5 +1,8 @@
 # backup files
 *.bak
+*.exe~
+*.dll~
+*.so~
 docs/archive/.backup-*/
 
 # dependencies

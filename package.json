@@ -50,6 +50,7 @@
     "reviews:validate": "node scripts/review-lifecycle.js --validate",
     "reviews:render": "cd scripts/reviews && npx tsx render-reviews-to-md.ts",
     "reviews:sync": "echo \"⚠️ DEPRECATED: use reviews:lifecycle\" && node scripts/review-lifecycle.js --sync-only",
+    "reviews:sync-check": "node scripts/review-lifecycle.js --sync-only --dry-run",
     "reviews:check-archive": "node scripts/check-review-archive.js",
     "reviews:archive": "echo \"⚠️ DEPRECATED: use reviews:lifecycle\" && node scripts/review-lifecycle.js",
     "reviews:repair": "echo \"⚠️ DEPRECATED: sync-reviews-to-jsonl.js moved to scripts/archive/\" && node scripts/archive/sync-reviews-to-jsonl.js --repair",

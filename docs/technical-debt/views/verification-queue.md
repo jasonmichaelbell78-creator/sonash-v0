@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2127
+**Items Needing Verification:** 2126
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -2142,4 +2142,3 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45590 | Documentation Domain Cluster (3 agents, 20-25% overlap)         | S3       | .claude/agents/technical-writer.md                                               | 0         |
 | DEBT-45614 | Add event_id and run_id to dedup-log records                    | S3       | docs/technical-debt/logs/dedup-log.jsonl                                         | 0         |
 | DEBT-45618 | Skip logging self-matches where kept === removed in dedup...    | S3       | scripts/debt/dedup-multi-pass.js                                                 | 0         |
-| DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v...    | S0       | package-lock.json                                                                | 0         |

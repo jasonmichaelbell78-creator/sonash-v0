@@ -470,3 +470,166 @@ describe("edge cases", () => {
     assert.equal(reviews[0].pr, null);
   });
 });
+
+// ---------------------------------------------------------------------------
+// 7. Multi-format header parsing tests
+// ---------------------------------------------------------------------------
+
+describe("parseMarkdownReviews multi-format headers", () => {
+  it("should parse rev-N format (JSONL-era)", () => {
+    const content =
+      "### Review rev-14: PR #470 R1 — Mixed Qodo+Gemini+SonarCloud (2026-03-26) (2026-03-26)\n\n**Source:** Qodo\n";
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, "rev-14");
+    assert.equal(reviews[0].date, "2026-03-26");
+  });
+
+  it("should parse bare number format (no #)", () => {
+    const content = "### Review 59\n\n**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed\n";
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, 59);
+  });
+
+  it("should parse intermediate format with em-dash separator", () => {
+    const content =
+      "### Review #58 \u2014 PR #472 R1 (Qodo + SonarCloud + Gemini)\n\nSome content\n";
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, 58);
+    assert.ok(reviews[0].title.includes("PR #472"));
+  });
+
+  it("should parse compound ID format (review-466-r1)", () => {
+    const content = "### Review review-466-r1: PR #466 R1 — Qodo (2026-03-24) (2026-03-24)\n\n";
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, "review-466-r1");
+    assert.equal(reviews[0].date, "2026-03-24");
+  });
+
+  it("should parse retro-bulk format", () => {
+    const content =
+      "### Review retro-bulk-448-470: Bulk retro PRs #448-#470 (13 PRs, 8 findings) (2026-03-26)\n\n";
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, "retro-bulk-448-470");
+    assert.equal(reviews[0].date, "2026-03-26");
+  });
+
+  it("should parse old numeric format with # and colon", () => {
+    const content = "### Review #486: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)\n\n";
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, 486);
+    assert.equal(reviews[0].date, "2026-03-18");
+  });
+
+  it("should NOT match 'Review Sources' header", () => {
+    const content = [
+      "### Review Sources",
+      "",
+      "Log findings from ALL AI code review sources:",
+      "",
+      "### Review #1: Real Review (2026-01-01)",
+      "",
+    ].join("\n");
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, 1);
+  });
+
+  it("should NOT match 'Review Cycle Summary' header", () => {
+    const content = [
+      "#### Review Cycle Summary",
+      "",
+      "Some cycle summary content",
+      "",
+      "#### Review #10: Real Review (2026-01-01)",
+      "",
+    ].join("\n");
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 1);
+    assert.equal(reviews[0].id, 10);
+  });
+
+  it("should parse mixed formats in single document", () => {
+    const content = [
+      "### Review #486: PR #448 R1 — Mixed (2026-03-18)",
+      "",
+      "---",
+      "",
+      "### Review rev-14: PR #470 R1 — Mixed (2026-03-26)",
+      "",
+      "---",
+      "",
+      "### Review 59",
+      "",
+      "---",
+      "",
+      "### Review review-466-r1: PR #466 R1 — Qodo (2026-03-24)",
+      "",
+      "---",
+      "",
+      "### Review retro-bulk-448-470: Bulk retro (2026-03-26)",
+      "",
+    ].join("\n");
+    const reviews = parseMarkdownReviews(content);
+
+    assert.equal(reviews.length, 5);
+    assert.equal(reviews[0].id, 486);
+    assert.equal(reviews[1].id, "rev-14");
+    assert.equal(reviews[2].id, 59);
+    assert.equal(reviews[3].id, "review-466-r1");
+    assert.equal(reviews[4].id, "retro-bulk-448-470");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 8. Composite key dedup tests
+// ---------------------------------------------------------------------------
+
+describe("buildCompositeKeys", () => {
+  const { buildCompositeKeys } = require(
+    path.resolve(projectRoot, "scripts", "review-lifecycle.js")
+  );
+
+  it("should build composite keys from records with PR and round in title", () => {
+    const records = [
+      { id: 58, pr: 472, title: "PR #472 R1 (Qodo)" },
+      { id: 59, pr: 477, title: "PR #477 R2 (Mixed)" },
+    ];
+    const keys = buildCompositeKeys(records);
+
+    assert.ok(keys.has("472:R1"));
+    assert.ok(keys.has("477:R2"));
+    assert.equal(keys.size, 2);
+  });
+
+  it("should skip records without PR or round", () => {
+    const records = [
+      { id: 1, pr: null, title: "No PR" },
+      { id: 2, pr: 100, title: "No round info" },
+      { id: 3, pr: -1, title: "Negative PR R1" },
+    ];
+    const keys = buildCompositeKeys(records);
+
+    assert.equal(keys.size, 0);
+  });
+
+  it("should handle empty and invalid records", () => {
+    const records = [null, undefined, {}, { id: 1 }];
+    const keys = buildCompositeKeys(records);
+
+    assert.equal(keys.size, 0);
+  });
+});

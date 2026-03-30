@@ -12,3 +12,10 @@
 {"timestamp":"2026-03-24T15:31:01.821Z","action":"false_positive","item_id":"DEBT-4399","reason":"SonarCloud S2068 pattern-matched 'auth/wrong-password' error message string in lib/utils/errors.ts — no actual credential"}
 {"timestamp":"2026-03-24T15:31:03.629Z","action":"false_positive","item_id":"DEBT-4403","reason":"SonarCloud S4721 flags all child_process usage. safeExec only receives hardcoded git/npm commands or validated date strings. No external input path."}
 {"timestamp":"2026-03-26T16:24:01.294Z","action":"resolved","item_id":"DEBT-45615","pr":null}
+{"timestamp":"2026-03-30T15:54:37.881Z","action":"resolved","item_id":"DEBT-4400","pr":null}
+{"timestamp":"2026-03-30T15:54:38.674Z","action":"resolved","item_id":"DEBT-4401","pr":null}
+{"timestamp":"2026-03-30T15:54:39.409Z","action":"resolved","item_id":"DEBT-4402","pr":null}
+{"timestamp":"2026-03-30T15:54:40.186Z","action":"resolved","item_id":"DEBT-11124","pr":null}
+{"timestamp":"2026-03-30T15:54:40.978Z","action":"resolved","item_id":"DEBT-11125","pr":null}
+{"timestamp":"2026-03-30T15:54:41.766Z","action":"resolved","item_id":"DEBT-11126","pr":null}
+{"timestamp":"2026-03-30T15:54:48.920Z","action":"resolved","item_id":"DEBT-11283","pr":null}

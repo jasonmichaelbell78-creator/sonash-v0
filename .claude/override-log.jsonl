@@ -35,3 +35,6 @@
 {"timestamp":"2026-03-30T12:46:03.650Z","check":"reviewer","reason":"PR #480 R1 fixes already reviewed by Qodo+Gemini+SonarCloud","user":"redacted","cwd":"redacted","git_branch":"planning-32926"}
 {"timestamp":"2026-03-30T12:56:06.005Z","check":"reviewer","reason":"PR #480 R2 fixes already reviewed by Qodo+Gemini+SonarCloud","user":"redacted","cwd":"redacted","git_branch":"planning-32926"}
 {"timestamp":"2026-03-30T13:09:44.340Z","check":"reviewer","reason":"PR #480 R3 fixes already reviewed by Qodo+SonarCloud","user":"redacted","cwd":"redacted","git_branch":"planning-32926"}
+{"timestamp":"2026-03-30T16:29:21.233Z","check":"reviewer","reason":"PR #481 R1 fixes reviewed by Qodo+Gemini+SonarCloud","user":"redacted","cwd":"redacted","git_branch":"planning-33026"}
+{"timestamp":"2026-03-30T16:29:56.080Z","check":"reviewer","reason":"shouldReplaceEntry is independent function with different logic; statSync/path.resolve/writeFileSync patterns exist across 80+ files and are tracked in TDMS","user":"redacted","cwd":"redacted","git_branch":"planning-33026"}
+{"timestamp":"2026-03-30T16:29:58.021Z","check":"propagation","reason":"shouldReplaceEntry is independent function with different logic; statSync/path.resolve/writeFileSync patterns exist across 80+ files and are tracked in TDMS","user":"redacted","cwd":"redacted","git_branch":"planning-33026"}

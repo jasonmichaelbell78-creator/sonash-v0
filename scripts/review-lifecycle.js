@@ -129,11 +129,40 @@ function loadExistingIds(records) {
   return ids;
 }
 
+/**
+ * Build composite keys (pr:round) from review records for collision detection.
+ * Handles duplicate numeric IDs that refer to different PRs.
+ * Returns Set of "PR:ROUND" strings (e.g. "472:R1", "477:R1").
+ */
+function buildCompositeKeys(records) {
+  const composites = new Set();
+  for (const rec of records) {
+    if (!rec || typeof rec !== "object") continue;
+    const prNum = Number(rec.pr);
+    if (!Number.isFinite(prNum) || prNum <= 0) continue;
+    {
+      // Extract round from title (e.g. "PR #472 R1 ..." -> "R1")
+      const roundMatch = /R(\d+)/i.exec(rec.title || "");
+      if (roundMatch) {
+        composites.add(`${prNum}:R${roundMatch[1]}`);
+      }
+    }
+  }
+  return composites;
+}
+
 // ── STEP 1: SYNC ──────────────────────────────────────────────────────────
 
 /**
  * Simplified markdown parser for transition period.
- * Extracts Review #N entries from AI_REVIEW_LEARNINGS_LOG.md.
+ * Extracts review entries from AI_REVIEW_LEARNINGS_LOG.md.
+ * Handles all header formats:
+ *   ### Review #N: ...              (old numeric with #)
+ *   ### Review rev-N: ...           (JSONL-era rev-N)
+ *   ### Review #N — ...             (intermediate, uses — not :)
+ *   ### Review N                    (bare number, no #)
+ *   ### Review review-466-r1: ...   (compound ID)
+ *   ### Review retro-bulk-448-470:  (retro entries)
  * Returns array of review objects.
  */
 function parseMarkdownReviews(content) {
@@ -142,6 +171,9 @@ function parseMarkdownReviews(content) {
   let current = null;
   let inFence = false;
 
+  // Non-review headers that start with "Review" but are section headers
+  const excludedSuffixes = new Set(["Sources", "Cycle"]);
+
   for (const line of lines) {
     if (line.trim().startsWith("```")) {
       inFence = !inFence;
@@ -149,12 +181,18 @@ function parseMarkdownReviews(content) {
     }
     if (inFence) continue;
 
-    // Match #### Review #N or ### Review #N or ## Review #N
-    const headerMatch = /^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/.exec(line);
+    // Match all review header formats:
+    // Captures the ID portion (with optional #) and everything after the separator
+    const headerMatch = /^#{2,4}\s+Review\s+#?([^\s:—]+)[\s:—]*(.*)/.exec(line);
     if (headerMatch) {
+      // Guard: skip non-review section headers like "Review Sources", "Review Cycle Summary"
+      const candidateId = headerMatch[1];
+      if (excludedSuffixes.has(candidateId)) continue;
+
       if (current) reviews.push(current);
 
-      const id = Number.parseInt(headerMatch[1], 10);
+      // Preserve numeric IDs as numbers, keep string IDs as strings
+      const id = /^\d+$/.test(candidateId) ? Number.parseInt(candidateId, 10) : candidateId;
       const titleAndDate = headerMatch[2].trim();
       const dateMatch = /\((\d{4}-\d{2}-\d{2})\)\s*$/.exec(titleAndDate);
       const date = dateMatch ? dateMatch[1] : "unknown";
@@ -329,10 +367,49 @@ function runSync() {
   }
   const archivedIds = loadExistingIds(archivedRecords);
 
-  // Filter to reviews not already in JSONL or archive (compare as strings for type safety)
-  const missing = mdReviews.filter(
-    (r) => !existingIds.has(String(r.id)) && !archivedIds.has(String(r.id))
-  );
+  // Build composite keys (pr:round) to detect ID collisions across different PRs.
+  // Example: Review #58 for PR #472 R1 and Review #58 for PR #477 R1 are distinct.
+  const allRecords = [...existingRecords, ...archivedRecords];
+  const existingComposites = buildCompositeKeys(allRecords);
+
+  // Build content-based dedup set: "pr|date|total|fixed|rejected" for all existing records.
+  // This catches duplicates where the same review exists under different ID formats
+  // (e.g., numeric "59" in markdown vs "rev-21" in JSONL for the same PR #480 review).
+  const contentKeys = new Set();
+  for (const rec of allRecords) {
+    if (rec.pr && rec.date && typeof rec.total === "number") {
+      contentKeys.add(`${rec.pr}|${rec.date}|${rec.total}|${rec.fixed || 0}|${rec.rejected || 0}`);
+    }
+  }
+
+  // Filter to reviews not already in JSONL or archive.
+  // Uses three dedup layers: (1) ID match, (2) content-key match, (3) composite PR:round match.
+  const missing = mdReviews.flatMap((r) => {
+    const idStr = String(r.id);
+    const idExists = existingIds.has(idStr) || archivedIds.has(idStr);
+
+    if (!idExists) {
+      // Secondary check: content-based dedup (same PR + date + counts = same review)
+      if (r.pr && r.date && typeof r.total === "number") {
+        const contentKey = `${r.pr}|${r.date}|${r.total}|${r.fixed || 0}|${r.rejected || 0}`;
+        if (contentKeys.has(contentKey)) return []; // Already exists under a different ID
+      }
+      return [r];
+    }
+
+    // ID already exists — check if this is a collision (same ID, different PR)
+    if (typeof r.pr === "number" && r.pr > 0) {
+      const roundMatch = /R(\d+)/i.exec(r.title || "");
+      if (roundMatch) {
+        const composite = `${r.pr}:R${roundMatch[1]}`;
+        if (!existingComposites.has(composite)) {
+          // Same review number but different PR — disambiguate the ID
+          return [{ ...r, id: `${r.id}-pr${r.pr}` }];
+        }
+      }
+    }
+    return [];
+  });
 
   logStep(
     "SYNC",
@@ -516,28 +593,41 @@ function countReviewsByPr(reviews) {
   return counts;
 }
 
-/** Build map of PR -> latest metrics entry by timestamp. */
+/** Coerce a PR value to a number when possible, otherwise return as-is. */
+function normalizePrKey(pr) {
+  const prNum = Number(pr);
+  return Number.isFinite(prNum) ? prNum : pr;
+}
+
+/** Parse a timestamp string into a comparable score (-Infinity for invalid). */
+function parseTimestampScore(timestamp) {
+  if (typeof timestamp !== "string") return -Infinity;
+  const t = Date.parse(timestamp);
+  return Number.isFinite(t) ? t : -Infinity;
+}
+
+/** Return true if the new entry should replace the existing one by timestamp. */
+function shouldReplaceEntry(existing, entryScore) {
+  if (!existing) return true;
+  const existingScore = parseTimestampScore(existing.timestamp);
+  // last-wins tiebreaker when both timestamps are invalid
+  return entryScore > existingScore || (entryScore === -Infinity && existingScore === -Infinity);
+}
+
+/** Build map of PR -> latest metrics entry by timestamp.
+ *  Normalizes PR keys: coerces string PR values to numbers where possible
+ *  so that entries created by bootstrapMissingEntries (which uses string keys)
+ *  are properly deduped against numeric-keyed entries from the churn tracker.
+ */
 function buildLatestMetricsMap(metrics) {
   const latestByPr = new Map();
   for (const entry of metrics) {
-    if (!entry || typeof entry !== "object" || typeof entry.pr !== "number") continue;
-    const existing = latestByPr.get(entry.pr);
-    const entryTime =
-      typeof entry.timestamp === "string" ? Date.parse(entry.timestamp) : Number.NaN;
-    const existingTime =
-      existing && typeof existing.timestamp === "string"
-        ? Date.parse(existing.timestamp)
-        : Number.NaN;
-    const entryScore = Number.isFinite(entryTime) ? entryTime : -Infinity;
-    const existingScore = Number.isFinite(existingTime) ? existingTime : -Infinity;
-
-    // last-wins tiebreaker when both timestamps are invalid
-    if (
-      !existing ||
-      entryScore > existingScore ||
-      (entryScore === -Infinity && existingScore === -Infinity)
-    ) {
-      latestByPr.set(entry.pr, entry);
+    if (!entry || typeof entry !== "object") continue;
+    if (entry.pr === undefined || entry.pr === null) continue;
+    const prKey = normalizePrKey(entry.pr);
+    const entryScore = parseTimestampScore(entry.timestamp);
+    if (shouldReplaceEntry(latestByPr.get(prKey), entryScore)) {
+      latestByPr.set(prKey, { ...entry, pr: prKey });
     }
   }
   return latestByPr;
@@ -825,15 +915,27 @@ function buildLatestReviewByPr(reviews) {
 /**
  * Bootstrap metrics entries for PRs present in reviews but absent from metrics.
  * Mutates dedupedEntries in place; returns the count of entries added.
+ *
+ * Uses numeric PR keys when possible to stay consistent with buildLatestMetricsMap
+ * normalization — prevents string/number key mismatches that cause phantom duplicates.
  */
 function bootstrapMissingEntries(dedupedEntries, reviewCountsNorm, latestReviewByPr) {
-  const existingPrs = new Set(dedupedEntries.map((e) => String(e.pr)));
+  // Build lookup using the same normalization as buildLatestMetricsMap
+  const existingPrs = new Set(
+    dedupedEntries.map((e) => {
+      const n = Number(e.pr);
+      return Number.isFinite(n) ? n : String(e.pr);
+    })
+  );
   let addedCount = 0;
   for (const [prKey, jsonlCount] of reviewCountsNorm) {
-    if (!existingPrs.has(prKey)) {
+    // Normalize the lookup key the same way
+    const prNum = Number(prKey);
+    const normalizedKey = Number.isFinite(prNum) ? prNum : prKey;
+    if (!existingPrs.has(normalizedKey)) {
       const latestReview = latestReviewByPr.get(prKey) || {};
       dedupedEntries.push({
-        pr: prKey,
+        pr: normalizedKey,
         title: latestReview.title || `PR #${prKey}`,
         total_commits: 0,
         fix_commits: 0,
@@ -844,6 +946,7 @@ function bootstrapMissingEntries(dedupedEntries, reviewCountsNorm, latestReviewB
         reconciled_at: new Date().toISOString(),
         source: "reconciled-from-jsonl",
       });
+      existingPrs.add(normalizedKey);
       addedCount++;
     }
   }
@@ -1115,6 +1218,7 @@ module.exports = {
   parseMarkdownReviews,
   loadReviews,
   loadExistingIds,
+  buildCompositeKeys,
   runSync,
   runArchive,
   runValidate,

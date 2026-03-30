@@ -917,140 +917,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review rev-8: PR #461 R1 — Mixed (2026-03-22) (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 1     | 1        | 5        |
-
----
-
-### Review rev-9: PR #461 R2 — Qodo (2026-03-22) (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 4     | 0        | 8        |
-
----
-
-### Review 499: PR #466 R1 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 500: PR #466 R2 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 501: PR #466 R3 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 502: PR #468 R4 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
-
----
-
-### Review rev-10: PR #468 R1 — Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 13    | 8     | 2        | 3        |
-
----
-
-### Review rev-11: PR #468 R2 — Mixed Gemini+Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 7     | 0        | 3        |
-
----
-
-### Review rev-12: PR #468 R3 — Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 4     | 0        | 4        |
-
----
-
-### Review rev-13: PR #468 R4 — Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 3        |
-
----
-
-### Review review-466-r1: PR #466 R1 — Qodo (2026-03-24) (2026-03-24)
-
-> **Completeness:** partial **Missing fields:** patterns, learnings
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 4     | 8        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 8     | 2       |
-
----
-
-### Review review-466-r2: PR #466 R2 — Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 8     | 2        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 8     | 2       |
-
----
-
 ### Review review-466-r3: PR #466 R3 — Qodo (2026-03-24) (2026-03-24)
 
 **Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
@@ -1073,6 +939,16 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 503: PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling (2026-03-25)
+
+**Date:** 2026-03-25 | **PR:** #469 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
 | 12    | 8     | 0        | 3        |
 
 ---
@@ -1083,7 +959,42 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 504: PR #469 R2 — CC Reduction, Map Normalization & Revalidation (2026-03-25)
+
+**Date:** 2026-03-25 | **PR:** #469 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
 | 8     | 7     | 0        | 1        |
+
+---
+
+### Review retro-bulk-448-470: Bulk retro PRs #448-#470 (13 PRs, 8 findings) (2026-03-26)
+
+**Date:** 2026-03-26 | **PR:** #470 | **Source:** bulk
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 0        |
+
+**Patterns:**
+
+- propagation-misses
+- repeat-rejection-churn
+- qodo-stale-head
+- cc-extraction-timing
+- diminishing-returns
+
+**Learnings:**
+
+- Add CC check after fixes in pr-review Step 4
+- 3 new reviewer suppression rules
+- DEBT-45615 resolved
+- Qodo stale diff note added to pr-review
 
 ---
 
@@ -1137,32 +1048,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review retro-bulk-448-470: Bulk retro PRs #448-#470 (13 PRs, 8 findings) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #470 | **Source:** bulk
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 0        |
-
-**Patterns:**
-
-- propagation-misses
-- repeat-rejection-churn
-- qodo-stale-head
-- cc-extraction-timing
-- diminishing-returns
-
-**Learnings:**
-
-- Add CC check after fixes in pr-review Step 4
-- 3 new reviewer suppression rules
-- DEBT-45615 resolved
-- Qodo stale diff note added to pr-review
-
----
-
-### Review rev-19: (untitled) (2026-03-26)
+### Review rev-19: PR #472 R1 — Mixed (2026-03-26) (2026-03-26)
 
 **Date:** 2026-03-26 | **PR:** #472 | **Source:** mixed
 
@@ -1172,13 +1058,89 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-20: (untitled) (2026-03-26)
+### Review rev-20: PR #472 R2 — Qodo (2026-03-26) (2026-03-26)
 
 **Date:** 2026-03-26 | **PR:** #472 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 8     | 6     | 2        | 0        |
+
+---
+
+### Review backfill-477-r1: PR #477 R1 — Mixed DocLint+SonarCloud+Qodo+Gemini (2026-03-28) (2026-03-28)
+
+> **Completeness:** partial **Missing fields:** severity
+
+**Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 21    | 14    | 0        | 7        |
+
+---
+
+### Review backfill-477-r2: PR #477 R2 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
+
+> **Completeness:** partial **Missing fields:** severity
+
+**Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 4     | 0        | 8        |
+
+---
+
+### Review backfill-477-r3: PR #477 R3 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
+
+> **Completeness:** partial **Missing fields:** severity
+
+**Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 3     | 0        | 4        |
+
+---
+
+### Review rev-21: PR #480 R1 — Mixed Qodo+Gemini+SonarCloud (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 27    | 24    | 0        | 3        |
+
+---
+
+### Review rev-22: PR #480 R2 — Mixed SonarCloud+Qodo+CI (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 6     | 0        | 2        |
+
+---
+
+### Review rev-23: PR #480 R3 — Mixed SonarCloud+Qodo (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+---
+
+### Review rev-24: PR #480 R4 — Mixed SonarCloud+Qodo (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 2     | 0        | 1        |
 
 ## Key Patterns
 

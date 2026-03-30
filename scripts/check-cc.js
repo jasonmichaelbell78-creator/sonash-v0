@@ -13,12 +13,13 @@
  *
  * Uses acorn for parsing — no ESLint plugin dependencies required.
  *
- * Usage: node scripts/check-cc.js [--threshold=N] [--verbose] [--all] [--update-baseline]
+ * Usage: node scripts/check-cc.js [--threshold=N] [--verbose] [--all] [--staged] [--update-baseline]
  *
  * Options:
  *   --threshold=N     Set complexity threshold (default: 15)
  *   --verbose         Show all functions, not just violations
  *   --all             Check all .js/.mjs files, not just changed ones
+ *   --staged          Check only staged files (git diff --cached). For pre-commit hooks.
  *   --update-baseline Record current CC per file into known-debt-baseline.json
  *
  * Baseline mode (C10-G4):
@@ -61,6 +62,7 @@ function getArgValue(name, defaultVal) {
 const THRESHOLD = Number.parseInt(getArgValue("threshold", "15"), 10);
 const VERBOSE = args.includes("--verbose");
 const CHECK_ALL = args.includes("--all");
+const CHECK_STAGED = args.includes("--staged");
 const UPDATE_BASELINE = args.includes("--update-baseline");
 const BASELINE_PATH = join(ROOT, ".claude", "state", "known-debt-baseline.json");
 
@@ -113,6 +115,30 @@ function getChangedFiles() {
       return output.trim().split("\n").filter(Boolean);
     } catch (err) {
       console.error("[check-cc] Failed to list files:", sanitizeError(err));
+      return [];
+    }
+  }
+
+  if (CHECK_STAGED) {
+    // Accept file args from CLI (pre-commit hook passes the already-computed list)
+    const fileArgs = args.filter((arg) => !arg.startsWith("--"));
+    if (fileArgs.length > 0) {
+      return fileArgs.filter((f) => f.endsWith(".js") || f.endsWith(".mjs"));
+    }
+    // Fallback: query git for staged (added/copied/modified) .js/.mjs files
+    try {
+      const output = execFileSync("git", ["diff", "--cached", "--name-only", "--diff-filter=ACM"], {
+        encoding: "utf-8",
+        timeout: 10000,
+        cwd: ROOT,
+      });
+      return output
+        .trim()
+        .split("\n")
+        .filter(Boolean)
+        .filter((f) => f.endsWith(".js") || f.endsWith(".mjs"));
+    } catch (err) {
+      console.error("[check-cc] Failed to list staged files:", sanitizeError(err));
       return [];
     }
   }

@@ -196,9 +196,35 @@ function loadReviews() {
 }
 
 function getPendingReviews(allReviews, lastConsolidated) {
+  const lastConsolidatedNum = typeof lastConsolidated === "number" ? lastConsolidated : 0;
+
+  const dateScore = (d) => {
+    if (typeof d !== "string") return -Infinity;
+    if (!/^\d{4}-\d{2}-\d{2}/.test(d)) return -Infinity;
+    const t = Date.parse(d);
+    return Number.isFinite(t) ? t : -Infinity;
+  };
+
+  // Find max valid date among numeric IDs up to the watermark
+  let lastConsolidatedDateScore = -Infinity;
+  for (const r of allReviews) {
+    if (!r || typeof r !== "object") continue;
+    if (typeof r.id !== "number") continue;
+    if (r.id > lastConsolidatedNum) continue;
+    lastConsolidatedDateScore = Math.max(lastConsolidatedDateScore, dateScore(r.date));
+  }
+
   return allReviews
-    .filter((r) => typeof r.id === "number" && r.id > lastConsolidated)
-    .sort((a, b) => a.id - b.id);
+    .filter((r) => {
+      if (typeof r.id === "number") return r.id > lastConsolidatedNum;
+      return dateScore(r.date) > lastConsolidatedDateScore;
+    })
+    .sort((a, b) => {
+      const aScore = dateScore(a.date);
+      const bScore = dateScore(b.date);
+      if (aScore !== bScore) return aScore - bScore;
+      return String(a.id) < String(b.id) ? -1 : 1;
+    });
 }
 
 // =============================================================================
