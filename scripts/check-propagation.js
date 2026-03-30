@@ -47,10 +47,10 @@ const __dirname = dirname(__filename);
 
 // ---- Skip mechanism (Step 7) ----
 if (process.env.SKIP_PROPAGATION) {
-  if (!process.argv.includes("--json")) {
-    console.log("  Propagation check skipped (SKIP_PROPAGATION is set)");
-  } else {
+  if (process.argv.includes("--json")) {
     console.log(JSON.stringify({ skipped: true, reason: "SKIP_PROPAGATION" }));
+  } else {
+    console.log("  Propagation check skipped (SKIP_PROPAGATION is set)");
   }
   process.exit(0);
 }
@@ -345,10 +345,12 @@ function findPatternMatchFiles(patternEntry) {
   const matches = [];
   const globs = registryGlobsToPathspecs(patternEntry.searchGlob);
 
-  // Convert the pattern from JS regex to POSIX ERE for git grep
-  // We use -P (PCRE) where available, but fall back to reading files
-  // Strategy: use git grep -l with the pattern's searchPattern equivalent
-  // Since registry patterns are JS regex strings, we use -P for compatibility
+  // patternAbsence mode: need ALL files in scope (not just ones matching a pattern)
+  if (patternEntry.missDetection === "patternAbsence") {
+    return findAllFilesForGlobs(globs, patternEntry.id);
+  }
+
+  // antiPattern mode: use git grep to find files containing the anti-pattern
   try {
     const output = execFileSync(
       "git",
@@ -371,12 +373,33 @@ function findPatternMatchFiles(patternEntry) {
         );
       }
     }
-    // Fall back to file-level scanning if git grep -P not available
     if (err && typeof err === "object" && "status" in err && err.status === 2) {
       return findPatternMatchFilesFallback(patternEntry);
     }
   }
 
+  return [...new Set(matches)];
+}
+
+function findAllFilesForGlobs(globs, patternId) {
+  const matches = [];
+  try {
+    const output = execFileSync("git", ["ls-files", "--", ...globs], {
+      encoding: "utf8",
+      maxBuffer: 5 * 1024 * 1024,
+      cwd: process.cwd(),
+    });
+    for (const file of output.trim().split("\n").filter(Boolean)) {
+      const normalized = toPosixPath(file.replace(/^\.\//, ""));
+      if (!shouldSkipMatch(normalized)) matches.push(normalized);
+    }
+  } catch (err) {
+    if (VERBOSE) {
+      console.warn(
+        `  [pattern-search] git ls-files failed for ${patternId}: ${sanitizeError(err)}`
+      );
+    }
+  }
   return [...new Set(matches)];
 }
 
@@ -482,6 +505,35 @@ function checkKnownPatterns(changedPaths) {
   return warnings;
 }
 
+function collectFuncNames(changedFiles) {
+  const allFuncNames = new Map();
+  for (const [filePath, funcNames] of changedFiles) {
+    for (const name of funcNames) {
+      if (!allFuncNames.has(name)) {
+        allFuncNames.set(name, new Set());
+      }
+      allFuncNames.get(name).add(filePath);
+    }
+  }
+  return allFuncNames;
+}
+
+function detectTriggeredPatterns() {
+  try {
+    const diffArgs = STAGED_ONLY
+      ? ["diff", "--cached", "-U0", "--diff-filter=ACMR"]
+      : ["diff", "@{u}...HEAD", "-U0", "--diff-filter=ACMR"];
+    const rawDiff = execFileSync("git", diffArgs, {
+      encoding: "utf8",
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    const addedLines = rawDiff.split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++"));
+    return matchPatterns(addedLines, registry);
+  } catch {
+    return [];
+  }
+}
+
 /**
  * Main analysis: find propagation misses.
  */
@@ -501,19 +553,8 @@ function analyze() {
   }
 
   // ---- Mode A: Function-name diffing ----
-  // Collect all changed file paths for exclusion
   const changedPaths = new Set(changedFiles.keys());
-
-  // Collect all function names across all changed files
-  const allFuncNames = new Map(); // funcName -> Set<files that changed it>
-  for (const [filePath, funcNames] of changedFiles) {
-    for (const name of funcNames) {
-      if (!allFuncNames.has(name)) {
-        allFuncNames.set(name, new Set());
-      }
-      allFuncNames.get(name).add(filePath);
-    }
-  }
+  const allFuncNames = collectFuncNames(changedFiles);
 
   if (VERBOSE) {
     console.log(
@@ -525,8 +566,6 @@ function analyze() {
 
   for (const [funcName, changedIn] of allFuncNames) {
     const allMatches = searchForFunction(funcName);
-
-    // Filter to files NOT in the changed set
     const missedFiles = allMatches.filter((m) => {
       const normalized = m.file.replace(/^\.\//, "");
       return !changedPaths.has(normalized);
@@ -542,30 +581,7 @@ function analyze() {
   }
 
   // ---- Mode B: Registry-based pattern checks ----
-  // Detect which registry patterns were triggered by the diff.
-  // parseDiff above extracted function names only; we need raw added lines
-  // for matchPatterns, so re-fetch the diff with minimal context.
-  let triggeredPatterns = [];
-  try {
-    let rawDiff;
-    if (STAGED_ONLY) {
-      rawDiff = execFileSync("git", ["diff", "--cached", "-U0", "--diff-filter=ACMR"], {
-        encoding: "utf8",
-        maxBuffer: 10 * 1024 * 1024,
-      });
-    } else {
-      rawDiff = execFileSync("git", ["diff", "@{u}...HEAD", "-U0", "--diff-filter=ACMR"], {
-        encoding: "utf8",
-        maxBuffer: 10 * 1024 * 1024,
-      });
-    }
-    const addedLines = rawDiff.split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++"));
-    triggeredPatterns = matchPatterns(addedLines, registry);
-  } catch {
-    // If diff fails here, skip pattern triggering (Mode A results still valid)
-  }
-
-  // Check known patterns across changed files
+  const triggeredPatterns = detectTriggeredPatterns();
   const patternWarnings = checkKnownPatterns(changedPaths);
   const duration_ms = Date.now() - startTime;
 

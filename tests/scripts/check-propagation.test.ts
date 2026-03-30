@@ -62,14 +62,17 @@ describe("check-propagation.js", () => {
   describe("registry integration", () => {
     it("registry file exists and is valid JSON", () => {
       const registryPath = path.join(PROJECT_ROOT, "scripts/config/propagation-patterns.json");
-      assert.ok(fs.existsSync(registryPath));
-      const content = fs.readFileSync(registryPath, "utf8");
-      const parsed = JSON.parse(content);
-      assert.ok(Array.isArray(parsed.patterns));
-      assert.ok(
-        parsed.patterns.length >= 10,
-        `Expected >= 10 patterns, got ${parsed.patterns.length}`
-      );
+      try {
+        const content = fs.readFileSync(registryPath, "utf8");
+        const parsed = JSON.parse(content);
+        assert.ok(Array.isArray(parsed.patterns));
+        assert.ok(
+          parsed.patterns.length >= 10,
+          `Expected >= 10 patterns, got ${parsed.patterns.length}`
+        );
+      } catch (err) {
+        assert.fail(`Failed to read/parse registry: ${(err as Error).message}`);
+      }
     });
 
     it("baseline file exists and is valid JSON", () => {
@@ -77,10 +80,13 @@ describe("check-propagation.js", () => {
         PROJECT_ROOT,
         "scripts/config/known-propagation-baseline.json"
       );
-      assert.ok(fs.existsSync(baselinePath));
-      const content = fs.readFileSync(baselinePath, "utf8");
-      const parsed = JSON.parse(content);
-      assert.ok(Array.isArray(parsed.entries));
+      try {
+        const content = fs.readFileSync(baselinePath, "utf8");
+        const parsed = JSON.parse(content);
+        assert.ok(Array.isArray(parsed.entries));
+      } catch (err) {
+        assert.fail(`Failed to read/parse baseline: ${(err as Error).message}`);
+      }
     });
   });
 
@@ -92,11 +98,11 @@ describe("check-propagation.js", () => {
       );
       const patterns = loadRegistry({ verbose: true });
       assert.ok(patterns.length >= 10);
-      const ids = patterns.map((p: { id: string }) => p.id);
-      assert.ok(ids.includes("sanitize-error"));
-      assert.ok(ids.includes("safe-to-write"));
-      assert.ok(ids.includes("lstat-symlink"));
-      assert.ok(ids.includes("path-traversal"));
+      const ids = new Set(patterns.map((p: { id: string }) => p.id));
+      assert.ok(ids.has("sanitize-error"));
+      assert.ok(ids.has("safe-to-write"));
+      assert.ok(ids.has("lstat-symlink"));
+      assert.ok(ids.has("path-traversal"));
     });
 
     it("matchPatterns finds patterns in diff lines", () => {

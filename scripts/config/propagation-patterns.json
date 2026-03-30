@@ -11,7 +11,7 @@
       "description": "Error sanitization — use sanitizeError() instead of raw error.message",
       "pattern": "\\bsanitizeError\\s*\\(",
       "antiPattern": "\\berr(?:or)?\\.message\\b(?!.*sanitizeError)",
-      "searchGlob": ["scripts/**/*.js"],
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "BLOCK",
       "missDetection": "antiPattern",
       "source": "PR #431, #448 — 6x recurrence"
@@ -31,7 +31,7 @@
       "description": "TOCTOU guard — use lstatSync + isSymbolicLink, not bare statSync",
       "pattern": "\\blstatSync\\s*\\(",
       "antiPattern": "(?:^|[^A-Za-z0-9_$])statSync\\s*\\((?!.*isSymbolicLink)",
-      "searchGlob": ["scripts/**/*.js"],
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "BLOCK",
       "missDetection": "antiPattern",
       "source": "PR #388, #397 — 6x recurrence"
@@ -41,7 +41,7 @@
       "description": "Path containment — use validatePathInDir() after path.resolve()",
       "pattern": "\\bvalidatePathInDir\\s*\\(",
       "antiPattern": "\\bpath\\.resolve\\s*\\((?!.*validatePathInDir)",
-      "searchGlob": ["scripts/**/*.js"],
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "BLOCK",
       "missDetection": "antiPattern",
       "source": "PR #374, #388, #389, #448 — 6x recurrence"
@@ -51,7 +51,7 @@
       "description": "Markdown injection — use escapeCell() for dynamic content in table cells",
       "pattern": "\\bescapeCell\\s*\\(",
       "antiPattern": "\\bwriteFileSync\\s*\\([^)]*\\.md(?!.*escapeCell)",
-      "searchGlob": ["scripts/**/*.js"],
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "WARN",
       "missDetection": "antiPattern",
       "source": "PR #415 — 6x recurrence, 3-round chain"
@@ -61,7 +61,7 @@
       "description": "Node executable — use process.execPath, not hardcoded 'node'",
       "pattern": "process\\.execPath",
       "antiPattern": "execFileSync\\s*\\(\\s*['\"]node['\"]",
-      "searchGlob": ["scripts/**/*.js"],
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "WARN",
       "missDetection": "antiPattern",
       "source": "PR #420 — 4x recurrence"
@@ -81,7 +81,7 @@
       "description": "Path traversal check — use regex test, not startsWith('..')",
       "pattern": "/\\^\\\\\\.\\\\\\.\\(\\?:\\[\\\\\\\\\\\\//\\]\\|\\$\\)/\\.test",
       "antiPattern": "startsWith\\s*\\(\\s*['\"]\\.\\.(?:['\"]|[/\\\\\\\\])",
-      "searchGlob": ["scripts/**/*.js"],
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "BLOCK",
       "missDetection": "antiPattern",
       "source": "PR #374, #389 — CLAUDE.md Section 5 enforced pattern"
@@ -91,7 +91,7 @@
       "description": "Symlink rejection — use refuseSymlink() helpers",
       "pattern": "\\brefuseSymlink\\w*\\s*\\(",
       "antiPattern": null,
-      "searchGlob": ["scripts/**/*.js"],
+      "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "BLOCK",
       "missDetection": "patternAbsence",
       "source": "PR #397 — symlink guard propagation"

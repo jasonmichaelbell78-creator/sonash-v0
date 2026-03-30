@@ -29,7 +29,6 @@
  *
  * Exit codes:
  *   0 = no propagation misses (or WARN-only findings)
- *   1 = propagation misses found (--blocking legacy mode)
  *   2 = BLOCK-severity miss found, or script error
  *
  * Version History:
@@ -177,6 +176,26 @@ function getStagedFiles() {
   }
 }
 
+function readOverrideFilesAsLines(stagedFiles, baseDir) {
+  const lines = [];
+  for (const f of stagedFiles) {
+    const absPath = path.resolve(baseDir, f);
+    try {
+      // CLAUDE.md Section 5: lstatSync symlink guard
+      const stat = lstatSync(absPath);
+      if (stat.isSymbolicLink()) continue;
+
+      const content = readFileSync(absPath, "utf8");
+      for (const line of content.split("\n")) {
+        lines.push(line);
+      }
+    } catch (err) {
+      if (VERBOSE) console.warn(`[propagation-staged] Cannot read ${f}: ${sanitizeError(err)}`);
+    }
+  }
+  return lines;
+}
+
 /**
  * Get added lines from staged diff for pattern matching.
  * Returns array of added lines (with leading + stripped).
@@ -189,24 +208,7 @@ function getStagedFiles() {
 function getDiffAddedLines(stagedFiles, baseDir) {
   const override = getArgValue("staged-files");
   if (override !== null) {
-    // In test/override mode: read full file contents as "added lines"
-    const lines = [];
-    for (const f of stagedFiles) {
-      const absPath = path.resolve(baseDir, f);
-      try {
-        // CLAUDE.md Section 5: lstatSync symlink guard
-        const stat = lstatSync(absPath);
-        if (stat.isSymbolicLink()) continue;
-
-        const content = readFileSync(absPath, "utf8");
-        for (const line of content.split("\n")) {
-          lines.push(line);
-        }
-      } catch (err) {
-        if (VERBOSE) console.warn(`[propagation-staged] Cannot read ${f}: ${sanitizeError(err)}`);
-      }
-    }
-    return lines;
+    return readOverrideFilesAsLines(stagedFiles, baseDir);
   }
 
   try {
@@ -223,6 +225,41 @@ function getDiffAddedLines(stagedFiles, baseDir) {
     if (VERBOSE) console.warn(`[propagation-staged] git diff -U0 failed: ${sanitizeError(err)}`);
     return [];
   }
+}
+
+function isValidScanTarget(normalized, baseDir, globs) {
+  // Skip excluded directories
+  const parts = normalized.split("/");
+  if (parts.some((p) => SKIP_DIRS.has(p))) return false;
+
+  // Only JS/TS files
+  if (!JS_EXTENSIONS.has(path.extname(normalized))) return false;
+
+  // Check if file matches any of the globs
+  let matchesGlob = false;
+  for (const glob of globs) {
+    if (minimatch(normalized, glob, { dot: true })) {
+      matchesGlob = true;
+      break;
+    }
+  }
+  if (!matchesGlob) return false;
+
+  const absPath = path.resolve(baseDir, normalized);
+
+  // CLAUDE.md Section 5: symlink guard
+  try {
+    const stat = lstatSync(absPath);
+    if (stat.isSymbolicLink()) return false;
+  } catch {
+    return false;
+  }
+
+  // CLAUDE.md Section 5: path traversal check
+  const rel = path.relative(baseDir, absPath);
+  if (/^\.\.(?:[\\/]|$)/.test(rel)) return false;
+
+  return true;
 }
 
 /**
@@ -250,39 +287,8 @@ function findFilesForGlobs(globs, baseDir) {
   const matched = [];
   for (const relFile of allTracked) {
     const normalized = relFile.replaceAll("\\", "/");
-
-    // Skip excluded directories
-    const parts = normalized.split("/");
-    if (parts.some((p) => SKIP_DIRS.has(p))) continue;
-
-    // Only JS/TS files
-    if (!JS_EXTENSIONS.has(path.extname(normalized))) continue;
-
-    // Check if file matches any of the globs
-    let matchesGlob = false;
-    for (const glob of globs) {
-      if (minimatch(normalized, glob, { dot: true })) {
-        matchesGlob = true;
-        break;
-      }
-    }
-    if (!matchesGlob) continue;
-
-    const absPath = path.resolve(baseDir, normalized);
-
-    // CLAUDE.md Section 5: symlink guard
-    try {
-      const stat = lstatSync(absPath);
-      if (stat.isSymbolicLink()) continue;
-    } catch {
-      continue;
-    }
-
-    // CLAUDE.md Section 5: path traversal check
-    const rel = path.relative(baseDir, absPath);
-    if (/^\.\.(?:[\\/]|$)/.test(rel)) continue;
-
-    matched.push(absPath);
+    if (!isValidScanTarget(normalized, baseDir, globs)) continue;
+    matched.push(path.resolve(baseDir, normalized));
   }
 
   return matched;
@@ -365,6 +371,60 @@ function fileContainsPattern(filePath, regex) {
 // Main analysis (registry-based)
 // ---------------------------------------------------------------------------
 
+function filterValidStagedFiles(stagedFilesRaw, baseDir) {
+  return stagedFilesRaw
+    .map((f) => String(f).replaceAll("\\", "/"))
+    .filter((f) => {
+      if (path.isAbsolute(f)) return false;
+      const resolved = path.resolve(baseDir, f);
+      const rel = path.relative(baseDir, resolved);
+      if (/^\.\.(?:[\\/]|$)/.test(rel)) return false;
+      // Reject symlinks to prevent reading outside the repo via link targets
+      try {
+        if (lstatSync(resolved).isSymbolicLink()) return false;
+      } catch {
+        return false;
+      }
+      return true;
+    });
+}
+
+function collectMissesForPattern(entry, baseline, jsStaged, baseDir) {
+  const misses = [];
+  const warnings = [];
+
+  const scanFiles = findFilesForGlobs(entry.searchGlob, baseDir);
+  const rawMisses = findMisses(entry, scanFiles, { verbose: VERBOSE });
+
+  for (const miss of rawMisses) {
+    const relFile = path.relative(baseDir, miss.file).replaceAll("\\", "/");
+
+    if (isBaselined(baseline, "pattern", entry.id, relFile)) {
+      if (VERBOSE) {
+        console.log(`[propagation-staged] Baselined: ${entry.id} in ${relFile}`);
+      }
+      continue;
+    }
+
+    misses.push({
+      patternId: entry.id,
+      file: relFile,
+      severity: entry.severity,
+    });
+
+    const sourceStaged = jsStaged[0] || "(diff)";
+    warnings.push({
+      pattern: entry.description,
+      patternId: entry.id,
+      stagedFile: sourceStaged,
+      siblingFile: relFile,
+      severity: entry.severity,
+    });
+  }
+
+  return { misses, warnings };
+}
+
 /**
  * Run the propagation check using the canonical registry.
  *
@@ -380,39 +440,27 @@ function fileContainsPattern(filePath, regex) {
  *   duration_ms: number
  * }}
  */
+function resolveBaseDir(optionsBaseDir) {
+  if (optionsBaseDir) return optionsBaseDir;
+  try {
+    return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf8",
+      timeout: 5000,
+    }).trim();
+  } catch {
+    return process.cwd();
+  }
+}
+
 function runCheck(options = {}) {
   const startTime = Date.now();
 
-  let baseDir = options.baseDir;
-  if (!baseDir) {
-    try {
-      baseDir = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-        encoding: "utf8",
-        timeout: 5000,
-      }).trim();
-    } catch {
-      baseDir = process.cwd();
-    }
-  }
+  const baseDir = resolveBaseDir(options.baseDir);
 
   const stagedFilesRaw = Array.isArray(options.stagedFiles)
     ? options.stagedFiles
     : getStagedFiles();
-  const stagedFiles = stagedFilesRaw
-    .map((f) => String(f).replaceAll("\\", "/"))
-    .filter((f) => {
-      if (path.isAbsolute(f)) return false;
-      const resolved = path.resolve(baseDir, f);
-      const rel = path.relative(baseDir, resolved);
-      if (/^\.\.(?:[\\/]|$)/.test(rel)) return false;
-      // Reject symlinks to prevent reading outside the repo via link targets
-      try {
-        if (lstatSync(resolved).isSymbolicLink()) return false;
-      } catch {
-        return false;
-      }
-      return true;
-    });
+  const stagedFiles = filterValidStagedFiles(stagedFilesRaw, baseDir);
 
   // Filter to JS/TS files only
   const jsStaged = stagedFiles.filter((f) => JS_EXTENSIONS.has(path.extname(f)));
@@ -453,47 +501,16 @@ function runCheck(options = {}) {
   // Step 3b: For each triggered pattern, find scan targets via searchGlob
   // -----------------------------------------------------------------------
   const baseline = loadBaseline({ verbose: VERBOSE });
-  const stagedSet = new Set(jsStaged.map((f) => f.replaceAll("\\", "/")));
   const allMisses = [];
-  const warnings = []; // Legacy-compat warnings array
+  const warnings = [];
 
   for (const patternId of triggeredIds) {
     const entry = registry.find((e) => e.id === patternId);
     if (!entry) continue;
 
-    // Find files matching this pattern's searchGlob
-    const scanFiles = findFilesForGlobs(entry.searchGlob, baseDir);
-
-    // Run miss detection
-    const misses = findMisses(entry, scanFiles, { verbose: VERBOSE });
-
-    for (const miss of misses) {
-      const relFile = path.relative(baseDir, miss.file).replaceAll("\\", "/");
-
-      // Step 3e: Suppress baselined violations
-      if (isBaselined(baseline, "pattern", patternId, relFile)) {
-        if (VERBOSE) {
-          console.log(`[propagation-staged] Baselined: ${patternId} in ${relFile}`);
-        }
-        continue;
-      }
-
-      allMisses.push({
-        patternId: entry.id,
-        file: relFile,
-        severity: entry.severity,
-      });
-
-      // Build legacy warnings shape — pick the first staged file as "source"
-      const sourceStaged = jsStaged[0] || "(diff)";
-      warnings.push({
-        pattern: entry.description,
-        patternId: entry.id,
-        stagedFile: sourceStaged,
-        siblingFile: relFile,
-        severity: entry.severity,
-      });
-    }
+    const result = collectMissesForPattern(entry, baseline, jsStaged, baseDir);
+    allMisses.push(...result.misses);
+    warnings.push(...result.warnings);
   }
 
   // -----------------------------------------------------------------------
@@ -524,6 +541,45 @@ function runCheck(options = {}) {
 // Output and exit
 // ---------------------------------------------------------------------------
 
+function groupWarningsByPattern(warnings) {
+  const grouped = new Map();
+  for (const w of warnings) {
+    const key = `${w.patternId}`;
+    if (!grouped.has(key)) {
+      grouped.set(key, {
+        pattern: w.pattern,
+        patternId: w.patternId,
+        severity: w.severity,
+        siblings: [],
+      });
+    }
+    grouped.get(key).siblings.push(w.siblingFile);
+  }
+  return grouped;
+}
+
+function printGroupedWarnings(grouped) {
+  for (const [, group] of grouped) {
+    const severityTag = group.severity === "BLOCK" ? "[BLOCK]" : "[WARN]";
+    console.log(`  ${severityTag} Pattern: ${group.pattern}`);
+    for (const sib of group.siblings) {
+      console.log(`  Propagation miss: ${group.pattern} in ${sib}`);
+    }
+    console.log();
+  }
+}
+
+function determineExitCode(blocked) {
+  if (blocked) {
+    console.log(
+      "[propagation-staged] BLOCKING: BLOCK-severity propagation misses found. Fix before committing."
+    );
+    return 2;
+  }
+  console.log("[propagation-staged] WARNING: Review sibling files for the same pattern.");
+  return 0;
+}
+
 function main() {
   try {
     const result = runCheck();
@@ -539,7 +595,6 @@ function main() {
       };
       console.log(JSON.stringify(jsonOut, null, 2));
       if (blocked) process.exit(2);
-      if (BLOCKING && misses.length > 0) process.exit(1);
       process.exit(0);
     }
 
@@ -559,47 +614,13 @@ function main() {
       process.exit(0);
     }
 
-    // Group warnings by pattern for cleaner output
-    const grouped = new Map();
-    for (const w of warnings) {
-      const key = `${w.patternId}`;
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          pattern: w.pattern,
-          patternId: w.patternId,
-          severity: w.severity,
-          siblings: [],
-        });
-      }
-      grouped.get(key).siblings.push(w.siblingFile);
-    }
+    const grouped = groupWarningsByPattern(warnings);
 
     console.log(`[propagation-staged] ${misses.length} propagation miss(es) detected:`);
     console.log();
-    for (const [, group] of grouped) {
-      const severityTag = group.severity === "BLOCK" ? "[BLOCK]" : "[WARN]";
-      console.log(`  ${severityTag} Pattern: ${group.pattern}`);
-      for (const sib of group.siblings) {
-        console.log(`  Propagation miss: ${group.pattern} in ${sib}`);
-      }
-      console.log();
-    }
+    printGroupedWarnings(grouped);
 
-    // Exit code logic: BLOCK-severity -> exit 2, --blocking legacy -> exit 1
-    if (blocked) {
-      console.log(
-        "[propagation-staged] BLOCKING: BLOCK-severity propagation misses found. Fix before committing."
-      );
-      process.exit(2);
-    } else if (BLOCKING && misses.length > 0) {
-      console.log(
-        "[propagation-staged] BLOCKING: Stage sibling files or review them before committing."
-      );
-      process.exit(1);
-    } else {
-      console.log("[propagation-staged] WARNING: Review sibling files for the same pattern.");
-      process.exit(0);
-    }
+    process.exit(determineExitCode(blocked));
   } catch (err) {
     console.error(`[propagation-staged] Script error: ${sanitizeError(err)}`);
     process.exit(2);

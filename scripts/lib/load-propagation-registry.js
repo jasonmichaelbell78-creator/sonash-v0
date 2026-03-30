@@ -10,7 +10,7 @@
  * @module lib/load-propagation-registry
  */
 
-const { readFileSync } = require("node:fs");
+const { readFileSync, lstatSync } = require("node:fs");
 const path = require("node:path");
 
 let sanitizeError;
@@ -33,6 +33,48 @@ const REGISTRY_PATH = path.join(__dirname, "..", "config", "propagation-patterns
 
 // Performance budget: 2 seconds (per D16)
 const PERF_BUDGET_MS = 2000;
+
+function hasValidRegex(entry) {
+  try {
+    new RegExp(entry.pattern);
+    if (entry.antiPattern) new RegExp(entry.antiPattern);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function normalizeMissDetection(value) {
+  return value === "antiPattern" || value === "patternAbsence" ? value : "antiPattern";
+}
+
+function validateEntry(entry, verbose) {
+  if (!entry || typeof entry !== "object") return null;
+  if (!entry.id || !entry.description || !entry.pattern || !Array.isArray(entry.searchGlob)) {
+    if (verbose)
+      console.warn(`[propagation-registry] Skipping invalid entry: ${entry.id || "unknown"}`);
+    return null;
+  }
+  if (!["BLOCK", "WARN"].includes(entry.severity)) {
+    if (verbose)
+      console.warn(`[propagation-registry] Invalid severity for ${entry.id}: ${entry.severity}`);
+    return null;
+  }
+  if (!hasValidRegex(entry)) {
+    if (verbose) console.warn(`[propagation-registry] Invalid regex for ${entry.id}`);
+    return null;
+  }
+  return {
+    id: entry.id,
+    description: entry.description,
+    pattern: entry.pattern,
+    antiPattern: entry.antiPattern || null,
+    searchGlob: entry.searchGlob,
+    severity: entry.severity,
+    missDetection: normalizeMissDetection(entry.missDetection),
+    source: entry.source || "",
+  };
+}
 
 /**
  * Load the pattern registry from disk.
@@ -58,32 +100,10 @@ function loadRegistry(options = {}) {
       return [];
     }
 
-    // Validate each entry
     const valid = [];
     for (const entry of parsed.patterns) {
-      if (!entry || typeof entry !== "object") continue;
-      if (!entry.id || !entry.description || !entry.pattern || !Array.isArray(entry.searchGlob)) {
-        if (verbose)
-          console.warn(`[propagation-registry] Skipping invalid entry: ${entry.id || "unknown"}`);
-        continue;
-      }
-      if (!["BLOCK", "WARN"].includes(entry.severity)) {
-        if (verbose)
-          console.warn(
-            `[propagation-registry] Invalid severity for ${entry.id}: ${entry.severity}`
-          );
-        continue;
-      }
-      valid.push({
-        id: entry.id,
-        description: entry.description,
-        pattern: entry.pattern,
-        antiPattern: entry.antiPattern || null,
-        searchGlob: entry.searchGlob,
-        severity: entry.severity,
-        missDetection: entry.missDetection || "antiPattern",
-        source: entry.source || "",
-      });
+      const validated = validateEntry(entry, verbose);
+      if (validated) valid.push(validated);
     }
 
     return valid;
@@ -125,6 +145,22 @@ function matchPatterns(diffLines, registry) {
   return triggered;
 }
 
+function compileMissRegex(patternEntry, mode, verbose) {
+  const source = mode === "antiPattern" ? patternEntry.antiPattern : patternEntry.pattern;
+  try {
+    return new RegExp(source);
+  } catch {
+    if (verbose) console.warn(`[propagation-registry] Invalid regex for ${patternEntry.id}`);
+    return null;
+  }
+}
+
+function isMiss(content, checkRegex, mode) {
+  checkRegex.lastIndex = 0;
+  const matches = checkRegex.test(content);
+  return (mode === "antiPattern" && matches) || (mode === "patternAbsence" && !matches);
+}
+
 /**
  * Find files with propagation misses for a given pattern entry.
  *
@@ -143,31 +179,19 @@ function findMisses(patternEntry, files, options = {}) {
   const mode = patternEntry.missDetection || "antiPattern";
 
   if (mode === "antiPattern" && !patternEntry.antiPattern) {
-    return []; // No antiPattern defined, nothing to check
-  }
-
-  let checkRegex;
-  try {
-    checkRegex = new RegExp(
-      mode === "antiPattern" ? patternEntry.antiPattern : patternEntry.pattern
-    );
-  } catch {
-    if (verbose) console.warn(`[propagation-registry] Invalid regex for ${patternEntry.id}`);
     return [];
   }
 
+  const checkRegex = compileMissRegex(patternEntry, mode, verbose);
+  if (!checkRegex) return [];
+
   for (const filePath of files) {
     try {
+      const st = lstatSync(filePath);
+      if (st.isSymbolicLink()) continue;
       const content = readFileSync(filePath, "utf8");
-      checkRegex.lastIndex = 0;
-      const matches = checkRegex.test(content);
-
-      if (mode === "antiPattern" && matches) {
-        // File has the bad pattern
-        misses.push({ file: filePath, mode: "antiPattern" });
-      } else if (mode === "patternAbsence" && !matches) {
-        // File lacks the good pattern
-        misses.push({ file: filePath, mode: "patternAbsence" });
+      if (isMiss(content, checkRegex, mode)) {
+        misses.push({ file: filePath, mode });
       }
     } catch (err) {
       if (verbose)
