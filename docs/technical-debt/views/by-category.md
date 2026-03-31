@@ -7799,7 +7799,7 @@
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)  | S3       | package.json                                                                     | 142  |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest          | S3       | package.json                                                                     | 11   |
 
-## security (723)
+## security (728)
 
 | ID         | Title                                                          | Severity | File                                                                    | Line |
 | ---------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -7988,6 +7988,11 @@
 | DEBT-11318 | Review critical aggregated security findings                   | S1       | docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md               | 1    |
 | DEBT-11319 | Critical Findings (Must Fix Immediately)                       | S1       | docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md               | 1    |
 | DEBT-11325 | SSRF bypass: bracketed IPv6 link-local addresses not dete...   | S1       | scripts/check-external-links.js                                         | 140  |
+| DEBT-45624 | Propagation miss: sanitize-error pattern in hooks              | S1       | .claude/hooks/session-start.js                                          | 1    |
+| DEBT-45625 | Propagation miss: lstat-symlink pattern in hooks               | S1       | .claude/hooks/check-mcp-servers.js                                      | 1    |
+| DEBT-45626 | Propagation miss: validate-path pattern in hooks (20 files)    | S1       | .claude/hooks/check-mcp-servers.js                                      | 1    |
+| DEBT-45627 | Propagation miss: path-traversal pattern in hooks              | S1       | .claude/hooks/check-mcp-servers.js                                      | 1    |
+| DEBT-45628 | Propagation miss: refuse-symlink pattern in hooks (32 files)   | S1       | .claude/hooks/block-push-to-main.js                                     | 1    |
 | DEBT-0376  | Zod schemas missing .strict() (unknown fields accepted)        | S2       | functions/src/schemas.ts                                                | 0    |
 | DEBT-0377  | Hardcoded fallback reCAPTCHA site key in server verificat...   | S2       | functions/src/recaptcha-verify.ts                                       | 0    |
 | DEBT-0378  | Server-side journal entry type enum missing 'step-1-works...   | S2       | functions/src/schemas.ts                                                | 0    |

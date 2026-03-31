@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2126
+**Items Needing Verification:** 2127
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -131,14 +131,10 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-11324 | BUG: .replace("-", " ") only replaces first dash in entry...    | S1       | components/journal/entry-feed.tsx                                                | 352       |
 | DEBT-11325 | SSRF bypass: bracketed IPv6 link-local addresses not dete...    | S1       | scripts/check-external-links.js                                                  | 140       |
 | DEBT-11331 | SQLite migration for TDMS pipeline — research + implement...    | S1       | scripts/debt/                                                                    | 0         |
-| DEBT-11335 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | scripts/check-propagation.js                                                     | 0         |
 | DEBT-11336 | Cyclomatic complexity violations in run-alerts.js: 10 fun...    | S1       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
-| DEBT-11339 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | scripts/check-propagation.js                                                     | 0         |
 | DEBT-11340 | Cyclomatic complexity violations in run-alerts.js: 10 fun...    | S1       | .claude/skills/alerts/scripts/run-alerts.js                                      | 0         |
 | DEBT-45521 | Hook bypass threshold: cc overridden 29+ times in 14 days       | S1       | scripts/log-override.js                                                          | 0         |
 | DEBT-45523 | Hook bypass threshold: cc overridden 29+ times in 14 days       | S1       | scripts/log-override.js                                                          | 0         |
-| DEBT-45524 | Hook bypass threshold: propagation overridden 31+ times i...    | S1       | propagation                                                                      | 0         |
-| DEBT-45525 | Hook bypass threshold: propagation overridden 33+ times i...    | S1       | propagation                                                                      | 0         |
 | DEBT-45526 | Hook bypass threshold: cc overridden 30+ times in 14 days       | S1       | cc                                                                               | 0         |
 | DEBT-45527 | Hook bypass threshold: cc overridden 31+ times in 14 days       | S1       | cc                                                                               | 0         |
 | DEBT-45556 | Orphaned: zero CLAUDE.md triggers, skill refs, or invocat...    | S1       | .claude/agents/backend-architect.md                                              | 0         |
@@ -161,6 +157,11 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45609 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | cross-doc-deps                                                                   | 0         |
 | DEBT-45610 | Hook bypass threshold: reviewer overridden 15+ times in 1...    | S1       | reviewer                                                                         | 0         |
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | cross-doc-deps                                                                   | 0         |
+| DEBT-45624 | Propagation miss: sanitize-error pattern in hooks               | S1       | .claude/hooks/session-start.js                                                   | 1         |
+| DEBT-45625 | Propagation miss: lstat-symlink pattern in hooks                | S1       | .claude/hooks/check-mcp-servers.js                                               | 1         |
+| DEBT-45626 | Propagation miss: validate-path pattern in hooks (20 files)     | S1       | .claude/hooks/check-mcp-servers.js                                               | 1         |
+| DEBT-45627 | Propagation miss: path-traversal pattern in hooks               | S1       | .claude/hooks/check-mcp-servers.js                                               | 1         |
+| DEBT-45628 | Propagation miss: refuse-symlink pattern in hooks (32 files)    | S1       | .claude/hooks/block-push-to-main.js                                              | 1         |
 | DEBT-2132  | Untitled finding                                                | S2       | N/A                                                                              | 0         |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | src/components                                                                   | 0         |

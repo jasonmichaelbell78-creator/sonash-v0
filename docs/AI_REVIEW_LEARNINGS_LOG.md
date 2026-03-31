@@ -366,6 +366,61 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#21)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-27
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#20)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-26
+- **Recurring patterns:**
+  - qodo (16x)
+  - sonarcloud (14x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#19)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-25
+- **Recurring patterns:**
+  - qodo (15x)
+  - sonarcloud (13x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#18)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-25
+- **Recurring patterns:**
+  - qodo (15x)
+  - sonarcloud (13x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#17)</summary>
+
+- **Date:** 2026-03-30
+- **Reviews consolidated:** #review-466-r3-#rev-24
+- **Recurring patterns:**
+  - qodo (14x)
+  - sonarcloud (12x)
+  - gemini (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#15)</summary>
 
 - **Date:** 2026-03-22
@@ -939,27 +994,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 503: PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling (2026-03-25)
-
-**Date:** 2026-03-25 | **PR:** #469 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
 | 12    | 8     | 0        | 3        |
-
----
-
-### Review 504: PR #469 R2 — CC Reduction, Map Normalization & Revalidation (2026-03-25)
-
-**Date:** 2026-03-25 | **PR:** #469 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
 
 ---
 
@@ -1142,12 +1177,54 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 3     | 2     | 0        | 1        |
 
+---
+
+### Review rev-25: PR #482 R1 — Mixed SonarCloud+Qodo+Gemini+CI (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 25    | 22    | 0        | 3        |
+
+---
+
+### Review rev-26: PR #482 R2 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 5     | 0        | 2        |
+
+---
+
+### Review rev-27: PR #482 R3 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 4     | 0        | 3        |
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
-  `aggregate-audit-findings.js` L1950 had "10-level nested instanceof
-  corruption" — verified false against actual codebase. AI-generated planning
-  docs must be verified before accepting claims about code state.
+
+---
+
+### Review rev-25: PR #482 R1 — Mixed SonarCloud+Qodo+Gemini+CI (2026-03-30) (2026-03-30)
+
+**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 25    | 22    | 0        | 3        |
+
+`aggregate-audit-findings.js` L1950 had "10-level nested instanceof corruption"
+— verified false against actual codebase. AI-generated planning docs must be
+verified before accepting claims about code state.
+
 - **Forward-referencing non-existent software:** Plan referenced "ESLint v10
   Migration" with `npm install eslint@^10.0.0`, but DIAGNOSIS.md in the same set
   correctly noted v10 doesn't exist (v9.39.4 is stable). Plans must not assume
@@ -2777,93 +2854,69 @@ deduped/merged)
 
 ---
 
-### Review 59
+### Review #63 — PR #482 R3 (Mixed: Qodo + SonarCloud)
 
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+**Date:** 2026-03-30 **Items:** 7 (4 fixed, 0 deferred, 3 rejected)
 
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 24    | 0        | 3        |
+**Patterns:**
 
-**Key learnings:**
+- ReDoS rejected 3rd time — registry is checked-in config, not user input.
+- Fail-open git diff addressed with fallback to file reading.
+- Symlink guards added to loadRegistry and loadBaseline config readers.
 
-- Hook shared-lib imports (`isSafeToWrite`) must use the same path as
-  `safeAppendFileSync` — `./lib/symlink-guard` doesn't exist; `safe-fs.js`
-  exports both.
-- Logger hooks should fail-open (`isSafeToWrite = () => true`), not fail-closed
-  — a broken guard disabling all logging is worse than a theoretical symlink.
-- `spawn()` does not support `timeout` option — only `execFile`/`exec` do. Use
-  manual `setTimeout` + `child.kill()`.
-- Deploy safeguards must scope to hosting deploys —
-  rules/indexes/storage/functions deploys don't need `.next/` or `.env.local`.
-- Stderr must be separated from JSON stdout in hooks — `2>&1` corrupts
-  structured output parsed by `jq`.
-- Research source citations should redact token values even when tokens are
-  revoked — SonarCloud flags literal PAT strings regardless of validity.
+**Learnings:**
+
+- Config file readers (registry, baseline) need symlink guards same as data file
+  readers — defense in depth for checked-in JSON.
+- Fail-safe: when git diff fails, fall back to reading staged file contents
+  rather than returning empty (which disables enforcement).
+- Always reset regex.lastIndex before test() in loops for defensive safety.
 
 ---
 
-### Review 60
+### Review #62 — PR #482 R2 (Mixed: Qodo + SonarCloud)
 
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+**Date:** 2026-03-30 **Items:** 7 (5 fixed, 0 deferred, 2 rejected)
 
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 6     | 0        | 2        |
+**Patterns:**
 
-**Key learnings:**
+- 2 of 7 items repeat-rejected from R1 (ReDoS, --blocking exit code).
+- Silent error suppression in git diff catch blocks — always log failures in
+  pre-commit gates to avoid false negatives.
 
-- Variable declarations must appear before any `setTimeout` callbacks that
-  reference them — hoisting doesn't apply to `let`/`const`.
-- When extracting complex logic to reduce CC, extract helper functions rather
-  than inlining — test files get CC-checked too.
-- Bash conditional tests should use `[[` over `[` for safety and feature parity.
-- `.nvmrc` path resolution needs repo root, not cwd — hooks may run from
-  subdirectories.
-- `path.isAbsolute(rel)` IS needed on Windows — `path.relative()` can return
-  absolute paths across drive boundaries (R1 overcorrection).
-- Unused speculative dependencies (added for planned features) should not be
-  committed until code imports them — CI knip gate catches them.
+**Learnings:**
+
+- Pre-commit diff failures must always warn (not just verbose) — silent empty
+  returns cause false negatives in propagation enforcement.
+- Use Set for dedup in pattern matching to prevent duplicate triggered IDs.
+- Use String.raw for regex strings in TypeScript tests.
 
 ---
 
-### Review 61
+### Review #61 — PR #482 R1 (Mixed: SonarCloud + Qodo + Gemini + CI)
 
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
+**Date:** 2026-03-30 **Items:** 25 (22 fixed, 0 deferred, 3 rejected)
 
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 0        |
+**Patterns:**
 
-**Key learnings:**
+- Multi-source convergence: Qodo + Gemini both flagged sh -e exit handling and
+  patternAbsence mode — auto-elevated to CRITICAL. Both were real bugs.
+- 7 CC refactors via parallel agents — 4 functions in staged script, 3 across
+  propagation.js and registry loader. Extracted 13 helper functions total.
+- searchGlob scope gap: 7 of 10 security patterns only scanned scripts/ but not
+  .claude/hooks/. Expanded all security patterns to include hooks directory.
+- patternAbsence mode was completely non-functional: git grep finds presence,
+  not absence. Fixed with git ls-files fallback for patternAbsence entries.
 
-- CC extraction needs to be aggressive enough — extracting one helper may not be
-  sufficient if the remaining function still exceeds the threshold.
-- REVERTED: `./lib/rotate-state.js` path was actually correct — file exists at
-  `.claude/hooks/lib/rotate-state.js`. R3 fix was wrong; verify file existence
-  before accepting reviewer suggestions about paths.
-- `fs.realpathSync` before path traversal checks prevents symlink bypass.
-- Non-numeric `.nvmrc` aliases (e.g. `lts/*`) need guards in version comparison
-  code.
+**Learnings:**
 
----
-
-### Review 62
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 2     | 0        | 1        |
-
-**Key learnings:**
-
-- Always verify file existence before accepting reviewer claims about broken
-  paths — `./lib/rotate-state.js` existed but reviewer said it didn't. R3
-  incorrectly changed a working path. R4 reverted it.
-- CC reduction by extracting one function may leave the extracted function
-  itself over threshold — extract sub-helpers from the helper too.
-- `.nvmrc` MAJOR.MINOR pins (e.g. `22.12`) need a separate case branch from
-  major-only pins.
+- sh -e hooks: always guard command substitutions with `|| exit_var=$?` pattern.
+- Exit code contracts: if hook-checks.json documents exit codes 0 and 2 only,
+  the script must never exit 1. Remove legacy --blocking flag when
+  severity-based exit codes make it redundant.
+- patternAbsence mode requires listing all files in scope, not grepping for
+  pattern presence. git ls-files is the correct approach for absence detection.
+- Security pattern searchGlobs should always include .claude/hooks/**/\*.js
+  alongside scripts/**/\*.js — hooks are security-relevant code.
 
 ---

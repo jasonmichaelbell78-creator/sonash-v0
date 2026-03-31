@@ -428,26 +428,39 @@ if [ "$RUN_PATTERNS" -eq 1 ]; then
   fi
 fi
 
-# 3b. Propagation-audit check (non-blocking, warns on security pattern siblings)
-# Reinstated as security-pattern-specific check (retro item #1).
-# Different from pre-push propagation: this checks security patterns in staged
-# files vs unstaged siblings in the same directory.
+# 3b. Propagation-audit check (registry-based, BLOCK/WARN per-pattern severity)
+# Scans staged diff for registry patterns, greps codebase for propagation misses.
+# Registry: scripts/config/propagation-patterns.json
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 if is_skipped propagation-staged; then
   node scripts/log-override.js --quick --check=propagation-staged --reason="$SKIP_REASON" 2>/dev/null || true
   echo "  ⏭️ Skipping propagation-staged (skipped via SKIP_CHECKS)"
   echo "propagation-staged|skip|0" >> "$CHECKS_TMPFILE"
 else
-  prop_staged_output=$(node scripts/check-propagation-staged.js 2>&1) || true
+  prop_staged_exit=0
+  prop_staged_output=$(node scripts/check-propagation-staged.js 2>&1) || prop_staged_exit=$?
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
   if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
-  if echo "$prop_staged_output" | grep -q "Propagation miss:"; then
-    echo "  ⚠️ Security pattern propagation misses detected (non-blocking)"
-    echo "$prop_staged_output" | grep "Propagation miss:" | head -5
-    node scripts/append-hook-warning.js --hook=pre-commit --type=propagation-staged --severity=warning --message="Security pattern propagation misses in staged files" --action="Review sibling files for same security patterns" || echo "⚠️ Warning write failed: propagation-staged" >&3
+  if [ "$prop_staged_exit" -eq 2 ]; then
+    # BLOCK-severity propagation miss — hard fail
+    echo "  ❌ Propagation miss (BLOCK): unstaged siblings have old pattern"
+    echo "$prop_staged_output" | grep -E "Pattern:|BLOCKING|miss" | head -10
+    node scripts/append-hook-warning.js --hook=pre-commit --type=propagation-staged --severity=error --message="BLOCK-severity propagation misses in staged files" --action="Stage sibling files or fix the old pattern" || echo "⚠️ Warning write failed: propagation-staged" >&3
+    echo "propagation-staged|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    FAILED=1
+  elif [ "$prop_staged_exit" -ne 0 ]; then
+    # Unexpected non-zero exit (infrastructure failure) — do not mask as success
+    echo "  ❌ Propagation check failed (exit $prop_staged_exit)"
+    echo "$prop_staged_output" | head -5
+    echo "propagation-staged|fail|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
+    FAILED=1
+  elif echo "$prop_staged_output" | grep -qi "warning\|WARN"; then
+    echo "  ⚠️ Propagation warnings (WARN-severity) — review recommended"
+    echo "$prop_staged_output" | grep -E "Pattern:|WARNING|miss" | head -5
+    node scripts/append-hook-warning.js --hook=pre-commit --type=propagation-staged --severity=warning --message="WARN-severity propagation misses in staged files" --action="Review sibling files for same patterns" || echo "⚠️ Warning write failed: propagation-staged" >&3
     echo "propagation-staged|warn|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
-    echo "  ✅ No security pattern propagation misses"
+    echo "  ✅ No propagation misses"
     echo "propagation-staged|pass|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
   fi
 fi

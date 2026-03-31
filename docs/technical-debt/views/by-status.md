@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2126)
+## NEW (2127)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -128,14 +128,10 @@
 | DEBT-11324 | BUG: .replace("-", " ") only replaces first dash in entry...    | S1       | code-quality             |
 | DEBT-11325 | SSRF bypass: bracketed IPv6 link-local addresses not dete...    | S1       | security                 |
 | DEBT-11331 | SQLite migration for TDMS pipeline — research + implement...    | S1       | refactoring              |
-| DEBT-11335 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | code-quality             |
 | DEBT-11336 | Cyclomatic complexity violations in run-alerts.js: 10 fun...    | S1       | code-quality             |
-| DEBT-11339 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | code-quality             |
 | DEBT-11340 | Cyclomatic complexity violations in run-alerts.js: 10 fun...    | S1       | code-quality             |
 | DEBT-45521 | Hook bypass threshold: cc overridden 29+ times in 14 days       | S1       | process                  |
 | DEBT-45523 | Hook bypass threshold: cc overridden 29+ times in 14 days       | S1       | process                  |
-| DEBT-45524 | Hook bypass threshold: propagation overridden 31+ times i...    | S1       | process                  |
-| DEBT-45525 | Hook bypass threshold: propagation overridden 33+ times i...    | S1       | process                  |
 | DEBT-45526 | Hook bypass threshold: cc overridden 30+ times in 14 days       | S1       | process                  |
 | DEBT-45527 | Hook bypass threshold: cc overridden 31+ times in 14 days       | S1       | process                  |
 | DEBT-45556 | Orphaned: zero CLAUDE.md triggers, skill refs, or invocat...    | S1       | code-quality             |
@@ -158,6 +154,11 @@
 | DEBT-45609 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | process                  |
 | DEBT-45610 | Hook bypass threshold: reviewer overridden 15+ times in 1...    | S1       | process                  |
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...    | S1       | process                  |
+| DEBT-45624 | Propagation miss: sanitize-error pattern in hooks               | S1       | security                 |
+| DEBT-45625 | Propagation miss: lstat-symlink pattern in hooks                | S1       | security                 |
+| DEBT-45626 | Propagation miss: validate-path pattern in hooks (20 files)     | S1       | security                 |
+| DEBT-45627 | Propagation miss: path-traversal pattern in hooks               | S1       | security                 |
+| DEBT-45628 | Propagation miss: refuse-symlink pattern in hooks (32 files)    | S1       | security                 |
 | DEBT-2132  | Untitled finding                                                | S2       | code-quality             |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | enhancements             |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | enhancements             |
@@ -7299,7 +7300,7 @@
 
 _No items_
 
-## RESOLVED (1123)
+## RESOLVED (1127)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -7400,6 +7401,10 @@ _No items_
 | DEBT-10887 | session-start.js outputs 400-600 tokens of verbose status...    | S1       | ai-optimization          |
 | DEBT-10994 | functions/src/admin.ts has 1 ESLint error — unused variab...    | S1       | code-quality             |
 | DEBT-11315 | 453 pre-existing blocking pattern violations in scripts/d...    | S1       | code-quality             |
+| DEBT-11335 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | code-quality             |
+| DEBT-11339 | Pattern propagation backlog: 4 patterns across 50+ files ...    | S1       | code-quality             |
+| DEBT-45524 | Hook bypass threshold: propagation overridden 31+ times i...    | S1       | process                  |
+| DEBT-45525 | Hook bypass threshold: propagation overridden 33+ times i...    | S1       | process                  |
 | DEBT-0274  | Add an explicit return statement at the end of the function.    | S2       | code-quality             |
 | DEBT-0275  | Assign this positional parameter to a local variable.           | S2       | code-quality             |
 | DEBT-0382  | Console statements present; replace with structured logge...    | S2       | security                 |

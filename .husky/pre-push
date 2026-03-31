@@ -267,9 +267,9 @@ if [ "$_REBASE_ONLY" = "1" ]; then
   echo "propagation|skip|0" >> "$CHECKS_TMPFILE"
 else
 CHECK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
-_scripts_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD -- 'scripts/**/*.js' 2>/dev/null | head -1)
-if [ -z "$_scripts_in_diff" ]; then
-  echo "  ⏭️ Propagation check skipped (no scripts in push diff)"
+_code_in_diff=$(git diff --name-only --diff-filter=ACMR @{u}...HEAD -- 'scripts/**/*.js' 'lib/**/*.js' 'lib/**/*.ts' 'lib/**/*.tsx' '.claude/hooks/**/*.js' 2>/dev/null | head -1)
+if [ -z "$_code_in_diff" ]; then
+  echo "  ⏭️ Propagation check skipped (no code files in push diff)"
   CHECK_END_NS=$(date +%s%N 2>/dev/null || date +%s)
   if [ ${#CHECK_START_NS} -gt 10 ]; then CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) / 1000000 )); else CHECK_DURATION_MS=$(( (CHECK_END_NS - CHECK_START_NS) * 1000 )); fi
   echo "propagation|skip|${CHECK_DURATION_MS}" >> "$CHECKS_TMPFILE"
