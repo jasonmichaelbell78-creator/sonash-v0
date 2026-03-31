@@ -3,9 +3,9 @@
   "topicSlug": "multi-layer-memory",
   "depth": "L1",
   "domain": "technology",
-  "status": "planned",
-  "phase": "0",
-  "phaseDetail": "Plan approved, awaiting execution",
+  "status": "in-progress",
+  "phase": "2.5",
+  "phaseDetail": "Research + synthesis + verification complete (30 agents). Phases 3-5 pending next session.",
   "startedAt": "2026-03-30T02:30:00Z",
   "outputPath": ".research/multi-layer-memory/",
   "subQuestions": [
@@ -14,7 +14,7 @@
       "topic": "Current Claude Code memory ecosystem inventory",
       "agents": 1,
       "wave": 1,
-      "status": "pending",
+      "status": "complete",
       "profile": "codebase"
     },
     {
@@ -22,23 +22,24 @@
       "topic": "Deep analysis of 6 referenced repos (claude-mem, cipher, everything-claude-code, interface-design, claude-supermemory, OpenMemory)",
       "agents": 3,
       "wave": 1,
-      "status": "pending",
+      "status": "complete",
       "profile": "web"
     },
     {
       "id": "SQ3",
       "topic": "Broader GitHub/marketplace/community memory system discovery",
-      "agents": 3,
+      "agents": 7,
       "wave": 1,
-      "status": "pending",
-      "profile": "web"
+      "status": "complete",
+      "profile": "web",
+      "note": "Original 3 agents timed out, re-spawned as 7 split agents"
     },
     {
       "id": "SQ4",
       "topic": "Academic/industry LLM memory architecture patterns",
       "agents": 2,
       "wave": 1,
-      "status": "pending",
+      "status": "complete",
       "profile": "web+academic"
     },
     {
@@ -46,7 +47,7 @@
       "topic": "MCP servers for memory/knowledge management (Obsidian, NotebookLM, vector DBs, plugin marketplaces)",
       "agents": 2,
       "wave": 1,
-      "status": "pending",
+      "status": "complete",
       "profile": "web"
     },
     {
@@ -54,7 +55,7 @@
       "topic": "Comparison matrix and architecture pattern mapping",
       "agents": 2,
       "wave": 2,
-      "status": "pending",
+      "status": "complete",
       "profile": "synthesis"
     },
     {
@@ -62,7 +63,7 @@
       "topic": "Cross-locale sync patterns (git, shared MCP, cloud DB, hybrid)",
       "agents": 2,
       "wave": 2,
-      "status": "pending",
+      "status": "complete",
       "profile": "web+codebase"
     },
     {
@@ -70,15 +71,16 @@
       "topic": "Hybrid/enhanced system design for SoNash",
       "agents": 2,
       "wave": 3,
-      "status": "pending",
-      "profile": "synthesis+web"
+      "status": "complete",
+      "profile": "synthesis+web",
+      "note": "Original agent stalled, re-spawned as 2 split agents"
     },
     {
       "id": "SQ9",
       "topic": "Clean-slate new system architecture",
       "agents": 2,
       "wave": 3,
-      "status": "pending",
+      "status": "complete",
       "profile": "web+design"
     },
     {
@@ -86,7 +88,7 @@
       "topic": "Failure modes, risks, maintenance costs, solo developer feasibility",
       "agents": 2,
       "wave": 3,
-      "status": "pending",
+      "status": "complete",
       "profile": "web+codebase"
     }
   ],
@@ -99,9 +101,14 @@
     "https://github.com/CaviraOSS/OpenMemory"
   ],
   "waves": {
-    "W1": { "agents": 11, "status": "pending" },
-    "W2": { "agents": 4, "status": "pending", "dependsOn": "W1" },
-    "W3": { "agents": 6, "status": "pending", "dependsOn": "W2" }
+    "W1": { "agents": 13, "status": "complete", "note": "SQ3 re-spawned from 3 to 7 agents" },
+    "W2": { "agents": 4, "status": "complete", "dependsOn": "W1" },
+    "W3": {
+      "agents": 8,
+      "status": "complete",
+      "dependsOn": "W2",
+      "note": "SQ8 re-spawned from 2 to 3 agents"
+    }
   },
   "completedPhases": ["0"],
   "agentResults": []
