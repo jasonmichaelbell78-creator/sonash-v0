@@ -102,3 +102,54 @@
 {"agent":"deep-research-searcher","description":"SQ4a: Academic LLM memory patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:40:36.172Z"}
 {"agent":"deep-research-searcher","description":"CL verify 4 medium-confidence claims","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:43:41.676Z"}
 {"agent":"Explore","description":"Explore skill creation patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:52:44.730Z"}
+{"agent":"deep-research-searcher","description":"SQ3a-1: GitHub Claude Code memory repos","sessionId":"session-1774966639630","timestamp":"2026-03-31T15:33:04.368Z"}
+{"agent":"deep-research-searcher","description":"SQ3a-2: GitHub non-Claude agent memory","sessionId":"session-1774966639630","timestamp":"2026-03-31T15:33:12.461Z"}
+{"agent":"deep-research-searcher","description":"SQ3b-1: Reddit + HN memory discussions","sessionId":"session-1774966639630","timestamp":"2026-03-31T15:33:22.600Z"}
+{"agent":"deep-research-searcher","description":"SQ3b-2: Blogs + Anthropic official docs","sessionId":"session-1774966639630","timestamp":"2026-03-31T15:33:32.142Z"}
+{"agent":"deep-research-searcher","description":"Research AI code understanding tools","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:26:38.523Z"}
+{"agent":"deep-research-searcher","description":"SQ3b-2a: Anthropic official memory docs","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:26:40.263Z"}
+{"agent":"deep-research-searcher","description":"SQ3b-2b: Developer blog posts on memory","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:26:45.309Z"}
+{"agent":"deep-research-searcher","description":"Research repo-to-text tools","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:26:45.824Z"}
+{"agent":"deep-research-searcher","description":"Research GitHub search API capabilities","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:26:56.463Z"}
+{"agent":"deep-research-searcher","description":"Research package registry search APIs","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:27:04.474Z"}
+{"agent":"deep-research-searcher","description":"Research code reuse assessment frameworks","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:27:22.572Z"}
+{"agent":"deep-research-searcher","description":"Audit internal codebase analysis capabilities","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:27:36.067Z"}
+{"agent":"deep-research-searcher","description":"Research curated discovery vectors","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:27:48.148Z"}
+{"agent":"deep-research-searcher","description":"Research web search as repo discovery","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:27:59.440Z"}
+{"agent":"deep-research-searcher","description":"Research pattern portability heuristics","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:28:20.456Z"}
+{"agent":"deep-research-searcher","description":"Research component extraction techniques","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:28:30.968Z"}
+{"agent":"deep-research-searcher","description":"Research architectural pattern mining","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:28:41.569Z"}
+{"agent":"deep-research-searcher","description":"Research prompting strategies for repo analysis","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:28:53.893Z"}
+{"agent":"deep-research-searcher","description":"Research AI multi-file understanding","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:29:13.478Z"}
+{"agent":"deep-research-searcher","description":"Research Claude Code OS ecosystem","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:29:27.039Z"}
+{"agent":"deep-research-searcher","description":"Analyze internal reuse delta","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:29:42.914Z"}
+{"agent":"deep-research-searcher","description":"SQ4b: Industry AI agent memory impls","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:31:52.650Z"}
+{"agent":"deep-research-searcher","description":"SQ5a: MCP memory/knowledge servers","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:32:05.794Z"}
+{"agent":"deep-research-searcher","description":"SQ5b: MCP memory integration patterns","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:32:21.911Z"}
+{"agent":"deep-research-searcher","description":"SQ6a: Memory system comparison matrix","sessionId":"session-1774966639630","timestamp":"2026-03-31T16:59:58.051Z"}
+{"agent":"deep-research-searcher","description":"SQ6b: Architecture pattern mapping","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:00:14.930Z"}
+{"agent":"deep-research-searcher","description":"SQ7a: Cross-locale sync patterns","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:00:34.182Z"}
+{"agent":"deep-research-searcher","description":"SQ7b: Cross-locale sync real implementations","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:00:54.740Z"}
+{"agent":"deep-research-searcher","description":"SQ8a: Hybrid enhanced memory design","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:17:58.901Z"}
+{"agent":"deep-research-searcher","description":"SQ8b: Extractable patterns for SoNash","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:18:17.515Z"}
+{"agent":"deep-research-searcher","description":"SQ9a: Clean-slate memory architecture","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:18:33.059Z"}
+{"agent":"deep-research-searcher","description":"SQ9b: Technology stack evaluation","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:18:50.178Z"}
+{"agent":"deep-research-searcher","description":"SQ10a: Failure modes and risks","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:19:08.252Z"}
+{"agent":"deep-research-searcher","description":"SQ10b: Solo dev feasibility analysis","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:19:23.290Z"}
+{"agent":"deep-research-searcher","description":"SQ8b-1: Capture + retrieval patterns","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:30:18.882Z"}
+{"agent":"deep-research-searcher","description":"SQ8b-2: Lifecycle + workflow patterns","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:30:27.443Z"}
+{"agent":"deep-research-synthesizer","description":"Synthesize landscape findings (SQ1-5)","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:37:12.506Z"}
+{"agent":"deep-research-synthesizer","description":"Synthesize analysis findings (SQ6-7)","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:37:21.127Z"}
+{"agent":"deep-research-synthesizer","description":"Synthesize recommendations (SQ8-10)","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:37:35.677Z"}
+{"agent":"deep-research-searcher","description":"Research Greptile + Sourcegraph Cody","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:44:51.325Z"}
+{"agent":"deep-research-searcher","description":"Research Cursor + Augment + Windsurf","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:44:57.680Z"}
+{"agent":"deep-research-searcher","description":"Research component extraction tools","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:45:03.939Z"}
+{"agent":"deep-research-searcher","description":"Research extraction candidate heuristics","sessionId":"session-1774966639630","timestamp":"2026-03-31T17:45:10.219Z"}
+{"agent":"deep-research-searcher","description":"Research bit.dev and module federation","sessionId":"session-1774966639630","timestamp":"2026-03-31T18:12:19.464Z"}
+{"agent":"deep-research-synthesizer","description":"Synthesize 17 findings into research output","sessionId":"session-1774966639630","timestamp":"2026-03-31T18:17:43.888Z"}
+{"agent":"deep-research-searcher","description":"Verify claims 1-40 against sources","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:04.560Z"}
+{"agent":"deep-research-searcher","description":"Verify claims 41-80 against sources","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:07.182Z"}
+{"agent":"deep-research-searcher","description":"Contrarian challenge on research","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:16.201Z"}
+{"agent":"deep-research-searcher","description":"Second contrarian challenge","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:22.587Z"}
+{"agent":"deep-research-searcher","description":"Outside-the-box challenge on research","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:41.735Z"}
+{"agent":"deep-research-searcher","description":"Second OTB challenge","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:51.551Z"}

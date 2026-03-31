@@ -250,9 +250,8 @@ Branch: [branch]
 
 Warnings: N acknowledged | Tech Debt: N S0, M S1
 Next Goals (from SESSION_CONTEXT.md):
-  1. [goal 1]
-  2. [goal 2]
-  3. [goal 3]
+  [list ALL goals from both "Immediate Priority" and "After Debt-Runner"
+   sections — do not truncate or cap the list]
 ```
 
 ### Goal Selection (MUST)

@@ -1,0 +1,39 @@
+{
+  "topic": "repo-analysis-value-extraction",
+  "status": "phase_3.95",
+  "phase": 3.95,
+  "depth": "L1",
+  "domain": "technology",
+  "supplemental_to": ".research/repo-analysis-skill/",
+  "sub_questions_completed": 16,
+  "findings_files": 17,
+  "findings_lines": 5522,
+  "verification": {
+    "claims_total": 80,
+    "verified_clean": 62,
+    "verified_caveat": 9,
+    "partial_refute": 1,
+    "discrepancies": 4,
+    "refuted": 0
+  },
+  "challenges": {
+    "contrarian_critical": 3,
+    "contrarian_important": 4,
+    "otb_v1_ideas": 5,
+    "changes_under_20_percent": true
+  },
+  "agents": {
+    "allocated": 24,
+    "searchers_completed": 18,
+    "searchers_failed": 2,
+    "searchers_respawned": 4,
+    "synthesizer": 1,
+    "verifiers": 2,
+    "contrarian": 2,
+    "otb": 2,
+    "gap": "scanning"
+  },
+  "output_dir": ".research/repo-analysis-value-extraction/",
+  "startedAt": "2026-03-31T16:00:00Z",
+  "updated": "2026-03-31T18:30:00Z"
+}

@@ -366,6 +366,28 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#25)</summary>
+
+- **Date:** 2026-03-31
+- **Reviews consolidated:** #review-466-r3-#rev-27
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#24)</summary>
+
+- **Date:** 2026-03-31
+- **Reviews consolidated:** #review-466-r3-#rev-27
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#23)</summary>
 
 - **Date:** 2026-03-31

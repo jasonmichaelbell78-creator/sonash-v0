@@ -129,6 +129,17 @@ propagation-research, repo-cleanup
 6. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
 7. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions.
 8. **Custom agents implementation** — Plan at `.planning/custom-agents/PLAN.md`.
+9. **Agent stalling investigation** — Agents reading 16+ findings files for
+   synthesis silently stall (context exhaustion, no error). Happened 4 times
+   this session. Explore: timeout watchdog, input chunking, or split prompts.
+10. **Codex plugin for Claude Code** — Install `openai/codex-plugin-cc`.
+    Cross-model adversarial review (`/codex:adversarial-review`), task
+    delegation (`/codex:rescue`). Requires ChatGPT subscription (have it).
+    Evaluate as complement to Gemini CLI contrarian challenges.
+11. **Lightweight TODO system** — Simple standalone TODO.md at project root with
+    flat numbered list, priority grouping (now/later). Surfaced at
+    session-begin. No per-file ceremony — just add/delete lines. Replace the
+    "Next Session Goals" section in SESSION_CONTEXT.md.
 
 ---
 
