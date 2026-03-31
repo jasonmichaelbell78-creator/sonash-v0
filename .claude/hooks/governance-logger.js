@@ -228,6 +228,10 @@ function main() {
     }
   });
   process.stdin.on("end", () => {
+    if (!input.trim()) {
+      console.log("ok");
+      process.exit(0);
+    }
     try {
       processPayload(input);
     } catch (err) {

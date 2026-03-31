@@ -79,6 +79,7 @@ const PRE_COMMIT_PATTERNS = [
   { patterns: ["check-agent-compliance.js"], allRequired: true, id: "agent-compliance" },
   { patterns: ["validate-schema.js --staged-only"], allRequired: true, id: "debt-schema" },
   { patterns: ["jsonl-sync", "JSONL\u2192MD sync"], allRequired: false, id: "jsonl-md-sync" },
+  { patterns: ["check-propagation-staged.js"], allRequired: true, id: "propagation-staged" },
 ];
 
 /**
@@ -104,7 +105,7 @@ const PRE_PUSH_PATTERNS = [
   { patterns: ["complexity:", "Cyclomatic complexity"], allRequired: false, id: "cyclomatic-cc" },
   { patterns: ["check-cc.js"], allRequired: true, id: "cognitive-cc" },
   { patterns: ["npm audit"], allRequired: true, id: "npm-audit" },
-  { patterns: ["triggers:check"], allRequired: true, id: "triggers" },
+  { patterns: ["check-triggers.js"], allRequired: true, id: "triggers" },
 ];
 
 /**

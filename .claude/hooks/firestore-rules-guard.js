@@ -155,6 +155,10 @@ process.stdin.on("data", (chunk) => {
   }
 });
 process.stdin.on("end", () => {
+  if (!input.trim()) {
+    console.log("ok");
+    process.exit(0);
+  }
   try {
     // --- Kill switches ---
     if (process.env.SKIP_GATES === "1" || process.env.ALLOW_RULES_EDIT === "1") {
