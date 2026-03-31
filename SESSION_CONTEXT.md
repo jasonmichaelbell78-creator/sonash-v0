@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.12 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.13 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-31 (Session #250)
+2026-03-31 (Session #251)
 
 ## Purpose
 
@@ -29,16 +29,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-30 **Branch**: `planning-33026` **Working On**:
-Session #249 — COMPLETE. Plan/research archival, propagation enforcement system.
+**Last Checkpoint**: 2026-03-31 **Branch**: `planning-33026` **Working On**:
+Session #251 — COMPLETE. Value-extraction deep-research + deep-plan discovery.
 
-**Uncommitted Work**: None (session-end commit pending)
+**Uncommitted Work**: None (session-end commit)
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 250 (since Jan 1, 2026)
+**Current Session Count**: 251 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,39 +48,39 @@ Session #249 — COMPLETE. Plan/research archival, propagation enforcement syste
 
 ## Recent Session Summaries
 
+**Session #251** (REPO-ANALYSIS VALUE-EXTRACTION RESEARCH + DEEP-PLAN):
+
+- **Branch**: `planning-33026` (2 commits)
+- **Value-extraction deep-research COMPLETE**: 28 agents (18 searchers + 4
+  respawns + 1 synthesizer + 2 verifiers + 2 contrarian + 2 OTB). 80 claims, 131
+  sources. 4 gaps researched: value extraction methodologies, repo
+  discovery/search, pattern portability, AI-driven content analysis.
+- **Key finding**: Conversation-first default (Repomix + Claude prompt), not
+  structured pipeline. Both contrarians converged on this independently.
+- **Deep-plan Phase 1 Discovery**: 5 of 7 Batch 1 decisions captured (name,
+  phasing, file structure, output dir, orchestration). Q2 (mode scope) deferred
+  for research — now complete. Q6 (tool install) investigated — locales
+  equivalent.
+- **OS vision revealed and saved to memory**: Primary goal is project-agnostic
+  "Claude Code OS" — portable workflows, skills, agents. SoNash app is
+  secondary.
+- **session-begin updated**: Now shows all goals without truncation.
+- **3 new tasks**: Agent stalling investigation, Codex plugin, lightweight TODO.
+- **Agent stalling pattern**: D1a and D3b stalled (empty output, context
+  exhaustion). Fixed by splitting into narrower-scoped agents.
+
+**Session #250** (REPO-ANALYSIS DEFENSIVE RESEARCH + MULTI-LAYER MEMORY):
+
+- **Branch**: `planning-33026`
+- Repo-analysis deep-research (defensive lens): 31 agents, 50 claims, 147
+  sources. Tools, pipeline, scoring, guard rails. GSD installed. Statusline fix.
+- Multi-layer memory deep-research: 30 agents, 128 claims, 3 waves.
+
 **Session #249** (PLAN/RESEARCH ARCHIVAL + PROPAGATION ENFORCEMENT):
 
 - **Branch**: `planning-33026` (4 commits)
-- **Archived 8 completed plans** to `.planning/archive/`: agent-env-analysis,
-  cli-tools, custom-statusline, statusline-research, hook-if-conditions,
-  passive-surfacing, propagation-research, repo-cleanup. Updated PLAN.md status
-  for hook-if (DRAFT→COMPLETE) and cli-tools (EXECUTING→COMPLETE).
-- **Archived 5 completed research** to `.research/archive/`:
-  claude-code-permissions, cli-tools, custom-statusline, hook-if-conditions,
-  repo-cleanup. Updated research-index.jsonl paths and status to "archived".
-- **Registered claude-code-permissions** in research-index.jsonl (was missing).
-- **Updated `.planning/STATE.md`** v3.2 with active plans and archive list.
-- **3-Layer Propagation Enforcement COMPLETE** (`/deep-plan`, 19 decisions, 12
-  steps): Pattern registry (`propagation-patterns.json`, 10 patterns from 13+
-  PRs), shared loader module, pre-commit refactored (diff-based, BLOCK/WARN per
-  severity), pre-push refactored (registry Mode B + function-name Mode A, scope
-  expanded), CANON registration, 465 pre-existing violations baselined, `--json`
-  output. Resolved DEBT-45524/45525/11335/11339.
-- **Code-reviewer passed**: APPROVE, 0 critical, 3 warnings (follow-up items).
-
-**Session #248** (ALERTS + BULK RETRO + PR #481):
-
-- **Branch**: `planning-33026`
-- `/alerts --full` resolved 4 errors, vulnerability fixed, reviews synced. Bulk
-  retro PRs #448-480 with 7 action items implemented. PR #481 created, R1 (11
-  fixes) + R2 (5 fixes) processed and merged.
-
-**Session #243** (WAVE 1 AUDIT + DEBT-RUNNER v2 + DEV DASHBOARD PLANNING):
-
-- **Branch**: `plan-32626`
-- Wave 1 Final Audit COMPLETE, CLI tools work locale DONE, statusline fixes,
-  deep-research v2 (debt-runner hybrid), dev dashboard scope expansion. See
-  SESSION_HISTORY.md for details.
+- Archived 8 plans + 5 research to archive dirs. 3-Layer Propagation Enforcement
+  COMPLETE (19 decisions, 12 steps). See SESSION_HISTORY.md.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -88,18 +88,14 @@ Session #249 — COMPLETE. Plan/research archival, propagation enforcement syste
 
 ## Quick Status
 
-| Item                            | Status        | Progress                                          |
-| ------------------------------- | ------------- | ------------------------------------------------- |
-| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner |
-| **Propagation Enforcement**     | COMPLETE      | 3-layer system, 19 decisions, 12 steps (#249)     |
-| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                   |
-| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next                                   |
-| **Research Discovery Standard** | BLOCKED       | Plan drafted, awaiting approval                   |
-| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                  |
-
-**Archived** (#249): agent-env, cli-tools, custom-statusline,
-statusline-research, hook-if-conditions, passive-surfacing,
-propagation-research, repo-cleanup
+| Item                            | Status        | Progress                                                               |
+| ------------------------------- | ------------- | ---------------------------------------------------------------------- |
+| **Repo Analysis Skill**         | RESEARCH DONE | 2 rounds (defensive + value-extraction), deep-plan Phase 1 in progress |
+| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                      |
+| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                                        |
+| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next                                                        |
+| **Multi-layer Memory**          | RESEARCH DONE | 30 agents, 128 claims. Execution next.                                 |
+| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                                       |
 
 **Current Branch**: `planning-33026`
 
@@ -111,8 +107,9 @@ propagation-research, repo-cleanup
 
 ### Immediate Priority
 
-1. **Repo analysis skill** — IN-PROGRESS (Session #250), deep-research phase
-   running. Pipeline: deep-research → deep-plan → skill-creator → skill-audit.
+1. **Repo analysis skill** — RESEARCH COMPLETE (Session #251). Resume
+   `/deep-plan` Phase 1 Discovery — Q2 (mode scope) needs redesign based on
+   value-extraction research (conversation-first default). 5 decisions captured.
 2. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
    center, XL effort. Plan at `.planning/dev-dashboard/PLAN.md`.
 3. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
