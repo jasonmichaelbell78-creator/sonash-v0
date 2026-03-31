@@ -276,7 +276,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "./tools/statusline/sonash-statusline.exe",
+    "command": "./tools/statusline/sonash-statusline-v2.exe",
     "padding": 2
   },
   "enabledPlugins": {

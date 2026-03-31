@@ -72,7 +72,19 @@ if (!sanitizeError) {
 }
 
 let warnings = 0;
+const warningEntries = []; // Collect for JSONL persistence
 const runCommandFailures = [];
+
+/**
+ * Record a session-start warning for both counting and JSONL persistence.
+ * @param {string} type - Warning category (e.g. "session-end-missing", "ratchet", "health")
+ * @param {string} message - Human-readable warning message
+ * @param {string} [action] - Suggested remediation action
+ */
+function addWarning(type, message, action) {
+  warnings++;
+  warningEntries.push({ type, message, action: action || null });
+}
 
 console.log(`🚀 SessionStart Hook for sonash-v0 (${envType})`);
 
@@ -155,7 +167,11 @@ if (previousState && previousState.lastBegin) {
     console.log(
       `⚠️  Previous session started ${hoursAgo}h ago without session-end. Action: review with /alerts`
     );
-    warnings++;
+    addWarning(
+      "session-end-missing",
+      `Previous session started ${hoursAgo}h ago without session-end`,
+      "Review with /alerts"
+    );
 
     // Auto-close the previous session to keep begin/end counts approximately aligned
     previousState.lastEnd = previousState.lastBegin; // Mark as ended at the time it started
@@ -248,7 +264,11 @@ if (secretsStatus.hasTokens) {
   console.log(
     "🔐 MCP secrets: ⚠️ encrypted but not decrypted → node scripts/secrets/decrypt-secrets.js"
   );
-  warnings++;
+  addWarning(
+    "mcp-secrets",
+    "Encrypted but not decrypted",
+    "node scripts/secrets/decrypt-secrets.js"
+  );
 } else {
   console.log("🔐 MCP secrets: ℹ️ not configured");
 }
@@ -431,7 +451,11 @@ function runCommand(description, command, timeoutMs = 120000) {
       reason,
       timestamp: new Date().toISOString(),
     });
-    warnings++;
+    addWarning(
+      "install-" + sanitizeInput(String(description)),
+      description + " " + reason,
+      safeCmd
+    );
     return false;
   }
 }
@@ -448,7 +472,11 @@ if (needsRootInstall()) {
     console.log(
       "   ⚠️ package-lock.json not found, falling back to npm install. Fix: npm install && git add package-lock.json"
     );
-    warnings++;
+    addWarning(
+      "missing-lockfile",
+      "package-lock.json not found",
+      "npm install && git add package-lock.json"
+    );
     runCommand(
       "Installing root dependencies (no lockfile)",
       "npm install --prefer-offline --no-audit --no-fund"
@@ -474,7 +502,11 @@ if (fs.existsSync("functions")) {
       console.log(
         "   ⚠️ functions/package-lock.json not found, falling back to npm install. Fix: cd functions && npm install && git add package-lock.json"
       );
-      warnings++;
+      addWarning(
+        "missing-lockfile-functions",
+        "functions/package-lock.json not found",
+        "cd functions && npm install && git add package-lock.json"
+      );
       runCommand(
         "Installing Firebase Functions dependencies (no lockfile)",
         "cd functions && npm install --prefer-offline --no-audit --no-fund --legacy-peer-deps"
@@ -579,7 +611,7 @@ try {
   } else {
     console.warn("🔍 Patterns: ⚠️ violations detected — npm run patterns:check-all");
   }
-  warnings++;
+  addWarning("pattern-violations", "Pattern violations detected", "npm run patterns:check-all");
 }
 
 // Auto-consolidation (v1 — no full v2 replacement yet, reads from v2 JSONL data)
@@ -599,7 +631,11 @@ try {
     console.error(
       `🔍 Consolidation: ❌ failed (exit ${exitCode}). Fix: node scripts/run-consolidation.js --verbose`
     );
-    warnings++;
+    addWarning(
+      "consolidation-failed",
+      `Consolidation failed (exit ${exitCode})`,
+      "node scripts/run-consolidation.js --verbose"
+    );
   } else if (exitCode === 1) {
     const stdout = (error.stdout || "").toString().trim();
     if (stdout) console.log(stdout);
@@ -642,7 +678,11 @@ try {
       console.warn(sanitizeInput(output.split("\n").slice(0, 5).join("\n")));
     }
     console.warn("   Fix: npm run reviews:lifecycle");
-    warnings++;
+    addWarning(
+      "review-lifecycle",
+      "Review lifecycle validation issues found",
+      "npm run reviews:lifecycle"
+    );
   } else if (err.status === 2) {
     // I/O error — surface as error
     const sanitized = sanitizeError ? sanitizeError(err) : "[review lifecycle error]";
@@ -650,7 +690,11 @@ try {
     console.error(
       "❌ Review lifecycle error: " + sanitizeInput(line0) + " Fix: npm run reviews:lifecycle"
     );
-    warnings++;
+    addWarning(
+      "review-lifecycle-error",
+      "Review lifecycle error: " + sanitizeInput(line0),
+      "npm run reviews:lifecycle"
+    );
   } else {
     // Other/unexpected error
     console.warn(
@@ -658,7 +702,11 @@ try {
         (err.status || "unknown") +
         ". Fix: npm run reviews:lifecycle"
     );
-    warnings++;
+    addWarning(
+      "review-lifecycle-unknown",
+      "Review lifecycle unexpected exit code " + (err.status || "unknown"),
+      "npm run reviews:lifecycle"
+    );
   }
 }
 
@@ -683,7 +731,11 @@ try {
         sanitizeInput(redactedMsg.split("\n")[0].replace(/\r$/, "")) +
         ". Fix: node scripts/rotate-jsonl.js --verbose"
     );
-    warnings++;
+    addWarning(
+      "jsonl-rotation",
+      sanitizeInput(redactedMsg.split("\n")[0].replace(/\r$/, "")),
+      "node scripts/rotate-jsonl.js --verbose"
+    );
   }
 }
 
@@ -987,14 +1039,14 @@ function executePipelineScript(scriptArgs, description, timeout, fixCommand) {
   } catch (err) {
     const sanitized = sanitizeError(err);
     const fixSuffix = fixCommand ? ` Fix: ${fixCommand}` : "";
-    console.log(
-      "   ⚠️ " +
-        description +
-        ": " +
-        sanitizeInput(String(sanitized).split("\n")[0].replace(/\r$/, "")) +
-        fixSuffix
+    const msg =
+      description + ": " + sanitizeInput(String(sanitized).split("\n")[0].replace(/\r$/, ""));
+    console.log("   ⚠️ " + msg + fixSuffix);
+    addWarning(
+      "pipeline-" + description.toLowerCase().replace(/\s+/g, "-"),
+      msg,
+      fixCommand || null
     );
-    warnings++;
   }
 }
 
@@ -1093,7 +1145,11 @@ try {
     console.log(`📊 TDMS: ${total} items (${resolved} resolved)`);
     if (s0Count > 0) {
       console.log(`   🔴 S0: ${s0Count} critical`);
-      warnings++;
+      addWarning(
+        "tdms-s0",
+        `S0: ${s0Count} critical debt items`,
+        "npm run debt:report --severity=S0"
+      );
     }
     if (s1Count > 10) {
       console.log(
@@ -1102,12 +1158,12 @@ try {
     }
   } else {
     console.log("📊 TDMS: ⚠️ metrics not found — npm run debt:metrics");
-    warnings++;
+    addWarning("tdms-missing", "TDMS metrics not found", "npm run debt:metrics");
   }
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
   console.error(`📊 TDMS: ❌ metrics read failed: ${msg}`);
-  warnings++;
+  addWarning("tdms-error", "TDMS metrics read failed", null);
 }
 
 // Step 13: Health quick check (non-blocking)
@@ -1147,7 +1203,11 @@ try {
       console.log(
         `   ⚠️ Health grade dropped ${previous.grade} → ${current.grade} (${deltaStr}pts). Action: run /alerts --full for details`
       );
-      warnings++;
+      addWarning(
+        "health-grade-drop",
+        `Health grade dropped ${previous.grade} → ${current.grade} (${deltaStr}pts)`,
+        "Run /alerts --full"
+      );
     } else if (curIdx >= 0 && prevIdx >= 0 && curIdx !== prevIdx) {
       const arrow = curIdx < prevIdx ? "↑" : "↓";
       console.log(
@@ -1212,10 +1272,64 @@ try {
     console.log(
       `   ⚠️ CLI tools missing: ${missing.join(", ")}. Fix: bash scripts/install-cli-tools.sh`
     );
-    warnings++;
+    addWarning(
+      "cli-tools-missing",
+      `CLI tools missing: ${missing.join(", ")}`,
+      "bash scripts/install-cli-tools.sh"
+    );
   }
 } catch {
   // Non-fatal — tool manifest may not exist or be unreadable
+}
+
+// Persist session-start warnings to JSONL so statusline can display them
+if (warningEntries.length > 0) {
+  try {
+    const logDir = path.join(projectDir, ".claude", "state");
+    const logPath = path.join(logDir, "hook-warnings-log.jsonl");
+    let guardOk = true;
+    try {
+      const { isSafeToWrite: safe } = require(
+        path.join(projectDir, ".claude", "hooks", "lib", "symlink-guard")
+      );
+      if (!safe(logPath)) guardOk = false;
+    } catch {
+      /* no guard — proceed */
+    }
+    if (guardOk) {
+      // Read current lastCleared and set timestamps 1s after it,
+      // so warnings survive even if a concurrent session set lastCleared
+      // moments before this flush runs
+      let ts = new Date().toISOString();
+      try {
+        const ackRaw = fs.readFileSync(path.join(logDir, "hook-warnings-ack.json"), "utf8");
+        const ackData = JSON.parse(ackRaw);
+        if (ackData.lastCleared) {
+          const afterCleared = new Date(new Date(ackData.lastCleared).getTime() + 1000);
+          const now = new Date();
+          ts = (afterCleared > now ? afterCleared : now).toISOString();
+        }
+      } catch {
+        /* no ack file — use current time */
+      }
+      const lines = warningEntries.map((w) =>
+        JSON.stringify({
+          hook: "session-start",
+          type: w.type,
+          severity: "warning",
+          message: w.message,
+          action: w.action,
+          timestamp: ts,
+          actor: "hook-system",
+          user: "redacted",
+          outcome: "warned",
+        })
+      );
+      fs.appendFileSync(logPath, lines.join("\n") + "\n");
+    }
+  } catch {
+    // Non-fatal — never block session start on warning persistence
+  }
 }
 
 console.log("");

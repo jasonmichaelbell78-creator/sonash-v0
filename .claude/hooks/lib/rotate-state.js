@@ -266,8 +266,40 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
         return { rotated: false, before: lines.length, after: lines.length, archived: 0 };
       }
 
-      const evicted = lines.slice(0, -keep);
-      const kept = lines.slice(-keep);
+      // FIX: Ack-aware rotation — never evict unacked entries (bug: lost 3 unacked warnings)
+      const ackPath = filePath.replace(/\.jsonl$/, "").replace(/-log$/, "") + "-ack.json";
+      let lastCleared = null;
+      try {
+        const ackRaw = fs.readFileSync(ackPath, "utf-8");
+        const ack = JSON.parse(ackRaw);
+        if (ack.lastCleared) lastCleared = new Date(ack.lastCleared);
+      } catch {
+        // No ack file — all entries treated as unacked
+      }
+
+      const acked = [];
+      const unacked = [];
+      for (const line of lines) {
+        let isUnacked = true;
+        if (lastCleared) {
+          try {
+            const entry = JSON.parse(line);
+            if (entry.timestamp && new Date(entry.timestamp) <= lastCleared) isUnacked = false;
+          } catch {
+            /* malformed — treat as unacked */
+          }
+        }
+        (isUnacked ? unacked : acked).push(line);
+      }
+
+      if (acked.length === 0) {
+        return { rotated: false, before: lines.length, after: lines.length, archived: 0 };
+      }
+
+      const ackedToKeep = Math.max(0, keep - unacked.length);
+      const keptAcked = ackedToKeep > 0 ? acked.slice(-ackedToKeep) : [];
+      const evicted = acked.slice(0, acked.length - ackedToKeep);
+      const kept = [...keptAcked, ...unacked];
 
       // Archive evicted entries (append to .archive file)
       const archivePath = `${filePath}.archive`;
