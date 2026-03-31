@@ -1,0 +1,108 @@
+{
+  "topic": "Multi-layer memory system for Claude Code",
+  "topicSlug": "multi-layer-memory",
+  "depth": "L1",
+  "domain": "technology",
+  "status": "planned",
+  "phase": "0",
+  "phaseDetail": "Plan approved, awaiting execution",
+  "startedAt": "2026-03-30T02:30:00Z",
+  "outputPath": ".research/multi-layer-memory/",
+  "subQuestions": [
+    {
+      "id": "SQ1",
+      "topic": "Current Claude Code memory ecosystem inventory",
+      "agents": 1,
+      "wave": 1,
+      "status": "pending",
+      "profile": "codebase"
+    },
+    {
+      "id": "SQ2",
+      "topic": "Deep analysis of 6 referenced repos (claude-mem, cipher, everything-claude-code, interface-design, claude-supermemory, OpenMemory)",
+      "agents": 3,
+      "wave": 1,
+      "status": "pending",
+      "profile": "web"
+    },
+    {
+      "id": "SQ3",
+      "topic": "Broader GitHub/marketplace/community memory system discovery",
+      "agents": 3,
+      "wave": 1,
+      "status": "pending",
+      "profile": "web"
+    },
+    {
+      "id": "SQ4",
+      "topic": "Academic/industry LLM memory architecture patterns",
+      "agents": 2,
+      "wave": 1,
+      "status": "pending",
+      "profile": "web+academic"
+    },
+    {
+      "id": "SQ5",
+      "topic": "MCP servers for memory/knowledge management (Obsidian, NotebookLM, vector DBs, plugin marketplaces)",
+      "agents": 2,
+      "wave": 1,
+      "status": "pending",
+      "profile": "web"
+    },
+    {
+      "id": "SQ6",
+      "topic": "Comparison matrix and architecture pattern mapping",
+      "agents": 2,
+      "wave": 2,
+      "status": "pending",
+      "profile": "synthesis"
+    },
+    {
+      "id": "SQ7",
+      "topic": "Cross-locale sync patterns (git, shared MCP, cloud DB, hybrid)",
+      "agents": 2,
+      "wave": 2,
+      "status": "pending",
+      "profile": "web+codebase"
+    },
+    {
+      "id": "SQ8",
+      "topic": "Hybrid/enhanced system design for SoNash",
+      "agents": 2,
+      "wave": 3,
+      "status": "pending",
+      "profile": "synthesis+web"
+    },
+    {
+      "id": "SQ9",
+      "topic": "Clean-slate new system architecture",
+      "agents": 2,
+      "wave": 3,
+      "status": "pending",
+      "profile": "web+design"
+    },
+    {
+      "id": "SQ10",
+      "topic": "Failure modes, risks, maintenance costs, solo developer feasibility",
+      "agents": 2,
+      "wave": 3,
+      "status": "pending",
+      "profile": "web+codebase"
+    }
+  ],
+  "referenceRepos": [
+    "https://github.com/thedotmack/claude-mem",
+    "https://github.com/campfirein/cipher",
+    "https://github.com/affaan-m/everything-claude-code",
+    "https://github.com/Dammyjay93/interface-design",
+    "https://github.com/supermemoryai/claude-supermemory",
+    "https://github.com/CaviraOSS/OpenMemory"
+  ],
+  "waves": {
+    "W1": { "agents": 11, "status": "pending" },
+    "W2": { "agents": 4, "status": "pending", "dependsOn": "W1" },
+    "W3": { "agents": 6, "status": "pending", "dependsOn": "W2" }
+  },
+  "completedPhases": ["0"],
+  "agentResults": []
+}
