@@ -20,7 +20,7 @@ if [[ -z "${HOME:-}" ]]; then
 fi
 
 INSTALL_DIR="$HOME/.claude/statusline"
-BINARY_NAME="sonash-statusline"
+BINARY_NAME="sonash-statusline-v2"
 
 # Ensure Go is in PATH (Windows install location)
 if ! command -v go &>/dev/null; then

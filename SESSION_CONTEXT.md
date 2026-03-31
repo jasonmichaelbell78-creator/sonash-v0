@@ -2,7 +2,7 @@
 
 **Document Version**: 8.12 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-30 (Session #249)
+2026-03-31 (Session #250)
 
 ## Purpose
 
@@ -38,7 +38,7 @@ Session #249 — COMPLETE. Plan/research archival, propagation enforcement syste
 
 ## Session Tracking
 
-**Current Session Count**: 249 (since Jan 1, 2026)
+**Current Session Count**: 250 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -111,17 +111,24 @@ propagation-research, repo-cleanup
 
 ### Immediate Priority
 
-1. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
+1. **Repo analysis skill** — IN-PROGRESS (Session #250), deep-research phase
+   running. Pipeline: deep-research → deep-plan → skill-creator → skill-audit.
+2. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
    center, XL effort. Plan at `.planning/dev-dashboard/PLAN.md`.
-2. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
+3. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
    Gates plan-orchestration Waves 2-3.
-3. **Multi-layer memory** — Research state file exists at home locale, recover
+4. **Multi-layer memory** — Research state file exists at home locale, recover
    and execute.
+5. **Worktree management skill** — Extend `superpowers:using-git-worktrees`
+   pattern with .claude/ directory syncing (skills, agents, rules, state). Use
+   `.worktrees/` project-local approach, add gitignore + dep install + test
+   baseline. Close the gap where .claude/ subdirs don't copy to worktrees.
 
 ### After Debt-Runner
 
-4. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
-5. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions.
+6. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
+7. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions.
+8. **Custom agents implementation** — Plan at `.planning/custom-agents/PLAN.md`.
 
 ---
 

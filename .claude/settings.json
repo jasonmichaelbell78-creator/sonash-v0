@@ -57,6 +57,14 @@
             "statusMessage": "Restoring context after compaction..."
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/gsd-check-update.js"
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -124,6 +132,16 @@
             "if": "Read(*.jsonl)|Read(*.log)|Read(*.csv)|Read(*.ndjson)",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/large-file-gate.js",
             "statusMessage": "Checking file size..."
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/gsd-prompt-guard.js",
+            "timeout": 5
           }
         ]
       }
@@ -235,6 +253,16 @@
             "continueOnError": true
           }
         ]
+      },
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/gsd-context-monitor.js",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -280,8 +308,6 @@
     "padding": 2
   },
   "enabledPlugins": {
-    "episodic-memory@superpowers-marketplace": true,
-    "superpowers@claude-plugins-official": true,
-    "superpowers-chrome@superpowers-marketplace": true
+    "superpowers@claude-plugins-official": true
   }
 }
