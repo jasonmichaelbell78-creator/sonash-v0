@@ -33,6 +33,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/audit-health`                   | Meta-check for audit system health                                                       |
 | `/create-audit`                   | Interactive wizard to scaffold new audit type                                            |
 | `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                                                    |
+| `/brainstorm`                     | Creative discovery phase — explore directions before deep-plan or deep-research          |
 | `/deep-plan`                      | Discovery-first planning with exhaustive Q&A and decision record                         |
 | `/deep-research`                  | Multi-agent research engine with parallel search, verification, and downstream adapters  |
 | `/doc-optimizer`                  | Scan docs, auto-fix formatting/headers/links                                             |
