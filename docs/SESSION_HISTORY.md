@@ -25,6 +25,29 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ---
 
+## 2026-04 Sessions
+
+### Session #255 (2026-04-01)
+
+**Focus**: Custom agents implementation (T8) + todos + Dependabot PRs
+
+- **Custom agents plan COMPLETE**: All 25 steps across P0/P1/P2/Validation.
+  Created sonash-context skill, removed 8 redundant agents, elevated 3 agents,
+  created 6 deep-research pipeline agents, wired SKILL.md, injected skills into
+  23 agents, added example blocks to 16 agents. 4 commits.
+- **Todos**: Added 5 new todos (T12-T16: github-health, RDS updates, learnings
+  analysis, .gitignore audit, Claude Code OS). T8 completed.
+- **Dependabot**: Merged #485 (fetch-metadata 3.0.0). Fixed #486 (codecov 6.0.0)
+  SHA pin + test assertion, pushed fix.
+- **Branch issue**: Other instance switched HEAD from planning-33026 to
+  research-planning. Fixed with stash+checkout. Root cause: shared working dir.
+
+### Session #254 (2026-04-01)
+
+**Focus**: Sync, statusline rebuild, alerts full review
+
+- Hook state file updates, session sync, statusline rebuild, alerts review.
+
 ## 2026-03 Sessions
 
 ### Session #248 (2026-03-30)

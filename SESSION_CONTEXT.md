@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.14 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.15 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-01 (Session #254)
+2026-04-01 (Session #255)
 
 ## Purpose
 
@@ -38,7 +38,7 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Session Tracking
 
-**Current Session Count**: 254 (since Jan 1, 2026)
+**Current Session Count**: 255 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,32 +48,31 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Recent Session Summaries
 
+**Session #255** (CUSTOM AGENTS + TODOS + DEPENDABOT):
+
+- **Branch**: `planning-33026` (5 commits)
+- **Custom agents plan COMPLETE** (T8): All 25 steps across P0 (sonash-context
+  skill, pipeline relocation), P1 (8 removals, 3 elevations, 3 overrides, 14
+  skill injections), P2 (6 deep-research pipeline agents, SKILL.md wiring),
+  Validation (structural audit, version check, pipeline verification).
+- **Todos**: Added T12-T16 (github-health, RDS updates, learnings analysis,
+  .gitignore audit, Claude Code OS). T8 completed.
+- **Dependabot**: Merged #485 (fetch-metadata 3.0). Fixed #486 (codecov 6.0) SHA
+  pin + test, pushed.
+- **Repo analysis deep-plan** completed by parallel instance (24 decisions,
+  9-step plan). T1 updated to implementation-ready.
+
+**Session #254** (SYNC + STATUSLINE + ALERTS):
+
+- Hook state file updates, statusline rebuild, alerts full review.
+
 **Session #253** (/TODO SKILL CREATION + SKILL-AUDIT):
 
 - **Branch**: `planning-33026`
 - **/todo skill created**: Full /skill-creator workflow — 26 discovery
   decisions, 8-option interactive menu, JSONL-backed persistence, AI-powered
   context capture. Independent of GSD.
-- **Seed data**: 11 todos migrated from SESSION_CONTEXT.md Next Session Goals.
-  T11 (/todo skill) completed during testing.
-- **Skill-audit complete**: 11 categories, 28 decisions (19 accepted, 9
-  rejected). Score 78/100 → ~88/100 post-fix. All 19 decisions implemented.
-- **Session-start hook wired**: Todo count now surfaces at session startup.
-- **Files created**: SKILL.md, REFERENCE.md, render-todos.js, todos.jsonl,
-  TODOS.md. validate-jsonl-md-sync.js updated.
-
-**Session #251** (REPO-ANALYSIS VALUE-EXTRACTION RESEARCH + DEEP-PLAN):
-
-- **Branch**: `planning-33026` (2 commits)
-- Value-extraction deep-research COMPLETE: 28 agents, 80 claims, 131 sources.
-- Deep-plan Phase 1 Discovery: 5/7 batch 1 decisions captured.
-- OS vision revealed: project-agnostic "Claude Code OS" is primary goal.
-
-**Session #250** (REPO-ANALYSIS DEFENSIVE RESEARCH + MULTI-LAYER MEMORY):
-
-- **Branch**: `planning-33026`
-- Repo-analysis deep-research (defensive lens): 31 agents, 50 claims, 147
-  sources. Multi-layer memory deep-research: 30 agents, 128 claims, 3 waves.
+- **Skill-audit complete**: 11 categories, 28 decisions. Score 78→88.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -81,15 +80,16 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Quick Status
 
-| Item                            | Status        | Progress                                                               |
-| ------------------------------- | ------------- | ---------------------------------------------------------------------- |
-| **Repo Analysis Skill**         | RESEARCH DONE | 2 rounds (defensive + value-extraction), deep-plan Phase 1 in progress |
-| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                      |
-| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                                        |
-| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next                                                        |
-| **Multi-layer Memory**          | RESEARCH DONE | 30 agents, 128 claims. Execution next.                                 |
-| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                                       |
-| **/todo Skill**                 | COMPLETE      | v1.1 — 8-option menu, JSONL, hooks, audited                            |
+| Item                            | Status        | Progress                                                    |
+| ------------------------------- | ------------- | ----------------------------------------------------------- |
+| **Repo Analysis Skill**         | PLAN READY    | Deep-plan complete (24 decisions, 9 steps). Ready for impl. |
+| **Custom Agents**               | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded.   |
+| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner           |
+| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                             |
+| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.        |
+| **Multi-layer Memory**          | RESEARCH DONE | 30 agents, 128 claims. Execution next.                      |
+| **Claude Code OS**              | NOT STARTED   | Primary strategic vision. Multi-stage research needed.      |
+| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                            |
 
 **Current Branch**: `planning-33026`
 
@@ -101,34 +101,22 @@ Session #253 — /todo skill creation + skill-audit.
 
 ### Immediate Priority
 
-1. **Repo analysis skill** — RESEARCH COMPLETE (Session #251). Resume
-   `/deep-plan` Phase 1 Discovery — Q2 (mode scope) needs redesign based on
-   value-extraction research (conversation-first default). 5 decisions captured.
+1. **Repo analysis skill** — PLAN READY. 24 decisions, 9-step plan at
+   `.planning/repo-analysis-skill/PLAN.md`. Ready for implementation.
 2. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
    center, XL effort. Plan at `.planning/dev-dashboard/PLAN.md`.
 3. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
    Gates plan-orchestration Waves 2-3.
-4. **Multi-layer memory** — Research state file exists at home locale, recover
-   and execute.
-5. **Worktree management skill** — Extend `superpowers:using-git-worktrees`
-   pattern with .claude/ directory syncing (skills, agents, rules, state). Use
-   `.worktrees/` project-local approach, add gitignore + dep install + test
-   baseline. Close the gap where .claude/ subdirs don't copy to worktrees.
+4. **Multi-layer memory** — Research state file at home locale. Execute.
+5. **Claude Code OS** — Primary strategic vision (T16). Needs multi-stage
+   research before any implementation. Run `/todo` to review full backlog.
 
 ### After Debt-Runner
 
 6. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
 7. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions.
-8. **Custom agents implementation** — Plan at `.planning/custom-agents/PLAN.md`.
-9. **Agent stalling investigation** — Agents reading 16+ findings files for
-   synthesis silently stall (context exhaustion, no error). Happened 4 times
-   this session. Explore: timeout watchdog, input chunking, or split prompts.
-10. **Codex plugin for Claude Code** — Install `openai/codex-plugin-cc`.
-    Cross-model adversarial review (`/codex:adversarial-review`), task
-    delegation (`/codex:rescue`). Requires ChatGPT subscription (have it).
-    Evaluate as complement to Gemini CLI contrarian challenges.
-11. ~~**Lightweight TODO system**~~ — DONE (Session #253). `/todo` skill with
-    JSONL storage, 8-option menu, session hooks. Run `/todo` to manage.
+
+### Backlog (run `/todo` for full list — 14 active, 2 completed)
 
 ---
 
