@@ -580,8 +580,68 @@ structured output.
     prettier-ignore, cross-doc deps), dual-audience principle (developer + AI
     agents), token cost awareness
 
-**Remaining P1 steps:** 5 (Wave A removals), 6 (Wave B, pending audit), 10
-(general-purpose override), 11 (plugin overrides), 12 (security-auditor
-upgrade), 13 (fix descriptions), 14 (inject sonash-context into all remaining).
+- **Step 4 — Cross-reference audit complete.** Explore agent audited all 9
+  removal candidates across CLAUDE.md, skills, teams, invocations, and settings.
+  Result: ALL 9 agents had zero active references. All mentions were passive
+  (planning docs, research artifacts, archived plans). Wave A: 5 safe removes.
+  Wave B: 4 audit-dependent (all confirmed zero references).
 
-**P2 and Validation:** Not started.
+- **Steps 5-6 — All 9 agents resolved.** Wave A: 5 redirect stubs
+  (error-detective → debugger, devops-troubleshooter → debugger,
+  deployment-engineer → fullstack-developer, penetration-tester →
+  security-auditor, security-engineer → security-auditor). Wave B: 3 redirect
+  stubs (markdown-syntax-formatter → technical-writer,
+  react-performance-optimization → performance-engineer, prompt-engineer →
+  technical-writer/skill-creator). mcp-expert: full replacement with
+  SoNash-specific MCP knowledge (memory, sonarcloud, context7 servers, Windows
+  command wrapping, health check integration).
+
+- **Step 10 — General-purpose override created.** New file at
+  `.claude/agents/general-purpose.md`. Project-level override for the default
+  agent with sonash-context skill, SoNash constraints, structured return format.
+
+- **Step 11 — Plugin agent overrides created.** Three new files:
+  `silent-failure-hunter.md` (sanitizeError enforcement, SoNash error patterns),
+  `pr-test-analyzer.md` (node:test conventions, httpsCallable mocking rules),
+  `mcp-expert.md` (replaced in Step 6).
+
+- **Step 12 — Security-auditor upgraded.** Model changed from sonnet → opus.
+  skills: [sonash-context] already added in Step 2. Agent body was already
+  well-built (536 lines) so no body changes needed.
+
+- **Step 13 — Descriptions fixed.** dependency-manager updated with meaningful
+  multi-sentence description and sonash-context skill. deep-research-searcher
+  and deep-research-synthesizer verified — descriptions already good.
+
+- **Step 14 — sonash-context injected into 14 remaining agents.** All local
+  SoNash agents now have `skills: [sonash-context]` in frontmatter. GSD agents
+  (project-agnostic) intentionally excluded.
+
+**P1: COMPLETE** (all 11 steps done)
+
+**P2 Pipeline Agents + Polish: MOSTLY COMPLETE**
+
+- **Steps 15-19 — All 6 pipeline agents created.** Dispatched 4 parallel agents
+  to create: deep-research-verifier (~150 lines, 4-verdict taxonomy, FIRE
+  confidence model, DRAGged conflict classification), contrarian-challenger
+  (~130 lines, steel-man + pre-mortem + Free-MAD protocol), otb-challenger (~120
+  lines, lateral thinking + feasibility assessment), dispute-resolver (~140
+  lines, DRAGged 5-type + T1-T4 evidence hierarchy + mandatory dissent records),
+  deep-research-gap-pursuer (~150 lines, 5 gap types + 3 search profiles +
+  diminishing returns signal), deep-research-final-synthesizer (~140 lines, 3
+  modes + version tracking + metadata update). All verified present on disk.
+
+- **Step 20 — SKILL.md wired.** All 6 deep-research phases updated with
+  `Agent(subagent_type="...")` calls: Phase 2.5 → deep-research-verifier, Phase
+  3 → contrarian-challenger + otb-challenger, Phase 3.5 → dispute-resolver,
+  Phase 3.95 → deep-research-gap-pursuer, Phase 3.96 → deep-research-verifier
+  (reuse), Phase 3.97 → deep-research-final-synthesizer. REFERENCE.md templates
+  preserved as deprecated fallbacks per D23.
+
+- **Step 22 — CLAUDE.md Section 7 updated.** Agent count updated from 27 to 34.
+
+**Remaining (deferred to next session):**
+
+- Step 21: Add `<example>` blocks to all remaining agents without them
+- Steps 23-25: Validation (structural audit, sonash-context audit, pipeline
+  smoke test)
