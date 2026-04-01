@@ -535,129 +535,104 @@ structured output.
 
 ## Execution Log
 
-### Session #255 (2026-04-01) — P0 Complete, P1 In Progress
+### Session #255 (2026-04-01) — ALL 25 STEPS COMPLETE
 
 **P0 Infrastructure (Steps 1-3): COMPLETE**
 
 - **Step 1 — sonash-context skill created.** New skill at
   `.claude/skills/sonash-context/SKILL.md` (~60 lines). Contains stack versions,
   architecture, security boundaries, key paths, coding standards, and return
-  format. Designed to be injected into all agents via `skills: [sonash-context]`
-  frontmatter field, eliminating duplicated project context across agent
-  definitions.
+  format. Injected into all agents via `skills: [sonash-context]` frontmatter,
+  eliminating duplicated project context across 23+ agent definitions.
 
 - **Step 2 — Pilot injection verified.** Added `skills: [sonash-context]` to
   `security-auditor.md`. Spawned agent on a trivial task — confirmed it could
   answer 3 questions (Next.js version, repository pattern file, error
-  sanitization function) entirely from the injected skill content. Injection
-  mechanism works.
+  sanitization function) entirely from the injected skill content.
 
-- **Step 3 — Pipeline agents relocated.** Copied `deep-research-searcher.md` and
+- **Step 3 — Pipeline agents relocated.** Moved `deep-research-searcher.md` and
   `deep-research-synthesizer.md` from `.claude/agents/global/` to
-  `.claude/agents/`. Removed originals from global/. Verified searcher resolves
-  from new location by spawning a test agent. Deep-research SKILL.md references
-  agents by name (not path), so relocation is transparent.
+  `.claude/agents/`. Verified searcher resolves by name from new location.
 
-**P1 Quick Wins (Steps 4-14): IN PROGRESS**
+**P1 Quick Wins (Steps 4-14): COMPLETE**
 
-- **Step 4 — Cross-reference audit dispatched.** Explore agent running in
-  background, auditing all 9 removal candidates across CLAUDE.md, skills, teams,
-  invocations, and settings. Will classify agents as Wave A (safe remove) or
-  Wave B (needs redirect).
+- **Step 4 — Cross-reference audit.** Explore agent audited all 9 removal
+  candidates across CLAUDE.md, skills, teams, invocations, and settings. Result:
+  ALL 9 agents had zero active references — all mentions were passive (planning
+  docs, research artifacts, archived plans).
 
-- **Steps 7-9 — Three agents elevated.** Rewrote `debugger.md`,
+- **Steps 5-6 — 9 agents resolved.** Wave A (5 redirect stubs): error-detective
+  → debugger, devops-troubleshooter → debugger, deployment-engineer →
+  fullstack-developer, penetration-tester → security-auditor, security-engineer
+  → security-auditor. Wave B (3 redirect stubs): markdown-syntax-formatter →
+  technical-writer, react-performance-optimization → performance-engineer,
+  prompt-engineer → technical-writer/skill-creator. mcp-expert: full replacement
+  with SoNash-specific MCP knowledge (memory, sonarcloud, context7 servers,
+  Windows command wrapping, health check integration).
+
+- **Steps 7-9 — 3 agents elevated.** Rewrote `debugger.md`,
   `performance-engineer.md`, and `technical-writer.md` from generic stubs
   (~30-40 lines each) to full SoNash-aware definitions (~100-150 lines each).
-  All three now have: `skills: [sonash-context]`, `model: inherit`, role blocks,
-  SoNash-specific error patterns/domains, structured return format, anti-pattern
-  lists, and `<example>` blocks. Key changes:
-  - **debugger**: Added Firebase/Firestore error patterns, pre-commit hook
-    failure workflow, sanitizeError enforcement, 5-step debugging sequence
-  - **performance-engineer**: Added Firestore query optimization, React 19
-    Server Components guidance, Firebase Functions cold start patterns, Core Web
-    Vitals focus, changed model from opus to inherit
-  - **technical-writer**: Added SoNash doc standards (headers, version tables,
-    prettier-ignore, cross-doc deps), dual-audience principle (developer + AI
-    agents), token cost awareness
+  All three: `skills: [sonash-context]`, `model: inherit`, role blocks,
+  SoNash-specific patterns, structured return, anti-patterns, `<example>`
+  blocks.
 
-- **Step 4 — Cross-reference audit complete.** Explore agent audited all 9
-  removal candidates across CLAUDE.md, skills, teams, invocations, and settings.
-  Result: ALL 9 agents had zero active references. All mentions were passive
-  (planning docs, research artifacts, archived plans). Wave A: 5 safe removes.
-  Wave B: 4 audit-dependent (all confirmed zero references).
+- **Step 10 — General-purpose override.** New project-level override for the
+  default agent with sonash-context, SoNash constraints, structured return.
 
-- **Steps 5-6 — All 9 agents resolved.** Wave A: 5 redirect stubs
-  (error-detective → debugger, devops-troubleshooter → debugger,
-  deployment-engineer → fullstack-developer, penetration-tester →
-  security-auditor, security-engineer → security-auditor). Wave B: 3 redirect
-  stubs (markdown-syntax-formatter → technical-writer,
-  react-performance-optimization → performance-engineer, prompt-engineer →
-  technical-writer/skill-creator). mcp-expert: full replacement with
-  SoNash-specific MCP knowledge (memory, sonarcloud, context7 servers, Windows
-  command wrapping, health check integration).
+- **Step 11 — Plugin agent overrides.** 3 new files: `silent-failure-hunter.md`
+  (sanitizeError enforcement), `pr-test-analyzer.md` (node:test conventions,
+  httpsCallable mocking), `mcp-expert.md` (replaced in Step 6).
 
-- **Step 10 — General-purpose override created.** New file at
-  `.claude/agents/general-purpose.md`. Project-level override for the default
-  agent with sonash-context skill, SoNash constraints, structured return format.
+- **Step 12 — Security-auditor upgraded.** Model sonnet → opus.
 
-- **Step 11 — Plugin agent overrides created.** Three new files:
-  `silent-failure-hunter.md` (sanitizeError enforcement, SoNash error patterns),
-  `pr-test-analyzer.md` (node:test conventions, httpsCallable mocking rules),
-  `mcp-expert.md` (replaced in Step 6).
-
-- **Step 12 — Security-auditor upgraded.** Model changed from sonnet → opus.
-  skills: [sonash-context] already added in Step 2. Agent body was already
-  well-built (536 lines) so no body changes needed.
-
-- **Step 13 — Descriptions fixed.** dependency-manager updated with meaningful
-  multi-sentence description and sonash-context skill. deep-research-searcher
-  and deep-research-synthesizer verified — descriptions already good.
+- **Step 13 — Descriptions fixed.** dependency-manager updated. Pipeline agent
+  descriptions verified (already good).
 
 - **Step 14 — sonash-context injected into 14 remaining agents.** All local
-  SoNash agents now have `skills: [sonash-context]` in frontmatter. GSD agents
-  (project-agnostic) intentionally excluded.
+  SoNash agents now have `skills: [sonash-context]`. GSD agents (project-
+  agnostic) intentionally excluded.
 
-**P1: COMPLETE** (all 11 steps done)
+**P2 Pipeline Agents + Polish (Steps 15-22): COMPLETE**
 
-**P2 Pipeline Agents + Polish: MOSTLY COMPLETE**
-
-- **Steps 15-19 — All 6 pipeline agents created.** Dispatched 4 parallel agents
-  to create: deep-research-verifier (~150 lines, 4-verdict taxonomy, FIRE
-  confidence model, DRAGged conflict classification), contrarian-challenger
-  (~130 lines, steel-man + pre-mortem + Free-MAD protocol), otb-challenger (~120
-  lines, lateral thinking + feasibility assessment), dispute-resolver (~140
-  lines, DRAGged 5-type + T1-T4 evidence hierarchy + mandatory dissent records),
-  deep-research-gap-pursuer (~150 lines, 5 gap types + 3 search profiles +
-  diminishing returns signal), deep-research-final-synthesizer (~140 lines, 3
-  modes + version tracking + metadata update). All verified present on disk.
+- **Steps 15-19 — 6 pipeline agents created** (4 parallel agents dispatched):
+  - `deep-research-verifier`: 4-verdict taxonomy, dual-path verification, FIRE
+    confidence model, DRAGged conflict classification
+  - `contrarian-challenger`: steel-man + pre-mortem + Free-MAD protocol
+  - `otb-challenger`: lateral thinking, feasibility assessment, reframing
+  - `dispute-resolver`: DRAGged 5-type conflicts, T1-T4 evidence hierarchy,
+    mandatory dissent records
+  - `deep-research-gap-pursuer`: 5 gap types, 3 search profiles
+    (web/codebase/academic), diminishing returns signal
+  - `deep-research-final-synthesizer`: 3 modes (post-verification,
+    post-gap-pursuit, full-resynthesis), version tracking, metadata update
 
 - **Step 20 — SKILL.md wired.** All 6 deep-research phases updated with
-  `Agent(subagent_type="...")` calls: Phase 2.5 → deep-research-verifier, Phase
-  3 → contrarian-challenger + otb-challenger, Phase 3.5 → dispute-resolver,
-  Phase 3.95 → deep-research-gap-pursuer, Phase 3.96 → deep-research-verifier
-  (reuse), Phase 3.97 → deep-research-final-synthesizer. REFERENCE.md templates
-  preserved as deprecated fallbacks per D23.
+  `Agent(subagent_type="...")` calls: Phase 2.5 → verifier, Phase 3 →
+  contrarian + OTB (parallel), Phase 3.5 → dispute-resolver, Phase 3.95 →
+  gap-pursuer, Phase 3.96 → verifier (reuse), Phase 3.97 → final-synthesizer.
+  REFERENCE.md templates preserved as deprecated fallbacks per D23.
 
-- **Step 22 — CLAUDE.md Section 7 updated.** Agent count updated from 27 to 34.
+- **Step 21 — Example blocks added to 16 agents** (3 parallel batches of 6+6+4).
+  All non-GSD, non-stub agents now have 1-2 `<example>` blocks.
 
-- **Step 21 — Example blocks added to 16 agents.** Dispatched 3 parallel agents
-  (batches of 6+6+4). All 16 non-GSD, non-stub agents now have 1-2 `<example>`
-  blocks showing user triggers and expected behavior.
+- **Step 22 — CLAUDE.md Section 7 updated.** Agent count 27 → 34.
 
-**Validation: COMPLETE**
+**Validation (Steps 23-25): COMPLETE**
 
-- **Step 23 — Structural audit passed.** All agents have name + description. All
-  non-GSD, non-stub agents have `skills: [sonash-context]` and `<example>`
-  blocks. tools: only missing on redirect stubs (expected) and general-purpose
-  (inherits defaults).
+- **Step 23 — Structural audit passed.** All agents: name + description present.
+  All non-GSD, non-stub agents: `skills: [sonash-context]` + `<example>` blocks.
 
 - **Step 24 — sonash-context audit passed.** All 5 package versions match
-  package.json. All referenced paths verified on disk (firestore-service.ts,
-  types/, schemas.ts, sanitize-error.js, security-helpers.js).
+  package.json. All 5 referenced paths verified on disk.
 
 - **Step 25 — Pipeline verification passed.** All 8 pipeline agents exist with
-  correct `name:` fields. All 7 SKILL.md `Agent(subagent_type="...")` references
-  match existing agent files (6 unique agents, verifier used twice).
+  correct names. All 7 SKILL.md agent references resolve to existing files.
 
-**PLAN STATUS: COMPLETE** — All 25 steps done. Deferred items in the follow-ups
-table remain for future cycles.
+**Summary:** 3 commits, 25 steps, 55 agent files (6 new pipeline agents, 3 new
+overrides, 1 new general-purpose, 3 elevated, 8 redirect stubs, 1 replaced, 14
+skill-injected, 16 example-blocked). Net: -1667 lines of generic content, +2759
+lines of SoNash-specific context. All validation passed.
+
+**PLAN STATUS: COMPLETE** — Deferred items in the follow-ups table remain for
+future cycles.
