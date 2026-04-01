@@ -1,62 +1,64 @@
 {
-  "task": "Deep Plan: repo-analysis skill implementation",
+  "task": "Deep Plan: repo-analysis skill — unified (defensive + value extraction)",
   "topic": "repo-analysis-skill",
-  "status": "phase_1",
-  "phase": 1,
-  "current_batch": 1,
-  "total_batches_so_far": 1,
+  "status": "phase_4_approval",
+  "phase": 4,
+  "current_batch": 4,
+  "total_batches_so_far": 4,
   "decisions": [
-    {
-      "id": 1,
-      "decision": "Skill name",
-      "choice": "/repo-analysis",
-      "rationale": "Matches research artifacts, descriptive, extends naturally to subcommands"
-    },
-    {
-      "id": 3,
-      "decision": "Implementation phasing",
-      "choice": "Single phase ship as one unit",
-      "rationale": "User preference for unified delivery"
-    },
-    {
-      "id": 4,
-      "decision": "Skill file structure",
-      "choice": "SKILL.md + REFERENCE.md",
-      "rationale": "Mirrors deep-plan pattern, agent orchestration fits in REFERENCE.md"
-    },
-    {
-      "id": 5,
-      "decision": "Output directory",
-      "choice": ".research/<repo-slug>/",
-      "rationale": "Existing convention, research-index.jsonl tracks runs"
-    },
+    { "id": 1, "decision": "Skill name", "choice": "/repo-analysis" },
+    { "id": 2, "decision": "Mode scope", "choice": "Automated Assess + conversational Extract" },
+    { "id": 3, "decision": "Implementation phasing", "choice": "Single phase ship as one unit" },
+    { "id": 4, "decision": "Skill file structure", "choice": "SKILL.md + REFERENCE.md" },
+    { "id": 5, "decision": "Output directory", "choice": ".research/<repo-slug>/" },
+    { "id": 6, "decision": "Tool installation", "choice": "Graceful degradation + install script" },
     {
       "id": 7,
       "decision": "Agent orchestration",
-      "choice": "Inline Quick Scan + spawned agents for deeper modes, judgment call on when to spawn",
-      "rationale": "Hybrid pattern, overhead acceptable when genuine benefit exists"
-    }
-  ],
-  "total_decisions": 5,
-  "pending_revisit": [
+      "choice": "Inline Quick Scan + spawned agents for deeper"
+    },
+    { "id": 8, "decision": "Quick Scan interaction", "choice": "Interactive gate after findings" },
+    { "id": 9, "decision": "Clone location", "choice": "/tmp/, auto-cleanup" },
+    { "id": 10, "decision": "TDMS integration", "choice": "Opt-in via routing menu" },
+    { "id": 11, "decision": "Comparison mode", "choice": "Single-repo v1" },
+    { "id": 12, "decision": "Value map format", "choice": "JSON + Markdown" },
+    { "id": 13, "decision": "Value extraction scoring", "choice": "Hybrid numeric + qualitative" },
+    { "id": 14, "decision": "Absence pattern display", "choice": "In-dimension + standalone" },
+    { "id": 15, "decision": "Agent allocation", "choice": "Dynamic, 4-concurrent cap" },
+    { "id": 16, "decision": "State file resume", "choice": "Offer resume/re-run/compare" },
     {
-      "question": "Q2",
-      "topic": "Mode scope — needs fundamental redesign based on contrarian findings (conversation-first default)"
+      "id": 17,
+      "decision": "Cross-references",
+      "choice": "deep-plan, deep-research, audit-comprehensive, TDMS, research-index"
+    },
+    { "id": 18, "decision": "Repomix integration", "choice": "repomix --compress to output dir" },
+    { "id": 19, "decision": "Private repo support", "choice": "Transparent via gh auth" },
+    { "id": 20, "decision": "Fork detection", "choice": "Analyze fork, flag with upstream ref" },
+    { "id": 21, "decision": "Home repo guard", "choice": "Exact URL match, warn + offer redirect" },
+    { "id": 22, "decision": "Error handling", "choice": "Retry once + graceful degradation" },
+    {
+      "id": 23,
+      "decision": "Output presentation",
+      "choice": "Write-to-disk-first, then summary inline"
     },
     {
-      "question": "Q6",
-      "topic": "Tool installation — locales now equivalent, graceful degradation confirmed"
+      "id": 24,
+      "decision": "Routing menu",
+      "choice": "5 options: Extract/TDMS/deep-plan/memory/Done"
     }
   ],
-  "notes": "Phase 0 DIAGNOSIS.md complete. Phase 1 Discovery batch 1 done (5 of 7 answered). Q2 (mode scope) deferred for supplemental research which is now COMPLETE. Supplemental research (28 agents, 80 claims) at .research/repo-analysis-value-extraction/. Key finding: conversation-first default (Repomix + Claude), not pipeline. Resume with Q2 redesign then continue Batch 2+.",
+  "total_decisions": 24,
+  "pending_revisit": [],
+  "self_audit": "24/24 decisions covered, checklist PASS",
+  "notes": "Plan complete. 9 steps. Awaiting approval.",
   "research": {
     "defensive": ".research/repo-analysis-skill/RESEARCH_OUTPUT.md",
     "value_extraction": ".research/repo-analysis-value-extraction/RESEARCH_OUTPUT.md"
   },
   "artifacts": {
     "diagnosis": ".planning/repo-analysis-skill/DIAGNOSIS.md",
-    "decisions": null,
-    "plan": null
+    "decisions": ".planning/repo-analysis-skill/DECISIONS.md",
+    "plan": ".planning/repo-analysis-skill/PLAN.md"
   },
-  "updated": "2026-03-31T18:45:00Z"
+  "updated": "2026-04-01T00:00:00Z"
 }

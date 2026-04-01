@@ -1329,6 +1329,38 @@ if (warningEntries.length > 0) {
   }
 }
 
+// --- Todo summary ---
+try {
+  const todosPath = path.join(baseDir, ".planning", "todos.jsonl");
+  if (fs.existsSync(todosPath)) {
+    const todoLines = fs
+      .readFileSync(todosPath, "utf-8")
+      .split("\n")
+      .filter((l) => l.trim())
+      .slice(-500);
+    const todos = [];
+    for (const line of todoLines) {
+      try {
+        todos.push(JSON.parse(line));
+      } catch {
+        /* skip malformed */
+      }
+    }
+    const active = todos.filter((t) => !["completed", "archived"].includes(t.status));
+    if (active.length > 0) {
+      const p0 = active.filter((t) => t.priority === "P0").length;
+      const p1 = active.filter((t) => t.priority === "P1").length;
+      const parts = [];
+      if (p0 > 0) parts.push(`${p0} P0`);
+      if (p1 > 0) parts.push(`${p1} P1`);
+      const detail = parts.length > 0 ? ` (${parts.join(", ")})` : "";
+      console.log(`📋 Todos: ${active.length} active${detail} — run /todo to manage`);
+    }
+  }
+} catch {
+  // Non-fatal — never block session start on todo read failure
+}
+
 console.log("");
 if (warnings === 0) {
   console.log("✅ SessionStart complete");

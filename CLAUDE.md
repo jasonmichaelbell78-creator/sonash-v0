@@ -217,7 +217,7 @@ metrics, commit).
 `/deep-plan`, `/skill-audit`) when complexity thresholds are met — not invoked
 directly.
 
-**Specialized agents** (`.claude/agents/`): 27 agents available beyond this
+**Specialized agents** (`.claude/agents/`): 34 agents available beyond this
 table (e.g., `test-engineer`, `performance-engineer`, `debugger`). Invoke by
 name when the task fits; the table above covers the most common triggers.
 

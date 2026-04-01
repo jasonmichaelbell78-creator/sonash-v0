@@ -1,9 +1,11 @@
 ---
 name: dependency-manager
-description: |
-  Use this agent to manage project dependencies. Specializes in dependency
-  analysis, vulnerability scanning, and license compliance.
+description:
+  Analyze project dependencies, scan for vulnerabilities, check license
+  compliance, and manage updates across npm workspaces. Covers both root
+  package.json and functions/package.json dependency trees.
 tools: Read, Bash, Grep
+skills: [sonash-context]
 model: sonnet
 ---
 
@@ -112,3 +114,18 @@ When your task is complete, return a structured summary to the caller:
 
 - {any follow-up items or risks}
 ```
+
+<example>
+User: "Check for vulnerable dependencies"
+
+Expected behavior:
+
+1. Run npm audit in the project root to scan the main dependency tree
+2. Run npm audit in the functions/ directory to scan the Cloud Functions
+   dependency tree separately
+3. Cross-reference findings with existing overrides in package.json to identify
+   already-patched transitive vulnerabilities
+4. Produce a structured vulnerability report with severity levels (critical,
+   high, moderate) and recommended actions (update, override, or defer)
+5. Flag any Firebase package version misalignment (all @firebase/\* packages
+   must stay on the same major version) </example>

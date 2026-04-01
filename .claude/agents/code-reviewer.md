@@ -7,6 +7,7 @@ description:
 tools: Read, Write, Edit, Bash, Grep, Glob
 disallowedTools: Agent
 model: sonnet
+skills: [sonash-context]
 maxTurns: 25
 ---
 
@@ -80,13 +81,14 @@ await setDoc(doc(db, "daily_logs", id), data); // NO: bypasses all server securi
 In tests, mock `httpsCallable`, never mock Firestore directly:
 
 ```typescript
-// CORRECT — mock the callable wrapper
-vi.mock("firebase/functions", () => ({
-  httpsCallable: vi.fn(() => vi.fn().mockResolvedValue({ data: {} })),
-}));
+// CORRECT — mock the callable wrapper using node:test
+import { mock } from "node:test";
+mock.module("firebase/functions", {
+  namedExports: { httpsCallable: mock.fn(() => mock.fn()) },
+});
 
 // WRONG — bypasses App Check, rate limits, Zod validation
-vi.mock("firebase/firestore");
+mock.module("firebase/firestore");
 ```
 
 ### 2. App Check Token Verification (CRITICAL)
@@ -257,3 +259,32 @@ Return your findings to the orchestrator in this exact format:
 If no issues found in a tier, omit that tier. Always include the Verdict line.
 BLOCK means critical security or data-loss issues. REQUEST_CHANGES means
 non-critical issues that should be fixed. APPROVE means ready to merge.
+
+<example>
+User: "Review the changes in this PR for security issues"
+
+Expected behavior:
+
+1. Run git diff to gather all changed files and their diffs
+2. Run npm run patterns:check and npm run lint, reporting any violations
+   verbatim
+3. Scan the diff for direct Firestore writes to protected collections (journal,
+   daily_logs, inventoryEntries) that bypass httpsCallable
+4. Check for raw error.message usage without sanitizeError() wrapping
+5. Verify any new Cloud Functions use security-wrapper.ts with requireAppCheck:
+   true
+6. Produce the structured review output with CRITICAL/WARNING/SUGGESTION tiers
+   and a Verdict </example>
+
+<example>
+User: "Review the last commit before I push"
+
+Expected behavior:
+
+1. Run git diff HEAD~1 to see the commit's changes
+2. Run both automated checks (patterns:check and lint)
+3. Manual review for SoNash-specific patterns: Zod validation on Cloud Function
+   inputs, try/catch on file reads, exec() /g flags, repository pattern
+   compliance
+4. Return structured findings with file:line references and a clear Verdict
+   (APPROVE, REQUEST_CHANGES, or BLOCK) </example>

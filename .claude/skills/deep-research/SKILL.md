@@ -214,17 +214,20 @@ Verify: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json.
 
 ## Phase 2.5: Verification (mandatory)
 
-Verification agents test claims against filesystem. Agent count: L1 (2), L2 (2),
-L3 (3), L4 (4+). Split claims across agents to avoid context exhaustion.
-Re-spawn per Critical Rule 8. Each writes `findings/V<N>-<scope>.md` with
-per-claim verdict: VERIFIED or REFUTED with evidence.
+Spawn `Agent(subagent_type="deep-research-verifier")` to test claims against
+filesystem and web sources. Agent count: L1 (2), L2 (2), L3 (3), L4 (4+). Split
+claims across agents to avoid context exhaustion. Re-spawn per Critical Rule 8.
+Each writes `findings/V<N>-<scope>.md` with per-claim verdict (4-type taxonomy:
+VERIFIED, REFUTED, UNVERIFIABLE, CONFLICTED) with evidence.
 
 ---
 
 ## Phase 3: Mandatory Challenges
 
-Contrarian and OTB agents **run in parallel**. Scale: L1-L2 (1+1), L3 (2+2), L4
-(3+3 + red team + pre-mortem). Templates: REFERENCE.md Sections 8-9.
+Spawn `Agent(subagent_type="contrarian-challenger")` and
+`Agent(subagent_type="otb-challenger")` **in parallel**. Scale: L1-L2 (1+1), L3
+(2+2), L4 (3+3 + red team + pre-mortem). Agent definitions contain full
+methodology; REFERENCE.md Sections 8-9 provide supplementary templates.
 Cross-model + CL verification: REFERENCE.md Sections 13-14. Re-synthesize if
 more than 20% of claims changed. If `gemini` CLI unavailable or fails more than
 50% of calls, proceed with independent assessment. Record "cross-model:
@@ -234,8 +237,8 @@ unavailable" in metadata.json.
 
 ## Phase 3.5: Dispute Resolution (mandatory when conflicts exist)
 
-Spawn resolution agents for conflicting claims. 1 agent per 5 disputes. Details:
-REFERENCE.md Section 21.
+Spawn `Agent(subagent_type="dispute-resolver")` for conflicting claims. 1 agent
+per 5 disputes. Details: REFERENCE.md Section 21.
 
 ---
 
@@ -254,9 +257,11 @@ self-audit]
 Scan ALL findings for gaps and actionable discoveries across 6 source types
 (D-agent gaps, serendipity items, REFUTED claims, challenge misses,
 LOW/UNVERIFIED claims, unresolved questions). Deduplicate by keyword overlap,
-filter for actionability. Formula: `ceil(G/2)` gap agents, capped by depth (L1:
-4, L2: 4, L3: 6, L4: 10). **One round only** (Critical Rule 9) -- no recursive
-gap chasing. Skip Phases 3.96-3.97 if 0 actionable gaps.
+filter for actionability. Spawn
+`Agent(subagent_type="deep-research-gap-pursuer")` with appropriate `gapType`
+profile (web, codebase, or academic). Formula: `ceil(G/2)` gap agents, capped by
+depth (L1: 4, L2: 4, L3: 6, L4: 10). **One round only** (Critical Rule 9) -- no
+recursive gap chasing. Skip Phases 3.96-3.97 if 0 actionable gaps.
 
 If 50%+ gap agents fail, present options: proceed with partial findings,
 re-spawn failed agents, or skip to self-audit.
@@ -267,16 +272,19 @@ Details: REFERENCE.md Section 22 (source list, dedup/actionability rules).
 
 ## Phase 3.96: Gap Verification (mandatory if gap agents spawned)
 
-Same pattern as Phase 2.5. Agent count: L1 (2), L2 (2), L3 (3), L4 (4). Each
-writes `findings/GV<N>-<scope>.md`. Details: REFERENCE.md Section 22.
+Same pattern as Phase 2.5 — spawn
+`Agent(subagent_type="deep-research-verifier")`. Agent count: L1 (2), L2 (2), L3
+(3), L4 (4). Each writes `findings/GV<N>-<scope>.md`. Details: REFERENCE.md
+Section 22.
 
 ---
 
 ## Phase 3.97: Final Re-Synthesis (mandatory if gap agents spawned)
 
-Single synthesizer **edits** RESEARCH_OUTPUT.md (not rewrite) with all findings.
-Updates claims.jsonl (`C-G*` IDs), sources.jsonl, metadata.json. CL-standard on
-final report. Details: REFERENCE.md Section 22.
+Spawn `Agent(subagent_type="deep-research-final-synthesizer")` in
+`post-gap-pursuit` mode. Single synthesizer **edits** RESEARCH_OUTPUT.md (not
+rewrite) with all findings. Updates claims.jsonl (`C-G*` IDs), sources.jsonl,
+metadata.json. CL-standard on final report. Details: REFERENCE.md Section 22.
 
 ---
 

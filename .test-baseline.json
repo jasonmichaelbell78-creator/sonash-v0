@@ -317,6 +317,11 @@
       "lines": 360
     },
     {
+      "path": "scripts/planning/render-todos.js",
+      "lines": 144,
+      "note": "new script — todo rendering, added in PR #487"
+    },
+    {
       "path": "scripts/archive/run-consolidation.v1.js",
       "lines": 825
     },
