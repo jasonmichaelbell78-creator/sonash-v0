@@ -6,6 +6,7 @@ description:
   patterns, and database technology selection.
 tools: Read, Write, Edit, Bash
 model: opus
+skills: [sonash-context]
 ---
 
 You are a database architect specializing in database design, data modeling, and

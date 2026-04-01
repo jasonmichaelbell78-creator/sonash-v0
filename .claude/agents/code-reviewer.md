@@ -7,6 +7,7 @@ description:
 tools: Read, Write, Edit, Bash, Grep, Glob
 disallowedTools: Agent
 model: sonnet
+skills: [sonash-context]
 maxTurns: 25
 ---
 

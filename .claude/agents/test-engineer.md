@@ -6,6 +6,7 @@ description:
   engineering practices.
 tools: Read, Write, Edit, Bash
 model: opus
+skills: [sonash-context]
 ---
 
 You are a test engineer specializing in comprehensive testing strategies, test

@@ -530,3 +530,58 @@ structured output.
 | App Check MASTER_DEBT entry                      | Separate security debt tracking        |
 | P3 net-new agents                                | Documented failures + creation gate    |
 | Audit re-run for >=75 mean                       | Follow-up session after implementation |
+
+---
+
+## Execution Log
+
+### Session #255 (2026-04-01) — P0 Complete, P1 In Progress
+
+**P0 Infrastructure (Steps 1-3): COMPLETE**
+
+- **Step 1 — sonash-context skill created.** New skill at
+  `.claude/skills/sonash-context/SKILL.md` (~60 lines). Contains stack versions,
+  architecture, security boundaries, key paths, coding standards, and return
+  format. Designed to be injected into all agents via `skills: [sonash-context]`
+  frontmatter field, eliminating duplicated project context across agent
+  definitions.
+
+- **Step 2 — Pilot injection verified.** Added `skills: [sonash-context]` to
+  `security-auditor.md`. Spawned agent on a trivial task — confirmed it could
+  answer 3 questions (Next.js version, repository pattern file, error
+  sanitization function) entirely from the injected skill content. Injection
+  mechanism works.
+
+- **Step 3 — Pipeline agents relocated.** Copied `deep-research-searcher.md` and
+  `deep-research-synthesizer.md` from `.claude/agents/global/` to
+  `.claude/agents/`. Removed originals from global/. Verified searcher resolves
+  from new location by spawning a test agent. Deep-research SKILL.md references
+  agents by name (not path), so relocation is transparent.
+
+**P1 Quick Wins (Steps 4-14): IN PROGRESS**
+
+- **Step 4 — Cross-reference audit dispatched.** Explore agent running in
+  background, auditing all 9 removal candidates across CLAUDE.md, skills, teams,
+  invocations, and settings. Will classify agents as Wave A (safe remove) or
+  Wave B (needs redirect).
+
+- **Steps 7-9 — Three agents elevated.** Rewrote `debugger.md`,
+  `performance-engineer.md`, and `technical-writer.md` from generic stubs
+  (~30-40 lines each) to full SoNash-aware definitions (~100-150 lines each).
+  All three now have: `skills: [sonash-context]`, `model: inherit`, role blocks,
+  SoNash-specific error patterns/domains, structured return format, anti-pattern
+  lists, and `<example>` blocks. Key changes:
+  - **debugger**: Added Firebase/Firestore error patterns, pre-commit hook
+    failure workflow, sanitizeError enforcement, 5-step debugging sequence
+  - **performance-engineer**: Added Firestore query optimization, React 19
+    Server Components guidance, Firebase Functions cold start patterns, Core Web
+    Vitals focus, changed model from opus to inherit
+  - **technical-writer**: Added SoNash doc standards (headers, version tables,
+    prettier-ignore, cross-doc deps), dual-audience principle (developer + AI
+    agents), token cost awareness
+
+**Remaining P1 steps:** 5 (Wave A removals), 6 (Wave B, pending audit), 10
+(general-purpose override), 11 (plugin overrides), 12 (security-auditor
+upgrade), 13 (fix descriptions), 14 (inject sonash-context into all remaining).
+
+**P2 and Validation:** Not started.

@@ -82,6 +82,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/using-superpowers`              | Claude skills usage guide                                                                |
 | `/ux-researcher-designer`         | UX research and design toolkit                                                           |
 | `/webapp-testing`                 | Web application testing with Playwright                                                  |
+| `sonash-context`                  | Shared project context injected into agents via `skills:` field (not user-invocable)     |
 
 ## System Commands
 

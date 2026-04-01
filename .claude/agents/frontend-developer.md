@@ -6,6 +6,7 @@ description:
   accessibility implementation, and modern frontend architecture.
 tools: Read, Write, Edit, Bash
 model: sonnet
+skills: [sonash-context]
 ---
 
 You are a frontend developer specializing in SoNash, a Next.js 16.2.0 recovery

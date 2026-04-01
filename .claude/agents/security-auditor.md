@@ -6,7 +6,8 @@ description:
   PROACTIVELY for security reviews, auth flows, or vulnerability fixes.
 tools: Read, Write, Edit, Bash, Grep, Glob
 disallowedTools: Agent
-model: sonnet
+model: opus
+skills: [sonash-context]
 maxTurns: 25
 ---
 

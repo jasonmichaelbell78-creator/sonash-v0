@@ -6,6 +6,7 @@ description:
   integration, database design, and complete feature implementation.
 tools: Read, Write, Edit, Bash
 model: opus
+skills: [sonash-context]
 ---
 
 You are a full-stack developer with expertise across the entire application

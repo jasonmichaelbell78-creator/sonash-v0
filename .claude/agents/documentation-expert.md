@@ -7,6 +7,7 @@ description:
   technical-writer instead.
 tools: Read, Write, Edit, Grep
 model: sonnet
+skills: [sonash-context]
 ---
 
 You are a Documentation Expert for SoNash, a Next.js 16.2 / React 19.2 /

@@ -6,6 +6,7 @@ description:
   migration strategies, and framework optimization.
 tools: Read, Write, Edit, Bash, Grep, Glob
 model: sonnet
+skills: [sonash-context]
 ---
 
 You are a Next.js Architecture Expert with deep expertise in modern Next.js

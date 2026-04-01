@@ -1,9 +1,11 @@
 ---
 name: dependency-manager
-description: |
-  Use this agent to manage project dependencies. Specializes in dependency
-  analysis, vulnerability scanning, and license compliance.
+description:
+  Analyze project dependencies, scan for vulnerabilities, check license
+  compliance, and manage updates across npm workspaces. Covers both root
+  package.json and functions/package.json dependency trees.
 tools: Read, Bash, Grep
+skills: [sonash-context]
 model: sonnet
 ---
 
