@@ -380,28 +380,6 @@ accumulate.
 <summary>Previous Consolidation (#27)</summary>
 
 - **Date:** 2026-04-01
-- **Reviews consolidated:** #review-466-r3-#rev-61
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#26)</summary>
-
-- **Date:** 2026-04-01
-- **Reviews consolidated:** #review-466-r3-#rev-61
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#26)</summary>
-
-- **Date:** 2026-04-01
 - **Reviews consolidated:** #review-466-r3-#rev-27
 - **Recurring patterns:**
   - qodo (17x)
@@ -2830,6 +2808,30 @@ deduped/merged)
   releases/download path), better grep fallback.
 - PATH check for $HOME/bin ensures tools are discoverable after install.
 - Missing source config guard prevents misleading "up to date" messages.
+
+---
+
+### Review #62 — PR #487 R1 (Mixed: Doc Lint + SonarCloud + Gemini + Qodo + CI)
+
+**Date:** 2026-04-01 **Items:** 7 (7 fixed, 0 deferred, 0 rejected)
+
+**Patterns:**
+
+- Vitest→node:test propagation across 3 agent files (test-engineer,
+  code-reviewer, example in test-engineer). Gemini caught the root; propagation
+  sweep found 2 more.
+- SonarCloud Array#push() batching: 16 instances across render-todos.js
+  consolidated into batched push() calls. Pattern: always batch consecutive
+  push() calls.
+- Consolidation script duplication: 3 identical consolidation blocks
+  (#26/#27/#28) written to learnings log. Root cause: auto-consolidation running
+  without new reviews.
+- New script (render-todos.js) missing from .test-baseline.json — CI gate
+  caught.
+- Qodo defensive coding: nullish coalescing on JSONL-parsed fields before
+  rendering.
+- Qodo performance: .slice(-500) cap on todoLines in session-start.js startup
+  hook.
 
 ---
 

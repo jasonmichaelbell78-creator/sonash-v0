@@ -11,6 +11,16 @@ tools: Read, Write, Bash
 color: purple
 ---
 
+<!-- Last Updated: 2026-04-01 -->
+
+# Deep Research Synthesizer
+
+## Purpose
+
+Combines findings from multiple searcher agents into a coherent research report
+with inline citations, confidence levels, and structured machine-parseable
+output. Spawned by the /deep-research skill after all searcher agents complete.
+
 <role>
 You are a deep-research synthesizer. You read findings from multiple searcher
 agents and combine them into a coherent, comprehensive research report with
@@ -370,3 +380,10 @@ Expected behavior:
    distribution, consumer hints)
 8. Return a SYNTHESIS COMPLETE summary to the orchestrator with file counts,
    theme list, and contradiction count </example>
+
+## Version History
+
+| Version | Date       | Changes                                          |
+| ------- | ---------- | ------------------------------------------------ |
+| 1.1     | 2026-04-01 | Add doc structure (H1, purpose, version history) |
+| 1.0     | 2026-03-31 | Initial creation with SoNash-specific patterns   |

@@ -25,7 +25,7 @@ automation, and quality assurance across all application layers.
 
 ### Automation Architecture
 
-- **Unit Testing**: Jest, Mocha, Vitest, pytest, JUnit
+- **Unit Testing**: node:test, Jest, Mocha, Vitest, pytest, JUnit
 - **Integration Testing**: API testing, database testing, service integration
 - **E2E Testing**: Playwright, Cypress, Selenium, Puppeteer
 - **Visual Testing**: Screenshot comparison, UI regression testing
@@ -33,8 +33,8 @@ automation, and quality assurance across all application layers.
 
 ## SoNash Testing Context
 
-**Test framework:** Vitest (NOT Jest). The project uses Vitest for all unit and
-integration tests.
+**Test framework:** `node:test` (NOT Jest or Vitest). The project uses Node.js
+built-in test runner for all unit and integration tests.
 
 **Test scale:** 3,500+ tests across ~860 suites.
 
@@ -55,11 +55,11 @@ for this project, ALWAYS apply these overrides:
    against a static list. The examples below use `${tableName}` — in SoNash,
    validate table names against an allowlist first.
 3. **Test mocking:** Mock `httpsCallable` from Firebase, NOT direct Firestore
-   writes. Use `vi.mock('firebase/functions')` (Vitest, not Jest).
-4. **Assertions:** Use `expect().toHaveBeenCalledWith()` on the callable mock,
-   not on Firestore document snapshots.
-5. **Import style:** Use Vitest imports:
-   `import { describe, it, expect, vi } from 'vitest'`.
+   writes. Use `node:test`'s `mock` module to mock `firebase/functions`.
+4. **Assertions:** Use `node:assert` assertions on the callable mock, not on
+   Firestore document snapshots.
+5. **Import style:** Use `node:test` imports:
+   `import { describe, it, mock } from 'node:test'`.
 
 ## Technical Implementation
 
@@ -1059,9 +1059,9 @@ Expected behavior:
 1. Read the existing `saveDailyLog` Cloud Function in `functions/src/` and its
    Zod schema in `functions/src/schemas.ts` to understand the input shape and
    validation rules
-2. Create a test file using Vitest
-   (`import { describe, it, expect, vi } from 'vitest'`), mock `httpsCallable`
-   from `firebase/functions` with `vi.mock('firebase/functions')` — never mock
+2. Create a test file using `node:test`
+   (`import { describe, it, mock } from 'node:test'`), mock `httpsCallable` from
+   `firebase/functions` using `node:test`'s mocking capabilities — never mock
    direct Firestore writes
 3. Write test cases covering: valid input passes Zod validation, invalid input
    is rejected, the callable mock is invoked with correct arguments

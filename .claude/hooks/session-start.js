@@ -1336,7 +1336,8 @@ try {
     const todoLines = fs
       .readFileSync(todosPath, "utf-8")
       .split("\n")
-      .filter((l) => l.trim());
+      .filter((l) => l.trim())
+      .slice(-500);
     const todos = [];
     for (const line of todoLines) {
       try {

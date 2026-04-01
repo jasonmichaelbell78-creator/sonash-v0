@@ -81,13 +81,14 @@ await setDoc(doc(db, "daily_logs", id), data); // NO: bypasses all server securi
 In tests, mock `httpsCallable`, never mock Firestore directly:
 
 ```typescript
-// CORRECT — mock the callable wrapper
-vi.mock("firebase/functions", () => ({
-  httpsCallable: vi.fn(() => vi.fn().mockResolvedValue({ data: {} })),
-}));
+// CORRECT — mock the callable wrapper using node:test
+import { mock } from "node:test";
+mock.module("firebase/functions", {
+  namedExports: { httpsCallable: mock.fn(() => mock.fn()) },
+});
 
 // WRONG — bypasses App Check, rate limits, Zod validation
-vi.mock("firebase/firestore");
+mock.module("firebase/firestore");
 ```
 
 ### 2. App Check Token Verification (CRITICAL)
