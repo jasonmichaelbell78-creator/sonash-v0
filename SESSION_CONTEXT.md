@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.13 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.14 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-03-31 (Session #252)
+2026-03-31 (Session #253)
 
 ## Purpose
 
@@ -30,7 +30,7 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-03-31 **Branch**: `planning-33026` **Working On**:
-Session #251 — COMPLETE. Value-extraction deep-research + deep-plan discovery.
+Session #253 — /todo skill creation + skill-audit.
 
 **Uncommitted Work**: None (session-end commit)
 
@@ -38,7 +38,7 @@ Session #251 — COMPLETE. Value-extraction deep-research + deep-plan discovery.
 
 ## Session Tracking
 
-**Current Session Count**: 252 (since Jan 1, 2026)
+**Current Session Count**: 253 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,39 +48,32 @@ Session #251 — COMPLETE. Value-extraction deep-research + deep-plan discovery.
 
 ## Recent Session Summaries
 
+**Session #253** (/TODO SKILL CREATION + SKILL-AUDIT):
+
+- **Branch**: `planning-33026`
+- **/todo skill created**: Full /skill-creator workflow — 26 discovery
+  decisions, 8-option interactive menu, JSONL-backed persistence, AI-powered
+  context capture. Independent of GSD.
+- **Seed data**: 11 todos migrated from SESSION_CONTEXT.md Next Session Goals.
+  T11 (/todo skill) completed during testing.
+- **Skill-audit complete**: 11 categories, 28 decisions (19 accepted, 9
+  rejected). Score 78/100 → ~88/100 post-fix. All 19 decisions implemented.
+- **Session-start hook wired**: Todo count now surfaces at session startup.
+- **Files created**: SKILL.md, REFERENCE.md, render-todos.js, todos.jsonl,
+  TODOS.md. validate-jsonl-md-sync.js updated.
+
 **Session #251** (REPO-ANALYSIS VALUE-EXTRACTION RESEARCH + DEEP-PLAN):
 
 - **Branch**: `planning-33026` (2 commits)
-- **Value-extraction deep-research COMPLETE**: 28 agents (18 searchers + 4
-  respawns + 1 synthesizer + 2 verifiers + 2 contrarian + 2 OTB). 80 claims, 131
-  sources. 4 gaps researched: value extraction methodologies, repo
-  discovery/search, pattern portability, AI-driven content analysis.
-- **Key finding**: Conversation-first default (Repomix + Claude prompt), not
-  structured pipeline. Both contrarians converged on this independently.
-- **Deep-plan Phase 1 Discovery**: 5 of 7 Batch 1 decisions captured (name,
-  phasing, file structure, output dir, orchestration). Q2 (mode scope) deferred
-  for research — now complete. Q6 (tool install) investigated — locales
-  equivalent.
-- **OS vision revealed and saved to memory**: Primary goal is project-agnostic
-  "Claude Code OS" — portable workflows, skills, agents. SoNash app is
-  secondary.
-- **session-begin updated**: Now shows all goals without truncation.
-- **3 new tasks**: Agent stalling investigation, Codex plugin, lightweight TODO.
-- **Agent stalling pattern**: D1a and D3b stalled (empty output, context
-  exhaustion). Fixed by splitting into narrower-scoped agents.
+- Value-extraction deep-research COMPLETE: 28 agents, 80 claims, 131 sources.
+- Deep-plan Phase 1 Discovery: 5/7 batch 1 decisions captured.
+- OS vision revealed: project-agnostic "Claude Code OS" is primary goal.
 
 **Session #250** (REPO-ANALYSIS DEFENSIVE RESEARCH + MULTI-LAYER MEMORY):
 
 - **Branch**: `planning-33026`
 - Repo-analysis deep-research (defensive lens): 31 agents, 50 claims, 147
-  sources. Tools, pipeline, scoring, guard rails. GSD installed. Statusline fix.
-- Multi-layer memory deep-research: 30 agents, 128 claims, 3 waves.
-
-**Session #249** (PLAN/RESEARCH ARCHIVAL + PROPAGATION ENFORCEMENT):
-
-- **Branch**: `planning-33026` (4 commits)
-- Archived 8 plans + 5 research to archive dirs. 3-Layer Propagation Enforcement
-  COMPLETE (19 decisions, 12 steps). See SESSION_HISTORY.md.
+  sources. Multi-layer memory deep-research: 30 agents, 128 claims, 3 waves.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -96,6 +89,7 @@ Session #251 — COMPLETE. Value-extraction deep-research + deep-plan discovery.
 | **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next                                                        |
 | **Multi-layer Memory**          | RESEARCH DONE | 30 agents, 128 claims. Execution next.                                 |
 | **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                                       |
+| **/todo Skill**                 | COMPLETE      | v1.1 — 8-option menu, JSONL, hooks, audited                            |
 
 **Current Branch**: `planning-33026`
 
@@ -133,10 +127,8 @@ Session #251 — COMPLETE. Value-extraction deep-research + deep-plan discovery.
     Cross-model adversarial review (`/codex:adversarial-review`), task
     delegation (`/codex:rescue`). Requires ChatGPT subscription (have it).
     Evaluate as complement to Gemini CLI contrarian challenges.
-11. **Lightweight TODO system** — Simple standalone TODO.md at project root with
-    flat numbered list, priority grouping (now/later). Surfaced at
-    session-begin. No per-file ceremony — just add/delete lines. Replace the
-    "Next Session Goals" section in SESSION_CONTEXT.md.
+11. ~~**Lightweight TODO system**~~ — DONE (Session #253). `/todo` skill with
+    JSONL storage, 8-option menu, session hooks. Run `/todo` to manage.
 
 ---
 

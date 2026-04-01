@@ -68,6 +68,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/systematic-debugging`           | Systematic bug investigation                                                             |
 | `/task-next`                      | Show next tasks from ROADMAP.md                                                          |
 | `/test-suite`                     | Multi-phase UI testing orchestration                                                     |
+| `/todo`                           | Cross-session todo management with JSONL persistence                                     |
 | `/add-debt`                       | Add items to MASTER_DEBT.jsonl                                                           |
 | `/skill-creator`                  | Structured workflow for creating or updating skills                                      |
 | `/skill-audit`                    | Interactive behavioral quality audit for individual skills                               |

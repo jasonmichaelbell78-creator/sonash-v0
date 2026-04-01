@@ -33,6 +33,11 @@ const GENERATORS = [
     output: ".planning/system-wide-standardization/DECISIONS.md",
     name: "DECISIONS.md",
   },
+  {
+    script: "scripts/planning/render-todos.js",
+    output: ".planning/TODOS.md",
+    name: "TODOS.md",
+  },
 ];
 
 let failures = 0;

@@ -638,7 +638,7 @@ _Uncategorized_
 
 | Document                                                                                                                                          | Description | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Contrarian/OTB agent design task](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/project_contrarian_agent_design.md)    | -           | ↓0 ↑0      | 2026-03-30    |
+| [Contrarian/OTB agent design task](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/project_contrarian_agent_design.md)    | -           | ↓0 ↑0      | 2026-04-01    |
 | [Learnings log must always complete](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/feedback_learnings_must_complete.md) | -           | ↓0 ↑0      | 2026-03-18    |
 | [No autonomous deferrals](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/feedback_no_autonomous_deferrals.md)            | -           | ↓0 ↑0      | 2026-03-24    |
 
