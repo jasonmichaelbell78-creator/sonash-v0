@@ -319,6 +319,10 @@ process.stdin.on("data", (chunk) => {
   }
 });
 process.stdin.on("end", () => {
+  if (!input.trim()) {
+    console.log("ok");
+    process.exit(0);
+  }
   try {
     // Parse stdin to check for non-hosting deploys
     const parsed = JSON.parse(input);

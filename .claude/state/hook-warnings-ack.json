@@ -2,7 +2,12 @@
   "acknowledged": {
     "settings-guardian": "2026-03-29T16:41:18.433Z",
     "deploy-safeguard": "2026-03-29T22:00:00.000Z",
-    "large-file-gate": "2026-03-29T22:00:00.000Z"
+    "large-file-gate": "2026-03-29T22:00:00.000Z",
+    "pr-creep": "2026-03-31T11:10:00.000Z",
+    "session-end-missing": "2026-03-31T11:10:00.000Z",
+    "review-lifecycle": "2026-03-31T11:10:00.000Z",
+    "tdms-s0": "2026-03-31T11:10:00.000Z",
+    "cli-tools-missing": "2026-03-31T11:10:00.000Z"
   },
-  "lastCleared": "2026-03-30T15:57:41.677Z"
+  "lastCleared": "2026-03-31T11:10:00.000Z"
 }

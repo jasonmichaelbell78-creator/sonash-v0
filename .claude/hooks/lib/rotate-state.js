@@ -266,8 +266,54 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
         return { rotated: false, before: lines.length, after: lines.length, archived: 0 };
       }
 
-      const evicted = lines.slice(0, -keep);
-      const kept = lines.slice(-keep);
+      // Ack-aware rotation: if an ack file exists, preserve unacked entries.
+      // Otherwise fall back to positional eviction (original behavior).
+      const ackPath = filePath.replace(/\.jsonl$/, "").replace(/-log$/, "") + "-ack.json";
+      let lastCleared = null;
+      try {
+        const ackRaw = fs.readFileSync(ackPath, "utf-8");
+        const ack = JSON.parse(ackRaw);
+        if (ack.lastCleared) {
+          const d = new Date(ack.lastCleared);
+          if (!Number.isNaN(d.getTime())) lastCleared = d;
+        }
+      } catch {
+        // No ack file — use positional eviction
+      }
+
+      let evicted, kept;
+      if (lastCleared) {
+        const acked = [];
+        const unacked = [];
+        for (const line of lines) {
+          let isUnacked = true;
+          try {
+            const entry = JSON.parse(line);
+            if (entry.timestamp) {
+              const ts = new Date(entry.timestamp);
+              if (!Number.isNaN(ts.getTime()) && ts <= lastCleared) isUnacked = false;
+            }
+          } catch {
+            /* malformed — treat as unacked */
+          }
+          (isUnacked ? unacked : acked).push(line);
+        }
+        const ackedToKeep = Math.max(0, keep - unacked.length);
+        const keptAcked = ackedToKeep > 0 ? acked.slice(-ackedToKeep) : [];
+        evicted = acked.slice(0, Math.max(0, acked.length - ackedToKeep));
+        kept = [...keptAcked, ...unacked];
+
+        // Hard cap: if unacked alone exceeds keep, evict oldest unacked
+        if (kept.length > keep) {
+          const overflow = kept.length - keep;
+          evicted = [...evicted, ...kept.slice(0, overflow)];
+          kept = kept.slice(overflow);
+        }
+      } else {
+        // No ack file — positional eviction
+        evicted = lines.slice(0, -keep);
+        kept = lines.slice(-keep);
+      }
 
       // Archive evicted entries (append to .archive file)
       const archivePath = `${filePath}.archive`;
