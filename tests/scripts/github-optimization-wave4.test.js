@@ -379,7 +379,7 @@ describe("4.6: Codecov Integration", () => {
 
     it("codecov action is SHA-pinned", () => {
       assert.ok(
-        content.includes("codecov/codecov-action@1af58845a975a7985b0beb0cbe6fbbb71a41dbad"),
+        content.includes("codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2"),
         "Codecov action should be SHA-pinned"
       );
     });
