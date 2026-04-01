@@ -366,6 +366,17 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#26)</summary>
+
+- **Date:** 2026-04-01
+- **Reviews consolidated:** #review-466-r3-#rev-27
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#25)</summary>
 
 - **Date:** 2026-03-31
@@ -374,105 +385,6 @@ accumulate.
   - qodo (17x)
   - sonarcloud (15x)
   - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#24)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-27
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#23)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-27
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#22)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-27
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#21)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-27
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#20)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-27
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#19)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-27
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#18)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-27
-- **Recurring patterns:**
-  - qodo (17x)
-  - sonarcloud (15x)
-  - gemini (4x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#17)</summary>
-
-- **Date:** 2026-03-31
-- **Reviews consolidated:** #review-466-r3-#rev-24
-- **Recurring patterns:**
-  - qodo (14x)
-  - sonarcloud (12x)
-  - gemini (3x)
-
-</details>
-<details>
-<summary>Previous Consolidation (#16)</summary>
-
-- **Date:** 2026-03-30
-- **Reviews consolidated:** #review-466-r3-#rev-24
-- **Recurring patterns:**
-  - qodo (14x)
-  - sonarcloud (12x)
-  - gemini (3x)
 
 </details>
 <details>
@@ -2875,6 +2787,25 @@ deduped/merged)
   releases/download path), better grep fallback.
 - PATH check for $HOME/bin ensures tools are discoverable after install.
 - Missing source config guard prevents misleading "up to date" messages.
+
+---
+
+### Review #61 — PR #483 R1 (Mixed: Qodo + Gemini + CI)
+
+**Date:** 2026-03-31 **Items:** 11 (9 fixed, 0 deferred, 2 rejected)
+
+**Patterns:**
+
+- 3-source convergence on rotation unbounded growth (Qodo+Gemini+QodoSugg) —
+  ack-aware logic skips rotation when acked.length===0, allowing JSONL to grow
+  without bound.
+- 3-source convergence on symlink guard fail-open (Gemini+QodoCompl+QodoSugg) —
+  catch swallows guard failure and proceeds with write. session-start.js is
+  high-churn (5+ PR fix rounds).
+- GSD hooks registered in settings.json but files don't exist at configured
+  paths (gsd-check-update.js missing, gsd-context-monitor.js missing).
+- Consolidation script bug: 34 identical consolidation entries written to
+  learning log (all show same date, same range, same patterns).
 
 ---
 

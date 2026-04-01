@@ -62,7 +62,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/gsd-check-update.js"
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/global/gsd-check-update.js"
           }
         ]
       }
@@ -251,16 +251,6 @@
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/governance-logger.js",
             "statusMessage": "Logging governance change...",
             "continueOnError": true
-          }
-        ]
-      },
-      {
-        "matcher": "Bash|Edit|Write|MultiEdit|Agent|Task",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/gsd-context-monitor.js",
-            "timeout": 10
           }
         ]
       }

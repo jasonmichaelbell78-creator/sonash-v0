@@ -144,9 +144,7 @@ function writeSessionState(state) {
     }
     fs.renameSync(tmpPath, SESSION_STATE_FILE);
   } catch (err) {
-    console.error(
-      `session-start: failed to write session state: ${err instanceof Error ? err.message : String(err)}`
-    );
+    console.error(`session-start: failed to write session state: ${sanitizeError(err)}`);
     try {
       fs.rmSync(tmpPath, { force: true });
     } catch {
@@ -248,9 +246,7 @@ function checkSecretsStatus() {
         looksLikeRealToken(readEnvVar(content, "SONAR_TOKEN")) ||
         looksLikeRealToken(readEnvVar(content, "CONTEXT7_API_KEY"));
     } catch (err) {
-      console.warn(
-        `session-start: failed to read .env.local: ${err instanceof Error ? err.message : String(err)}`
-      );
+      console.warn(`session-start: failed to read .env.local: ${sanitizeError(err)}`);
     }
   }
 
@@ -774,7 +770,7 @@ function readWarningsJsonl(filePath) {
     return { entries, error: null };
   } catch (err) {
     if (err && err.code === "ENOENT") return { entries: [], error: "ENOENT" };
-    return { entries: [], error: err instanceof Error ? err.message : String(err) };
+    return { entries: [], error: sanitizeError(err) };
   }
 }
 
@@ -1161,8 +1157,7 @@ try {
     addWarning("tdms-missing", "TDMS metrics not found", "npm run debt:metrics");
   }
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error(`📊 TDMS: ❌ metrics read failed: ${msg}`);
+  console.error(`📊 TDMS: ❌ metrics read failed: ${sanitizeError(err)}`);
   addWarning("tdms-error", "TDMS metrics read failed", null);
 }
 
@@ -1287,16 +1282,17 @@ if (warningEntries.length > 0) {
   try {
     const logDir = path.join(projectDir, ".claude", "state");
     const logPath = path.join(logDir, "hook-warnings-log.jsonl");
-    let guardOk = true;
+    let guardOk = false;
     try {
       const { isSafeToWrite: safe } = require(
         path.join(projectDir, ".claude", "hooks", "lib", "symlink-guard")
       );
-      if (!safe(logPath)) guardOk = false;
+      guardOk = Boolean(safe(logPath));
     } catch {
-      /* no guard — proceed */
+      // Guard missing/unloadable — fail closed, skip persistence
     }
     if (guardOk) {
+      fs.mkdirSync(logDir, { recursive: true });
       // Read current lastCleared and set timestamps 1s after it,
       // so warnings survive even if a concurrent session set lastCleared
       // moments before this flush runs
@@ -1327,8 +1323,9 @@ if (warningEntries.length > 0) {
       );
       fs.appendFileSync(logPath, lines.join("\n") + "\n");
     }
-  } catch {
+  } catch (persistErr) {
     // Non-fatal — never block session start on warning persistence
+    console.warn(`session-start: warning persistence failed: ${sanitizeError(persistErr)}`);
   }
 }
 

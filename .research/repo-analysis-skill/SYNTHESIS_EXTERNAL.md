@@ -817,8 +817,8 @@ Organized by failure category:
 
 - Do not assume `src/` exists; enumerate actual root-level directories
 - Treat Linguist language stats as advisory; cross-check against file extensions
-- Identify and skip vendor/generated dirs (node_modules, vendor, _.min.js,
-  _\_generated.\*)
+- Identify and skip vendor/generated dirs (node*modules, vendor, *.min.js,
+  \_\_generated.\*)
 - Handle polyglot repos; analyze top 3 languages by bytes as primary
 - Language detection via API fails for repos >100,000 files; fall back to local
   scc

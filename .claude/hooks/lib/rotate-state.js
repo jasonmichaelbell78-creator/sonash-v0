@@ -273,7 +273,10 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
       try {
         const ackRaw = fs.readFileSync(ackPath, "utf-8");
         const ack = JSON.parse(ackRaw);
-        if (ack.lastCleared) lastCleared = new Date(ack.lastCleared);
+        if (ack.lastCleared) {
+          const d = new Date(ack.lastCleared);
+          if (!Number.isNaN(d.getTime())) lastCleared = d;
+        }
       } catch {
         // No ack file — use positional eviction
       }
@@ -286,19 +289,26 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
           let isUnacked = true;
           try {
             const entry = JSON.parse(line);
-            if (entry.timestamp && new Date(entry.timestamp) <= lastCleared) isUnacked = false;
+            if (entry.timestamp) {
+              const ts = new Date(entry.timestamp);
+              if (!Number.isNaN(ts.getTime()) && ts <= lastCleared) isUnacked = false;
+            }
           } catch {
             /* malformed — treat as unacked */
           }
           (isUnacked ? unacked : acked).push(line);
         }
-        if (acked.length === 0) {
-          return { rotated: false, before: lines.length, after: lines.length, archived: 0 };
-        }
         const ackedToKeep = Math.max(0, keep - unacked.length);
         const keptAcked = ackedToKeep > 0 ? acked.slice(-ackedToKeep) : [];
-        evicted = acked.slice(0, acked.length - ackedToKeep);
+        evicted = acked.slice(0, Math.max(0, acked.length - ackedToKeep));
         kept = [...keptAcked, ...unacked];
+
+        // Hard cap: if unacked alone exceeds keep, evict oldest unacked
+        if (kept.length > keep) {
+          const overflow = kept.length - keep;
+          evicted = [...evicted, ...kept.slice(0, overflow)];
+          kept = kept.slice(overflow);
+        }
       } else {
         // No ack file — positional eviction
         evicted = lines.slice(0, -keep);
