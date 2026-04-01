@@ -369,6 +369,17 @@ accumulate.
 <summary>Previous Consolidation (#26)</summary>
 
 - **Date:** 2026-04-01
+- **Reviews consolidated:** #review-466-r3-#rev-61
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#26)</summary>
+
+- **Date:** 2026-04-01
 - **Reviews consolidated:** #review-466-r3-#rev-27
 - **Recurring patterns:**
   - qodo (17x)
@@ -1173,6 +1184,16 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 7     | 4     | 0        | 3        |
+
+---
+
+### Review rev-61: (untitled) (2026-03-31)
+
+**Date:** 2026-03-31 | **PR:** #483 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 9     | 0        | 2        |
 
 ## Key Patterns
 
