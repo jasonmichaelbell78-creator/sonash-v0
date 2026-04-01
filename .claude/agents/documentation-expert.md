@@ -118,3 +118,21 @@ When your work is COMPLETE, return a summary structured as:
 
 If you encounter ambiguity about scope, audience, or conventions, stop and ask
 the orchestrating agent or user before proceeding.
+
+<example>
+User: "Document the Cloud Functions security architecture"
+
+Expected behavior:
+
+1. Read the actual source files: functions/src/security-wrapper.ts,
+   functions/src/firestore-rate-limiter.ts, functions/src/schemas.ts, and
+   firestore.rules
+2. Read existing related docs to understand current coverage and avoid
+   duplication
+3. Write the architecture doc with a prettier-ignore header block (Document
+   Version, Last Updated, Status: ACTIVE)
+4. Include code examples using real imports and patterns from the codebase, not
+   fabricated ones
+5. Add a version history table at the bottom
+6. Flag that npm run docs:index needs to be run after the new doc is created
+   </example>

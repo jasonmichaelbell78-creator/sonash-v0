@@ -640,8 +640,24 @@ structured output.
 
 - **Step 22 — CLAUDE.md Section 7 updated.** Agent count updated from 27 to 34.
 
-**Remaining (deferred to next session):**
+- **Step 21 — Example blocks added to 16 agents.** Dispatched 3 parallel agents
+  (batches of 6+6+4). All 16 non-GSD, non-stub agents now have 1-2 `<example>`
+  blocks showing user triggers and expected behavior.
 
-- Step 21: Add `<example>` blocks to all remaining agents without them
-- Steps 23-25: Validation (structural audit, sonash-context audit, pipeline
-  smoke test)
+**Validation: COMPLETE**
+
+- **Step 23 — Structural audit passed.** All agents have name + description. All
+  non-GSD, non-stub agents have `skills: [sonash-context]` and `<example>`
+  blocks. tools: only missing on redirect stubs (expected) and general-purpose
+  (inherits defaults).
+
+- **Step 24 — sonash-context audit passed.** All 5 package versions match
+  package.json. All referenced paths verified on disk (firestore-service.ts,
+  types/, schemas.ts, sanitize-error.js, security-helpers.js).
+
+- **Step 25 — Pipeline verification passed.** All 8 pipeline agents exist with
+  correct `name:` fields. All 7 SKILL.md `Agent(subagent_type="...")` references
+  match existing agent files (6 unique agents, verifier used twice).
+
+**PLAN STATUS: COMPLETE** — All 25 steps done. Deferred items in the follow-ups
+table remain for future cycles.

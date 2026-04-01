@@ -1050,3 +1050,22 @@ When your task is complete, return a structured summary to the caller:
 
 - {any follow-up items or concerns}
 ```
+
+<example>
+User: "Write tests for the saveDailyLog Cloud Function."
+
+Expected behavior:
+
+1. Read the existing `saveDailyLog` Cloud Function in `functions/src/` and its
+   Zod schema in `functions/src/schemas.ts` to understand the input shape and
+   validation rules
+2. Create a test file using Vitest
+   (`import { describe, it, expect, vi } from 'vitest'`), mock `httpsCallable`
+   from `firebase/functions` with `vi.mock('firebase/functions')` — never mock
+   direct Firestore writes
+3. Write test cases covering: valid input passes Zod validation, invalid input
+   is rejected, the callable mock is invoked with correct arguments
+   (`expect(mockCallable).toHaveBeenCalledWith(...)`), and 429 rate-limit errors
+   are handled gracefully
+4. Use `sanitizeError(error)` from `scripts/lib/sanitize-error.js` in any
+   error-handling test paths — never assert on raw `error.message` </example>

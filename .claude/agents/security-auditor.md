@@ -533,3 +533,20 @@ If no issues found in a severity tier, omit that tier. Always include the
 Verdict line. BLOCK means S0 issues that must be resolved before merge.
 CONDITIONAL means S1/S2 issues that need tracking. SECURE means no actionable
 findings.
+
+<example>
+User: "Audit the new deleteAccount Cloud Function for security"
+
+Expected behavior:
+
+1. Read `functions/src/index.ts` (or wherever deleteAccount is defined) to
+   inspect the implementation
+2. Verify it uses `withSecurityChecks()` wrapper with `requireAppCheck: true`, a
+   `rateLimiter` instance, and a Zod `validationSchema`
+3. Confirm userId is extracted from `request.auth.uid` (not from client-supplied
+   `request.data`), preventing user A from deleting user B's account
+4. Run `npm run patterns:check` and `npm run lint` against the function file
+5. Check Firestore rules to confirm direct client deletes are blocked on the
+   relevant collection
+6. Produce a structured Security Audit Report with severity-classified findings
+   and a Verdict (SECURE, CONDITIONAL, or BLOCK) </example>

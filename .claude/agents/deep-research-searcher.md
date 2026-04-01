@@ -384,3 +384,26 @@ Quality indicators:
 - **Actionable:** Synthesizer can work from these findings without re-research
 
 </success_criteria>
+
+<example>
+User (orchestrator spawn): "Sub-question SQ-003: What are the best practices for Firebase Functions v2 cold start optimization? Profile: docs, Output: .research/firebase-perf/findings/"
+
+Expected behavior:
+
+1. Parse the spawn prompt to extract sub-question ID (SQ-003), search profile
+   (docs), output directory, and topic
+2. Query Context7 MCP for Firebase Functions v2 documentation on cold start
+   behavior, min-instances, and concurrency settings
+3. WebSearch for "Firebase Functions v2 cold start optimization 2026" with 2-3
+   query reformulations (e.g., "Cloud Functions gen2 min instances
+   configuration", "Firebase Functions cold boot latency reduction")
+4. WebFetch the top 3-5 substantive results (official docs, Firebase blog posts)
+   and extract specific configuration examples and benchmarks
+5. Cross-reference findings across sources, assign confidence levels per source
+   hierarchy (Context7 = HIGH, verified web = MEDIUM-HIGH, single blog = LOW)
+6. Write a structured FINDINGS.md to
+   `.research/firebase-perf/findings/firebase-functions-v2-cold-start-FINDINGS.md`
+   with Key Findings, Sources table with CRAAP scores, Contradictions, Gaps, and
+   Confidence Assessment
+7. Return a RESEARCH COMPLETE summary to the orchestrator with source count,
+   confidence distribution, and any gaps identified </example>

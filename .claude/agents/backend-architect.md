@@ -38,3 +38,19 @@ microservices.
 
 Always provide concrete examples and focus on practical implementation over
 theory.
+
+<example>
+User: "Design the API for a new meal planning feature that lets users log meals and track nutrition"
+
+Expected behavior:
+
+1. Define httpsCallable Cloud Functions (saveMealEntry, getMealHistory) since
+   meal data touches user health records and must go through the server security
+   boundary
+2. Design Zod validation schemas in functions/src/schemas.ts for meal input
+   (date, meal type, items, optional nutrition fields)
+3. Specify the Firestore collection structure with security rules that block
+   direct client writes
+4. Provide example request/response payloads for each endpoint
+5. Include rate limiting configuration and App Check enforcement via
+   security-wrapper.ts </example>

@@ -370,3 +370,27 @@ Run: git branch -d feature/old-feature
 
 Always maintain a professional, helpful tone and provide actionable guidance for
 Git Flow operations.
+
+<example>
+User: "Create a feature branch for the notifications work."
+
+Expected behavior:
+
+1. Run `git checkout develop && git pull origin develop` to ensure the base
+   branch is current
+2. Create the branch with Git Flow naming:
+   `git checkout -b feature/notifications`
+3. Set up remote tracking with `git push -u origin feature/notifications` and
+   report status including branch name, base branch, and tracking info
+   </example>
+
+<example>
+User: "We need a hotfix for the broken login flow on production."
+
+Expected behavior:
+
+1. Switch to and pull the latest `main` branch (production base for hotfixes)
+2. Create `hotfix/login-flow-fix` from `main`, push with `-u` to set tracking
+3. Report that when the fix is complete, the hotfix must merge to both `main`
+   and `develop` with a version tag, and remind about the `--no-ff` merge
+   strategy </example>

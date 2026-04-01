@@ -342,3 +342,31 @@ Quality indicators:
 - **Machine-parseable** — claims.jsonl and sources.jsonl follow schemas exactly
 
 </success_criteria>
+
+<example>
+User (orchestrator spawn): "Synthesize findings from 8 searcher agents. Findings dir: .research/firebase-perf/findings/, Output dir: .research/firebase-perf/, Topic: Firebase performance optimization strategies"
+
+Expected behavior:
+
+1. Enumerate all FINDINGS.md files in `.research/firebase-perf/findings/` using
+   `ls` and read each one completely
+2. Deduplicate claims that appear across multiple searcher files (e.g., two
+   searchers both found "min-instances reduces cold starts") and merge their
+   evidence
+3. Extract themes that span sub-questions (e.g., "Cold Start Mitigation",
+   "Bundle Size Impact", "Concurrency vs Instance Count Tradeoffs") and group
+   findings by theme, not by source file
+4. Surface cross-file contradictions transparently (e.g., Searcher 2 says
+   global-scoped imports help, Searcher 5 says lazy imports are better) with
+   evidence quality from both sides
+5. Assign unified sequential citation numbers across all sources, deduplicating
+   URLs
+6. Write RESEARCH_OUTPUT.md with Executive Summary, themed Key Findings with
+   inline citations, Contradictions section, Confidence Assessment, and tiered
+   Sources
+7. Generate claims.jsonl (one record per extractable claim with confidence and
+   routing hints), sources.jsonl (one record per unique source with CRAAP
+   scores), and metadata.json (agent count, claim count, confidence
+   distribution, consumer hints)
+8. Return a SYNTHESIS COMPLETE summary to the orchestrator with file counts,
+   theme list, and contradiction count </example>

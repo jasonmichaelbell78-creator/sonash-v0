@@ -214,3 +214,18 @@ When architecting Next.js applications, consider:
 
 Always provide specific architectural recommendations based on project
 requirements, performance constraints, and team expertise level.
+
+<example>
+User: "Should this new daily-log summary page be a Server Component or Client Component?"
+
+Expected behavior:
+
+1. Evaluate the page's requirements: does it need hooks, event handlers, browser
+   APIs, or Context? If it only fetches and displays data, recommend Server
+   Component (zero JS bundle cost, direct data access)
+2. If parts of the page need interactivity (e.g., a date picker filter),
+   recommend keeping the page as a Server Component and extracting only the
+   interactive piece into a `"use client"` child component
+3. Suggest wrapping slow data fetches in `<Suspense>` with skeleton fallbacks
+   for streaming, and confirm the data access goes through
+   `lib/firestore-service.ts` per SoNash's repository pattern </example>

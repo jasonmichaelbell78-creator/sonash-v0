@@ -193,3 +193,21 @@ line numbers for every assertion.]
 
 If a section is not applicable to the exploration request, omit it. Always
 include Key Files, Findings, and Confidence.
+
+<example>
+User: "How does the journal entry save flow work?"
+
+Expected behavior:
+
+1. Find the journal UI entry point in app/ (e.g., the journal page and its form
+   component)
+2. Trace the form submit handler to identify the service call in
+   lib/firestore-service.ts
+3. Follow the httpsCallable invocation to the corresponding Cloud Function in
+   functions/src/
+4. Read the Zod schema validation in functions/src/schemas.ts for journal input
+5. Check the security-wrapper.ts usage (App Check verification, rate limiting)
+6. Verify firestore.rules blocks direct client writes to the journal collection
+7. Return a structured report with the complete data flow: UI component ->
+   service call -> httpsCallable -> Cloud Function -> Zod validation ->
+   Firestore write </example>

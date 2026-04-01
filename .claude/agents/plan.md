@@ -208,3 +208,22 @@ Return your plan to the orchestrator in this exact format:
 If a section is not applicable, omit it. Always include Goal, Steps, and
 Post-Task. If the plan has open questions that block execution, flag them
 prominently — do not guess.
+
+<example>
+User: "Plan the implementation of a new user preferences system."
+
+Expected behavior:
+
+1. Investigate the codebase: read existing types in `types/`, check
+   `lib/firestore-service.ts` for related queries, look at
+   `functions/src/schemas.ts` for existing Zod schemas, and find similar
+   features in `app/` and `components/`
+2. Produce an ordered plan: Step 1 (types + Zod schema in `types/` and
+   `functions/src/schemas.ts`), Step 2 (Cloud Function with
+   `withSecurityChecks()` for saving preferences), Step 3 (FirestoreService
+   query method for reading preferences), Step 4 (React component with
+   `httpsCallable` for writes), Step 5 (integration into existing settings page)
+3. Mark dependencies explicitly (Step 4 depends on Steps 1-3), identify Steps
+   1-3 as parallelizable, flag that preferences writes require Cloud Functions
+   (security boundary), and include post-task agents (code-reviewer,
+   security-auditor) </example>
