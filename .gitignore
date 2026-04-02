@@ -159,6 +159,7 @@ consolidation-output/
 
 # Git worktrees (isolated workspaces, never commit)
 .worktrees/
+.claude/worktrees/
 functions/.next/
 
 # Deep Research intermediate artifacts
