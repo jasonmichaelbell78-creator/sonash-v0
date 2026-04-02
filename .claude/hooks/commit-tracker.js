@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
+/* global require, process, console, __dirname */
 /* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * commit-tracker.js - PostToolUse hook (Bash) for automatic commit logging
@@ -22,11 +22,18 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
-let isSafeToWrite, gitExec, projectDir, sanitizeInput;
+let isSafeToWrite, gitExec, projectDir, sanitizeInput, sanitizeError;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
   isSafeToWrite = () => false;
+}
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
 }
 try {
   ({ gitExec, projectDir } = require("./lib/git-utils.js"));
@@ -261,10 +268,7 @@ function logCommitFailure(command) {
     }
   } catch (error) {
     // Non-critical — log for debuggability but don't break the hook
-    console.error(
-      "commit-tracker: failed to log commit failure:",
-      error instanceof Error ? error.message : String(error)
-    );
+    console.error("commit-tracker: failed to log commit failure:", sanitizeError(error));
   }
 }
 

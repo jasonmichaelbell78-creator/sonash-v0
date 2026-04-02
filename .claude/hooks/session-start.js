@@ -1238,10 +1238,7 @@ try {
   });
 } catch (error) {
   // Non-critical — log for debuggability but don't block session start
-  console.error(
-    "session-start: activity logging failed:",
-    error instanceof Error ? error.message : String(error)
-  );
+  console.error("session-start: activity logging failed:", sanitizeError(error));
 }
 
 // CLI tool detection from tool-manifest.json
