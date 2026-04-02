@@ -68,6 +68,7 @@ function normalizeItem(item) {
     status: ensureValid(item.status, VALID_STATUSES, "NEW"),
     roadmap_ref: item.roadmap_ref || null,
     created: item.created || new Date().toISOString().split("T")[0],
+    updated: new Date().toISOString().split("T")[0],
     verified_by: item.verified_by || null,
     resolution: item.resolution || null,
   };

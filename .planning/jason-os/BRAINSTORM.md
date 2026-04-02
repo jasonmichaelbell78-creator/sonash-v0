@@ -117,14 +117,14 @@ trap. Plugin could serve as the short-term vehicle even within the B→F path.
 
 ## Evaluation Summary
 
-| Direction   | Clarity | Medium-Term | Sync | Total |
-| ----------- | ------- | ----------- | ---- | ----- |
-| A: Plugin   | 4/5     | 5/5         | 3/5  | 12/15 |
-| B: Template | 5/5     | 3/5         | 2/5  | 10/15 |
-| C: Monorepo | 2/5     | 2/5         | 5/5  | 9/15  |
-| D: Extract  | 3/5     | 4/5         | 4/5  | 11/15 |
-| E: Hybrid   | 4/5     | 4/5         | 3/5  | 11/15 |
-| F: Platform | 4/5     | 5/5         | 4/5  | 13/15 |
+| Direction   | Strengths                                      | Weaknesses                                   | Feasibility |
+| ----------- | ---------------------------------------------- | -------------------------------------------- | ----------- |
+| A: Plugin   | Best sync (`/reload-plugins`), clean namespace | Plugin constraints limit what's included     | High        |
+| B: Template | Simplest mental model, zero infrastructure     | Worst sync — projects diverge immediately    | High        |
+| C: Monorepo | No sync needed — one repo                      | Couples unrelated projects, gets unwieldy    | Medium      |
+| D: Extract  | Elegant one-way sync, SoNash stays source      | No persistent identity for JASON-OS          | Medium      |
+| E: Hybrid   | Clean separation (scaffold + living OS)        | Two repos to maintain                        | High        |
+| F: Platform | CLI solves sync by design, strongest evolution | Biggest build effort, CLI is its own project | Medium-High |
 
 ## Chosen Direction
 
