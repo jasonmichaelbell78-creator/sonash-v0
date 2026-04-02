@@ -140,6 +140,8 @@ function getNewestSourceMtime(dirPath) {
         // Path traversal guard: ensure file is within project directory
         const rel = path.relative(projectDir, absPath);
         if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
+        // TOCTOU guard: reject symlinks before stat
+        if (fs.lstatSync(absPath).isSymbolicLink()) continue;
         const stat = fs.statSync(absPath);
         if (stat.mtimeMs > newestMtime) {
           newestMtime = stat.mtimeMs;
@@ -169,6 +171,13 @@ function checkBuildFreshness() {
 
   // Check if .next/ directory exists
   try {
+    // TOCTOU guard: reject symlinks before stat
+    if (fs.lstatSync(nextDir).isSymbolicLink()) {
+      return {
+        level: "block",
+        message: "No production build found (.next is a symlink). Run: npm run build",
+      };
+    }
     const stat = fs.statSync(nextDir);
     if (!stat.isDirectory()) {
       return {
@@ -186,6 +195,13 @@ function checkBuildFreshness() {
   // Check BUILD_ID mtime vs source mtime
   let buildMtime = 0;
   try {
+    // TOCTOU guard: reject symlinks before stat
+    if (fs.lstatSync(buildIdPath).isSymbolicLink()) {
+      return {
+        level: "warn",
+        message: "Build may be stale (BUILD_ID is a symlink). Consider running: npm run build",
+      };
+    }
     const stat = fs.statSync(buildIdPath);
     buildMtime = stat.mtimeMs;
   } catch {

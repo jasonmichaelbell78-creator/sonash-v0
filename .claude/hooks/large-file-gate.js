@@ -151,6 +151,11 @@ process.stdin.on("end", () => {
     // Check file existence -- if missing, let Read tool handle the error
     let stat;
     try {
+      // TOCTOU guard: reject symlinks before stat
+      if (fs.lstatSync(absPath).isSymbolicLink()) {
+        // Symlink — allow through (let Read tool handle)
+        process.exit(0);
+      }
       stat = fs.statSync(absPath);
     } catch {
       // File doesn't exist or can't be accessed -- allow through

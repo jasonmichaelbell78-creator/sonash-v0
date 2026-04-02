@@ -1719,6 +1719,53 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
   },
+
+  // --- Patterns from Learning Effectiveness Analysis (Session #257) ---
+  // These patterns recurred 3-5 times despite documentation. Automation required.
+
+  // Signal error code semantics (5x recurrence)
+  {
+    id: "signal-exit-code",
+    severity: "high",
+    pattern: /process\.exit\s*\(\s*[2-9]\d*\s*\)/g,
+    message:
+      "Non-standard exit code — use 0 (success) or 1 (failure). Codes 2+ have signal semantics in Node.js",
+    fix: "Use process.exit(1) for errors. If distinct exit codes needed, document the contract in a comment",
+    review: "Reviews: 353, 354, 357, 359, 361 — 5x recurrence",
+    fileTypes: [".js"],
+    // Hooks use exit(2) for BLOCK semantics (documented contract with pre-commit/pre-push wrapper)
+    pathExclude: /(?:^|[\\/])\.claude[\\/]hooks[\\/]/,
+    pathExcludeList: verifiedPatterns["signal-exit-code"] || [],
+  },
+
+  // Silent parse prevention (4x recurrence)
+  {
+    id: "silent-json-parse",
+    severity: "high",
+    pattern: /JSON\.parse\s*\([^)]+\)\s*;?\s*\n(?!\s*\})/g,
+    message: "JSON.parse without try/catch — will throw on malformed input and crash silently",
+    fix: "Wrap in try/catch: try { JSON.parse(...) } catch { /* handle or default */ }",
+    review: "Reviews: 353, 356, 357, 359 — 4x recurrence",
+    fileTypes: [".js"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExcludeList: verifiedPatterns["silent-json-parse"] || [],
+  },
+
+  // Symlink parent traversal (3x recurrence)
+  {
+    id: "symlink-parent-traversal",
+    severity: "high",
+    pattern: /(?:mkdirSync|writeFileSync|appendFileSync)\s*\([^)]+\)(?![\s\S]{0,200}lstatSync)/g,
+    message:
+      "Write operation without symlink guard on parent directory — symlink could redirect writes",
+    fix: "Check parent with: if (fs.lstatSync(dir).isSymbolicLink()) return; — or use isSafeToWrite() from scripts/lib/security-helpers.js",
+    review: "Reviews: 353, 357, 358 — 3x recurrence",
+    fileTypes: [".js"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|safe-fs)\.js$/,
+    pathExcludeList: verifiedPatterns["symlink-parent-traversal"] || [],
+  },
 ];
 
 // ═══════════════════════════════════════════════════════════════════

@@ -12,12 +12,19 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+let sanitizeError;
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
+}
 let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./symlink-guard"));
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  process.stderr.write(`[rotate-state] symlink-guard unavailable: ${msg}\n`);
+  process.stderr.write(`[rotate-state] symlink-guard unavailable: ${sanitizeError(err)}\n`);
   /**
    * Check if a single path component is a symlink.
    * Returns false if it's a symlink, true if safe, false on unexpected errors.
@@ -341,11 +348,7 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
     });
   } catch (err) {
     const errDetail =
-      err && typeof err === "object" && "code" in err
-        ? err.code
-        : err instanceof Error
-          ? err.message
-          : String(err);
+      err && typeof err === "object" && "code" in err ? err.code : sanitizeError(err);
     process.stderr.write(`[archiveRotateJsonl] Error rotating ${filePath}: ${errDetail}\n`);
     return { rotated: false, before: 0, after: 0, archived: 0 };
   }

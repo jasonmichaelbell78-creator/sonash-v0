@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
+/* global require, process, console, __dirname */
 /* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * post-read-handler.js - Consolidated PostToolUse (Read) hook
@@ -21,6 +21,14 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+let sanitizeError;
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
+}
 let projectDir, loadJson, saveJson;
 try {
   ({ projectDir } = require("./lib/git-utils.js"));
@@ -366,20 +374,14 @@ function main() {
     // Phase 1: Context tracking + large file warning
     runContextTracking();
   } catch (err) {
-    // nosemgrep: sonash.security.no-unsanitized-error-response -- console.warn for developer diagnostics, not user-facing
-    console.warn(
-      `post-read-handler: context tracking error: ${err instanceof Error ? err.message : String(err)}`
-    );
+    console.warn(`post-read-handler: context tracking error: ${sanitizeError(err)}`);
   }
 
   try {
     // Phase 2: Auto-save context check
     runAutoSaveContext();
   } catch (err) {
-    // nosemgrep: sonash.security.no-unsanitized-error-response -- console.warn for developer diagnostics, not user-facing
-    console.warn(
-      `post-read-handler: auto-save error: ${err instanceof Error ? err.message : String(err)}`
-    );
+    console.warn(`post-read-handler: auto-save error: ${sanitizeError(err)}`);
   }
 
   // Always succeed

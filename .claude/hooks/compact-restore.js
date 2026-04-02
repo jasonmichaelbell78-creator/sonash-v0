@@ -26,18 +26,22 @@ try {
       .slice(0, 500);
   /* eslint-enable no-control-regex */
 }
+let sanitizeError;
+try {
+  ({ sanitizeError } = require("../../scripts/lib/security-helpers.js"));
+} catch {
+  sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
+}
 try {
   fs = require("node:fs");
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error("Failed to load node:fs:", sanitizeInput(msg));
+  console.error("Failed to load node:fs:", sanitizeInput(sanitizeError(err)));
   process.exit(1);
 }
 try {
   path = require("node:path");
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error("Failed to load node:path:", sanitizeInput(msg));
+  console.error("Failed to load node:path:", sanitizeInput(sanitizeError(err)));
   process.exit(1);
 }
 
