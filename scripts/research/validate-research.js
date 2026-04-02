@@ -249,8 +249,8 @@ function checkClaimToReportBidirectional(claims, reportText) {
 
   const jsonlIds = new Set(claims.map((c) => c.id).filter(Boolean));
 
-  // Extract claim IDs from report (C-NNN or C-GNNN patterns)
-  const reportIdRegex = /\bC-(?:G?\d+)\b/g;
+  // Extract claim IDs from report (C-NNN or C-GNNN patterns, 3+ digits)
+  const reportIdRegex = /\bC-(?:G?\d{3,})\b/g;
   const reportIds = new Set();
   let match;
   while ((match = reportIdRegex.exec(reportText)) !== null) {
