@@ -27,6 +27,20 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-04 Sessions
 
+### Session #256 (2026-04-01)
+
+**Focus**: JASON-OS brainstorm + /brainstorm skill creation + research roadmap
+
+- **PR #487 R1 review**: 7/7 fixed (vitest→node:test, push batching,
+  consolidation dupes, test baseline, perf cap, nullish coalescing). Review #62.
+- **/brainstorm skill created**: /skill-creator (17 decisions) + /skill-audit
+  (18 decisions). 5-phase diamond model. Cross-refs to deep-plan, deep-research,
+  CLAUDE.md.
+- **JASON-OS brainstorm COMPLETE**: 6 directions, 2 research agents. Chosen:
+  Template → Platform (B→F). 5 anti-goals, 7 open questions.
+- **JASON-OS research roadmap**: /deep-plan produced 16-domain research program
+  (32 decisions), 3 tiers, git-tracked orchestration artifacts.
+
 ### Session #255 (2026-04-01)
 
 **Focus**: Custom agents implementation (T8) + todos + Dependabot PRs
@@ -47,6 +61,14 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 **Focus**: Sync, statusline rebuild, alerts full review
 
 - Hook state file updates, session sync, statusline rebuild, alerts review.
+
+### Session #253 (2026-03-31)
+
+**Focus**: /todo skill creation + skill-audit
+
+- /todo skill created via /skill-creator (26 decisions). JSONL-backed, 8-option
+  interactive menu, AI-powered context capture. Independent of GSD.
+- Skill-audit: 11 categories, 28 decisions. Score 78→88.
 
 ## 2026-03 Sessions
 

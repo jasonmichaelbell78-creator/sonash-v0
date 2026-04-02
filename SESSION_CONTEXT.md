@@ -2,7 +2,7 @@
 
 **Document Version**: 8.15 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-01 (Session #255)
+2026-04-01 (Session #256)
 
 ## Purpose
 
@@ -38,7 +38,7 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Session Tracking
 
-**Current Session Count**: 255 (since Jan 1, 2026)
+**Current Session Count**: 256 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +47,23 @@ Session #253 — /todo skill creation + skill-audit.
 ---
 
 ## Recent Session Summaries
+
+**Session #256** (JASON-OS BRAINSTORM + SKILL CREATION + RESEARCH ROADMAP):
+
+- **Branch**: `planning-33026` (5 commits)
+- **PR #487 R1 review**: 7/7 items fixed (vitest→node:test propagation across 3
+  agent files, Array#push batching, consolidation dupes, test baseline, session
+  perf cap, nullish coalescing). Review #62.
+- **/brainstorm skill created**: Full /skill-creator (17 decisions) +
+  /skill-audit (18 decisions). 5-phase diamond model, Socratic dialogue,
+  contrarian checkpoint, deep-research-searcher agents for unknowns.
+  Cross-references added to deep-plan, deep-research, CLAUDE.md Section 7.
+- **JASON-OS brainstorm COMPLETE**: 6 directions explored, 2 research agents
+  dispatched. Chosen direction: Template → Platform (B→F). 5 anti-goals, 7 open
+  questions. BRAINSTORM.md at `.planning/jason-os/`.
+- **JASON-OS research roadmap COMPLETE**: /deep-plan produced 16-domain research
+  program (32 decisions) across 3 tiers. Orchestration via git-tracked
+  artifacts. Next: Domain 01 (Internal Archaeology).
 
 **Session #255** (CUSTOM AGENTS + TODOS + DEPENDABOT):
 
@@ -66,14 +83,6 @@ Session #253 — /todo skill creation + skill-audit.
 
 - Hook state file updates, statusline rebuild, alerts full review.
 
-**Session #253** (/TODO SKILL CREATION + SKILL-AUDIT):
-
-- **Branch**: `planning-33026`
-- **/todo skill created**: Full /skill-creator workflow — 26 discovery
-  decisions, 8-option interactive menu, JSONL-backed persistence, AI-powered
-  context capture. Independent of GSD.
-- **Skill-audit complete**: 11 categories, 28 decisions. Score 78→88.
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -88,7 +97,7 @@ Session #253 — /todo skill creation + skill-audit.
 | **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                             |
 | **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.        |
 | **Multi-layer Memory**          | RESEARCH DONE | 30 agents, 128 claims. Execution next.                      |
-| **Claude Code OS**              | NOT STARTED   | Primary strategic vision. Multi-stage research needed.      |
+| **JASON-OS (Claude Code OS)**   | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.      |
 | **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                            |
 
 **Current Branch**: `planning-33026`
@@ -108,8 +117,9 @@ Session #253 — /todo skill creation + skill-audit.
 3. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
    Gates plan-orchestration Waves 2-3.
 4. **Multi-layer memory** — Research state file at home locale. Execute.
-5. **Claude Code OS** — Primary strategic vision (T16). Needs multi-stage
-   research before any implementation. Run `/todo` to review full backlog.
+5. **JASON-OS Domain 01** — Internal Archaeology. Full inventory of every skill,
+   agent, hook, script. Start with `/deep-research`. Can run in parallel with
+   Domain 02 (External Landscape) from other locale.
 
 ### After Debt-Runner
 

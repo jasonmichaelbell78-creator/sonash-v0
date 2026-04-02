@@ -52,17 +52,19 @@ planning | Conflicting sources need evaluation | `/deep-plan` needs domain
 research | Skill creation via `/skill-creator` | GSD project research.
 
 **Don't use:** Simple factual questions | Codebase-only (use `Explore`) | User
-wants confirmation | Mid-implementation lookups | Must complete in <2 minutes.
+wants confirmation | Mid-implementation lookups | Must complete in <2 minutes |
+Creative ideation without a research question (use `/brainstorm` first).
 
 ## Routing Guide
 
-| Situation                       | Use                | Why                                  |
-| ------------------------------- | ------------------ | ------------------------------------ |
-| Domain research before planning | `/deep-research`   | Structured multi-agent investigation |
-| Quick factual lookup            | Ask Claude         | Single-turn, no orchestration needed |
-| Codebase understanding          | `Explore` agent    | Codebase-specific tools              |
-| Planning with known domain      | `/deep-plan`       | Discovery-first planning             |
-| Multi-phase project setup       | `/gsd:new-project` | Project-level with built-in research |
+| Situation                            | Use                | Why                                   |
+| ------------------------------------ | ------------------ | ------------------------------------- |
+| Creative ideation, direction unclear | `/brainstorm`      | Explore directions before researching |
+| Domain research before planning      | `/deep-research`   | Structured multi-agent investigation  |
+| Quick factual lookup                 | Ask Claude         | Single-turn, no orchestration needed  |
+| Codebase understanding               | `Explore` agent    | Codebase-specific tools               |
+| Planning with known domain           | `/deep-plan`       | Discovery-first planning              |
+| Multi-phase project setup            | `/gsd:new-project` | Project-level with built-in research  |
 
 ## Input
 

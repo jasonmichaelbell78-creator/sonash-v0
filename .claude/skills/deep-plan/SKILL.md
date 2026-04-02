@@ -49,13 +49,15 @@ plans by front-loading decision-making through exhaustive questioning.
 - Tasks with 3-4 decisions — use regular plan mode (EnterPlanMode)
 - Tasks where the user has already specified every decision
 - Multi-phase project roadmaps — use `/gsd:new-project` or `/gsd:new-milestone`
-- Brainstorming without a concrete implementation target — use a brainstorming
-  approach first, then `/deep-plan` to plan the chosen approach
+- Brainstorming without a concrete implementation target — use `/brainstorm`
+  first, then `/deep-plan` to plan the chosen approach
+- Direction is unclear ("what should we build?") — use `/brainstorm` to explore
 
 ## Routing Guide
 
 | Situation              | Use                | Why                                     |
 | ---------------------- | ------------------ | --------------------------------------- |
+| Direction unclear      | `/brainstorm`      | Explore WHAT before planning HOW        |
 | 5+ ambiguous decisions | `/deep-plan`       | Exhaustive discovery prevents bad plans |
 | 3-4 clear decisions    | EnterPlanMode      | Lighter-weight, faster                  |
 | Multi-phase roadmap    | `/gsd:new-project` | Project-level planning with milestones  |
@@ -114,27 +116,30 @@ reference actual patterns, not generic placeholders.
      research before I can ask informed questions. Run `/deep-research` first?"
      Do not proceed with uninformed discovery questions when domain expertise is
      absent.
-4. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
-5. Identify existing patterns, conventions, and neighboring systems (MUST)
-6. Produce `DIAGNOSIS.md` at the plan output location (MUST):
+4. **Brainstorm check** (SHOULD) — check for
+   `.planning/<topic-slug>/BRAINSTORM.md`. If found, load chosen direction,
+   anti-goals, and open questions as pre-seeded context for discovery.
+5. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
+6. Identify existing patterns, conventions, and neighboring systems (MUST)
+7. Produce `DIAGNOSIS.md` at the plan output location (MUST):
    - ROADMAP alignment check (aligned / misaligned / new direction)
    - Relevant existing systems and their patterns
    - Reframe check: is the task what it appears to be?
-7. **Verify code-state claims (MUST):** All claims in DIAGNOSIS.md about
+8. **Verify code-state claims (MUST):** All claims in DIAGNOSIS.md about
    specific code state (line numbers, bug descriptions, specific values,
    corruption claims) MUST include a verify command. Claims without verification
    are flagged as `[UNVERIFIED]`. Run `npm view <pkg> version` for any version
    references — plans MUST NOT assume future/unreleased software exists. Use
    "preparation" language ("prepare for eventual vN") not imperative ("migrate
    to vN").
-8. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M) —
+9. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M) —
    if DIAGNOSIS.md makes 5+ claims about codebase state (claims = testable
    assertions about codebase state, per `/convergence-loop` SKILL.md), verify
    via convergence-loop quick preset. Wrong diagnosis cascades through the
    entire plan. **If claims are wrong:** correct DIAGNOSIS.md and re-verify
    before presenting. See `/convergence-loop` SKILL.md "Programmatic Mode" for
    the integration contract.
-9. Present DIAGNOSIS.md to user for review (MUST)
+10. Present DIAGNOSIS.md to user for review (MUST)
 
 **If misaligned with ROADMAP:** Present the conflict to the user. Options: (1)
 proceed with acknowledgment, (2) reframe to align, (3) abort. Do NOT silently

@@ -2811,6 +2811,24 @@ deduped/merged)
 
 ---
 
+### Review #63 — PR #488 R1 (Mixed: Qodo Compliance + Qodo Suggestions + Gemini)
+
+**Date:** 2026-04-01 **Items:** 3 (3 fixed, 0 deferred, 0 rejected)
+
+**Patterns:**
+
+- TDMS created-date churn: normalize-all.js overwrites `created` on re-runs.
+  Fix: add `updated` field, preserve original `created`. Dedup mergeItems now
+  keeps earliest `created` across merges.
+- Agent invocation audit trail: JSONL entries missing `user` and `outcome`
+  fields for compliance. Fix: add `process.env.USER` and `outcome: "invoked"`.
+- Brainstorm evaluation table: BRAINSTORM.md used custom headers (Clarity/
+  Medium-Term/Sync) instead of REFERENCE.md template (Strengths/Weaknesses/
+  Feasibility). Fix: aligned with template. First real-world validation of
+  /brainstorm skill output format.
+
+---
+
 ### Review #62 — PR #487 R1 (Mixed: Doc Lint + SonarCloud + Gemini + Qodo + CI)
 
 **Date:** 2026-04-01 **Items:** 7 (7 fixed, 0 deferred, 0 rejected)

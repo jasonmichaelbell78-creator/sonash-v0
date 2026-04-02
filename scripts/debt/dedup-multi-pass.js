@@ -262,6 +262,11 @@ function mergeItems(primary, secondary) {
     merged.severity = secondary.severity;
   }
 
+  // Preserve earliest created date across merges
+  if (secondary.created && (!merged.created || secondary.created < merged.created)) {
+    merged.created = secondary.created;
+  }
+
   // Track merge sources (only add valid source_id strings, prevent duplicates)
   if (!merged.merged_from) merged.merged_from = [];
   if (typeof secondary.source_id === "string" && secondary.source_id.trim()) {
