@@ -1,0 +1,34 @@
+{
+  "topic": "CLI Tools for AI-Directed Workflow",
+  "depth": "L1",
+  "questionType": "exploratory",
+  "domain": "technology",
+  "startedAt": "2026-03-23T11:00:00Z",
+  "completedAt": "2026-03-23T16:45:00Z",
+  "agentCount": 13,
+  "searchRounds": 80,
+  "sourceCount": 73,
+  "claimCount": 45,
+  "confidenceDistribution": {
+    "HIGH": 41,
+    "MEDIUM": 2,
+    "LOW": 2,
+    "UNVERIFIED": 0
+  },
+  "selfAuditResult": "6/6 passed",
+  "postVerification": {
+    "contrarianRefuted": 2,
+    "contrarianWeakened": 15,
+    "contrarianConfirmed": 4,
+    "claimsVerified": 6,
+    "claimsUpgraded": 3,
+    "claimsDowngraded": 2
+  },
+  "consumerHints": {
+    "hasStackClaims": true,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": false,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 0
+  }
+}

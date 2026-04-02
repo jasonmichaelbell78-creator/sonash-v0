@@ -151,20 +151,13 @@ nul
 # Consolidation output (local-only)
 consolidation-output/
 
-# Research intermediate artifacts (session-specific, not committed)
-# Conclusion artifacts (RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json) are retained
-.research/**/findings/
-.research/**/challenges/
-.research/**/archive/
+# Research artifacts — all committed for traceability (Decision 2026-04-02)
 
 # Git worktrees (isolated workspaces, never commit)
 .worktrees/
 .claude/worktrees/
 functions/.next/
 
-# Deep Research intermediate artifacts
-.research/*/findings/
-.research/*/challenges/
 
 # Statusline Go binary (machine-specific compiled output)
 tools/statusline/sonash-statusline
