@@ -366,6 +366,17 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#29)</summary>
+
+- **Date:** 2026-04-02
+- **Reviews consolidated:** #review-466-r3-#rev-63
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#28)</summary>
 
 - **Date:** 2026-04-01
@@ -955,14 +966,14 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 5     | 4        | 0        |
+|-------|-------|----------|----------|
+| 9 | 5 | 4 | 0 |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 6     | 2       |
+|----------|-------|-------|---------|
+| 0 | 1 | 6 | 2 |
 
 ---
 
@@ -971,8 +982,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-25 | **PR:** #469 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 8     | 0        | 3        |
+|-------|-------|----------|----------|
+| 12 | 8 | 0 | 3 |
 
 ---
 
@@ -981,8 +992,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-25 | **PR:** #469 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 7     | 0        | 1        |
+|-------|-------|----------|----------|
+| 8 | 7 | 0 | 1 |
 
 ---
 
@@ -991,8 +1002,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #470 | **Source:** bulk
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 0        |
+|-------|-------|----------|----------|
+| 8 | 5 | 0 | 0 |
 
 **Patterns:**
 
@@ -1016,8 +1027,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 32    | 19    | 0        | 13       |
+|-------|-------|----------|----------|
+| 32 | 19 | 0 | 13 |
 
 ---
 
@@ -1026,8 +1037,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 5     | 0        | 2        |
+|-------|-------|----------|----------|
+| 7 | 5 | 0 | 2 |
 
 ---
 
@@ -1036,8 +1047,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 5     | 0        | 5        |
+|-------|-------|----------|----------|
+| 10 | 5 | 0 | 5 |
 
 ---
 
@@ -1046,8 +1057,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 4     | 0        | 7        |
+|-------|-------|----------|----------|
+| 11 | 4 | 0 | 7 |
 
 ---
 
@@ -1056,8 +1067,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 0     | 0        | 6        |
+|-------|-------|----------|----------|
+| 6 | 0 | 0 | 6 |
 
 ---
 
@@ -1066,8 +1077,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #472 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 13    | 12    | 0        | 1        |
+|-------|-------|----------|----------|
+| 13 | 12 | 0 | 1 |
 
 ---
 
@@ -1076,44 +1087,47 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-26 | **PR:** #472 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 6     | 2        | 0        |
+|-------|-------|----------|----------|
+| 8 | 6 | 2 | 0 |
 
 ---
 
 ### Review backfill-477-r1: PR #477 R1 — Mixed DocLint+SonarCloud+Qodo+Gemini (2026-03-28) (2026-03-28)
 
-> **Completeness:** partial **Missing fields:** severity
+> **Completeness:** partial
+> **Missing fields:** severity
 
 **Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 14    | 0        | 7        |
+|-------|-------|----------|----------|
+| 21 | 14 | 0 | 7 |
 
 ---
 
 ### Review backfill-477-r2: PR #477 R2 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
 
-> **Completeness:** partial **Missing fields:** severity
+> **Completeness:** partial
+> **Missing fields:** severity
 
 **Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 4     | 0        | 8        |
+|-------|-------|----------|----------|
+| 12 | 4 | 0 | 8 |
 
 ---
 
 ### Review backfill-477-r3: PR #477 R3 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
 
-> **Completeness:** partial **Missing fields:** severity
+> **Completeness:** partial
+> **Missing fields:** severity
 
 **Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 3     | 0        | 4        |
+|-------|-------|----------|----------|
+| 7 | 3 | 0 | 4 |
 
 ---
 
@@ -1122,8 +1136,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 24    | 0        | 3        |
+|-------|-------|----------|----------|
+| 27 | 24 | 0 | 3 |
 
 ---
 
@@ -1132,8 +1146,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 6     | 0        | 2        |
+|-------|-------|----------|----------|
+| 8 | 6 | 0 | 2 |
 
 ---
 
@@ -1142,8 +1156,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 0        |
+|-------|-------|----------|----------|
+| 6 | 6 | 0 | 0 |
 
 ---
 
@@ -1152,8 +1166,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 2     | 0        | 1        |
+|-------|-------|----------|----------|
+| 3 | 2 | 0 | 1 |
 
 ---
 
@@ -1162,8 +1176,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 25    | 22    | 0        | 3        |
+|-------|-------|----------|----------|
+| 25 | 22 | 0 | 3 |
 
 ---
 
@@ -1172,8 +1186,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 5     | 0        | 2        |
+|-------|-------|----------|----------|
+| 7 | 5 | 0 | 2 |
 
 ---
 
@@ -1182,8 +1196,8 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 4     | 0        | 3        |
+|-------|-------|----------|----------|
+| 7 | 4 | 0 | 3 |
 
 ---
 
@@ -1192,8 +1206,43 @@ deduplicated, non-overlapping ranges):
 **Date:** 2026-03-31 | **PR:** #483 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 9     | 0        | 2        |
+|-------|-------|----------|----------|
+| 11 | 9 | 0 | 2 |
+
+---
+
+### Review rev-62: (untitled) (2026-04-01)
+
+**Date:** 2026-04-01 | **PR:** #487 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+|-------|-------|----------|----------|
+| 7 | 7 | 0 | 0 |
+
+**Patterns:**
+
+- vitest-to-node-test-propagation
+- array-push-batching
+- consolidation-duplication
+- test-baseline-missing
+- nullish-coalescing-defense
+- startup-perf-cap
+
+---
+
+### Review rev-63: (untitled) (2026-04-01)
+
+**Date:** 2026-04-01 | **PR:** #488 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+|-------|-------|----------|----------|
+| 3 | 3 | 0 | 0 |
+
+**Patterns:**
+
+- tdms-created-date-churn
+- agent-audit-trail
+- brainstorm-table-alignment
 
 ## Key Patterns
 
@@ -2981,3 +3030,4 @@ deduped/merged)
   major-only pins.
 
 ---
+
