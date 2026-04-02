@@ -171,3 +171,11 @@
 {"agent":"Explore","description":"Triage plans and research for JASON-OS","sessionId":"session-1775078923779","timestamp":"2026-04-02T00:30:08.760Z"}
 {"agent":"claude-code-guide","description":"Research no-flicker mode in Claude Code 2.1.89","sessionId":"session-1775125078548","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T10:37:06.345Z"}
 {"agent":"Explore","description":"Explore session-start hook integration point","sessionId":"session-1775125078548","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T10:57:36.438Z"}
+{"agent":"claude-code-guide","description":"Research terminal emulators for Windows Claude Code","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:07:41.566Z"}
+{"agent":"Explore","description":"Explore .claude directory structure and dependencies","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:41:48.754Z"}
+{"agent":"Explore","description":"Explore git worktree usage and Claude Code docs","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:43:06.241Z"}
+{"agent":"deep-research-searcher","description":"Research Claude Code worktree support","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:45:06.593Z"}
+{"agent":"fullstack-developer","description":"Build repo-analysis SKILL.md scaffold","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:37:56.506Z"}
+{"agent":"fullstack-developer","description":"Build repo-analysis tool scripts","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:38:07.440Z"}
+{"agent":"fullstack-developer","description":"Wire cross-references for repo-analysis","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:50:45.678Z"}
+{"agent":"code-reviewer","description":"Review repo-analysis skill files","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:50:54.225Z"}

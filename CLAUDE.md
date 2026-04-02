@@ -1,8 +1,8 @@
 # AI Context & Rules for SoNash
 
 <!-- prettier-ignore-start -->
-**Document Version:** 5.8
-**Last Updated:** 2026-03-24
+**Document Version:** 5.9
+**Last Updated:** 2026-04-02
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -200,6 +200,7 @@ Interactive tools (suggest to user when appropriate): `lazygit`, `yazi`, `fzf`.
 | React/frontend component work  | `frontend-developer` agent              | Task  |
 | UI/frontend design             | `frontend-design` skill                 | Skill |
 | New UI feature                 | Generate `.protocol.json`               | Write |
+| External repo analysis         | `repo-analysis` skill                   | Skill |
 
 ### POST-TASK (before committing) `[GATE: pre-commit hook + code-reviewer]`
 
@@ -247,6 +248,7 @@ Evidence-Based).
 
 | Version | Date       | Changes                                               |
 | ------- | ---------- | ----------------------------------------------------- |
+| 5.9     | 2026-04-02 | Section 7: add repo-analysis trigger (Step 8 xrefs)   |
 | 5.8     | 2026-03-24 | Section 7: add teams/specialized agents notes (P5)    |
 | 5.7     | 2026-03-21 | Add guardrail #14: never set SKIP_REASON autonomously |
 | 5.6     | 2026-03-17 | Add 6 behavioral guardrails from /insights (7-12)     |

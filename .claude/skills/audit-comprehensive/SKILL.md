@@ -23,11 +23,14 @@ escalation, then aggregates findings into a comprehensive report.
 
 - Tasks related to audit-comprehensive
 - User explicitly invokes `/audit-comprehensive`
+- User attempts `/repo-analysis` on the home repo -- repo-analysis will warn and
+  offer to redirect here (home repo guard)
 
 ## When NOT to Use
 
 - When the task doesn't match this skill's scope -- check related skills
 - When a more specialized skill exists for the specific task
+- When analyzing an **external** repo -- use `/repo-analysis` instead
 
 ## Overview
 

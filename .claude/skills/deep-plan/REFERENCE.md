@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-01
+**Document Version:** 1.1
+**Last Updated:** 2026-04-02
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -225,6 +225,27 @@ Verify before presenting plan (Phase 3.5):
 - [ ] At least one audit checkpoint
 - [ ] Effort estimate
 - [ ] Parallelization guidance where applicable
+
+---
+
+## Research Context Injection
+
+Deep-plan sessions can consume pre-existing research as Phase 0 context,
+skipping redundant discovery. The following sources are recognized:
+
+| Source           | Artifacts                                                     | Injection Point                       |
+| ---------------- | ------------------------------------------------------------- | ------------------------------------- |
+| `/deep-research` | `RESEARCH_OUTPUT.md` in `.research/<topic>/`                  | Phase 0 diagnosis context             |
+| `/repo-analysis` | `analysis.json`, `value-map.json` in `.research/<repo-slug>/` | Phase 0 `## Research Context` section |
+
+**Using `/repo-analysis` output as deep-plan input:**
+
+When the user selects "Deep-plan this" from the repo-analysis routing menu (or
+manually provides repo-analysis artifacts), inject the `analysis.json` summary
+as a `## Research Context` section in the DIAGNOSIS.md. The value-map.json
+extraction candidates become input for Architecture & Structure questions
+(Category 2). This avoids re-discovering information the analysis already
+captured (health bands, absence patterns, value extraction candidates).
 
 ---
 
