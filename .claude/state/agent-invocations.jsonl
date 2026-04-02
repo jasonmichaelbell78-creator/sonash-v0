@@ -179,3 +179,9 @@
 {"agent":"fullstack-developer","description":"Build repo-analysis tool scripts","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:38:07.440Z"}
 {"agent":"fullstack-developer","description":"Wire cross-references for repo-analysis","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:50:45.678Z"}
 {"agent":"code-reviewer","description":"Review repo-analysis skill files","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:50:54.225Z"}
+{"agent":"fullstack-developer","description":"Fix sanitizeError propagation in hook files","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:19:08.337Z"}
+{"agent":"fullstack-developer","description":"Fix lstat-symlink propagation in hook files","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:19:18.769Z"}
+{"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:34.220Z"}
+{"agent":"Explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:34.301Z"}
+{"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:50.667Z"}
+{"agent":"Explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:50.752Z"}
