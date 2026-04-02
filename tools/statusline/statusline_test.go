@@ -333,6 +333,20 @@ not-json-at-all
 	if got := countUnackedSince(logFile, ackFile); got != 3 {
 		t.Errorf("malformed entries: expected 3 unacked, got %d", got)
 	}
+
+	// Resolved entries are excluded from unacked count
+	resolvedLines := `{"timestamp":"2026-03-25T10:00:00Z"}
+{"timestamp":"2026-03-25T11:00:00Z","resolved":true,"resolvedAt":"2026-03-26T00:00:00Z"}
+{"timestamp":"2026-03-26T10:00:00Z"}
+{"timestamp":"2026-03-26T11:00:00Z","resolved":true}
+`
+	if err := os.WriteFile(logFile, []byte(resolvedLines), 0644); err != nil {
+		t.Fatalf("write logFile (resolved): %v", err)
+	}
+	os.Remove(ackFile) // clear ack — all non-resolved should count
+	if got := countUnackedSince(logFile, ackFile); got != 2 {
+		t.Errorf("resolved entries: expected 2 unacked, got %d", got)
+	}
 }
 
 func TestPrepareLine(t *testing.T) {

@@ -1195,6 +1195,41 @@ deduplicated, non-overlapping ranges):
 | ----- | ----- | -------- | -------- |
 | 11    | 9     | 0        | 2        |
 
+---
+
+### Review rev-62: (untitled) (2026-04-01)
+
+**Date:** 2026-04-01 | **PR:** #487 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Patterns:**
+
+- vitest-to-node-test-propagation
+- array-push-batching
+- consolidation-duplication
+- test-baseline-missing
+- nullish-coalescing-defense
+- startup-perf-cap
+
+---
+
+### Review rev-63: (untitled) (2026-04-01)
+
+**Date:** 2026-04-01 | **PR:** #488 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Patterns:**
+
+- tdms-created-date-churn
+- agent-audit-trail
+- brainstorm-table-alignment
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed

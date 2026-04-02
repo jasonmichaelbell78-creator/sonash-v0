@@ -15,12 +15,37 @@ type RateLimitBucket struct {
 	ResetsAt       json.RawMessage `json:"resets_at"`
 }
 
-// StdinData matches Claude Code's statusline JSON schema.
-type StdinData struct {
-	Model struct {
+// FlexModel handles model as either a string ("claude-opus-4-6") or an object ({id, display_name}).
+// Claude Code >=2.1.89 sends a string; older versions sent an object.
+type FlexModel struct {
+	ID          string
+	DisplayName string
+}
+
+func (m *FlexModel) UnmarshalJSON(data []byte) error {
+	// Try string first (new format)
+	var s string
+	if err := json.Unmarshal(data, &s); err == nil {
+		m.ID = s
+		m.DisplayName = s
+		return nil
+	}
+	// Fall back to object (old format)
+	var obj struct {
 		ID          string `json:"id"`
 		DisplayName string `json:"display_name"`
-	} `json:"model"`
+	}
+	if err := json.Unmarshal(data, &obj); err != nil {
+		return err
+	}
+	m.ID = obj.ID
+	m.DisplayName = obj.DisplayName
+	return nil
+}
+
+// StdinData matches Claude Code's statusline JSON schema.
+type StdinData struct {
+	Model FlexModel `json:"model"`
 	SessionID string `json:"session_id"`
 	Workspace struct {
 		CurrentDir string `json:"current_dir"`
