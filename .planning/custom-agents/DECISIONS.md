@@ -1,7 +1,7 @@
 # Decisions: Custom Agent Implementation
 
 **Date:** 2026-03-31 **Decisions:** 30 **Source:** /deep-plan discovery (4
-batches, 30 questions) **Research:** .research/custom-agents/ (111 claims, 58
+batches, 30 questions) **Research:** .research/custom-agents/ (111 claims, 46
 sources, L4 depth)
 
 ---

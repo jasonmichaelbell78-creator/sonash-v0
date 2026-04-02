@@ -1149,7 +1149,7 @@ _Uncategorized_
 
 | Document                                                                       | Description | References | Last Modified |
 | ------------------------------------------------------------------------------ | ----------- | ---------- | ------------- |
-| [Decisions: Custom Agent Implementation](.planning/custom-agents/DECISIONS.md) | -           | ↓1 ↑0      | 2026-04-01    |
+| [Decisions: Custom Agent Implementation](.planning/custom-agents/DECISIONS.md) | -           | ↓1 ↑0      | 2026-04-02    |
 | [Diagnosis: Custom Agent Implementation](.planning/custom-agents/DIAGNOSIS.md) | -           | ↓0 ↑0      | 2026-04-01    |
 | [Plan: Custom Agent Implementation](.planning/custom-agents/PLAN.md)           | -           | ↓0 ↑2      | 2026-04-02    |
 
@@ -1159,9 +1159,9 @@ _Uncategorized_
 
 | Document                                                                        | Description                    | References | Last Modified |
 | ------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Decisions: Dev Dashboard Command Center](.planning/dev-dashboard/DECISIONS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-30    |
-| [Diagnosis: Dev Dashboard Command Center](.planning/dev-dashboard/DIAGNOSIS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-30    |
-| [Plan: Dev Dashboard Command Center](.planning/dev-dashboard/PLAN.md)           | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-03-30    |
+| [Decisions: Dev Dashboard Command Center](.planning/dev-dashboard/DECISIONS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-04-02    |
+| [Diagnosis: Dev Dashboard Command Center](.planning/dev-dashboard/DIAGNOSIS.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-04-02    |
+| [Plan: Dev Dashboard Command Center](.planning/dev-dashboard/PLAN.md)           | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-04-02    |
 
 ### .planning > github-health-skill (Tier 4)
 

@@ -24,17 +24,16 @@ health awareness — a clear operational visibility win.
 
 **Source:** `.research/github-health/RESEARCH_OUTPUT.md` (2026-03-29)
 
-32-agent research completed (Session #246, PR #480): 21 discovery agents, 3
-verification, 2 challenge, 1 dispute, 3 gap pursuit. 100 claims, 103 sources
+Research completed (Session #246, PR #480): 20 agent output files (findings +
+challenges), 39 claims (C-001 through C-039), 27 sources (S-001 through S-026)
 across 6 domains. Architecture design in Section 4.
 
-**Note:** The `metadata.json` and RESEARCH_OUTPUT.md Section 7.1 claim only 3 of
-21 discovery agents produced findings files. This is **stale/inaccurate** — the
-PR description confirms 32 agents ran with 100 claims and 103 sources, and the
-report itself contains detailed findings across all 6 domains (claims C-001
-through C-039, sources S-001 through S-026). The metadata was likely written
-before the full pipeline completed. The skill design should treat the full
-research output as the authoritative source.
+**Note (2026-04-02 integrity fix):** The original DIAGNOSIS cited "32 agents /
+100 claims / 103 sources" from the PR description. Post-remediation metadata
+shows agentCount=20 (actual files), claimCount=39, sourceCount=27. The PR
+description figures conflated planned agents with completed output files and
+counted non-claim items as claims. The corrected metadata.json and
+RESEARCH_OUTPUT.md are authoritative.
 
 **Key research findings that shape planning:**
 

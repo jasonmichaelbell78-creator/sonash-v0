@@ -5,6 +5,7 @@
   "session": 245,
   "depth": "L3",
   "agentCount": 46,
+  "agentCountNote": "agentCount=total output files (findings+challenges); agents.total=searcher agents deployed",
   "claimCount": 100,
   "sourceCount": 90,
   "confidenceDistribution": {

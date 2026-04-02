@@ -529,6 +529,7 @@ structured output.
 | Golden test cases                                | Formal test infrastructure initiative  |
 | App Check MASTER_DEBT entry                      | Separate security debt tracking        |
 | P3 net-new agents                                | Documented failures + creation gate    |
+| Firebase MCP P0.6 evaluation (C-107)             | Infrastructure evaluation, not agent   |
 | Audit re-run for >=75 mean                       | Follow-up session after implementation |
 
 ---

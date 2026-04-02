@@ -358,6 +358,16 @@ for future session-begin enhancement — no code change needed now.
 
 ---
 
+## Design Notes
+
+- **Batch-review phase omitted.** Research Section 11.2 defined Phase 4.5 (TDMS
+  dedup, mandatory pre-review) and Phase 5 (interactive batch review, 3-5
+  findings per batch). These were deliberately compressed into the routing menu
+  pattern for v1. If interactive review becomes necessary, re-derive from
+  research Section 11.2.
+
+---
+
 ## Version History
 
 | Version | Date       | Description                                         |
