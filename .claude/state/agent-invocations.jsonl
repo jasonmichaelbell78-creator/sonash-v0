@@ -166,3 +166,6 @@
 {"agent":"general-purpose","description":"Step 17: Create dispute-resolver","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:45:47.796Z"}
 {"agent":"general-purpose","description":"Steps 18-19: Gap pursuer + synthesizer","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:46:47.091Z"}
 {"agent":"code-reviewer","description":"Code review script changes","sessionId":"session-1775078923779","timestamp":"2026-04-01T22:04:24.588Z"}
+{"agent":"deep-research-searcher","description":"Research Claude Code OS landscape","sessionId":"session-1775078923779","timestamp":"2026-04-01T23:41:41.532Z"}
+{"agent":"Explore","description":"Explore OS-portable artifacts","sessionId":"session-1775078923779","timestamp":"2026-04-01T23:42:24.119Z"}
+{"agent":"Explore","description":"Triage plans and research for JASON-OS","sessionId":"session-1775078923779","timestamp":"2026-04-02T00:30:08.760Z"}
