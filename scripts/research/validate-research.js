@@ -14,9 +14,13 @@
  * @module research/validate-research
  */
 
-import { readFileSync, writeFileSync, readdirSync, existsSync } from "fs";
-import { join, relative, basename } from "path";
+import { readdirSync, existsSync } from "fs";
+import { join, relative } from "path";
+import { createRequire } from "module";
 import { sanitizeError } from "../lib/sanitize-error.js";
+
+const require = createRequire(import.meta.url);
+const { safeWriteFileSync, readUtf8Sync } = require("../lib/safe-fs.js");
 
 const ROOT = join(import.meta.dirname, "..", "..");
 const RESEARCH_DIR = join(ROOT, ".research");
@@ -35,7 +39,7 @@ const fixMode = args.includes("--fix");
 function readJsonl(filePath) {
   if (!existsSync(filePath)) return null;
   try {
-    const content = readFileSync(filePath, "utf-8");
+    const content = readUtf8Sync(filePath);
     const lines = content.split("\n").filter((l) => l.trim().length > 0);
     const results = [];
     for (let i = 0; i < lines.length; i++) {
@@ -54,7 +58,7 @@ function readJsonl(filePath) {
 function readJson(filePath) {
   if (!existsSync(filePath)) return null;
   try {
-    return JSON.parse(readFileSync(filePath, "utf-8"));
+    return JSON.parse(readUtf8Sync(filePath));
   } catch (err) {
     return { error: sanitizeError(err) };
   }
@@ -63,7 +67,7 @@ function readJson(filePath) {
 function readText(filePath) {
   if (!existsSync(filePath)) return null;
   try {
-    return readFileSync(filePath, "utf-8");
+    return readUtf8Sync(filePath);
   } catch (err) {
     return { error: sanitizeError(err) };
   }
@@ -383,7 +387,7 @@ function validateTopic(topic) {
     if (Object.keys(fixes).length > 0) {
       const updated = { ...metadata, ...fixes };
       try {
-        writeFileSync(metadataPath, JSON.stringify(updated, null, 2) + "\n", "utf-8");
+        safeWriteFileSync(metadataPath, JSON.stringify(updated, null, 2) + "\n");
       } catch (err) {
         results.push({ check: "Fix apply", status: "FAIL", detail: sanitizeError(err) });
       }
@@ -470,7 +474,7 @@ function writeStateFile(allResults) {
   }
 
   try {
-    writeFileSync(STATE_FILE, lines.join("\n") + "\n", "utf-8");
+    safeWriteFileSync(STATE_FILE, lines.join("\n") + "\n");
     console.log(`📊 State written to ${relative(ROOT, STATE_FILE)}`);
   } catch (err) {
     console.error(`Failed to write state: ${sanitizeError(err)}`);

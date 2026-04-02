@@ -1,64 +1,64 @@
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"2. Claim coverage","status":"WARN","detail":"18/111 claims cited in report (93 not cited)","uncoveredCount":93}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"3. Findings inventory","status":"WARN","detail":"0/37 files (findings: 0, challenges: 0) — partial, rest likely at home locale"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"5. Post-pipeline delta","status":"PASS","detail":"111 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"custom-agents","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (VERIFIED, REFUTED, UNVERIFIABLE, MODIFIED) but no verification fields in claims.jsonl"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 44 claims in JSONL)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"3. Findings inventory","status":"PASS","detail":"25 files match agentCount 25"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"5. Post-pipeline delta","status":"PASS","detail":"44 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"debt-runner-expansion","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (VERIFIED, REFUTED) but no verification fields in claims.jsonl"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 100 claims in JSONL)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"3. Findings inventory","status":"WARN","detail":"2/36 files (findings: 2, challenges: 0) — partial, rest likely at home locale"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"5. Post-pipeline delta","status":"PASS","detail":"100 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"dev-dashboard","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (VERIFIED) but no verification fields in claims.jsonl"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"2. Claim coverage","status":"PASS","detail":"All claims referenced in report"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"3. Findings inventory","status":"WARN","detail":"0/32 files (findings: 0, challenges: 0) — partial, rest likely at home locale"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"5. Post-pipeline delta","status":"PASS","detail":"39 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"github-health","check":"8. Verdict persistence","status":"PASS","detail":"No verification verdicts in report"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"2. Claim coverage","status":"WARN","detail":"13/128 claims cited in report (115 not cited)","uncoveredCount":115}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"3. Findings inventory","status":"PASS","detail":"40 files match agentCount 40"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"5. Post-pipeline delta","status":"PASS","detail":"128 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"multi-layer-memory","check":"8. Verdict persistence","status":"PASS","detail":"1/128 claims have verification fields"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 34 claims in JSONL)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"3. Findings inventory","status":"PASS","detail":"22 files match agentCount 22"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"5. Post-pipeline delta","status":"PASS","detail":"34 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"plan-orchestration","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (REFUTED) but no verification fields in claims.jsonl"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"1. Source traceability","status":"WARN","detail":"64 orphaned sourceIds (accepted: research-phase-codes)","orphanedCount":64}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"2. Claim coverage","status":"WARN","detail":"11/50 claims cited in report (39 not cited)","uncoveredCount":39}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"3. Findings inventory","status":"PASS","detail":"29 files match agentCount 29"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"5. Post-pipeline delta","status":"PASS","detail":"50 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-skill","check":"8. Verdict persistence","status":"PASS","detail":"No verification verdicts in report"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"1. Source traceability","status":"WARN","detail":"170 orphaned sourceIds (accepted: research-phase-codes)","orphanedCount":170}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 80 claims in JSONL)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"3. Findings inventory","status":"PASS","detail":"23 files match agentCount 23"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"5. Post-pipeline delta","status":"PASS","detail":"80 claims match"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
-{"timestamp":"2026-04-02T19:15:31.103Z","topic":"repo-analysis-value-extraction","check":"8. Verdict persistence","status":"PASS","detail":"No verification verdicts in report"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"2. Claim coverage","status":"WARN","detail":"18/111 claims cited in report (93 not cited)","uncoveredCount":93}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"3. Findings inventory","status":"WARN","detail":"0/37 files (findings: 0, challenges: 0) — partial, rest likely at home locale"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"5. Post-pipeline delta","status":"PASS","detail":"111 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"custom-agents","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (VERIFIED, REFUTED, UNVERIFIABLE, MODIFIED) but no verification fields in claims.jsonl"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 44 claims in JSONL)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"3. Findings inventory","status":"PASS","detail":"25 files match agentCount 25"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"5. Post-pipeline delta","status":"PASS","detail":"44 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"debt-runner-expansion","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (VERIFIED, REFUTED) but no verification fields in claims.jsonl"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 100 claims in JSONL)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"3. Findings inventory","status":"WARN","detail":"2/36 files (findings: 2, challenges: 0) — partial, rest likely at home locale"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"5. Post-pipeline delta","status":"PASS","detail":"100 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"dev-dashboard","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (VERIFIED) but no verification fields in claims.jsonl"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"2. Claim coverage","status":"PASS","detail":"All claims referenced in report"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"3. Findings inventory","status":"WARN","detail":"0/32 files (findings: 0, challenges: 0) — partial, rest likely at home locale"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"5. Post-pipeline delta","status":"PASS","detail":"39 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"github-health","check":"8. Verdict persistence","status":"PASS","detail":"No verification verdicts in report"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"2. Claim coverage","status":"WARN","detail":"13/128 claims cited in report (115 not cited)","uncoveredCount":115}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"3. Findings inventory","status":"PASS","detail":"40 files match agentCount 40"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"5. Post-pipeline delta","status":"PASS","detail":"128 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"multi-layer-memory","check":"8. Verdict persistence","status":"PASS","detail":"1/128 claims have verification fields"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"1. Source traceability","status":"PASS","detail":"All sourceIds resolve"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 34 claims in JSONL)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"3. Findings inventory","status":"PASS","detail":"22 files match agentCount 22"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"5. Post-pipeline delta","status":"PASS","detail":"34 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"plan-orchestration","check":"8. Verdict persistence","status":"WARN","detail":"Report has verdicts (REFUTED) but no verification fields in claims.jsonl"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"1. Source traceability","status":"WARN","detail":"64 orphaned sourceIds (accepted: research-phase-codes)","orphanedCount":64}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"2. Claim coverage","status":"WARN","detail":"11/50 claims cited in report (39 not cited)","uncoveredCount":39}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"3. Findings inventory","status":"PASS","detail":"29 files match agentCount 29"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"5. Post-pipeline delta","status":"PASS","detail":"50 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-skill","check":"8. Verdict persistence","status":"PASS","detail":"No verification verdicts in report"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"1. Source traceability","status":"WARN","detail":"170 orphaned sourceIds (accepted: research-phase-codes)","orphanedCount":170}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"2. Claim coverage","status":"WARN","detail":"Report uses no inline claim IDs (pre-standard format, 80 claims in JSONL)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"3. Findings inventory","status":"PASS","detail":"23 files match agentCount 23"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"4. Confidence reconciliation","status":"PASS","detail":"Confidence counts match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"5. Post-pipeline delta","status":"PASS","detail":"80 claims match"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"6. Claim-to-report bidir","status":"PASS","detail":"All report claim IDs exist in JSONL"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"7. Source freshness","status":"PASS","detail":"All sources fresh (< 30 days)"}
+{"timestamp":"2026-04-02T19:24:25.214Z","topic":"repo-analysis-value-extraction","check":"8. Verdict persistence","status":"PASS","detail":"No verification verdicts in report"}
