@@ -5,7 +5,8 @@
   "domain": "developer-tooling / code-quality / GitHub-analysis / AI-assisted-development",
   "startedAt": "2026-03-31T00:00:00Z",
   "completedAt": "2026-03-31T12:00:00Z",
-  "agentCount": 32,
+  "agentCount": 29,
+  "sourceIdScheme": "research-phase-codes",
   "searchRounds": 6,
   "sourceCount": 147,
   "claimCount": 50,
@@ -20,9 +21,9 @@
     "phase6_final": "RESEARCH_OUTPUT.md (this synthesis)"
   },
   "confidenceDistribution": {
-    "HIGH": 37,
-    "MEDIUM": 10,
-    "LOW": 1,
+    "HIGH": 42,
+    "MEDIUM": 6,
+    "LOW": 0,
     "UNVERIFIED": 2
   },
   "contradictionsFound": 6,

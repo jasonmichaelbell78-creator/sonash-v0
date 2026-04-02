@@ -4,6 +4,15 @@
   "completed": "2026-03-29",
   "session": 245,
   "depth": "L3",
+  "agentCount": 36,
+  "claimCount": 100,
+  "sourceCount": 90,
+  "confidenceDistribution": {
+    "HIGH": 99,
+    "MEDIUM": 1,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
   "agents": {
     "total": 36,
     "wave1": 9,

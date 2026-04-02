@@ -37,6 +37,7 @@
     "propagation:check": "node scripts/check-propagation.js",
     "cc:check": "node scripts/check-cc.js",
     "cc:check-all": "node scripts/check-cc.js --all",
+    "research:validate": "node scripts/research/validate-research.js",
     "patterns:check": "node scripts/check-pattern-compliance.js",
     "patterns:check-all": "node scripts/check-pattern-compliance.js --all",
     "patterns:suggest": "node scripts/suggest-pattern-automation.js",

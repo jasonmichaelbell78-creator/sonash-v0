@@ -44,3 +44,10 @@
 {"id":"S-044","url":"https://nuqs.47ng.com","title":"nuqs URL state management for Next.js — static export compatibility unconfirmed","type":"official-docs","accessDate":"2026-03-27","trustLevel":"MEDIUM","craapScore":{"currency":4,"relevance":4,"authority":4,"accuracy":3,"purpose":4}}
 {"id":"S-045","url":"https://github.com/WiseLibs/better-sqlite3","title":"better-sqlite3 official documentation","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH","craapScore":{"currency":4,"relevance":5,"authority":5,"accuracy":4,"purpose":5}}
 {"id":"S-046","url":"https://www.papaparse.com","title":"PapaParse CSV parser official documentation","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH","craapScore":{"currency":4,"relevance":4,"authority":5,"accuracy":4,"purpose":4}}
+{"id":"S-047","url":".research/debt-runner-expansion/challenges/otb-2.md","title":"Out-of-the-box challenge #2 — product strategy critique","type":"challenge","accessDate":"2026-03-27","trustLevel":"HIGH"}
+{"id":"S-048","url":"https://tanstack.com/table/v8","title":"TanStack Table v8 official documentation","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH"}
+{"id":"S-049","url":"https://tanstack.com/virtual/v3","title":"TanStack Virtual v3 official documentation","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH"}
+{"id":"S-050","url":"https://recharts.org","title":"Recharts official documentation","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH"}
+{"id":"S-051","url":"https://ui.shadcn.com/docs/components/chart","title":"shadcn/ui chart component documentation","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH"}
+{"id":"S-052","url":"https://lucaong.github.io/minisearch","title":"MiniSearch official documentation","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH"}
+{"id":"S-054","url":"https://github.com/WiseLibs/better-sqlite3","title":"better-sqlite3 GitHub repository and npm registry","type":"official-docs","accessDate":"2026-03-27","trustLevel":"HIGH"}

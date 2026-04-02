@@ -3,7 +3,16 @@
   "topicSlug": "multi-layer-memory",
   "depth": "L1",
   "domain": "technology",
-  "status": "phase-2.5-complete",
+  "status": "challenge-and-gap-complete",
+  "agentCount": 40,
+  "claimCount": 128,
+  "sourceCount": 38,
+  "confidenceDistribution": {
+    "HIGH": 101,
+    "MEDIUM": 26,
+    "LOW": 1,
+    "UNVERIFIED": 0
+  },
   "startedAt": "2026-03-30T02:30:00Z",
   "phase2CompletedAt": "2026-03-31T18:00:00Z",
   "outputPath": ".research/multi-layer-memory/",

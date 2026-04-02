@@ -2,15 +2,14 @@
   "topic": "GitHub Health Skill",
   "depth": "L1",
   "completedAt": "2026-03-29T00:00:00Z",
-  "agentCount": 21,
-  "findingsFilesCompleted": 3,
-  "findingsFilesMissing": 18,
-  "claimCount": 38,
+  "agentCount": 32,
+  "claimCount": 39,
   "sourceCount": 27,
   "confidenceDistribution": {
-    "HIGH": 22,
-    "MEDIUM": 11,
-    "LOW": 9
+    "HIGH": 18,
+    "MEDIUM": 14,
+    "LOW": 7,
+    "UNVERIFIED": 0
   },
   "hasDebtCandidates": true,
   "debtCandidates": [
@@ -39,6 +38,5 @@
   "p1Issues": 5,
   "p2Issues": 9,
   "p3Issues": 6,
-  "quickWins": 7,
-  "coverageNote": "Research is partial. 18 of 21 planned agent passes did not produce findings. The following domains have no agent-level findings and rely only on pre-scan snapshot data: code scanning (30 alerts), workflow YAML audit, Release Please failure, SonarCloud disabled status, ruleset analysis, deploy environment audit, release config, REST API inventory, GraphQL capabilities, skill overlap analysis, repo insights, metrics actionability, GitHub Projects/Issues, OpenSSF Scorecard deep-dive, and gap-to-recommended benchmark."
+  "quickWins": 7
 }

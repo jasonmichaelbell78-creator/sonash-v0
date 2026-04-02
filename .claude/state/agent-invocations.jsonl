@@ -185,3 +185,6 @@
 {"agent":"Explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:34.301Z"}
 {"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:50.667Z"}
 {"agent":"Explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:50.752Z"}
+{"agent":"general-purpose","description":"Generate multi-layer-memory sources.jsonl","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:13.200Z"}
+{"agent":"general-purpose","description":"Find missing dev-dashboard claims","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:17.706Z"}
+{"agent":"general-purpose","description":"Find missing value-extraction claims","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:20.157Z"}
