@@ -961,8 +961,9 @@ function regenerateHookWarnings() {
   // Read ack state
   const ack = readAckState(ackPath);
 
-  // Filter to unacknowledged entries
-  const unacked = filterUnacknowledged(entries, ack);
+  // Filter out resolved entries, then filter to unacknowledged
+  const unresolved = entries.filter((e) => !e.resolved);
+  const unacked = filterUnacknowledged(unresolved, ack);
 
   // Deduplicate by (hook, type, message) — keep most recent
   const seen = new Map();
@@ -990,6 +991,19 @@ function regenerateHookWarnings() {
   writeWarningsFile(warningsPath, { warnings: capped });
 
   return capped;
+}
+
+// Resolve stale warnings before regenerating the view
+try {
+  execFileSync("node", [path.join(projectDir, "scripts", "resolve-hook-warnings.js")], {
+    cwd: projectDir,
+    stdio: "pipe",
+    timeout: 15000,
+  });
+} catch (resolveErr) {
+  // Best-effort — don't block session-start on resolve failure
+  const msg = resolveErr && resolveErr.stdout ? resolveErr.stdout.toString().trim() : "";
+  if (msg) console.log(`   ${sanitizeInput(msg)}`);
 }
 
 // Regenerate hook-warnings.json from canonical JSONL before any display/pipeline
@@ -1224,10 +1238,7 @@ try {
   });
 } catch (error) {
   // Non-critical — log for debuggability but don't block session start
-  console.error(
-    "session-start: activity logging failed:",
-    error instanceof Error ? error.message : String(error)
-  );
+  console.error("session-start: activity logging failed:", sanitizeError(error));
 }
 
 // CLI tool detection from tool-manifest.json

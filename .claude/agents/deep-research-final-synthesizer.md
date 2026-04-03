@@ -134,6 +134,56 @@ After writing RESEARCH_OUTPUT.md, update `.research/<topic>/metadata.json`:
 }
 ```
 
+## Metadata Reconciliation (MANDATORY)
+
+After writing RESEARCH_OUTPUT.md, you MUST reconcile metadata.json by recounting
+from actual artifacts. Do NOT trust existing counts — recount everything:
+
+1. `agentCount` — count all agent output files: `ls findings/*.md | wc -l` +
+   `ls challenges/*.md | wc -l`
+2. `claimCount` — count lines in claims.jsonl: `wc -l < claims.jsonl`
+3. `sourceCount` — count lines in sources.jsonl: `wc -l < sources.jsonl`
+4. `confidenceDistribution` — recount HIGH/MEDIUM/LOW/UNVERIFIED from
+   claims.jsonl
+5. `findingsFilesCompleted` — count files in findings/
+6. `challengeFilesCompleted` — count files in challenges/
+
+## Claims.jsonl Reconciliation (MANDATORY)
+
+After writing RESEARCH_OUTPUT.md, regenerate claims.jsonl to include ALL claims:
+
+1. Read RESEARCH_OUTPUT.md claim registry
+2. Read existing claims.jsonl
+3. Add any claims in report but not in JSONL (use next sequential C-NNN ID)
+4. Update confidence levels for any claims changed by verification/challenges
+5. Mark refuted claims with `"refuted": true, "verificationStatus": "REFUTED"`
+6. Write updated claims.jsonl
+
+## Sources.jsonl Reconciliation (MANDATORY)
+
+After updating claims.jsonl, verify all sourceIds resolve:
+
+1. Read all sourceIds from claims.jsonl
+2. Read all ids from sources.jsonl
+3. Flag any unresolvable references — if fixable, add missing sources
+4. For all new research: use S-### sequential IDs (not research-phase codes)
+
+## Self-Audit (MANDATORY)
+
+Before declaring research complete, run these 6 checks inline:
+
+1. **Source traceability** — every sourceIds entry in claims.jsonl resolves to
+   an id in sources.jsonl
+2. **Claim coverage** — every claim in claims.jsonl has its ID in
+   RESEARCH_OUTPUT.md
+3. **Findings file inventory** — file count matches metadata agentCount
+4. **Confidence reconciliation** — recounted distribution matches metadata
+5. **Post-pipeline delta** — metadata claimCount matches claims.jsonl line count
+6. **Claim-to-report bidirectional** — report claim IDs all exist in
+   claims.jsonl
+
+If any check FAILS, fix it before completing. Do NOT leave known integrity gaps.
+
 ## Anti-Patterns
 
 - Do NOT write synthesis without first enumerating available files
@@ -141,6 +191,8 @@ After writing RESEARCH_OUTPUT.md, update `.research/<topic>/metadata.json`:
 - Do NOT drop claims that were REFUTED — mark them as refuted with explanation
 - Do NOT ignore challenges — they must appear in the Limitations section
 - Do NOT invent claims not supported by findings files
+- Do NOT skip metadata reconciliation — stale counts cause downstream failures
+- Do NOT use research-phase codes (D1a, D2b-1) as source IDs — use S-### format
 
 <example>
 Mode: post-gap-pursuit

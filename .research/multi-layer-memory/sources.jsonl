@@ -1,0 +1,38 @@
+{"id":"D1","url":".research/multi-layer-memory/findings/D1-codebase-memory-inventory.md","title":"Current Claude Code memory ecosystem inventory","type":"codebase","accessDate":"2026-03-31"}
+{"id":"D2a","url":".research/multi-layer-memory/findings/D2a-claude-mem-cipher.md","title":"Deep analysis of claude-mem and cipher reference repos","type":"web","accessDate":"2026-03-31"}
+{"id":"D2b","url":".research/multi-layer-memory/findings/D2b-everything-cc-interface.md","title":"Deep analysis of everything-claude-code and interface-design repos","type":"web","accessDate":"2026-03-31"}
+{"id":"D2c","url":".research/multi-layer-memory/findings/D2c-supermemory-openmemory.md","title":"Deep analysis of claude-supermemory and OpenMemory repos","type":"web","accessDate":"2026-03-31"}
+{"id":"D3a-1","url":".research/multi-layer-memory/findings/D3a-1-github-claude-memory.md","title":"GitHub discovery of Claude Code specific memory repos","type":"web","accessDate":"2026-03-31"}
+{"id":"D3a-2","url":".research/multi-layer-memory/findings/D3a-2-github-agent-memory.md","title":"GitHub discovery of non-Claude AI coding agent memory systems","type":"web","accessDate":"2026-03-31"}
+{"id":"D3b-1","url":".research/multi-layer-memory/findings/D3b-1-reddit-hn.md","title":"Community patterns from Reddit and Hacker News","type":"web","accessDate":"2026-03-31"}
+{"id":"D3b-2a","url":".research/multi-layer-memory/findings/D3b-2a-anthropic-official.md","title":"Anthropic official documentation on Claude Code memory","type":"official-docs","accessDate":"2026-03-31"}
+{"id":"D3b-2b","url":".research/multi-layer-memory/findings/D3b-2b-dev-blogs.md","title":"Developer blog posts and community content on Claude Code memory","type":"web","accessDate":"2026-03-31"}
+{"id":"D3c","url":".research/multi-layer-memory/findings/D3c-marketplace-plugins.md","title":"Broader memory system discovery from plugin marketplaces and tool ecosystems","type":"web","accessDate":"2026-03-31"}
+{"id":"D4a","url":".research/multi-layer-memory/findings/D4a-academic-memory-patterns.md","title":"Academic and industry LLM memory architecture patterns","type":"academic","accessDate":"2026-03-31"}
+{"id":"D4b","url":".research/multi-layer-memory/findings/D4b-industry-implementations.md","title":"Industry implementations of AI coding agent memory","type":"web","accessDate":"2026-03-31"}
+{"id":"D5a","url":".research/multi-layer-memory/findings/D5a-mcp-memory-servers.md","title":"MCP servers for memory and knowledge management","type":"web","accessDate":"2026-03-31"}
+{"id":"D5b","url":".research/multi-layer-memory/findings/D5b-mcp-integration-patterns.md","title":"MCP memory integration patterns and architecture","type":"web","accessDate":"2026-03-31"}
+{"id":"D6a","url":".research/multi-layer-memory/findings/D6a-comparison-matrix.md","title":"Comparison matrix of all discovered memory systems","type":"codebase","accessDate":"2026-03-31"}
+{"id":"D6b","url":".research/multi-layer-memory/findings/D6b-architecture-patterns.md","title":"Architecture pattern mapping across memory systems","type":"codebase","accessDate":"2026-03-31"}
+{"id":"D7a","url":".research/multi-layer-memory/findings/D7a-cross-locale-sync.md","title":"Cross-locale sync patterns technical analysis","type":"web","accessDate":"2026-03-31"}
+{"id":"D7b","url":".research/multi-layer-memory/findings/D7b-sync-implementations.md","title":"Cross-locale sync real-world implementations and tools","type":"web","accessDate":"2026-03-31"}
+{"id":"D8a","url":".research/multi-layer-memory/findings/D8a-hybrid-enhanced-design.md","title":"Hybrid enhanced memory system design for SoNash","type":"codebase","accessDate":"2026-03-31"}
+{"id":"D8b-1","url":".research/multi-layer-memory/findings/D8b-1-capture-retrieval-patterns.md","title":"Extractable capture and retrieval pattern adoption guides","type":"codebase","accessDate":"2026-03-31"}
+{"id":"D8b-2","url":".research/multi-layer-memory/findings/D8b-2-lifecycle-workflow-patterns.md","title":"Lifecycle and workflow pattern adoption guides","type":"codebase","accessDate":"2026-03-31"}
+{"id":"D9a","url":".research/multi-layer-memory/findings/D9a-clean-slate-architecture.md","title":"Clean-slate memory system architecture design","type":"web","accessDate":"2026-03-31"}
+{"id":"D9b","url":".research/multi-layer-memory/findings/D9b-technology-evaluation.md","title":"Technology evaluation for memory system components","type":"web","accessDate":"2026-03-31"}
+{"id":"D10a","url":".research/multi-layer-memory/findings/D10a-failure-modes-risks.md","title":"Failure modes, risks, and what can go wrong","type":"web","accessDate":"2026-03-31"}
+{"id":"D10b","url":".research/multi-layer-memory/findings/D10b-solo-dev-feasibility.md","title":"Solo developer feasibility and maintenance cost analysis","type":"codebase","accessDate":"2026-03-31"}
+{"id":"S1","url":".research/multi-layer-memory/findings/S1-landscape-synthesis.md","title":"Landscape synthesis of multi-layer memory research","type":"codebase","accessDate":"2026-03-31"}
+{"id":"S2","url":".research/multi-layer-memory/findings/S2-analysis-synthesis.md","title":"Analysis synthesis of comparison, patterns, and sync findings","type":"codebase","accessDate":"2026-03-31"}
+{"id":"S3","url":".research/multi-layer-memory/findings/S3-recommendations-synthesis.md","title":"Recommendations synthesis for multi-layer memory system","type":"codebase","accessDate":"2026-03-31"}
+{"id":"G1","url":".research/multi-layer-memory/findings/G1-cursor-and-tool-negatives.md","title":"Gap research on Cursor memory removal and tool negative evidence","type":"web","accessDate":"2026-03-31"}
+{"id":"G1b","url":".research/multi-layer-memory/findings/G1-cursor-memory-removal.md","title":"Cursor IDE memory feature removal investigation","type":"web","accessDate":"2026-03-31"}
+{"id":"G2","url":".research/multi-layer-memory/findings/G2-actual-usage-metrics.md","title":"Actual memory system usage metrics gap analysis","type":"codebase","accessDate":"2026-03-31"}
+{"id":"G5","url":".research/multi-layer-memory/findings/G5-autodream-and-autoMemDir.md","title":"AutoDream observable evidence and autoMemoryDirectory behavior","type":"codebase","accessDate":"2026-03-31"}
+{"id":"V1","url":".research/multi-layer-memory/findings/V1-codebase-verification.md","title":"Codebase verification of claims against filesystem","type":"codebase","accessDate":"2026-03-31"}
+{"id":"V1b","url":".research/multi-layer-memory/findings/V1-landscape-verification.md","title":"Landscape claims verification against filesystem state","type":"codebase","accessDate":"2026-03-31"}
+{"id":"V2","url":".research/multi-layer-memory/findings/V2-analysis-verification.md","title":"Analysis claims verification for C-100 through C-145","type":"codebase","accessDate":"2026-03-31"}
+{"id":"V2b","url":".research/multi-layer-memory/findings/V2-external-verification.md","title":"External claim verification via web spot-checks","type":"web","accessDate":"2026-03-31"}
+{"id":"V3","url":".research/multi-layer-memory/findings/V3-recommendations-verification.md","title":"Recommendations claims verification for C-200 through C-243","type":"codebase","accessDate":"2026-03-31"}
+{"id":"V4","url":".research/multi-layer-memory/findings/V4-amac-paper-verification.md","title":"A-MAC paper verification via web and academic search","type":"academic","accessDate":"2026-03-31"}

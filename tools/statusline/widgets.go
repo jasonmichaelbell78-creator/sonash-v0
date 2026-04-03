@@ -622,9 +622,15 @@ func isEntryUnacked(line string, lastCleared time.Time) bool {
 	var entry struct {
 		Timestamp string `json:"timestamp"`
 		Acked     *bool  `json:"acked"`
+		Resolved  bool   `json:"resolved"`
 	}
 	if err := json.Unmarshal([]byte(line), &entry); err != nil {
 		return true // malformed entries count as unacked
+	}
+
+	// Resolved warnings are no longer active — skip them
+	if entry.Resolved {
+		return false
 	}
 
 	// Legacy format: has acked field but no timestamp

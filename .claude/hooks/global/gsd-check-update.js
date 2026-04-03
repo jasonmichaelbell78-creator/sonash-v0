@@ -21,16 +21,36 @@ if (!fs.existsSync(cacheDir)) {
 }
 
 // Run check in background (spawn detached process)
+// Note: execSync used intentionally inside spawned child — input is hardcoded, not user-provided
 const child = spawn(
   process.execPath,
   [
     "-e",
     `
   const fs = require('fs');
+  const nodePath = require('path');
   const { execSync } = require('child_process');
 
   const cacheFile = ${JSON.stringify(cacheFile)};
   const versionFile = ${JSON.stringify(versionFile)};
+
+  // Symlink guard: refuse to write through symlinks
+  function isSafeToWrite(filePath) {
+    try {
+      let current = nodePath.resolve(filePath);
+      while (true) {
+        try {
+          if (fs.lstatSync(current).isSymbolicLink()) return false;
+        } catch (e) {
+          if (!(e && typeof e === 'object' && e.code === 'ENOENT')) return false;
+        }
+        const parent = nodePath.dirname(current);
+        if (parent === current) break;
+        current = parent;
+      }
+      return true;
+    } catch { return false; }
+  }
 
   let installed = '0.0.0';
   try {
@@ -49,7 +69,9 @@ const child = spawn(
     checked: Math.floor(Date.now() / 1000)
   };
 
-  fs.writeFileSync(cacheFile, JSON.stringify(result));
+  if (isSafeToWrite(cacheFile)) {
+    fs.writeFileSync(cacheFile, JSON.stringify(result));
+  }
 `,
   ],
   {

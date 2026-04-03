@@ -1,8 +1,8 @@
 # Claude Code Command Reference (Index)
 
 <!-- prettier-ignore-start -->
-**Version:** 5.9
-**Last Updated:** 2026-03-24
+**Version:** 6.0
+**Last Updated:** 2026-04-02
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -80,6 +80,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/gh-fix-ci`                      | Fix failing GitHub CI actions                                                            |
 | `/market-research-reports`        | Generate market research reports                                                         |
 | `/ui-design-system`               | Design system components toolkit                                                         |
+| `/repo-analysis`                  | Analyze external repos: health assessment (45 dimensions) + value extraction (3 tiers)   |
 | `/using-superpowers`              | Claude skills usage guide                                                                |
 | `/ux-researcher-designer`         | UX research and design toolkit                                                           |
 | `/webapp-testing`                 | Web application testing with Playwright                                                  |
@@ -161,6 +162,7 @@ Source: `.husky/`
 
 | Version | Date         | Change                                                             |
 | ------- | ------------ | ------------------------------------------------------------------ |
+| 6.0     | 2026-04-02   | Added /repo-analysis skill (65 skills)                             |
 | 5.9     | 2026-03-24   | Added convergence-loop, data-effectiveness-audit, debt-runner (64) |
 | 5.5     | 2026-02-24   | Added skill/doc/script/comprehensive ecosystem audits (65)         |
 | 5.4     | 2026-02-23   | Added /tdms-ecosystem-audit + /session-ecosystem-audit (61)        |

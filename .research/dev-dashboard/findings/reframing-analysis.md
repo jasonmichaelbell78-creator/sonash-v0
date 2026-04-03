@@ -1,13 +1,13 @@
 # Reframing Analysis: Debt-Runner Research v1 → v2
 
-**Date:** 2026-03-27 (Session #243)
-**Source:** Explore agent + inline analysis comparing v1 CLI-only research against hybrid scope
+**Date:** 2026-03-27 (Session #243) **Source:** Explore agent + inline analysis
+comparing v1 CLI-only research against hybrid scope
 
 ## Context
 
-The original debt-runner research (v1, 17 agents) was done with CLI-only framing.
-Post-research, the user decided on hybrid CLI+Web architecture. This analysis
-identified what needed to change in the research output.
+The original debt-runner research (v1, 17 agents) was done with CLI-only
+framing. Post-research, the user decided on hybrid CLI+Web architecture. This
+analysis identified what needed to change in the research output.
 
 ## Findings (10 items)
 
@@ -21,8 +21,8 @@ identified what needed to change in the research output.
    implicitly as CLI output. Items 1,3,4,5,6 (trend viz, PR summary, source
    health, category velocity) are web dashboard features, not CLI.
 
-3. **Section 7.4 Integration Points (lines 579-591)** — Missing web dashboard
-   as integration point entirely. No mention of how web accesses JSONL/metrics.
+3. **Section 7.4 Integration Points (lines 579-591)** — Missing web dashboard as
+   integration point entirely. No mention of how web accesses JSONL/metrics.
 
 ### REFRAME (4 sections)
 

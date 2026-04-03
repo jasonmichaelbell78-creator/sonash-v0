@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
+/* global require, process, console, __dirname */
 /* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * post-write-validator.js - Consolidated PostToolUse hook for Write/Edit/MultiEdit
@@ -42,13 +42,22 @@ try {
   /* eslint-enable no-control-regex */
 }
 
+// ─── Optional dependency: sanitizeError ─────────────────────────────────────
+let sanitizeError;
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
+}
+
 // ─── Optional dependency: sanitizeFilesystemError ────────────────────────────
 let sanitizeFilesystemError;
 try {
   ({ sanitizeFilesystemError } = require("../../scripts/lib/validate-paths.js"));
 } catch {
-  sanitizeFilesystemError = (err) =>
-    (err instanceof Error ? err.message : String(err)).slice(0, 200);
+  sanitizeFilesystemError = (err) => sanitizeError(err);
 }
 
 // ─── Optional dependency: loadConfigWithRegex (for agent-trigger-enforcer) ───

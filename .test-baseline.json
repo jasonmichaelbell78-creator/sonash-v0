@@ -444,6 +444,21 @@
       "path": "scripts/test-hook-gates.js",
       "lines": 390,
       "note": "Hook gate test harness — meta-test tool, not unit-tested itself"
+    },
+    {
+      "path": "scripts/repo-analysis/check-tools.js",
+      "lines": 236,
+      "note": "Repo analysis tool detection — optional external tooling check"
+    },
+    {
+      "path": "scripts/research/validate-research.js",
+      "lines": 500,
+      "note": "Research integrity validator — dev tooling, not production code"
+    },
+    {
+      "path": "scripts/resolve-hook-warnings.js",
+      "lines": 297,
+      "note": "Hook warning auto-resolver — session lifecycle utility"
     }
   ]
 }

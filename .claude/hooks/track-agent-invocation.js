@@ -24,6 +24,16 @@ try {
   /* eslint-enable no-control-regex */
 }
 
+// Lazy-load sanitizeError (best-effort)
+let sanitizeError;
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
+}
+
 // Lazy-load shared helpers (best-effort — never block on import failure)
 let isSafeToWrite, rotateJsonl, withLock;
 try {
@@ -167,10 +177,7 @@ function writeState(state) {
       // ignore cleanup failures
     }
     // Log error but don't block execution
-    console.error(
-      `Warning: Could not write to ${STATE_FILE}:`,
-      sanitizeInput(err instanceof Error ? err.message : String(err))
-    );
+    console.error(`Warning: Could not write to ${STATE_FILE}:`, sanitizeInput(sanitizeError(err)));
   }
 }
 

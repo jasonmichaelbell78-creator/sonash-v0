@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
+/* global require, process, console, __dirname */
 /* eslint-disable @typescript-eslint/no-require-imports */
 /**
  * commit-tracker.js - PostToolUse hook (Bash) for automatic commit logging
@@ -22,11 +22,18 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
-let isSafeToWrite, gitExec, projectDir, sanitizeInput;
+let isSafeToWrite, gitExec, projectDir, sanitizeInput, sanitizeError;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
 } catch {
   isSafeToWrite = () => false;
+}
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "..", "scripts", "lib", "security-helpers.js")
+  ));
+} catch {
+  sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
 }
 try {
   ({ gitExec, projectDir } = require("./lib/git-utils.js"));
@@ -128,9 +135,7 @@ function saveLastHead(head) {
     fs.renameSync(tmpPath, TRACKER_STATE);
   } catch (err) {
     // Non-critical — worst case we re-log the same commit next time
-    console.warn(
-      `commit-tracker: failed to save HEAD state: ${err instanceof Error ? err.message : String(err)}`
-    );
+    console.warn(`commit-tracker: failed to save HEAD state: ${sanitizeError(err)}`);
     try {
       fs.rmSync(`${TRACKER_STATE}.tmp`, { force: true });
     } catch {
@@ -261,10 +266,7 @@ function logCommitFailure(command) {
     }
   } catch (error) {
     // Non-critical — log for debuggability but don't break the hook
-    console.error(
-      "commit-tracker: failed to log commit failure:",
-      error instanceof Error ? error.message : String(error)
-    );
+    console.error("commit-tracker: failed to log commit failure:", sanitizeError(error));
   }
 }
 
@@ -387,10 +389,7 @@ function main() {
   try {
     reportCommitFailure();
   } catch (err) {
-    console.error(
-      "commit-tracker: reportCommitFailure failed:",
-      err instanceof Error ? err.message : String(err)
-    );
+    console.error("commit-tracker: reportCommitFailure failed:", sanitizeError(err));
   }
 
   console.log("ok");
@@ -399,13 +398,47 @@ function main() {
 
 /**
  * Resolve the .git directory, handling worktrees and GIT_DIR env var.
+ * Validates resolved paths stay within or near the project directory.
  */
 function resolveGitDir() {
+  const cwd = process.cwd();
+  const dotGitPath = path.join(cwd, ".git");
+
+  /**
+   * Containment check: resolved git dir must be within the project tree
+   * or a reasonable ancestor (worktrees may be siblings).
+   * Falls back to default .git path on containment failure.
+   */
+  function validateGitDir(resolved) {
+    try {
+      const abs = path.resolve(resolved);
+      // Reject filesystem roots (too broad to be a safe git dir)
+      const parent = path.dirname(abs);
+      if (parent === abs) return dotGitPath;
+      const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+      const gitDir = norm(abs);
+      const cwdAbs = norm(path.resolve(cwd));
+      const cwdParent = norm(path.dirname(path.resolve(cwd)));
+      // Allow: inside cwd, equal to cwd, or inside cwd's parent (worktree layouts)
+      if (
+        gitDir === cwdAbs ||
+        gitDir.startsWith(cwdAbs + path.sep) ||
+        gitDir === cwdParent ||
+        gitDir.startsWith(cwdParent + path.sep)
+      ) {
+        return abs;
+      }
+    } catch {
+      // fall through
+    }
+    return dotGitPath;
+  }
+
   const envGitDir = process.env.GIT_DIR;
   if (typeof envGitDir === "string" && envGitDir.length > 0) {
-    return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
+    const resolved = path.isAbsolute(envGitDir) ? envGitDir : path.resolve(cwd, envGitDir);
+    return validateGitDir(resolved);
   }
-  const dotGitPath = path.join(process.cwd(), ".git");
   try {
     if (fs.lstatSync(dotGitPath).isSymbolicLink()) return dotGitPath;
     const st = fs.statSync(dotGitPath);
@@ -414,7 +447,8 @@ function resolveGitDir() {
       const m = txt.match(/^gitdir:\s*(.+)\s*$/i);
       if (m && m[1]) {
         const resolved = m[1].trim();
-        return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
+        const abs = path.isAbsolute(resolved) ? resolved : path.resolve(cwd, resolved);
+        return validateGitDir(abs);
       }
     }
   } catch {

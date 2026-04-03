@@ -366,6 +366,28 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#30)</summary>
+
+- **Date:** 2026-04-02
+- **Reviews consolidated:** #review-466-r3-#rev-63
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#29)</summary>
+
+- **Date:** 2026-04-02
+- **Reviews consolidated:** #review-466-r3-#rev-63
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#28)</summary>
 
 - **Date:** 2026-04-01
@@ -1187,13 +1209,48 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-61: (untitled) (2026-03-31)
+### Review rev-61: PR #483 R1 — Mixed (2026-03-31) (2026-03-31)
 
 **Date:** 2026-03-31 | **PR:** #483 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 11    | 9     | 0        | 2        |
+
+---
+
+### Review rev-62: PR #487 R1 — Mixed (2026-04-01) (2026-04-01)
+
+**Date:** 2026-04-01 | **PR:** #487 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Patterns:**
+
+- vitest-to-node-test-propagation
+- array-push-batching
+- consolidation-duplication
+- test-baseline-missing
+- nullish-coalescing-defense
+- startup-perf-cap
+
+---
+
+### Review rev-63: PR #488 R1 — Mixed (2026-04-01) (2026-04-01)
+
+**Date:** 2026-04-01 | **PR:** #488 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Patterns:**
+
+- tdms-created-date-churn
+- agent-audit-trail
+- brainstorm-table-alignment
 
 ## Key Patterns
 
@@ -2826,6 +2883,56 @@ deduped/merged)
   Medium-Term/Sync) instead of REFERENCE.md template (Strengths/Weaknesses/
   Feasibility). Fix: aligned with template. First real-world validation of
   /brainstorm skill output format.
+
+---
+
+### Review #65 — PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud)
+
+**Date:** 2026-04-03 **Items:** 7 new + 5 stale (5 fixed, 1 rejected, 5
+stale-rejected, 1 already-fixed)
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+  all platforms. Fix: conditional `$PLATFORM == "windows"` guard.
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+  PATH manipulation risk. Removed from npm ping and rg --version.
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review #64 — PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI)
+
+**Date:** 2026-04-03 **Items:** 31 (31 fixed, 1 deferred, 0 rejected)
+
+**Patterns:**
+
+- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
+  skipped size enforcement. Fix: size-check the resolved target instead.
+- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
+  replaced with line-by-line `testFn`. CLAUDE.md two-strikes policy applied.
+- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
+  validate-research (16→helpers x2). Pattern: extract helpers when CC>15.
+- sanitizeError import paths: 5 hooks + rotate-state.js used
+  `path.join(__dirname, '..', 'scripts')` from `.claude/hooks/` — resolves to
+  `.claude/scripts/` not repo root. Fix: `'..', '..'` for hooks, `'..','..','..`
+  for hooks/lib. Multi-source convergence (Qodo + Gemini).
+- Source traceability false-negative: `checkSourceTraceability()` only checked
+  `sourceIds`/`sources` arrays, missed `source` (singular string). Fix:
+  `collectClaimRefs()` normalizer handles all 3 formats.
+- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
+  remove existsSync, catch ENOENT in try/catch.
+- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
+  Fix: pre-extraction `unzip -Z1` / `tar -tzf` content listing with path
+  traversal regex.
+- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
+  regex, symlink guard, path containment). 20+ files deferred to DEBT-45630
+  (pre-existing from PR #397).
+- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+  (Prettier formatting: CI, MAJOR): Ran Prettier on 37 files that failed CI.
 
 ---
 

@@ -5,7 +5,7 @@
   "domain": "claude-code-agent-ecosystem",
   "startedAt": "2026-03-29T00:00:00Z",
   "completedAt": "2026-03-29T23:59:59Z",
-  "agentCount": 37,
+  "agentCount": 45,
   "searchRounds": 5,
   "verificationPasses": 4,
   "challengeFiles": 4,
@@ -15,7 +15,7 @@
   "version": "3.0",
   "confidenceDistribution": {
     "HIGH": 74,
-    "MEDIUM": 32,
+    "MEDIUM": 35,
     "LOW": 2,
     "UNVERIFIED": 0
   },

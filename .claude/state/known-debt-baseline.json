@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-03-14",
+  "updated": "2026-04-02",
   "baselines": {
     "raw-error-message": {
       "baseline": 0,
@@ -60,6 +60,18 @@
       "scripts/check-pattern-compliance.js": 22,
       "scripts/check-review-archive.js": 102,
       "scripts/check-skill-audit-status.js": 19
+    },
+    "refuse-symlink-propagation": {
+      "baseline": 35,
+      "recorded": "2026-04-02",
+      "note": "Pre-existing from PR #397. 35 hook/script files use old symlink pattern. Not introduced by research-integrity-fix branch.",
+      "ratchet_history": [
+        {
+          "date": "2026-04-02",
+          "from": null,
+          "to": 35
+        }
+      ]
     }
   },
   "generated": "2026-03-19T17:15:14.609Z"

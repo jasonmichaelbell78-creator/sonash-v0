@@ -4,6 +4,16 @@
   "completed": "2026-03-29",
   "session": 245,
   "depth": "L3",
+  "agentCount": 46,
+  "agentCountNote": "agentCount=total output files (findings+challenges); agents.total=searcher agents deployed",
+  "claimCount": 100,
+  "sourceCount": 90,
+  "confidenceDistribution": {
+    "HIGH": 99,
+    "MEDIUM": 1,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
   "agents": {
     "total": 36,
     "wave1": 9,
@@ -14,8 +24,8 @@
   },
   "claims": {
     "total": 100,
-    "high": 97,
-    "medium": 3,
+    "high": 99,
+    "medium": 1,
     "low": 0
   },
   "sources": {

@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.15 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.16 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-01 (Session #256)
+2026-04-03 (Session #259)
 
 ## Purpose
 
@@ -38,7 +38,7 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Session Tracking
 
-**Current Session Count**: 256 (since Jan 1, 2026)
+**Current Session Count**: 259 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,40 +48,34 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Recent Session Summaries
 
-**Session #256** (JASON-OS BRAINSTORM + SKILL CREATION + RESEARCH ROADMAP):
+**Session #259** (RESEARCH INTEGRITY COMPLETION + PR REVIEW):
 
-- **Branch**: `planning-33026` (5 commits)
-- **PR #487 R1 review**: 7/7 items fixed (vitest→node:test propagation across 3
-  agent files, Array#push batching, consolidation dupes, test baseline, session
-  perf cap, nullish coalescing). Review #62.
-- **/brainstorm skill created**: Full /skill-creator (17 decisions) +
-  /skill-audit (18 decisions). 5-phase diamond model, Socratic dialogue,
-  contrarian checkpoint, deep-research-searcher agents for unknowns.
-  Cross-references added to deep-plan, deep-research, CLAUDE.md Section 7.
-- **JASON-OS brainstorm COMPLETE**: 6 directions explored, 2 research agents
-  dispatched. Chosen direction: Template → Platform (B→F). 5 anti-goals, 7 open
-  questions. BRAINSTORM.md at `.planning/jason-os/`.
-- **JASON-OS research roadmap COMPLETE**: /deep-plan produced 16-domain research
-  program (32 decisions) across 3 tiers. Orchestration via git-tracked
-  artifacts. Next: Domain 01 (Internal Archaeology).
+- **Branch**: `planning-33026` (9 commits)
+- **Research integrity Phase 5-6 COMPLETE**: Home locale sync — committed 143
+  local-only research files, updated metadata agentCounts. 8-agent verification
+  sweep across all 10 research outputs (51 PASS, 0 FAIL, 29 WARN). 7 citation
+  fixes across 5 plans. 3-agent impact analysis: no completed implementations
+  built on wrong data. T18 completed, T1 completed.
+- **PR #489 created**: 399 files, 174K insertions. Research integrity fix +
+  repo-analysis skill + statusline v3.
+- **PR #489 R1 review**: 31 items fixed (8C/12M/8m/3T). Symlink bypass, regex
+  DoS, 4 CC reductions, sanitizeError paths (6 hooks), source traceability bug,
+  TOCTOU removal, Zip/Tar Slip, propagation (7 hooks). DEBT-45630 for
+  pre-existing refuse-symlink. Review #64.
+- **PR #489 R2 review**: 5 fixed, 1 rejected, 5 stale. Cross-platform .exe
+  naming bug, shell:true removal, validateGitDir tightened, TOCTOU fix, CC
+  extraction. Review #65.
 
-**Session #255** (CUSTOM AGENTS + TODOS + DEPENDABOT):
+**Session #258** (RESEARCH INTEGRITY FIX — Phases 1-4):
 
-- **Branch**: `planning-33026` (5 commits)
-- **Custom agents plan COMPLETE** (T8): All 25 steps across P0 (sonash-context
-  skill, pipeline relocation), P1 (8 removals, 3 elevations, 3 overrides, 14
-  skill injections), P2 (6 deep-research pipeline agents, SKILL.md wiring),
-  Validation (structural audit, version check, pipeline verification).
-- **Todos**: Added T12-T16 (github-health, RDS updates, learnings analysis,
-  .gitignore audit, Claude Code OS). T8 completed.
-- **Dependabot**: Merged #485 (fetch-metadata 3.0). Fixed #486 (codecov 6.0) SHA
-  pin + test, pushed.
-- **Repo analysis deep-plan** completed by parallel instance (24 decisions,
-  9-step plan). T1 updated to implementation-ready.
+- **Branch**: `planning-33026` (4 commits)
+- Phases 1-4: 176 research artifacts committed, validation script created,
+  metadata remediated (48 PASS, 0 FAIL), pipeline agents fixed.
 
-**Session #254** (SYNC + STATUSLINE + ALERTS):
+**Session #257** (RESEARCH INTEGRITY PLAN — worktree session):
 
-- Hook state file updates, statusline rebuild, alerts full review.
+- Diagnosed 9 research outputs. Produced 22-step plan (21 decisions). T18
+  created.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -89,16 +83,17 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Quick Status
 
-| Item                            | Status        | Progress                                                    |
-| ------------------------------- | ------------- | ----------------------------------------------------------- |
-| **Repo Analysis Skill**         | PLAN READY    | Deep-plan complete (24 decisions, 9 steps). Ready for impl. |
-| **Custom Agents**               | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded.   |
-| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner           |
-| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                             |
-| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.        |
-| **Multi-layer Memory**          | RESEARCH DONE | 30 agents, 128 claims. Execution next.                      |
-| **JASON-OS (Claude Code OS)**   | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.      |
-| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                            |
+| Item                            | Status        | Progress                                                  |
+| ------------------------------- | ------------- | --------------------------------------------------------- |
+| **Research Integrity Fix**      | COMPLETE      | All 6 phases done. 51 PASS, 0 FAIL. T18 completed.        |
+| **Repo Analysis Skill**         | COMPLETE      | SKILL.md + REFERENCE.md shipped. T1 completed.            |
+| **Custom Agents**               | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded. |
+| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner         |
+| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                           |
+| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.      |
+| **Multi-layer Memory**          | RESEARCH DONE | 40 agents, 128 claims. Execution next.                    |
+| **JASON-OS (Claude Code OS)**   | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.    |
+| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                          |
 
 **Current Branch**: `planning-33026`
 
@@ -110,31 +105,29 @@ Session #253 — /todo skill creation + skill-audit.
 
 ### Immediate Priority
 
-1. **Repo analysis skill** — PLAN READY. 24 decisions, 9-step plan at
-   `.planning/repo-analysis-skill/PLAN.md`. Ready for implementation.
+1. **PR #489 R2+ review** — Check if SonarCloud/CI have new findings after R2
+   push. Process any remaining items.
 2. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
    center, XL effort. Plan at `.planning/dev-dashboard/PLAN.md`.
 3. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
    Gates plan-orchestration Waves 2-3.
-4. **Multi-layer memory** — Research state file at home locale. Execute.
-5. **JASON-OS Domain 01** — Internal Archaeology. Full inventory of every skill,
-   agent, hook, script. Start with `/deep-research`. Can run in parallel with
-   Domain 02 (External Landscape) from other locale.
+4. **Multi-layer memory** — Research done (40 agents, 128 claims). Execute.
+5. **JASON-OS Domain 01** — Internal Archaeology via /deep-research.
 
 ### After Debt-Runner
 
 6. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
 7. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions.
 
-### Backlog (run `/todo` for full list — 14 active, 2 completed)
+### Backlog (run `/todo` for full list — 11 active, 4 completed)
 
 ---
 
 ## Pending PR Reviews
 
-**Status**: No pending reviews. Review lifecycle overhaul not yet PR'd.
+**Status**: PR #489 R2 complete. Watch for R3 from SonarCloud/CI.
 
-**Last Processed**: 2026-03-15 (Session #220)
+**Last Processed**: 2026-04-03 (Session #259)
 
 ---
 

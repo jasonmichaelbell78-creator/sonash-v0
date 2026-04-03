@@ -544,7 +544,7 @@ if is_skipped doc-header; then
   node scripts/log-override.js --quick --check=doc-header --reason="$SKIP_REASON" 2>/dev/null || true
   echo "doc-headers|skip|0" >> "$CHECKS_TMPFILE"
 else
-  NEW_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep -E '\.md$' || true)
+  NEW_MD_FILES=$(git diff --cached --name-only --diff-filter=A | grep -E '\.md$' | grep -v '^\.research/' | grep -v '^\.planning/' || true)
   if [ -n "$NEW_MD_FILES" ]; then
     RUN_DOCHEADERS=1
   else

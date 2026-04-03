@@ -85,3 +85,4 @@
 {"timestamp":"2026-03-30T23:06:57.725Z","action":"intake-pr-deferred","pr_number":482,"item_id":"DEBT-45627","file":".claude/hooks/check-mcp-servers.js","severity":"S1"}
 {"timestamp":"2026-03-30T23:07:02.992Z","action":"intake-pr-deferred","pr_number":482,"item_id":"DEBT-45628","file":".claude/hooks/block-push-to-main.js","severity":"S1"}
 {"timestamp":"2026-03-31T00:08:27.153Z","action":"intake-manual","item_id":"DEBT-45629","file":"tools/statusline/render.go","severity":"S2","category":"engineering-productivity"}
+{"timestamp":"2026-04-03T01:04:10.466Z","action":"intake-manual","item_id":"DEBT-45630","file":".claude/hooks","severity":"S1","category":"security"}

@@ -46,7 +46,10 @@ function findCurrentTask(session, homeDir) {
     .filter((f) => f.startsWith(session) && f.includes("-agent-") && f.endsWith(".json"))
     .map((f) => {
       try {
-        return { name: f, mtime: fs.statSync(path.join(todosDir, f)).mtime };
+        const fp = path.join(todosDir, f);
+        // TOCTOU guard: reject symlinks before stat
+        if (fs.lstatSync(fp).isSymbolicLink()) return null;
+        return { name: f, mtime: fs.statSync(fp).mtime };
       } catch {
         return null;
       }

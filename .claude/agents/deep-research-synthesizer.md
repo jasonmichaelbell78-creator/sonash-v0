@@ -192,7 +192,9 @@ Write to: `<output_dir>/RESEARCH_OUTPUT.md`
 
 ## Step 7: Generate claims.jsonl
 
-One record per extractable claim:
+One record per extractable claim. Claims MUST reference S-### source IDs (not
+research-phase codes like D1a, D2b-1). Map each source to a sequential S-### ID
+in sources.jsonl first, then reference those IDs here.
 
 ```json
 {
@@ -224,6 +226,10 @@ Routing hints:
 Write to: `<output_dir>/claims.jsonl`
 
 ## Step 8: Generate sources.jsonl
+
+Sources MUST use sequential S-### IDs (S-001, S-002, etc.). Do NOT use
+research-phase codes (D1a, D2a-1, etc.) as source IDs — these create
+traceability failures downstream.
 
 One record per unique source:
 

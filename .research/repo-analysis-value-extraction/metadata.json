@@ -5,7 +5,8 @@
   "domain": "software-engineering / ai-tooling / code-reuse",
   "startedAt": "2026-03-31T00:00:00.000Z",
   "completedAt": "2026-03-31T19:00:00.000Z",
-  "agentCount": 18,
+  "agentCount": 23,
+  "sourceIdScheme": "research-phase-codes",
   "searchRounds": 1,
   "sourceCount": 131,
   "claimCount": 80,
@@ -29,10 +30,10 @@
     "SQ-D5: What is the internal capabilities delta for value extraction?"
   ],
   "confidenceDistribution": {
-    "HIGH": 68,
-    "MEDIUM": 10,
+    "HIGH": 74,
+    "MEDIUM": 6,
     "LOW": 0,
-    "UNVERIFIED": 2
+    "UNVERIFIED": 0
   },
   "themesIdentified": [
     "Context Quality as Primary Performance Lever",

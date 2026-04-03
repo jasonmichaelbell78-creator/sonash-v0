@@ -44,18 +44,35 @@ try {
 
 // --- Constants ---
 
-const projectDir =
-  process.env.CLAUDE_PROJECT_DIR ||
-  (() => {
-    try {
-      return execFileSync("git", ["rev-parse", "--show-toplevel"], {
-        encoding: "utf8",
-        timeout: 5000,
-      }).trim();
-    } catch {
-      return process.cwd();
+const projectDir = (() => {
+  const fallback = process.cwd();
+  const candidate =
+    process.env.CLAUDE_PROJECT_DIR ||
+    (() => {
+      try {
+        return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+          encoding: "utf8",
+          timeout: 5000,
+        }).trim();
+      } catch {
+        return fallback;
+      }
+    })();
+  // Path containment: validate candidate is within or contains cwd
+  try {
+    const resolved = path.resolve(candidate);
+    const cwd = path.resolve(fallback);
+    const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+    const a = norm(resolved);
+    const b = norm(cwd);
+    if (a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep)) {
+      return resolved;
     }
-  })();
+  } catch {
+    // fall through
+  }
+  return fallback;
+})();
 
 /** Source directories to check for freshness comparison */
 const SOURCE_DIRS = ["app", "lib", "components"];
@@ -140,6 +157,8 @@ function getNewestSourceMtime(dirPath) {
         // Path traversal guard: ensure file is within project directory
         const rel = path.relative(projectDir, absPath);
         if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) continue;
+        // TOCTOU guard: reject symlinks before stat
+        if (fs.lstatSync(absPath).isSymbolicLink()) continue;
         const stat = fs.statSync(absPath);
         if (stat.mtimeMs > newestMtime) {
           newestMtime = stat.mtimeMs;
@@ -169,6 +188,13 @@ function checkBuildFreshness() {
 
   // Check if .next/ directory exists
   try {
+    // TOCTOU guard: reject symlinks before stat
+    if (fs.lstatSync(nextDir).isSymbolicLink()) {
+      return {
+        level: "block",
+        message: "No production build found (.next is a symlink). Run: npm run build",
+      };
+    }
     const stat = fs.statSync(nextDir);
     if (!stat.isDirectory()) {
       return {
@@ -186,6 +212,13 @@ function checkBuildFreshness() {
   // Check BUILD_ID mtime vs source mtime
   let buildMtime = 0;
   try {
+    // TOCTOU guard: reject symlinks before stat
+    if (fs.lstatSync(buildIdPath).isSymbolicLink()) {
+      return {
+        level: "warn",
+        message: "Build may be stale (BUILD_ID is a symlink). Consider running: npm run build",
+      };
+    }
     const stat = fs.statSync(buildIdPath);
     buildMtime = stat.mtimeMs;
   } catch {

@@ -51,8 +51,24 @@ try {
 const WINDOW_MS = 20 * 60 * 1000; // 20 minutes
 const TRIGGER_COUNT = 3; // Warn on 3rd occurrence (per D12)
 
-// Resolve project directory from cwd or env
-const projectDir = process.env.CLAUDE_PROJECT_DIR || process.cwd();
+// Resolve project directory from cwd or env (with path containment check)
+const projectDir = (() => {
+  const fallback = process.cwd();
+  const candidate = process.env.CLAUDE_PROJECT_DIR || fallback;
+  try {
+    const resolved = path.resolve(candidate);
+    const cwd = path.resolve(fallback);
+    const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+    const a = norm(resolved);
+    const b = norm(cwd);
+    if (a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep)) {
+      return resolved;
+    }
+  } catch {
+    // fall through
+  }
+  return fallback;
+})();
 const STATE_FILE = path.join(projectDir, ".claude", "state", "error-loop-tracker.json");
 const WARNINGS_LOG = path.join(projectDir, ".claude", "state", "hook-warnings-log.jsonl");
 

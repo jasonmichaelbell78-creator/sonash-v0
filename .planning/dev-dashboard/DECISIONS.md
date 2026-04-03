@@ -8,7 +8,7 @@
 
 **Date:** 2026-03-29 (Session #245) **Questions asked:** 42 **Decisions
 captured:** 43 **Prior research:** `.research/dev-dashboard/RESEARCH_OUTPUT.md`
-(42 agents)
+(36 searcher agents, 46 output files)
 
 ## User Constraints (binding, non-negotiable)
 
