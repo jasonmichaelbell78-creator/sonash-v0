@@ -2886,6 +2886,38 @@ deduped/merged)
 
 ---
 
+### Review #63 — PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI)
+
+**Date:** 2026-04-03 **Items:** 31 (31 fixed, 1 deferred, 0 rejected)
+
+**Patterns:**
+
+- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
+  skipped size enforcement. Fix: size-check the resolved target instead.
+- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
+  replaced with line-by-line `testFn`. CLAUDE.md two-strikes policy applied.
+- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
+  validate-research (16→helpers x2). Pattern: extract helpers when CC>15.
+- sanitizeError import paths: 5 hooks + rotate-state.js used
+  `path.join(__dirname, '..', 'scripts')` from `.claude/hooks/` — resolves to
+  `.claude/scripts/` not repo root. Fix: `'..', '..'` for hooks, `'..','..','..`
+  for hooks/lib. Multi-source convergence (Qodo + Gemini).
+- Source traceability false-negative: `checkSourceTraceability()` only checked
+  `sourceIds`/`sources` arrays, missed `source` (singular string). Fix:
+  `collectClaimRefs()` normalizer handles all 3 formats.
+- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
+  remove existsSync, catch ENOENT in try/catch.
+- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
+  Fix: pre-extraction `unzip -Z1` / `tar -tzf` content listing with path
+  traversal regex.
+- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
+  regex, symlink guard, path containment). 20+ files deferred to DEBT-45630
+  (pre-existing from PR #397).
+- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+  (Prettier formatting: CI, MAJOR): Ran Prettier on 37 files that failed CI.
+
+---
+
 ### Review #62 — PR #487 R1 (Mixed: Doc Lint + SonarCloud + Gemini + Qodo + CI)
 
 **Date:** 2026-04-01 **Items:** 7 (7 fixed, 0 deferred, 0 rejected)
