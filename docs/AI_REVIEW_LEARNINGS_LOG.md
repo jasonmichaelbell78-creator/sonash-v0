@@ -2886,7 +2886,25 @@ deduped/merged)
 
 ---
 
-### Review #63 — PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI)
+### Review #65 — PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud)
+
+**Date:** 2026-04-03 **Items:** 7 new + 5 stale (5 fixed, 1 rejected, 5
+stale-rejected, 1 already-fixed)
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+  all platforms. Fix: conditional `$PLATFORM == "windows"` guard.
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+  PATH manipulation risk. Removed from npm ping and rg --version.
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review #64 — PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI)
 
 **Date:** 2026-04-03 **Items:** 31 (31 fixed, 1 deferred, 0 rejected)
 

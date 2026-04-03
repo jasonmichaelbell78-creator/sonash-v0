@@ -143,9 +143,11 @@ download_github_release() {
     (cd "$extract_dir" && unzip -o "$tmp/download" >/dev/null 2>&1) || { echo "    ERROR: unzip failed" >&2; rm -rf "$tmp"; return 1; }
     local found
     found=$(find "$extract_dir" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
+    local dest="$BIN_DIR/$binary"
+    if [[ "$PLATFORM" == "windows" ]]; then dest="$BIN_DIR/${binary}.exe"; fi
     if [[ -n "$found" ]]; then
-      cp "$found" "$BIN_DIR/${binary}.exe"
-      chmod +x "$BIN_DIR/${binary}.exe"
+      cp "$found" "$dest"
+      chmod +x "$dest"
     else
       echo "    ERROR: binary not found in archive" >&2
       rm -rf "$tmp"
@@ -163,9 +165,11 @@ download_github_release() {
     (cd "$extract_dir" && tar xzf "$tmp/download" --no-same-owner 2>/dev/null) || { echo "    ERROR: tar extract failed" >&2; rm -rf "$tmp"; return 1; }
     local found
     found=$(find "$extract_dir" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
+    local dest="$BIN_DIR/$binary"
+    if [[ "$PLATFORM" == "windows" ]]; then dest="$BIN_DIR/${binary}.exe"; fi
     if [[ -n "$found" ]]; then
-      cp "$found" "$BIN_DIR/${binary}.exe"
-      chmod +x "$BIN_DIR/${binary}.exe"
+      cp "$found" "$dest"
+      chmod +x "$dest"
     else
       echo "    ERROR: binary not found in archive" >&2
       rm -rf "$tmp"
@@ -173,8 +177,10 @@ download_github_release() {
     fi
   else
     # Bare binary (e.g., .exe direct download)
-    cp "$tmp/download" "$BIN_DIR/${binary}.exe"
-    chmod +x "$BIN_DIR/${binary}.exe"
+    local dest="$BIN_DIR/$binary"
+    if [[ "$PLATFORM" == "windows" ]]; then dest="$BIN_DIR/${binary}.exe"; fi
+    cp "$tmp/download" "$dest"
+    chmod +x "$dest"
   fi
   rm -rf "$tmp"
   return 0

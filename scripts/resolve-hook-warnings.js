@@ -135,7 +135,6 @@ const RESOLVE_CHECKS = {
         cwd: ROOT_DIR,
         stdio: "pipe",
         timeout: 5000,
-        shell: true,
       });
       return true;
     } catch {
@@ -152,7 +151,6 @@ const RESOLVE_CHECKS = {
         cwd: ROOT_DIR,
         stdio: "pipe",
         timeout: 3000,
-        shell: true,
       });
       return true;
     } catch {
@@ -238,25 +236,31 @@ function findActiveWarningTypes(entries) {
  * @param {Set<string>} activeTypes - Set of active warning types to check
  * @returns {Set<string>} Set of type strings whose conditions are now resolved
  */
+function logResolveResult(type, status, error) {
+  if (!VERBOSE) return;
+  if (status === "skip") console.log(`  ${type}: no resolve check — skipping`);
+  else if (status === "resolved") console.log(`  ${type}: RESOLVED`);
+  else if (status === "active") console.log(`  ${type}: still active`);
+  else if (status === "error") console.log(`  ${type}: check failed — ${sanitizeError(error)}`);
+}
+
 function runResolveChecks(activeTypes) {
   const resolvedTypes = new Set();
   for (const type of activeTypes) {
     const check = RESOLVE_CHECKS[type];
     if (!check) {
-      if (VERBOSE) console.log(`  ${type}: no resolve check — skipping`);
+      logResolveResult(type, "skip");
       continue;
     }
-
     try {
-      const isResolved = check();
-      if (isResolved) {
+      if (check()) {
         resolvedTypes.add(type);
-        if (VERBOSE) console.log(`  ${type}: RESOLVED`);
-      } else if (VERBOSE) {
-        console.log(`  ${type}: still active`);
+        logResolveResult(type, "resolved");
+      } else {
+        logResolveResult(type, "active");
       }
     } catch (e) {
-      if (VERBOSE) console.log(`  ${type}: check failed — ${sanitizeError(e)}`);
+      logResolveResult(type, "error", e);
     }
   }
   return resolvedTypes;

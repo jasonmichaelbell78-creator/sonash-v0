@@ -412,11 +412,20 @@ function resolveGitDir() {
   function validateGitDir(resolved) {
     try {
       const abs = path.resolve(resolved);
+      // Reject filesystem roots (too broad to be a safe git dir)
+      const parent = path.dirname(abs);
+      if (parent === abs) return dotGitPath;
       const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
-      const a = norm(abs);
-      const b = norm(path.resolve(cwd));
-      // Allow: inside cwd, equal to cwd, or cwd inside resolved (worktree roots)
-      if (a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep)) {
+      const gitDir = norm(abs);
+      const cwdAbs = norm(path.resolve(cwd));
+      const cwdParent = norm(path.dirname(path.resolve(cwd)));
+      // Allow: inside cwd, equal to cwd, or inside cwd's parent (worktree layouts)
+      if (
+        gitDir === cwdAbs ||
+        gitDir.startsWith(cwdAbs + path.sep) ||
+        gitDir === cwdParent ||
+        gitDir.startsWith(cwdParent + path.sep)
+      ) {
         return abs;
       }
     } catch {

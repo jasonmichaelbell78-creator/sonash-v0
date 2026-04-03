@@ -39,7 +39,11 @@ const child = spawn(
     try {
       let current = nodePath.resolve(filePath);
       while (true) {
-        if (fs.existsSync(current) && fs.lstatSync(current).isSymbolicLink()) return false;
+        try {
+          if (fs.lstatSync(current).isSymbolicLink()) return false;
+        } catch (e) {
+          if (!(e && typeof e === 'object' && e.code === 'ENOENT')) return false;
+        }
         const parent = nodePath.dirname(current);
         if (parent === current) break;
         current = parent;
