@@ -4,7 +4,8 @@
  * Verifies that audit findings paths are covered by rotation-policy.json
  */
 
-/* global describe, beforeAll, test, expect */
+const { describe, test, before } = require("node:test");
+const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -18,39 +19,37 @@ const AUDIT_FINDINGS_PATHS = [
 describe("3689cfd62f77: Audit findings rotation coverage", () => {
   let policy;
 
-  beforeAll(() => {
-    try {
-      const raw = fs.readFileSync(ROTATION_POLICY_PATH, "utf8");
-      policy = JSON.parse(raw);
-    } catch (err) {
-      throw new Error(`Failed to load rotation policy at ${ROTATION_POLICY_PATH}: ${String(err)}`);
-    }
+  before(() => {
+    const raw = fs.readFileSync(ROTATION_POLICY_PATH, "utf8");
+    policy = JSON.parse(raw);
   });
 
   test("rotation-policy.json exists and is valid JSON", () => {
-    expect(policy).toBeDefined();
-    expect(policy.tiers).toBeDefined();
+    assert.ok(policy, "policy should be defined");
+    assert.ok(policy.tiers, "policy.tiers should be defined");
   });
 
   test("audit findings paths are listed in a rotation tier", () => {
-    // Collect all files from all tiers
     const allRotatedFiles = Object.values(policy.tiers).flatMap((tier) => tier.files || []);
 
     for (const auditPath of AUDIT_FINDINGS_PATHS) {
-      expect(allRotatedFiles).toContain(auditPath);
+      assert.ok(
+        allRotatedFiles.includes(auditPath),
+        `Expected ${auditPath} to be in rotation policy`
+      );
     }
   });
 
   test("audit findings tier has maxAgeDays <= 90", () => {
-    // Find which tier contains the audit findings
+    let found = false;
     for (const [, tier] of Object.entries(policy.tiers)) {
       const hasAuditFiles = AUDIT_FINDINGS_PATHS.some((p) => (tier.files || []).includes(p));
       if (hasAuditFiles) {
-        expect(tier.maxAgeDays).toBeLessThanOrEqual(90);
-        return;
+        assert.ok(tier.maxAgeDays <= 90, `maxAgeDays should be <= 90, got ${tier.maxAgeDays}`);
+        found = true;
+        break;
       }
     }
-    // If we reach here, no tier contains audit findings
-    throw new Error("No rotation tier contains audit findings paths");
+    assert.ok(found, "No rotation tier contains audit findings paths");
   });
 });

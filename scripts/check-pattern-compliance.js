@@ -936,6 +936,41 @@ const ANTI_PATTERNS = [
     pathExcludeList: verifiedPatterns["jsonl-parse-no-try-catch"] || [],
   },
 
+  // Pattern: "Multi-line JSON reassembly" — 3 recurrences (Reviews: 353, 357, 358)
+  // JSONL files can contain multi-line (pretty-printed) JSON; naive line-split + parse crashes
+  {
+    id: "multiline-json-reassembly",
+    severity: "low",
+    testFn: (content, filePath) => {
+      // Only flag files that read .jsonl files AND split+parse without brace tracking
+      if (!content.includes(".jsonl")) return [];
+      const hasSplitParse =
+        content.includes('.split("\\n")') ||
+        content.includes(".split('\\n')") ||
+        content.includes(".split(`\\n`)");
+      const hasLineParse = /JSON\.parse\s*\(\s*(?:line|l|entry|row)\b/.test(content);
+      if (!hasSplitParse || !hasLineParse) return [];
+      // Check if there IS brace-depth tracking (indicates awareness of multi-line)
+      const hasBraceTracking =
+        content.includes("braceDepth") ||
+        content.includes("brace_depth") ||
+        content.includes("braceCount") ||
+        content.includes("depth++") ||
+        content.includes("depth --") ||
+        content.includes("accumulat");
+      if (hasBraceTracking) return [];
+      return [{ line: 1, match: "JSONL split+parse without multi-line brace tracking" }];
+    },
+    message:
+      "JSONL parsing splits on newline and calls JSON.parse per line without multi-line reassembly — pretty-printed entries will crash",
+    fix: "Accumulate lines and track brace depth: increment on '{', decrement on '}'. Only JSON.parse when depth returns to 0.",
+    review: "Reviews: 353, 357, 358 — multi-line JSON reassembly",
+    fileTypes: [".js", ".ts"],
+    pathFilter: /(?:^|[\\/])scripts[\\/]/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|safe-fs)\.js$/,
+    pathExcludeList: verifiedPatterns["multiline-json-reassembly"] || [],
+  },
+
   // Pattern: "Rename fallback guard" — 14 recurrences (Reviews: 339, 340, 341, 342, 345)
   // renameSync can fail on cross-drive moves; needs writeFileSync+unlinkSync fallback
   {

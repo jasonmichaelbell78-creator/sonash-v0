@@ -37,7 +37,6 @@
       "files": [
         ".claude/state/health-score-log.jsonl",
         "docs/technical-debt/MASTER_DEBT.jsonl",
-        ".claude/state/velocity-log.jsonl",
         ".claude/state/lifecycle-scores.jsonl",
         ".claude/state/learning-routes.jsonl"
       ]

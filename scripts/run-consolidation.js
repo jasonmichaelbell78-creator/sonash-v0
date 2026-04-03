@@ -248,23 +248,9 @@ function extractPatterns(reviews) {
       if (!entry.reviews.includes(review.id)) entry.reviews.push(review.id);
     }
 
-    // Also extract from title keywords for broader pattern detection
-    const title = (review.title || "").toLowerCase();
-    for (const keyword of PATTERN_KEYWORDS) {
-      const m = keyword.exec(title);
-      if (m) {
-        const match = m[0]?.toLowerCase()?.trim();
-        if (!match) continue;
-        if (!patterns.has(match)) {
-          patterns.set(match, { pattern: match, count: 0, reviews: [], learnings: [] });
-        }
-        const entry = patterns.get(match);
-        if (!entry.reviews.includes(review.id)) {
-          entry.count++;
-          entry.reviews.push(review.id);
-        }
-      }
-    }
+    // Title keyword extraction removed — review.patterns array has structured
+    // data. Title matching produced false positives from review source names
+    // (qodo, sonarcloud, gemini, ci) appearing in titles like "PR #470 R1 — Mixed Qodo+SonarCloud".
 
     // Collect learnings for pattern context
     const learnings = Array.isArray(review.learnings) ? review.learnings : [];
@@ -307,7 +293,6 @@ const PATTERN_KEYWORDS = [
   /fail-closed/i,
   /typescript/i,
   /eslint/i,
-  /sonarcloud/i,
   /nullable/i,
   /symlink/i,
   /propagation/i,
@@ -323,8 +308,6 @@ const PATTERN_KEYWORDS = [
   /compliance/i,
   /documentation/i,
   /markdown/i,
-  /qodo/i,
-  /gemini/i,
 ];
 
 function categorizePatterns(patterns) {

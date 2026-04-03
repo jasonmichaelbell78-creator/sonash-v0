@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated": "2026-03-13",
+  "updated": "2026-04-03",
   "patterns": [
     {
       "id": "error-sanitization",
@@ -434,6 +434,7 @@
       "slogans.ts",
       "sober-living.ts",
       "users.ts"
-    ]
+    ],
+    "symlink-parent-traversal": ["archive-doc.js"]
   }
 }

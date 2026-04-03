@@ -48,6 +48,22 @@
       "reason": "gitleaks-action SHA unavailable (upstream infrastructure issue, not PR code). ESLint CJS config fixed in Session #240. Suppress until CI stabilizes.",
       "suppressedAt": "2026-03-26T15:30:00.000Z",
       "expiresAt": "2026-04-26T15:30:00.000Z"
+    },
+    {
+      "id": "suppress-2026-04-03-review-fix-ratio",
+      "category": "review-quality",
+      "messagePattern": "fix ratio",
+      "reason": "High fix ratio is a positive signal — benchmark threshold is inverted for this project review workflow",
+      "suppressedAt": "2026-04-03T11:21:00.000Z",
+      "expiresAt": null
+    },
+    {
+      "id": "suppress-2026-04-03-roadmap-overdue",
+      "category": "roadmap",
+      "messagePattern": "date(s) in ROADMAP.md may be overdue",
+      "reason": "False positive — date is in an archive filename link, not a due date. ROADMAP v3.17 removed all date-based scheduling.",
+      "suppressedAt": "2026-04-03T11:26:00.000Z",
+      "expiresAt": null
     }
   ]
 }

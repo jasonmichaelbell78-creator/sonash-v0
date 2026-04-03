@@ -34,7 +34,7 @@ try {
 } catch (err) {
   const msg = err instanceof Error ? err.message : String(err);
   console.error(`Error: failed to load skill-config: ${msg}`);
-  process.exit(2);
+  process.exit(1);
 }
 
 /**

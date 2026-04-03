@@ -263,6 +263,9 @@ function ensureArchiveDir() {
   }
 
   try {
+    if (!isSafeToWrite(ARCHIVE_DIR)) {
+      return { success: false, error: "Symlink detected in archive directory path" };
+    }
     mkdirSync(ARCHIVE_DIR, { recursive: true });
     console.log(`Created archive directory: ${ARCHIVE_DIR}`);
     return { success: true };
