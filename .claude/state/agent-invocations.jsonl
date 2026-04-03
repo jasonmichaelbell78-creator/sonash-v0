@@ -133,3 +133,5 @@
 {"agent":"fullstack-developer","description":"Fix deep-research write-to-disk","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:18:15.920Z"}
 {"agent":"fullstack-developer","description":"Fix doc-optimizer write-to-disk","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:18:22.829Z"}
 {"agent":"fullstack-developer","description":"Fix audit-process write-to-disk","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:18:28.453Z"}
+{"agent":"security-auditor","description":"Security + architecture scan MemSkill","sessionId":"session-1775234762147","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:51:48.807Z"}
+{"agent":"explore","description":"Doc + code quality scan MemSkill","sessionId":"session-1775234762147","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:51:53.970Z"}

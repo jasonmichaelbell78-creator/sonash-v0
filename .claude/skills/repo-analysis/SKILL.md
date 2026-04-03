@@ -276,9 +276,13 @@ Presented after Standard or Deep analysis completes. Offers 6 options:
 | Option                  | Action                                                           |
 | ----------------------- | ---------------------------------------------------------------- |
 | **1. Extract value**    | Load repomix-output.txt + value-map context. Present candidates. |
-|                         | For each selected candidate, ask: "Extract, skip, or defer?"     |
-|                         | Persist decisions to extraction result files, append to journal, |
-|                         | regenerate EXTRACTIONS.md. If "extract", offer to load source.   |
+|                         | Ask: "Act on specific candidates, or defer all for later review? |
+|                         | [specific / defer all]". If "defer all": write all candidates    |
+|                         | to extraction-journal.jsonl with status "deferred", regenerate   |
+|                         | EXTRACTIONS.md, done. If "specific": for each selected candidate |
+|                         | ask "Extract, skip, or defer?" Persist decisions to extraction   |
+|                         | result files, append to journal, regenerate EXTRACTIONS.md.      |
+|                         | If "extract", offer to load source files for adaptation.         |
 | **2. Send to TDMS**     | Transform findings.jsonl to TDMS format (severity mapping:       |
 |                         | high→S1, medium→S2, low/info→S3) and run TDMS intake.            |
 |                         | Source: `repo-analysis-<slug>-<date>`. Opt-in only.              |

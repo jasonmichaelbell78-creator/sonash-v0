@@ -1,6 +1,6 @@
 # Code Review Patterns Reference
 
-**Document Version:** 4.1 **Source:** Distilled from 347 AI code reviews **Last
+**Document Version:** 4.2 **Source:** Distilled from 347 AI code reviews **Last
 Updated:** 2026-02-26
 
 ---
@@ -190,6 +190,20 @@ vi.mock("firebase/firestore"); // Bypasses App Check, rate limits, validation
 #299)
 
 **Source:** Consolidation #2 (Reviews #1-#399)
+
+### Cross Platform Binary Naming: Install Tools.Sh Hardcoded `.Exe` Extension On
+
+🟡 **Rule:** Cross Platform Binary Naming: Install Tools.Sh Hardcoded `.Exe`
+Extension On — recurring pattern from 3 reviews (#65)
+
+**Source:** Consolidation #36 (Reviews #64-#rev-65)
+
+### Shell:True Removal: `Execfilesync` With `Shell: True` Unnecessary, Creates
+
+🟡 **Rule:** Shell:True Removal: `Execfilesync` With `Shell: True` Unnecessary,
+Creates — recurring pattern from 3 reviews (#65)
+
+**Source:** Consolidation #36 (Reviews #64-#rev-65)
 
 ## npm/Dependencies
 
@@ -1199,6 +1213,34 @@ recurring pattern from 4 reviews (#460, #463, #466, #469)
 
 **Source:** Consolidation #2 (Reviews #452-#470)
 
+### Validategitdir Tightened: Reject Filesystem Roots, Scope To Cwd Parent.
+
+🟡 **Rule:** Validategitdir Tightened: Reject Filesystem Roots, Scope To Cwd
+Parent. — recurring pattern from 3 reviews (#65)
+
+**Source:** Consolidation #36 (Reviews #64-#rev-65)
+
+### Gsd Check Update Toctou: Existssync + Lstatsync → Lstatsync + Enoent Catch.
+
+🟡 **Rule:** Gsd Check Update Toctou: Existssync + Lstatsync → Lstatsync +
+Enoent Catch. — recurring pattern from 3 reviews (#65)
+
+**Source:** Consolidation #36 (Reviews #64-#rev-65)
+
+### Cc Extraction: Logresolveresult() Helper Reduced Runresolvechecks Cc 17→<15.
+
+🟡 **Rule:** Cc Extraction: Logresolveresult() Helper Reduced Runresolvechecks
+Cc 17→<15. — recurring pattern from 3 reviews (#65)
+
+**Source:** Consolidation #36 (Reviews #64-#rev-65)
+
+### Gemini Stale Detection: 5 Comments Referenced Pre R1 Commit. Auto Rejected.
+
+🟡 **Rule:** Gemini Stale Detection: 5 Comments Referenced Pre R1 Commit. Auto
+Rejected. — recurring pattern from 3 reviews (#65)
+
+**Source:** Consolidation #36 (Reviews #64-#rev-65)
+
 ## Enforcement
 
 These patterns are automatically enforced by:
@@ -1220,6 +1262,7 @@ helpers.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.2     | 2026-04-03 | **CONSOLIDATION #36:** Auto-added 6 patterns (cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on, shell:true removal: `execfilesync` with `shell: true` unnecessary, creates, validategitdir tightened: reject filesystem roots, scope to cwd parent., gsd-check-update toctou: existssync + lstatsync → lstatsync + enoent catch., cc extraction: logresolveresult() helper reduced runresolvechecks cc 17→<15., gemini stale detection: 5 comments referenced pre-r1 commit. auto-rejected.). Source: Reviews #64-#rev-65.                                                                                                                                                                  |
 | 4.1     | 2026-03-09 | **CONSOLIDATION #2:** Auto-added 9 patterns (verify-doc-math-before-commit, clarify-ai-implementation-time, secret-packaging-denylist, yaml-boundary-detection, cache-counting-bug, restore-continueonerror, fp-1fp-4-test-assertions, global-settings-deterministic-testing, --tests-without-assertions-are-worse-than-no-tests-they-prov). Source: Reviews #452-#470.                                                                                                                                                                                                                                                                                                                                                 |
 | 4.0     | 2026-03-05 | **CONSOLIDATION #2:** Auto-added 52 patterns (suppress-internal-tooling-security-noise, add-security-checklist-to-ecosystem-audit-checker-template, when-adding-escapesanitization-functions, escapecell-propagation, efficiency, pre-push-hook, blocking-implement-cc-pre-push-check, cc-pre-push-check, critical-implement-cc-pre-push-check, ci-1 …(+42 more)). Source: Reviews #448-#458.                                                                                                                                                                                                                                                                                                                           |
 | 3.9     | 2026-03-02 | **CONSOLIDATION #10:** Auto-added 18 patterns (sanitize-markdown-headings, sanitize-markdown-render, composite-key-for-nullable-ids, temp-file-symlink-race, regex-character-class-escaping, cognitive-complexity-extraction, cc-reduction-getlatestloghash, toctou-race-appendentries, retrorecordparse-safeparse, invocation-id-collision …(+8 more)). Source: Reviews #466-#477.                                                                                                                                                                                                                                                                                                                                     |

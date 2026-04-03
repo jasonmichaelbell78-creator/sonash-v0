@@ -1,0 +1,1 @@
+{"repo":"ViktorAxelsen/MemSkill","scan_date":"2026-04-03","depth":"standard","version":"2.0","bands":{"Security":22,"Reliability":30,"Maintainability":52,"Documentation":62,"Process":12,"Velocity":68},"adoption":{"verdict":"Extract","score":38},"stars":390,"forks":23,"contributors":1,"findings":15,"test_functions":0,"python_lines":12182}

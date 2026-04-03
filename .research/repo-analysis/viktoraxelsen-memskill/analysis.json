@@ -1,0 +1,225 @@
+{
+  "meta": {
+    "repo": "ViktorAxelsen/MemSkill",
+    "url": "https://github.com/ViktorAxelsen/MemSkill",
+    "scan_date": "2026-04-03",
+    "scan_depth": "standard",
+    "scan_version": "2.0",
+    "clone_dir": "C:/Users/jbell/AppData/Local/Temp/repo-analysis-viktoraxelsen-memskill/",
+    "files_cloned": 82
+  },
+  "repo": {
+    "description": "MemSkill: Learning and Evolving Memory Skills for Self-Evolving Agents",
+    "language": "Python",
+    "license": "Apache-2.0",
+    "created_at": "2026-01-30T14:46:19Z",
+    "pushed_at": "2026-03-31T20:19:44Z",
+    "age_days": 63,
+    "size_kb": 5520,
+    "stars": 390,
+    "forks": 23,
+    "open_issues": 5,
+    "contributors": 1,
+    "subscribers": 3,
+    "is_fork": false,
+    "is_archived": false,
+    "default_branch": "main",
+    "languages": { "Python": 483645, "Shell": 7851 }
+  },
+  "dimensions": {
+    "QS-01_activity_pulse": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "Last push 3 days ago. ~2 commits/week."
+    },
+    "QS-02_star_velocity": {
+      "score": 65,
+      "band": "Healthy",
+      "detail": "390 stars in 63 days (~6/day)."
+    },
+    "QS-03_fork_ratio": {
+      "score": 60,
+      "band": "Healthy",
+      "detail": "23 forks / 390 stars = 5.9%."
+    },
+    "QS-04_issue_health": {
+      "score": 50,
+      "band": "Needs Work",
+      "detail": "5 open issues, all questions. No triage."
+    },
+    "QS-05_pr_throughput": {
+      "score": 20,
+      "band": "Critical",
+      "detail": "No PR activity. Direct pushes to main."
+    },
+    "QS-06_release_cadence": {
+      "score": 10,
+      "band": "Critical",
+      "detail": "Zero releases. No tags."
+    },
+    "QS-07_contributor_diversity": {
+      "score": 10,
+      "band": "Critical",
+      "detail": "Single contributor. Bus factor = 1."
+    },
+    "QS-08_license": { "score": 90, "band": "Excellent", "detail": "Apache-2.0." },
+    "QS-09_community_health": {
+      "score": 30,
+      "band": "Critical",
+      "detail": "42% health. Missing CONTRIBUTING, CoC, templates."
+    },
+    "QS-10_documentation": {
+      "score": 60,
+      "band": "Healthy",
+      "detail": "README 360 lines, paper linked, setup instructions."
+    },
+    "QS-11_ci_quality": {
+      "score": 15,
+      "band": "Critical",
+      "detail": "Only pages deployment. No test CI."
+    },
+    "QS-12_security_posture": {
+      "score": 12,
+      "band": "Critical",
+      "detail": "No SECURITY.md. API key printed to stdout on error."
+    },
+    "QS-15_code_scanning": { "score": 10, "band": "Critical", "detail": "No code scanning." },
+    "ST-01_subprocess_safety": {
+      "score": 70,
+      "band": "Healthy",
+      "detail": "No subprocess calls. LLM API via openai client. But trust_remote_code=True and pickle.load on checkpoints."
+    },
+    "ST-02_test_coverage": {
+      "score": 5,
+      "band": "Critical",
+      "detail": "Zero test files. No pytest, unittest, or mock imports anywhere."
+    },
+    "ST-03_test_ci_enforcement": {
+      "score": 5,
+      "band": "Critical",
+      "detail": "No tests exist to enforce."
+    },
+    "ST-04_code_structure": {
+      "score": 75,
+      "band": "Healthy",
+      "detail": "Well-organized src/ with single-responsibility modules. Data processing and eval as extension points with factory pattern."
+    },
+    "ST-05_code_reuse": {
+      "score": 65,
+      "band": "Healthy",
+      "detail": "Modular design. No copy-paste. But main.py is 42KB — should delegate more."
+    },
+    "ST-06_plugin_architecture": {
+      "score": 50,
+      "band": "Needs Work",
+      "detail": "Factory pattern for datasets/evaluators. No formal plugin system."
+    },
+    "ST-07_credential_handling": {
+      "score": 20,
+      "band": "Critical",
+      "detail": "API key printed to stdout (S0). Placeholder keys in defaults. W&B key via CLI arg visible in ps output. No .gitignore."
+    },
+    "ST-08_path_safety": {
+      "score": 55,
+      "band": "Needs Work",
+      "detail": "No validation on data_file paths from CLI. Low risk for local research use."
+    },
+    "ST-09_type_safety": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "Consistent type hints in src/. Partial in top-level scripts. No mypy config."
+    },
+    "ST-10_dependency_isolation": {
+      "score": 30,
+      "band": "Critical",
+      "detail": "18 deps, 0 pinned. GPU deps not in requirements.txt. Reproducibility risk."
+    },
+    "ST-11_error_handling": {
+      "score": 55,
+      "band": "Needs Work",
+      "detail": "No bare except clauses. But raw print(e) throughout. 18 try/except in trainer."
+    },
+    "ST-12_registry_quality": {
+      "score": 0,
+      "band": "Critical",
+      "detail": "No registry, no package distribution. Research script only."
+    },
+    "ST-13_methodology_docs": {
+      "score": 65,
+      "band": "Healthy",
+      "detail": "README with 30 CLI flags documented. arXiv paper. No architecture doc. No extension guide beyond 4-step README section."
+    },
+    "ST-14_scaffolding": {
+      "score": 20,
+      "band": "Critical",
+      "detail": "No scaffolding. No templates. Shell scripts require manual placeholder editing."
+    },
+    "ST-15_monorepo_coordination": {
+      "score": 0,
+      "band": "Critical",
+      "detail": "N/A — single project, not a monorepo."
+    }
+  },
+  "summary_bands": {
+    "Security": { "score": 22, "band": "Critical" },
+    "Reliability": { "score": 30, "band": "Critical" },
+    "Maintainability": { "score": 52, "band": "Needs Work" },
+    "Documentation": { "score": 62, "band": "Healthy" },
+    "Process": { "score": 12, "band": "Critical" },
+    "Velocity": { "score": 68, "band": "Healthy" }
+  },
+  "absence_patterns": [
+    {
+      "pattern": "LONE_WOLF",
+      "confidence": "High",
+      "evidence": "Single contributor, 32 commits, no CODEOWNERS."
+    },
+    {
+      "pattern": "TEST_THEATER",
+      "confidence": "High",
+      "evidence": "Zero test files. eval scripts are not tests."
+    },
+    {
+      "pattern": "GHOST_SHIP",
+      "confidence": "Low",
+      "evidence": "Not abandoned (pushed 3 days ago) but single-author academic repo with no succession plan."
+    }
+  ],
+  "adoption_assessment": {
+    "verdict": "Extract",
+    "verdict_score": 38,
+    "dimensions": {
+      "WR-01_stack_compatibility": {
+        "score": 45,
+        "band": "Needs Work",
+        "detail": "Python ML stack. Our stack is Node/TS. Concepts portable, code not. PPO/GAE + LLM prompting patterns are language-agnostic."
+      },
+      "WR-02_integration_complexity": {
+        "score": 20,
+        "band": "Critical",
+        "detail": "Not a library. No pip install, no API, no plugin system. 42KB main.py + 102KB trainer.py monoliths. Requires significant decomposition."
+      },
+      "WR-03_maintenance_burden": {
+        "score": 15,
+        "band": "Critical",
+        "detail": "Single author, zero releases, zero tests, no .gitignore. Could be abandoned at any time."
+      },
+      "WR-04_lock_in_risk": {
+        "score": 80,
+        "band": "Excellent",
+        "detail": "Apache-2.0. HuggingFace artifacts. Standard ML stack. Easy to fork concepts."
+      },
+      "WR-05_value_to_cost": {
+        "score": 55,
+        "band": "Needs Work",
+        "detail": "High conceptual value for agent memory research. Novel skill evolution and meta-memory framework. But extracting requires reading the paper — code is a reference implementation, not reusable."
+      },
+      "WR-06_ecosystem_maturity": {
+        "score": 15,
+        "band": "Critical",
+        "detail": "63-day academic repo. Single author. No community beyond issue questions. No releases."
+      }
+    },
+    "recommendation": "Extract concepts only. Read arXiv 2602.02474 for the memory skills framework. Key ideas: meta-memory skills, PPO-driven skill selection, LLM-driven skill evolution from failures. Do not depend on the code."
+  }
+}

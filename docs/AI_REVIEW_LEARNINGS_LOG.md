@@ -366,6 +366,25 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#36)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #64-#rev-65
+- **Recurring patterns:**
+  - cc extraction: logresolveresult() helper reduced runresolvechecks cc 17→<15.
+    (3x)
+  - cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+    (3x)
+  - gemini stale detection: 5 comments referenced pre-r1 commit. auto-rejected.
+    (3x)
+  - gsd-check-update toctou: existssync + lstatsync → lstatsync + enoent catch.
+    (3x)
+  - shell:true removal: `execfilesync` with `shell: true` unnecessary, creates
+    (3x)
+  - validategitdir tightened: reject filesystem roots, scope to cwd parent. (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#35)</summary>
 
 - **Date:** 2026-04-03
