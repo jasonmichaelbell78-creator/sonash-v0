@@ -1,0 +1,42 @@
+{
+  "agent": "test-engineer",
+  "scan_date": "2026-04-03",
+  "capture_method": "task-notification-fallback",
+  "summary": {
+    "total_test_functions": 2707,
+    "total_test_files": 69,
+    "test_classes": "402+",
+    "harnesses_with_tests": 31,
+    "harnesses_without_tests": 1,
+    "framework_pytest": 47,
+    "framework_unittest": 16,
+    "conftest_files": 0,
+    "coverage_config": false,
+    "ci_test_enforcement": false,
+    "ci_workflows": 1,
+    "ci_workflow_runs_tests": false,
+    "backend_free_tests": "~2100 of 2707",
+    "skip_guarded_e2e": 20
+  },
+  "per_harness_top5": [
+    { "name": "blender", "tests": 208, "files": 2 },
+    { "name": "inkscape", "tests": 202, "files": 2 },
+    { "name": "shotcut", "tests": 193, "files": 2 },
+    { "name": "audacity", "tests": 164, "files": 3 },
+    { "name": "libreoffice", "tests": 158, "files": 2 }
+  ],
+  "per_harness_bottom3": [
+    { "name": "intelwatch", "tests": 4, "files": 2 },
+    { "name": "novita", "tests": 9, "files": 2 },
+    { "name": "mermaid", "tests": 10, "files": 2 }
+  ],
+  "key_findings": [
+    "2,707 test functions confirms and exceeds README claim of 1,839",
+    "Two-tier architecture: test_core.py (synthetic) + test_full_e2e.py (real backends)",
+    "~2,100 tests runnable without external backends",
+    "Zero CI enforcement — no pytest in any workflow",
+    "Zero coverage infrastructure — no conftest.py, no .coveragerc, no pyproject.toml test config",
+    "sys.path.insert hack in every test file instead of proper package install",
+    "sketch harness is JavaScript outlier — not discoverable by pytest"
+  ]
+}

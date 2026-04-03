@@ -9,8 +9,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.8
-**Last Updated:** 2026-03-29
+**Document Version:** 1.9
+**Last Updated:** 2026-04-03
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -31,7 +31,13 @@ produces structured output with downstream routing.
 2. **Contrarian + OTB mandatory at ALL levels** -- no exceptions.
 3. **Floor depth is L1 (Exhaustive)** -- no shallow modes. If someone wants
    quick, they ask Claude directly.
-4. **Write to disk first** -- findings must survive crashes.
+4. **Write to disk first** -- findings must survive crashes. **Output capture
+   fallback:** On Windows, agent output files may be 0 bytes
+   (anthropics/claude-code#39791). After each background agent completes, check
+   the output file size. If 0 bytes, capture the task-notification result text
+   and write it to the expected output file using the Write tool. Empty results
+   must never be silently accepted -- if no output is available via any channel,
+   report the failure to the user.
 5. **State file updated after every state-changing event** -- enables resume.
 6. **Research writes ONLY to `.research/<topic-slug>/`** -- never to
    consumer-owned artifacts.
@@ -202,12 +208,22 @@ ask proceed or re-run. **L4:** TeamCreate for interdependent sub-questions.
 Each agent returns: sub-questions addressed, source count, confidence
 distribution summary, gaps identified count, findings file path.
 
+**Post-completion check (MUST):** After each searcher agent completes, verify
+`FINDINGS.md` is non-empty (`wc -c`). If 0 bytes, write the task-notification
+`<result>` text to the file. This is the Windows agent output fallback --
+findings must exist on disk before Phase 2 begins.
+
 **Post-research summary:** Before synthesis, present: sub-questions answered,
 source count, top themes. Proceed to synthesis?
 
 ---
 
 ## Phase 2: Synthesis
+
+**Pre-synthesis validation:** Before spawning the synthesizer, verify all
+expected FINDINGS.md files are non-empty. If any are still 0 bytes after
+fallback capture, list the empty files to the user and ask whether to proceed
+with partial data or re-run the failed searchers.
 
 Spawn synthesizer with findings_dir, output_dir, topic, depth, sub_questions.
 Verify: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json.
@@ -362,6 +378,7 @@ to artifact-based recovery on corruption. Schema: REFERENCE.md Section 19.
 
 | Version | Date       | Description                                                                                                     |
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| 1.9     | 2026-04-03 | Added Windows agent output fallback (anthropics/claude-code#39791)                                              |
 | 1.8     | 2026-03-29 | Skill-audit: 20 decisions — UX, guard rails, output, compaction, CL, TDMS, scalability, extraction              |
 | 1.7     | 2026-03-29 | Add Phases 3.95-3.97: gap pursuit, gap verification, final re-synthesis. Rule 9. Extract detail to REFERENCE.md |
 | 1.6     | 2026-03-27 | Add Rules 8-10: context exhaustion re-spawn, mandatory verification + dispute resolution phases                 |

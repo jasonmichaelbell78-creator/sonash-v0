@@ -1,0 +1,69 @@
+{
+  "agent": "security-auditor",
+  "scan_date": "2026-04-03",
+  "capture_method": "task-notification-fallback",
+  "summary": {
+    "verdict": "CONDITIONAL",
+    "total_findings": 20,
+    "by_severity": { "S0": 3, "S1": 4, "S2": 5, "S3": 8 },
+    "subprocess_calls": 99,
+    "shell_true": 0,
+    "os_system": 0,
+    "xml_parsing_files": 21,
+    "path_join_with_input": 331,
+    "credential_files_with_perms": 4,
+    "codec_allowlists": 2
+  },
+  "criticals": [
+    {
+      "id": "SEC-S0-1",
+      "title": "SoX effects list passes agent-controlled strings to subprocess without allowlist",
+      "file": "audacity/agent-harness/cli_anything/audacity/utils/sox_backend.py:98",
+      "owasp": "A03"
+    },
+    {
+      "id": "SEC-S0-2",
+      "title": "Intelwatch forwards all Click ctx.args to subprocess with zero validation",
+      "file": "intelwatch/agent-harness/cli_anything/intelwatch/intelwatch_cli.py:18-22",
+      "owasp": "A03"
+    },
+    {
+      "id": "SEC-S0-3",
+      "title": "GIMP _script_fu_escape() missing parenthesis escaping (Scheme injection)",
+      "file": "gimp/agent-harness/cli_anything/gimp/utils/gimp_backend.py:15-22",
+      "owasp": "A03"
+    }
+  ],
+  "high": [
+    {
+      "id": "SEC-S1-1",
+      "title": "XXE exposure in shotcut lxml parsing (no resolve_entities=False)",
+      "file": "shotcut/agent-harness/cli_anything/shotcut/core/session.py:99,109"
+    },
+    {
+      "id": "SEC-S1-2",
+      "title": "No path traversal confinement on output paths (abspath without directory check)",
+      "file": "Multiple backends"
+    },
+    {
+      "id": "SEC-S1-3",
+      "title": "Hardcoded test password admin123",
+      "file": "adguardhome/agent-harness/cli_anything/adguardhome/tests/test_full_e2e.py:86"
+    },
+    {
+      "id": "SEC-S1-4",
+      "title": "Zotero LIKE query does not escape % and _ wildcards",
+      "file": "zotero/agent-harness/cli_anything/zotero/utils/zotero_sqlite.py:169,453"
+    }
+  ],
+  "positives": [
+    "0 shell=True across 99 subprocess calls",
+    "0 os.system/os.popen",
+    "0 eval/exec on untrusted input",
+    "Parameterized SQL queries (100% in zotero)",
+    "Codec allowlists in kdenlive + shotcut",
+    "Credential files use 0o600 permissions",
+    "shlex.split for REPL parsing (18 CLIs)",
+    "No pickle/unsafe YAML/deserialization"
+  ]
+}

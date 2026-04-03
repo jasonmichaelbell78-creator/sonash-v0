@@ -105,6 +105,14 @@ Section 8).
     Never compose a SKIP_REASON yourself — the user must authorize the exact
     wording. Rewording "pre-existing" with synonyms is still a violation.
     `[BEHAVIORAL: no automated enforcement]`
+15. **Never accept empty agent results silently.** Background agent output files
+    are 0 bytes on Windows (anthropics/claude-code#39791). When a background
+    agent completes, check the task-notification `<result>` field — if the
+    output file is empty, capture the result text inline or write it to the
+    expected output file yourself. Empty results must NEVER be silently
+    accepted, gracefully degraded, or skipped. If an agent produces no usable
+    output via any channel, report the failure to the user — do not continue as
+    if findings were captured. `[BEHAVIORAL: no automated enforcement]`
 
 ## 5. Critical Anti-Patterns
 
