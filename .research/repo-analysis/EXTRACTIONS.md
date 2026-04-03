@@ -1,6 +1,6 @@
 # Extraction Candidates -- Cross-Repo Summary
 
-Generated: 2026-04-03 | Total: 18 candidates across 3 repos
+Generated: 2026-04-03 | Total: 21 candidates across 4 repos
 
 ## Extracted (0)
 
@@ -40,6 +40,14 @@ _None yet._
 | 3-File Architecture Pattern  | Medium  | E0     | Immutable + mutable + instructions. Agent-editable zone contracts.                                 |
 | Autonomous Crash Recovery    | Medium  | E0     | Stack trace reading, fix attempts, revert on failure. Relevant to GSD executor.                    |
 | Results TSV Logging          | Low     | E0     | commit/metric/memory/status/description. Already have JSONL equivalent.                            |
+
+### codecrafters-io/build-your-own-x (3 candidates) -- Verdict: Extract (45)
+
+| Candidate                     | Novelty | Effort | Notes                                                       |
+| ----------------------------- | ------- | ------ | ----------------------------------------------------------- |
+| Systems Knowledge Curriculum  | High    | E2     | 5 domains relevant to JASON-OS: Shell, Git, DB, Search, PL. |
+| 35-Category Tutorial Taxonomy | Medium  | E0     | Learning path reference across 35 technology domains.       |
+| Curated Link Format           | Low     | E0     | Standard awesome-list format. Low extraction value.         |
 
 ## Skipped (0)
 
