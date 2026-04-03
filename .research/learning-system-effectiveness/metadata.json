@@ -1,0 +1,82 @@
+{
+  "topic": "Learning System Effectiveness in AI-Directed Development",
+  "depth": "L1",
+  "questionType": "evaluative — measuring system impact, identifying anti-patterns, recommending improvements",
+  "domain": "AI-directed development, developer tooling measurement, knowledge management, pattern enforcement",
+  "startedAt": "2026-04-03T00:00:00Z",
+  "completedAt": "2026-04-03T00:00:00Z",
+  "agentCount": 13,
+  "searchRounds": 13,
+  "sourceCount": 80,
+  "claimCount": 40,
+  "findingsFilesProcessed": [
+    "D1a-ai-tool-features.md",
+    "D2-code-vs-behavioral.md",
+    "D3-minimum-viable.md",
+    "D4-retroactive-measurement.md",
+    "D5-non-ab-methods.md",
+    "D6-graduation-patterns.md",
+    "D7a-git-history.md",
+    "D7b-review-data.md",
+    "D7c-learning-router.md",
+    "D8-anti-patterns.md",
+    "D9-cross-cutting.md",
+    "D10-km-theory.md",
+    "D11-case-studies.md"
+  ],
+  "themesIdentified": [
+    "Code vs. Behavioral Learning Structural Asymmetry",
+    "Measurement Anti-Patterns (Goodhart's Law, Vanity Metrics, McNamara Fallacy)",
+    "Minimum Viable Learning Systems",
+    "Retroactive Measurement Methods",
+    "Knowledge Management Theory (SECI, Knowing-Doing Gap, Codification Paradox)",
+    "SoNash Specific — Broken Pipeline and Stale Data",
+    "AI Tool Landscape — No Tool Proves Effectiveness",
+    "Case Studies — What Effective Quality Systems Look Like",
+    "Non-Developer Director Context",
+    "Graduation Pipeline Patterns (Inform-Block Separation, Ratcheting)"
+  ],
+  "contradictionsFound": 4,
+  "brainstormQuestionsAnswered": [
+    "SQ-1: What effective learning infra exists in AI-directed dev — models from other projects?",
+    "SQ-2: Code-level enforcement vs. behavioral improvement — same or different systems?",
+    "SQ-3: Minimum viable learning system that proves its own value?",
+    "SQ-4: Retroactive measurement using existing git/PR data?",
+    "SQ-5: Measuring dev tool effectiveness without A/B tests?"
+  ],
+  "confidenceDistribution": {
+    "HIGH": 28,
+    "MEDIUM-HIGH": 6,
+    "MEDIUM": 6,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
+  "selfAuditResult": "Passed — all 13 findings files read, findings deduplicated, themes extracted by concept not source, all claims have inline citations, contradictions surfaced",
+  "consumerHints": {
+    "hasStackClaims": true,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 0,
+    "criticalCodebaseFindings": [
+      "learning-router field-name mismatch (generated_code: null in all 37 pending-refinements)",
+      "enforcement test uses Jest syntax run via plain Node (always fails)",
+      "analyze-learning-effectiveness.js and learning-routes.jsonl are disconnected parallel systems",
+      "89.2% effectiveness metric is a vanity metric by Lean Startup criteria",
+      "pattern-fix commit ratio stable at ~30% for 4+ months — no declining trend",
+      "sanitizeError commits: Jan=43, Feb=31, Mar=40 — no declining trend after checker introduction"
+    ],
+    "immediatelyActionableFixes": [
+      "Fix field-name mismatch: scaffold?.generatedCode alignment",
+      "Fix Jest execution context for enforcement test",
+      "Replace 89.2% metric with 4 minimum viable metrics",
+      "Run retroactive git pickaxe analysis before adding any new learning infrastructure"
+    ],
+    "keyRecommendations": [
+      "Separate code learning from behavioral learning architecturally",
+      "Implement Notion-style ratchet for 38 stalled patterns",
+      "Replace vanity metric with 4-metric closed-loop system",
+      "Apply double-loop learning to question the rule-accumulation approach itself"
+    ]
+  }
+}

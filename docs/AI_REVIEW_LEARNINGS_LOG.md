@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.116 **Created:** 2026-01-02 **Last Updated:**
-2026-03-26
+**Document Version:** 17.118 **Created:** 2026-01-02 **Last Updated:**
+2026-04-03
 
 ## Purpose
 
@@ -365,6 +365,72 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#36)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #64-#rev-65
+- **Recurring patterns:**
+  - cc extraction: logresolveresult() helper reduced runresolvechecks cc 17→<15.
+    (3x)
+  - cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+    (3x)
+  - gemini stale detection: 5 comments referenced pre-r1 commit. auto-rejected.
+    (3x)
+  - gsd-check-update toctou: existssync + lstatsync → lstatsync + enoent catch.
+    (3x)
+  - shell:true removal: `execfilesync` with `shell: true` unnecessary, creates
+    (3x)
+  - validategitdir tightened: reject filesystem roots, scope to cwd parent. (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#35)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #64-#rev-65
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#34)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #64-#rev-65
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#33)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #64-#rev-65
+- **Recurring patterns:**
+  - ci (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#32)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #review-466-r3-#rev-65
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#31)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #review-466-r3-#rev-63
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
 <details>
 <summary>Previous Consolidation (#30)</summary>
 
@@ -1251,6 +1317,126 @@ deduplicated, non-overlapping ranges):
 - tdms-created-date-churn
 - agent-audit-trail
 - brainstorm-table-alignment
+
+---
+
+### Review rev-64: PR #489 R1 — Mixed (2026-04-03) (2026-04-03)
+
+**Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 31    | 31    | 1        | 0        |
+
+**Patterns:**
+
+- symlink-bypass-size-gate
+- s5852-regex-dos-testfn
+- cc-reduction-extract-helpers
+- sanitizeError-import-path
+- source-traceability-singular
+- toctou-existsSync-removal
+- zip-tar-slip-pre-extraction
+- propagation-4-patterns-46-files
+- prettier-ci-research-files
+
+---
+
+### Review rev-65: PR #489 R2 — Mixed (2026-04-03) (2026-04-03)
+
+**Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 5     | 0        | 1        |
+
+**Patterns:**
+
+- cross-platform-exe-naming
+- shell-true-removal
+- validateGitDir-tightened
+- toctou-existsSync-isSafeToWrite
+- cc-logResolveResult-extraction
+- gemini-stale-detection
+
+---
+
+### Review 64: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
+
+**Date:** unknown | **PR:** #397 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
+- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
+- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
+- sanitizeError import paths: 5 hooks + rotate-state.js used
+- Source traceability false-negative: `checkSourceTraceability()` only checked
+- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
+- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
+- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
+- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+
+---
+
+### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown) (unknown) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
 
 ## Key Patterns
 
@@ -2883,6 +3069,47 @@ deduped/merged)
   Medium-Term/Sync) instead of REFERENCE.md template (Strengths/Weaknesses/
   Feasibility). Fix: aligned with template. First real-world validation of
   /brainstorm skill output format.
+
+---
+
+### Review #67 — PR #491 R2 (Mixed: CI + Qodo)
+
+**Date:** 2026-04-03 **Items:** 21 (18 fixed, 0 deferred, 3 rejected/stale)
+
+**Patterns:**
+
+- Pattern checker false positives: `symlink-parent-traversal` regex only
+  recognized `lstatSync`, not `isSafeToWrite`. Fixed regex + verified patterns.
+- `silent-json-parse` line-level check missed try/catch on prior line. Added
+  run-alerts.js to verified patterns.
+- `mkdirSync` before `isSafeToWrite` check: genuine TOCTOU in run-alerts.js
+  baseline writer. Reordered to check guard first.
+- Exit code 2→1: run-consolidation.js used non-standard exit(2). Fixed.
+- TDMS data quality: 239 duplicate `audit:hash-*` entries, 412 evidence field
+  array→string normalizations, 553 backslash path corrections.
+- Path disclosure: R1 fix logged full `ARCHIVE_DIR` path to stderr. Removed.
+- Rejected exit code revert suggestions: contradicts CI pattern compliance gate.
+
+---
+
+### Review #66 — PR #491 R1 (Mixed: SonarCloud + Qodo + Gemini)
+
+**Date:** 2026-04-03 **Items:** 16 (14 fixed, 0 deferred, 2 rejected)
+
+**Patterns:**
+
+- Unguarded symlink delete: `rmSync` in run-consolidation.js cleanup path
+  bypassed `isSafeToWrite` guard used by the write path. Fix: add guard + log.
+- Repomix bloat: 113K lines of packed external repos committed to git. Fix:
+  `git rm` + `**/repomix-output.txt` in `.gitignore`. Regenerable artifacts.
+- Dead code: `PATTERN_KEYWORDS` array (40 regexes) defined but never referenced
+  after title keyword extraction was removed. Fix: delete entirely.
+- Exit code doc mismatch: header documented `2 = error` but code used
+  `process.exit(1)`. Fix: update header to match implementation.
+- `String.raw` for escaped backslashes: SonarCloud S6638 — use `String.raw`
+  template literals to avoid double-escaping in string comparisons.
+- Test hardening: readFileSync try/catch, Array→Set for `.has()` lookups.
+- Rejected node:test→Jest suggestion: SoNash uses node:test, not Jest.
 
 ---
 

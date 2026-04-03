@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-04-02
+**Document Version:** 2.0
+**Last Updated:** 2026-04-03
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -57,25 +57,80 @@ All three batches run in parallel.
 
 ### 1.2 Standard Mode Dimensions (requires clone, 15 dimensions)
 
-| #     | Dimension                            | Signal | Auto | Tool                                   |
-| ----- | ------------------------------------ | ------ | ---- | -------------------------------------- |
-| ST-01 | Cyclomatic complexity                | 4/5    | 5/5  | `lizard` (26 languages)                |
-| ST-02 | Cognitive complexity                 | 5/5    | 4/5  | `rust-code-analysis` (where supported) |
-| ST-03 | Code duplication                     | 4/5    | 5/5  | `jscpd` (150+ languages)               |
-| ST-04 | LOC and file/function size metrics   | 3/5    | 5/5  | `scc` (322 languages)                  |
-| ST-05 | Dead code / unused exports           | 4/5    | 4/5  | `knip` (JS/TS), `vulture` (Python)     |
-| ST-06 | Dependency direction + circular deps | 5/5    | 4/5  | `dependency-cruiser` (JS/TS)           |
-| ST-07 | SAST vulnerability detection         | 5/5    | 5/5  | `semgrep` (30+ languages)              |
-| ST-08 | Type safety coverage                 | 4/5    | 5/5  | `type-coverage` (TS), `mypy` (Python)  |
-| ST-09 | Test coverage presence/maturity      | 4/5    | 4/5  | Detect framework config + file ratio   |
-| ST-10 | Secrets in current code              | 5/5    | 5/5  | `gitleaks` (150+ patterns)             |
-| ST-11 | Architecture pattern compliance      | 5/5    | 3/5  | AST-based + `dependency-cruiser` rules |
-| ST-12 | Naming convention consistency        | 3/5    | 5/5  | Linter rules (language-specific)       |
-| ST-13 | Error handling quality               | 5/5    | 4/5  | `semgrep` rules + AST analysis         |
-| ST-14 | Absence pattern classification       | 5/5    | 5/5  | Multi-source classifier (7 patterns)   |
-| ST-15 | Framework/stack detection            | 3/5    | 5/5  | Manifest + config file heuristics      |
+Domain-based dimensions reflecting what the analysis actually measures. Tools
+listed in the Source column feed the dimension but are not the dimension itself.
 
-### 1.3 Deep Mode Dimensions (requires 12-month history, 12 dimensions)
+| #     | Dimension                           | Signal | Auto | Source                                           |
+| ----- | ----------------------------------- | ------ | ---- | ------------------------------------------------ |
+| ST-01 | Subprocess/execution safety         | 5/5    | 4/5  | `grep` shell=True/os.system + `semgrep` rules    |
+| ST-02 | Test coverage and quality           | 5/5    | 4/5  | Test file ratio, framework detection, test count |
+| ST-03 | Test CI enforcement                 | 5/5    | 5/5  | Workflow analysis, test commands in CI steps     |
+| ST-04 | Code structure consistency          | 4/5    | 4/5  | Directory layout analysis, naming conventions    |
+| ST-05 | Code reuse patterns                 | 4/5    | 3/5  | Shared library detection, copy-paste analysis    |
+| ST-06 | Plugin/extension architecture       | 4/5    | 3/5  | Plugin configs, marketplace files, entry points  |
+| ST-07 | Credential handling                 | 5/5    | 4/5  | `gitleaks` + env var / config file pattern scan  |
+| ST-08 | Path safety                         | 5/5    | 4/5  | Path construction patterns, traversal guards     |
+| ST-09 | Type safety and static analysis     | 4/5    | 5/5  | `mypy`/`pyright`/`tsc` config, type hint density |
+| ST-10 | Dependency isolation                | 4/5    | 4/5  | Manifest analysis, shared vs isolated deps       |
+| ST-11 | Error handling quality              | 4/5    | 4/5  | `semgrep` rules + manual pattern inspection      |
+| ST-12 | Registry/catalog quality            | 3/5    | 4/5  | Registry file parsing, entry completeness        |
+| ST-13 | Methodology documentation           | 4/5    | 3/5  | SOP docs, contributing guides, architecture docs |
+| ST-14 | Scaffolding/generation tooling      | 3/5    | 3/5  | Template detection, generator scripts            |
+| ST-15 | Monorepo/multi-project coordination | 4/5    | 4/5  | Monorepo markers, shared CI, cross-project gates |
+
+**Absence pattern classification** runs across all dimensions as a cross-cutting
+concern (see Section 5), not as a single dimension.
+
+**Tool mapping appendix:** The original tool-based dimension catalog (v1.0) is
+preserved below for reference. These tools remain available as data sources that
+feed the domain-based dimensions above.
+
+<details>
+<summary>v1.0 Tool-Based Dimension Mapping (archived)</summary>
+
+| Tool                     | Feeds Dimension(s)    | When Used                        |
+| ------------------------ | --------------------- | -------------------------------- |
+| `lizard`                 | ST-04 (structure)     | Complexity metrics               |
+| `jscpd`                  | ST-05 (code reuse)    | Duplication detection            |
+| `scc`                    | ST-04 (structure)     | LOC counting, cost estimation    |
+| `knip` / `vulture`       | ST-05 (code reuse)    | Dead code detection              |
+| `dependency-cruiser`     | ST-10 (dep isolation) | JS/TS dependency graph           |
+| `semgrep`                | ST-01, ST-08, ST-11   | SAST, path safety, error quality |
+| `gitleaks`               | ST-07 (credentials)   | Secret detection                 |
+| `mypy` / `type-coverage` | ST-09 (type safety)   | Type checking                    |
+
+</details>
+
+### 1.3 Whole-Repo Adoption Dimensions (6 dimensions)
+
+Evaluates whether to adopt the repository as a whole — install it, depend on it,
+or integrate its ecosystem — rather than extracting individual parts. Computed
+during Phase 4 (Aggregation) from existing dimension data plus adoption-specific
+signals.
+
+| #     | Dimension              | Signal | Auto | Source                                                                 |
+| ----- | ---------------------- | ------ | ---- | ---------------------------------------------------------------------- |
+| WR-01 | Stack compatibility    | 5/5    | 4/5  | Language match, framework overlap, OS support, install method          |
+| WR-02 | Integration complexity | 5/5    | 3/5  | Plugin system, config requirements, API surface, migration path        |
+| WR-03 | Maintenance burden     | 5/5    | 4/5  | Update frequency, breaking change history, dep chain depth             |
+| WR-04 | Lock-in risk           | 5/5    | 3/5  | Proprietary formats, vendor lock-in, data portability, alternatives    |
+| WR-05 | Value-to-cost ratio    | 5/5    | 2/5  | Unique value vs DIY effort, community support, commercial alternatives |
+| WR-06 | Ecosystem maturity     | 4/5    | 4/5  | Age, stability signals, enterprise adoption, doc completeness          |
+
+**Quick Scan partial assessment:** WR-01 (from language/framework metadata),
+WR-04 (from license + alternatives search), WR-06 (from age, stars, contributor
+diversity). Other dimensions require clone.
+
+**Adoption verdict bands:**
+
+| Band    | Score  | Interpretation                                           |
+| ------- | ------ | -------------------------------------------------------- |
+| Adopt   | 75-100 | Integrate as-is, benefits clearly outweigh costs         |
+| Trial   | 55-74  | Worth a proof-of-concept, some concerns to address first |
+| Extract | 30-54  | Don't adopt whole — cherry-pick valuable parts instead   |
+| Avoid   | 0-29   | Costs outweigh benefits, build or find alternatives      |
+
+### 1.4 Deep Mode Dimensions (requires 12-month history, 12 dimensions)
 
 | #     | Dimension                                 | Signal | Auto | Tool                                     |
 | ----- | ----------------------------------------- | ------ | ---- | ---------------------------------------- |
@@ -143,7 +198,7 @@ All three batches run in parallel.
 ## 3. Output Schemas
 
 Four primary artifacts plus one injectable Markdown summary. All written to
-`.research/<repo-slug>/`.
+`.research/repo-analysis/<repo-slug>/`.
 
 ### 3.1 `analysis.json`
 
@@ -152,164 +207,224 @@ the Compare resume option.
 
 ```json
 {
-  "$schema": "repo-analysis/v1",
   "meta": {
-    "analysis_id": "uuid-v4",
-    "timestamp": "ISO8601",
-    "target_repo": "github.com/org/repo",
-    "target_commit": "sha",
-    "language": "TypeScript",
-    "loc": 42000,
-    "analysis_mode": "quick|standard|deep"
+    "repo": "OWNER/REPO",
+    "url": "https://github.com/OWNER/REPO",
+    "scan_date": "YYYY-MM-DD",
+    "scan_depth": "quick|standard|deep",
+    "scan_version": "2.0",
+    "clone_dir": "/tmp/repo-analysis-<slug>/",
+    "files_cloned": 796
   },
-  "summary": {
-    "overall_band": "Critical|Needs Work|Healthy|Excellent",
-    "overall_score": 74,
-    "critical_health_metric": 52,
-    "trend": "improving|stable|declining|new",
-    "delta_from_previous": 6,
-    "one_sentence": "Well-structured codebase with strong CI, weak security posture.",
-    "top_priority_action": "Add rate limiting to Cloud Functions endpoints"
+  "repo": {
+    "description": "string",
+    "language": "Python",
+    "license": "Apache-2.0",
+    "created_at": "ISO8601",
+    "pushed_at": "ISO8601",
+    "age_days": 26,
+    "size_kb": 22982,
+    "stars": 27518,
+    "forks": 2569,
+    "open_issues": 73,
+    "contributors": 44,
+    "is_fork": false,
+    "is_archived": false,
+    "languages": { "Python": 4772855, "JavaScript": 31014 }
   },
   "dimensions": {
-    "security": { "band": "Needs Work", "score": 52, "delta": -4 },
-    "reliability": { "band": "Healthy", "score": 78, "delta": 2 },
-    "maintainability": { "band": "Excellent", "score": 81, "delta": 5 },
-    "documentation": { "band": "Healthy", "score": 66, "delta": 0 },
-    "process": { "band": "Excellent", "score": 88, "delta": 8 },
-    "velocity": { "band": "Healthy", "score": 71, "delta": -1 }
+    "QS-01_activity_pulse": {
+      "score": 95,
+      "band": "Excellent",
+      "detail": "..."
+    },
+    "ST-01_subprocess_safety": {
+      "score": 88,
+      "band": "Excellent",
+      "detail": "..."
+    }
   },
-  "absence_patterns": ["security_facade"],
-  "actionable_insights": {
-    "top_to_steal": [],
-    "top_to_avoid": []
+  "summary_bands": {
+    "Security": { "score": 58, "band": "Needs Work" },
+    "Reliability": { "score": 70, "band": "Healthy" },
+    "Maintainability": { "score": 76, "band": "Healthy" },
+    "Documentation": { "score": 82, "band": "Excellent" },
+    "Process": { "score": 48, "band": "Needs Work" },
+    "Velocity": { "score": 95, "band": "Excellent" }
+  },
+  "absence_patterns": [
+    { "pattern": "SECURITY_FACADE", "confidence": "Medium", "evidence": "..." }
+  ],
+  "adoption_assessment": {
+    "verdict": "Trial|Adopt|Extract|Avoid",
+    "verdict_score": 62,
+    "dimensions": {
+      "WR-01_stack_compatibility": {
+        "score": 75,
+        "band": "Healthy",
+        "detail": "..."
+      },
+      "WR-02_integration_complexity": {
+        "score": 60,
+        "band": "Healthy",
+        "detail": "..."
+      },
+      "WR-03_maintenance_burden": {
+        "score": 55,
+        "band": "Needs Work",
+        "detail": "..."
+      },
+      "WR-04_lock_in_risk": {
+        "score": 80,
+        "band": "Excellent",
+        "detail": "..."
+      },
+      "WR-05_value_to_cost": {
+        "score": 50,
+        "band": "Needs Work",
+        "detail": "..."
+      },
+      "WR-06_ecosystem_maturity": {
+        "score": 45,
+        "band": "Needs Work",
+        "detail": "..."
+      }
+    },
+    "recommendation": "One-sentence adoption recommendation"
   }
 }
 ```
 
 **Field definitions:**
 
-| Field                    | Type   | Description                                                |
-| ------------------------ | ------ | ---------------------------------------------------------- |
-| `analysis_id`            | string | UUID v4, unique per run                                    |
-| `timestamp`              | string | ISO 8601 timestamp of analysis completion                  |
-| `target_repo`            | string | Full GitHub path `owner/repo`                              |
-| `target_commit`          | string | HEAD commit SHA at time of analysis                        |
-| `language`               | string | Primary language by LOC                                    |
-| `loc`                    | number | Total lines of code (from `scc` or API estimate)           |
-| `analysis_mode`          | string | Depth tier: `quick`, `standard`, or `deep`                 |
-| `overall_band`           | string | Categorical band (see scoring bands below)                 |
-| `overall_score`          | number | Weighted average, 0-100 (internal, for trend tracking)     |
-| `critical_health_metric` | number | Minimum score across all dimensions (mandatory secondary)  |
-| `trend`                  | string | Direction vs previous run: improving/stable/declining/new  |
-| `delta_from_previous`    | number | Score change from last run (0 if first run)                |
-| `one_sentence`           | string | Human-readable summary, one sentence                       |
-| `top_priority_action`    | string | Single most impactful recommended action                   |
-| `dimensions.*`           | object | Per-dimension band, score (0-100), and delta from previous |
-| `absence_patterns`       | array  | Named patterns detected (see Section 5)                    |
-| `actionable_insights`    | object | Top patterns to adopt from and top anti-patterns to avoid  |
+| Field                                | Type   | Description                                                   |
+| ------------------------------------ | ------ | ------------------------------------------------------------- |
+| `meta.repo`                          | string | GitHub `OWNER/REPO` identifier                                |
+| `meta.url`                           | string | Full GitHub URL                                               |
+| `meta.scan_date`                     | string | Date of analysis (YYYY-MM-DD)                                 |
+| `meta.scan_depth`                    | string | Depth tier: `quick`, `standard`, or `deep`                    |
+| `meta.scan_version`                  | string | Skill version used for this analysis                          |
+| `meta.clone_dir`                     | string | Clone location (null for Quick Scan)                          |
+| `meta.files_cloned`                  | number | Number of files in clone (null for Quick Scan)                |
+| `repo.*`                             | object | GitHub metadata (description, language, license, stars, etc.) |
+| `dimensions.*`                       | object | Per-dimension: score (0-100), band, and detail string         |
+| `summary_bands.*`                    | object | 6-dimension summary: Security, Reliability, etc.              |
+| `absence_patterns`                   | array  | Objects with pattern name, confidence, and evidence           |
+| `adoption_assessment`                | object | Whole-repo adoption verdict + WR dimensions (see Sec 1.3)     |
+| `adoption_assessment.verdict`        | string | Adopt / Trial / Extract / Avoid                               |
+| `adoption_assessment.verdict_score`  | number | Weighted average of WR dimensions, 0-100                      |
+| `adoption_assessment.recommendation` | string | One-sentence adoption recommendation                          |
 
-**Critical Health Metric:** The minimum score across all 6 dimensions. A repo
-with a 90 average but a 15 security score is `Critical` regardless of average.
-Display alongside overall band: `Healthy (74) | Critical floor: Security (52)`.
+**Critical Health Metric:** The minimum score across all 6 summary dimensions. A
+repo with a 90 average but a 15 security score is `Critical` regardless of
+average. Display alongside overall band:
+`Healthy (74) | Critical floor: Security (52)`.
 
-### 3.2 `findings.jsonl` (TDMS-compatible)
+### 3.2 `findings.jsonl`
 
-One record per finding. Schema matches `docs/templates/JSONL_SCHEMA_STANDARD.md`
-for direct TDMS intake compatibility.
+One record per finding. Uses a lightweight analysis-native format. TDMS intake
+(routing option 2) transforms to TDMS-compatible format at intake time.
 
 ```jsonl
 {
-  "title": "string",
-  "severity": "S0|S1|S2|S3",
-  "category": "security|performance|code-quality|refactoring|documentation|process",
-  "file": "path/to/file",
-  "line": 42,
-  "description": "string",
-  "recommendation": "string",
-  "source": "repo-analysis-<repo-slug>-<date>",
-  "fingerprint": "<category>::<file>::<identifier>",
-  "effort": "E0|E1|E2|E3",
-  "confidence": 0-100,
-  "files": [],
-  "why_it_matters": "string",
-  "suggested_fix": "string",
-  "acceptance_tests": [],
-  "evidence": []
+  "id": "F001",
+  "severity": "high|medium|low|info",
+  "dimension": "QS-15|ST-01|WR-03",
+  "title": "No SAST for subprocess-heavy codebase",
+  "detail": "Full finding description with evidence",
+  "recommendation": "Recommended action"
 }
 ```
 
 **Field definitions:**
 
-| Field              | Type   | Description                                      |
-| ------------------ | ------ | ------------------------------------------------ |
-| `title`            | string | Short finding title                              |
-| `severity`         | string | S0 (critical) through S3 (informational)         |
-| `category`         | string | Finding category matching TDMS taxonomy          |
-| `file`             | string | Relative file path in analyzed repo              |
-| `line`             | number | Line number (0 if not applicable)                |
-| `description`      | string | Full finding description                         |
-| `recommendation`   | string | Recommended action                               |
-| `source`           | string | Attribution: `repo-analysis-<slug>-<YYYY-MM-DD>` |
-| `fingerprint`      | string | Dedup key: `<category>::<file>::<identifier>`    |
-| `effort`           | string | E0 (trivial) through E3 (major)                  |
-| `confidence`       | number | 0-100 confidence in finding accuracy             |
-| `files`            | array  | Additional affected files                        |
-| `why_it_matters`   | string | Impact explanation                               |
-| `suggested_fix`    | string | Concrete fix suggestion                          |
-| `acceptance_tests` | array  | How to verify the fix                            |
-| `evidence`         | array  | Supporting evidence (tool output, code snippets) |
+| Field            | Type   | Required | Description                              |
+| ---------------- | ------ | -------- | ---------------------------------------- |
+| `id`             | string | Yes      | Finding ID (F001, F002, etc.)            |
+| `severity`       | string | Yes      | `high`, `medium`, `low`, or `info`       |
+| `dimension`      | string | Yes      | Dimension ID (e.g., QS-15, ST-01, WR-03) |
+| `title`          | string | Yes      | Short finding title                      |
+| `detail`         | string | Yes      | Full description with evidence           |
+| `recommendation` | string | Yes      | Recommended action                       |
+
+**TDMS intake transform (routing option 2):**
+
+When the user selects "Send to TDMS", each finding is transformed to
+TDMS-compatible format before intake:
+
+| findings.jsonl field | TDMS field       | Transform                                    |
+| -------------------- | ---------------- | -------------------------------------------- |
+| `id`                 | `source_id`      | Prefixed: `repo-analysis-<slug>-<date>-F001` |
+| `severity`           | `severity`       | `high`→S1, `medium`→S2, `low`→S3, `info`→S3  |
+| `title`              | `title`          | Direct copy                                  |
+| `detail`             | `description`    | Direct copy                                  |
+| `recommendation`     | `recommendation` | Direct copy                                  |
+| (derived)            | `category`       | Derived from dimension prefix                |
+| (derived)            | `status`         | Always `NEW`                                 |
+| (derived)            | `source`         | `repo-analysis-<slug>-<YYYY-MM-DD>`          |
 
 ### 3.3 `value-map.json`
 
 Ranked list of extraction candidates. Produced by Standard and Deep modes.
-Consumed by the Extract routing option.
+Consumed by the Extract routing option. Updated with extraction decisions when
+user acts on candidates.
 
 ```json
 {
-  "$schema": "repo-analysis-value-map/v1",
-  "repo": "github.com/org/repo",
-  "analysis_id": "uuid-v4",
-  "timestamp": "ISO8601",
-  "candidates": [
+  "repo": "OWNER/REPO",
+  "scan_date": "YYYY-MM-DD",
+  "extraction_candidates": [
     {
       "rank": 1,
       "name": "Rate limiting middleware",
-      "description": "Express middleware implementing sliding window rate limiting with Redis backing",
-      "files": ["src/middleware/rate-limiter.ts", "src/config/rate-limits.ts"],
+      "location": "src/middleware/rate-limiter.ts + src/config/rate-limits.ts",
+      "description": "What the component/pattern does and why it matters",
       "pattern_novelty": "High|Med|Low",
       "code_portability": 12,
       "adoption_readiness": "High|Med|Low",
       "quality_signal": "High|Med|Low",
       "extraction_effort": "E0|E1|E2|E3",
-      "why_interesting": "string",
-      "portability_notes": "string",
-      "dependencies": ["ioredis"],
-      "our_equivalent": "none|partial|full",
-      "our_equivalent_path": "path/to/our/version"
+      "notes": "Portability concerns, adaptation requirements, context",
+      "status": "identified|selected|extracted|integrated|skipped",
+      "decision_date": "ISO8601 or null",
+      "decision_notes": "Why this decision was made"
     }
   ]
 }
 ```
 
-**Field definitions:**
+**Required fields:**
 
-| Field                 | Type   | Description                                               |
-| --------------------- | ------ | --------------------------------------------------------- |
-| `rank`                | number | Priority rank by composite value signal                   |
-| `name`                | string | Short descriptive name for the extraction candidate       |
-| `description`         | string | What the component/pattern does                           |
-| `files`               | array  | Source files comprising the candidate                     |
-| `pattern_novelty`     | string | Does this repo do something we do not? High/Med/Low       |
-| `code_portability`    | number | 0-15 score (5-dimension rubric, see Section 6)            |
-| `adoption_readiness`  | string | License, deps overlap, stack match: High/Med/Low          |
-| `quality_signal`      | string | Is this pattern better than what we have? High/Med/Low    |
-| `extraction_effort`   | string | E0 (copy-paste) through E3 (significant adaptation)       |
-| `why_interesting`     | string | Explanation of value                                      |
-| `portability_notes`   | string | Specific portability concerns or advantages               |
-| `dependencies`        | array  | External dependencies required by this candidate          |
-| `our_equivalent`      | string | Whether we have an existing equivalent: none/partial/full |
-| `our_equivalent_path` | string | Path to our version if partial/full equivalent exists     |
+| Field                | Type   | Description                                            |
+| -------------------- | ------ | ------------------------------------------------------ |
+| `rank`               | number | Priority rank by composite value signal                |
+| `name`               | string | Short descriptive name for the extraction candidate    |
+| `location`           | string | Source file(s) or directory in the analyzed repo       |
+| `description`        | string | What the component/pattern does and why it matters     |
+| `pattern_novelty`    | string | Does this repo do something we do not? High/Med/Low    |
+| `code_portability`   | number | 0-15 score (5-dimension rubric, see Section 6)         |
+| `adoption_readiness` | string | License, deps overlap, stack match: High/Med/Low       |
+| `quality_signal`     | string | Is this pattern better than what we have? High/Med/Low |
+| `extraction_effort`  | string | E0 (copy-paste) through E3 (significant adaptation)    |
+| `notes`              | string | Portability concerns, adaptation requirements, context |
+
+**Extraction tracking fields (added during Extract routing flow):**
+
+| Field            | Type   | Description                                                              |
+| ---------------- | ------ | ------------------------------------------------------------------------ |
+| `status`         | string | `identified` (default), `selected`, `extracted`, `integrated`, `skipped` |
+| `decision_date`  | string | ISO 8601 date when user made decision (null until acted on)              |
+| `decision_notes` | string | Why this decision was made                                               |
+
+**Optional enrichment fields:**
+
+| Field                 | Type   | Description                                              |
+| --------------------- | ------ | -------------------------------------------------------- |
+| `files`               | array  | Specific source files (when `location` is a directory)   |
+| `dependencies`        | array  | External dependencies required by this candidate         |
+| `our_equivalent`      | string | Whether we have an equivalent: `none`, `partial`, `full` |
+| `our_equivalent_path` | string | Path to our version if partial/full equivalent exists    |
+| `extracted_to`        | string | Path in our repo where this was extracted to             |
 
 **Extraction effort levels:**
 
@@ -385,6 +500,111 @@ Structured Markdown following `## Research Context: Repo Analysis` header format
 expected by deep-plan's DIAGNOSIS.md injection. Contains human-readable summary
 of all findings, dimension bands, absence patterns, and value map highlights.
 This is the primary display artifact shown inline after each phase.
+
+### 3.6 Extraction Persistence Artifacts
+
+Three artifacts track extraction decisions and outcomes across repos.
+
+#### 3.6.1 Per-Candidate Extraction Result
+
+**Location:** `.research/repo-analysis/<slug>/extractions/<candidate-slug>.json`
+
+Written when user acts on a candidate in the Extract routing flow.
+
+```json
+{
+  "candidate": "HARNESS.md Methodology",
+  "repo": "HKUDS/CLI-Anything",
+  "scan_date": "2026-04-03",
+  "status": "selected",
+  "decision": "extract|skip|defer",
+  "decision_date": "2026-04-03",
+  "decision_notes": "7-phase SOP applicable to JASON-OS agent-native tooling",
+  "source_files": [
+    "cli-anything-plugin/HARNESS.md",
+    "cli-anything-plugin/guides/"
+  ],
+  "extracted_to": "docs/reference/HARNESS_METHODOLOGY.md",
+  "adaptation_notes": "Adapted Phase 3 examples for TypeScript/Node",
+  "dependencies_added": [],
+  "follow_up": "Evaluate SKILL.md format for sonash skill files"
+}
+```
+
+| Field                | Type   | Required | Description                                      |
+| -------------------- | ------ | -------- | ------------------------------------------------ |
+| `candidate`          | string | Yes      | Name from value-map.json                         |
+| `repo`               | string | Yes      | Source repo identifier                           |
+| `scan_date`          | string | Yes      | Date of analysis that found this candidate       |
+| `status`             | string | Yes      | `selected`, `extracted`, `integrated`, `skipped` |
+| `decision`           | string | Yes      | `extract`, `skip`, or `defer`                    |
+| `decision_date`      | string | Yes      | ISO 8601 date of decision                        |
+| `decision_notes`     | string | Yes      | Reasoning for the decision                       |
+| `source_files`       | array  | No       | Specific files in source repo                    |
+| `extracted_to`       | string | No       | Destination path in our repo (if extracted)      |
+| `adaptation_notes`   | string | No       | What was changed during extraction               |
+| `dependencies_added` | array  | No       | New dependencies required                        |
+| `follow_up`          | string | No       | Remaining work or related investigations         |
+
+#### 3.6.2 Cross-Repo Extraction Journal
+
+**Location:** `.research/repo-analysis/extraction-journal.jsonl`
+
+Append-only log across ALL repos analyzed. One line per extraction decision.
+
+```jsonl
+{
+  "repo": "HKUDS/CLI-Anything",
+  "candidate": "HARNESS.md Methodology",
+  "status": "selected",
+  "decision": "extract",
+  "decision_date": "2026-04-03",
+  "extracted_to": "docs/reference/HARNESS_METHODOLOGY.md",
+  "notes": "7-phase SOP for agent-native CLI wrapping. E0 effort."
+}
+```
+
+| Field           | Type   | Description                              |
+| --------------- | ------ | ---------------------------------------- |
+| `repo`          | string | Source repo                              |
+| `candidate`     | string | Candidate name from value-map            |
+| `status`        | string | Current status                           |
+| `decision`      | string | extract / skip / defer                   |
+| `decision_date` | string | When the decision was made               |
+| `extracted_to`  | string | Destination path (null if not extracted) |
+| `notes`         | string | Optional context about the candidate     |
+
+#### 3.6.3 `EXTRACTIONS.md` (Human-Readable Summary)
+
+**Location:** `.research/repo-analysis/EXTRACTIONS.md`
+
+Auto-regenerated from `extraction-journal.jsonl` after each Extract routing
+flow. Grouped by status for quick scanning.
+
+```markdown
+# Extraction Candidates — Cross-Repo Summary
+
+Generated: 2026-04-03 | Total: 7 candidates across 1 repo
+
+## Extracted (0)
+
+_None yet._
+
+## Deferred (7)
+
+### HKUDS/CLI-Anything (7 candidates) -- Verdict: Trial (62)
+
+| Candidate              | Novelty | Effort | Notes                                                       |
+| ---------------------- | ------- | ------ | ----------------------------------------------------------- |
+| HARNESS.md Methodology | High    | E0     | 7-phase SOP for agent-native CLI wrapping.                  |
+| SKILL.md Format        | High    | E0     | AI-discoverable skill definition. Compare against existing. |
+
+_(truncated for brevity)_
+
+## Skipped (3)
+
+...
+```
 
 ---
 
@@ -622,7 +842,7 @@ special chars). Examples:
   "dimensions_failed": [],
   "clone_dir": "/tmp/repo-analysis-<slug>/",
   "clone_strategy": "none|blobless-shallow|blobless-history|full",
-  "output_dir": ".research/<repo-slug>/",
+  "output_dir": ".research/repo-analysis/<repo-slug>/",
   "agent_budget": {
     "allocated": 6,
     "spawned": 0,
@@ -843,7 +1063,7 @@ Every analysis run appends one record for cross-skill discoverability.
 | `depth`            | string | `quick` / `standard` / `deep`                   |
 | `date`             | string | ISO 8601 timestamp                              |
 | `score_summary`    | object | `{ security: 52, reliability: 78, ... }`        |
-| `output_dir`       | string | Path to `.research/<slug>/`                     |
+| `output_dir`       | string | Path to `.research/repo-analysis/<slug>/`       |
 | `absence_patterns` | array  | Detected patterns (e.g., `["SECURITY_FACADE"]`) |
 
 **Readers:** `/deep-plan` Phase 0 (discovers prior research), session-begin

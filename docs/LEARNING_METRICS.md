@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-04-02
+**Last Updated:** 2026-04-03
 
 ---
 
@@ -27,40 +27,36 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #353 - #504 (10 reviews) **Analysis Date:** 2026-04-02
+**Review Range:** #353 - #504 (10 reviews) **Analysis Date:** 2026-04-03
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 89.2% |
-| Patterns Learned          | 356   |
-| Patterns Automated        | 40    |
-| Patterns Failing          | 1     |
-| Critical Pattern Success  | 96.6% |
+| Learning Effectiveness    | 89.6% |
+| Patterns Learned          | 362   |
+| Patterns Automated        | 41    |
+| Patterns Failing          | 0     |
+| Critical Pattern Success  | 96.7% |
 | Automation Coverage       | 16.4% |
-| Total Documented Patterns | 444   |
-| Total Automated Patterns  | 73    |
+| Total Documented Patterns | 450   |
+| Total Automated Patterns  | 74    |
 
 ### Top Recommended Actions
 
-1. **[Automation]** Automate "Multi\-line JSON reassembly"
-   - Recurred 3 times after documentation \(Reviews: 353, 357, 358\)
-   - Action: Add pattern to check\-pattern\-compliance.js
+1. **[Documentation]** Improve documentation for "POSIX shell compliance"
+   - Recurred 2 times \- documentation may be unclear
+   - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
 2. **[Documentation]** Improve documentation for "Git option injection"
    - Recurred 2 times \- documentation may be unclear
    - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
 
-3. **[Documentation]** Improve documentation for "git add \-A prohibition"
-   - Recurred 2 times \- documentation may be unclear
-   - Action: Review and enhance pattern documentation in CODE_PATTERNS.md
-
-4. **[Training]** Create guide for "Symlink write guard"
+3. **[Training]** Create guide for "Symlink write guard"
    - Critical pattern with 6 recurrences needs dedicated guide
    - Action: Create docs/agent_docs/SYMLINK_WRITE_GUARD_GUIDE.md
 
-5. **[Training]** Create guide for "Segment\-based path check"
+4. **[Training]** Create guide for "Segment\-based path check"
    - Critical pattern with 6 recurrences needs dedicated guide
    - Action: Create docs/agent_docs/SEGMENT_BASED_PATH_CHECK_GUIDE.md
 
@@ -70,10 +66,10 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 356   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 40    | Pattern recurred but now enforced by tooling |
+| ✅ LEARNED   | 362   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 41    | Pattern recurred but now enforced by tooling |
 | 🟡 WEAK      | 47    | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED    | 1     | Pattern recurred 3+ times - needs automation |
+| 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
 
 ---
 
@@ -81,4 +77,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-04-02 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-04-03 | Rewritten to focus on Claude's learning effectiveness |

@@ -38,7 +38,7 @@ try {
   ({ safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs"));
 } catch {
   console.error("safe-fs unavailable; cannot safely write files");
-  process.exit(2);
+  process.exit(1);
 }
 
 // Symlink guard (Review #316-#323)
@@ -167,6 +167,7 @@ function writeState(state) {
 }
 
 function ensureDir(dir) {
+  if (!isSafeToWrite(dir) || (existsSync(dir) && !isSafeToWrite(dir))) return;
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
 
@@ -248,23 +249,9 @@ function extractPatterns(reviews) {
       if (!entry.reviews.includes(review.id)) entry.reviews.push(review.id);
     }
 
-    // Also extract from title keywords for broader pattern detection
-    const title = (review.title || "").toLowerCase();
-    for (const keyword of PATTERN_KEYWORDS) {
-      const m = keyword.exec(title);
-      if (m) {
-        const match = m[0]?.toLowerCase()?.trim();
-        if (!match) continue;
-        if (!patterns.has(match)) {
-          patterns.set(match, { pattern: match, count: 0, reviews: [], learnings: [] });
-        }
-        const entry = patterns.get(match);
-        if (!entry.reviews.includes(review.id)) {
-          entry.count++;
-          entry.reviews.push(review.id);
-        }
-      }
-    }
+    // Title keyword extraction removed — review.patterns array has structured
+    // data. Title matching produced false positives from review source names
+    // (qodo, sonarcloud, gemini, ci) appearing in titles like "PR #470 R1 — Mixed Qodo+SonarCloud".
 
     // Collect learnings for pattern context
     const learnings = Array.isArray(review.learnings) ? review.learnings : [];
@@ -281,51 +268,6 @@ function extractPatterns(reviews) {
 
   return patterns;
 }
-
-// Note: no /g flag — exec() is called once per keyword per title, so /g is unnecessary
-// and would require manual lastIndex reset between calls.
-const PATTERN_KEYWORDS = [
-  /command injection/i,
-  /path traversal/i,
-  /regex dos/i,
-  /redos/i,
-  /prototype pollution/i,
-  /ssrf/i,
-  /xss/i,
-  /injection/i,
-  /sanitiz/i,
-  /validation/i,
-  /security/i,
-  /cognitive complexity/i,
-  /\bcc\b/i,
-  /cc reduction/i,
-  /dead code/i,
-  /refactor/i,
-  /performance/i,
-  /error handling/i,
-  /try[/-]catch/i,
-  /fail-closed/i,
-  /typescript/i,
-  /eslint/i,
-  /sonarcloud/i,
-  /nullable/i,
-  /symlink/i,
-  /propagation/i,
-  /atomic write/i,
-  /shell/i,
-  /bash/i,
-  /crlf/i,
-  /cross-platform/i,
-  /github actions/i,
-  /\bci\b/i,
-  /pre-commit/i,
-  /pre-push/i,
-  /compliance/i,
-  /documentation/i,
-  /markdown/i,
-  /qodo/i,
-  /gemini/i,
-];
 
 function categorizePatterns(patterns) {
   const categories = {
@@ -388,7 +330,18 @@ function generateReport(reviews, patterns, categories) {
 }
 
 function generateRuleSuggestions(recurringPatterns, range) {
-  if (recurringPatterns.length === 0) return;
+  if (recurringPatterns.length === 0) {
+    // Clean up stale suggestions from prior runs
+    try {
+      if (existsSync(OUTPUT_FILE) && isSafeToWrite(OUTPUT_FILE)) {
+        const st = fs.lstatSync(OUTPUT_FILE);
+        if (st.isFile()) rmSync(OUTPUT_FILE, { force: true });
+      }
+    } catch (err) {
+      log(`  ⚠️ Failed to clean up stale suggestions: ${sanitizeError(err)}`, c.yellow);
+    }
+    return;
+  }
 
   ensureDir(OUTPUT_DIR);
   const now = new Date().toISOString().split("T")[0];

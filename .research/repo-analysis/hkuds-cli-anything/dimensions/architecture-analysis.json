@@ -1,0 +1,47 @@
+{
+  "agent": "explore",
+  "scan_date": "2026-04-03",
+  "capture_method": "task-notification-fallback",
+  "summary": {
+    "registry_cli_count": 33,
+    "registry_categories": 19,
+    "registry_versions": { "1.0.0": 25, "0.1.0": 5, "0.1.1": 1, "1.0.1": 1, "1.1.0": 1 },
+    "harness_directories": 32,
+    "python_harnesses": 31,
+    "js_harness": 1,
+    "unique_contributors": 22,
+    "team_owned": 9,
+    "community_contributed": 24,
+    "skill_md_null_in_registry": 5,
+    "repl_skin_copies": 29,
+    "repl_skin_drift": "Plugin master has newer features (skill_path auto-detect) not in harness copies",
+    "shared_libraries": 0,
+    "conftest_files": 0,
+    "namespace_package_compliant": "31 of 32"
+  },
+  "plugin_system": {
+    "claude_plugin": "cli-anything-plugin/.claude-plugin/plugin.json — minimal descriptor",
+    "slash_commands": 5,
+    "opencode_parallel": "opencode-commands/ — same 5 commands reformatted for OpenCode",
+    "guides": 6,
+    "scaffolding": "skill_generator.py + templates/SKILL.md.template (Jinja2)"
+  },
+  "harness_methodology": {
+    "phases": "7 + Phase 6.5 (SKILL.md generation)",
+    "novel_aspects": [
+      "Mandatory real-software invocation (tests must fail, not skip)",
+      "Rendering Gap warning (filter translation layer)",
+      "TEST.md as two-part artifact (plan then results)",
+      "Output verification methodology (frame-level pixel, RMS/spectral, magic bytes)",
+      "MCP Backend Pattern (guides/mcp-backend.md)",
+      "Session file locking (_locked_save_json)"
+    ]
+  },
+  "dependency_base": "click>=8.0 + prompt-toolkit>=3.0 + python>=3.10",
+  "outliers": [
+    "sketch: Node.js (commander/jest), not Python",
+    "wiremock: uses rich>=13.0 instead of prompt-toolkit, :cli instead of :main",
+    "freecad: most complex (17 core modules, 258 commands, Apache-2.0 license, v1.1.0)",
+    "comfyui: namespace package violation (__init__.py at cli_anything/ level)"
+  ]
+}

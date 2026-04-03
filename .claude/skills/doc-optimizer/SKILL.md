@@ -11,7 +11,7 @@ estimated_time_sequential: 120 min
 
 # Documentation Optimizer
 
-**Version:** 1.4 **Last Updated:** 2026-02-24 **Status:** ACTIVE **Waves:** 5
+**Version:** 1.5 **Last Updated:** 2026-04-03 **Status:** ACTIVE **Waves:** 5
 waves with 13 agents **Output:** `.claude/state/doc-optimizer/`
 
 **What This Does:** Wave-based orchestrator that deploys 13 parallel agents
@@ -132,6 +132,11 @@ wc -l < ".claude/state/doc-optimizer/wave1-format.jsonl" 2>/dev/null || echo "0"
 # cat .claude/state/doc-optimizer/wave1-format.jsonl
 ```
 
+If `wc -l` returns 0 for any output file, this is likely the Windows agent
+output bug (anthropics/claude-code#39791). Check the task-notification result
+for that agent -- if it contains findings, write them to the file. If no
+findings available via any channel, report the failure to the user.
+
 ### Wave Chunking (Max 2 Waves Per Invocation)
 
 If context is running low (past ~60% usage), **stop after the current wave**,
@@ -152,6 +157,15 @@ files.
 Before launching each wave, the orchestrator should estimate remaining context.
 If the conversation already contains 3+ agent completions, consider saving state
 and resuming in a new session rather than risking overflow.
+
+### Windows Output Fallback (MUST)
+
+Background agent output files may be 0 bytes on Windows
+(anthropics/claude-code#39791). After each wave completes, check each agent's
+JSONL output file size. If 0 bytes, capture the task-notification `<result>`
+text and write it to the expected JSONL file using the Write tool. Do NOT
+proceed to the next wave until all current wave output files are non-empty.
+Empty results must never be silently accepted.
 
 ---
 
@@ -464,6 +478,7 @@ When modifying this skill, also update:
 
 | Version | Date       | Description                                                     |
 | ------- | ---------- | --------------------------------------------------------------- |
+| 1.5     | 2026-04-03 | Windows agent output fallback for 0-byte files (#39791)         |
 | 1.4     | 2026-02-24 | Extract 13 agent prompts to prompts.md (71% size reduction)     |
 | 1.3     | 2026-02-14 | Dedupe CRITICAL RETURN PROTOCOL (13x inline -> 1 shared ref)    |
 | 1.2     | 2026-02-07 | Step 10 expanded: temp file cleanup + obsolete artifact removal |

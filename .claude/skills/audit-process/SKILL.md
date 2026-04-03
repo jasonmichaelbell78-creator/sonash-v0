@@ -6,7 +6,7 @@ description:
 
 # Comprehensive Automation Audit
 
-**Version:** 2.4 **Last Updated:** 2026-02-24 **Status:** ACTIVE
+**Version:** 2.5 **Last Updated:** 2026-04-03 **Status:** ACTIVE
 
 This audit covers **16 automation types** across **12 audit categories** using a
 **7-stage approach** with parallel agent execution.
@@ -46,9 +46,18 @@ context.**
 
 1. **Agent outputs go to files, not conversation** -- each agent prompt MUST
    include: `Write findings to: ${AUDIT_DIR}/[filename].jsonl`
-2. **Verify after each stage** -- check all output files exist and are non-zero
+2. **Verify after each stage** -- check all output files exist and are non-zero.
+   If any file is 0 bytes, apply the Windows output fallback before declaring
+   the stage complete.
 3. **Why this matters** -- context compaction can happen at any time; only files
    persist
+4. **Windows output fallback (MUST):** Background agent output files may be 0
+   bytes on Windows (anthropics/claude-code#39791). After each stage completes,
+   check each agent's JSONL output file size. If 0 bytes, capture the
+   task-notification `<result>` text and write it to the expected stage JSONL
+   file using the Write tool. Do NOT proceed to the next stage until all current
+   stage output files are non-empty. Empty results must never be silently
+   accepted -- report failure to user if no output available via any channel.
 
 ---
 
@@ -318,6 +327,7 @@ done
 
 | Version | Date       | Changes                                                                  |
 | ------- | ---------- | ------------------------------------------------------------------------ |
+| 2.5     | 2026-04-03 | Windows output fallback for 0-byte agent files (claude-code#39791)       |
 | 2.4     | 2026-02-24 | Extract 22 agent prompts to prompts.md (68% size reduction)              |
 | 2.3     | 2026-02-23 | Add mandatory MASTER_DEBT cross-reference step before interactive review |
 | 2.2     | 2026-01-31 | Added recovery procedures, root check safeguards, Step 2.5               |

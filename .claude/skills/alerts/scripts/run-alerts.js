@@ -111,10 +111,7 @@ const BENCHMARKS = {
     automation_coverage: { good: 40, average: 25, poor: 10 },
     failing_patterns: { good: 0, average: 5, poor: 10 },
   },
-  velocity: {
-    items_per_session: { good: 5, average: 2, poor: 0 },
-    acceleration_threshold: 0.15,
-  },
+  // velocity: removed — system was dead data (Session #260)
   review: {
     fix_ratio: { good: 0.3, average: 0.45, poor: 0.6 },
     max_rounds: { good: 2, average: 3, poor: 5 },
@@ -547,10 +544,14 @@ function saveBaseline() {
 
   try {
     const stateDir = path.dirname(BASELINE_PATH);
+    const tmpPath = `${BASELINE_PATH}.tmp`;
+    if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) {
+      console.error("  [warn] isSafeToWrite blocked baseline write");
+      return;
+    }
     if (!fs.existsSync(stateDir)) {
       fs.mkdirSync(stateDir, { recursive: true });
     }
-    const tmpPath = `${BASELINE_PATH}.tmp`;
     if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) {
       console.error("  [warn] isSafeToWrite blocked baseline write");
       return;
@@ -2046,80 +2047,8 @@ function checkConsolidation() {
 }
 
 // ============================================================================
-// VELOCITY (Full mode, Informational)
+// VELOCITY — removed (Session #260). System was dead data — never detected completions.
 // ============================================================================
-
-function checkVelocity() {
-  console.error("  Checking velocity...");
-
-  const logPath = path.join(ROOT_DIR, ".claude", "state", "velocity-log.jsonl");
-  const lines = safeReadLines(logPath);
-  if (lines.length === 0) {
-    ensureCategory("velocity", "Velocity");
-    return;
-  }
-
-  const recent = lines
-    .slice(-5)
-    .map((l) => safeParse(l))
-    .filter(Boolean);
-
-  if (recent.length === 0) {
-    ensureCategory("velocity", "Velocity");
-    return;
-  }
-
-  const completed = recent.map((e) => e.items_completed ?? 0);
-  const avg = completed.length > 0 ? completed.reduce((a, b) => a + b, 0) / completed.length : 0;
-
-  addAlert(
-    "velocity",
-    "info",
-    `Velocity: avg ${avg.toFixed(1)} items/session over last ${recent.length} sessions`,
-    null,
-    null
-  );
-
-  // Check for zero-velocity streak
-  const lastThree = completed.slice(-3);
-  if (lastThree.length >= 3 && lastThree.every((c) => c === 0)) {
-    addAlert("velocity", "info", "No debt items resolved in last 3 sessions", null, null);
-  }
-
-  // Trend
-  const velocityTrend = computeTrend(logPath, "items_completed");
-
-  // Detect acceleration/deceleration
-  let acceleration = null;
-  if (completed.length >= 3) {
-    const firstHalf = completed.slice(0, Math.floor(completed.length / 2));
-    const secondHalf = completed.slice(Math.floor(completed.length / 2));
-    const firstAvg =
-      firstHalf.length > 0 ? firstHalf.reduce((a, b) => a + b, 0) / firstHalf.length : 0;
-    const secondAvg =
-      secondHalf.length > 0 ? secondHalf.reduce((a, b) => a + b, 0) / secondHalf.length : 0;
-    if (firstAvg > 0) {
-      const change = (secondAvg - firstAvg) / firstAvg;
-      if (Math.abs(change) > BENCHMARKS.velocity.acceleration_threshold) {
-        acceleration = change > 0 ? "accelerating" : "decelerating";
-      }
-    }
-  }
-
-  const avgRating = rateHigherBetter(avg, BENCHMARKS.velocity.items_per_session);
-
-  addContext("velocity", {
-    benchmarks: { items_per_session: BENCHMARKS.velocity.items_per_session },
-    ratings: { items_per_session: avgRating },
-    trend: velocityTrend,
-    sparkline: velocityTrend ? sparkline(velocityTrend.values) : "",
-    acceleration,
-    totals: {
-      avg_items_per_session: Math.round(avg * 10) / 10,
-      recent_sessions: recent.length,
-    },
-  });
-}
 
 // ============================================================================
 // SESSION ACTIVITY (Full mode, Informational)
@@ -3819,55 +3748,7 @@ function checkCrossdocDeps() {
 // WAVE 6 CHECKERS — Data Effectiveness Audit (ls-014, ls-015, ls-017, ls-020)
 // ============================================================================
 
-/**
- * ls-014: Velocity Regression — detect sharp velocity drops (Limited mode)
- */
-function checkVelocityRegression() {
-  console.error("  Checking velocity regression...");
-
-  const logPath = path.join(ROOT_DIR, ".claude", "state", "velocity-log.jsonl");
-  const lines = safeReadLines(logPath);
-  if (lines.length === 0) {
-    ensureCategory("velocity-regression", "Velocity Regression");
-    return;
-  }
-
-  const recent = lines
-    .slice(-3)
-    .map((l) => safeParse(l))
-    .filter(Boolean);
-
-  if (recent.length < 2) {
-    ensureCategory("velocity-regression", "Velocity Regression");
-    return;
-  }
-
-  // Compare last session velocity to the one before it
-  const velocities = recent.map((e) => e.items_completed ?? e.velocity ?? 0);
-  const lastIdx = velocities.length - 1;
-  const prevIdx = lastIdx - 1;
-  const lastVelocity = velocities[lastIdx];
-  const prevVelocity = velocities[prevIdx];
-
-  if (prevVelocity > 0) {
-    const dropPct = ((prevVelocity - lastVelocity) / prevVelocity) * 100;
-
-    if (dropPct >= 50) {
-      addAlert(
-        "velocity-regression",
-        "warning",
-        `Velocity dropped ${Math.round(dropPct)}% (${prevVelocity} → ${lastVelocity} items/session)`,
-        null,
-        "Review recent session for blockers or scope changes"
-      );
-    }
-  }
-
-  addContext("velocity-regression", {
-    recentVelocities: velocities,
-    sessions: recent.length,
-  });
-}
+// ls-014: Velocity Regression — removed (Session #260). Dead data system.
 
 /**
  * ls-017: Stale Planning Data — flag old planning decisions (Full mode)
@@ -4373,7 +4254,7 @@ function computeHealthScore() {
     "pattern-hotspots": 0.03,
     "context-usage": 0.02,
     // Existing adjusted (9%)
-    velocity: 0.03,
+    // velocity: removed (Session #260)
     "review-quality": 0.03,
     docs: 0.03,
     // Full-mode only (contribute when measured)
@@ -4500,8 +4381,7 @@ function main() {
   checkReviewsSync();
   checkReviewArchive();
   checkCrossdocDeps();
-  // Wave 6 limited-mode checker (ls-014)
-  checkVelocityRegression();
+  // Wave 6 limited-mode checker (ls-014) — velocity-regression removed (Session #260)
 
   // Full mode only (additional 17 categories)
   if (isFullMode) {
@@ -4509,7 +4389,7 @@ function main() {
     checkRoadmapPlanning();
     checkReviewQuality();
     checkConsolidation();
-    checkVelocity();
+    // checkVelocity() — removed (Session #260)
     checkSessionActivity();
     checkCommitActivity();
     checkRoadmapValidation();
@@ -4552,7 +4432,7 @@ function main() {
   ensureCategory("reviews-sync", "Reviews Sync");
   ensureCategory("review-archive", "Review Archive Health");
   ensureCategory("crossdoc", "Cross-Document Dependencies");
-  ensureCategory("velocity-regression", "Velocity Regression");
+  // velocity-regression: removed (Session #260)
   ensureCategory("pending-refinements", "Pending Refinements (Fix-or-DEBT)");
 
   if (isFullMode) {
@@ -4560,7 +4440,7 @@ function main() {
     ensureCategory("roadmap", "Roadmap/Planning");
     ensureCategory("review-quality", "Review Quality");
     ensureCategory("consolidation", "Consolidation Status");
-    ensureCategory("velocity", "Velocity");
+    // velocity: removed (Session #260)
     ensureCategory("session-activity", "Session Activity");
     ensureCategory("commit-activity", "Commit Activity");
     ensureCategory("roadmap-health", "Roadmap Validation");

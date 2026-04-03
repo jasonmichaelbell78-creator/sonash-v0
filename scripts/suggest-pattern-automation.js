@@ -13,7 +13,7 @@
  * 3. Suggesting regex patterns for ones that aren't
  * 4. Optionally adding them to check-pattern-compliance.js
  *
- * Exit codes: 0 = success (including when all patterns covered), 2 = error
+ * Exit codes: 0 = success (including when all patterns covered), 1 = error
  */
 
 import { readFileSync, existsSync } from "node:fs";
@@ -111,7 +111,7 @@ function extractPatternsFromLearnings() {
   // Check file exists
   if (!existsSync(LEARNINGS_FILE)) {
     console.error(`❌ Learnings file not found: ${LEARNINGS_FILENAME}`);
-    process.exit(2);
+    process.exit(1);
   }
 
   let content;
@@ -119,7 +119,7 @@ function extractPatternsFromLearnings() {
     content = readFileSync(LEARNINGS_FILE, "utf-8");
   } catch (error) {
     console.error(`❌ Failed to read learnings file: ${sanitizeError(error)}`);
-    process.exit(2);
+    process.exit(1);
   }
 
   const extracted = [];
@@ -176,7 +176,7 @@ function getExistingPatterns() {
   // Check file exists
   if (!existsSync(CHECKER_FILE)) {
     console.error(`❌ Pattern checker file not found: ${CHECKER_FILENAME}`);
-    process.exit(2);
+    process.exit(1);
   }
 
   let content;
@@ -184,7 +184,7 @@ function getExistingPatterns() {
     content = readFileSync(CHECKER_FILE, "utf-8");
   } catch (error) {
     console.error(`❌ Failed to read pattern checker: ${sanitizeError(error)}`);
-    process.exit(2);
+    process.exit(1);
   }
 
   const patterns = [];
@@ -342,7 +342,7 @@ function main() {
   // Abort if we couldn't parse existing patterns (prevents false positive suggestions)
   if (existing.length === 0) {
     console.error("❌ Unable to detect existing patterns; aborting to avoid false suggestions.");
-    process.exit(2);
+    process.exit(1);
   }
 
   // Find patterns that aren't covered
@@ -408,7 +408,7 @@ function main() {
       );
     } catch (error) {
       console.error(`❌ Failed to write suggestions file: ${sanitizeError(error)}`);
-      process.exit(2);
+      process.exit(1);
     }
   }
 }
@@ -418,5 +418,5 @@ try {
 } catch (error) {
   // Catch-all for unexpected errors with sanitized output
   console.error(`❌ Unexpected error: ${sanitizeError(error)}`);
-  process.exit(2);
+  process.exit(1);
 }

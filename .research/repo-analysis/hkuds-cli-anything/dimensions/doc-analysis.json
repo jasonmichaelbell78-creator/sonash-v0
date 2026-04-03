@@ -1,0 +1,30 @@
+{
+  "agent": "documentation-expert",
+  "scan_date": "2026-04-03",
+  "capture_method": "task-notification-fallback",
+  "summary": {
+    "total_markdown_files": 167,
+    "readme_test_count_discrepancy": "Badge says 1,839 / table says 2,005 / footer says 1,839",
+    "readme_cn_staleness": "Frozen at 11 harnesses / 1,508 tests",
+    "readme_ja_staleness": "Frozen at 11 harnesses / 1,508 tests",
+    "plugin_readme_staleness": "Claims 8 harnesses / 1,245 tests (actual: 22+ / 2,005)",
+    "hub_skill_md_staleness": "Lists 21 CLIs, missing 8+ harnesses, frozen at 2026-03-18",
+    "contributing_quality": "Good but missing HARNESS.md link",
+    "security_quality": "Good threat model, abspath without confinement",
+    "skill_md_consistency": "30 of 32 harnesses have SKILL.md, mostly template-consistent",
+    "harness_md_quality": "Canonical is excellent. Shotcut copy is outdated v0.1.x",
+    "cross_linking": "Functional but /root/ hardcoded paths in plugin docs"
+  },
+  "high_findings": [
+    "Test count badge 1,839 vs table 2,005 in same README",
+    "CN/JA READMEs frozen at 1,508 tests / 11 apps (3-5 weeks behind)",
+    "Plugin README claims 8 harnesses / 1,245 tests",
+    "docs/hub/SKILL.md missing 8+ harnesses"
+  ],
+  "medium_findings": [
+    "RenderDoc 14 skipped tests reported as passed in README",
+    "AnyGen TEST.md plans 63 but README shows 50",
+    "Shotcut HARNESS.md contains outdated methodology",
+    "CONTRIBUTING.md doesn't link to HARNESS.md"
+  ]
+}
