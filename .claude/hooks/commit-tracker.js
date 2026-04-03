@@ -398,13 +398,38 @@ function main() {
 
 /**
  * Resolve the .git directory, handling worktrees and GIT_DIR env var.
+ * Validates resolved paths stay within or near the project directory.
  */
 function resolveGitDir() {
+  const cwd = process.cwd();
+  const dotGitPath = path.join(cwd, ".git");
+
+  /**
+   * Containment check: resolved git dir must be within the project tree
+   * or a reasonable ancestor (worktrees may be siblings).
+   * Falls back to default .git path on containment failure.
+   */
+  function validateGitDir(resolved) {
+    try {
+      const abs = path.resolve(resolved);
+      const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+      const a = norm(abs);
+      const b = norm(path.resolve(cwd));
+      // Allow: inside cwd, equal to cwd, or cwd inside resolved (worktree roots)
+      if (a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep)) {
+        return abs;
+      }
+    } catch {
+      // fall through
+    }
+    return dotGitPath;
+  }
+
   const envGitDir = process.env.GIT_DIR;
   if (typeof envGitDir === "string" && envGitDir.length > 0) {
-    return path.isAbsolute(envGitDir) ? envGitDir : path.resolve(process.cwd(), envGitDir);
+    const resolved = path.isAbsolute(envGitDir) ? envGitDir : path.resolve(cwd, envGitDir);
+    return validateGitDir(resolved);
   }
-  const dotGitPath = path.join(process.cwd(), ".git");
   try {
     if (fs.lstatSync(dotGitPath).isSymbolicLink()) return dotGitPath;
     const st = fs.statSync(dotGitPath);
@@ -413,7 +438,8 @@ function resolveGitDir() {
       const m = txt.match(/^gitdir:\s*(.+)\s*$/i);
       if (m && m[1]) {
         const resolved = m[1].trim();
-        return path.isAbsolute(resolved) ? resolved : path.resolve(process.cwd(), resolved);
+        const abs = path.isAbsolute(resolved) ? resolved : path.resolve(cwd, resolved);
+        return validateGitDir(abs);
       }
     }
   } catch {

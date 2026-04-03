@@ -44,18 +44,35 @@ try {
 
 // --- Constants ---
 
-const projectDir =
-  process.env.CLAUDE_PROJECT_DIR ||
-  (() => {
-    try {
-      return execFileSync("git", ["rev-parse", "--show-toplevel"], {
-        encoding: "utf8",
-        timeout: 5000,
-      }).trim();
-    } catch {
-      return process.cwd();
+const projectDir = (() => {
+  const fallback = process.cwd();
+  const candidate =
+    process.env.CLAUDE_PROJECT_DIR ||
+    (() => {
+      try {
+        return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+          encoding: "utf8",
+          timeout: 5000,
+        }).trim();
+      } catch {
+        return fallback;
+      }
+    })();
+  // Path containment: validate candidate is within or contains cwd
+  try {
+    const resolved = path.resolve(candidate);
+    const cwd = path.resolve(fallback);
+    const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+    const a = norm(resolved);
+    const b = norm(cwd);
+    if (a === b || a.startsWith(b + path.sep) || b.startsWith(a + path.sep)) {
+      return resolved;
     }
-  })();
+  } catch {
+    // fall through
+  }
+  return fallback;
+})();
 
 /** Source directories to check for freshness comparison */
 const SOURCE_DIRS = ["app", "lib", "components"];
