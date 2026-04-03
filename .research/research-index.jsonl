@@ -9,3 +9,4 @@
 {"slug":"repo-analysis-skill","topic":"External GitHub repo analysis skill","status":"complete","depth":"L1","date":"2026-03-31","claims":50,"sources":147,"path":".research/repo-analysis-skill/","tags":["tooling","skill-design","repo-analysis","multi-agent"]}
 {"repo":"HKUDS/CLI-Anything","url":"https://github.com/HKUDS/CLI-Anything","scan_date":"2026-04-03","depth":"quick","output_dir":".research/repo-analysis/hkuds-cli-anything","skill":"repo-analysis"}
 {"repo":"ViktorAxelsen/MemSkill","url":"https://github.com/ViktorAxelsen/MemSkill","scan_date":"2026-04-03","depth":"standard","output_dir":".research/repo-analysis/viktoraxelsen-memskill","skill":"repo-analysis"}
+{"repo":"karpathy/autoresearch","url":"https://github.com/karpathy/autoresearch","scan_date":"2026-04-03","depth":"deep","output_dir":".research/repo-analysis/karpathy-autoresearch","skill":"repo-analysis","verdict":"Extract (62)","stars":65023}

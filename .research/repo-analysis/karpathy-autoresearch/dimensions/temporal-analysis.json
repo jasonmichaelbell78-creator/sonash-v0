@@ -1,0 +1,62 @@
+{
+  "dimension": "temporal",
+  "depth": "deep",
+  "commit_count": 60,
+  "age_days": 28,
+  "velocity": {
+    "commits_per_week": 15,
+    "burst_period": "2026-03-07 to 2026-03-09 (48h)",
+    "burst_commits": 30,
+    "post_burst_commits": 30,
+    "trend": "intense-launch-then-maintenance"
+  },
+  "contributor_analysis": {
+    "total_contributors": 11,
+    "breakdown": [
+      { "name": "autoresearch (AI agent)", "commits": 25, "role": "autonomous-researcher" },
+      { "name": "Andrej Karpathy", "commits": 29, "role": "creator-maintainer" },
+      { "name": "Community (6 people)", "commits": 6, "role": "bug-fixes" }
+    ],
+    "bus_factor": 1,
+    "ai_agent_commit_ratio": 0.42,
+    "note": "42% of commits are by the AI agent — the repo is its own test case"
+  },
+  "churn_hotspots": [
+    { "file": "train.py", "modifications": 27, "reason": "Agent experiment target — by design" },
+    { "file": "README.md", "modifications": 10, "reason": "Documentation iteration" },
+    { "file": "program.md", "modifications": 2, "reason": "Agent instruction refinement" }
+  ],
+  "temporal_patterns": {
+    "overnight_experiments": "25 commits in ~12h window (Mar 7-8 UTC)",
+    "experiment_cadence": "~30 min per experiment (5 min train + overhead)",
+    "human_followup": "Bug fixes, docs, community PRs in week 2-4",
+    "last_activity": "2026-03-25 (merge PR #342)"
+  },
+  "findings": [
+    {
+      "id": "T001",
+      "severity": "info",
+      "title": "AI-human commit ratio nearly 1:1",
+      "detail": "25 agent commits vs 29 human commits — rare pattern showing genuine autonomous research"
+    },
+    {
+      "id": "T002",
+      "severity": "info",
+      "title": "Experiment burst pattern",
+      "detail": "30 commits in 48h during initial research run, then maintenance mode"
+    },
+    {
+      "id": "T003",
+      "severity": "medium",
+      "title": "8 days since last push",
+      "detail": "Last activity Mar 25. May indicate experiment cycle complete or maintainer moved on"
+    },
+    {
+      "id": "T004",
+      "severity": "info",
+      "title": "Community engagement shallow",
+      "detail": "6 community contributors with 1 commit each — PRs accepted but no sustained contributors"
+    }
+  ],
+  "summary": "Classic 'brilliant experiment' lifecycle: intense 48h launch burst (half AI-generated), viral adoption, then light maintenance. The 42% AI commit ratio is the repo's thesis proved in its own history."
+}
