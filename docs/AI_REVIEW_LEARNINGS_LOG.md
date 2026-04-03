@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.116 **Created:** 2026-01-02 **Last Updated:**
-2026-03-26
+**Document Version:** 17.117 **Created:** 2026-01-02 **Last Updated:**
+2026-04-03
 
 ## Purpose
 
@@ -3069,6 +3069,27 @@ deduped/merged)
   Medium-Term/Sync) instead of REFERENCE.md template (Strengths/Weaknesses/
   Feasibility). Fix: aligned with template. First real-world validation of
   /brainstorm skill output format.
+
+---
+
+### Review #66 — PR #491 R1 (Mixed: SonarCloud + Qodo + Gemini)
+
+**Date:** 2026-04-03 **Items:** 16 (14 fixed, 0 deferred, 2 rejected)
+
+**Patterns:**
+
+- Unguarded symlink delete: `rmSync` in run-consolidation.js cleanup path
+  bypassed `isSafeToWrite` guard used by the write path. Fix: add guard + log.
+- Repomix bloat: 113K lines of packed external repos committed to git. Fix:
+  `git rm` + `**/repomix-output.txt` in `.gitignore`. Regenerable artifacts.
+- Dead code: `PATTERN_KEYWORDS` array (40 regexes) defined but never referenced
+  after title keyword extraction was removed. Fix: delete entirely.
+- Exit code doc mismatch: header documented `2 = error` but code used
+  `process.exit(1)`. Fix: update header to match implementation.
+- `String.raw` for escaped backslashes: SonarCloud S6638 — use `String.raw`
+  template literals to avoid double-escaping in string comparisons.
+- Test hardening: readFileSync try/catch, Array→Set for `.has()` lookups.
+- Rejected node:test→Jest suggestion: SoNash uses node:test, not Jest.
 
 ---
 

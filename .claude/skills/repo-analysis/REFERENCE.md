@@ -559,7 +559,8 @@ Append-only log across ALL repos analyzed. One line per extraction decision.
   "status": "selected",
   "decision": "extract",
   "decision_date": "2026-04-03",
-  "extracted_to": "docs/reference/HARNESS_METHODOLOGY.md"
+  "extracted_to": "docs/reference/HARNESS_METHODOLOGY.md",
+  "notes": "7-phase SOP for agent-native CLI wrapping. E0 effort."
 }
 ```
 
@@ -571,6 +572,7 @@ Append-only log across ALL repos analyzed. One line per extraction decision.
 | `decision`      | string | extract / skip / defer                   |
 | `decision_date` | string | When the decision was made               |
 | `extracted_to`  | string | Destination path (null if not extracted) |
+| `notes`         | string | Optional context about the candidate     |
 
 #### 3.6.3 `EXTRACTIONS.md` (Human-Readable Summary)
 
@@ -584,19 +586,20 @@ flow. Grouped by status for quick scanning.
 
 Generated: 2026-04-03 | Total: 7 candidates across 1 repo
 
-## Extracted (1)
+## Extracted (0)
 
-| Repo               | Candidate              | Date       | Destination     |
-| ------------------ | ---------------------- | ---------- | --------------- |
-| HKUDS/CLI-Anything | HARNESS.md Methodology | 2026-04-03 | docs/reference/ |
+_None yet._
 
-## Selected (2)
+## Deferred (7)
 
-...
+### HKUDS/CLI-Anything (7 candidates) -- Verdict: Trial (62)
 
-## Deferred (1)
+| Candidate              | Novelty | Effort | Notes                                                       |
+| ---------------------- | ------- | ------ | ----------------------------------------------------------- |
+| HARNESS.md Methodology | High    | E0     | 7-phase SOP for agent-native CLI wrapping.                  |
+| SKILL.md Format        | High    | E0     | AI-discoverable skill definition. Compare against existing. |
 
-...
+_(truncated for brevity)_
 
 ## Skipped (3)
 

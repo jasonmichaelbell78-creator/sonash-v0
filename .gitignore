@@ -139,6 +139,9 @@ nul
 .planning/**/agent-research/*.txt
 .planning/**/agent-research/*.json
 
+# Repomix packed outputs (regenerable, large, may contain external repo code)
+**/repomix-output.txt
+
 # GSD (Get Shit Done) plugin — local-only files
 .claude/agents/gsd-*.md
 .claude/commands/gsd/

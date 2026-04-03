@@ -20,8 +20,12 @@ describe("3689cfd62f77: Audit findings rotation coverage", () => {
   let policy;
 
   before(() => {
-    const raw = fs.readFileSync(ROTATION_POLICY_PATH, "utf8");
-    policy = JSON.parse(raw);
+    try {
+      const raw = fs.readFileSync(ROTATION_POLICY_PATH, "utf8");
+      policy = JSON.parse(raw);
+    } catch (err) {
+      throw new Error(`Failed to load rotation policy: ${err.message}`);
+    }
   });
 
   test("rotation-policy.json exists and is valid JSON", () => {
@@ -30,13 +34,12 @@ describe("3689cfd62f77: Audit findings rotation coverage", () => {
   });
 
   test("audit findings paths are listed in a rotation tier", () => {
-    const allRotatedFiles = Object.values(policy.tiers).flatMap((tier) => tier.files || []);
+    const allRotatedFiles = new Set(
+      Object.values(policy.tiers).flatMap((tier) => tier.files || [])
+    );
 
     for (const auditPath of AUDIT_FINDINGS_PATHS) {
-      assert.ok(
-        allRotatedFiles.includes(auditPath),
-        `Expected ${auditPath} to be in rotation policy`
-      );
+      assert.ok(allRotatedFiles.has(auditPath), `Expected ${auditPath} to be in rotation policy`);
     }
   });
 

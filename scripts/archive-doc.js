@@ -253,6 +253,7 @@ function ensureArchiveDir() {
   verbose("Checking archive directory:", ARCHIVE_DIR);
 
   if (!isSafeToWrite(ARCHIVE_DIR)) {
+    console.error("❌ Refusing to write: symlink detected in archive directory path:", ARCHIVE_DIR);
     return { success: false, error: "Symlink detected in archive directory path" };
   }
 

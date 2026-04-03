@@ -13,7 +13,7 @@
  * 3. Suggesting regex patterns for ones that aren't
  * 4. Optionally adding them to check-pattern-compliance.js
  *
- * Exit codes: 0 = success (including when all patterns covered), 2 = error
+ * Exit codes: 0 = success (including when all patterns covered), 1 = error
  */
 
 import { readFileSync, existsSync } from "node:fs";

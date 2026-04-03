@@ -268,47 +268,6 @@ function extractPatterns(reviews) {
   return patterns;
 }
 
-// Note: no /g flag — these regexes use .test() in categorizePatterns, not exec()
-const PATTERN_KEYWORDS = [
-  /command injection/i,
-  /path traversal/i,
-  /regex dos/i,
-  /redos/i,
-  /prototype pollution/i,
-  /ssrf/i,
-  /xss/i,
-  /injection/i,
-  /sanitiz/i,
-  /validation/i,
-  /security/i,
-  /cognitive complexity/i,
-  /\bcc\b/i,
-  /cc reduction/i,
-  /dead code/i,
-  /refactor/i,
-  /performance/i,
-  /error handling/i,
-  /try[/-]catch/i,
-  /fail-closed/i,
-  /typescript/i,
-  /eslint/i,
-  /nullable/i,
-  /symlink/i,
-  /propagation/i,
-  /atomic write/i,
-  /shell/i,
-  /bash/i,
-  /crlf/i,
-  /cross-platform/i,
-  /github actions/i,
-  /\bci\b/i,
-  /pre-commit/i,
-  /pre-push/i,
-  /compliance/i,
-  /documentation/i,
-  /markdown/i,
-];
-
 function categorizePatterns(patterns) {
   const categories = {
     Security: [],
@@ -373,9 +332,11 @@ function generateRuleSuggestions(recurringPatterns, range) {
   if (recurringPatterns.length === 0) {
     // Clean up stale suggestions from prior runs
     try {
-      if (existsSync(OUTPUT_FILE)) rmSync(OUTPUT_FILE, { force: true });
-    } catch {
-      /* ignore cleanup errors */
+      if (existsSync(OUTPUT_FILE) && isSafeToWrite(OUTPUT_FILE)) {
+        rmSync(OUTPUT_FILE, { force: true });
+      }
+    } catch (err) {
+      log(`  ⚠️ Failed to clean up stale suggestions: ${sanitizeError(err)}`, c.yellow);
     }
     return;
   }

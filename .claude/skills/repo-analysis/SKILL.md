@@ -179,9 +179,10 @@ through ST-15 (33 dimensions). **Value:** ~80% of full analysis signal.
    `/tmp/repo-analysis-<slug>/`
    - LFS check: `GIT_LFS_SKIP_SMUDGE=1` if `.gitattributes` detected
    - Monorepo detection (turbo.json, nx.json, pnpm-workspace.yaml, etc.)
-   - Repomix check: `npx repomix --version`. If unavailable, install:
-     `npm install -g repomix`. If install fails, log and continue (SHOULD, not
-     MUST). Extract routing option will note repomix-output.txt unavailability.
+   - Repomix check: `npx repomix --version`. If unavailable, use
+     `npx repomix@latest` for execution. If execution fails, log and continue
+     (SHOULD, not MUST). Extract routing will note repomix-output.txt
+     unavailability.
 2. Check tool availability: run `node scripts/repo-analysis/check-tools.js`. Log
    manifest to state file. Missing tools trigger graceful degradation.
 3. Spawn dimension agents (dynamic allocation, 4 concurrent max). After each
@@ -278,7 +279,8 @@ Presented after Standard or Deep analysis completes. Offers 6 options:
 | **1. Extract value**    | Load repomix-output.txt + value-map context. Present candidates. |
 |                         | Ask: "Act on specific candidates, or defer all for later review? |
 |                         | [specific / defer all]". If "defer all": write all candidates    |
-|                         | to extraction-journal.jsonl with status "deferred", regenerate   |
+|                         | to extraction-journal.jsonl with status "deferred" and decision  |
+|                         | "defer", regenerate                                              |
 |                         | EXTRACTIONS.md, done. If "specific": for each selected candidate |
 |                         | ask "Extract, skip, or defer?" Persist decisions to extraction   |
 |                         | result files, append to journal, regenerate EXTRACTIONS.md.      |

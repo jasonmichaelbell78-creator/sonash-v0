@@ -945,8 +945,8 @@ const ANTI_PATTERNS = [
       // Only flag files that read .jsonl files AND split+parse without brace tracking
       if (!content.includes(".jsonl")) return [];
       const hasSplitParse =
-        content.includes('.split("\\n")') ||
-        content.includes(".split('\\n')") ||
+        content.includes(String.raw`.split("\n")`) ||
+        content.includes(String.raw`.split('\n')`) ||
         content.includes(".split(`\\n`)");
       const hasLineParse = /JSON\.parse\s*\(\s*(?:line|l|entry|row)\b/.test(content);
       if (!hasSplitParse || !hasLineParse) return [];
