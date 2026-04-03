@@ -366,6 +366,17 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#31)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #review-466-r3-#rev-63
+- **Recurring patterns:**
+  - qodo (17x)
+  - sonarcloud (15x)
+  - gemini (4x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#30)</summary>
 
 - **Date:** 2026-04-02
@@ -1251,6 +1262,88 @@ deduplicated, non-overlapping ranges):
 - tdms-created-date-churn
 - agent-audit-trail
 - brainstorm-table-alignment
+
+---
+
+### Review rev-63: (untitled) (2026-04-03)
+
+**Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 31    | 31    | 1        | 0        |
+
+**Patterns:**
+
+- symlink-bypass-size-gate
+- s5852-regex-dos-testfn
+- cc-reduction-extract-helpers
+- sanitizeError-import-path
+- source-traceability-singular
+- toctou-existsSync-removal
+- zip-tar-slip-pre-extraction
+- propagation-4-patterns-46-files
+- prettier-ci-research-files
+
+---
+
+### Review 63-pr397: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
+
+**Date:** unknown | **PR:** #397 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
+- S5852 regex DoS (silent-json-parse): backtracking-vulnerable
+- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
+- sanitizeError import paths: 5 hooks + rotate-state.js used
+- Source traceability false-negative: `checkSourceTraceability()` only checked
+- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
+- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
+- Propagation: 4 patterns across 46 files audited, 7 fixed
+- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+
+---
+
+### Review rev-65: (untitled) (2026-04-03)
+
+**Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 5     | 0        | 1        |
+
+**Patterns:**
+
+- cross-platform-exe-naming
+- shell-true-removal
+- validateGitDir-tightened
+- toctou-existsSync-isSafeToWrite
+- cc-logResolveResult-extraction
+- gemini-stale-detection
+
+---
+
+### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
 
 ## Key Patterns
 
