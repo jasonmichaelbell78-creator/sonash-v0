@@ -544,10 +544,14 @@ function saveBaseline() {
 
   try {
     const stateDir = path.dirname(BASELINE_PATH);
+    const tmpPath = `${BASELINE_PATH}.tmp`;
+    if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) {
+      console.error("  [warn] isSafeToWrite blocked baseline write");
+      return;
+    }
     if (!fs.existsSync(stateDir)) {
       fs.mkdirSync(stateDir, { recursive: true });
     }
-    const tmpPath = `${BASELINE_PATH}.tmp`;
     if (!isSafeToWrite(BASELINE_PATH) || !isSafeToWrite(tmpPath)) {
       console.error("  [warn] isSafeToWrite blocked baseline write");
       return;

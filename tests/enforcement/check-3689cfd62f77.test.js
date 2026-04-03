@@ -24,7 +24,8 @@ describe("3689cfd62f77: Audit findings rotation coverage", () => {
       const raw = fs.readFileSync(ROTATION_POLICY_PATH, "utf8");
       policy = JSON.parse(raw);
     } catch (err) {
-      throw new Error(`Failed to load rotation policy: ${err.message}`);
+      const msg = err instanceof Error ? err.message : String(err);
+      throw new Error(`Failed to load rotation policy: ${msg}`);
     }
   });
 

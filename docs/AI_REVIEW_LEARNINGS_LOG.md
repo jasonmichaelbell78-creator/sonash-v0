@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.117 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.118 **Created:** 2026-01-02 **Last Updated:**
 2026-04-03
 
 ## Purpose
@@ -3069,6 +3069,26 @@ deduped/merged)
   Medium-Term/Sync) instead of REFERENCE.md template (Strengths/Weaknesses/
   Feasibility). Fix: aligned with template. First real-world validation of
   /brainstorm skill output format.
+
+---
+
+### Review #67 — PR #491 R2 (Mixed: CI + Qodo)
+
+**Date:** 2026-04-03 **Items:** 21 (18 fixed, 0 deferred, 3 rejected/stale)
+
+**Patterns:**
+
+- Pattern checker false positives: `symlink-parent-traversal` regex only
+  recognized `lstatSync`, not `isSafeToWrite`. Fixed regex + verified patterns.
+- `silent-json-parse` line-level check missed try/catch on prior line. Added
+  run-alerts.js to verified patterns.
+- `mkdirSync` before `isSafeToWrite` check: genuine TOCTOU in run-alerts.js
+  baseline writer. Reordered to check guard first.
+- Exit code 2→1: run-consolidation.js used non-standard exit(2). Fixed.
+- TDMS data quality: 239 duplicate `audit:hash-*` entries, 412 evidence field
+  array→string normalizations, 553 backslash path corrections.
+- Path disclosure: R1 fix logged full `ARCHIVE_DIR` path to stderr. Removed.
+- Rejected exit code revert suggestions: contradicts CI pattern compliance gate.
 
 ---
 

@@ -1804,7 +1804,8 @@ const ANTI_PATTERNS = [
   {
     id: "symlink-parent-traversal",
     severity: "high",
-    pattern: /(?:mkdirSync|writeFileSync|appendFileSync)\s*\([^)]+\)(?![\s\S]{0,200}lstatSync)/g,
+    pattern:
+      /(?:mkdirSync|writeFileSync|appendFileSync)\s*\([^)]+\)(?![\s\S]{0,200}(?:lstatSync|isSafeToWrite))/g,
     message:
       "Write operation without symlink guard on parent directory — symlink could redirect writes",
     fix: "Check parent with: if (fs.lstatSync(dir).isSymbolicLink()) return; — or use isSafeToWrite() from scripts/lib/security-helpers.js",

@@ -38,7 +38,7 @@ try {
   ({ safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs"));
 } catch {
   console.error("safe-fs unavailable; cannot safely write files");
-  process.exit(2);
+  process.exit(1);
 }
 
 // Symlink guard (Review #316-#323)
@@ -167,6 +167,7 @@ function writeState(state) {
 }
 
 function ensureDir(dir) {
+  if (!isSafeToWrite(dir) || (existsSync(dir) && !isSafeToWrite(dir))) return;
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 }
 
@@ -333,7 +334,8 @@ function generateRuleSuggestions(recurringPatterns, range) {
     // Clean up stale suggestions from prior runs
     try {
       if (existsSync(OUTPUT_FILE) && isSafeToWrite(OUTPUT_FILE)) {
-        rmSync(OUTPUT_FILE, { force: true });
+        const st = fs.lstatSync(OUTPUT_FILE);
+        if (st.isFile()) rmSync(OUTPUT_FILE, { force: true });
       }
     } catch (err) {
       log(`  ⚠️ Failed to clean up stale suggestions: ${sanitizeError(err)}`, c.yellow);

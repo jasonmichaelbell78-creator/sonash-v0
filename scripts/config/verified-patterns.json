@@ -435,6 +435,7 @@
       "sober-living.ts",
       "users.ts"
     ],
-    "symlink-parent-traversal": ["archive-doc.js"]
+    "symlink-parent-traversal": ["archive-doc.js", "run-alerts.js", "run-consolidation.js"],
+    "silent-json-parse": ["run-alerts.js"]
   }
 }
