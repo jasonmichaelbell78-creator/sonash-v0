@@ -1,6 +1,7 @@
 # Decision Record: JASON-OS Research Roadmap
 
-**Date:** 2026-04-01 **Questions Asked:** 32 **Decisions Captured:** 32
+**Date:** 2026-04-01 (updated 2026-04-03) **Questions Asked:** 35 **Decisions
+Captured:** 35
 
 ## Research Purpose & Philosophy
 
@@ -48,3 +49,11 @@
 | 30  | Domain numbering             | Numbered (suggesting order, not rigid), insertable as NN-a for new domains                                                       | Flexibility to reorder while maintaining suggested sequence                                        |
 | 31  | Reassessment triggers        | (a) Contradicting findings, (b) new domain needed, (c) every 3rd domain regardless                                               | Three triggers ensure the roadmap stays current without constant rework                            |
 | 32  | Research completion criteria | No artificial limits — operator decides when research is sufficient                                                              | Contrarian and verification gates surface quality. Done when operator says done                    |
+
+## Brainstorm Revisit (2026-04-03)
+
+| #   | Decision                               | Choice                                                                                                                         | Rationale                                                                                                                                           |
+| --- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 33  | External adoption scouting domain      | New Domain 02a in Tier 1 — dedicated to discovering additive and replacement improvements from external repos                  | Gap identified: Domain 02 surveys approaches conceptually but doesn't evaluate specific repos for adoption. Repo-analysis skill generates this data |
+| 34  | Cross-cutting adoption protocol        | Every domain's Phase A scoping MUST check Domain 02a findings for relevant entries before starting research                    | Ensures scouting discoveries are consumed everywhere, not siloed. Prevents re-researching what repo-analysis already found                          |
+| 35  | Repo-analysis as primary scouting tool | `/repo-analysis` skill is the primary tool for Domain 02a, with findings classified as additive, replacement, or inspirational | Skill already exists and is being actively used. Classification taxonomy enables targeted consumption by downstream domains                         |

@@ -4186,12 +4186,12 @@ _Uncategorized_
 
 | Document                                                                             | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
-| [Brainstorm: JASON-OS](.planning/jason-os/BRAINSTORM.md)                             | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [Decision Record: JASON-OS Research Roadmap](.planning/jason-os/DECISIONS.md)        | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [JASON-OS Research — Cross-Domain Dependencies](.planning/jason-os/DEPENDENCIES.md)  | -                                                               | ↓0 ↑0      | 2026-04-02    |
+| [Brainstorm: JASON-OS](.planning/jason-os/BRAINSTORM.md)                             | -                                                               | ↓0 ↑0      | 2026-04-04    |
+| [Decision Record: JASON-OS Research Roadmap](.planning/jason-os/DECISIONS.md)        | -                                                               | ↓0 ↑0      | 2026-04-04    |
+| [JASON-OS Research — Cross-Domain Dependencies](.planning/jason-os/DEPENDENCIES.md)  | -                                                               | ↓0 ↑0      | 2026-04-04    |
 | [JASON-OS Research — Cross-Domain Synthesis](.planning/jason-os/SYNTHESIS.md)        | Rolling synthesis of findings across all research domains. N... | ↓0 ↑0      | 2026-04-02    |
-| [JASON-OS Research Roadmap — Status Tracker](.planning/jason-os/RESEARCH_ROADMAP.md) | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [Research Roadmap: JASON-OS](.planning/jason-os/PLAN.md)                             | Comprehensive inventory of every skill, agent, hook, script,... | ↓0 ↑0      | 2026-04-02    |
+| [JASON-OS Research Roadmap — Status Tracker](.planning/jason-os/RESEARCH_ROADMAP.md) | -                                                               | ↓0 ↑0      | 2026-04-04    |
+| [Research Roadmap: JASON-OS](.planning/jason-os/PLAN.md)                             | Comprehensive inventory of every skill, agent, hook, script,... | ↓0 ↑0      | 2026-04-04    |
 
 ### .planning > learning-analysis (Tier 4)
 
@@ -4909,7 +4909,7 @@ _Uncategorized_
 
 | Document                                                                              | Description                                                  | References | Last Modified |
 | ------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------- |
-| [Extraction Candidates -- Cross-Repo Summary](.research/repo-analysis/EXTRACTIONS.md) | Generated: 2026-04-03 \| Total: 21 candidates across 4 repos | ↓0 ↑0      | 2026-04-03    |
+| [Extraction Candidates -- Cross-Repo Summary](.research/repo-analysis/EXTRACTIONS.md) | Generated: 2026-04-03 \| Total: 21 candidates across 4 repos | ↓0 ↑0      | 2026-04-04    |
 
 ### .research > repo-analysis > codecrafters-io-build-your-own-x (Tier 4)
 
@@ -4917,7 +4917,7 @@ _Uncategorized_
 
 | Document                                                                                                                | Description | References | Last Modified |
 | ----------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [codecrafters-io/build-your-own-x — Deep Analysis](.research/repo-analysis/codecrafters-io-build-your-own-x/summary.md) | -           | ↓0 ↑0      | 2026-04-03    |
+| [codecrafters-io/build-your-own-x — Deep Analysis](.research/repo-analysis/codecrafters-io-build-your-own-x/summary.md) | -           | ↓0 ↑0      | 2026-04-04    |
 
 ### .research > repo-analysis > hkuds-cli-anything (Tier 4)
 
@@ -4933,7 +4933,7 @@ _Uncategorized_
 
 | Document                                                                                          | Description | References | Last Modified |
 | ------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [karpathy/autoresearch — Deep Analysis](.research/repo-analysis/karpathy-autoresearch/summary.md) | -           | ↓0 ↑0      | 2026-04-03    |
+| [karpathy/autoresearch — Deep Analysis](.research/repo-analysis/karpathy-autoresearch/summary.md) | -           | ↓0 ↑0      | 2026-04-04    |
 
 ### .research > repo-analysis > viktoraxelsen-memskill (Tier 4)
 
@@ -5185,7 +5185,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-03    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-04    |
 
 ### scripts (Tier 4)
 
@@ -8773,9 +8773,9 @@ Documents with no inbound links (not referenced by any other document):
 | 1592 | [.planning/dev-dashboard/DIAGNOSIS.md](.planning/dev-dashboard/DIAGNOSIS.md)                                                                                                                                                                                                                     | Diagnosis: Dev Dashboard Command Center                                                                                                  | 4    | ACTIVE                                                                         |
 | 1593 | [.planning/dev-dashboard/PLAN.md](.planning/dev-dashboard/PLAN.md)                                                                                                                                                                                                                               | Plan: Dev Dashboard Command Center                                                                                                       | 4    | ACTIVE                                                                         |
 | 1594 | [.planning/github-health-skill/DIAGNOSIS.md](.planning/github-health-skill/DIAGNOSIS.md)                                                                                                                                                                                                         | DIAGNOSIS: /github-health Skill                                                                                                          | 4    | -                                                                              |
-| 1595 | [.planning/jason-os/BRAINSTORM.md](.planning/jason-os/BRAINSTORM.md)                                                                                                                                                                                                                             | Brainstorm: JASON-OS                                                                                                                     | 4    | Complete **Routing:** deep-plan \(phased                                       |
+| 1595 | [.planning/jason-os/BRAINSTORM.md](.planning/jason-os/BRAINSTORM.md)                                                                                                                                                                                                                             | Brainstorm: JASON-OS                                                                                                                     | 4    | Complete **Routing:**                                                          |
 | 1596 | [.planning/jason-os/DECISIONS.md](.planning/jason-os/DECISIONS.md)                                                                                                                                                                                                                               | Decision Record: JASON-OS Research Roadmap                                                                                               | 4    | -                                                                              |
-| 1597 | [.planning/jason-os/DEPENDENCIES.md](.planning/jason-os/DEPENDENCIES.md)                                                                                                                                                                                                                         | JASON-OS Research — Cross-Domain Dependencies                                                                                            | 4    | Initial \(populated from PLAN.md,                                              |
+| 1597 | [.planning/jason-os/DEPENDENCIES.md](.planning/jason-os/DEPENDENCIES.md)                                                                                                                                                                                                                         | JASON-OS Research — Cross-Domain Dependencies                                                                                            | 4    | Updated \(added Domain 02a +                                                   |
 | 1598 | [.planning/jason-os/PLAN.md](.planning/jason-os/PLAN.md)                                                                                                                                                                                                                                         | Research Roadmap: JASON-OS                                                                                                               | 4    | -                                                                              |
 | 1599 | [.planning/jason-os/RESEARCH_ROADMAP.md](.planning/jason-os/RESEARCH_ROADMAP.md)                                                                                                                                                                                                                 | JASON-OS Research Roadmap — Status Tracker                                                                                               | 4    | -                                                                              |
 | 1600 | [.planning/jason-os/SYNTHESIS.md](.planning/jason-os/SYNTHESIS.md)                                                                                                                                                                                                                               | JASON-OS Research — Cross-Domain Synthesis                                                                                               | 4    | Awaiting                                                                       |

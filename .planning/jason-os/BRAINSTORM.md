@@ -1,7 +1,7 @@
 # Brainstorm: JASON-OS
 
-**Date:** 2026-04-01 **Status:** Complete **Routing:** deep-plan (phased
-implementation plan)
+**Date:** 2026-04-01 (revisited 2026-04-03) **Status:** Complete **Routing:**
+deep-plan (phased implementation plan)
 
 ## Problem Space
 
@@ -163,3 +163,44 @@ Next action: `/deep-plan` — phased implementation plan for JASON-OS, starting
 with the minimum viable template extraction. Open questions 1-6 become discovery
 questions. Open question 7 should be addressed first as a triage session to
 clear the backlog before adding JASON-OS to it.
+
+---
+
+## Revisit: 2026-04-03
+
+**Trigger:** Operator is actively running `/repo-analysis` on external repos to
+scout for adoption possibilities. Identified a gap — no domain in the research
+roadmap covers "find and adopt improvements from outside sources."
+
+**Gap identified:** Domain 02 (External Landscape) surveys approaches
+conceptually. But nowhere in the 16-domain roadmap did we account for evaluating
+specific external repos for **additive** (new capabilities) or **replacement**
+(better implementations) improvements. The repo-analysis skill generates exactly
+this data, but it had no home.
+
+**Resolution: B+C Hybrid**
+
+- **B: New Domain 02a (External Adoption Scouting)** — dedicated Tier 1 domain.
+  Uses `/repo-analysis` as primary tool. Findings classified as additive,
+  replacement, or inspirational. Unlike other domains, 02a is **ongoing** — it
+  doesn't gate once and close. New repos can be scouted at any time.
+
+- **C: Cross-Cutting Adoption Protocol** — added to the Research Protocol (Phase
+  A scoping) for every domain. Before scoping research, each domain MUST check
+  Domain 02a findings for entries classified under that domain. This ensures
+  scouting discoveries feed into every domain, not just one.
+
+**New decisions:** 33 (new domain), 34 (cross-cutting protocol), 35
+(repo-analysis as primary tool). See DECISIONS.md.
+
+**Operator clarifications (responses to revisit prompts):**
+
+- 16-domain scope: "massive is fine. the joy is in the work."
+- B→F direction: "good though research may reveal more"
+- v0.1 scope: reframed — "i don't think in terms of shippable. I want to create.
+  The rest comes in time."
+- Extraction: "won't all port over and many will most likely be simplified"
+- Windows agent bug: "not an issue here at home" — guardrails sufficient
+
+**Updated routing:** Same as original — `/deep-plan` next. Domain 02a is already
+active via repo-analysis runs.
