@@ -12,18 +12,18 @@ proposes to improve.
 Every session start injects three documents into the context window before any
 user interaction occurs.
 
-| Source                 | Characters | Approx Tokens (÷4) |
-| ---------------------- | ---------: | ------------------: |
-| CLAUDE.md              |     14,147 |               3,537 |
-| MEMORY.md (index)      |      6,239 |               1,560 |
-| 43 referenced .md files|     47,586 |              11,897 |
-| SESSION_CONTEXT.md     |      8,988 |               2,247 |
-| **Total**              | **76,960** |          **19,240** |
+| Source                  | Characters | Approx Tokens (÷4) |
+| ----------------------- | ---------: | -----------------: |
+| CLAUDE.md               |     14,147 |              3,537 |
+| MEMORY.md (index)       |      6,239 |              1,560 |
+| 43 referenced .md files |     47,586 |             11,897 |
+| SESSION_CONTEXT.md      |      8,988 |              2,247 |
+| **Total**               | **76,960** |         **19,240** |
 
 **Key finding**: The auto-memory subsystem alone (MEMORY.md + 43 child files)
 accounts for 53,825 characters / ~13,456 tokens — 70% of the total injection
-payload. CLAUDE.md and SESSION_CONTEXT.md together contribute only 23,135 chars /
-~5,784 tokens (30%).
+payload. CLAUDE.md and SESSION_CONTEXT.md together contribute only 23,135 chars
+/ ~5,784 tokens (30%).
 
 ### Injection as Proportion of Context Window
 
@@ -46,15 +46,15 @@ payload. CLAUDE.md and SESSION_CONTEXT.md together contribute only 23,135 chars 
 
 ### Category Breakdown
 
-| Category     | Files | Characters | % of total |
-| ------------ | ----: | ---------: | ---------: |
-| feedback_    |    23 |     23,587 |      43.8% |
-| project_     |     9 |     14,992 |      27.8% |
-| MEMORY.md    |     1 |      6,239 |      11.6% |
-| reference_   |     5 |      4,122 |       7.7% |
-| user_        |     4 |      2,559 |       4.8% |
-| t3_          |     1 |      1,319 |       2.4% |
-| sws_         |     1 |      1,007 |       1.9% |
+| Category    | Files | Characters | % of total |
+| ----------- | ----: | ---------: | ---------: |
+| feedback\_  |    23 |     23,587 |      43.8% |
+| project\_   |     9 |     14,992 |      27.8% |
+| MEMORY.md   |     1 |      6,239 |      11.6% |
+| reference\_ |     5 |      4,122 |       7.7% |
+| user\_      |     4 |      2,559 |       4.8% |
+| t3\_        |     1 |      1,319 |       2.4% |
+| sws\_       |     1 |      1,007 |       1.9% |
 
 **Key finding**: Feedback entries dominate — 23 files (52% of file count) and
 43.8% of character volume. These are behavioral corrections the AI must
@@ -62,26 +62,26 @@ internalize to avoid repeating past mistakes.
 
 ### 5 Largest Files
 
-| File                                | Characters |
-| ----------------------------------- | ---------: |
-| project_github_health_research.md   |      2,362 |
-| project_hook_if_research.md         |      2,126 |
-| project_active_initiatives.md       |      2,057 |
-| project_cross_locale_config.md      |      1,921 |
-| project_contrarian_agent_design.md  |      1,829 |
+| File                               | Characters |
+| ---------------------------------- | ---------: |
+| project_github_health_research.md  |      2,362 |
+| project_hook_if_research.md        |      2,126 |
+| project_active_initiatives.md      |      2,057 |
+| project_cross_locale_config.md     |      1,921 |
+| project_contrarian_agent_design.md |      1,829 |
 
 All 5 largest are `project_` files — status tracking for multi-session
 initiatives.
 
 ### 5 Smallest Files
 
-| File                              | Characters |
-| --------------------------------- | ---------: |
-| user_communication_preferences.md |        450 |
-| user_decision_authority.md        |        471 |
-| reference_tdms_systems.md         |        473 |
-| reference_documentation_standards.md |     494 |
-| reference_external_systems.md     |        520 |
+| File                                 | Characters |
+| ------------------------------------ | ---------: |
+| user_communication_preferences.md    |        450 |
+| user_decision_authority.md           |        471 |
+| reference_tdms_systems.md            |        473 |
+| reference_documentation_standards.md |        494 |
+| reference_external_systems.md        |        520 |
 
 ### Files Not Modified in 30+ Days
 
@@ -92,17 +92,17 @@ modifications.
 
 ### Modification Timeline
 
-| Date       | Files Modified | Notes                             |
-| ---------- | -------------: | --------------------------------- |
-| 2026-03-17 |             15 | Bulk consolidation event           |
-| 2026-03-19 |              1 |                                    |
-| 2026-03-22 |              1 |                                    |
-| 2026-03-23 |              2 |                                    |
-| 2026-03-25 |              6 | Session batch                      |
-| 2026-03-26 |              2 |                                    |
-| 2026-03-29 |              7 | Session batch                      |
-| 2026-03-30 |              2 |                                    |
-| 2026-03-31 |              8 | Today (most recent)                |
+| Date       | Files Modified | Notes                    |
+| ---------- | -------------: | ------------------------ |
+| 2026-03-17 |             15 | Bulk consolidation event |
+| 2026-03-19 |              1 |                          |
+| 2026-03-22 |              1 |                          |
+| 2026-03-23 |              2 |                          |
+| 2026-03-25 |              6 | Session batch            |
+| 2026-03-26 |              2 |                          |
+| 2026-03-29 |              7 | Session batch            |
+| 2026-03-30 |              2 |                          |
+| 2026-03-31 |              8 | Today (most recent)      |
 
 ---
 
@@ -156,15 +156,15 @@ CLAUDE.md has **9 commits** visible in recent history, with the most recent on
 
 #### Warning Type Breakdown (active file)
 
-| Hook / Type                       | Count |
-| --------------------------------- | ----: |
-| session-start / tdms-s0           |    10 |
-| session-start / session-end-missing |   9 |
-| session-start / review-lifecycle  |     9 |
-| session-start / cli-tools-missing |     8 |
-| session-start / pipeline-ratchet  |     1 |
-| pre-commit / pr-creep             |     1 |
-| pre-push / trigger                |     1 |
+| Hook / Type                         | Count |
+| ----------------------------------- | ----: |
+| session-start / tdms-s0             |    10 |
+| session-start / session-end-missing |     9 |
+| session-start / review-lifecycle    |     9 |
+| session-start / cli-tools-missing   |     8 |
+| session-start / pipeline-ratchet    |     1 |
+| pre-commit / pr-creep               |     1 |
+| pre-push / trigger                  |     1 |
 
 **Key finding**: 95% of warnings are session-start warnings (37 of 39). The same
 4 warning types repeat every session start — this is wallpaper, not actionable
@@ -179,14 +179,14 @@ no action taken.
 
 #### Override Type Breakdown
 
-| Check       | Count | % of total |
-| ----------- | ----: | ---------: |
-| reviewer    |    18 |      45.0% |
-| doc-header  |    12 |      30.0% |
-| triggers    |     5 |      12.5% |
-| propagation |     2 |       5.0% |
-| cross-doc-deps |  2 |       5.0% |
-| tests       |     1 |       2.5% |
+| Check          | Count | % of total |
+| -------------- | ----: | ---------: |
+| reviewer       |    18 |      45.0% |
+| doc-header     |    12 |      30.0% |
+| triggers       |     5 |      12.5% |
+| propagation    |     2 |       5.0% |
+| cross-doc-deps |     2 |       5.0% |
+| tests          |     1 |       2.5% |
 
 **Key finding**: Reviewer overrides dominate (45%). These are cases where the
 pre-commit/pre-push hook required a code-reviewer agent to have run, but the
@@ -228,8 +228,8 @@ invocations (124 of 155). This file only covers 3 days and 10 sessions.
 
 - **97 files** total
 - **1.9 MB** total size (1,737,766 bytes)
-- **Top consumers**: reviews archives (591 KB), commit-log (174 KB),
-  hook-runs (156 KB), hook-warnings archive (90 KB)
+- **Top consumers**: reviews archives (591 KB), commit-log (174 KB), hook-runs
+  (156 KB), hook-warnings archive (90 KB)
 
 ---
 
@@ -237,15 +237,15 @@ invocations (124 of 155). This file only covers 3 days and 10 sessions.
 
 Several JSONL files grow without bound:
 
-| File                        | Entries | Bytes   | Growth driver                |
-| --------------------------- | ------: | ------: | ---------------------------- |
-| commit-log.jsonl            |     498 | 173,680 | Every commit                 |
-| hook-runs.jsonl             |     149 | 155,600 | Every hook execution          |
-| hook-warnings-log (archive) |     338 |  90,148 | Every warning (rotated)       |
-| reviews.jsonl.archive       |       — | 302,387 | Archived PR reviews           |
-| reviews-archive.jsonl       |       — | 289,187 | Duplicate archive?            |
-| agent-invocations.jsonl     |     155 |  25,059 | Every agent spawn             |
-| review-metrics.jsonl        |      56 |  12,668 | Every PR review round         |
+| File                        | Entries |   Bytes | Growth driver           |
+| --------------------------- | ------: | ------: | ----------------------- |
+| commit-log.jsonl            |     498 | 173,680 | Every commit            |
+| hook-runs.jsonl             |     149 | 155,600 | Every hook execution    |
+| hook-warnings-log (archive) |     338 |  90,148 | Every warning (rotated) |
+| reviews.jsonl.archive       |       — | 302,387 | Archived PR reviews     |
+| reviews-archive.jsonl       |       — | 289,187 | Duplicate archive?      |
+| agent-invocations.jsonl     |     155 |  25,059 | Every agent spawn       |
+| review-metrics.jsonl        |      56 |  12,668 | Every PR review round   |
 
 Two review archives (`reviews.jsonl.archive` and `reviews-archive.jsonl`)
 together consume 591 KB — the largest storage consumers in the state directory.
@@ -254,23 +254,23 @@ together consume 591 KB — the largest storage consumers in the state directory
 
 ## 6. Cross-System Summary
 
-| Metric                          | Value         |
-| ------------------------------- | ------------- |
-| Session-start token cost        | ~19,240       |
-| Memory files                    | 44            |
-| Memory total chars              | 53,825        |
-| Memory system age               | 14 days       |
-| Feedback entries (behavioral)   | 23 (52%)      |
-| Files never stale (all <30d)    | 44 (100%)     |
-| SESSION_CONTEXT commits/day     | 4.3           |
-| Hook warnings (lifetime)        | 377           |
-| Hook warnings (repeating/stale) | 95%           |
-| Override log entries             | 40            |
-| Agent invocations (3 days)      | 155           |
-| State directory files           | 97            |
-| State directory size            | 1.9 MB        |
-| Commit log entries              | 498           |
-| Hook run entries                | 149           |
+| Metric                          | Value     |
+| ------------------------------- | --------- |
+| Session-start token cost        | ~19,240   |
+| Memory files                    | 44        |
+| Memory total chars              | 53,825    |
+| Memory system age               | 14 days   |
+| Feedback entries (behavioral)   | 23 (52%)  |
+| Files never stale (all <30d)    | 44 (100%) |
+| SESSION_CONTEXT commits/day     | 4.3       |
+| Hook warnings (lifetime)        | 377       |
+| Hook warnings (repeating/stale) | 95%       |
+| Override log entries            | 40        |
+| Agent invocations (3 days)      | 155       |
+| State directory files           | 97        |
+| State directory size            | 1.9 MB    |
+| Commit log entries              | 498       |
+| Hook run entries                | 149       |
 
 ---
 

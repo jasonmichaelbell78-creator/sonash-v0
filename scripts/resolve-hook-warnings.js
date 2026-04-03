@@ -38,7 +38,7 @@ try {
   ({ safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs"));
 } catch {
   console.error("safe-fs unavailable; refusing to write");
-  process.exit(2);
+  process.exit(1);
 }
 
 // Symlink guard
@@ -64,9 +64,9 @@ const ROOT_DIR = path.join(__dirname, "..");
 const LOG_PATH = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
 const ACK_PATH = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-ack.json");
 
-const args = process.argv.slice(2);
-const VERBOSE = args.includes("--verbose");
-const DRY_RUN = args.includes("--dry-run");
+const args = new Set(process.argv.slice(2));
+const VERBOSE = args.has("--verbose");
+const DRY_RUN = args.has("--dry-run");
 
 /**
  * Resolve check functions.
@@ -116,9 +116,9 @@ const RESOLVE_CHECKS = {
         encoding: "utf8",
       }).trim();
 
-      const count = parseInt(countStr, 10);
+      const count = Number.parseInt(countStr, 10);
       // Resolved if below the warning threshold (10)
-      return !isNaN(count) && count < 10;
+      return !Number.isNaN(count) && count < 10;
     } catch {
       return false;
     }
@@ -220,30 +220,26 @@ function writeLogEntries(entries) {
 }
 
 /**
- * Main: resolve stale warnings
+ * Find unique active (unresolved) warning types from log entries.
+ * @param {Array} entries - Parsed JSONL log entries
+ * @returns {Set<string>} Set of active warning type strings
  */
-function main() {
-  const entries = readLogEntries();
-  if (entries.length === 0) {
-    if (VERBOSE) console.log("No log entries to check");
-    return;
-  }
-
-  // Find unique active (unresolved) warning types
+function findActiveWarningTypes(entries) {
   const activeTypes = new Set();
   for (const entry of entries) {
     if (entry._malformed || entry.resolved) continue;
     if (entry.type) activeTypes.add(entry.type);
   }
+  return activeTypes;
+}
 
-  if (VERBOSE) {
-    console.log(`Active warning types: ${[...activeTypes].join(", ") || "none"}`);
-  }
-
-  // Run resolve checks
+/**
+ * Run resolve checks against active warning types.
+ * @param {Set<string>} activeTypes - Set of active warning types to check
+ * @returns {Set<string>} Set of type strings whose conditions are now resolved
+ */
+function runResolveChecks(activeTypes) {
   const resolvedTypes = new Set();
-  const now = new Date().toISOString();
-
   for (const type of activeTypes) {
     const check = RESOLVE_CHECKS[type];
     if (!check) {
@@ -256,29 +252,62 @@ function main() {
       if (isResolved) {
         resolvedTypes.add(type);
         if (VERBOSE) console.log(`  ${type}: RESOLVED`);
-      } else {
-        if (VERBOSE) console.log(`  ${type}: still active`);
+      } else if (VERBOSE) {
+        console.log(`  ${type}: still active`);
       }
     } catch (e) {
       if (VERBOSE) console.log(`  ${type}: check failed — ${sanitizeError(e)}`);
     }
   }
+  return resolvedTypes;
+}
+
+/**
+ * Mark matching entries as resolved with a timestamp.
+ * Mutates entries in place.
+ * @param {Array} entries - Parsed JSONL log entries
+ * @param {Set<string>} resolvedTypes - Types to mark resolved
+ * @param {string} timestamp - ISO timestamp for resolvedAt
+ * @returns {number} Count of entries marked resolved
+ */
+function markResolvedEntries(entries, resolvedTypes, timestamp) {
+  let resolvedCount = 0;
+  for (const entry of entries) {
+    if (entry._malformed || entry.resolved) continue;
+    if (resolvedTypes.has(entry.type)) {
+      entry.resolved = true;
+      entry.resolvedAt = timestamp;
+      resolvedCount++;
+    }
+  }
+  return resolvedCount;
+}
+
+/**
+ * Main: resolve stale warnings
+ */
+function main() {
+  const entries = readLogEntries();
+  if (entries.length === 0) {
+    if (VERBOSE) console.log("No log entries to check");
+    return;
+  }
+
+  const activeTypes = findActiveWarningTypes(entries);
+
+  if (VERBOSE) {
+    console.log(`Active warning types: ${[...activeTypes].join(", ") || "none"}`);
+  }
+
+  const resolvedTypes = runResolveChecks(activeTypes);
 
   if (resolvedTypes.size === 0) {
     if (VERBOSE) console.log("No warnings resolved");
     return;
   }
 
-  // Mark resolved entries
-  let resolvedCount = 0;
-  for (const entry of entries) {
-    if (entry._malformed || entry.resolved) continue;
-    if (resolvedTypes.has(entry.type)) {
-      entry.resolved = true;
-      entry.resolvedAt = now;
-      resolvedCount++;
-    }
-  }
+  const now = new Date().toISOString();
+  const resolvedCount = markResolvedEntries(entries, resolvedTypes, now);
 
   if (DRY_RUN) {
     console.log(

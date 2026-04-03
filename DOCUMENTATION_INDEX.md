@@ -1570,7 +1570,7 @@ _Uncategorized_
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Cross-Claim Consistency Check (Part A — Checks 1-5)](.research/debt-runner-expansion/findings/V3a-consistency.md)                                                    | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Cross-Claim Consistency Check: RESEARCH_OUTPUT.md](.research/debt-runner-expansion/findings/V3-consistency.md)                                                       | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [Data Directory Inventory](.research/debt-runner-expansion/findings/data-dir-inventory.md)                                                                            | \| filepath \| line_count \| data_type \| web_relevance \|      | ↓0 ↑0      | 2026-03-29    |
+| [Data Directory Inventory](.research/debt-runner-expansion/findings/data-dir-inventory.md)                                                                            | \| filepath ...                                                 | ↓0 ↑0      | 2026-04-03    |
 | [Dispute Resolutions -- debt-runner Expansion Research](.research/debt-runner-expansion/findings/dispute-resolutions.md)                                              | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Findings: /dev/debt Tab Integration into Dev Dashboard Shell and Next.js Architecture](.research/debt-runner-expansion/findings/SQ2-web-integration.md)              | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Findings: Advanced/Power Features for the Debt Dashboard Web Tab](.research/debt-runner-expansion/findings/SQ4b-web-power.md)                                        | -                                                               | ↓0 ↑0      | 2026-04-02    |
@@ -1586,7 +1586,7 @@ _Uncategorized_
 | [Findings: Scripts Inventory, Data Pipeline, and Verified Bugs — Updated with SQLite Dimension](.research/debt-runner-expansion/findings/SQ7-scripts-bugs-updated.md) | Reads metrics.json and (optionally) MASTER_DEBT.jsonl,          | ↓0 ↑0      | 2026-04-02    |
 | [Findings: SQLite Schema for tdms.db — Read-Optimized Mirror of MASTER_DEBT.jsonl](.research/debt-runner-expansion/findings/SQ1a-sqlite-schema.md)                    | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Skill Inventory Part 2: Skills F-Z + Data Directories](.research/debt-runner-expansion/findings/skill-inventory-part2.md)                                            | Research for debt-runner web dashboard expansion. Covers: gh... | ↓0 ↑0      | 2026-04-02    |
-| [State File Inventory — `.claude/state/`](.research/debt-runner-expansion/findings/state-file-inventory.md)                                                           | > Generated: 2026-03-27. Excludes task-_.json, deep-plan._.j... | ↓0 ↑0      | 2026-03-29    |
+| [State File Inventory — `.claude/state/`](.research/debt-runner-expansion/findings/state-file-inventory.md)                                                           | > Generated: 2026-03-27. Excludes task-_.json, deep-plan._.j... | ↓0 ↑0      | 2026-04-03    |
 | [V1 Codebase Verification — debt-runner Expansion Research Claims](.research/debt-runner-expansion/findings/V1-codebase-verification.md)                              | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [V2 Data Verification](.research/debt-runner-expansion/findings/V2-data-verification.md)                                                                              | -                                                               | ↓0 ↑0      | 2026-04-02    |
 
@@ -1635,7 +1635,7 @@ _Uncategorized_
 
 | Document                                                                                                                                                  | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Admin vs Dev Dashboard Audit](.research/dev-dashboard/findings/admin-audit.md)                                                                           | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Admin vs Dev Dashboard Audit](.research/dev-dashboard/findings/admin-audit.md)                                                                           | -                                                               | ↓0 ↑0      | 2026-04-03    |
 | [Dispute Resolutions — Dev Dashboard Research](.research/dev-dashboard/findings/dispute-resolutions.md)                                                   | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Findings: Admin vs Dev Dashboard Boundary Classification](.research/dev-dashboard/findings/SQ3a-admin-dev-boundary.md)                                   | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Findings: Alternative Tab Groupings (Challenger)](.research/dev-dashboard/findings/SQ2b-grouping-challenger.md)                                          | -                                                               | ↓0 ↑0      | 2026-04-02    |
@@ -1677,7 +1677,7 @@ _Uncategorized_
 | [Findings: Track B Evaluation Against Wave 1 Findings](.research/dev-dashboard/findings/SQ3b-track-b-evaluation.md)                                       | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [GAP-2: Decision Completeness Audit](.research/dev-dashboard/findings/GAP-2-decision-completeness.md)                                                     | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Open Question Answers — Session #245](.research/dev-dashboard/findings/Q-ANSWERS-session245.md)                                                          | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [Reframing Analysis: Debt-Runner Research v1 → v2](.research/dev-dashboard/findings/reframing-analysis.md)                                                | -                                                               | ↓0 ↑0      | 2026-03-29    |
+| [Reframing Analysis: Debt-Runner Research v1 → v2](.research/dev-dashboard/findings/reframing-analysis.md)                                                | -                                                               | ↓0 ↑0      | 2026-04-03    |
 | [User Checkpoint: Tab Grouping Decisions](.research/dev-dashboard/findings/CHECKPOINT-tab-decisions.md)                                                   | -                                                               | ↓0 ↑0      | 2026-04-02    |
 
 ### .research > github-health (Tier 4)
@@ -1730,8 +1730,8 @@ _Uncategorized_
 
 | Document                                                                                                     | Description | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------ | ----------- | ---------- | ------------- |
-| [Contrarian Challenge: Multi-Layer Memory Research](.research/multi-layer-memory/challenges/contrarian-1.md) | -           | ↓0 ↑0      | 2026-04-02    |
-| [Outside-The-Box Challenge: Multi-Layer Memory Research](.research/multi-layer-memory/challenges/otb-1.md)   | -           | ↓0 ↑0      | 2026-04-02    |
+| [Contrarian Challenge: Multi-Layer Memory Research](.research/multi-layer-memory/challenges/contrarian-1.md) | -           | ↓0 ↑0      | 2026-04-03    |
+| [Outside-The-Box Challenge: Multi-Layer Memory Research](.research/multi-layer-memory/challenges/otb-1.md)   | -           | ↓0 ↑0      | 2026-04-03    |
 
 ### .research > multi-layer-memory > findings (Tier 4)
 
@@ -1766,17 +1766,17 @@ _Uncategorized_
 | [Findings: MCP Servers for Memory and Knowledge Management](.research/multi-layer-memory/findings/D5a-mcp-memory-servers.md)                                | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Findings: Solo Developer Feasibility and Maintenance Cost Analysis](.research/multi-layer-memory/findings/D10b-solo-dev-feasibility.md)                    | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [Findings: Technology Evaluation — Memory System Component Recommendations](.research/multi-layer-memory/findings/D9b-technology-evaluation.md)             | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [G1: Cursor IDE Memory Feature Removal](.research/multi-layer-memory/findings/G1-cursor-memory-removal.md)                                                  | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [G2: Actual Memory System Usage Metrics](.research/multi-layer-memory/findings/G2-actual-usage-metrics.md)                                                  | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [G5: AutoDream Observable Evidence + G4: autoMemoryDirectory Behavior](.research/multi-layer-memory/findings/G5-autodream-and-autoMemDir.md)                | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [Gap Research: Cursor Memory Removal + Tool Negative Evidence](.research/multi-layer-memory/findings/G1-cursor-and-tool-negatives.md)                       | -                                                               | ↓0 ↑0      | 2026-04-02    |
+| [G1: Cursor IDE Memory Feature Removal](.research/multi-layer-memory/findings/G1-cursor-memory-removal.md)                                                  | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [G2: Actual Memory System Usage Metrics](.research/multi-layer-memory/findings/G2-actual-usage-metrics.md)                                                  | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [G5: AutoDream Observable Evidence + G4: autoMemoryDirectory Behavior](.research/multi-layer-memory/findings/G5-autodream-and-autoMemDir.md)                | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Gap Research: Cursor Memory Removal + Tool Negative Evidence](.research/multi-layer-memory/findings/G1-cursor-and-tool-negatives.md)                       | -                                                               | ↓0 ↑0      | 2026-04-03    |
 | [Recommendations Synthesis: Multi-Layer Memory System](.research/multi-layer-memory/findings/S3-recommendations-synthesis.md)                               | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [S1: Landscape Synthesis — Multi-Layer Memory Research](.research/multi-layer-memory/findings/S1-landscape-synthesis.md)                                    | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [S2: Analysis Synthesis — Comparison, Patterns, and Sync](.research/multi-layer-memory/findings/S2-analysis-synthesis.md)                                   | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [V1: Landscape Claims Verification](.research/multi-layer-memory/findings/V1-landscape-verification.md)                                                     | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [V2: Analysis Claims Verification (C-100 through C-145)](.research/multi-layer-memory/findings/V2-analysis-verification.md)                                 | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [V3: Recommendations Claims Verification (C-200 through C-243)](.research/multi-layer-memory/findings/V3-recommendations-verification.md)                   | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [V4: A-MAC Paper Verification](.research/multi-layer-memory/findings/V4-amac-paper-verification.md)                                                         | -                                                               | ↓0 ↑0      | 2026-04-02    |
+| [V1: Landscape Claims Verification](.research/multi-layer-memory/findings/V1-landscape-verification.md)                                                     | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [V2: Analysis Claims Verification (C-100 through C-145)](.research/multi-layer-memory/findings/V2-analysis-verification.md)                                 | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [V3: Recommendations Claims Verification (C-200 through C-243)](.research/multi-layer-memory/findings/V3-recommendations-verification.md)                   | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [V4: A-MAC Paper Verification](.research/multi-layer-memory/findings/V4-amac-paper-verification.md)                                                         | -                                                               | ↓0 ↑0      | 2026-04-03    |
 
 ### .research > plan-orchestration (Tier 4)
 
@@ -1792,10 +1792,10 @@ _Uncategorized_
 
 | Document                                                                                                          | Description | References | Last Modified |
 | ----------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Contrarian Challenge: Plan Orchestration Research Claims](.research/plan-orchestration/challenges/CONTRARIAN.md) | -           | ↓0 ↑0      | 2026-03-24    |
-| [Methodology Critique: Plan Orchestration Research](.research/plan-orchestration/challenges/METHODOLOGY.md)       | -           | ↓0 ↑0      | 2026-03-24    |
-| [Outside-the-Box Analysis: Plan Orchestration](.research/plan-orchestration/challenges/OUTSIDE_THE_BOX.md)        | -           | ↓0 ↑0      | 2026-03-24    |
-| [Second-Order Effects and Downstream Implications](.research/plan-orchestration/challenges/SECOND_ORDER.md)       | -           | ↓0 ↑0      | 2026-03-24    |
+| [Contrarian Challenge: Plan Orchestration Research Claims](.research/plan-orchestration/challenges/CONTRARIAN.md) | -           | ↓0 ↑0      | 2026-04-03    |
+| [Methodology Critique: Plan Orchestration Research](.research/plan-orchestration/challenges/METHODOLOGY.md)       | -           | ↓0 ↑0      | 2026-04-03    |
+| [Outside-the-Box Analysis: Plan Orchestration](.research/plan-orchestration/challenges/OUTSIDE_THE_BOX.md)        | -           | ↓0 ↑0      | 2026-04-03    |
+| [Second-Order Effects and Downstream Implications](.research/plan-orchestration/challenges/SECOND_ORDER.md)       | -           | ↓0 ↑0      | 2026-04-03    |
 
 ### .research > plan-orchestration > findings (Tier 4)
 
@@ -1803,24 +1803,24 @@ _Uncategorized_
 
 | Document                                                                                                                       | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
-| [Findings: Agent Environment Analysis Plan Inventory](.research/plan-orchestration/findings/S-06-agent-env.md)                 | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: CLI Tools Implementation Plan Inventory](.research/plan-orchestration/findings/S-03-cli-tools.md)                   | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Cross-Plan Dependency Graph and Critical Path](.research/plan-orchestration/findings/S-09-dependency-graph.md)      | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Cross-Plan File Overlap Map](.research/plan-orchestration/findings/S-08-file-overlaps.md)                           | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Cross-Plan MASTER_DEBT Analysis](.research/plan-orchestration/findings/S-11-master-debt.md)                         | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Cross-Plan Redundancy and Synergy Analysis](.research/plan-orchestration/findings/S-10-redundancy-synergy.md)       | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Documentation Cascade & Git/Branch Strategy](.research/plan-orchestration/findings/S-15-doc-git-strategy.md)        | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Passive Surfacing Remediation Plan Inventory](.research/plan-orchestration/findings/S-04-passive-surfacing.md)      | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Plan Inventory -- custom-statusline](.research/plan-orchestration/findings/S-02-custom-statusline.md)               | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Propagation-Research Plan Inventory](.research/plan-orchestration/findings/S-05-propagation.md)                     | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Repo Cleanup Plan Inventory](.research/plan-orchestration/findings/S-01-repo-cleanup.md)                            | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Risk Assessment and Rollback Blast Radius](.research/plan-orchestration/findings/S-17-risk-rollback.md)             | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: ROADMAP Alignment & CANON Pre-Work Analysis](.research/plan-orchestration/findings/S-13-roadmap-canon.md)           | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Scheduling Theory Applied to Plan Orchestration](.research/plan-orchestration/findings/S-14-scheduling-theory.md)   | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: Skill, Hook, and Agent Definition Impact Analysis](.research/plan-orchestration/findings/S-12-skill-hook-impact.md) | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: SWS Decomposition into Schedulable Chunks](.research/plan-orchestration/findings/S-16-sws-decomposition.md)         | -                                                               | ↓0 ↑0      | 2026-03-24    |
-| [Findings: System-Wide Standardization (SWS) Plan Inventory](.research/plan-orchestration/findings/S-07-sws.md)                | Build CANON framework and validate it works end-to-end with ... | ↓0 ↑0      | 2026-03-24    |
-| [User Constraint: SWS Scope Growth](.research/plan-orchestration/findings/CONSTRAINT-sws-scope-growth.md)                      | -                                                               | ↓0 ↑0      | 2026-03-24    |
+| [Findings: Agent Environment Analysis Plan Inventory](.research/plan-orchestration/findings/S-06-agent-env.md)                 | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: CLI Tools Implementation Plan Inventory](.research/plan-orchestration/findings/S-03-cli-tools.md)                   | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Cross-Plan Dependency Graph and Critical Path](.research/plan-orchestration/findings/S-09-dependency-graph.md)      | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Cross-Plan File Overlap Map](.research/plan-orchestration/findings/S-08-file-overlaps.md)                           | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Cross-Plan MASTER_DEBT Analysis](.research/plan-orchestration/findings/S-11-master-debt.md)                         | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Cross-Plan Redundancy and Synergy Analysis](.research/plan-orchestration/findings/S-10-redundancy-synergy.md)       | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Documentation Cascade & Git/Branch Strategy](.research/plan-orchestration/findings/S-15-doc-git-strategy.md)        | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Passive Surfacing Remediation Plan Inventory](.research/plan-orchestration/findings/S-04-passive-surfacing.md)      | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Plan Inventory -- custom-statusline](.research/plan-orchestration/findings/S-02-custom-statusline.md)               | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Propagation-Research Plan Inventory](.research/plan-orchestration/findings/S-05-propagation.md)                     | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Repo Cleanup Plan Inventory](.research/plan-orchestration/findings/S-01-repo-cleanup.md)                            | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Risk Assessment and Rollback Blast Radius](.research/plan-orchestration/findings/S-17-risk-rollback.md)             | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: ROADMAP Alignment & CANON Pre-Work Analysis](.research/plan-orchestration/findings/S-13-roadmap-canon.md)           | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Scheduling Theory Applied to Plan Orchestration](.research/plan-orchestration/findings/S-14-scheduling-theory.md)   | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: Skill, Hook, and Agent Definition Impact Analysis](.research/plan-orchestration/findings/S-12-skill-hook-impact.md) | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: SWS Decomposition into Schedulable Chunks](.research/plan-orchestration/findings/S-16-sws-decomposition.md)         | -                                                               | ↓0 ↑0      | 2026-04-03    |
+| [Findings: System-Wide Standardization (SWS) Plan Inventory](.research/plan-orchestration/findings/S-07-sws.md)                | Build CANON framework and validate it works end-to-end with ... | ↓0 ↑0      | 2026-04-03    |
+| [User Constraint: SWS Scope Growth](.research/plan-orchestration/findings/CONSTRAINT-sws-scope-growth.md)                      | -                                                               | ↓0 ↑0      | 2026-04-03    |
 
 ### .research > repo-analysis-skill (Tier 4)
 
@@ -1838,7 +1838,7 @@ _Uncategorized_
 
 | Document                                                                                                       | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Contrarian Challenge: Repo Analysis Skill Research](.research/repo-analysis-skill/challenges/contrarian-1.md) | -                                                               | ↓0 ↑0      | 2026-04-02    |
+| [Contrarian Challenge: Repo Analysis Skill Research](.research/repo-analysis-skill/challenges/contrarian-1.md) | -                                                               | ↓0 ↑0      | 2026-04-03    |
 | [Outside-the-Box Challenges: Repo Analysis Skill](.research/repo-analysis-skill/challenges/otb-1.md)           | Surface creative but implementable ideas the primary researc... | ↓0 ↑0      | 2026-04-02    |
 
 ### .research > repo-analysis-skill > findings (Tier 4)

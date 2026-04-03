@@ -128,7 +128,7 @@ function checkTool(name, def) {
       timeout: 10000, // 10s timeout per tool
       stdio: ["ignore", "pipe", "pipe"],
     });
-    const version = (output || "").trim().split("\n")[0] || "unknown";
+    const version = (output || "").trim().split(/\r?\n/)[0] || "unknown";
     return { available: true, version, error: null };
   } catch (err) {
     // Use sanitizeError — never expose raw error.message
@@ -185,6 +185,53 @@ function checkAllTools() {
 
 // ── CLI entry point ────────────────────────────────────────────────
 
+/**
+ * Print a single tier's tools in human-readable format.
+ *
+ * @param {object} tools - The manifest.tools object
+ * @param {number} tier - Tier number to filter by
+ * @param {string} label - Section heading label
+ */
+function printTierTools(tools, tier, label) {
+  console.log(`${label}:`);
+  for (const [name, info] of Object.entries(tools)) {
+    if (info.tier !== tier) continue;
+    const status = info.available ? "OK" : "MISSING";
+    const version = info.available ? info.version : "";
+    console.log(`  ${name.padEnd(20)} ${status.padEnd(10)} ${version}`);
+  }
+}
+
+/**
+ * Print manifest summary and missing-tool guidance.
+ *
+ * @param {{ tier1: { available: number, total: number }, tier2: { available: number, total: number }, totalAvailable: number, totalChecked: number }} summary
+ */
+function printSummary(summary) {
+  const s = summary;
+  console.log(
+    `\nSummary: Tier 1: ${s.tier1.available}/${s.tier1.total} | Tier 2: ${s.tier2.available}/${s.tier2.total} | Total: ${s.totalAvailable}/${s.totalChecked}`
+  );
+
+  if (s.tier1.available < s.tier1.total) {
+    console.log("\nNOTE: Missing Tier 1 tools will cause graceful degradation.");
+    console.log("      Run: bash scripts/repo-analysis/install-tools.sh");
+  }
+}
+
+/**
+ * Output manifest in human-readable pretty format.
+ *
+ * @param {{ tools: object, summary: object }} manifest
+ */
+function outputPretty(manifest) {
+  console.log("=== Repo Analysis Tool Manifest ===\n");
+  printTierTools(manifest.tools, 1, "Tier 1 (Core Analysis)");
+  console.log("");
+  printTierTools(manifest.tools, 2, "Tier 2 (Language-Conditional)");
+  printSummary(manifest.summary);
+}
+
 function main() {
   const args = process.argv.slice(2);
   const pretty = args.includes("--pretty");
@@ -193,34 +240,7 @@ function main() {
     const manifest = checkAllTools();
 
     if (pretty) {
-      // Human-readable output
-      console.log("=== Repo Analysis Tool Manifest ===\n");
-
-      console.log("Tier 1 (Core Analysis):");
-      for (const [name, info] of Object.entries(manifest.tools)) {
-        if (info.tier !== 1) continue;
-        const status = info.available ? "OK" : "MISSING";
-        const version = info.available ? info.version : "";
-        console.log(`  ${name.padEnd(20)} ${status.padEnd(10)} ${version}`);
-      }
-
-      console.log("\nTier 2 (Language-Conditional):");
-      for (const [name, info] of Object.entries(manifest.tools)) {
-        if (info.tier !== 2) continue;
-        const status = info.available ? "OK" : "MISSING";
-        const version = info.available ? info.version : "";
-        console.log(`  ${name.padEnd(20)} ${status.padEnd(10)} ${version}`);
-      }
-
-      const s = manifest.summary;
-      console.log(
-        `\nSummary: Tier 1: ${s.tier1.available}/${s.tier1.total} | Tier 2: ${s.tier2.available}/${s.tier2.total} | Total: ${s.totalAvailable}/${s.totalChecked}`
-      );
-
-      if (s.tier1.available < s.tier1.total) {
-        console.log("\nNOTE: Missing Tier 1 tools will cause graceful degradation.");
-        console.log("      Run: bash scripts/repo-analysis/install-tools.sh");
-      }
+      outputPretty(manifest);
     } else {
       // JSON output for programmatic consumption
       console.log(JSON.stringify(manifest, null, 2));

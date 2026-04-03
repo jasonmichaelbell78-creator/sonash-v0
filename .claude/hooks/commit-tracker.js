@@ -30,7 +30,7 @@ try {
 }
 try {
   ({ sanitizeError } = require(
-    path.join(__dirname, "..", "scripts", "lib", "security-helpers.js")
+    path.join(__dirname, "..", "..", "scripts", "lib", "security-helpers.js")
   ));
 } catch {
   sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");

@@ -1,3 +1,4 @@
+/* global __dirname */
 /**
  * Research Output Validation Script
  *
@@ -14,30 +15,42 @@
  * @module research/validate-research
  */
 
-import { readdirSync, existsSync } from "fs";
-import { join, relative } from "path";
-import { createRequire } from "module";
-import { sanitizeError } from "../lib/sanitize-error.js";
-
-const require = createRequire(import.meta.url);
+const { readdirSync } = require("node:fs");
+const { join, relative } = require("node:path");
+const { sanitizeError } = require("../lib/sanitize-error.cjs");
 const { safeWriteFileSync, readUtf8Sync } = require("../lib/safe-fs.js");
+const { parseCliArgs } = require("../lib/security-helpers.js");
 
-const ROOT = join(import.meta.dirname, "..", "..");
+const ROOT = join(__dirname, "..", "..");
 const RESEARCH_DIR = join(ROOT, ".research");
 const STATE_FILE = join(ROOT, ".claude", "state", "research-validation.jsonl");
 
-const SKIP_TOPICS = ["research-discovery-standard"];
+const SKIP_TOPICS = new Set(["research-discovery-standard"]);
 
 // ── CLI Args ─────────────────────────────────────────────────────────────────
 
-const args = process.argv.slice(2);
-const topicFilter = args.find((a) => a.startsWith("--topic="))?.slice("--topic=".length);
-const fixMode = args.includes("--fix");
+// Normalize --key=value into [--key, value] for parseCliArgs (which uses space-separated format)
+const rawArgs = process.argv.slice(2).flatMap((arg) => {
+  const eqIdx = arg.indexOf("=");
+  if (eqIdx > 0 && arg.startsWith("--")) return [arg.slice(0, eqIdx), arg.slice(eqIdx + 1)];
+  return [arg];
+});
+
+const cliOptions = parseCliArgs(rawArgs, {
+  "--topic": { type: "string", required: false },
+  "--fix": { type: "boolean" },
+});
+const topicFilter = cliOptions["--topic"] || null;
+const fixMode = cliOptions["--fix"];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
+/**
+ * Read a JSONL file and parse each line as JSON.
+ * @param {string} filePath - Absolute path to the JSONL file
+ * @returns {{data: object[] | null, error: string | null}} Parsed lines or error
+ */
 function readJsonl(filePath) {
-  if (!existsSync(filePath)) return null;
   try {
     const content = readUtf8Sync(filePath);
     const lines = content.split("\n").filter((l) => l.trim().length > 0);
@@ -46,35 +59,50 @@ function readJsonl(filePath) {
       try {
         results.push(JSON.parse(lines[i]));
       } catch {
-        return { error: `Parse error at line ${i + 1}`, line: i + 1 };
+        return { data: null, error: `Parse error at line ${i + 1}` };
       }
     }
-    return results;
+    return { data: results, error: null };
   } catch (err) {
-    return { error: sanitizeError(err) };
+    if (err.code === "ENOENT") return { data: null, error: null };
+    return { data: null, error: sanitizeError(err) };
   }
 }
 
+/**
+ * Read and parse a JSON file.
+ * @param {string} filePath - Absolute path to the JSON file
+ * @returns {{data: object | null, error: string | null}} Parsed object or error
+ */
 function readJson(filePath) {
-  if (!existsSync(filePath)) return null;
   try {
-    return JSON.parse(readUtf8Sync(filePath));
+    return { data: JSON.parse(readUtf8Sync(filePath)), error: null };
   } catch (err) {
-    return { error: sanitizeError(err) };
+    if (err.code === "ENOENT") return { data: null, error: null };
+    return { data: null, error: sanitizeError(err) };
   }
 }
 
+/**
+ * Read a text file.
+ * @param {string} filePath - Absolute path to the text file
+ * @returns {{data: string | null, error: string | null}} File contents or error
+ */
 function readText(filePath) {
-  if (!existsSync(filePath)) return null;
   try {
-    return readUtf8Sync(filePath);
+    return { data: readUtf8Sync(filePath), error: null };
   } catch (err) {
-    return { error: sanitizeError(err) };
+    if (err.code === "ENOENT") return { data: null, error: null };
+    return { data: null, error: sanitizeError(err) };
   }
 }
 
+/**
+ * Count .md files in a directory (recursive).
+ * @param {string} dirPath - Absolute path to the directory
+ * @returns {number} Number of .md files found
+ */
 function countFiles(dirPath) {
-  if (!existsSync(dirPath)) return 0;
   try {
     return readdirSync(dirPath, { recursive: true }).filter((f) => {
       const name = typeof f === "string" ? f : f.toString();
@@ -87,16 +115,30 @@ function countFiles(dirPath) {
 
 // ── Checks ───────────────────────────────────────────────────────────────────
 
+/**
+ * Collect all source reference IDs from a claim, normalizing across
+ * sourceIds (array/string), sources (array), and source (string) fields.
+ * @param {object} claim - A single claim object
+ * @returns {string[]} Array of source reference IDs
+ */
+function collectClaimRefs(claim) {
+  const refs = [];
+  if (Array.isArray(claim.sourceIds)) refs.push(...claim.sourceIds);
+  else if (typeof claim.sourceIds === "string") refs.push(claim.sourceIds);
+  if (Array.isArray(claim.sources)) refs.push(...claim.sources);
+  if (typeof claim.source === "string") refs.push(claim.source);
+  return refs;
+}
+
 function checkSourceTraceability(claims, sources, metadata) {
-  if (!claims || claims.error) return { status: "WARN", detail: "No claims.jsonl" };
-  if (!sources || sources.error) return { status: "WARN", detail: "No sources.jsonl" };
+  if (!claims) return { status: "WARN", detail: "No claims.jsonl" };
+  if (!sources) return { status: "WARN", detail: "No sources.jsonl" };
 
   const sourceIds = new Set(sources.map((s) => s.id));
   const orphaned = [];
 
   for (const claim of claims) {
-    // Some claims use "sources" array instead of "sourceIds"
-    const refs = claim.sourceIds || claim.sources || [];
+    const refs = collectClaimRefs(claim);
     for (const sid of refs) {
       if (!sourceIds.has(sid)) {
         orphaned.push({ claim: claim.id, sourceId: sid });
@@ -107,7 +149,7 @@ function checkSourceTraceability(claims, sources, metadata) {
   if (orphaned.length === 0) return { status: "PASS", detail: "All sourceIds resolve" };
 
   // D-code/S-code mismatch is accepted for existing research with sourceIdScheme
-  if (metadata && metadata.sourceIdScheme) {
+  if (metadata?.sourceIdScheme) {
     return {
       status: "WARN",
       detail: `${orphaned.length} orphaned sourceIds (accepted: ${metadata.sourceIdScheme})`,
@@ -123,7 +165,7 @@ function checkSourceTraceability(claims, sources, metadata) {
 }
 
 function checkClaimCoverage(claims, reportText) {
-  if (!claims || claims.error) return { status: "WARN", detail: "No claims.jsonl" };
+  if (!claims) return { status: "WARN", detail: "No claims.jsonl" };
   if (!reportText) return { status: "WARN", detail: "No RESEARCH_OUTPUT.md" };
 
   const uncovered = [];
@@ -157,7 +199,7 @@ function checkClaimCoverage(claims, reportText) {
 }
 
 function checkFindingsInventory(topicDir, metadata) {
-  if (!metadata || metadata.error) return { status: "WARN", detail: "No metadata.json" };
+  if (!metadata) return { status: "WARN", detail: "No metadata.json" };
 
   const findingsCount = countFiles(join(topicDir, "findings"));
   const challengesCount = countFiles(join(topicDir, "challenges"));
@@ -185,8 +227,8 @@ function checkFindingsInventory(topicDir, metadata) {
 }
 
 function checkConfidenceReconciliation(claims, metadata) {
-  if (!claims || claims.error) return { status: "WARN", detail: "No claims.jsonl" };
-  if (!metadata || metadata.error) return { status: "WARN", detail: "No metadata.json" };
+  if (!claims) return { status: "WARN", detail: "No claims.jsonl" };
+  if (!metadata) return { status: "WARN", detail: "No metadata.json" };
   if (!metadata.confidenceDistribution)
     return { status: "WARN", detail: "No confidenceDistribution in metadata" };
 
@@ -221,8 +263,8 @@ function checkConfidenceReconciliation(claims, metadata) {
 }
 
 function checkPostPipelineDelta(claims, metadata) {
-  if (!claims || claims.error) return { status: "WARN", detail: "No claims.jsonl" };
-  if (!metadata || metadata.error) return { status: "WARN", detail: "No metadata.json" };
+  if (!claims) return { status: "WARN", detail: "No claims.jsonl" };
+  if (!metadata) return { status: "WARN", detail: "No metadata.json" };
   if (metadata.claimCount === undefined)
     return { status: "WARN", detail: "No claimCount in metadata" };
 
@@ -248,7 +290,7 @@ function checkPostPipelineDelta(claims, metadata) {
 }
 
 function checkClaimToReportBidirectional(claims, reportText) {
-  if (!claims || claims.error) return { status: "WARN", detail: "No claims.jsonl" };
+  if (!claims) return { status: "WARN", detail: "No claims.jsonl" };
   if (!reportText) return { status: "WARN", detail: "No RESEARCH_OUTPUT.md" };
 
   const jsonlIds = new Set(claims.map((c) => c.id).filter(Boolean));
@@ -274,7 +316,7 @@ function checkClaimToReportBidirectional(claims, reportText) {
 }
 
 function checkSourceFreshness(sources) {
-  if (!sources || sources.error) return { status: "WARN", detail: "No sources.jsonl" };
+  if (!sources) return { status: "WARN", detail: "No sources.jsonl" };
 
   const now = new Date();
   const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
@@ -297,7 +339,7 @@ function checkSourceFreshness(sources) {
 }
 
 function checkVerificationVerdictPersistence(claims, reportText) {
-  if (!claims || claims.error) return { status: "WARN", detail: "No claims.jsonl" };
+  if (!claims) return { status: "WARN", detail: "No claims.jsonl" };
   if (!reportText) return { status: "WARN", detail: "No RESEARCH_OUTPUT.md" };
 
   // Check if report mentions verification verdicts
@@ -333,13 +375,50 @@ function checkVerificationVerdictPersistence(claims, reportText) {
 // ── Main ─────────────────────────────────────────────────────────────────────
 
 function getTopics() {
-  const entries = readdirSync(RESEARCH_DIR, { withFileTypes: true });
-  return entries
-    .filter((e) => e.isDirectory() && e.name !== "archive")
-    .map((e) => e.name)
-    .filter((name) => !SKIP_TOPICS.includes(name))
-    .filter((name) => !topicFilter || name === topicFilter)
-    .sort();
+  try {
+    const entries = readdirSync(RESEARCH_DIR, { withFileTypes: true });
+    return entries
+      .filter((e) => e.isDirectory() && e.name !== "archive")
+      .map((e) => e.name)
+      .filter((name) => !SKIP_TOPICS.has(name))
+      .filter((name) => !topicFilter || name === topicFilter)
+      .sort();
+  } catch (err) {
+    if (err.code === "ENOENT") return [];
+    throw err;
+  }
+}
+
+/**
+ * Check if a parsed read result has a parse/read error (non-ENOENT).
+ * @param {{data: *, error: string | null}} result - Result from readJsonl/readJson/readText
+ * @returns {boolean} True if the result contains an error
+ */
+function hasReadError(result) {
+  return result.error !== null;
+}
+
+/**
+ * Build early-return results for JSONL parse failures.
+ * @param {string} topic - Topic name
+ * @param {{data: *, error: string | null}} claimsResult - Result from readJsonl
+ * @param {{data: *, error: string | null}} sourcesResult - Result from readJsonl
+ * @returns {{topic: string, results: object[]} | null} Error result or null if no errors
+ */
+function checkParseErrors(topic, claimsResult, sourcesResult) {
+  if (hasReadError(claimsResult)) {
+    return {
+      topic,
+      results: [{ check: "JSONL Parse", status: "FAIL", detail: claimsResult.error }],
+    };
+  }
+  if (hasReadError(sourcesResult)) {
+    return {
+      topic,
+      results: [{ check: "JSONL Parse", status: "FAIL", detail: sourcesResult.error }],
+    };
+  }
+  return null;
 }
 
 function validateTopic(topic) {
@@ -349,23 +428,18 @@ function validateTopic(topic) {
   const metadataPath = join(topicDir, "metadata.json");
   const reportPath = join(topicDir, "RESEARCH_OUTPUT.md");
 
-  const claims = readJsonl(claimsPath);
-  const sources = readJsonl(sourcesPath);
-  const metadata = readJson(metadataPath);
-  const reportText = readText(reportPath);
+  const claimsResult = readJsonl(claimsPath);
+  const sourcesResult = readJsonl(sourcesPath);
+  const metadataResult = readJson(metadataPath);
+  const reportResult = readText(reportPath);
 
-  if (claims && claims.error) {
-    return {
-      topic,
-      results: [{ check: "JSONL Parse", status: "FAIL", detail: claims.error }],
-    };
-  }
-  if (sources && sources.error) {
-    return {
-      topic,
-      results: [{ check: "JSONL Parse", status: "FAIL", detail: sources.error }],
-    };
-  }
+  const parseError = checkParseErrors(topic, claimsResult, sourcesResult);
+  if (parseError) return parseError;
+
+  const claims = claimsResult.data;
+  const sources = sourcesResult.data;
+  const metadata = metadataResult.data;
+  const reportText = reportResult.data;
 
   const fixes = {};
   const results = [
@@ -380,7 +454,7 @@ function validateTopic(topic) {
   ];
 
   // Apply fixes in --fix mode
-  if (fixMode && metadata && !metadata.error) {
+  if (fixMode && metadata) {
     for (const r of results) {
       if (r.fix) Object.assign(fixes, r.fix);
     }
@@ -400,16 +474,28 @@ function validateTopic(topic) {
 function statusIcon(status) {
   switch (status) {
     case "PASS":
-      return "✅";
+      return "PASS";
     case "FAIL":
-      return "❌";
+      return "FAIL";
     case "WARN":
-      return "⚠️ ";
+      return "WARN";
     case "FIXED":
-      return "🔧";
+      return "FIX ";
     default:
-      return "❓";
+      return "??? ";
   }
+}
+
+/**
+ * Determine the summary status label for a topic based on its result counts.
+ * @param {number} fails - Number of FAIL results
+ * @param {number} warns - Number of WARN results
+ * @returns {string} Status label string
+ */
+function topicStatusLabel(fails, warns) {
+  if (fails > 0) return "FAIL";
+  if (warns > 0) return "WARN";
+  return "PASS";
 }
 
 function printResults(allResults) {
@@ -418,9 +504,9 @@ function printResults(allResults) {
   let totalWarn = 0;
   let totalFixed = 0;
 
-  console.log("\n╔══════════════════════════════════════════════════════════════╗");
-  console.log("║           RESEARCH OUTPUT VALIDATION REPORT                 ║");
-  console.log("╚══════════════════════════════════════════════════════════════╝\n");
+  console.log("\n======================================================");
+  console.log("       RESEARCH OUTPUT VALIDATION REPORT               ");
+  console.log("======================================================\n");
 
   for (const { topic, results } of allResults) {
     const fails = results.filter((r) => r.status === "FAIL").length;
@@ -433,22 +519,43 @@ function printResults(allResults) {
     totalWarn += warns;
     totalFixed += fixed;
 
-    const topicStatus = fails > 0 ? "❌" : warns > 0 ? "⚠️ " : "✅";
-    console.log(`${topicStatus} ${topic}`);
+    const label = topicStatusLabel(fails, warns);
+    console.log(`[${label}] ${topic}`);
 
     for (const r of results) {
-      console.log(`   ${statusIcon(r.status)} ${r.check}: ${r.detail}`);
+      console.log(`   [${statusIcon(r.status)}] ${r.check}: ${r.detail}`);
     }
     console.log();
   }
 
-  console.log("┌──────────────────────────────────────────────────────────────┐");
+  console.log("------------------------------------------------------");
   console.log(
-    `│ TOTAL: ${totalPass} pass, ${totalFail} fail, ${totalWarn} warn, ${totalFixed} fixed`
+    `TOTAL: ${totalPass} pass, ${totalFail} fail, ${totalWarn} warn, ${totalFixed} fixed`
   );
-  console.log("└──────────────────────────────────────────────────────────────┘\n");
+  console.log("------------------------------------------------------\n");
 
   return totalFail;
+}
+
+/**
+ * Build a single state entry object from a check result.
+ * @param {string} timestamp - ISO timestamp
+ * @param {string} topic - Topic name
+ * @param {object} r - Check result with status, detail, and optional arrays
+ * @returns {object} State entry for JSONL output
+ */
+function buildStateEntry(timestamp, topic, r) {
+  return {
+    timestamp,
+    topic,
+    check: r.check,
+    status: r.status,
+    detail: r.detail,
+    ...(r.orphaned ? { orphanedCount: r.orphaned.length } : {}),
+    ...(r.uncovered ? { uncoveredCount: r.uncovered.length } : {}),
+    ...(r.reportOnly ? { reportOnlyCount: r.reportOnly.length } : {}),
+    ...(r.stale ? { staleCount: r.stale.length } : {}),
+  };
 }
 
 function writeStateFile(allResults) {
@@ -457,25 +564,13 @@ function writeStateFile(allResults) {
 
   for (const { topic, results } of allResults) {
     for (const r of results) {
-      lines.push(
-        JSON.stringify({
-          timestamp,
-          topic,
-          check: r.check,
-          status: r.status,
-          detail: r.detail,
-          ...(r.orphaned ? { orphanedCount: r.orphaned.length } : {}),
-          ...(r.uncovered ? { uncoveredCount: r.uncovered.length } : {}),
-          ...(r.reportOnly ? { reportOnlyCount: r.reportOnly.length } : {}),
-          ...(r.stale ? { staleCount: r.stale.length } : {}),
-        })
-      );
+      lines.push(JSON.stringify(buildStateEntry(timestamp, topic, r)));
     }
   }
 
   try {
     safeWriteFileSync(STATE_FILE, lines.join("\n") + "\n");
-    console.log(`📊 State written to ${relative(ROOT, STATE_FILE)}`);
+    console.log(`State written to ${relative(ROOT, STATE_FILE)}`);
   } catch (err) {
     console.error(`Failed to write state: ${sanitizeError(err)}`);
   }
@@ -490,7 +585,7 @@ if (topics.length === 0) {
 }
 
 console.log(`Validating ${topics.length} research output(s)...`);
-if (fixMode) console.log("🔧 Fix mode enabled — will auto-correct metadata counts\n");
+if (fixMode) console.log("Fix mode enabled — will auto-correct metadata counts\n");
 
 const allResults = topics.map(validateTopic);
 const failCount = printResults(allResults);

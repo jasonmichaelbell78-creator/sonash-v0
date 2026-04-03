@@ -1,8 +1,8 @@
 # Contrarian Challenge: Repo Analysis Skill Research
 
 **Author:** deep-research-searcher (contrarian mode) **Date:** 2026-03-31
-**Target:** SYNTHESIS_EXTERNAL.md + SYNTHESIS_INTERNAL.md **Role:** Argue
-rigorously _against_ the main findings. Not to be disagreeable — to surface
+**Target:** SYNTHESIS*EXTERNAL.md + SYNTHESIS_INTERNAL.md **Role:** Argue
+rigorously \_against* the main findings. Not to be disagreeable — to surface
 where the research oversells, under-examines, or papers over real costs.
 
 ---

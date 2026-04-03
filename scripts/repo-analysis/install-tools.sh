@@ -28,6 +28,10 @@ case "$(uname -s)" in
   MINGW*|MSYS*|CYGWIN*) PLATFORM="windows" ;;
   Darwin*)              PLATFORM="macos"   ;;
   Linux*)               PLATFORM="linux"   ;;
+  *)
+    echo "ERROR: Unsupported platform: $(uname -s)" >&2
+    return 1 2>/dev/null || exit 1
+    ;;
 esac
 
 echo "=== Repo Analysis Tool Installer ==="
@@ -55,6 +59,9 @@ already=0
 failed=0
 missing_list=""
 
+# ── Constants ──────────────────────────────────────────────────────
+MSG_TRYING_BREW="    Trying brew..."
+
 # ── Helpers ─────────────────────────────────────────────────────────
 
 check_tool() {
@@ -73,12 +80,14 @@ mark_failed() {
   printf "  %-18s MISSING\n" "$name"
   missing_list="$missing_list $name"
   failed=$((failed + 1))
+  return 0
 }
 
 mark_installed() {
   local name="$1"
   printf "  %-18s INSTALLED\n" "$name"
   installed=$((installed + 1))
+  return 0
 }
 
 pip_cmd() {
@@ -89,6 +98,7 @@ pip_cmd() {
   else
     echo ""
   fi
+  return 0
 }
 
 download_github_release() {
@@ -124,13 +134,13 @@ download_github_release() {
   if [[ "$url" == *.zip ]]; then
     local extract_dir="$tmp/extract"
     mkdir -p "$extract_dir"
-    (cd "$extract_dir" && unzip -o "$tmp/download" >/dev/null 2>&1) || { echo "    ERROR: unzip failed" >&2; rm -rf "$tmp"; return 1; }
-    # Reject path traversal in archive
-    if find "$extract_dir" -name '*..*' 2>/dev/null | grep -q .; then
-      echo "    ERROR: archive contains suspicious path traversal entries" >&2
+    # Validate archive entries BEFORE extraction (Zip Slip prevention)
+    if unzip -Z1 "$tmp/download" 2>/dev/null | grep -E '(^/|^[A-Za-z]:[\\\/]|(^|[\\\/])\.\.([\\/]|$))' -q; then
+      echo "    ERROR: archive contains path traversal or absolute paths" >&2
       rm -rf "$tmp"
       return 1
     fi
+    (cd "$extract_dir" && unzip -o "$tmp/download" >/dev/null 2>&1) || { echo "    ERROR: unzip failed" >&2; rm -rf "$tmp"; return 1; }
     local found
     found=$(find "$extract_dir" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
     if [[ -n "$found" ]]; then
@@ -144,6 +154,12 @@ download_github_release() {
   elif [[ "$url" == *.tar.gz || "$url" == *.tgz ]]; then
     local extract_dir="$tmp/extract"
     mkdir -p "$extract_dir"
+    # Validate tar entries BEFORE extraction (Tar Slip prevention)
+    if tar -tzf "$tmp/download" 2>/dev/null | grep -E '(^/|^[A-Za-z]:[\\\/]|(^|[\\\/])\.\.([\\/]|$))' -q; then
+      echo "    ERROR: tar contains path traversal or absolute paths" >&2
+      rm -rf "$tmp"
+      return 1
+    fi
     (cd "$extract_dir" && tar xzf "$tmp/download" --no-same-owner 2>/dev/null) || { echo "    ERROR: tar extract failed" >&2; rm -rf "$tmp"; return 1; }
     local found
     found=$(find "$extract_dir" -name "$binary" -o -name "${binary}.exe" 2>/dev/null | head -1)
@@ -188,7 +204,7 @@ install_scc() {
 
   # Try brew (macOS/Linux)
   if $HAS_BREW; then
-    echo "    Trying brew..."
+    echo "$MSG_TRYING_BREW"
     if brew install scc 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" scc --version 2>/dev/null; then mark_installed "$name"; return 0; fi
@@ -196,11 +212,9 @@ install_scc() {
   fi
 
   # Try GitHub release (Windows)
-  if [[ "$PLATFORM" == "windows" ]]; then
-    if download_github_release "boyter/scc" "scc" "Windows_x86_64\\.zip"; then
-      hash -r 2>/dev/null || true
-      if check_tool "$name" scc --version 2>/dev/null; then mark_installed "$name"; return 0; fi
-    fi
+  if [[ "$PLATFORM" == "windows" ]] && download_github_release "boyter/scc" "scc" "Windows_x86_64\\.zip"; then
+    hash -r 2>/dev/null || true
+    if check_tool "$name" scc --version 2>/dev/null; then mark_installed "$name"; return 0; fi
   fi
 
   mark_failed "$name"
@@ -228,7 +242,7 @@ install_semgrep() {
 
   # Try brew (macOS)
   if $HAS_BREW; then
-    echo "    Trying brew..."
+    echo "$MSG_TRYING_BREW"
     if brew install semgrep 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" semgrep --version 2>/dev/null; then mark_installed "$name"; return 0; fi
@@ -287,7 +301,8 @@ install_jscpd() {
 # 5. gitleaks — GitHub release binary, brew, or go install
 install_gitleaks() {
   local name="gitleaks"
-  if check_tool "$name" gitleaks version 2>/dev/null; then
+  local gh_repo="gitleaks/gitleaks"
+  if check_tool "$name" "$name" version 2>/dev/null; then
     already=$((already + 1)); return 0
   fi
   if $VERIFY_ONLY; then mark_failed "$name"; return 0; fi
@@ -296,37 +311,37 @@ install_gitleaks() {
 
   # Try brew
   if $HAS_BREW; then
-    echo "    Trying brew..."
-    if brew install gitleaks 2>&1 | tail -3; then
+    echo "$MSG_TRYING_BREW"
+    if brew install "$name" 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
-      if check_tool "$name" gitleaks version 2>/dev/null; then mark_installed "$name"; return 0; fi
+      if check_tool "$name" "$name" version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
   fi
 
   # Try GitHub release (Windows)
   if [[ "$PLATFORM" == "windows" ]]; then
-    if download_github_release "gitleaks/gitleaks" "gitleaks" "windows_x64\\.zip"; then
+    if download_github_release "$gh_repo" "$name" "windows_x64\\.zip"; then
       hash -r 2>/dev/null || true
-      if check_tool "$name" gitleaks version 2>/dev/null; then mark_installed "$name"; return 0; fi
+      if check_tool "$name" "$name" version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
   elif [[ "$PLATFORM" == "linux" ]]; then
-    if download_github_release "gitleaks/gitleaks" "gitleaks" "linux_x64\\.tar\\.gz"; then
+    if download_github_release "$gh_repo" "$name" "linux_x64\\.tar\\.gz"; then
       hash -r 2>/dev/null || true
-      if check_tool "$name" gitleaks version 2>/dev/null; then mark_installed "$name"; return 0; fi
+      if check_tool "$name" "$name" version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
   elif [[ "$PLATFORM" == "macos" ]]; then
-    if download_github_release "gitleaks/gitleaks" "gitleaks" "darwin_x64\\.tar\\.gz"; then
+    if download_github_release "$gh_repo" "$name" "darwin_x64\\.tar\\.gz"; then
       hash -r 2>/dev/null || true
-      if check_tool "$name" gitleaks version 2>/dev/null; then mark_installed "$name"; return 0; fi
+      if check_tool "$name" "$name" version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
   fi
 
   # Try go install
   if $HAS_GO; then
     echo "    Trying go install..."
-    if go install github.com/gitleaks/gitleaks/v8@latest 2>&1 | tail -3; then
+    if go install "github.com/$gh_repo/v8@latest" 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
-      if check_tool "$name" gitleaks version 2>/dev/null; then mark_installed "$name"; return 0; fi
+      if check_tool "$name" "$name" version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
   fi
 
@@ -358,7 +373,7 @@ install_git_quick_stats() {
 
   # Try brew
   if $HAS_BREW; then
-    echo "    Trying brew..."
+    echo "$MSG_TRYING_BREW"
     if brew install git-quick-stats 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" git-quick-stats --version 2>/dev/null; then mark_installed "$name"; return 0; fi

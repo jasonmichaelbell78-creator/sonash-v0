@@ -1739,10 +1739,23 @@ const ANTI_PATTERNS = [
   },
 
   // Silent parse prevention (4x recurrence)
+  // S5852 two-strikes: regex replaced with string parsing to eliminate backtracking DoS
   {
     id: "silent-json-parse",
     severity: "high",
-    pattern: /JSON\.parse\s*\([^)]+\)\s*;?\s*\n(?!\s*\})/g,
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const violations = [];
+      for (let i = 0; i < lines.length; i++) {
+        if (/JSON\.parse\s*\(/.test(lines[i]) && !/try\s*\{/.test(lines[i])) {
+          const nextLine = (lines[i + 1] || "").trim();
+          if (nextLine && !nextLine.startsWith("}") && !nextLine.startsWith("catch")) {
+            violations.push({ line: i + 1, match: lines[i].trim().slice(0, 50) });
+          }
+        }
+      }
+      return violations;
+    },
     message: "JSON.parse without try/catch — will throw on malformed input and crash silently",
     fix: "Wrap in try/catch: try { JSON.parse(...) } catch { /* handle or default */ }",
     review: "Reviews: 353, 356, 357, 359 — 4x recurrence",

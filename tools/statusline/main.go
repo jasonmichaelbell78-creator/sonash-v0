@@ -23,6 +23,11 @@ type FlexModel struct {
 }
 
 func (m *FlexModel) UnmarshalJSON(data []byte) error {
+	if len(data) == 0 || string(data) == "null" {
+		m.ID = ""
+		m.DisplayName = ""
+		return nil
+	}
 	// Try string first (new format)
 	var s string
 	if err := json.Unmarshal(data, &s); err == nil {

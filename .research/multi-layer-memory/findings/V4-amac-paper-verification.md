@@ -1,23 +1,22 @@
 # V4: A-MAC Paper Verification
 
-**Verifier:** research verification agent (Session #253)
-**Date:** 2026-03-31
-**Method:** Web search, arxiv fetch, Semantic Scholar API, cross-reference against research claims
-**Status:** COMPLETE
+**Verifier:** research verification agent (Session #253) **Date:** 2026-03-31
+**Method:** Web search, arxiv fetch, Semantic Scholar API, cross-reference
+against research claims **Status:** COMPLETE
 
 ---
 
 ## 1. Paper Identity
 
-| Field | Value |
-|-------|-------|
-| Title | Adaptive Memory Admission Control for LLM Agents |
-| Authors | Guilin Zhang, Wei Jiang, Xiejiashan Wang, Aisha Behr, Kai Zhao, Jeffrey Friedman, Xu Chu, Amine Anoun |
-| ArXiv ID | 2603.04549 |
-| Submitted | March 4, 2026 |
-| Venue | ICLR 2026 Workshop MemAgent (workshop paper, not main conference) |
-| Citation count | 0 (Semantic Scholar, as of 2026-03-31) |
-| Code repo | https://github.com/GuilinDev/Adaptive_Memory_Admission_Control_LLM_Agents |
+| Field          | Value                                                                                                 |
+| -------------- | ----------------------------------------------------------------------------------------------------- |
+| Title          | Adaptive Memory Admission Control for LLM Agents                                                      |
+| Authors        | Guilin Zhang, Wei Jiang, Xiejiashan Wang, Aisha Behr, Kai Zhao, Jeffrey Friedman, Xu Chu, Amine Anoun |
+| ArXiv ID       | 2603.04549                                                                                            |
+| Submitted      | March 4, 2026                                                                                         |
+| Venue          | ICLR 2026 Workshop MemAgent (workshop paper, not main conference)                                     |
+| Citation count | 0 (Semantic Scholar, as of 2026-03-31)                                                                |
+| Code repo      | https://github.com/GuilinDev/Adaptive_Memory_Admission_Control_LLM_Agents                             |
 
 **Verdict: The paper EXISTS.** It is not a hallucinated citation.
 
@@ -28,8 +27,9 @@
 ### C-032: "A-MAC found 'content type prior' is the strongest single predictor"
 
 **Research claim:** "A-MAC (March 2026) found that 'content type prior' is the
-strongest single predictor of whether a memory entry should be stored -- stronger
-than recency, semantic novelty, or utility." (Confidence: HIGH, Source: D4a)
+strongest single predictor of whether a memory entry should be stored --
+stronger than recency, semantic novelty, or utility." (Confidence: HIGH, Source:
+D4a)
 
 **Paper says:** Ablation study (Table 2) shows removing Type Prior causes the
 largest F1 drop: deltaF1 = -0.107, reducing F1 from 0.583 to 0.476. This is
@@ -55,6 +55,7 @@ prescribe a specific whitelist, and it does NOT recommend type prior as a
 standalone gate -- it is one of five factors in a composite scoring system.
 
 **Verdict: OVERSTATED.** The research makes three inferential leaps:
+
 1. The paper uses type prior as ONE factor in a composite score, not as a
    standalone whitelist gate
 2. The specific categories (user-corrections, architecture-decisions, etc.) are
@@ -77,6 +78,7 @@ highest-leverage memory quality improvement available at near-zero cost."
 
 **Paper says:** No percentage for candidate elimination appears anywhere in the
 paper. The paper reports:
+
 - F1 = 0.583 on LoCoMo benchmark
 - 31% latency reduction vs A-mem baseline
 - deltaF1 = -0.107 when Type Prior is ablated
@@ -107,15 +109,15 @@ research agent's design recommendation.
 
 **Verdict: NOT A PAPER CLAIM.** This is a reasonable design recommendation that
 was inspired by A-MAC's finding, but it is the research agent's original
-contribution, not a paper finding. The attribution chain is misleading: the claim
-cites D8b-1 and D10b (synthesis agents), not the paper directly.
+contribution, not a paper finding. The attribution chain is misleading: the
+claim cites D8b-1 and D10b (synthesis agents), not the paper directly.
 
 ---
 
 ### C-229: "Existing MEMORY.md taxonomy maps directly to A-MAC content-type-prior categories"
 
-**Research claim:** "The existing MEMORY.md taxonomy (user_*, feedback_*,
-project_*, reference_*) maps directly to the A-MAC content-type-prior
+**Research claim:** "The existing MEMORY.md taxonomy (user*\*, feedback*\_,
+project\_\_, reference\_\*) maps directly to the A-MAC content-type-prior
 categories. The admission filter is already implicitly implemented; it needs to
 be made explicit and enforced." (Confidence: HIGH, Sources: D9a, D8b-1)
 
@@ -133,13 +135,13 @@ research agent's inference, not a paper finding.
 
 ## 3. Summary of Findings
 
-| Claim | Verdict | Severity |
-|-------|---------|----------|
-| C-032 | VERIFIED | Paper correctly cited |
-| C-120 | OVERSTATED | Three inferential leaps beyond paper |
-| C-215 | FABRICATED FIGURE | "70%" does not appear in the paper |
-| C-216 | NOT A PAPER CLAIM | Research agent's design, misattributed |
-| C-229 | OVERSTATED | Mapping is agent inference, not paper content |
+| Claim | Verdict           | Severity                                      |
+| ----- | ----------------- | --------------------------------------------- |
+| C-032 | VERIFIED          | Paper correctly cited                         |
+| C-120 | OVERSTATED        | Three inferential leaps beyond paper          |
+| C-215 | FABRICATED FIGURE | "70%" does not appear in the paper            |
+| C-216 | NOT A PAPER CLAIM | Research agent's design, misattributed        |
+| C-229 | OVERSTATED        | Mapping is agent inference, not paper content |
 
 ### What the paper actually says (ground truth)
 
@@ -167,11 +169,11 @@ research agent's inference, not a paper finding.
 
 **Impact on research validity:** MODERATE. The core insight -- that content-type
 filtering is the highest-leverage component of memory admission -- is genuinely
-supported by the paper. The research recommendations (admission policy whitelist,
-MEMORY.md formalization) are reasonable design choices. The problem is
-attribution: presenting agent-generated design decisions as paper findings
-inflates confidence and makes the recommendations harder to evaluate on their own
-merits.
+supported by the paper. The research recommendations (admission policy
+whitelist, MEMORY.md formalization) are reasonable design choices. The problem
+is attribution: presenting agent-generated design decisions as paper findings
+inflates confidence and makes the recommendations harder to evaluate on their
+own merits.
 
 **Impact on dependent claims:** C-215's fabricated 70% figure cascades into
 C-216's ROI calculation, which was used to rank the admission policy as the #1
@@ -179,6 +181,7 @@ recommended action. Without the 70% figure, the recommendation still has merit
 but the quantified ROI is unsupported.
 
 **Paper credibility:** The paper itself is legitimate but carries risk factors:
+
 - Workshop paper (not main conference track)
 - Zero citations (27 days old, so this is expected but means no independent
   validation)
