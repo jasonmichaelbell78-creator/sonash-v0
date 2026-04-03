@@ -1,0 +1,2 @@
+{"repo":"HKUDS/CLI-Anything","scan_date":"2026-04-03","depth":"quick","bands":{"Security":38,"Reliability":52,"Maintainability":74,"Documentation":78,"Process":55,"Velocity":95},"stars":27518,"forks":2569,"contributors":44,"findings":7}
+{"repo":"HKUDS/CLI-Anything","scan_date":"2026-04-03","depth":"standard","bands":{"Security":58,"Reliability":70,"Maintainability":76,"Documentation":82,"Process":48,"Velocity":95},"stars":27518,"forks":2569,"contributors":44,"findings":13,"test_functions":2707,"subprocess_calls":122,"shell_true":0,"harnesses":33}

@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#35)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #64-#rev-65
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#34)</summary>
 
 - **Date:** 2026-04-03
@@ -1333,7 +1342,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 63-pr397: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown) (unknown)
+### Review 64: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
 
 **Date:** unknown | **PR:** #397 | **Source:** manual
 
@@ -1344,14 +1353,33 @@ deduplicated, non-overlapping ranges):
 **Patterns:**
 
 - Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
-- S5852 regex DoS (silent-json-parse): backtracking-vulnerable
+- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
 - CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
 - sanitizeError import paths: 5 hooks + rotate-state.js used
 - Source traceability false-negative: `checkSourceTraceability()` only checked
 - TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
 - Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
-- Propagation: 4 patterns across 46 files audited, 7 fixed
+- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
 - CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+
+---
+
+### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown) (unknown) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
 
 ---
 
@@ -1390,28 +1418,6 @@ deduplicated, non-overlapping ranges):
 - gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
 - CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
 - Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
-
----
-
-### Review 64: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
-
-**Date:** unknown | **PR:** #397 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
-- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
-- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
-- sanitizeError import paths: 5 hooks + rotate-state.js used
-- Source traceability false-negative: `checkSourceTraceability()` only checked
-- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
-- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
-- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
-- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
 
 ## Key Patterns
 

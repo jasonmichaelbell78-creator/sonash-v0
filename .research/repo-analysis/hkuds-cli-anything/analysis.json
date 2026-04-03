@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "repo": "HKUDS/CLI-Anything",
+    "url": "https://github.com/HKUDS/CLI-Anything",
+    "scan_date": "2026-04-03",
+    "scan_depth": "standard",
+    "scan_version": "1.0",
+    "clone_dir": "/tmp/repo-analysis-hkuds-cli-anything/",
+    "files_cloned": 796
+  },
+  "repo": {
+    "description": "CLI-Anything: Making ALL Software Agent-Native -- CLI-Hub",
+    "language": "Python",
+    "license": "Apache-2.0",
+    "created_at": "2026-03-08T13:52:57Z",
+    "pushed_at": "2026-04-03T11:13:23Z",
+    "age_days": 26,
+    "size_kb": 22982,
+    "stars": 27518,
+    "forks": 2569,
+    "open_issues": 73,
+    "contributors": 44,
+    "subscribers": 132,
+    "is_fork": false,
+    "is_archived": false,
+    "default_branch": "main",
+    "languages": {
+      "Python": 4772855,
+      "C#": 177101,
+      "JavaScript": 31014,
+      "Shell": 16265,
+      "PowerShell": 793
+    }
+  },
+  "dimensions": {
+    "QS-01_activity_pulse": { "score": 95, "band": "Excellent" },
+    "QS-02_star_velocity": { "score": 98, "band": "Excellent" },
+    "QS-03_fork_ratio": { "score": 72, "band": "Healthy" },
+    "QS-04_issue_health": { "score": 55, "band": "Needs Work" },
+    "QS-05_pr_throughput": { "score": 80, "band": "Excellent" },
+    "QS-06_release_cadence": { "score": 40, "band": "Needs Work" },
+    "QS-07_contributor_diversity": { "score": 78, "band": "Healthy" },
+    "QS-08_license": { "score": 90, "band": "Excellent" },
+    "QS-09_community_health": { "score": 70, "band": "Healthy" },
+    "QS-10_documentation": { "score": 78, "band": "Healthy" },
+    "QS-11_ci_quality": { "score": 30, "band": "Needs Work" },
+    "QS-12_security_posture": { "score": 55, "band": "Needs Work" },
+    "QS-15_code_scanning": { "score": 20, "band": "Critical" },
+    "ST-01_subprocess_safety": { "score": 88, "band": "Excellent" },
+    "ST-02_test_coverage": { "score": 82, "band": "Excellent" },
+    "ST-03_test_ci_gap": { "score": 15, "band": "Critical" },
+    "ST-04_harness_consistency": { "score": 85, "band": "Excellent" },
+    "ST-05_code_reuse": { "score": 70, "band": "Healthy" },
+    "ST-06_plugin_architecture": { "score": 75, "band": "Healthy" },
+    "ST-07_credential_handling": { "score": 60, "band": "Needs Work" },
+    "ST-08_path_safety": { "score": 72, "band": "Healthy" },
+    "ST-09_type_hints": { "score": 55, "band": "Needs Work" },
+    "ST-10_dependency_isolation": { "score": 78, "band": "Healthy" },
+    "ST-11_error_handling": { "score": 68, "band": "Healthy" },
+    "ST-12_registry_quality": { "score": 80, "band": "Excellent" },
+    "ST-13_methodology_doc": { "score": 90, "band": "Excellent" },
+    "ST-14_scaffolding": { "score": 75, "band": "Healthy" },
+    "ST-15_monorepo_tooling": { "score": 35, "band": "Needs Work" }
+  },
+  "summary_bands": {
+    "Security": { "score": 58, "band": "Needs Work" },
+    "Reliability": { "score": 70, "band": "Healthy" },
+    "Maintainability": { "score": 76, "band": "Healthy" },
+    "Documentation": { "score": 82, "band": "Excellent" },
+    "Process": { "score": 48, "band": "Needs Work" },
+    "Velocity": { "score": 95, "band": "Excellent" }
+  },
+  "absence_patterns": [
+    {
+      "pattern": "SECURITY_FACADE",
+      "confidence": "Medium",
+      "evidence": "SECURITY.md backed by real code mitigations (0 shell=True, allowlists). Gap is CI enforcement."
+    },
+    {
+      "pattern": "TEST_THEATER",
+      "confidence": "Low",
+      "evidence": "2,707 real test functions. Gap is CI automation, not test quality."
+    }
+  ]
+}

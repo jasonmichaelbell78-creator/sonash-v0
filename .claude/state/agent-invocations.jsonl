@@ -118,3 +118,10 @@
 {"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:22:13.546Z"}
 {"agent":"Explore","description":"Search codebase","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:22:13.623Z"}
 {"agent":"code-reviewer","description":"Code review of alerts fixes","sessionId":"session-1775211547313","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:34:27.980Z"}
+{"agent":"security-auditor","description":"Security audit of CLI-Anything","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:17.390Z"}
+{"agent":"test-engineer","description":"Test framework analysis","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:24.191Z"}
+{"agent":"explore","description":"Codebase architecture mapping","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:32.610Z"}
+{"agent":"documentation-expert","description":"Documentation quality analysis","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:38.893Z"}
+{"agent":"documentation-expert","description":"Documentation quality re-scan","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:57:18.307Z"}
+{"agent":"Explore","description":"Trace repo-analysis dependencies","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T14:56:04.406Z"}
+{"agent":"fullstack-developer","description":"Apply SKILL.md v2.0 changes","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T15:09:29.275Z"}

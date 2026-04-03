@@ -233,10 +233,10 @@ Verify before presenting plan (Phase 3.5):
 Deep-plan sessions can consume pre-existing research as Phase 0 context,
 skipping redundant discovery. The following sources are recognized:
 
-| Source           | Artifacts                                                     | Injection Point                       |
-| ---------------- | ------------------------------------------------------------- | ------------------------------------- |
-| `/deep-research` | `RESEARCH_OUTPUT.md` in `.research/<topic>/`                  | Phase 0 diagnosis context             |
-| `/repo-analysis` | `analysis.json`, `value-map.json` in `.research/<repo-slug>/` | Phase 0 `## Research Context` section |
+| Source           | Artifacts                                                              | Injection Point                       |
+| ---------------- | ---------------------------------------------------------------------- | ------------------------------------- |
+| `/deep-research` | `RESEARCH_OUTPUT.md` in `.research/<topic>/`                           | Phase 0 diagnosis context             |
+| `/repo-analysis` | `analysis.json`, `value-map.json` in `.research/repo-analysis/<slug>/` | Phase 0 `## Research Context` section |
 
 **Using `/repo-analysis` output as deep-plan input:**
 

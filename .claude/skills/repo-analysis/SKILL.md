@@ -4,12 +4,13 @@ description: >-
   Analyze external GitHub repositories for health assessment (automated) and
   value extraction (conversation-primed). Three depth tiers: Quick Scan
   (API-only default), Standard (clone + static), Deep (12-month history +
-  temporal). Outputs structured artifacts to .research/<repo-slug>/.
+  temporal). Outputs structured artifacts to
+  .research/repo-analysis/<repo-slug>/.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-04-02
+**Document Version:** 2.0
+**Last Updated:** 2026-04-03
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -90,9 +91,12 @@ scopes).
 - `--depth=standard` -- Clone + static analysis
 - `--depth=deep` -- 12-month history + temporal analysis
 
-**Output location:** `.research/<repo-slug>/` (analysis.json, findings.jsonl,
-value-map.json, trends.jsonl, summary.md). User MAY specify a different
-location.
+**Output location:** `.research/repo-analysis/<repo-slug>/` — per-repo
+artifacts: analysis.json, findings.jsonl, value-map.json, trends.jsonl,
+summary.md, repomix-output.txt (SHOULD), extractions/ (created during Extract
+routing). Cross-repo artifacts:
+`.research/repo-analysis/extraction-journal.jsonl`,
+`.research/repo-analysis/EXTRACTIONS.md`.
 
 ---
 
@@ -100,14 +104,14 @@ location.
 
 ```
 VALIDATE:  Guards         -> Home repo? Archived? Rate limits? Fork flag
-PHASE 0:   Quick Scan     -> API-only, <30s, 18 dimensions, present findings
+PHASE 0:   Quick Scan     -> API-only, <30s, 18 dimensions + partial adoption assessment
 GATE:      Interactive     -> "Run Standard analysis? [y/N]"
-PHASE 1:   Clone          -> Blobless partial clone to /tmp/
+PHASE 1:   Clone          -> Blobless partial clone + repomix install check
 PHASE 2:   Dimension Wave -> Up to 4 concurrent agents, static analysis
 PHASE 3:   History Wave   -> Conditional: 12-month temporal analysis
-PHASE 4:   Aggregation    -> Merge all dimensions, compute bands
+PHASE 4:   Aggregation    -> Merge all dimensions, compute bands + adoption assessment
 PHASE 5:   Value Map      -> Extraction candidates ranked by portability
-ROUTING:   Menu           -> 5 options: Extract | TDMS | Deep-plan | Memory | Done
+ROUTING:   Menu           -> 6 options: Extract | TDMS | Deep-plan | Memory | Adopt | Done
 ```
 
 Use phase transition markers: `========== PHASE N: [NAME] ==========`
@@ -151,7 +155,7 @@ evaluation questions.
 9. If `trends.jsonl` contains a previous run for this repo, proactively surface
    the delta before presenting new results (SHOULD)
 10. Write artifacts: `analysis.json`, `findings.jsonl`, `summary.md` to
-    `.research/<repo-slug>/` (MUST)
+    `.research/repo-analysis/<repo-slug>/` (MUST)
 11. Append to `trends.jsonl` (MUST)
 12. Update state file (MUST)
 13. Present `summary.md` inline (MUST)
@@ -175,7 +179,11 @@ through ST-15 (33 dimensions). **Value:** ~80% of full analysis signal.
    `/tmp/repo-analysis-<slug>/`
    - LFS check: `GIT_LFS_SKIP_SMUDGE=1` if `.gitattributes` detected
    - Monorepo detection (turbo.json, nx.json, pnpm-workspace.yaml, etc.)
-2. Run `check-tools.js` for tool availability manifest
+   - Repomix check: `npx repomix --version`. If unavailable, install:
+     `npm install -g repomix`. If install fails, log and continue (SHOULD, not
+     MUST). Extract routing option will note repomix-output.txt unavailability.
+2. Check tool availability: run `node scripts/repo-analysis/check-tools.js`. Log
+   manifest to state file. Missing tools trigger graceful degradation.
 3. Spawn dimension agents (dynamic allocation, 4 concurrent max). After each
    agent returns, report: "Dimension N of M complete (agent-name)." Spawned
    agents use the Agent tool's default timeout. If an agent exceeds 5 minutes,
@@ -188,12 +196,18 @@ through ST-15 (33 dimensions). **Value:** ~80% of full analysis signal.
      dependency-cruiser (JS/TS), lizard (complexity), jscpd (duplication), scc
      (LOC/cost)
 4. Each agent writes `dimensions/<dim>-findings.json` before returning
+   - **Agent path rule:** Provide agents with the resolved WINDOWS path to the
+     clone directory (e.g., `C:/Users/.../AppData/Local/Temp/...`), not the
+     Unix-mapped `/tmp/` path. Subagents may not resolve path mappings.
+   - **Output capture fallback:** If an agent's output file is empty after
+     completion, the orchestrator captures the task-notification result text and
+     writes it to the dimension file. Findings must persist to disk.
 5. Orchestrator verifies file existence (write-to-disk-first rule)
 6. Run absence pattern classifier on full data (all 7 patterns)
 7. Aggregation: merge Quick Scan + Standard dimensions, recompute bands
 8. Run Repomix: `repomix --compress` on clone, save to
-   `.research/<slug>/repomix-output.txt` (SHOULD — graceful degradation if
-   unavailable)
+   `.research/repo-analysis/<slug>/repomix-output.txt` (SHOULD — graceful
+   degradation if unavailable)
 9. Generate `value-map.json` with top 5-10 extraction candidates:
    - Pattern Novelty (High/Med/Low)
    - Code Portability (0-15 rubric)
@@ -257,20 +271,24 @@ dependency evaluation questions without a clone.
 
 ## Routing Menu
 
-Presented after Standard or Deep analysis completes. Offers 5 options:
+Presented after Standard or Deep analysis completes. Offers 6 options:
 
-| Option                | Action                                                           |
-| --------------------- | ---------------------------------------------------------------- |
-| **1. Extract value**  | Load `.research/<slug>/repomix-output.txt` + value-map context   |
-|                       | into conversation. Present: "Value extraction context loaded.    |
-|                       | Which candidates interest you?" User drives the conversation.    |
-| **2. Send to TDMS**   | Run TDMS intake on `findings.jsonl`. Source field set to         |
-|                       | `repo-analysis-<repo-slug>-<date>`. Opt-in only.                 |
-| **3. Deep-plan this** | Inject `analysis.json` summary as `## Research Context` in a new |
-|                       | `/deep-plan` session.                                            |
-| **4. Save to memory** | Persist key findings as project memory (reference type --        |
-|                       | "Analyzed <repo>, key finding: <one-liner>").                    |
-| **5. Done**           | Cleanup temp files, confirm artifacts saved, exit.               |
+| Option                  | Action                                                           |
+| ----------------------- | ---------------------------------------------------------------- |
+| **1. Extract value**    | Load repomix-output.txt + value-map context. Present candidates. |
+|                         | For each selected candidate, ask: "Extract, skip, or defer?"     |
+|                         | Persist decisions to extraction result files, append to journal, |
+|                         | regenerate EXTRACTIONS.md. If "extract", offer to load source.   |
+| **2. Send to TDMS**     | Transform findings.jsonl to TDMS format (severity mapping:       |
+|                         | high→S1, medium→S2, low/info→S3) and run TDMS intake.            |
+|                         | Source: `repo-analysis-<slug>-<date>`. Opt-in only.              |
+| **3. Deep-plan this**   | Inject analysis.json summary as `## Research Context` in a new   |
+|                         | `/deep-plan` session.                                            |
+| **4. Save to memory**   | Persist key findings as project memory (reference type).         |
+| **5. Adoption verdict** | Present the adoption assessment (WR-01 through WR-06) with       |
+|                         | verdict band (Adopt/Trial/Extract/Avoid) and recommendation.     |
+|                         | If not yet computed, compute it now from available dimensions.   |
+| **6. Done**             | Cleanup temp files, confirm artifacts saved, exit.               |
 
 Present the menu and wait for selection. Multiple selections are allowed
 sequentially (e.g., user can Extract, then Save to memory, then Done).
@@ -372,6 +390,10 @@ for future session-begin enhancement — no code change needed now.
 
 | Version | Date       | Description                                         |
 | ------- | ---------- | --------------------------------------------------- |
+| 2.0     | 2026-04-03 | Schema alignment to reality, whole-repo adoption    |
+|         |            | analysis (WR dims), extraction persistence,         |
+|         |            | agent capture fixes, repomix integration            |
+| 1.2     | 2026-04-03 | Output path: .research/repo-analysis/<slug>/        |
 | 1.1     | 2026-04-02 | Skill-audit: 16 decisions — UX, guard rails, labels |
 | 1.0     | 2026-04-02 | Initial implementation: 3 tiers, 45 dimensions,     |
 |         |            | routing menu, state file resume, value extraction   |
