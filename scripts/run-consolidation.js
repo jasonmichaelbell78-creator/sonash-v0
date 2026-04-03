@@ -268,8 +268,7 @@ function extractPatterns(reviews) {
   return patterns;
 }
 
-// Note: no /g flag — exec() is called once per keyword per title, so /g is unnecessary
-// and would require manual lastIndex reset between calls.
+// Note: no /g flag — these regexes use .test() in categorizePatterns, not exec()
 const PATTERN_KEYWORDS = [
   /command injection/i,
   /path traversal/i,
@@ -371,7 +370,15 @@ function generateReport(reviews, patterns, categories) {
 }
 
 function generateRuleSuggestions(recurringPatterns, range) {
-  if (recurringPatterns.length === 0) return;
+  if (recurringPatterns.length === 0) {
+    // Clean up stale suggestions from prior runs
+    try {
+      if (existsSync(OUTPUT_FILE)) rmSync(OUTPUT_FILE, { force: true });
+    } catch {
+      /* ignore cleanup errors */
+    }
+    return;
+  }
 
   ensureDir(OUTPUT_DIR);
   const now = new Date().toISOString().split("T")[0];

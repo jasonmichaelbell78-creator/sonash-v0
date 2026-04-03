@@ -252,6 +252,10 @@ function safeWriteFile(filePath, content, description) {
 function ensureArchiveDir() {
   verbose("Checking archive directory:", ARCHIVE_DIR);
 
+  if (!isSafeToWrite(ARCHIVE_DIR)) {
+    return { success: false, error: "Symlink detected in archive directory path" };
+  }
+
   if (existsSync(ARCHIVE_DIR)) {
     verbose("Archive directory already exists");
     return { success: true };
@@ -263,9 +267,6 @@ function ensureArchiveDir() {
   }
 
   try {
-    if (!isSafeToWrite(ARCHIVE_DIR)) {
-      return { success: false, error: "Symlink detected in archive directory path" };
-    }
     mkdirSync(ARCHIVE_DIR, { recursive: true });
     console.log(`Created archive directory: ${ARCHIVE_DIR}`);
     return { success: true };

@@ -956,7 +956,7 @@ const ANTI_PATTERNS = [
         content.includes("brace_depth") ||
         content.includes("braceCount") ||
         content.includes("depth++") ||
-        content.includes("depth --") ||
+        content.includes("depth--") ||
         content.includes("accumulat");
       if (hasBraceTracking) return [];
       return [{ line: 1, match: "JSONL split+parse without multi-line brace tracking" }];
