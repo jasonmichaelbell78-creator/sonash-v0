@@ -1,103 +1,3 @@
-{"agent":"deep-research-searcher","description":"SQ4-docs: Model selection from Anthropic","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:03:46.136Z"}
-{"agent":"deep-research-searcher","description":"SQ5-skills: Workflow gaps in skills","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:04.148Z"}
-{"agent":"deep-research-searcher","description":"SQ5-hooks: Workflow gaps in hooks","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:16.235Z"}
-{"agent":"deep-research-searcher","description":"SQ6-overrides: Current custom override eval","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:28.114Z"}
-{"agent":"deep-research-searcher","description":"SQ6-system: System agent catalog analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:07:45.261Z"}
-{"agent":"deep-research-searcher","description":"SQ5-pipelines: Deploy/CI/test gaps","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:27.959Z"}
-{"agent":"deep-research-searcher","description":"SQ6-gaps: Override gap synthesis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:39.544Z"}
-{"agent":"deep-research-searcher","description":"SQ7-stubs: Stub agent elevation analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:15:55.122Z"}
-{"agent":"deep-research-searcher","description":"SQ7-redundancy: Redundancy deep analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:16:11.398Z"}
-{"agent":"code-reviewer","description":"Review deploy-safeguard.js fix - APPROVED","sessionId":"session-1774822733641939500","timestamp":"2026-03-29T22:18:53.000Z"}
-{"agent":"deep-research-searcher","description":"SQ7-consolidation: Merge D7a+D7b conflicts","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:23:50.922Z"}
-{"agent":"deep-research-searcher","description":"SQ8-web: Adversarial agent patterns","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:24:10.433Z"}
-{"agent":"deep-research-searcher","description":"SQ8-internal: Deep-research pipeline analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:24:26.138Z"}
-{"agent":"deep-research-searcher","description":"SQ9-web: Pipeline agent patterns","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:27:59.118Z"}
-{"agent":"deep-research-searcher","description":"SQ9-internal: Current pipeline implementation","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:28:27.273Z"}
-{"agent":"deep-research-searcher","description":"SQ10-github: Net-new agents from GitHub","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:13.138Z"}
-{"agent":"deep-research-searcher","description":"SQ10-community: Agents from skill.sh/community","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:26.032Z"}
-{"agent":"deep-research-searcher","description":"SQ10-internal: Internal gap-fill agents","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:34:41.273Z"}
-{"agent":"deep-research-searcher","description":"SQ11-web: Agent team patterns external","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:42:41.792Z"}
-{"agent":"deep-research-searcher","description":"SQ11-internal: Current teams analysis","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:42:54.908Z"}
-{"agent":"deep-research-searcher","description":"SQ12-web: Agent quality validation","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:43:06.995Z"}
-{"agent":"deep-research-searcher","description":"SQ12-internal: Current quality processes","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:43:17.798Z"}
-{"agent":"deep-research-synthesizer","description":"Phase 2: Synthesize all 29 findings","sessionId":"session-1774813256317","timestamp":"2026-03-29T22:50:03.148Z"}
-{"agent":"deep-research-searcher","description":"V1: Verify claims 1-50 vs filesystem","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:04:36.861Z"}
-{"agent":"deep-research-searcher","description":"V2: Verify claims 51-100 vs filesystem","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:04:39.931Z"}
-{"agent":"deep-research-searcher","description":"Phase 2.7a: Compare vs agent-env analysis","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:05:03.081Z"}
-{"agent":"deep-research-searcher","description":"Phase 2.7b: Compare vs archived research","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:05:13.224Z"}
-{"agent":"deep-research-searcher","description":"Contrarian 1: Challenge consolidation claims","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:29:39.938Z"}
-{"agent":"deep-research-searcher","description":"Contrarian 2: Challenge new agent claims","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:29:59.398Z"}
-{"agent":"deep-research-searcher","description":"OTB 1: Alternative approaches missed","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:30:19.579Z"}
-{"agent":"deep-research-searcher","description":"OTB 2: Systemic blind spots","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:30:40.606Z"}
-{"agent":"deep-research-searcher","description":"Phase 3.5: Resolve all disputes","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:39:06.444Z"}
-{"agent":"deep-research-synthesizer","description":"Phase 3.9: Re-synthesize with corrections","sessionId":"session-1774824767645","timestamp":"2026-03-29T23:45:35.873Z"}
-{"agent":"fullstack-developer","description":"Fix CRITICAL+MAJOR hook bugs","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:23:23.801Z"}
-{"agent":"fullstack-developer","description":"Fix ensure-fnm + pre-commit + test harness","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:23:39.923Z"}
-{"agent":"fullstack-developer","description":"Fix MINOR+TRIVIAL review items","sessionId":"session-1774867914051","timestamp":"2026-03-30T12:24:07.517Z"}
-{"agent":"fullstack-developer","description":"Fix review-lifecycle sync parser","sessionId":"session-1774867914051","timestamp":"2026-03-30T13:50:19.543Z"}
-{"agent":"explore","description":"Bulk retro data analysis 15 PRs","sessionId":"session-1774867914051","timestamp":"2026-03-30T14:17:05.389Z"}
-{"agent":"fullstack-developer","description":"Audit Qodo suppression config","sessionId":"session-1774867914051","timestamp":"2026-03-30T15:22:52.407Z"}
-{"agent":"fullstack-developer","description":"Add CC check to pre-commit hook","sessionId":"session-1774867914051","timestamp":"2026-03-30T15:23:04.198Z"}
-{"agent":"fullstack-developer","description":"Dedup review-metrics + upsert fix","sessionId":"session-1774867914051","timestamp":"2026-03-30T15:23:12.966Z"}
-{"agent":"fullstack-developer","description":"Fix PR #481 R1 review items","sessionId":"session-1774867914051","timestamp":"2026-03-30T16:25:24.258Z"}
-{"agent":"fullstack-developer","description":"Fix PR #481 R2 review items","sessionId":"session-1774867914051","timestamp":"2026-03-30T17:04:13.715Z"}
-{"agent":"explore","description":"Verify cli-tools plan completion","sessionId":"session-1774891152421","timestamp":"2026-03-30T17:23:39.881Z"}
-{"agent":"explore","description":"Verify custom-statusline plan","sessionId":"session-1774891152421","timestamp":"2026-03-30T17:23:49.758Z"}
-{"agent":"explore","description":"Verify repo-cleanup plan","sessionId":"session-1774891152421","timestamp":"2026-03-30T17:23:50.742Z"}
-{"agent":"explore","description":"Check other plans for completion","sessionId":"session-1774891152421","timestamp":"2026-03-30T17:24:16.471Z"}
-{"agent":"explore","description":"Verify claude-code-permissions plan","sessionId":"session-1774891152421","timestamp":"2026-03-30T17:24:42.127Z"}
-{"agent":"explore","description":"Verify hook-if-conditions plan","sessionId":"session-1774891152421","timestamp":"2026-03-30T17:24:50.689Z"}
-{"agent":"Explore","description":"Find multi-layered memory research","sessionId":"session-1774891152421","timestamp":"2026-03-30T17:43:01.189Z"}
-{"agent":"explore","description":"Explore propagation research archive","sessionId":"session-1774891152421","timestamp":"2026-03-30T18:01:12.937Z"}
-{"agent":"explore","description":"Explore existing pre-commit and pre-push","sessionId":"session-1774891152421","timestamp":"2026-03-30T18:01:29.967Z"}
-{"agent":"explore","description":"Explore retro evidence of propagation failures","sessionId":"session-1774891152421","timestamp":"2026-03-30T18:02:35.592Z"}
-{"agent":"fullstack-developer","description":"Layer 2: Refactor pre-push propagation","sessionId":"session-1774891152421","timestamp":"2026-03-30T18:26:28.143Z"}
-{"agent":"fullstack-developer","description":"Layer 1: Refactor pre-commit propagation","sessionId":"session-1774891152421","timestamp":"2026-03-30T18:26:31.311Z"}
-{"agent":"code-reviewer","description":"Code review propagation scripts","sessionId":"session-1774891152421","timestamp":"2026-03-30T19:57:49.483Z"}
-{"agent":"explore","description":"Compare session-start vs session-begin","sessionId":"session-1774891152421","timestamp":"2026-03-30T20:09:48.239Z"}
-{"agent":"Explore","description":"Find research/planning aggregate docs","sessionId":"session-1774891152421","timestamp":"2026-03-30T20:33:00.335Z"}
-{"agent":"deep-research-searcher","description":"D1a: Code analysis dimensions","sessionId":"session-1774955087795","timestamp":"2026-03-31T11:28:34.849Z"}
-{"agent":"deep-research-searcher","description":"D1b: Project analysis dimensions","sessionId":"session-1774955087795","timestamp":"2026-03-31T11:28:40.631Z"}
-{"agent":"deep-research-searcher","description":"D2a: Code analysis tools inventory","sessionId":"session-1774955087795","timestamp":"2026-03-31T11:28:49.116Z"}
-{"agent":"deep-research-searcher","description":"D2b: Security/supply chain tools","sessionId":"session-1774955087795","timestamp":"2026-03-31T11:28:56.648Z"}
-{"agent":"claude-code-guide","description":"Claude Code worktree research","sessionId":"session-1774955087795","timestamp":"2026-03-31T11:45:22.887Z"}
-{"agent":"claude-code-guide","description":"Research /gsd skill visibility","sessionId":"session-1774955087795","timestamp":"2026-03-31T11:59:23.547Z"}
-{"agent":"claude-code-guide","description":"Search GSD framework updates","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:04:43.566Z"}
-{"agent":"Explore","description":"Find colon-named local skills/commands","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:04:51.213Z"}
-{"agent":"deep-research-searcher","description":"D2a-1: Static analyzers + linters","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:14:31.213Z"}
-{"agent":"deep-research-searcher","description":"D2a-2: AST parsers + complexity","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:14:37.017Z"}
-{"agent":"deep-research-searcher","description":"D2a-3: LOC + churn + architecture","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:14:43.412Z"}
-{"agent":"deep-research-searcher","description":"D2a-4: GitHub API + meta tools","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:14:50.801Z"}
-{"agent":"deep-research-searcher","description":"D3a: Code quality platforms","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:22:15.216Z"}
-{"agent":"deep-research-searcher","description":"D3b: Specialized analysis platforms","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:22:21.461Z"}
-{"agent":"deep-research-searcher","description":"D4: Analysis pipeline design","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:22:31.270Z"}
-{"agent":"deep-research-searcher","description":"D5: Output structure + scoring","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:22:42.061Z"}
-{"agent":"deep-research-searcher","description":"D6: Comparison methodologies","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:31:04.833Z"}
-{"agent":"deep-research-searcher","description":"D7: Constraints and edge cases","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:31:14.011Z"}
-{"agent":"deep-research-searcher","description":"D8: Skill orchestration design","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:31:24.231Z"}
-{"agent":"deep-research-searcher","description":"D11: Competitive intelligence","sessionId":"session-1774955087795","timestamp":"2026-03-31T12:31:33.050Z"}
-{"agent":"deep-research-searcher","description":"D9a-1: Hooks + pre-commit inventory","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:42:38.734Z"}
-{"agent":"deep-research-searcher","description":"D9a-2: Pattern checker + code review","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:42:45.097Z"}
-{"agent":"deep-research-searcher","description":"D9b-1: Skills inventory (names only)","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:42:52.390Z"}
-{"agent":"deep-research-searcher","description":"D9b-2: Agents + TDMS + session","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:42:58.820Z"}
-{"agent":"deep-research-searcher","description":"D10a: Universal quality standards","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:45:30.765Z"}
-{"agent":"deep-research-searcher","description":"D10b: Hook config + review learnings","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:45:35.654Z"}
-{"agent":"deep-research-searcher","description":"D12: AI-assisted repo analysis","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:45:46.416Z"}
-{"agent":"deep-research-synthesizer","description":"Synthesize external research findings","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:52:33.744Z"}
-{"agent":"deep-research-synthesizer","description":"Synthesize internal analysis findings","sessionId":"session-1774960421993","timestamp":"2026-03-31T12:52:41.848Z"}
-{"agent":"deep-research-searcher","description":"V1: Verify tool/API claims","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:13:48.852Z"}
-{"agent":"deep-research-searcher","description":"V2: Verify [REDACTED] claims","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:13:57.663Z"}
-{"agent":"deep-research-searcher","description":"Contrarian challenge: repo analysis","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:14:07.949Z"}
-{"agent":"deep-research-searcher","description":"OTB challenge: repo analysis","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:14:18.575Z"}
-{"agent":"deep-research-searcher","description":"SQ1: Claude Code memory inventory","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:19:11.402Z"}
-{"agent":"deep-research-searcher","description":"SQ2a: Analyze claude-mem + cipher repos","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:19:24.470Z"}
-{"agent":"deep-research-searcher","description":"SQ2b: Analyze everything-claude-code + interface-design","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:19:33.682Z"}
-{"agent":"deep-research-searcher","description":"SQ2c: Analyze claude-supermemory + OpenMemory","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:19:43.592Z"}
-{"agent":"deep-research-searcher","description":"G1: Quick scan mode + make-vs-buy","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:20:29.389Z"}
-{"agent":"deep-research-searcher","description":"G2: Temporal analysis + absence patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:20:38.816Z"}
-{"agent":"deep-research-synthesizer","description":"Final re-synthesis of all findings","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:28:20.687Z"}
-{"agent":"deep-research-searcher","description":"SQ3a: GitHub memory system discovery","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:39:56.460Z"}
-{"agent":"deep-research-searcher","description":"SQ3b: Community blog/forum memory patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:40:07.975Z"}
 {"agent":"deep-research-searcher","description":"SQ3c: Plugin marketplaces and ecosystems","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:40:20.639Z"}
 {"agent":"deep-research-searcher","description":"SQ4a: Academic LLM memory patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:40:36.172Z"}
 {"agent":"deep-research-searcher","description":"CL verify 4 medium-confidence claims","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:43:41.676Z"}
@@ -188,3 +88,18 @@
 {"agent":"general-purpose","description":"Generate multi-layer-memory sources.jsonl","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:13.200Z"}
 {"agent":"general-purpose","description":"Find missing dev-dashboard claims","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:17.706Z"}
 {"agent":"general-purpose","description":"Find missing value-extraction claims","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:20.157Z"}
+{"agent":"explore","description":"Verify custom-agents research→plan→impl","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:48:05.762Z"}
+{"agent":"explore","description":"Verify repo-analysis research→plan→impl","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:48:15.648Z"}
+{"agent":"explore","description":"Verify plan-orchestration research→impl","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:48:19.598Z"}
+{"agent":"explore","description":"Audit 3 remaining downstream plans","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:48:28.590Z"}
+{"agent":"explore","description":"Full verify custom-agents research","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:55:22.227Z"}
+{"agent":"explore","description":"Full verify dev-dashboard research","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:55:29.349Z"}
+{"agent":"explore","description":"Full verify github-health research","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:55:34.343Z"}
+{"agent":"explore","description":"Full verify multi-layer-memory research","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:55:38.646Z"}
+{"agent":"explore","description":"Full verify plan-orchestration research","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:55:42.580Z"}
+{"agent":"explore","description":"Full verify debt-runner research","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:55:45.706Z"}
+{"agent":"explore","description":"Full verify both repo-analysis research","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:55:52.906Z"}
+{"agent":"explore","description":"Verify pre-pipeline research outputs","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-02T23:56:00.610Z"}
+{"agent":"explore","description":"Impact analysis: custom-agents impl","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:03:18.445Z"}
+{"agent":"explore","description":"Impact analysis: repo-analysis impl","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:03:30.088Z"}
+{"agent":"explore","description":"Impact analysis: plan-orch waves 0-1b","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:03:37.361Z"}
