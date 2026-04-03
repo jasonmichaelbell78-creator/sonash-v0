@@ -2,7 +2,7 @@
 
 **Document Version**: 8.16 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-02 (Session #259)
+2026-04-03 (Session #259)
 
 ## Purpose
 
@@ -48,39 +48,34 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Recent Session Summaries
 
+**Session #259** (RESEARCH INTEGRITY COMPLETION + PR REVIEW):
+
+- **Branch**: `planning-33026` (9 commits)
+- **Research integrity Phase 5-6 COMPLETE**: Home locale sync — committed 143
+  local-only research files, updated metadata agentCounts. 8-agent verification
+  sweep across all 10 research outputs (51 PASS, 0 FAIL, 29 WARN). 7 citation
+  fixes across 5 plans. 3-agent impact analysis: no completed implementations
+  built on wrong data. T18 completed, T1 completed.
+- **PR #489 created**: 399 files, 174K insertions. Research integrity fix +
+  repo-analysis skill + statusline v3.
+- **PR #489 R1 review**: 31 items fixed (8C/12M/8m/3T). Symlink bypass, regex
+  DoS, 4 CC reductions, sanitizeError paths (6 hooks), source traceability bug,
+  TOCTOU removal, Zip/Tar Slip, propagation (7 hooks). DEBT-45630 for
+  pre-existing refuse-symlink. Review #64.
+- **PR #489 R2 review**: 5 fixed, 1 rejected, 5 stale. Cross-platform .exe
+  naming bug, shell:true removal, validateGitDir tightened, TOCTOU fix, CC
+  extraction. Review #65.
+
 **Session #258** (RESEARCH INTEGRITY FIX — Phases 1-4):
 
 - **Branch**: `planning-33026` (4 commits)
-- **Phase 1**: Committed 176 previously-gitignored research artifacts (findings,
-  challenges, archive). Updated `.gitignore` to track all `.research/` files.
-- **Phase 2**: Created `scripts/research/validate-research.js` with 8 integrity
-  checks (source traceability, claim coverage, findings inventory, confidence
-  reconciliation, post-pipeline delta, claim-to-report bidir, source freshness,
-  verdict persistence). Wired as `npm run research:validate`.
-- **Phase 3**: Remediated metadata.json for all 8 research outputs. Fixed
-  agentCount, claimCount, sourceCount, confidenceDistribution. Added C-039 to
-  github-health, 7 missing sources to debt-runner, generated multi-layer-memory
-  sources.jsonl, fixed 4 confidence downgrades. Baseline: 27 PASS, 24 FAIL →
-  Final: 48 PASS, 0 FAIL, 16 WARN.
-- **Phase 4**: Updated deep-research pipeline agents — mandatory metadata
-  reconciliation, claims/sources integrity checks, self-audit in
-  final-synthesizer. S-code scheme enforcement in Phase 2 synthesizer.
-- **Remaining**: Phase 5 (verify implementations + audit 6 downstream plans) and
-  Phase 6 (final validation + home locale sync). Continue at home locale.
+- Phases 1-4: 176 research artifacts committed, validation script created,
+  metadata remediated (48 PASS, 0 FAIL), pipeline agents fixed.
 
 **Session #257** (RESEARCH INTEGRITY PLAN — worktree session):
 
-- Diagnosed 9 research outputs for integrity gaps. Produced DIAGNOSIS.md,
-  DECISIONS.md (21 decisions), PLAN.md (22 steps, 6 phases). T18 P0 created.
-
-**Session #256** (JASON-OS BRAINSTORM + SKILL CREATION + RESEARCH ROADMAP):
-
-- **Branch**: `planning-33026` (5 commits)
-- **PR #487 R1 review**: 7/7 items fixed. Review #62.
-- **/brainstorm skill created**: Full /skill-creator + /skill-audit.
-- **JASON-OS brainstorm COMPLETE**: Chosen direction: Template → Platform (B→F).
-- **JASON-OS research roadmap COMPLETE**: 16-domain research program (32
-  decisions).
+- Diagnosed 9 research outputs. Produced 22-step plan (21 decisions). T18
+  created.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -88,17 +83,17 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Quick Status
 
-| Item                            | Status        | Progress                                                    |
-| ------------------------------- | ------------- | ----------------------------------------------------------- |
-| **Research Integrity Fix**      | PHASE 4 DONE  | Phases 1-4 complete. Phase 5-6 remain (verify + home sync). |
-| **Repo Analysis Skill**         | PLAN READY    | Deep-plan complete (24 decisions, 9 steps). Ready for impl. |
-| **Custom Agents**               | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded.   |
-| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner           |
-| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                             |
-| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.        |
-| **Multi-layer Memory**          | RESEARCH DONE | 40 agents, 128 claims. Execution next.                      |
-| **JASON-OS (Claude Code OS)**   | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.      |
-| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                            |
+| Item                            | Status        | Progress                                                  |
+| ------------------------------- | ------------- | --------------------------------------------------------- |
+| **Research Integrity Fix**      | COMPLETE      | All 6 phases done. 51 PASS, 0 FAIL. T18 completed.        |
+| **Repo Analysis Skill**         | COMPLETE      | SKILL.md + REFERENCE.md shipped. T1 completed.            |
+| **Custom Agents**               | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded. |
+| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner         |
+| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                           |
+| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.      |
+| **Multi-layer Memory**          | RESEARCH DONE | 40 agents, 128 claims. Execution next.                    |
+| **JASON-OS (Claude Code OS)**   | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.    |
+| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                          |
 
 **Current Branch**: `planning-33026`
 
@@ -110,32 +105,29 @@ Session #253 — /todo skill creation + skill-audit.
 
 ### Immediate Priority
 
-1. **Research integrity fix Phase 5-6** — Verify implementations (custom-agents,
-   repo-analysis), audit 6 downstream plans, final validation, home locale sync.
-   Plan at `.planning/research-integrity-fix/PLAN.md` Steps 15-22.
-2. **Home locale research sync** — Run `npm run research:validate` at home,
-   commit any missing findings/challenges files (Step 21).
-3. **Repo analysis skill** — PLAN READY. 24 decisions, 9-step plan at
-   `.planning/repo-analysis-skill/PLAN.md`. Ready for implementation.
-4. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
+1. **PR #489 R2+ review** — Check if SonarCloud/CI have new findings after R2
+   push. Process any remaining items.
+2. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
    center, XL effort. Plan at `.planning/dev-dashboard/PLAN.md`.
-5. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
+3. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
    Gates plan-orchestration Waves 2-3.
+4. **Multi-layer memory** — Research done (40 agents, 128 claims). Execute.
+5. **JASON-OS Domain 01** — Internal Archaeology via /deep-research.
 
 ### After Debt-Runner
 
 6. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
 7. **Wave 2: SWS CANON** (Step 12) — 6-10 sessions.
 
-### Backlog (run `/todo` for full list — 14 active, 2 completed)
+### Backlog (run `/todo` for full list — 11 active, 4 completed)
 
 ---
 
 ## Pending PR Reviews
 
-**Status**: No pending reviews. Review lifecycle overhaul not yet PR'd.
+**Status**: PR #489 R2 complete. Watch for R3 from SonarCloud/CI.
 
-**Last Processed**: 2026-03-15 (Session #220)
+**Last Processed**: 2026-04-03 (Session #259)
 
 ---
 

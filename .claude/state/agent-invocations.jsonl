@@ -103,3 +103,17 @@
 {"agent":"explore","description":"Impact analysis: custom-agents impl","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:03:18.445Z"}
 {"agent":"explore","description":"Impact analysis: repo-analysis impl","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:03:30.088Z"}
 {"agent":"explore","description":"Impact analysis: plan-orch waves 0-1b","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:03:37.361Z"}
+{"agent":"fullstack-developer","description":"Fix validate-research.js (12 items)","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:33:33.002Z"}
+{"agent":"fullstack-developer","description":"Fix resolve-hook-warnings.js (5 items)","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:33:38.776Z"}
+{"agent":"fullstack-developer","description":"Fix install-tools.sh (5 items)","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:33:49.837Z"}
+{"agent":"fullstack-developer","description":"Fix sanitizeError paths (6 hooks)","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:33:58.782Z"}
+{"agent":"fullstack-developer","description":"Fix remaining 3 files","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:34:21.793Z"}
+{"agent":"fullstack-developer","description":"Fix FlexModel null guard","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:34:26.560Z"}
+{"agent":"code-reviewer","description":"Code review PR #489 R1 fix commit","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:52:49.374Z"}
+{"agent":"fullstack-developer","description":"Propagation: lstat-symlink pattern","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:56:20.090Z"}
+{"agent":"fullstack-developer","description":"Propagation: validate-path pattern","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:56:32.661Z"}
+{"agent":"fullstack-developer","description":"Propagation: refuse-symlink pattern","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:56:42.564Z"}
+{"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:05:18.928Z"}
+{"agent":"Explore","description":"Search codebase","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:05:19.009Z"}
+{"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:22:13.546Z"}
+{"agent":"Explore","description":"Search codebase","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:22:13.623Z"}
