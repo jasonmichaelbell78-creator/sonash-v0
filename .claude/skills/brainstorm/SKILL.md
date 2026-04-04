@@ -76,9 +76,10 @@ converges on a chosen path — before any implementation decisions are made.
 conversation context. Accepts anything from a vague notion to a detailed
 concept.
 
-**Output:** `.planning/<topic-slug>/BRAINSTORM.md` — co-located with deep-plan
-artifacts so Phase 0 discovers it naturally. **Slug:** lowercase, hyphens for
-spaces/special chars, max 50 chars.
+**Output:** `.research/<topic-slug>/BRAINSTORM.md` — co-located with research
+artifacts as an early-stage discovery artifact. Downstream skills (deep-plan,
+deep-research) discover it naturally during Phase 0. **Slug:** lowercase,
+hyphens for spaces/special chars, max 50 chars.
 
 ---
 
@@ -120,7 +121,7 @@ Vague ideas are welcome — we'll shape them together. No code will be written."
    - Domain/technology questions: spawn `deep-research-searcher` agents with
      sub-question, search profile (web/docs/academic), output path, depth
    - No limit on agent count — dispatch as many as the landscape requires
-5. **Duplicate check (MUST):** Check `.planning/<topic-slug>/`. If BRAINSTORM.md
+5. **Duplicate check (MUST):** Check `.research/<topic-slug>/`. If BRAINSTORM.md
    exists, offer: resume, start fresh, or rename.
 6. Check `.research/` for prior research on related topics (SHOULD)
 7. **Convergence-loop verify landscape (SHOULD):** If Phase 0 makes 3+ claims
@@ -255,7 +256,7 @@ so, sketch the hybrid and confirm: "So the direction is: [synthesis]. Correct?"
 
 **Purpose:** Produce the BRAINSTORM.md artifact and route to next action.
 
-1. Write BRAINSTORM.md to `.planning/<topic-slug>/` (MUST)
+1. Write BRAINSTORM.md to `.research/<topic-slug>/` (MUST)
 2. Display inline in conversation (MUST — primary output)
 3. **Convergence-loop verify** (MUST) — run CL quick preset on BRAINSTORM.md
    claims about codebase state, existing systems, and feasibility. As many

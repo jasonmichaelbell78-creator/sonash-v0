@@ -117,7 +117,7 @@ reference actual patterns, not generic placeholders.
      Do not proceed with uninformed discovery questions when domain expertise is
      absent.
 4. **Brainstorm check** (SHOULD) — check for
-   `.planning/<topic-slug>/BRAINSTORM.md`. If found, load chosen direction,
+   `.research/<topic-slug>/BRAINSTORM.md`. If found, load chosen direction,
    anti-goals, and open questions as pre-seeded context for discovery.
 5. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
 6. Identify existing patterns, conventions, and neighboring systems (MUST)

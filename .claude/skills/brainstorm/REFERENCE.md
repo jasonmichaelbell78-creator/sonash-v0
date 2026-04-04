@@ -177,7 +177,7 @@ feasibility gaps, and what each direction misses that the other gets right.
     { "type": "deep-research-searcher", "scope": "...", "status": "complete" }
   ],
   "artifacts": {
-    "brainstorm": ".planning/<slug>/BRAINSTORM.md"
+    "brainstorm": ".research/<slug>/BRAINSTORM.md"
   },
   "updated": "ISO timestamp"
 }

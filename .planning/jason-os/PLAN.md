@@ -8,14 +8,14 @@ sequenced in tiers: foundational domains first, then domain-specific, with
 ongoing cross-domain synthesis. Each domain is multi-phased (scope → research →
 gate). All artifacts are git-tracked for cross-locale persistence.
 
-**Decisions:** See DECISIONS.md (32 decisions) **Prior art:** See BRAINSTORM.md
-(chosen direction: Template → Platform)
+**Decisions:** See DECISIONS.md (32 decisions) **Prior art:** See
+[BRAINSTORM.md](../../.research/jason-os/BRAINSTORM.md) (chosen direction:
+Template → Platform)
 
 ## File Structure
 
 ```
 .planning/jason-os/
-├── BRAINSTORM.md              (complete)
 ├── DECISIONS.md               (complete — this plan's decisions)
 ├── PLAN.md                    (this file — research roadmap)
 ├── RESEARCH_ROADMAP.md        (living orchestration artifact — status tracker)
@@ -23,6 +23,7 @@ gate). All artifacts are git-tracked for cross-locale persistence.
 └── DEPENDENCIES.md            (living cross-domain dependency map)
 
 .research/jason-os/
+├── BRAINSTORM.md              (complete — moved from .planning/ during R&D migration)
 ├── 01-internal-archaeology/   (domain research outputs)
 ├── 02-external-landscape/
 ├── 02a-adoption-scouting/
@@ -275,8 +276,8 @@ starter kit."
 - What "portable" means operationally — everything works everywhere, or core
   works everywhere with extensions per project
 
-**Prior art to ingest:** BRAINSTORM.md (anti-goals, chosen direction, operator
-identity as no-code vibe coder).
+**Prior art to ingest:** [BRAINSTORM.md](../../.research/jason-os/BRAINSTORM.md)
+(anti-goals, chosen direction, operator identity as no-code vibe coder).
 
 **Estimated scope:** Medium — mix of external research and internal reflection.
 

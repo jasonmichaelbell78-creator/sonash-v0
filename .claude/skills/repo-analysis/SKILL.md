@@ -257,7 +257,7 @@ phase-level resume.
 - **Downstream:** `/deep-plan`, TDMS, project memory
 - **Neighbors:** `/audit-comprehensive` (home repo), dimension agents
 - **References:** [REFERENCE.md](./REFERENCE.md),
-  [BRAINSTORM.md](../../.planning/repo-analysis-knowledge/BRAINSTORM.md)
+  [BRAINSTORM.md](../../.research/archive/repo-analysis-knowledge/BRAINSTORM.md)
 
 ## Guard Rails
 
