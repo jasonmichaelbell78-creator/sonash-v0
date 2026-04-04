@@ -1068,3 +1068,201 @@ Every analysis run appends one record for cross-skill discoverability.
 
 **Readers:** `/deep-plan` Phase 0 (discovers prior research), session-begin
 (surfaces active analyses), Compare resume option (finds previous runs).
+
+---
+
+## 13. Knowledge Dimensions (Creator View)
+
+Five dimensions that capture what a repo UNDERSTANDS, not just its health. These
+feed the Creator View (SKILL.md Phase 4). Low automation — knowledge extraction
+requires AI judgment, not tool output.
+
+| #     | Dimension                | Signal | Auto | What It Captures                                    |
+| ----- | ------------------------ | ------ | ---- | --------------------------------------------------- |
+| KN-01 | Domain knowledge map     | 5/5    | 2/5  | What technical domains does this repo teach/embody? |
+| KN-02 | Insight density          | 5/5    | 1/5  | Non-obvious insights embedded in code/docs/design   |
+| KN-03 | Learning path potential  | 4/5    | 2/5  | Could this repo serve as a curriculum or deep dive? |
+| KN-04 | Methodology novelty      | 5/5    | 1/5  | Does this repo approach a problem in a new way?     |
+| KN-05 | Relevance to active work | 5/5    | 1/5  | How directly does this connect to current projects? |
+
+**Scoring:** Each dimension scored 0-100 with the same 4-band scale (Section 4).
+The Knowledge composite score is the weighted average of KN-01 through KN-05.
+
+**Key differences from engineer dimensions:**
+
+- Low automation — requires reading and understanding, not counting
+- Subjective — AI judgment, not tool output
+- Context-dependent — KN-05 requires home repo context loading
+- Changes the verdict — a repo with Critical health but Excellent knowledge
+  should score differently than health-only analysis suggests
+
+**Examples from real analyses:**
+
+| Repo                  | Knowledge Score | What Was Missed Without This                                                                                       |
+| --------------------- | --------------- | ------------------------------------------------------------------------------------------------------------------ |
+| karpathy/autoresearch | Excellent (92)  | Autonomous research methodology, agent instruction design, fixed-budget experimentation as generalizable pattern   |
+| build-your-own-x      | Excellent (85)  | 363 paths into deep systems knowledge. 5 domains directly relevant to JASON-OS. The "build from scratch" pedagogy. |
+| CLI-Anything          | Healthy (72)    | HARNESS.md 7-phase SOP for agent-native CLI wrapping. Claude Code plugin marketplace format.                       |
+| MemSkill              | Excellent (88)  | Meta-memory concept (skills about HOW to remember). Skill evolution loop. arXiv 2602.02474.                        |
+
+---
+
+## 14. Creator View Specification
+
+The Creator View is the primary analytical output for Standard and Deep modes.
+It captures what the repo KNOWS and how it relates to your work.
+
+### 14.1 Style Guide
+
+- **Conversational prose, not tables.** Written as you'd explain a repo to a
+  colleague over coffee, not as a compliance report.
+- **Anti-goal: must NOT read like a technical manual.** No jargon-heavy,
+  impersonal, bullet-point-only output.
+- **Direct address.** "You're doing X. They're doing Y. Here's why that
+  matters." Not "The repository implements X."
+- **Depth over brevity.** Each section should be substantive — 5-15 lines of
+  real analysis, not 2-line summaries.
+- **Opinionated when warranted.** The Challenge section (14.5) exists to push
+  back. Don't soften genuine insights.
+
+### 14.2 Home Repo Context Loading
+
+Before writing any Creator View section, load:
+
+**MUST load:**
+
+- `CLAUDE.md` — conventions, stack, architecture constraints
+- `ROADMAP.md` — project direction, planned features, vision
+- `SESSION_CONTEXT.md` — current sprint, active work
+- `.claude/skills/` directory listing — active skills inventory
+- Active project memories from MEMORY.md — project initiatives
+
+**MAY load (when comparison requires deeper context):**
+
+- Specific skill SKILL.md files for detailed comparison
+- Agent definitions for agent-architecture comparison
+- Specific source files when the external repo has a direct equivalent
+
+### 14.3 Section: What This Repo Understands
+
+Deep analysis of the repo's embedded knowledge. Not WHAT it does (features,
+functionality) — what it KNOWS (mental models, techniques, philosophies).
+
+**Prompts to explore:**
+
+- What problem does this repo solve, and what understanding of that problem does
+  it demonstrate?
+- What non-obvious design decisions reveal deep domain knowledge?
+- What would a developer learn by studying this codebase that they couldn't
+  learn from documentation alone?
+- What methodologies or approaches does this repo embody?
+
+### 14.4 Section: What's Relevant To Your Work
+
+Direct comparison to home repo. Reference specific files, skills, approaches.
+
+**Prompts to explore:**
+
+- What does this repo do that we also do? How do their approaches differ?
+- What does this repo do that we DON'T do? Should we?
+- What active projects (JASON-OS, current sprint) would benefit from this
+  knowledge?
+- Are there specific skills, agents, or workflows that overlap?
+
+### 14.5 Section: Where Your Approach Differs
+
+Classify each meaningful difference:
+
+| Classification | Meaning                                   | Action                                         |
+| -------------- | ----------------------------------------- | ---------------------------------------------- |
+| **Ahead**      | You've already solved this better         | Confirm direction, note as validation          |
+| **Different**  | Valid alternative approach, neither wrong | Consider whether their approach has advantages |
+| **Behind**     | They've figured out something you haven't | Investigate further, consider adopting         |
+
+### 14.6 Section: The Challenge
+
+The most important section. Opinionated, specific, actionable.
+
+**Rules:**
+
+- Only when warranted. If nothing genuinely challenges your approach, say so
+  explicitly: "No significant challenges identified."
+- Never forced. Don't manufacture challenges for completeness.
+- Never obstructive. Challenge to improve, not to criticize.
+- One recommendation, not five. "THE thing to consider."
+- Include reasoning. Why this matters, what changes if you adopt it.
+
+### 14.7 Section: Knowledge Candidates
+
+What you could LEARN from deeper engagement. Not code to extract — understanding
+to gain.
+
+**Tier structure:**
+
+- **Tier 1: Directly relevant** — connects to active projects, current sprint
+- **Tier 2: Deepens understanding** — builds systems knowledge, mental models
+- **Tier 3: Interesting but lower priority** — worth knowing, not urgent
+
+Added to `value-map.json` alongside pattern candidates. Knowledge candidates use
+extraction effort E0 (read/study) or E1 (experiment/prototype).
+
+---
+
+## 15. Standard/Deep Process Details
+
+Absorbed from SKILL.md v2.0 to keep SKILL.md under 300 lines.
+
+### 15.1 Clone Process (Phase 1)
+
+1. Clone: `git clone --filter=blob:none --depth=1 <url>` to
+   `/tmp/repo-analysis-<slug>/`
+2. LFS check: `GIT_LFS_SKIP_SMUDGE=1` if `.gitattributes` detected
+3. Monorepo detection (turbo.json, nx.json, pnpm-workspace.yaml, etc.)
+4. **Repomix generation (MUST — immediately after clone):**
+   `npx repomix@latest --compress --output <output-dir>/repomix-output.txt`
+   Verify file exists. If fails: retry once, report to user. Never skip.
+5. For Deep: `git fetch --unshallow` or `--shallow-since="1 year ago"`
+6. Update state file with clone path and strategy
+
+### 15.2 Dimension Wave (Phase 2)
+
+**Small repos (<20 files):** Analyze inline via Bash. Subagents cannot access
+temp directories — do NOT spawn agents for small repos.
+
+**Large repos (20+ files):** Copy clone to project workspace at
+`.research/repo-analysis/<slug>/source/`, then spawn agents against that path.
+Max 4 concurrent. See Section 10 for agent allocation.
+
+**Agent failure handling (MUST):**
+
+1. After each agent completes, verify dimension file exists
+2. If file is empty (0 bytes — Windows agent output bug): capture
+   task-notification result text, write to dimension file
+3. If agent failed entirely: log failure reason, re-dispatch with narrower scope
+   (same pattern as deep-research agent overflow)
+4. If retry also fails: report to user, continue with available dimensions
+5. NEVER silently accept missing dimension data
+
+### 15.3 Temporal Analysis (Phase 3 — Deep only)
+
+1. `git shortlog -sn --all` for contributor breakdown
+2. `git log --format="%aI"` for commit velocity distribution
+3. `git log --numstat` for churn hotspot detection
+4. Bot-commit filtering (exclude dependabot, renovate, etc.)
+5. Monthly aggregation for temporal fingerprint (Section 7)
+
+---
+
+## 16. Version History
+
+| Version | Date       | Description                                         |
+| ------- | ---------- | --------------------------------------------------- |
+| 3.0     | 2026-04-03 | Dual-lens rewrite: Creator View + Engineer View.    |
+|         |            | Knowledge dimensions (KN-01-05). No silent skips.   |
+|         |            | Inline analysis for small repos. Repomix mandatory. |
+|         |            | SKILL.md compressed to <300 lines.                  |
+| 2.0     | 2026-04-03 | Schema alignment, adoption assessment, extraction   |
+|         |            | persistence, agent capture fixes, repomix           |
+| 1.2     | 2026-04-03 | Output path: .research/repo-analysis/<slug>/        |
+| 1.1     | 2026-04-02 | Skill-audit: 16 decisions — UX, guard rails, labels |
+| 1.0     | 2026-04-02 | Initial: 3 tiers, 45 dimensions, routing, resume    |
