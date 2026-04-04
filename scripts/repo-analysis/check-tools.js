@@ -131,7 +131,7 @@ function checkTool(name, def) {
     const version = (output || "").trim().split(/\r?\n/)[0] || "unknown";
     return { available: true, version, error: null };
   } catch (err) {
-    // Use sanitizeError — never expose raw error.message
+    // Use sanitizeError() for safe error handling
     return { available: false, version: null, error: sanitizeError(err) };
   }
 }
