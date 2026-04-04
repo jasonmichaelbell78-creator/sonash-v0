@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "suppressions": [
+    {
+      "id": "security-validity-checks",
+      "category": "security",
+      "finding": "Secret scanning validity checks disabled",
+      "reason": "Feature not available on current GitHub tier — API accepts PATCH but state remains disabled; UI does not expose toggle. Likely requires GitHub Advanced Security (GHAS) which is not enabled for this repo.",
+      "suppressedAt": "2026-04-04T19:40:00.000Z",
+      "expiresAt": "2026-10-04T00:00:00.000Z"
+    },
+    {
+      "id": "config-delete-branch-on-merge",
+      "category": "config",
+      "finding": "deleteBranchOnMerge disabled",
+      "reason": "Intentional config choice — user prefers manual branch cleanup. Do not re-surface.",
+      "suppressedAt": "2026-04-04T19:55:00.000Z",
+      "expiresAt": null
+    }
+  ],
+  "categorySuppressions": []
+}
