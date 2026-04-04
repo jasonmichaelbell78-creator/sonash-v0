@@ -366,6 +366,25 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#37)</summary>
+
+- **Date:** 2026-04-03
+- **Reviews consolidated:** #64-#review-pr491-r2
+- **Recurring patterns:**
+  - cc extraction: logresolveresult() helper reduced runresolvechecks cc 17→<15.
+    (3x)
+  - cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+    (3x)
+  - gemini stale detection: 5 comments referenced pre-r1 commit. auto-rejected.
+    (3x)
+  - gsd-check-update toctou: existssync + lstatsync → lstatsync + enoent catch.
+    (3x)
+  - shell:true removal: `execfilesync` with `shell: true` unnecessary, creates
+    (3x)
+  - validategitdir tightened: reject filesystem roots, scope to cwd parent. (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#36)</summary>
 
 - **Date:** 2026-04-03
@@ -1038,107 +1057,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review review-466-r3: PR #466 R3 — Qodo (2026-03-24) (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #466 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 5     | 4        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 6     | 2       |
-
----
-
-### Review 503: PR #469 R1 — Reconcile Bootstrap, Exit Code & Metrics Sampling (2026-03-25)
-
-**Date:** 2026-03-25 | **PR:** #469 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 8     | 0        | 3        |
-
----
-
-### Review 504: PR #469 R2 — CC Reduction, Map Normalization & Revalidation (2026-03-25)
-
-**Date:** 2026-03-25 | **PR:** #469 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 7     | 0        | 1        |
-
----
-
-### Review retro-bulk-448-470: Bulk retro PRs #448-#470 (13 PRs, 8 findings) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #470 | **Source:** bulk
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 0        |
-
-**Patterns:**
-
-- propagation-misses
-- repeat-rejection-churn
-- qodo-stale-head
-- cc-extraction-timing
-- diminishing-returns
-
-**Learnings:**
-
-- Add CC check after fixes in pr-review Step 4
-- 3 new reviewer suppression rules
-- DEBT-45615 resolved
-- Qodo stale diff note added to pr-review
-
----
-
-### Review rev-14: PR #470 R1 — Mixed Qodo+Gemini+SonarCloud (2026-03-26) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 32    | 19    | 0        | 13       |
-
----
-
-### Review rev-15: PR #470 R2 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 5     | 0        | 2        |
-
----
-
-### Review rev-16: PR #470 R3 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 5     | 0        | 5        |
-
----
-
-### Review rev-17: PR #470 R4 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 4     | 0        | 7        |
-
----
-
 ### Review rev-18: PR #470 R5 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
 
 **Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
@@ -1361,82 +1279,41 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 64: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
+### Review review-pr491-r1: (untitled) (2026-04-03)
 
-**Date:** unknown | **PR:** #397 | **Source:** manual
+**Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 16    | 14    | 0        | 2        |
 
 **Patterns:**
 
-- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
-- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
-- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
-- sanitizeError import paths: 5 hooks + rotate-state.js used
-- Source traceability false-negative: `checkSourceTraceability()` only checked
-- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
-- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
-- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
-- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+- unguarded-symlink-delete
+- repomix-bloat
+- dead-code-pattern-keywords
+- exit-code-doc-mismatch
+- string-raw-escaping
+- test-hardening
 
 ---
 
-### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown) (unknown) (unknown)
+### Review review-pr491-r2: (untitled) (2026-04-03)
 
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
-- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
-- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
-- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
-- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
-- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
-
----
-
-### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown) (unknown)
-
-**Date:** unknown | **Source:** manual
+**Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 21    | 18    | 0        | 3        |
 
 **Patterns:**
 
-- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
-- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
-- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
-- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
-- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
-- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
-
----
-
-### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
-- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
-- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
-- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
-- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
-- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+- checker-fp-symlink-regex
+- checker-fp-json-parse
+- mkdirSync-before-guard
+- exit-code-2
+- tdms-data-quality
+- path-disclosure-fix
 
 ## Key Patterns
 

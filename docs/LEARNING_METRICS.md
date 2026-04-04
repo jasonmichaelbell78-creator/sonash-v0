@@ -33,8 +33,8 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 89.6% |
-| Patterns Learned          | 362   |
+| Learning Effectiveness    | 89.3% |
+| Patterns Learned          | 361   |
 | Patterns Automated        | 41    |
 | Patterns Failing          | 0     |
 | Critical Pattern Success  | 96.7% |
@@ -66,9 +66,9 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 362   | Pattern never recurred after documentation   |
+| ✅ LEARNED   | 361   | Pattern never recurred after documentation   |
 | 🔧 AUTOMATED | 41    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 47    | Pattern recurred 1-2 times - needs attention |
+| 🟡 WEAK      | 48    | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
 
 ---
