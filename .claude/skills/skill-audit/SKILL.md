@@ -2,11 +2,11 @@
 name: skill-audit
 description: >-
   Interactive behavioral quality audit for individual skills. Evaluates against
-  11 quality categories (including T25 convergence loop integration) to surface
-  attention management issues and produce actionable decisions. Includes
-  self-audit verification that all decisions were actually implemented. Uses
-  convergence loops in its own discovery phase. Produces a decision record and
-  updated skill files.
+  12 quality categories (including T25 convergence loop and completion
+  verification) to surface attention management issues and produce actionable
+  decisions. Includes self-audit verification that all decisions were actually
+  implemented. Uses convergence loops in its own discovery phase. Produces a
+  decision record and updated skill files.
 ---
 
 <!-- prettier-ignore-start -->
@@ -66,7 +66,7 @@ gap through guided decisions with the user.
 
 ```
 Phase 1: Preparation    → Validate target, read skill + standards, initialize state
-Phase 2: Category Audit → 11 categories (incl. T25), interactive, decisions saved per category
+Phase 2: Category Audit → 12 categories (incl. T25 + Completion Verification), interactive, decisions saved per category
 Phase 2.5: Operational Deps → Scripts, hooks, data files, npm scripts, state files
 Phase 3: Crosscheck     → Verify skill-creator + ecosystem impact + adjacent contracts
 Phase 4: Implementation → Apply decisions (priority order, batch related changes)
@@ -103,9 +103,11 @@ Categories: 10 | Estimated decisions: [N]
 
 ## Phase 2: Category Audit (Interactive, MUST)
 
-> Read `.claude/skills/skill-audit/REFERENCE.md` for the 11 category
+> Read `.claude/skills/skill-audit/REFERENCE.md` for the 12 category
 > definitions, question banks, scoring rubrics, and presentation format.
-> Category 11 (Convergence Loop Integration) evaluates T25 compliance.
+> Category 11 (Convergence Loop Integration) evaluates T25 compliance. Category
+> 12 (Completion Verification Design) evaluates built-in self-audit quality per
+> SKILL_STANDARDS.md.
 
 **Self-application (T25):** Skill-audit's own discovery (this phase) SHOULD use
 a `quick` convergence loop: Pass 1 audits all categories, Pass 2 verifies
@@ -162,7 +164,7 @@ interactive flow. The rewrite conclusion does not change the process.
 **Scope explosion guard:** If 3+ categories below 4/10: "Multiple categories
 show fundamental issues. Continue auditing, or pivot to `/skill-creator`?"
 
-### After Category 11 (MUST)
+### After Category 12 (MUST)
 
 "Are there quality concerns the 11 categories didn't surface?" Add user findings
 as additional decisions.
@@ -182,15 +184,16 @@ findings. Then: "Proceed to implementation with these N decisions? [Y/modify/n]"
 
 Run these checks for every skill with scripts, hooks, or data file dependencies:
 
-| Check          | Level            | What to verify                                                            |
-| -------------- | ---------------- | ------------------------------------------------------------------------- |
-| A. Scripts     | MUST             | All invoked scripts exist, **run without error**, produce expected output |
-| B. Hooks       | SHOULD           | All hooks that feed data are configured and write output                  |
-| C. Data files  | MUST             | Every file read has a writer, every file written has a reader             |
-| D. npm scripts | SHOULD           | All `npm run` commands exist in package.json                              |
-| E. Docs        | SHOULD           | All referenced docs/anchors still exist                                   |
-| F. Functions   | MAY (MUST if >3) | Internal functions produce output, handle missing input                   |
-| G. State files | MUST             | Schema matches read/write usage, path writable                            |
+| Check          | Level               | What to verify                                                            |
+| -------------- | ------------------- | ------------------------------------------------------------------------- |
+| A. Scripts     | MUST                | All invoked scripts exist, **run without error**, produce expected output |
+| B. Hooks       | SHOULD              | All hooks that feed data are configured and write output                  |
+| C. Data files  | MUST                | Every file read has a writer, every file written has a reader             |
+| C2. Contracts  | MUST (if consumers) | Output artifacts match downstream consumer expectations (format, schema)  |
+| D. npm scripts | SHOULD              | All `npm run` commands exist in package.json                              |
+| E. Docs        | SHOULD              | All referenced docs/anchors still exist                                   |
+| F. Functions   | MAY (MUST if >3)    | Internal functions produce output, handle missing input                   |
+| G. State files | MUST                | Schema matches read/write usage, path writable                            |
 
 **MUST investigate root causes** (SA-3) — don't just note "file missing." Trace
 the writer, identify WHY it's missing (dead code? never wired? wrong path?).
@@ -207,10 +210,13 @@ finding. **Pause for user confirmation before proceeding to Phase 3.**
 ## Phase 3: Crosscheck + Ecosystem Impact (MUST)
 
 1. Review skill-creator — does it guide creators to avoid the gaps found?
-2. Present crosscheck summary: gap count + recommendations
-3. **Adjacent skill contracts** (SA-4, MUST) — referenced skills exist,
+2. **Self-audit crosscheck** (MUST) — does skill-creator's discovery include
+   self-audit design questions? Does the content checklist require a self-audit
+   phase per SKILL_STANDARDS.md?
+3. Present crosscheck summary: gap count + recommendations
+4. **Adjacent skill contracts** (SA-4, MUST) — referenced skills exist,
    interfaces match assumptions, handoff protocol consistent on both sides
-4. **Ecosystem impact** (MUST) — identify downstream skills/files affected. For
+5. **Ecosystem impact** (MUST) — identify downstream skills/files affected. For
    each impact, offer actionable solutions (not just notifications). User may
    address downstream impacts within this audit or defer.
 
@@ -362,6 +368,7 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 | Version | Date       | Description                                                             |
 | ------- | ---------- | ----------------------------------------------------------------------- |
+| 3.5     | 2026-04-04 | Add Category 12 (Completion Verification Design), expand Phase 2.5+3    |
 | 3.4     | 2026-03-19 | Fix invocation tracking: context MUST include target+decisions+score    |
 | 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2     |
 | 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping |

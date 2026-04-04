@@ -1,8 +1,8 @@
 # Skill Creator Reference
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-03-18
+**Document Version:** 1.2
+**Last Updated:** 2026-04-04
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -81,6 +81,14 @@ Workflow structure, phase design, output artifacts.
   skill's discovery or validation phase. Example: `/deep-plan` uses it in Phase
   0 to verify DIAGNOSIS.md claims; `/skill-creator` uses it in Phase 5 to verify
   created skill's codebase claims.
+- "What deliverables should the skill's self-audit verify at completion? List
+  the specific output artifacts, state files, and generated documents." (Per
+  SKILL_STANDARDS.md Self-Audit at Completion)
+- "What verification agents should the self-audit dispatch — code-reviewer,
+  explore, or domain-specific? What should each verify?"
+- "Are there files or processes that could become orphaned if execution is
+  partial? What downstream skills consume this skill's output, and what format
+  do they expect?"
 
 ### Category 3: Attention & Prompt Engineering
 
@@ -154,6 +162,8 @@ non-negotiable; SHOULD items may be skipped with documented rationale.
 10. SHOULD: Quick-start example (5-8 lines) showing minimal invocation (S25)
 11. MUST (if state files): State file schema in REFERENCE.md (per Q8) (S26)
 12. MUST (if state files): Resume detection on re-invocation (S27)
+13. MUST (Standard/Complex): Self-audit phase present as penultimate phase
+14. MUST (if downstream consumers): Self-audit includes contract verification
 
 ### Behavioral Quality
 

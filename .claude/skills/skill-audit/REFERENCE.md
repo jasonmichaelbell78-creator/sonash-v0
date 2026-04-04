@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 2.1
-**Last Updated:** 2026-03-15
+**Document Version:** 2.2
+**Last Updated:** 2026-04-04
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -396,10 +396,63 @@ overall scoring denominator accordingly (100 -> 90 for 10 categories).
 
 ---
 
+## Category 12: Completion Verification Design
+
+**Purpose:** Does the skill verify its own execution through a built-in
+self-audit phase? Per SKILL_STANDARDS.md, Standard and Complex skills MUST
+include a self-audit phase with 9 verification dimensions.
+
+### Evaluation Criteria
+
+- **Self-audit phase present** — does the skill have a dedicated verification
+  phase near the end of its process?
+- **Phase positioning** — is it penultimate (after all build, before closure)?
+- **Dimension coverage** — which of the 9 SKILL_STANDARDS.md dimensions are
+  covered? (completeness, orphan detection, build integrity, gap analysis,
+  functional verification, multi-agent, regression, contract, partial recovery)
+- **Tier-appropriate scope** — Standard skills cover dimensions 1-5 minimum;
+  Complex skills cover all 9
+- **Multi-agent verification** — does the self-audit dispatch independent
+  agents?
+- **Regression detection** — if re-run, does it compare against prior output?
+- **Contract verification** — if downstream consumers exist, does it verify
+  output matches their expectations?
+- **Partial execution recovery** — does it detect stale artifacts from
+  interrupted runs?
+
+### Common Findings
+
+- Standard/Complex skill has no self-audit phase at all (most common gap)
+- Self-audit exists but only checks structural validation (runs
+  `skills:validate`) — misses completeness, orphans, gaps
+- Self-audit positioned after closure (evidence already cleaned up)
+- No multi-agent verification for Complex skills with >15 deliverables
+- Downstream consumers listed in Integration section but self-audit doesn't
+  verify contract compliance
+- No regression detection — re-runs silently lose prior capabilities
+- Self-audit checks existence but not function (file exists but doesn't work)
+
+### Scoring Guide
+
+| Score | Criteria                                                        |
+| ----- | --------------------------------------------------------------- |
+| 9-10  | Full 9-dimension self-audit, correctly positioned, tier-matched |
+| 7-8   | Self-audit present with most dimensions, minor gaps             |
+| 5-6   | Self-audit present but missing key dimensions or mispositioned  |
+| 3-4   | Minimal self-audit (grep-only or structural-only)               |
+| 1-2   | No self-audit despite Standard/Complex tier                     |
+| N/A   | Simple skill (<50 lines) — "Done when:" gate sufficient         |
+
+**N/A handling:** If a skill is Simple tier (<50 lines, no companions), score
+this category as N/A and exclude from the total. Adjust scoring denominator
+accordingly (120 -> 110 for 11 categories, or 100 if both Cat 11 and 12 N/A).
+
+---
+
 ## Overall Scoring
 
-Sum individual category scores for an overall quality score out of 110 (or 100
-if Category 11 is N/A).
+Sum individual category scores for an overall quality score out of 120 (or
+adjusted if Category 11 and/or 12 is N/A).
 
 | Range | Rating    | Action                                      |
 | ----- | --------- | ------------------------------------------- |

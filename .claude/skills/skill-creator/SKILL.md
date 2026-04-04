@@ -153,6 +153,9 @@ hook, script, CLAUDE.md entry, or agent — present the reframe before proceedin
 11. **Cross-batch revision** (MUST) — if a later batch answer conflicts with an
     earlier decision, present the conflict and allow revision. Update state file
     with the revised decision.
+12. **Self-audit design** (MUST for Standard/Complex) — discovery MUST include
+    questions about the created skill's self-audit phase. See REFERENCE.md
+    Category 2 for the self-audit design questions.
 
 **Delegation:** If user says "you decide," accept recommended defaults. Document
 each delegated decision with rationale.
@@ -180,6 +183,10 @@ nothing missing.
    - Guard rails and failure modes
    - Integration surface (neighbors, handoffs)
    - Compaction resilience design
+   - **Self-audit phase design** (MUST for Standard/Complex) — list expected
+     output artifacts to verify, verification agents to dispatch, orphan
+     detection scope, and downstream contract checks. Reference
+     SKILL_STANDARDS.md "Self-Audit at Completion" for the 9 dimensions.
 3. Present for approval (MUST): "Here's the planned structure. Proceed? [approve
    / approve with changes / reject]"
 
@@ -231,6 +238,12 @@ convergence-loop programmatic mode into that phase. Reference
 `/convergence-loop` SKILL.md "Programmatic Mode" section for the integration
 contract.
 
+**Self-audit phase (MUST for Standard/Complex):** Write a self-audit phase into
+the created skill as the penultimate phase (before Closure). Reference
+SKILL_STANDARDS.md "Self-Audit at Completion" for the 9 verification dimensions.
+Customize with the skill's specific deliverables, downstream contracts, and
+regression detection needs from Phase 3 planning.
+
 ### 4.4 Write Companions (SHOULD)
 
 Extract to REFERENCE.md if SKILL.md approaches 300 lines. Move examples,
@@ -257,8 +270,15 @@ templates, question banks to companion files.
    implementation. Decisions with no grep match are MISSING — fix before
    proceeding to Phase 6. See SKILL_STANDARDS.md "Self-Audit at Completion."
 
+7. **Self-audit phase present** (MUST for Standard/Complex) — verify the created
+   skill includes a self-audit phase positioned as penultimate, referencing
+   SKILL_STANDARDS.md dimensions appropriate to its tier
+8. **Contract verification wired** (MUST if downstream consumers) — verify the
+   self-audit checks output against documented consumer expectations
+
 **Done when:** `skills:validate` passes, behavioral checklist addressed, under
-300 lines, codebase claims verified, all decisions grep-verified.
+300 lines, codebase claims verified, all decisions grep-verified, self-audit
+phase present (Standard/Complex).
 
 ---
 
@@ -327,6 +347,7 @@ behavioral quality that structural validation cannot catch.
 
 | Version | Date       | Description                                                                          |
 | ------- | ---------- | ------------------------------------------------------------------------------------ |
+| 3.3     | 2026-04-04 | Add mandatory self-audit phase for Standard/Complex skills (9 dimensions)            |
 | 3.2     | 2026-03-15 | Skill-audit: CL verify MUST for Complex, reorder Phase 5, anti-patterns to REFERENCE |
 | 3.1     | 2026-03-15 | Convergence-loop integration: Phase 4.3 build + Phase 5 verify                       |
 | 3.0     | 2026-03-08 | Full rewrite from 52-decision audit (48/100 -> target 82/100)                        |

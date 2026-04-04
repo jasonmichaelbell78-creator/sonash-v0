@@ -1,8 +1,8 @@
 # Skill Standards
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
-**Last Updated:** 2026-02-28
+**Document Version:** 3.0
+**Last Updated:** 2026-04-04
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -261,21 +261,68 @@ Skills that involve multi-step interaction SHOULD include:
 
 ## Self-Audit at Completion
 
-Skills that produce output artifacts SHOULD include a self-audit step before
-declaring completion. The canonical pattern (derived from `skill-audit` Phase
-5):
+Standard and Complex skills MUST include a self-audit phase that verifies the
+skill's own execution before declaring completion. Simple skills (<50 lines,
+reference-only) are exempt — a "Done when:" gate is sufficient.
+
+### Tier Requirements
+
+| Tier                                        | Self-Audit Requirement                                     |
+| ------------------------------------------- | ---------------------------------------------------------- |
+| **Simple** (<50 lines, no companions)       | "Done when:" gate only. No separate self-audit phase.      |
+| **Standard** (50-200 lines, 0-2 companions) | MUST: dimensions 1-5. SHOULD: dimensions 6-9.              |
+| **Complex** (200-300 lines, 3+ companions)  | MUST: all 9 dimensions including multi-agent verification. |
+
+### Ordering (MUST)
+
+Self-audit is always the **penultimate phase** — after ALL build/implementation
+work, before closure/cleanup. No build work may occur after self-audit. No
+cleanup may occur before it. If self-audit finds failures, re-enter Build, fix,
+then re-run Self-Audit.
+
+### 9 Verification Dimensions
+
+1. **Completeness** (MUST Standard+) — verify all promised deliverables exist on
+   disk. Glob/ls for expected output paths from the planning phase.
+2. **Orphan detection** (MUST Standard+) — check that all files created during
+   execution are referenced by the skill's output or state. Flag unreferenced
+   files as orphans.
+3. **Build integrity** (MUST Standard+) — grep output files for `TODO`, `FIXME`,
+   `placeholder`, `[TBD]`, and other stub markers. Nothing left unbuilt.
+4. **Gap analysis** (MUST Standard+) — compare planning decisions against actual
+   output. Each accepted decision MUST map to a deliverable. Decisions with no
+   corresponding output are MISSING.
+5. **Functional verification** (MUST Standard+) — run scripts in dry-run/check
+   mode, validate state file schemas, test key execution paths. A file that
+   exists but doesn't work is worse than a missing file.
+6. **Multi-agent verification** (SHOULD Standard, MUST Complex) — dispatch a
+   `code-reviewer` or `explore` agent to independently verify a sample of
+   deliverables. For >15 decisions/outputs, this is MUST regardless of tier.
+7. **Regression detection** (SHOULD Standard, MUST Complex) — if a state file
+   from a previous run exists, compare current artifact list against the
+   previous run's `files_created`. Flag artifacts that existed before but are
+   missing now as REGRESSION.
+8. **Contract verification** (MUST if downstream consumers exist) — if the
+   skill's Integration section lists downstream consumers, verify output
+   artifacts match the documented contract (path, format, required fields/
+   sections). For JSONL: validate against schema. For MD: verify required
+   sections exist.
+9. **Partial execution recovery** (SHOULD Standard, MUST Complex) — if the state
+   file shows a resume from an earlier phase, check artifacts from pre-resume
+   phases for staleness. Verify all agent output files are non-empty (ref:
+   CLAUDE.md guardrail #15). Flag artifacts with timestamps older than last
+   resume as STALE.
+
+### Base Verification Pattern
+
+These apply to ALL tiers (including Simple via "Done when:" gates):
 
 1. **Re-read all modified/created files** (MUST) — do NOT rely on memory
-2. **Grep-based proof** (MUST) — for each accepted decision or required output,
-   grep the file for a keyword proving implementation. Cite the result. If grep
-   finds nothing, the item is MISSING — not PASS.
-3. **T20 tally** (SHOULD) — categorize verification results: Confirmed
-   (implemented as expected), Corrected (differs from plan), Extended (beyond
-   plan), New (unmapped content)
+2. **Grep-based proof** (MUST) — for each required output, grep the file for a
+   keyword proving implementation. If grep finds nothing, item is MISSING.
+3. **T20 tally** (SHOULD) — categorize results: Confirmed (as expected),
+   Corrected (differs from plan), Extended (beyond plan), New (unmapped)
 4. **"Done when" gate** (MUST) — self-audit must pass before closure phase
-
-For skills with >15 decisions or outputs, dispatch an independent
-`code-reviewer` agent for cross-verification.
 
 ---
 
@@ -311,3 +358,7 @@ For skills with >15 decisions or outputs, dispatch an independent
 - [ ] Warm-up with effort estimate at skill start
 - [ ] Approval gates before irreversible actions or phase transitions
 - [ ] Post-execution retro prompt (learning loop)
+- [ ] MUST (Standard/Complex): Self-audit phase with dimensions 1-5 minimum
+- [ ] MUST (Standard/Complex): Self-audit positioned as penultimate phase
+- [ ] MUST (if downstream consumers): Contract verification in self-audit
+- [ ] SHOULD: Multi-agent verification in self-audit (MUST for Complex)
