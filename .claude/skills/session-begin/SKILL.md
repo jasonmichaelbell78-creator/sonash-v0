@@ -133,7 +133,7 @@ Automated by SessionStart hook. If it failed (check hook output), run:
 
 ## Phase 3: Health Scripts (MUST)
 
-**Output:** "Running 9 health scripts..."
+**Output:** "Running 10 health scripts..."
 
 ```bash
 npm run patterns:check
@@ -145,6 +145,7 @@ npm run reviews:sync -- --apply
 npm run reviews:check-archive
 npm run reviews:archive
 npm run hooks:analytics -- --since=$(date -d '7 days ago' +%Y-%m-%d)
+node scripts/run-github-health.js --quick
 ```
 
 **After all scripts:** "Scripts complete: N passed, M failed, K warnings."

@@ -136,3 +136,6 @@
 {"agent":"security-auditor","description":"Security + architecture scan MemSkill","sessionId":"session-1775234762147","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:51:48.807Z"}
 {"agent":"explore","description":"Doc + code quality scan MemSkill","sessionId":"session-1775234762147","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:51:53.970Z"}
 {"agent":"Explore","description":"Explore skill structure patterns","sessionId":"session-1775256251870","user":"jason","outcome":"invoked","timestamp":"2026-04-03T23:27:24.459Z"}
+{"agent":"Explore","description":"Verify phase completeness","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T13:30:25.468Z"}
+{"agent":"code-reviewer","description":"Audit decisions coverage","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T13:32:26.852Z"}
+{"agent":"code-reviewer","description":"Grep-verify all 20 decisions","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T16:58:54.248Z"}

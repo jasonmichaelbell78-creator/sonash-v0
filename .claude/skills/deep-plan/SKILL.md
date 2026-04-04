@@ -310,6 +310,13 @@ after routing.
 approach. PLAN.md is consumed by GSD via `/gsd:plan-phase`. DIAGNOSIS.md is
 reference-only.
 
+**Skill-type plans (MUST):** If the plan produces a skill (SKILL.md +
+companions), the executor MUST reference
+`.claude/skills/_shared/SKILL_STANDARDS.md` during implementation. Key checks:
+version history section, self-audit phase (Standard/Complex tier), line count
+under 300, MUST/SHOULD hierarchy. The skill-creator enforces these; direct
+execution from deep-plan must enforce them manually.
+
 **Invocation tracking** (MUST):
 
 ```bash
