@@ -199,10 +199,10 @@ install_scc() {
 
   echo "[$name] Installing..."
 
-  # Try go install
+  # Try go install (pinned version per OpenSSF Scorecard)
   if $HAS_GO; then
     echo "    Trying go install..."
-    if go install github.com/boyter/scc/v3@latest 2>&1 | tail -3; then
+    if go install github.com/boyter/scc/v3@v3.7.0 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" scc --version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
@@ -295,7 +295,7 @@ install_jscpd() {
 
   if $HAS_NPM; then
     echo "    Trying npm install -g..."
-    if npm install -g jscpd 2>&1 | tail -3; then
+    if npm install -g jscpd@4.0.8 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" jscpd --version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
@@ -342,10 +342,10 @@ install_gitleaks() {
     fi
   fi
 
-  # Try go install
+  # Try go install (pinned version per OpenSSF Scorecard)
   if $HAS_GO; then
     echo "    Trying go install..."
-    if go install "github.com/$gh_repo/v8@latest" 2>&1 | tail -3; then
+    if go install "github.com/$gh_repo/v8@v8.30.1" 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" "$name" version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
@@ -368,14 +368,7 @@ install_git_quick_stats() {
 
   echo "[$name] Installing..."
 
-  # Try npm (cross-platform)
-  if $HAS_NPM; then
-    echo "    Trying npm install -g..."
-    if npm install -g git-quick-stats 2>&1 | tail -3; then
-      hash -r 2>/dev/null || true
-      if check_tool "$name" git-quick-stats --version 2>/dev/null; then mark_installed "$name"; return 0; fi
-    fi
-  fi
+  # git-quick-stats is not on npm registry — skip npm path (OpenSSF Scorecard compliance)
 
   # Try brew
   if $HAS_BREW; then
@@ -409,7 +402,7 @@ install_repomix() {
 
   if $HAS_NPM; then
     echo "    Trying npm install -g..."
-    if npm install -g repomix 2>&1 | tail -3; then
+    if npm install -g repomix@1.13.1 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" repomix --version 2>/dev/null; then mark_installed "$name"; return 0; fi
     fi
