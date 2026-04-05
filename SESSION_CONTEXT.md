@@ -164,6 +164,33 @@ Awaiting final review/merge.
 
 ---
 
+## Known Issues (surfaced Session #262 session-end)
+
+1. **Missing velocity script** — `scripts/velocity/track-session.js` does not
+   exist. `npm run session:end` pipeline Step 7a fails with `MODULE_NOT_FOUND`.
+   Either create the script or remove Step 7a from the session-end skill. See
+   `.claude/skills/session-end/SKILL.md` line ~245 (Phase 3 table, row `a`).
+2. **session-end-commit.js uses legacy skip flags** —
+   `scripts/session-end-commit.js:244` sets `SKIP_DOC_INDEX_CHECK=1` and
+   `SKIP_DOC_HEADER_CHECK=1` env vars without `SKIP_REASON`. The pre-commit hook
+   now requires `SKIP_REASON` whenever any skip flag is present, so
+   `npm run session:end` fails with "SKIP_REASON is required when overriding
+   checks". Fix: either include a justification (e.g.
+   `SKIP_REASON="automated session-end commit — only SESSION_CONTEXT.md"`) or
+   migrate to the staging-everything approach (session #262 used a manual
+   `git add` + `git commit` fallback).
+3. **`.claire/worktrees/` not in .gitignore** — empty dir
+   (`.claire/worktrees/rnd4426/`) appears untracked. `.gitignore` has
+   `.claude/worktrees/` but not `.claire/worktrees/`. Likely a typo or a stray
+   directory from a tool. Add `.claire/` to `.gitignore` if it's meant to mirror
+   `.claude/worktrees/`.
+4. **Persistent cognitive-cc + trigger hook warnings** — pre-push reports
+   `cognitive-cc` errored (exit 2) and `triggers` flagged "Skill/agent files
+   modified" even though no skill/agent files were in the session-end commit.
+   The trigger warning was acked as stale, but the underlying detection may be
+   matching on commit history beyond the current push. Investigate
+   `scripts/check-cognitive-cc.js` exit 2 and the trigger detector's window.
+
 ## Pending Manual Actions
 
 - Set up GitHub repository variables (Settings -> Secrets and variables ->
