@@ -40,7 +40,7 @@
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v... | package-lock.json              | 0    | security | E1     |
 | DEBT-45612 | Review this potentially hard-coded password.                 | lib/utils/errors.ts            | 71   | security | E0     |
 
-## S1 - High (1369)
+## S1 - High (1370)
 
 | ID         | Title                                                         | File                                                                                                                                               | Line | Category                 | Effort    |
 | ---------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | --------- |
@@ -1413,6 +1413,7 @@
 | DEBT-45631 | Propagation: lstat-symlink pattern in 8 hook files            | .claude/hooks/                                                                                                                                     | 0    | code-quality             | E2        |
 | DEBT-45632 | Propagation: validate-path pattern in 20 hook files           | .claude/hooks/                                                                                                                                     | 0    | code-quality             | E2        |
 | DEBT-45633 | Propagation: refuse-symlink pattern in 35 files               | .claude/hooks/                                                                                                                                     | 0    | code-quality             | E2        |
+| DEBT-45639 | Pre-existing test failures across ecosystem-v2 cluster (1...  | dist-tests/tests/scripts/ecosystem-v2/                                                                                                             | 0    | code-quality             | E2        |
 
 ## S2 - Medium (3453)
 
@@ -4870,7 +4871,7 @@
 | DEBT-45636 | Review lifecycle: 9 data integrity findings                       | scripts/review-lifecycle.js                                                                                                                                                 | 0         | process                  | E2        |
 | DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)       | scripts/generate-documentation-index.js                                                                                                                                     | 0         | performance              | E2        |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...      | scripts/verify-enforcement.js                                                                                                                                               | 0         | process                  | E1        |
-| DEBT-45639 | 7 untracked cognitive-cc violations + pre-push .rc race m...      | scripts/check-pattern-compliance.js                                                                                                                                         | 1870      | refactoring              | E2        |
+| DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js              | scripts/health/lib/warning-lifecycle.test.js                                                                                                                                | 0         | code-quality             | E1        |
 
 ## S3 - Low (3641)
 

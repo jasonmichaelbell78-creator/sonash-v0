@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2136)
+## NEW (2139)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -163,6 +163,7 @@
 | DEBT-45631 | Propagation: lstat-symlink pattern in 8 hook files              | S1       | code-quality             |
 | DEBT-45632 | Propagation: validate-path pattern in 20 hook files             | S1       | code-quality             |
 | DEBT-45633 | Propagation: refuse-symlink pattern in 35 files                 | S1       | code-quality             |
+| DEBT-45639 | Pre-existing test failures across ecosystem-v2 cluster (1...    | S1       | code-quality             |
 | DEBT-2132  | Untitled finding                                                | S2       | code-quality             |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | enhancements             |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | enhancements             |
@@ -731,9 +732,11 @@
 | DEBT-45623 | Upgrade TypeScript 5.x to 6.x in functions                      | S2       | refactoring              |
 | DEBT-45629 | Statusline lacks width-aware line reflow                        | S2       | engineering-productivity |
 | DEBT-45634 | Add update-item.js to TDMS toolkit                              | S2       | refactoring              |
+| DEBT-45635 | cognitive-cc exit 2 + trigger detector window bug               | S2       | process                  |
 | DEBT-45636 | Review lifecycle: 9 data integrity findings                     | S2       | process                  |
+| DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)     | S2       | performance              |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...    | S2       | process                  |
-| DEBT-45639 | 7 untracked cognitive-cc violations + pre-push .rc race m...    | S2       | refactoring              |
+| DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js            | S2       | code-quality             |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
@@ -7309,7 +7312,7 @@
 
 _No items_
 
-## RESOLVED (1129)
+## RESOLVED (1127)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -7690,8 +7693,6 @@ _No items_
 | DEBT-11312 | Add JSONL schema validation to intake scripts                   | S2       | process                  |
 | DEBT-11330 | Auto-increment review numbers from JSONL max to prevent c...    | S2       | process                  |
 | DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | security                 |
-| DEBT-45635 | cognitive-cc exit 2 + trigger detector window bug               | S2       | process                  |
-| DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)     | S2       | performance              |
 | DEBT-0786  | Template docs located outside docs/templates/ directory         | S3       | code-quality             |
 | DEBT-0787  | Test count mismatch between DEVELOPMENT.md and actual tes...    | S3       | code-quality             |
 | DEBT-0848  | Unused dependencies remain in runtime dependencies (tool-...    | S3       | code-quality             |

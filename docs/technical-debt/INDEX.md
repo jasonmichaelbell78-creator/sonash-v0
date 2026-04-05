@@ -9,24 +9,24 @@
 
 ---
 
-**Total Items:** 8489
+**Total Items:** 8490
 
 ## Quick Stats
 
 | Severity      | Count |
 | ------------- | ----- |
 | S0 (Critical) | 26    |
-| S1 (High)     | 1369  |
+| S1 (High)     | 1370  |
 | S2 (Medium)   | 3453  |
 | S3 (Low)      | 3641  |
 
 | Category                 | Count |
 | ------------------------ | ----- |
-| code-quality             | 4719  |
+| code-quality             | 4721  |
 | documentation            | 982   |
 | process                  | 730   |
 | security                 | 729   |
-| refactoring              | 671   |
+| refactoring              | 670   |
 | ai-optimization          | 254   |
 | performance              | 180   |
 | enhancements             | 154   |
@@ -35,9 +35,9 @@
 | Status         | Count |
 | -------------- | ----- |
 | VERIFIED       | 5150  |
-| RESOLVED       | 1129  |
+| RESOLVED       | 1127  |
 | FALSE_POSITIVE | 74    |
-| NEW            | 2136  |
+| NEW            | 2139  |
 
 ## Views
 
@@ -142,7 +142,7 @@
 - **DEBT-0021**: Refactor this function to reduce its Cognitive Complexity from
   16 to the 15 a... (scripts/add-false-positive.js:139)
 
-_...and 1349 more. See [by-severity.md](./views/by-severity.md)_
+_...and 1350 more. See [by-severity.md](./views/by-severity.md)_
 
 ---
 

@@ -142,6 +142,9 @@ nul
 # Repomix packed outputs (regenerable, large, may contain external repo code)
 **/repomix-output.txt
 
+# repo-analysis source/ workspaces (cloned external repos, regenerable, large)
+.research/repo-analysis/**/source/
+
 # GSD (Get Shit Done) plugin — local-only files
 .claude/agents/gsd-*.md
 .claude/commands/gsd/
