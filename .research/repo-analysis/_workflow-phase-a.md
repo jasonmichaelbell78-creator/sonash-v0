@@ -137,6 +137,121 @@ Task #6: Phase B via /deep-plan (after batch is complete)
   │  Then skill-creator for whichever skill (existing or new).
 ```
 
+## Deep-Plan Seed Questions (for Task #2)
+
+These are the concrete design questions the `/deep-plan` discovery phase must
+resolve before skill-creator can act. They emerged from session #263 discussion
+and are preserved here for the next session's kickoff. Discovery should not
+treat this list as exhaustive — add more questions as they surface — but should
+treat it as the minimum scaffold.
+
+### G8 — Personal-fit vs objective-fit separation
+
+- Does `value-map.json` represent fit-separation as two parallel rank arrays
+  (`objective_rank` + `personal_rank`), or a single array with two score fields
+  per candidate (`objective_score` + `personal_score`)?
+- How does `EXTRACTIONS.md` table schema change? Add a "Fit" column? Two
+  columns? Or show only personal-fit and keep objective-fit in the per-repo
+  `value-map.json`?
+- How does a "brilliant but off-sprint" candidate get visually distinguished
+  from a low-value one? Park-for-later badge? Section split?
+- Is "fit" computed at scan time (baked into the artifact) or at read time
+  (recomputed against current active projects each time you review)? Strong
+  implications for re-scan strategy.
+
+### G1 — Link mining + CURATED_LIST absence pattern
+
+- Data structure for mined links: new third candidate type in `value-map.json`
+  (pattern / knowledge / mined-link), a sub-document within value-map, or a
+  separate `mined-links.jsonl`?
+- Minimum mined-link schema — what fields? Proposed:
+  `{title, url, category, objective_score, personal_fit_score, one_line_relevance, evidence_ref, home_projects_matched[]}`.
+- What are the CURATED_LIST detection signals? Candidates to discuss: README >
+  50KB, code-to-markdown ratio near zero, single-top-level-directory structure
+  with README + scripts/, topics tags include "awesome" or "list" or
+  "resources", file tree < 20 files outside docs/scripts/, external link density
+  per README KB.
+- Binary classification (CURATED_LIST yes/no) or continuous curation-level score
+  (0-100)? Continuous gives more control; binary is simpler.
+- False-positive risk: a library/framework with a big README (e.g., a monorepo's
+  documentation hub). How do we differentiate from a true curated-list?
+- Recursion depth: do we follow links FROM mined links (e.g., an API entry
+  points to a Postman collection which points to docs)? Or is depth=1 the cap?
+- Rate limiting: 850 links × fetch time vs batch processing. What's the
+  performance budget?
+- Home-repo context loading for fit scoring: same CLAUDE.md / ROADMAP.md /
+  MEMORY.md loading pattern as Creator View, or something lighter for link
+  filtering?
+
+### G9 — Anti-ideas / cautionary learnings
+
+- Structural placement: new 6th Creator View section ("What's Worth Avoiding"),
+  sub-section of Section 3 Where Your Approach Differs ("Cautionary" as a fourth
+  classification next to Ahead/Different/Behind), or a new category in
+  `findings.jsonl` with `category: "cautionary"`?
+- How does anti-ideas interact with absence patterns? They're related but not
+  identical — absence patterns are health signals (SOLO_MAINTAINER,
+  CELEBRITY_STAGNATION), anti-ideas are behavioral/cultural lessons ("commercial
+  capture erodes community labor"). Which is the primary, which is the derived?
+- Evidence requirement: should every anti-idea cite a specific absence pattern
+  or finding from the repo? Or can it be a pure pattern observation without
+  direct evidence?
+
+### G10 — Long-tail repo bias fix / scoring lens
+
+- "Creator mode" vs "adoption mode" — is this a user-selected flag at scan time,
+  a repo-type-inferred default (library → adoption, long-tail research repo →
+  creator), or a dual-output (both shown, labeled)?
+- Which specific dimensions get rebalanced? Velocity, Maintainability, and
+  Contributor Count are obvious candidates. What about Process? Security?
+- Does the adoption verdict (Adopt/Trial/Extract/Avoid) change under creator
+  mode, or only the band scoring? Probably the verdict changes semantically
+  (Adopt → "Study" or similar) when in creator mode.
+- How is the rebalance weighted — multiplicative penalty reduction, dimension
+  exclusion, or separate scoring function?
+
+### Migration (cross-cutting)
+
+- The 6 already-scanned repos have v1 `value-map.json`. Migrate in-place during
+  re-scan, or generate v2 alongside v1 and keep both?
+- Does re-scanning require re-cloning each repo? We still have `source/` for
+  teng-lin; other repos' source directories may not exist. Can Creator View
+  Phase 4 run against a fresh clone OR an existing source/ dir interchangeably?
+- Is there a schema version field to add so future migrations have a reference
+  point?
+- What happens to `extraction-journal.jsonl` entries that were written under v1
+  — do they need a schema_version field too?
+
+### Rollout order (discussion seed, not a decision)
+
+Intuition to challenge during discovery:
+
+- G9 (anti-ideas) first — purely additive, lowest risk, highest learning per
+  hour.
+- G10 (scoring rebalance) next — doesn't change schemas, only weights.
+- G8 (schema change for fit separation) third — disruptive, requires migration
+  plan for the 6 existing repos.
+- G1 (link mining) last — depends on G8's schema decisions AND requires the most
+  new code.
+
+Alternative order to consider: G1 first because it's the highest user-facing
+value. Trade-off is higher rework risk if G8's schema decisions change things.
+
+## Repo Type Classification (for G1 routing)
+
+Informs which repo types should trigger CURATED_LIST detection and link mining.
+The current skill handles library/codebase well and awesome-list / registry
+poorly — G1's job is to fix the right-hand column.
+
+| Repo type              | Link mining value                        | Current skill fit | Examples in tracker                           |
+| ---------------------- | ---------------------------------------- | ----------------- | --------------------------------------------- |
+| Library / SDK          | Low — the repo IS the content            | Excellent         | notebooklm-py, karpathy/autoresearch          |
+| Codebase / application | Low — same                               | Excellent         | HKUDS/CLI-Anything (CLI wrapper codebase)     |
+| Awesome-list           | **Very high** — links ARE the content    | **Poor**          | public-apis, codecrafters-io/build-your-own-x |
+| Registry / marketplace | **High** — links are first-class entries | **Poor**          | _(none yet in tracker — likely future)_       |
+| Documentation hub      | Medium                                   | Moderate          | ViktorAxelsen/MemSkill (prompts + docs mix)   |
+| Monorepo               | Variable per package                     | Moderate          | _(not in tracker)_                            |
+
 ## Compaction Resilience Anchors
 
 If this session is interrupted (compaction, context reset, locale switch), pick
@@ -176,6 +291,7 @@ up here:
 
 ## Status Log
 
-| Date       | Event                                                                                        |
-| ---------- | -------------------------------------------------------------------------------------------- |
-| 2026-04-05 | Document created. Task #1 in progress — resolving pre-commit block for session state commit. |
+| Date       | Event                                                                                                                                                                                                                            |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-04-05 | Document created. Task #1 in progress — resolving pre-commit block for session state commit.                                                                                                                                     |
+| 2026-04-05 | Task #1 completed (commit 3ee3a097). Added Deep-Plan Seed Questions + Repo Type Classification sections before context clear. Session #263 continuing — context clear planned to reset budget before task #2 /deep-plan kickoff. |
