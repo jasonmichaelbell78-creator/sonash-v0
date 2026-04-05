@@ -64,6 +64,14 @@
       "reason": "False positive — date is in an archive filename link, not a due date. ROADMAP v3.17 removed all date-based scheduling.",
       "suppressedAt": "2026-04-03T11:26:00.000Z",
       "expiresAt": null
+    },
+    {
+      "id": "suppress-2026-04-05-s0-app-check",
+      "category": "debt-metrics",
+      "messagePattern": "S0 critical debt item",
+      "reason": "S0 App Check items tracked in ROADMAP Operational Visibility track — not a session-begin concern",
+      "suppressedAt": "2026-04-05T14:40:00.000Z",
+      "expiresAt": "2026-06-04T14:40:00.000Z"
     }
   ]
 }

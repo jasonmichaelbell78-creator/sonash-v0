@@ -6213,7 +6213,7 @@
 | DEBT-11280 | Journal lock screen component exists but is never importe... | S3       | components/journal/lock-screen.tsx                    | 0    |
 | DEBT-11281 | Swipe navigation has no visual affordance — only hint is ... | S3       | components/notebook/notebook-shell.tsx                | 1132 |
 
-## performance (179)
+## performance (180)
 
 | ID         | Title                                                        | Severity | File                                                  | Line |
 | ---------- | ------------------------------------------------------------ | -------- | ----------------------------------------------------- | ---- |
@@ -6358,6 +6358,7 @@
 | DEBT-11226 | 3 PNG images 2.0-2.8 MB served uncompressed — WebP conver... | S2       | public/images/                                        | 0    |
 | DEBT-11227 | MoodSparkline fires separate 30-doc Firestore read on eve... | S2       | components/notebook/visualizations/mood-sparkline.tsx | 16   |
 | DEBT-11253 | NotebookShell SVG data URL recomputed every render           | S2       | components/notebook/notebook-shell.tsx                | 0    |
+| DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)  | S2       | scripts/generate-documentation-index.js               | 0    |
 | DEBT-0808  | Only 6 dynamic imports despite 101 client components         | S3       | components                                            | 0    |
 | DEBT-0809  | useMemo/useCallback usage is inconsistent                    | S3       | components                                            | 0    |
 | DEBT-0810  | Image optimization disabled (unoptimized: true)              | S3       | next.config.mjs                                       | 14   |
@@ -6397,7 +6398,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (727)
+## process (730)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6768,6 +6769,9 @@
 | DEBT-45530 | 3 learning-route entries have \_repair_needed due to missi... | S2       | .claude/state/learning-routes.jsonl                                     | 1    |
 | DEBT-45531 | Learning routes with \_repair_needed: missing enforcement ... | S2       | .claude/state/learning-routes.jsonl                                     | 1    |
 | DEBT-45622 | Audit findings storage: no rotation, no automated re-check    | S2       | scripts/verify-enforcement.js                                           | 1    |
+| DEBT-45635 | cognitive-cc exit 2 + trigger detector window bug             | S2       | scripts/check-cc.js                                                     | 0    |
+| DEBT-45636 | Review lifecycle: 9 data integrity findings                   | S2       | scripts/review-lifecycle.js                                             | 0    |
+| DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...  | S2       | scripts/verify-enforcement.js                                           | 0    |
 | DEBT-0811  | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812  | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813  | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |

@@ -164,6 +164,30 @@ Awaiting final review/merge.
 
 ---
 
+## Known Issues
+
+### Resolved in Session #263 (PR #493)
+
+1. ~~**Missing velocity script**~~ — RESOLVED. Removed Step 7a row from
+   `.claude/skills/session-end/SKILL.md` (script was intentionally removed in
+   Session #260, caller was missed). Also removed velocity rows from
+   `DEVELOPMENT.md` in PR #493 R1.
+2. ~~**session-end-commit.js uses legacy skip flags**~~ — RESOLVED. Added
+   `SKIP_REASON="automated session-end commit — only SESSION_CONTEXT.md"` to the
+   env object at `scripts/session-end-commit.js:244` (user-authorized wording
+   per CLAUDE.md Guardrail #14).
+3. ~~**`.claire/worktrees/` not in .gitignore**~~ — RESOLVED. Added `.claire/`
+   to `.gitignore` alongside `.claude/worktrees/`.
+
+### Open
+
+4. **Persistent cognitive-cc + trigger hook warnings** — tracked as
+   **DEBT-45635**. Pre-push reports `cognitive-cc` errored (exit 2) and
+   `triggers` flagged "Skill/agent files modified" on commits that don't touch
+   skill/agent files. Trigger detector matches commit history beyond the current
+   push diff. Requires investigation of `scripts/check-cc.js` exit 2 and the
+   trigger detector's detection window.
+
 ## Pending Manual Actions
 
 - Set up GitHub repository variables (Settings -> Secrets and variables ->

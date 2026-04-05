@@ -1414,7 +1414,7 @@
 | DEBT-45632 | Propagation: validate-path pattern in 20 hook files           | .claude/hooks/                                                                                                                                     | 0    | code-quality             | E2        |
 | DEBT-45633 | Propagation: refuse-symlink pattern in 35 files               | .claude/hooks/                                                                                                                                     | 0    | code-quality             | E2        |
 
-## S2 - Medium (3448)
+## S2 - Medium (3452)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4866,6 +4866,10 @@
 | DEBT-45623 | Upgrade TypeScript 5.x to 6.x in functions                        | functions/package.json                                                                                                                                                      | 28        | refactoring              | E1        |
 | DEBT-45629 | Statusline lacks width-aware line reflow                          | tools/statusline/render.go                                                                                                                                                  | 12        | engineering-productivity | E2        |
 | DEBT-45634 | Add update-item.js to TDMS toolkit                                | scripts/debt/                                                                                                                                                               | 0         | refactoring              | E2        |
+| DEBT-45635 | cognitive-cc exit 2 + trigger detector window bug                 | scripts/check-cc.js                                                                                                                                                         | 0         | process                  | E2        |
+| DEBT-45636 | Review lifecycle: 9 data integrity findings                       | scripts/review-lifecycle.js                                                                                                                                                 | 0         | process                  | E2        |
+| DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)       | scripts/generate-documentation-index.js                                                                                                                                     | 0         | performance              | E2        |
+| DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...      | scripts/verify-enforcement.js                                                                                                                                               | 0         | process                  | E1        |
 
 ## S3 - Low (3641)
 

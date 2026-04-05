@@ -473,7 +473,7 @@ _Foundation_
 | Document                                      | Description                                                  | References | Last Modified |
 | --------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------- |
 | [Architecture Documentation](ARCHITECTURE.md) | -                                                            | ↓10 ↑6     | 2026-03-25    |
-| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓10 ↑11    | 2026-03-30    |
+| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓10 ↑11    | 2026-04-05    |
 
 ### Agent Documentation (Tier 3)
 
@@ -558,7 +558,7 @@ _Planning & Active_
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-03-19    |
-| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-04-04    |
+| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-04-05    |
 | [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-03-19    |
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓1 ↑2      | 2026-03-19    |
 | [Testing Plan](docs/TESTING_CHECKLIST.md)                                                              | Comprehensive testing guidance for the SoNash application, i... | ↓5 ↑1      | 2026-03-19    |
@@ -700,7 +700,7 @@ _Claude Code skills_
 | [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑2      | 2026-03-16    |
 | [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-04-04    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-26    |
-| [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-03-19    |
+| [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-04-05    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Shared Ecosystem Audit Library](.claude/skills/_shared/ecosystem-audit/README.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-26    |
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-04-04    |
@@ -745,9 +745,9 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-04    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-05    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-04-02    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-04-05    |
 
 ### Templates (Tier 3)
 
@@ -3781,7 +3781,7 @@ _Uncategorized_
 
 | Document                    | Description                                                     | References | Last Modified |
 | --------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Todos](.planning/TODOS.md) | <!-- Generated by scripts/planning/render-todos.js — do not ... | ↓0 ↑0      | 2026-04-04    |
+| [Todos](.planning/TODOS.md) | <!-- Generated by scripts/planning/render-todos.js — do not ... | ↓0 ↑0      | 2026-04-05    |
 
 ### .planning > archive (Tier 4)
 
@@ -5215,7 +5215,7 @@ _Reference_
 | [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                  | This is a **one-page quick reference** for the SoNash review...   | ↓3 ↑4      | 2026-03-19    |
 | [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-03-19    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-01-24    |
-| [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-04-01    |
+| [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-04-05    |
 | [Slash Commands & Skills Reference](docs/SLASH_COMMANDS_REFERENCE.md)             | Comprehensive reference for all slash commands and skills av...   | ↓1 ↑2      | 2026-03-19    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-03-30    |
 
@@ -5291,11 +5291,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-04    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-04    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-04    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-04    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
 
 ---
 

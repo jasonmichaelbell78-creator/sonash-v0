@@ -241,7 +241,12 @@ function main() {
       cwd: REPO_ROOT, // Review #217 R4: Works from any subdirectory
       encoding: "utf8",
       stdio: "inherit",
-      env: { ...process.env, SKIP_DOC_INDEX_CHECK: "1", SKIP_DOC_HEADER_CHECK: "1" },
+      env: {
+        ...process.env,
+        SKIP_DOC_INDEX_CHECK: "1",
+        SKIP_DOC_HEADER_CHECK: "1",
+        SKIP_REASON: "automated session-end commit — only SESSION_CONTEXT.md",
+      },
     });
     log("✓ Committed session-end changes", colors.green);
   } catch (err) {

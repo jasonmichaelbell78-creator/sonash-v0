@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#42)</summary>
+
+- **Date:** 2026-04-05
+- **Reviews consolidated:** #64-#review-pr492-r2
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#41)</summary>
 
 - **Date:** 2026-04-05
@@ -1525,6 +1534,16 @@ deduplicated, non-overlapping ranges):
 - Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
 - Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
 - CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+
+---
+
+### Review 66-pr493: PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint) (unknown)
+
+**Date:** unknown | **PR:** #493 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 ## Key Patterns
 
@@ -3665,3 +3684,40 @@ stale-rejected, 1 already-fixed)
   major-only pins.
 
 ---
+
+---
+
+### Review #66 — PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint)
+
+**Date:** 2026-04-05 | **PR:** #493 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 5     | 0        | 2        |
+
+**Key learnings:**
+
+- **Review-metrics reconcile logic doesn't check `review_rounds` vs JSONL record
+  count** — `scripts/review-lifecycle.js` reconciles disposition data but
+  doesn't recompute `review_rounds` from `reviews.jsonl`. Manually editing
+  committed metrics without running reconcile leaves stale cross-db state
+  visible to PR reviewers. Fix: always run `npm run reviews:lifecycle` after
+  touching `review-metrics.jsonl`, and consider extending reconcile to recompute
+  `review_rounds`.
+- **Suppression `messagePattern` uses substring `.includes()`, not regex** —
+  narrowing a pattern to a term that appears in `details` but not `message` will
+  break matching. Always verify against the actual alert `message` field before
+  adjusting suppressions.
+- **Automated session-closure scripts justify hardcoded SKIP_REASON** —
+  runtime-required SKIP_REASON is correct for ad-hoc skips, but automated
+  single-purpose commits (like session-end) satisfy Guardrail #14 via a
+  user-authorized committed string. The tradeoff is explicitness vs
+  automation-friendliness.
+- **Known Issues sections become stale fast** — when a PR resolves items
+  documented in SESSION_CONTEXT.md, the PR should also update the doc to reflect
+  Resolved status. Reviewers will flag the inconsistency otherwise.
+- **Duplicate consolidation entries** are a symptom of the consolidator running
+  twice on the same review range. Root cause not investigated — deduping the
+  display only.
+- **DEVELOPMENT.md isn't auto-regenerated from code** — removing a script
+  requires manual doc update. Worth a cross-doc dependency check.

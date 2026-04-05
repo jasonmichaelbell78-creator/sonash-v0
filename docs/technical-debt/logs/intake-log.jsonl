@@ -90,3 +90,7 @@
 {"timestamp":"2026-04-04T23:06:26.811Z","action":"intake-manual","item_id":"DEBT-45632","file":".claude/hooks/","severity":"S1","category":"code-quality"}
 {"timestamp":"2026-04-04T23:06:27.126Z","action":"intake-manual","item_id":"DEBT-45633","file":".claude/hooks/","severity":"S1","category":"code-quality"}
 {"timestamp":"2026-04-05T02:45:26.030Z","action":"intake-manual","item_id":"DEBT-45634","file":"scripts/debt/","severity":"S2","category":"refactoring"}
+{"timestamp":"2026-04-05T14:29:33.277Z","action":"intake-manual","item_id":"DEBT-45635","file":"scripts/check-cc.js","severity":"S2","category":"process"}
+{"timestamp":"2026-04-05T17:23:24.623Z","action":"intake-manual","item_id":"DEBT-45636","file":"scripts/review-lifecycle.js","severity":"S2","category":"process"}
+{"timestamp":"2026-04-05T17:23:29.779Z","action":"intake-manual","item_id":"DEBT-45637","file":"scripts/generate-documentation-index.js","severity":"S2","category":"performance"}
+{"timestamp":"2026-04-05T17:23:35.064Z","action":"intake-manual","item_id":"DEBT-45638","file":"scripts/verify-enforcement.js","severity":"S2","category":"process"}
