@@ -1,7 +1,7 @@
 {
   "$schema": "Propagation baseline — violations listed here are suppressed from warnings. Only NEW violations trigger alerts.",
   "version": 2,
-  "updated": "2026-04-04",
+  "updated": "2026-04-05",
   "entries": [
     {
       "type": "pattern",
@@ -4048,6 +4048,34 @@
       "file": "scripts/resolve-hook-warnings.js",
       "addedAt": "2026-04-04",
       "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/debt/extract-audit-reports.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/debt/extract-context-debt.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/multi-ai/normalize-format.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/tasks/resolve-dependencies.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
     }
   ]
 }
