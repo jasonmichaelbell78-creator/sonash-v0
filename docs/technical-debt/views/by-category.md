@@ -7133,7 +7133,7 @@
 | DEBT-2121  | Security: Potential command injection in resolve-item.js ...  | S0       | scripts/debt/resolve-item.js                                            | 21   |
 | DEBT-9295  | CI quality gates non-blocking allowing regressions            | S0       | .github/workflows/ci.yml                                                | 0    |
 
-## refactoring (670)
+## refactoring (671)
 
 | ID         | Title                                                        | Severity | File                                                                             | Line |
 | ---------- | ------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------- | ---- |
@@ -7294,6 +7294,7 @@
 | DEBT-45529 | Sacred-path drift: Shadow-Append Registry should be autho... | S2       | .planning/system-wide-standardization/PLAN-v2.md                                 | 606  |
 | DEBT-45623 | Upgrade TypeScript 5.x to 6.x in functions                   | S2       | functions/package.json                                                           | 28   |
 | DEBT-45634 | Add update-item.js to TDMS toolkit                           | S2       | scripts/debt/                                                                    | 0    |
+| DEBT-45639 | 7 untracked cognitive-cc violations + pre-push .rc race m... | S2       | scripts/check-pattern-compliance.js                                              | 1870 |
 | DEBT-0817  | 2 tracked TODO markers in codebase                           | S3       | components/notebook/features/quick-actions-fab.tsx                               | 12   |
 | DEBT-0818  | 4 linter suppressions in codebase (ts-ignore, ts-expect-e... | S3       | lib/logger.ts                                                                    | 86   |
 | DEBT-3523  | Refactor to reduce cognitive complexity (currently 29, ta... | S3       | scripts/check-content-accuracy.js                                                | 188  |

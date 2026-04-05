@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2135)
+## NEW (2136)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -733,6 +733,7 @@
 | DEBT-45634 | Add update-item.js to TDMS toolkit                              | S2       | refactoring              |
 | DEBT-45636 | Review lifecycle: 9 data integrity findings                     | S2       | process                  |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...    | S2       | process                  |
+| DEBT-45639 | 7 untracked cognitive-cc violations + pre-push .rc race m...    | S2       | refactoring              |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
