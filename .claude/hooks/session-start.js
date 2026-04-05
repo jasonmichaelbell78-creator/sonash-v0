@@ -329,7 +329,8 @@ function saveRootHash() {
   const hash = computeHash("package-lock.json");
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(LOCKFILE_HASH_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
+  fs.mkdirSync(dir, { recursive: true });
   const absPath = path.resolve(LOCKFILE_HASH_FILE);
   const tmpPath = `${absPath}.tmp`;
   if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
@@ -378,7 +379,8 @@ function saveFunctionsHash() {
   const hash = computeHash("functions/package-lock.json");
   if (!hash) return; // Don't write invalid hash
   const dir = path.dirname(FUNCTIONS_LOCKFILE_HASH_FILE);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
+  fs.mkdirSync(dir, { recursive: true });
   const absPath = path.resolve(FUNCTIONS_LOCKFILE_HASH_FILE);
   const tmpPath = `${absPath}.tmp`;
   if (!isSafeToWrite(absPath) || !isSafeToWrite(tmpPath)) {
@@ -556,7 +558,8 @@ if (runCommandFailures.length > 0) {
   const failuresPath = path.join(projectDir, ".claude", "state", "session-start-failures.json");
   try {
     const failuresDir = path.dirname(failuresPath);
-    if (!fs.existsSync(failuresDir)) fs.mkdirSync(failuresDir, { recursive: true });
+    // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
+    fs.mkdirSync(failuresDir, { recursive: true });
     if (isSafeToWrite(failuresPath)) {
       const tmpFailPath = `${failuresPath}.tmp`;
       if (isSafeToWrite(tmpFailPath)) {

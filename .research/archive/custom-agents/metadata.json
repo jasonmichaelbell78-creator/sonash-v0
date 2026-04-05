@@ -1,0 +1,155 @@
+{
+  "topic": "Custom agents for deep-research and general duty within this project",
+  "depth": "L4",
+  "questionType": "architecture-and-implementation",
+  "domain": "claude-code-agent-ecosystem",
+  "startedAt": "2026-03-29T00:00:00Z",
+  "completedAt": "2026-03-29T23:59:59Z",
+  "agentCount": 45,
+  "searchRounds": 5,
+  "verificationPasses": 4,
+  "challengeFiles": 4,
+  "disputeResolutions": 12,
+  "sourceCount": 58,
+  "claimCount": 111,
+  "version": "3.0",
+  "confidenceDistribution": {
+    "HIGH": 74,
+    "MEDIUM": 35,
+    "LOW": 2,
+    "UNVERIFIED": 0
+  },
+  "verificationSummary": {
+    "verified": 59,
+    "refuted": 8,
+    "modified": 19,
+    "unverifiable": 24
+  },
+  "selfAuditResult": "Phase 6 gap-pursuit amendment complete — 9 new claims added (C-103 through C-111), 7 confidence changes (6 upgrades + 1 downgrade), 2 major corrections (security-auditor model state, C-003 case-insensitivity), 4 new themes added (2.1-2.5 auto-delegation, 9.2 App Check gap), 13 new sources added (S-046 through S-058)",
+  "waveSummary": {
+    "wave1": {
+      "description": "Foundation — agent frontmatter, orchestration, inventory, model selection",
+      "agents": 7,
+      "subQuestions": ["SQ1", "SQ2", "SQ3", "SQ4"]
+    },
+    "wave2": {
+      "description": "Gap Analysis — workflow gaps in skills, hooks, pipelines; system/plugin overrides",
+      "agents": 8,
+      "subQuestions": ["SQ5", "SQ6"]
+    },
+    "wave3": {
+      "description": "Specific Design — stub elevation, redundancy analysis, adversarial patterns, pipeline agents",
+      "agents": 10,
+      "subQuestions": ["SQ7", "SQ8", "SQ9"]
+    },
+    "wave4": {
+      "description": "Synthesis Research — net-new agents, team composition, quality validation",
+      "agents": 4,
+      "subQuestions": ["SQ10", "SQ11", "SQ12"]
+    },
+    "wave5_gapPursuit": {
+      "description": "Gap Pursuit — effort:max correction, Firebase skills eval, auto-delegation deep dive, teams cost-quality, confidence verification, gap verification passes",
+      "agents": 8,
+      "findingsFiles": ["G1", "G2", "G3", "G4", "CL1", "GV1", "GV2"]
+    }
+  },
+  "keyCorrections": {
+    "C-001": "CLAUDE.md IS inherited — threat model changed from 'security absence' to 'context incompleteness'",
+    "C-004": "16 fields (not 17) — off-by-one in D1b source document",
+    "C-007": "All 36 agents were scored — 18 improvement ACTIONS deferred, not 18 unscored agents",
+    "C-048": "security-engineer → REMOVE (not KEEP BOTH) — AWS/Python content with zero SoNash applicability",
+    "C-086": "PR review team → RECOMMEND AGAINST (not DEFERRED)",
+    "C-091": "Non-standard colors: deep-research-synthesizer (purple) + gsd-debugger (orange), NOT dependency-manager/documentation-expert",
+    "C-049": "security-auditor has model: sonnet (not model: opus as D8 assumed); correct action is model: opus upgrade at next update; effort: max returns API error on Sonnet",
+    "C-003": "Case-insensitivity DOWNGRADED to LOW — no official source confirms; docs mandate lowercase as hard constraint",
+    "C-002": "Description as routing signal UPGRADED to HIGH — two Tier-1 sources (official docs + official plugin examples)",
+    "C-028": "Skill model: field broken UPGRADED to HIGH — GitHub Issue #21679 confirmed open, high-priority",
+    "C-029": "Built-in agent models UPGRADED to HIGH — confirmed verbatim in official docs table; names corrected",
+    "C-033": "MAST percentages UPGRADED to HIGH — exact figures confirmed via official MAST project page",
+    "C-025": "iMAD range corrected: 57-92% (not 68-92%); floor is 57% vs MAD on ScienceQA; UPGRADED to HIGH",
+    "C-022": "FIRE costs corrected: two separate axes (7.6x LLM, 16.5x search); UPGRADED to HIGH",
+    "Firebase_skill_count": "11 skills (not 13 as originally stated) — direct content inspection confirmed",
+    "App_Check_runtime": "requireAppCheck: false in ALL Cloud Functions — doc-vs-runtime gap, untracked in MASTER_DEBT"
+  },
+  "keyFindings": {
+    "consolidationTarget": "26 → 17 local agents (35% reduction)",
+    "newPipelineAgents": 6,
+    "pipelineAgentsAreClosed": true,
+    "hardAgentCeiling": 30,
+    "p0InfrastructureSteps": 6,
+    "ecosystemGrade": "F (54/100 post-session improvement, diagnostic baseline not crisis)",
+    "criticalGap": "Phase 2.5 verification has no template (confirmed REFERENCE.md v1.8)",
+    "highestLeverageSpecificityAction": "general-purpose project override (13+ invocations lack stack-version specificity)",
+    "highestLeverageSecurityAction": "extend PostToolUse Write hook for structural constraint enforcement",
+    "preAgentInfrastructure": "sonash-context shared skill before any new agent creation",
+    "securityAuditorCorrection": "model: sonnet currently; upgrade to model: opus at next substantive update",
+    "appCheckGap": "requireAppCheck: false in all Cloud Functions — untracked security debt",
+    "autoGelegationMechanism": "pure LLM reasoning, no classifier; 3 agents have zero-signal descriptions",
+    "firebaseSkillsCount": 11,
+    "firebaseSkillsGap": "no App Check, httpsCallable, or Cloud Functions coverage in official skills"
+  },
+  "implementationOrder": {
+    "P0": "Define metrics + sonash-context skill + verify injection + fix compliance test + cross-reference audit + hook extension + evaluate Firebase MCP server",
+    "P1": "general-purpose override + consolidation (with redirect stubs) + silent-failure-hunter + pr-test-analyzer overrides + model: opus for security-auditor + Wait technique + fix 3 zero-signal agent descriptions",
+    "P2": "6 pipeline agents (pilot verifier first) + 3 stub elevations + mcp-expert replacement + code-simplifier + type-design-analyzer + add <example> blocks + TeammateIdle hook for audit-review-team + firebase-specialist (after P0.6 + manual validation)",
+    "P3": "R17 audit alerts + refactoring-specialist (creation gate) + convergence-loop-verifier (after documented failure) + App Check MASTER_DEBT entry"
+  },
+  "contradictionsFound": 15,
+  "gapPursuitAmendments": {
+    "criticalCorrections": 2,
+    "confidenceUpgrades": 6,
+    "confidenceDowngrades": 1,
+    "newClaims": 9,
+    "newSources": 13,
+    "newThemes": [
+      "Theme 2: Auto-Delegation Architecture (2.1-2.5)",
+      "Theme 9.2: App Check doc-vs-runtime gap"
+    ],
+    "newRecommendations": [
+      "P0.6 Firebase MCP server",
+      "R7 fix zero-signal descriptions",
+      "R8 model: opus upgrade",
+      "R12 firebase-specialist",
+      "R13 example blocks",
+      "R14 TeammateIdle hook",
+      "R21 App Check MASTER_DEBT"
+    ]
+  },
+  "consumerHints": {
+    "hasStackClaims": true,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 2,
+    "hasActionableRecommendations": true,
+    "hasInfrastructurePrerequisites": true,
+    "soloDevConstraintApplied": true,
+    "hardAgentCeiling": 30,
+    "recommendationPriorities": {
+      "p0": 6,
+      "p1": 8,
+      "p2": 8,
+      "p3": 5
+    },
+    "topThemes": [
+      "agent-body-semantics-CLAUDE.md-inherited",
+      "auto-delegation-pure-LLM-reasoning",
+      "ecosystem-quality-calibration-not-crisis",
+      "consolidation-26-to-17-with-redirect-stubs",
+      "global-sync-gap",
+      "deep-research-pipeline-gaps-closed-set-of-6",
+      "adversarial-agent-patterns",
+      "model-selection-tiering-opus-not-effort-max",
+      "team-composition-recommend-against-pr-team",
+      "firebase-skills-SoNash-gap",
+      "app-check-disabled-untracked-debt",
+      "net-new-agents-creation-gate",
+      "quality-validation-lifecycle",
+      "sonash-context-skill-infrastructure"
+    ],
+    "criticalSecurityFindings": [
+      "App Check disabled in all Cloud Functions (doc-vs-runtime gap)",
+      "CVE-2025-59536 supply chain risk via agent files (reduced by zero bypassPermissions agents)"
+    ]
+  }
+}

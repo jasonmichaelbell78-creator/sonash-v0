@@ -1,0 +1,94 @@
+{
+  "topic": "Research & Discovery Standard — supplemental gaps (v2)",
+  "slug": "research-discovery-standard-v2",
+  "depth": "L1",
+  "date": "2026-04-04",
+  "status": "synthesis_complete",
+  "agents_total": 8,
+  "sub_questions": 8,
+  "findings_files": 8,
+  "claim_count": 77,
+  "source_count": 63,
+  "confidence_distribution": {
+    "HIGH": 63,
+    "MEDIUM": 13,
+    "LOW": 1,
+    "UNVERIFIED": 0
+  },
+  "cross_cutting_themes": [
+    "declarative_over_imperative",
+    "capture_first_enrich_later",
+    "skill_completed_stages_are_pre_verified",
+    "minimal_infrastructure_maximum_compatibility",
+    "acknowledgment_required_surfacing"
+  ],
+  "key_decisions": {
+    "SQ1_state_machine": "two_orthogonal_axes_guarded_whitelist",
+    "SQ2_auto_advance": "dual_path_lazy_scan_plus_filechanged_hook",
+    "SQ3_findings_refs": "findings_refs_array_on_todos_jsonl",
+    "SQ4_todo_ux": "two_fields_type_and_stage_capture_first",
+    "SQ5_schema_versioning": "per_record_schema_version_additive_only",
+    "SQ6_dashboard": "7th_rnd_tab_separate_from_planning",
+    "SQ7_scouting_governance": "saturation_chesterton_rogers_adr_artifacts",
+    "SQ8_cl_integration": "cross_cutting_skill_aware_tier_scaled"
+  },
+  "contradictions_identified": 5,
+  "open_questions_for_deep_plan": 8,
+  "relates_to": {
+    "prior_research": ".research/research-discovery-standard/",
+    "brainstorm": ".research/research-discovery-standard/BRAINSTORM.md",
+    "prior_decisions": ".planning/research-discovery-standard/DECISIONS.md"
+  },
+  "consumer_hints": {
+    "hasStackClaims": false,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 1,
+    "convergenceLoopCandidates": 2,
+    "deepPlanCandidates": 52,
+    "memoryCandidates": 35
+  },
+  "findings_summary": {
+    "SQ1_state_machine": {
+      "findings": 14,
+      "confidence": "HIGH",
+      "verdict": "two_orthogonal_axes_guarded_whitelist_stage_history_embedded"
+    },
+    "SQ2_auto_advance": {
+      "findings": 14,
+      "confidence": "HIGH",
+      "verdict": "dual_path_lazy_plus_filechanged_no_polling"
+    },
+    "SQ3_findings_refs": {
+      "findings": 14,
+      "confidence": "HIGH",
+      "verdict": "findings_refs_array_on_todos_slug_id_addressing"
+    },
+    "SQ4_todo_ux_split": {
+      "findings": 14,
+      "confidence": "MEDIUM_HIGH",
+      "verdict": "type_stage_fields_capture_first_inline_badge"
+    },
+    "SQ5_schema_versioning": {
+      "findings": 13,
+      "confidence": "HIGH",
+      "verdict": "per_record_schema_version_additive_bulk_migration_git_rollback"
+    },
+    "SQ6_dashboard": {
+      "findings": 14,
+      "confidence": "HIGH",
+      "verdict": "add_7th_rnd_tab_build_rnd_js_3_source_join"
+    },
+    "SQ7_scouting_governance": {
+      "findings": 15,
+      "confidence": "HIGH",
+      "verdict": "saturation_based_stop_chesterton_rogers_adr_exit_artifact"
+    },
+    "SQ8_cl_integration": {
+      "findings": 14,
+      "confidence": "HIGH",
+      "verdict": "cross_cutting_skill_aware_tier_scaled_d5_preserved"
+    }
+  }
+}

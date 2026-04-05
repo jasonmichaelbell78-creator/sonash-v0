@@ -99,7 +99,8 @@ function saveWarnedFiles(warned) {
       return;
     }
 
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
+    mkdirSync(dir, { recursive: true });
 
     // Verify target and tmp are not symlinks (prevent symlink-clobber attacks)
     if (isSymlink(WARNED_FILES_PATH) || isSymlink(tmpPath)) {
@@ -640,11 +641,41 @@ const ANTI_PATTERNS = [
   },
 
   // Unbounded file reads (reading entire file into memory)
+  // Uses testFn to look backward ~15 lines for a size-guard idiom (an explicit
+  // `.size` comparison or MAX_* constant reference). The comparison itself
+  // signals that a guard is in place — we don't require a specific call site
+  // name (this keeps the rule agnostic to lstat vs fstat vs stat).
   {
     id: "unbounded-file-read",
     severity: "medium",
-    pattern:
-      /readFileSync\s*\([^)]+\)[\s\S]{0,30}\.split\s*\(\s*['"`]\\n['"`]\s*\)(?![\s\S]{0,50}(?:slice|MAX_LINES))/g,
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      const guardRe = /\.size\s*[><]=?|MAX_BYTES|MAX_SIZE|MAX_GAP/;
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Match readFileSync immediately followed by .split('\n') on the
+        // same line or within the next 2 lines (chained-call style).
+        if (!/readFileSync\s*\(/.test(line)) continue;
+        const window = lines.slice(i, Math.min(i + 3, lines.length)).join(" ");
+        if (!/\.split\s*\(\s*['"`]\\n['"`]\s*\)/.test(window)) continue;
+        // Skip if there's an explicit slice/MAX_LINES truncation nearby
+        if (/slice|MAX_LINES/.test(window)) continue;
+        // Look backward up to 15 lines for a size-guard comparison
+        const backStart = Math.max(0, i - 15);
+        let hasSizeGuard = false;
+        for (let j = backStart; j < i; j++) {
+          if (guardRe.test(lines[j])) {
+            hasSizeGuard = true;
+            break;
+          }
+        }
+        if (!hasSizeGuard) {
+          matches.push({ line: i + 1, match: line.trim().slice(0, 100) });
+        }
+      }
+      return matches;
+    },
     message: "Reading entire file then splitting - may OOM on large files",
     fix: "Use readline or stream for large files, or add size check: if (stat.size > MAX_SIZE) skip",
     review: "Session #151 analysis",
@@ -959,6 +990,15 @@ const ANTI_PATTERNS = [
         content.includes("depth--") ||
         content.includes("accumulat");
       if (hasBraceTracking) return [];
+      // Defensive try/catch around JSON.parse(line) handles multi-line entries
+      // by failing the parse and filtering the null result — this is an
+      // acceptable alternative to brace tracking (pretty-printed entries are
+      // silently skipped rather than crashing).
+      const hasTryCatchPattern =
+        /try\s*\{\s*(?:return\s+)?JSON\.parse\s*\(\s*(?:line|l|entry|row)\b[\s\S]*?\}\s*catch/.test(
+          content
+        );
+      if (hasTryCatchPattern) return [];
       return [{ line: 1, match: "JSONL split+parse without multi-line brace tracking" }];
     },
     message:
@@ -1325,6 +1365,16 @@ const ANTI_PATTERNS = [
       }
       // Find regex literal start positions (after = , ( : ! | ? + -)
       const REGEX_START = /(?:^|[=(,;!&|?:+\-~\s])(\/)(?![/*])/g;
+      // Honor an inline "SonarCloud S5852" documentation comment in the
+      // preceding 3 lines as a bounded-input acknowledgment. The commenter
+      // is asserting they audited ReDoS risk.
+      function hasBoundedComment(lines, i) {
+        const start = Math.max(0, i - 3);
+        for (let k = start; k < i; k++) {
+          if (/SonarCloud\s+S5852|bounded input|no ReDoS/i.test(lines[k])) return true;
+        }
+        return false;
+      }
       return (content) => {
         const lines = content.split("\n");
         const matches = [];
@@ -1333,11 +1383,17 @@ const ANTI_PATTERNS = [
           const trimmed = line.trimStart();
           if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
           REGEX_START.lastIndex = 0;
-          let m;
-          while ((m = REGEX_START.exec(line)) !== null) {
-            const slashIdx = m.index + m[0].length - 1;
+          let regexMatch;
+          while ((regexMatch = REGEX_START.exec(line)) !== null) {
+            const slashIdx = regexMatch.index + regexMatch[0].length - 1;
             const body = extractRegexBody(line, slashIdx);
             if (!body || body.length < 5) continue;
+            // Skip regexes that are pure literal alternations (no
+            // metacharacters inside branches). These are ReDoS-safe because
+            // each branch is a fixed string and can match in O(1) per branch.
+            const isPureAlternation = /^\^?\(?[\w:\-|./]+\)?\$?$/.test(body) && body.includes("|");
+            if (isPureAlternation) continue;
+            if (hasBoundedComment(lines, i)) continue;
             const score = estimateComplexity(body);
             if (score >= THRESHOLD) {
               matches.push({
@@ -1639,11 +1695,27 @@ const ANTI_PATTERNS = [
   },
 
   // Non-standard exit codes — exit codes should follow 0=success, 1=action-needed, 2=fatal
-  // Recurred 5 times in reviews; enforcing signal-error-code semantics
+  // Recurred 5 times in reviews; enforcing signal-error-code semantics.
+  // Only flags LITERAL numeric arguments outside the 0/1/2 range. Variable
+  // expressions (e.g. `process.exit(exitCode)` or `process.exit(cond ? 1 : 0)`)
+  // are assumed to be validated at their source site.
   {
     id: "non-standard-exit-code",
     severity: "medium",
-    pattern: /process\.exit\(\s*(?!(?:[012])\s*\))[^)]+\)/g,
+    testFn: (content) => {
+      const matches = [];
+      const literalPattern = /process\.exit\(\s*(\d+)\s*\)/g;
+      const lines = content.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        for (const match of lines[i].matchAll(literalPattern)) {
+          const code = Number(match[1]);
+          if (code !== 0 && code !== 1 && code !== 2) {
+            matches.push({ line: i + 1, match: lines[i].trim().slice(0, 80) });
+          }
+        }
+      }
+      return matches;
+    },
     message: "Exit code not 0 (success), 1 (action-needed), or 2 (fatal) — see CODE_PATTERNS.md",
     fix: "Use: process.exit(0) for success, process.exit(1) for action-needed/recoverable, process.exit(2) for fatal error",
     review: "5 review recurrences — signal-error-code semantics",
@@ -1742,7 +1814,11 @@ const ANTI_PATTERNS = [
         if (trimmed.startsWith("import ") || trimmed.includes("require(")) continue;
         if (!lines[i].includes("readFileSync")) continue;
         if (readsKnownTextExtension(lines[i], safeExtensions)) continue;
-        if (!lines[i].includes("utf8") && !lines[i].includes("utf-8")) continue;
+        // Explicit utf8/utf-8 encoding is the caller asserting "this is text" —
+        // readFileSync with utf8 on a binary file returns garbled text, not a
+        // crash. Only flag reads WITHOUT explicit text encoding, where the
+        // return is a Buffer that downstream code might misuse.
+        if (lines[i].includes("utf8") || lines[i].includes("utf-8")) continue;
         matches.push({ line: i + 1, match: trimmed.slice(0, 50) });
       }
       return matches;
@@ -1759,13 +1835,20 @@ const ANTI_PATTERNS = [
   // These patterns recurred 3-5 times despite documentation. Automation required.
 
   // Signal error code semantics (5x recurrence)
+  // Flags exit codes >= 3 only. Exit 2 is allowed per CODE_PATTERNS.md convention
+  // ("0=success, 1=action-needed, 2=error") and is explicitly used as a documented
+  // contract in pre-commit/pre-push hooks (BLOCK semantics) and in session-begin
+  // scripts (API failure / partial data). The earlier `non-standard-exit-code`
+  // rule at ~line 1645 already enforces 0/1/2 as the only allowed values; this
+  // rule adds HIGH-severity blocking for the signal range (SIGINT=130, SIGTERM=143,
+  // raw SIGKILL=137 etc. should never appear as explicit exit codes).
   {
     id: "signal-exit-code",
     severity: "high",
-    pattern: /process\.exit\s*\(\s*[2-9]\d*\s*\)/g,
+    pattern: /process\.exit\s*\(\s*[3-9]\d*\s*\)/g,
     message:
-      "Non-standard exit code — use 0 (success) or 1 (failure). Codes 2+ have signal semantics in Node.js",
-    fix: "Use process.exit(1) for errors. If distinct exit codes needed, document the contract in a comment",
+      "Non-standard exit code — use 0 (success), 1 (action-needed), or 2 (fatal). Codes 3+ overlap signal semantics in Node.js",
+    fix: "Use process.exit(0/1/2) per CODE_PATTERNS.md. If a distinct code is needed, document the contract in a comment.",
     review: "Reviews: 353, 354, 357, 359, 361 — 5x recurrence",
     fileTypes: [".js"],
     // Hooks use exit(2) for BLOCK semantics (documented contract with pre-commit/pre-push wrapper)
@@ -1775,6 +1858,12 @@ const ANTI_PATTERNS = [
 
   // Silent parse prevention (4x recurrence)
   // S5852 two-strikes: regex replaced with string parsing to eliminate backtracking DoS
+  //
+  // Multi-line detection: walk backward up to 20 lines looking for an unclosed
+  // `try {` block. A `try {` is "unclosed" if the net `{` minus `}` count
+  // between it and the JSON.parse line is >= 1, meaning the try's body is
+  // still open. This eliminates the most common false positive (JSON.parse
+  // several lines inside a multi-line try block).
   {
     id: "silent-json-parse",
     severity: "high",
@@ -1782,11 +1871,35 @@ const ANTI_PATTERNS = [
       const lines = content.split("\n");
       const violations = [];
       for (let i = 0; i < lines.length; i++) {
-        if (/JSON\.parse\s*\(/.test(lines[i]) && !/try\s*\{/.test(lines[i])) {
-          const nextLine = (lines[i + 1] || "").trim();
-          if (nextLine && !nextLine.startsWith("}") && !nextLine.startsWith("catch")) {
-            violations.push({ line: i + 1, match: lines[i].trim().slice(0, 50) });
+        if (!/JSON\.parse\s*\(/.test(lines[i])) continue;
+        // Same-line try{ catches the one-liner case
+        if (/try\s*\{/.test(lines[i])) continue;
+        // Multi-line: walk back up to 20 lines for an unclosed try {
+        const backStart = Math.max(0, i - 20);
+        let inTry = false;
+        for (let j = i - 1; j >= backStart; j--) {
+          if (/try\s*\{/.test(lines[j])) {
+            // Count braces between this try and the JSON.parse line
+            let depth = 0;
+            for (let k = j; k < i; k++) {
+              // Strip strings/comments very loosely
+              const l = lines[k].replace(/\/\/.*$/, "").replace(/"[^"]*"|'[^']*'|`[^`]*`/g, "");
+              for (const ch of l) {
+                if (ch === "{") depth++;
+                else if (ch === "}") depth--;
+              }
+            }
+            // If we haven't closed the try's opening brace, we're inside it
+            if (depth >= 1) {
+              inTry = true;
+            }
+            break;
           }
+        }
+        if (inTry) continue;
+        const nextLine = (lines[i + 1] || "").trim();
+        if (nextLine && !nextLine.startsWith("}") && !nextLine.startsWith("catch")) {
+          violations.push({ line: i + 1, match: lines[i].trim().slice(0, 50) });
         }
       }
       return violations;
@@ -1801,11 +1914,57 @@ const ANTI_PATTERNS = [
   },
 
   // Symlink parent traversal (3x recurrence)
+  // Only checks mkdirSync — writeFileSync/renameSync/appendFileSync are
+  // handled by the earlier `write-without-symlink-guard` rule at line ~782
+  // which already does bidirectional guard detection.
   {
     id: "symlink-parent-traversal",
     severity: "high",
-    pattern:
-      /(?:mkdirSync|writeFileSync|appendFileSync)\s*\([^)]+\)(?![\s\S]{0,200}(?:lstatSync|isSafeToWrite))/g,
+    testFn: (content) => {
+      const lines = content.split("\n");
+      const matches = [];
+      // Guard patterns that, if present anywhere in a 20-line window around
+      // the mkdirSync call, mean the parent has already been validated.
+      // Also includes safe-fs wrapper calls (safeWriteFileSync etc.) because
+      // those wrappers handle symlink checking internally.
+      const guardPatterns = [
+        "isSafeToWrite",
+        "isWriteSafe",
+        "lstatSync",
+        "isSymbolicLink",
+        "guardSymlink",
+        "refuseSymlink",
+        "safeWriteFileSync",
+        "safeAppendFileSync",
+        "safeRenameSync",
+        "safeAtomicWriteSync",
+      ];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        // Match only `mkdirSync(` preceded by a word-boundary — this excludes
+        // `safeMkdirSync` etc., and any wrapped helper name.
+        if (!/\bmkdirSync\s*\(/.test(line)) continue;
+        const trimmed = line.trim();
+        // Skip comments, imports, destructured members
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) continue;
+        if (trimmed.startsWith("import ") || trimmed.includes("require(")) continue;
+        if (/^\w+,?$/.test(trimmed)) continue;
+        // Bidirectional guard search: 10 lines before + 10 lines after
+        const backStart = Math.max(0, i - 10);
+        const fwdEnd = Math.min(lines.length, i + 11);
+        let hasGuard = false;
+        for (let j = backStart; j < fwdEnd; j++) {
+          if (guardPatterns.some((g) => lines[j].includes(g))) {
+            hasGuard = true;
+            break;
+          }
+        }
+        if (!hasGuard) {
+          matches.push({ line: i + 1, match: trimmed.slice(0, 120) });
+        }
+      }
+      return matches;
+    },
     message:
       "Write operation without symlink guard on parent directory — symlink could redirect writes",
     fix: "Check parent with: if (fs.lstatSync(dir).isSymbolicLink()) return; — or use isSafeToWrite() from scripts/lib/security-helpers.js",

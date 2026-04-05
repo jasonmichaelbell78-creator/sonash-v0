@@ -1,0 +1,86 @@
+{
+  "topic": "Repo analysis value-extraction lens — how to extract value (patterns, ideas, reusable components) from external repos (offensive lens, supplement to defensive-lens research at .research/repo-analysis-skill/RESEARCH_OUTPUT.md)",
+  "depth": "L1",
+  "questionType": "implementation-strategy",
+  "domain": "software-engineering / ai-tooling / code-reuse",
+  "startedAt": "2026-03-31T00:00:00.000Z",
+  "completedAt": "2026-03-31T19:00:00.000Z",
+  "agentCount": 23,
+  "sourceIdScheme": "research-phase-codes",
+  "searchRounds": 1,
+  "sourceCount": 131,
+  "claimCount": 80,
+  "findingsFilesProcessed": 17,
+  "subQuestions": [
+    "SQ-D1a: How do AI code-indexing tools (Greptile, Sourcegraph, Cursor, Augment) work internally?",
+    "SQ-D1b: What repo-to-text tools exist and how do they compare?",
+    "SQ-D1c: What frameworks exist for evaluating code reuse quality?",
+    "SQ-D1d: What internal capabilities already exist and what is missing?",
+    "SQ-D2a: How does the GitHub Search API work?",
+    "SQ-D2b: How do package registry search APIs work?",
+    "SQ-D2c: What curated discovery vectors exist beyond GitHub?",
+    "SQ-D2d: What web search APIs are available for repo discovery?",
+    "SQ-D3a: What heuristics predict component portability?",
+    "SQ-D3b-1: What tools support component extraction?",
+    "SQ-D3b-2: What heuristics identify good extraction candidates?",
+    "SQ-D3c: How can architectural patterns be mined automatically?",
+    "SQ-D4a: What prompting strategies work best for codebase analysis?",
+    "SQ-D4b: How do AI tools handle multi-file understanding at scale?",
+    "SQ-D4c: What can be learned from the Claude Code ecosystem?",
+    "SQ-D5: What is the internal capabilities delta for value extraction?"
+  ],
+  "confidenceDistribution": {
+    "HIGH": 74,
+    "MEDIUM": 6,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
+  "themesIdentified": [
+    "Context Quality as Primary Performance Lever",
+    "Portability is Multi-Dimensional",
+    "Fake Stars and Signal Pollution",
+    "Whole-Repo Indexing vs On-Demand Retrieval",
+    "Internal Capabilities Delta (70% exists, 30% must build)",
+    "Documentation Paradox (discovery gate vs integration difficulty)",
+    "LLM Pattern Detection Limitations",
+    "7-Phase Value Extraction Pipeline Architecture"
+  ],
+  "contradictionsFound": 7,
+  "selfAuditResult": null,
+  "consumerHints": {
+    "hasStackClaims": true,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 2,
+    "hasArchitectureClaims": true,
+    "hasImplementationRecipe": true,
+    "primaryDeliverable": "RESEARCH_OUTPUT.md",
+    "outputDirectory": ".research/repo-analysis-value-extraction/",
+    "supplementsReport": ".research/repo-analysis-skill/RESEARCH_OUTPUT.md",
+    "newCapabilitiesToBuild": [
+      "repo-discovery agent",
+      "portability-analyzer sub-agent",
+      "adaptation-guide-writer agent",
+      "VALUE_FINDINGS.jsonl schema + intake pipeline",
+      "summary vs extraction mode switch"
+    ],
+    "directReuseAvailable": [
+      "deep-research pipeline (as-is)",
+      "claims.jsonl schema (as-is)",
+      "gsd-codebase-mapper 4-axis model (as-is)",
+      "explore agent strategy (as-is)",
+      "TDMS schema pattern (adapt)",
+      "ecosystem-audit weighted scoring (adapt)"
+    ],
+    "keyThresholds": {
+      "portabilityRubricPassScore": 10,
+      "portabilityRubricMaxScore": 15,
+      "fullTextVsRagTokenBreakpoint": 200000,
+      "plosOnePuaThreshold": 450,
+      "hotspotBotCommitContamination": "73.9%",
+      "llmDesignPatternAccuracy": "38%",
+      "roseRefactoringF1": "96.9%"
+    }
+  }
+}

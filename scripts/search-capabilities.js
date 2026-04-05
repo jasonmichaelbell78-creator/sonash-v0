@@ -16,7 +16,7 @@ const { execFileSync } = require("node:child_process");
 const { readdirSync, readFileSync, existsSync } = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
-const { sanitizeError } = require("./lib/sanitize-error");
+const { sanitizeError } = require("./lib/sanitize-error.cjs");
 
 const { loadConfig } = require("./config/load-config");
 

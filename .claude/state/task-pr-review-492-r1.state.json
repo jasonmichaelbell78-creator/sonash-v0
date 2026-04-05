@@ -1,0 +1,65 @@
+{
+  "pr": 492,
+  "round": 1,
+  "review_number": 506,
+  "source": "mixed",
+  "total": 28,
+  "fixed": 27,
+  "deferred": 0,
+  "rejected": 0,
+  "batch_acknowledged": 1,
+  "severity": { "critical": 0, "major": 12, "minor": 9, "trivial": 7 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": "b15fd08b",
+  "completed_at": "2026-04-05T02:47:07Z",
+  "source_detail": {
+    "qodo_action_required": 5,
+    "qodo_suggestions": 13,
+    "qodo_compliance": 6,
+    "gemini": 2,
+    "sonarcloud_hotspots": 3,
+    "sonarcloud_code_smells": 6,
+    "ci_failures": 1,
+    "raw_count_before_dedup": 36
+  },
+  "repeat_patterns": [
+    {
+      "pattern": "toctou-existsSync-mkdirSync",
+      "recurrence": 4,
+      "prior_prs": [489, 491],
+      "current_files_fixed": 6
+    },
+    {
+      "pattern": "sanitize-error-cjs-import",
+      "recurrence": 2,
+      "prior_prs": [489],
+      "current_files_fixed": 8
+    },
+    {
+      "pattern": "exit-code-doc-mismatch",
+      "recurrence": 2,
+      "prior_prs": [491],
+      "current_files_fixed": 1
+    }
+  ],
+  "propagation_sweeps": {
+    "sanitize_error_cjs": 8,
+    "toctou_existsSync_mkdirSync": 6
+  },
+  "files_modified": 36,
+  "tdms_followup": ["DEBT-45634"],
+  "test_coverage": {
+    "new_test_file": "tests/scripts/run-github-health.test.ts",
+    "tests_added": 26,
+    "suites_added": 6
+  },
+  "verification": {
+    "lint": "pass",
+    "patterns_check": "pass (7 pre-existing LOW warnings in unchanged files)",
+    "cc_check": "pass (0 violations in run-github-health.js)",
+    "test_suite": "3580/3581 pass (1 pre-existing skipped)",
+    "smoke_test": "26/26 pass",
+    "coverage_gate": "0 NEW gaps"
+  }
+}

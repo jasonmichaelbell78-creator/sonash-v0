@@ -1,0 +1,89 @@
+{
+  "topic": "Repo Analysis Skill — design research for a /repo-analysis Claude skill that evaluates external GitHub repositories",
+  "depth": "L4",
+  "questionType": "skill-design / tool-research / architecture",
+  "domain": "developer-tooling / code-quality / GitHub-analysis / AI-assisted-development",
+  "startedAt": "2026-03-31T00:00:00Z",
+  "completedAt": "2026-03-31T12:00:00Z",
+  "agentCount": 29,
+  "sourceIdScheme": "research-phase-codes",
+  "searchRounds": 6,
+  "sourceCount": 147,
+  "claimCount": 50,
+  "findingsFilesProcessed": 26,
+  "phases": {
+    "phase1_external": "15 findings files (D1a through D12)",
+    "phase1_internal": "7 findings files (D8 through D10b)",
+    "phase2_synthesis": "SYNTHESIS_EXTERNAL.md + SYNTHESIS_INTERNAL.md",
+    "phase3_verification": "V1 (tool/API), V2 (internal codebase)",
+    "phase4_challenge": "contrarian-1 (6 challenges), otb-1 (7 opportunities)",
+    "phase5_gaps": "G1 (quick scan + make-vs-buy), G2 (temporal + absence)",
+    "phase6_final": "RESEARCH_OUTPUT.md (this synthesis)"
+  },
+  "confidenceDistribution": {
+    "HIGH": 42,
+    "MEDIUM": 6,
+    "LOW": 0,
+    "UNVERIFIED": 2
+  },
+  "contradictionsFound": 6,
+  "contradictionsResolved": {
+    "DORA_5th_metric": "Rework Rate (not Reliability) — confirmed by V1",
+    "skill_count": "65 (not 62) — confirmed by V2 filesystem read",
+    "agent_count": "57 (not 39) — confirmed by V2; global/ subdir was missed",
+    "trivy_attack_scope": "More extensive than originally reported; mirror.gcr.io hazard — confirmed by V1",
+    "api_coverage_pct": "40-55% partial / 40% full — clarified by G1 dimension cross-reference",
+    "codeclimate_redirect": "Spinout (not acquisition/redirect) — confirmed by V1"
+  },
+  "themesIdentified": [
+    "Quick Scan as default entry point (API-only, no clone, 40-55% signal coverage)",
+    "4-tier hybrid pipeline (API → blobless → 12-month → full clone)",
+    "Minimum viable tool stack (Tier 1: 5-7 tools; Tier 2 language-conditional)",
+    "Categorical scoring bands over false-precision numeric composites",
+    "Absence pattern classifier (7 named patterns with detection logic)",
+    "Temporal fingerprint (5 signals, sparkline, pure git log commands)",
+    "Make-vs-buy: custom skill for external eval; commercial for ongoing PR review",
+    "Internal codebase as reference rubric (347 reviews, empirically grown)",
+    "Three-layer enforcement as quality signal (hook + AI + propagation registry)",
+    "Strategic intelligence (team signals, AI adoption, due diligence)",
+    "TDMS-native output schema (no transformation needed for debt intake)"
+  ],
+  "selfAuditResult": {
+    "challengesAddressed": 6,
+    "mandatoryChanges": [
+      "Quick Scan is now DEFAULT mode (was optional)",
+      "Scoring uses bands not numeric composites as primary display",
+      "Agent count formula replaced by gsd-codebase-mapper-first approach",
+      "Tool stack tiered as minimal viable (not 30-tool recommendation)",
+      "Trivy attack scope corrected (mirror.gcr.io hazard added)",
+      "DORA 5th metric corrected to Rework Rate"
+    ],
+    "partiallyConceded": [
+      "Tool maintenance burden is real but addressed with Tier 1/2/3 policy",
+      "Strategic intelligence features scoped as 'observable signals' not 'computed scores'"
+    ],
+    "notConceded": [
+      "Multi-agent parallelism justified for Standard/Deep modes",
+      "Custom skill vs commercial tools: they solve different problems"
+    ]
+  },
+  "outputFiles": {
+    "report": ".research/repo-analysis-skill/RESEARCH_OUTPUT.md",
+    "claims": ".research/repo-analysis-skill/claims.jsonl",
+    "sources": ".research/repo-analysis-skill/sources.jsonl",
+    "metadata": ".research/repo-analysis-skill/metadata.json"
+  },
+  "consumerHints": {
+    "hasStackClaims": true,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 3,
+    "primaryConsumer": "skill-creator for /repo-analysis SKILL.md design",
+    "secondaryConsumer": "deep-plan for implementation planning (Phase 2)",
+    "urgentOperationalItem": "C-G006 — Trivy CVE-2026-33634 mirror.gcr.io hazard requires immediate pipeline audit if Trivy is in use",
+    "quickStartRecommendation": "Start with Quick Scan (Phase 0 only) implementation — 8-10 API calls, no clone, delivers 40-55% signal. Then add Standard mode clone + 5 Tier 1 tools. Deep mode and temporal fingerprint are Phase 3.",
+    "makeVsBuyDecision": "Build custom skill for external repo evaluation + TDMS integration. Consider CodeRabbit ($24/dev/month) for ongoing PR review of own codebase — do not try to replicate that with the custom skill.",
+    "notes": "10 new claims (C-G001 through C-G010) added from gap/challenge/verification passes. 17 new sources (S-130 through S-146) added. RESEARCH_OUTPUT.md is the single authoritative design document — supersedes SYNTHESIS_EXTERNAL.md and SYNTHESIS_INTERNAL.md."
+  }
+}

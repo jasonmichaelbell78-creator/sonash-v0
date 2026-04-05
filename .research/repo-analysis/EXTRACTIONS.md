@@ -1,12 +1,12 @@
 # Extraction Candidates -- Cross-Repo Summary
 
-Generated: 2026-04-03 | Total: 13 candidates across 2 repos
+Generated: 2026-04-03 | Total: 21 candidates across 4 repos
 
 ## Extracted (0)
 
 _None yet._
 
-## Deferred (13)
+## Deferred (18)
 
 ### HKUDS/CLI-Anything (7 candidates) -- Verdict: Trial (62)
 
@@ -30,6 +30,24 @@ _None yet._
 | Designer Prompt Templates          | High    | E0     | 18KB failure classification + mutation prompts. Portable text.                                            |
 | Dual-Embedding Memory Bank         | Medium  | E2     | Content + context embeddings. Concept portable, code tied to FAISS+PyTorch.                               |
 | Operation Templates with Meta-Info | Medium  | E1     | Usage + reward + EMA tracking for skill/tool selection.                                                   |
+
+### karpathy/autoresearch (5 candidates) -- Verdict: Extract (62)
+
+| Candidate                    | Novelty | Effort | Notes                                                                                              |
+| ---------------------------- | ------- | ------ | -------------------------------------------------------------------------------------------------- |
+| program.md Agent Instruction | High    | E0     | Autonomous agent skill file: setup, experiment loop, NEVER STOP, crash recovery. Compare SKILL.md. |
+| Fixed-Budget Experimentation | High    | E0     | Fixed 5-min budget, single metric, git branch per run. Generalizable optimization loop.            |
+| 3-File Architecture Pattern  | Medium  | E0     | Immutable + mutable + instructions. Agent-editable zone contracts.                                 |
+| Autonomous Crash Recovery    | Medium  | E0     | Stack trace reading, fix attempts, revert on failure. Relevant to GSD executor.                    |
+| Results TSV Logging          | Low     | E0     | commit/metric/memory/status/description. Already have JSONL equivalent.                            |
+
+### codecrafters-io/build-your-own-x (3 candidates) -- Verdict: Extract (45)
+
+| Candidate                     | Novelty | Effort | Notes                                                       |
+| ----------------------------- | ------- | ------ | ----------------------------------------------------------- |
+| Systems Knowledge Curriculum  | High    | E2     | 5 domains relevant to JASON-OS: Shell, Git, DB, Search, PL. |
+| 35-Category Tutorial Taxonomy | Medium  | E0     | Learning path reference across 35 technology domains.       |
+| Curated Link Format           | Low     | E0     | Standard awesome-list format. Low extraction value.         |
 
 ## Skipped (0)
 

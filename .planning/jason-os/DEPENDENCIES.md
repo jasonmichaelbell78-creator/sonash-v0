@@ -1,7 +1,7 @@
 # JASON-OS Research — Cross-Domain Dependencies
 
-**Last Updated:** 2026-04-01 **Status:** Initial (populated from PLAN.md,
-refined after each domain gate)
+**Last Updated:** 2026-04-03 **Status:** Updated (added Domain 02a +
+cross-cutting protocol)
 
 ## Dependency Graph
 
@@ -11,6 +11,8 @@ Tier 1 (Foundation):
                             ├──→ ALL subsequent domains
   02 External Landscape ────┤
                             ├──→ 04, 05, 07, 08, 12, 13, 14, 15, 16
+  02a Adoption Scouting ────┤
+                            ├──→ ALL (cross-cutting protocol, ongoing)
   03 Existing Work ─────────┤
                             ├──→ ALL (determines prior art to ingest)
   04 Design Philosophy ─────┘
@@ -37,7 +39,7 @@ Tier 3 (Experience & Distribution):
 
 | Parallel Group | Domains          | Condition                         |
 | -------------- | ---------------- | --------------------------------- |
-| Tier 1 Wave A  | 01 + 02          | Independent — can run in parallel |
+| Tier 1 Wave A  | 01 + 02 + 02a    | Independent — can run in parallel |
 | Tier 1 Wave B  | 03 + 04          | After 01/02 initial findings      |
 | Tier 2 Wave A  | 05 + 09          | After Tier 1                      |
 | Tier 2 Wave B  | 06 + 10          | After 05                          |

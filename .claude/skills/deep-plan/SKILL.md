@@ -117,7 +117,7 @@ reference actual patterns, not generic placeholders.
      Do not proceed with uninformed discovery questions when domain expertise is
      absent.
 4. **Brainstorm check** (SHOULD) — check for
-   `.planning/<topic-slug>/BRAINSTORM.md`. If found, load chosen direction,
+   `.research/<topic-slug>/BRAINSTORM.md`. If found, load chosen direction,
    anti-goals, and open questions as pre-seeded context for discovery.
 5. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
 6. Identify existing patterns, conventions, and neighboring systems (MUST)
@@ -309,6 +309,13 @@ after routing.
 **Artifact consumers:** DECISIONS.md is referenced during execution by any
 approach. PLAN.md is consumed by GSD via `/gsd:plan-phase`. DIAGNOSIS.md is
 reference-only.
+
+**Skill-type plans (MUST):** If the plan produces a skill (SKILL.md +
+companions), the executor MUST reference
+`.claude/skills/_shared/SKILL_STANDARDS.md` during implementation. Key checks:
+version history section, self-audit phase (Standard/Complex tier), line count
+under 300, MUST/SHOULD hierarchy. The skill-creator enforces these; direct
+execution from deep-plan must enforce them manually.
 
 **Invocation tracking** (MUST):
 

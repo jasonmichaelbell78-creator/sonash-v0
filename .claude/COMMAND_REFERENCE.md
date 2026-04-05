@@ -78,6 +78,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/artifacts-builder`              | Build multi-component claude.ai artifacts                                                |
 | `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions                                                   |
 | `/gh-fix-ci`                      | Fix failing GitHub CI actions                                                            |
+| `/github-health`                  | 7-phase GitHub health assessment with per-finding triage and inline fixes                |
 | `/market-research-reports`        | Generate market research reports                                                         |
 | `/ui-design-system`               | Design system components toolkit                                                         |
 | `/repo-analysis`                  | Analyze external repos: health assessment (45 dimensions) + value extraction (3 tiers)   |

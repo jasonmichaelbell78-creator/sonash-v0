@@ -8,14 +8,14 @@ sequenced in tiers: foundational domains first, then domain-specific, with
 ongoing cross-domain synthesis. Each domain is multi-phased (scope → research →
 gate). All artifacts are git-tracked for cross-locale persistence.
 
-**Decisions:** See DECISIONS.md (32 decisions) **Prior art:** See BRAINSTORM.md
-(chosen direction: Template → Platform)
+**Decisions:** See DECISIONS.md (32 decisions) **Prior art:** See
+[BRAINSTORM.md](../../.research/jason-os/BRAINSTORM.md) (chosen direction:
+Template → Platform)
 
 ## File Structure
 
 ```
 .planning/jason-os/
-├── BRAINSTORM.md              (complete)
 ├── DECISIONS.md               (complete — this plan's decisions)
 ├── PLAN.md                    (this file — research roadmap)
 ├── RESEARCH_ROADMAP.md        (living orchestration artifact — status tracker)
@@ -23,8 +23,10 @@ gate). All artifacts are git-tracked for cross-locale persistence.
 └── DEPENDENCIES.md            (living cross-domain dependency map)
 
 .research/jason-os/
+├── BRAINSTORM.md              (complete — moved from .planning/ during R&D migration)
 ├── 01-internal-archaeology/   (domain research outputs)
 ├── 02-external-landscape/
+├── 02a-adoption-scouting/
 ├── 03-existing-work/
 ├── 04-design-philosophy/
 ├── 05-architecture-patterns/
@@ -54,6 +56,10 @@ Every domain follows this protocol (per Decisions #23, #24):
 - Identify sub-questions for /deep-research decomposition
 - Check prior art: existing .research/ and .planning/ artifacts to ingest
 - Check DEPENDENCIES.md for inputs needed from other domains
+- **Adoption check (per Decision #34):** Check Domain 02a scouting findings for
+  entries classified under this domain. Ingest as prior art. If a finding
+  directly answers a research question, note it and reduce scope. If a finding
+  suggests an alternative approach, include it as a candidate direction.
 - Present scope to user for approval before executing
 
 ### Phase B: Research Execution
@@ -155,6 +161,65 @@ not strict sequence).
 
 ---
 
+### Domain 02a: External Adoption Scouting
+
+**Purpose:** Discover specific external repos, skills, agents, and patterns that
+represent additive or replacement improvements to the JASON-OS ecosystem. Unlike
+Domain 02 (which surveys approaches conceptually), this domain evaluates
+concrete implementations for adoption potential.
+
+**Why in Tier 1:** Scouting findings inform every subsequent domain. A better
+sync mechanism found in Domain 02a changes Domain 07's scope. A superior
+template pattern changes Domain 08. Discoveries must be available before
+domain-specific research begins.
+
+**Primary tool:** `/repo-analysis` skill — used to scan external repos for
+health assessment and value extraction. Findings classified as:
+
+- **Additive:** Capability we don't have (new skill, new pattern, new approach)
+- **Replacement:** Better implementation of something we already have
+- **Inspirational:** Interesting approach worth adapting but not directly
+  portable
+
+**Scope includes:**
+
+- Scan repos discovered through research, community, or manual exploration
+- Classify each finding by type (additive/replacement/inspirational) and target
+  domain (which JASON-OS research domain it informs)
+- Maintain a living catalog of evaluated repos and their findings
+- Feed classified findings into the Cross-Cutting Adoption Protocol (see below)
+
+**Nature:** Unlike other domains, 02a is **ongoing** — it doesn't have a single
+research phase and gate. New repos can be scouted at any time. The domain is
+"gated" when the operator decides the catalog is sufficient for implementation
+planning.
+
+**Prior art to ingest:** Current repo-analysis runs (in progress as of
+2026-04-03), Codex plugin analysis, awesome-claude-code ecosystem data.
+
+**Estimated scope:** Ongoing/incremental — each repo-analysis run adds to the
+catalog.
+
+**Depends on:** Nothing — independent, runs alongside all other domains. **Feeds
+into:** ALL subsequent domains via Cross-Cutting Adoption Protocol.
+
+---
+
+### Cross-Cutting Adoption Protocol
+
+Added to the Research Protocol (Phase A) for every domain:
+
+> **Adoption check (MUST):** Before scoping domain-specific research, check
+> Domain 02a findings for entries classified under this domain. Ingest relevant
+> scouting findings as prior art. If a scouting finding directly answers a
+> research question, note it and reduce scope accordingly. If a finding suggests
+> an alternative approach, include it as a candidate direction.
+
+This ensures repo-analysis discoveries are consumed everywhere, not siloed in a
+single domain.
+
+---
+
 ### Domain 03: Existing Work Evaluation
 
 **Purpose:** Deep evaluation of every plan and research directory in the repo to
@@ -211,8 +276,8 @@ starter kit."
 - What "portable" means operationally — everything works everywhere, or core
   works everywhere with extensions per project
 
-**Prior art to ingest:** BRAINSTORM.md (anti-goals, chosen direction, operator
-identity as no-code vibe coder).
+**Prior art to ingest:** [BRAINSTORM.md](../../.research/jason-os/BRAINSTORM.md)
+(anti-goals, chosen direction, operator identity as no-code vibe coder).
 
 **Estimated scope:** Medium — mix of external research and internal reflection.
 
@@ -435,20 +500,23 @@ from this plan.
 
 ## Step 2: Execute Tier 1 (Domains 01-04)
 
-Execute each domain following the Research Protocol (Phase A-D). Domains 01 and
-02 can run in parallel across sessions (independent). Domain 03 benefits from 01
-but can start concurrently. Domain 04 benefits from 02 but can start after 02's
-initial findings are available.
+Execute each domain following the Research Protocol (Phase A-D). Domains 01, 02,
+and 02a can run in parallel across sessions (independent). Domain 03 benefits
+from 01 but can start concurrently. Domain 04 benefits from 02 but can start
+after 02's initial findings are available. Domain 02a is ongoing — repo-analysis
+findings accumulate over time and feed into every subsequent domain via the
+Cross-Cutting Adoption Protocol.
 
 **Suggested grouping (flexible):**
 
 - Session N: Domain 01 (Internal Archaeology) — large, may span 2+ sessions
 - Session N (parallel if second locale): Domain 02 (External Landscape)
+- Ongoing: Domain 02a (External Adoption Scouting) — runs alongside other work
 - After 01 initial findings: Domain 03 (Existing Work Evaluation)
 - After 02 initial findings: Domain 04 (Design Philosophy)
 
-**Done when:** All 4 domains gated, SYNTHESIS.md updated, Checkpoint 1 complete.
-**Depends on:** Step 1.
+**Done when:** All 5 domains gated (02a may remain open as ongoing),
+SYNTHESIS.md updated, Checkpoint 1 complete. **Depends on:** Step 1.
 
 ---
 

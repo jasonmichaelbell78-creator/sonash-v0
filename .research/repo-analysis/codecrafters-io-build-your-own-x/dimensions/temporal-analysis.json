@@ -1,0 +1,64 @@
+{
+  "dimension": "temporal",
+  "depth": "deep",
+  "commit_count": 611,
+  "age_days": 2887,
+  "velocity": {
+    "yearly_distribution": {
+      "2018": 327,
+      "2019": 48,
+      "2020": 30,
+      "2021": 12,
+      "2022": 63,
+      "2023": 64,
+      "2024": 27,
+      "2025": 29,
+      "2026": 11
+    },
+    "last_12_months_commits": 1,
+    "trend": "dormant — 1 commit in 12 months despite 486K stars"
+  },
+  "contributor_analysis": {
+    "total_contributors": 30,
+    "breakdown": [
+      { "name": "Daniel Stefanovic", "commits": 320, "role": "original-creator (inactive)" },
+      { "name": "Paul Kuruvilla", "commits": 68, "role": "codecrafters-io maintainer" },
+      { "name": "Sarup Banskota", "commits": 26, "role": "codecrafters-io co-founder" }
+    ],
+    "bus_factor": 0,
+    "note": "Original creator (320 of 611 commits) appears inactive. codecrafters-io org maintains sporadically. Effectively unmaintained."
+  },
+  "ownership_transfer": {
+    "original_owner": "Daniel Stefanovic",
+    "current_owner": "codecrafters-io",
+    "transfer_type": "org-acquisition (repo moved to codecrafters-io namespace)",
+    "commercial_use": "Banner at top of README drives traffic to codecrafters.io platform"
+  },
+  "temporal_patterns": {
+    "initial_burst": "327 commits in 2018 (creation year)",
+    "decline": "48→30→12 commits (2019-2021)",
+    "revival": "63→64 commits (2022-2023, likely viral resurgence)",
+    "current": "Practically dormant. 1 merge commit in last 12 months."
+  },
+  "findings": [
+    {
+      "id": "T001",
+      "severity": "high",
+      "title": "Effectively unmaintained",
+      "detail": "1 commit in 12 months. 460 open issues, 30 open PRs. No active triage."
+    },
+    {
+      "id": "T002",
+      "severity": "medium",
+      "title": "Ownership transfer to commercial entity",
+      "detail": "Originally by Daniel Stefanovic, now codecrafters-io. Banner promotes paid platform."
+    },
+    {
+      "id": "T003",
+      "severity": "info",
+      "title": "Lifecycle: mature/dormant curated list",
+      "detail": "8-year-old project. Content is still valuable but actively decaying (link rot)."
+    }
+  ],
+  "summary": "Classic 'viral awesome-list' lifecycle: explosive 2018 creation, gradual community contribution decline, org acquisition for marketing, now dormant. Content still valuable but unmaintained — expect link rot."
+}

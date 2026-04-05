@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.17 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.19 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-03 (Session #261)
+2026-04-05 (Session #262)
 
 ## Purpose
 
@@ -29,8 +29,8 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-03-31 **Branch**: `planning-33026` **Working On**:
-Session #253 — /todo skill creation + skill-audit.
+**Last Checkpoint**: 2026-04-05 **Branch**: `planning-4326` **Working On**:
+Session #262 — PR #492 R1+R2 reviews + research-discovery-standard v2.
 
 **Uncommitted Work**: None (session-end commit)
 
@@ -38,7 +38,7 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Session Tracking
 
-**Current Session Count**: 261 (since Jan 1, 2026)
+**Current Session Count**: 263 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +47,31 @@ Session #253 — /todo skill creation + skill-audit.
 ---
 
 ## Recent Session Summaries
+
+**Session #262** (PR #492 R1+R2 REVIEWS + RESEARCH-DISCOVERY-STANDARD v2):
+
+- **Branch**: `planning-4326` (11 commits, spanning 2026-04-04 → 2026-04-05)
+- **PR #492 R1 review**: 27 fixes applied in a single batch. Security
+  (path-traversal, symlink guards), cognitive complexity reductions, propagation
+  debt batch-ack. Commit `b15fd08b`.
+- **PR #492 R2 review**: R2 contradictions resolved + pattern checker rule bug
+  fixes. Follow-up TOCTOU cleanup — replaced `existsSync` checks with
+  `lstatSync` try/catch in OOM guards + checker rule. Commits `7731a6e7`,
+  `1819d4e6`, `5a44d2ed`.
+- **Baseline propagation cleanup**: Suppressed pre-existing patterns + FPs
+  including `nextLine` function-name false positives in
+  `known-propagation-baseline.json`. Commits `38b73ce4`, `449a142a`.
+- **research-discovery-standard v2**: Supplemental /deep-research run — 8
+  findings docs (D1-D8), 2 verification docs (V1-V2), contrarian + OTB
+  challenges, dispute resolutions, gap scan, AUDIT + RESUME + RESEARCH_OUTPUT.
+  954-line synthesis. Commits `df86826b`, `8febf48d`, `b0fe2fd6`.
+- **Artifact migration**: Migrated `BRAINSTORM.md` artifacts from `.planning/`
+  to `.research/` (jason-os, learning-analysis, worktree-management,
+  research-discovery-standard). Commit `faa5cf6e`.
+- **Commits**: 11 total — `13ec2677` (hook log update), `b15fd08b` (R1 batch),
+  `faa5cf6e` (artifact migration), `df86826b` + `8febf48d` + `b0fe2fd6` (v2
+  research), `38b73ce4` (baseline), `7731a6e7` (R2 batch), `1819d4e6` (TOCTOU),
+  `5a44d2ed` (ack), `449a142a` (baseline FPs).
 
 **Session #261** (REPO-ANALYSIS v2.0 + MEMSKILL ANALYSIS + AGENT OUTPUT FIX):
 
@@ -79,29 +104,26 @@ Session #253 — /todo skill creation + skill-audit.
 - Branch sync, /alerts --full 21 fixes, code review fixes (symlink bypass, stale
   cleanup, depth-- typo).
 
-**Session #259** (RESEARCH INTEGRITY COMPLETION + PR REVIEW):
-
-- Research integrity complete, PR #489 R1+R2 reviews (36 items fixed).
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                            | Status        | Progress                                                   |
-| ------------------------------- | ------------- | ---------------------------------------------------------- |
-| **Research Integrity Fix**      | COMPLETE      | All 6 phases done. 51 PASS, 0 FAIL. T18 completed.         |
-| **Repo Analysis Skill**         | v2.0 SHIPPED  | Adoption assessment, extraction persistence, schema align. |
-| **Custom Agents**               | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded.  |
-| **Plan Orchestration**          | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner          |
-| **Dev Dashboard**               | IN-PROGRESS   | Started Session #245, XL effort                            |
-| **debt-runner Expansion**       | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.       |
-| **Multi-layer Memory**          | RESEARCH DONE | 40 agents, 128 claims. Execution next.                     |
-| **JASON-OS (Claude Code OS)**   | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.     |
-| **System-Wide Standardization** | BLOCKED       | Behind plan-orchestration Wave 2                           |
+| Item                               | Status        | Progress                                                   |
+| ---------------------------------- | ------------- | ---------------------------------------------------------- |
+| **PR #492**                        | R1+R2 DONE    | 27 R1 fixes + R2 TOCTOU cleanup + baseline cleanup merged. |
+| **Research-Discovery-Standard v2** | RESEARCH DONE | 8 findings + 2 verification docs + synthesis. Ready.       |
+| **Repo Analysis Skill**            | v2.0 SHIPPED  | Adoption assessment, extraction persistence, schema align. |
+| **Custom Agents**                  | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded.  |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner          |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                            |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.       |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                     |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.     |
+| **System-Wide Standardization**    | BLOCKED       | Behind plan-orchestration Wave 2                           |
 
-**Current Branch**: `work-4326`
+**Current Branch**: `planning-4326`
 
 **Test Status**: 3564 tests pass, 0 fail
 
@@ -111,19 +133,23 @@ Session #253 — /todo skill creation + skill-audit.
 
 ### Immediate Priority
 
-1. **Post GitHub comment** — anthropics/claude-code#39791 comment at
+1. **PR #492 merge** — R1+R2 reviews done, TOCTOU + baseline cleanup merged.
+   Ready for final review/merge.
+2. **Post GitHub comment** — anthropics/claude-code#39791 comment at
    `.claude/tmp/github-comment-39791.md`. Post manually.
-2. **Review EXTRACTIONS.md** — 13 deferred candidates across 2 repos. Decide
+3. **research-discovery-standard v2 → plan** — 954-line synthesis ready. Decide
+   whether to /deep-plan the v2 recommendations.
+4. **Review EXTRACTIONS.md** — 13 deferred candidates across 2 repos. Decide
    which to extract when ready.
-3. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
+5. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
    center, XL effort.
-4. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
-5. **Multi-layer memory** — Research done (40 agents, 128 claims). Execute.
-6. **JASON-OS Domain 01** — Internal Archaeology via /deep-research.
+6. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
+7. **Multi-layer memory** — Research done (40 agents, 128 claims). Execute.
+8. **JASON-OS Domain 01** — Internal Archaeology via /deep-research.
 
 ### After Debt-Runner
 
-7. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
+9. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
 
 ### Backlog (run `/todo` for full list — 11 active, 6 completed)
 
@@ -131,9 +157,10 @@ Session #253 — /todo skill creation + skill-audit.
 
 ## Pending PR Reviews
 
-**Status**: PR #489 merged. New PR pending from work-4326 (Session #261).
+**Status**: PR #492 R1+R2 reviews processed (27 + TOCTOU/baseline fixes).
+Awaiting final review/merge.
 
-**Last Processed**: 2026-04-03 (Session #261)
+**Last Processed**: 2026-04-05 (Session #262)
 
 ---
 

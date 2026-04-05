@@ -1,0 +1,121 @@
+{
+  "dimension": "security",
+  "risk_level": "medium",
+  "summary": "A research-grade training tool with medium overall risk. The primary concerns are: (1) pickle deserialization of the tokenizer file enables arbitrary code execution if the cache directory is compromised, (2) the program.md instructs AI agents to run indefinitely with full code modification rights and shell access (inherent by-design risk), (3) no integrity verification on downloaded data shards from HuggingFace. No credentials are hardcoded, no subprocess/shell injection vectors exist, and path handling is constrained to a fixed cache directory. The attack surface is narrow because this is a single-user local research tool, not a server application.",
+  "findings": [
+    {
+      "id": "S1-001",
+      "severity": "high",
+      "title": "Arbitrary code execution via pickle deserialization",
+      "owasp": "A08:2021 Software and Data Integrity Failures",
+      "file": "prepare.py",
+      "lines": [178, 219],
+      "description": "The tokenizer is serialized with pickle.dump (line 178-179) and deserialized with pickle.load (line 219). pickle.load can run arbitrary Python code embedded in the serialized stream. If an attacker can write to ~/.cache/autoresearch/tokenizer/tokenizer.pkl (e.g., via a supply-chain attack, a compromised shared filesystem, or a symlink attack), they achieve full code execution when train.py loads the tokenizer.",
+      "code_snippet": "with open(os.path.join(tokenizer_dir, 'tokenizer.pkl'), 'rb') as f:\n    enc = pickle.load(f)",
+      "fix": "Replace pickle with a safer serialization format. Since the tokenizer state is just mergeable_ranks (dict of bytes->int), pattern (str), and special_tokens (dict of str->int), use JSON or torch.save with weights_only=True for the rank data. Alternatively, add an integrity check (SHA-256 hash verification) on the pickle file before loading.",
+      "mitigating_factors": "The pickle file is generated locally by prepare.py, not downloaded from the network. An attacker would need local filesystem write access to the cache directory."
+    },
+    {
+      "id": "S2-001",
+      "severity": "medium",
+      "title": "No integrity verification on downloaded data shards",
+      "owasp": "A08:2021 Software and Data Integrity Failures",
+      "file": "prepare.py",
+      "lines": [57, 75],
+      "description": "Data shards are downloaded from HuggingFace over HTTPS but no checksum or hash verification is performed after download. The download uses a temp file + rename pattern (good for atomicity), but a compromised CDN or HuggingFace account takeover could serve malicious parquet files. While parquet itself is a data format (not code), corrupted training data could poison model outputs.",
+      "code_snippet": "response = requests.get(url, stream=True, timeout=30)\nos.rename(temp_path, filepath)",
+      "fix": "Add SHA-256 checksum verification against a pinned manifest. HuggingFace datasets typically provide checksums in the dataset card or API metadata.",
+      "mitigating_factors": "HTTPS provides transport-layer integrity. Parquet files are data, not executable. The attack requires compromising HuggingFace infrastructure."
+    },
+    {
+      "id": "S2-002",
+      "severity": "medium",
+      "title": "Autonomous agent loop with unrestricted code modification",
+      "owasp": "A01:2021 Broken Access Control",
+      "file": "program.md",
+      "lines": [94, 112],
+      "description": "program.md instructs AI agents to run indefinitely ('NEVER STOP'), modify train.py freely, run training via shell commands, read logs, and perform git operations. This is by-design but represents a significant trust boundary. A prompt injection in model output, log files, or error messages could cause the agent to act on unintended commands. The instruction 'tail -n 50 run.log' means the agent reads arbitrary program output that could contain adversarial content.",
+      "code_snippet": "LOOP FOREVER: 1. Look at the git state 2. Tune train.py 3. git commit 4. Run: uv run train.py > run.log 2>&1",
+      "fix": "Accepted risk for this tool's purpose. Mitigations: (a) run in a sandboxed environment (container, VM), (b) restrict agent shell access to only 'uv run train.py' and git commands, (c) use the AI platform's permission controls to limit file modification to train.py only.",
+      "mitigating_factors": "The README recommends 'disable all permissions' when running agents. Designed for supervised single-user local research."
+    },
+    {
+      "id": "S2-003",
+      "severity": "medium",
+      "title": "torch.load without explicit weights_only=True",
+      "owasp": "A08:2021 Software and Data Integrity Failures",
+      "file": "prepare.py",
+      "lines": [251],
+      "description": "torch.load(f, map_location=device) is called without weights_only=True when loading token_bytes.pt. In older PyTorch versions, torch.load uses unsafe deserialization under the hood and can run arbitrary code. PyTorch 2.9.1 (used here) defaults weights_only=True, but the explicit parameter is missing, making the code fragile if the PyTorch version were downgraded.",
+      "code_snippet": "return torch.load(f, map_location=device)",
+      "fix": "Add weights_only=True explicitly: torch.load(f, map_location=device, weights_only=True).",
+      "mitigating_factors": "PyTorch 2.9.1 (pinned in pyproject.toml) defaults weights_only=True. The file is locally generated, not downloaded."
+    },
+    {
+      "id": "S3-001",
+      "severity": "low",
+      "title": "Fixed cache directory without permission hardening",
+      "owasp": "A05:2021 Security Misconfiguration",
+      "file": "prepare.py",
+      "lines": [38, 93],
+      "description": "The cache directory ~/.cache/autoresearch/ is created with os.makedirs(exist_ok=True) using default permissions. On multi-user systems, other users could potentially read or modify cached data and tokenizer files.",
+      "fix": "Set restrictive permissions: os.makedirs(DATA_DIR, mode=0o700, exist_ok=True).",
+      "mitigating_factors": "Designed for single-user workstations. ~/.cache is already user-owned."
+    },
+    {
+      "id": "S3-002",
+      "severity": "low",
+      "title": "No pinned hashes for PyPI dependencies in pyproject.toml",
+      "owasp": "A06:2021 Vulnerable and Outdated Components",
+      "file": "pyproject.toml",
+      "lines": [7, 17],
+      "description": "Dependencies use >= version ranges. The 'rustbpe' and 'kernels' packages are relatively niche. However, uv.lock (445KB, committed) provides hash-verified lockfile resolution.",
+      "fix": "uv.lock already mitigates. No additional action needed for this tool's threat model.",
+      "mitigating_factors": "uv.lock provides lockfile pinning. rustbpe is authored by Karpathy. kernels is a known PyTorch ecosystem package."
+    },
+    {
+      "id": "S3-003",
+      "severity": "low",
+      "title": "Raw error messages in download retry logging",
+      "owasp": "A09:2021 Security Logging and Monitoring Failures",
+      "file": "prepare.py",
+      "lines": [79],
+      "description": "Download retry errors print the raw exception: print(f'Attempt ... failed for {filename}: {e}'). Could expose URL parameters or server error details.",
+      "fix": "Acceptable for a local research tool. Sanitize if productionized.",
+      "mitigating_factors": "Output goes to local terminal only. No credentials in URLs."
+    },
+    {
+      "id": "S3-004",
+      "severity": "low",
+      "title": "No subprocess or shell injection vectors (positive finding)",
+      "owasp": "N/A",
+      "file": "all files",
+      "lines": [],
+      "description": "The codebase does not use os.system(), subprocess, or any shell patterns. All computation uses Python library calls (requests, torch, pyarrow). No user-supplied strings are interpolated into commands.",
+      "fix": "No action needed.",
+      "mitigating_factors": "N/A"
+    },
+    {
+      "id": "S3-005",
+      "severity": "low",
+      "title": "No credential handling or API key exposure (positive finding)",
+      "owasp": "N/A",
+      "file": "all files",
+      "lines": [],
+      "description": "No API keys, tokens, passwords, or credential handling. Downloads use public HuggingFace URLs. Only non-sensitive env vars are set. .gitignore excludes results.tsv and CLAUDE.md.",
+      "fix": "No action needed.",
+      "mitigating_factors": "N/A"
+    },
+    {
+      "id": "S3-006",
+      "severity": "low",
+      "title": "Path handling is constrained and safe (positive finding)",
+      "owasp": "N/A",
+      "file": "prepare.py",
+      "lines": [38, 59],
+      "description": "All file paths are constructed from fixed constants joined with integer-formatted shard indices. No user-supplied strings in path construction. argparse enforces int type on CLI args. No path traversal possible.",
+      "fix": "No action needed.",
+      "mitigating_factors": "N/A"
+    }
+  ]
+}

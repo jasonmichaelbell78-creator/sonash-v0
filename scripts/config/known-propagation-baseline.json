@@ -1,7 +1,7 @@
 {
   "$schema": "Propagation baseline — violations listed here are suppressed from warnings. Only NEW violations trigger alerts.",
   "version": 2,
-  "updated": "2026-03-30",
+  "updated": "2026-04-05",
   "entries": [
     {
       "type": "pattern",
@@ -3376,6 +3376,706 @@
       "file": "scripts/security-check.js",
       "addedAt": "2026-03-30",
       "reason": "pre-existing at enforcement rollout"
+    },
+    {
+      "type": "function",
+      "key": "printResult",
+      "file": "scripts/test-hook-gates.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "printResult",
+      "file": "scripts/validate-canon-schema.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "elapsed",
+      "file": "scripts/check-external-links.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "elapsed",
+      "file": "scripts/review-lifecycle.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "ageDays",
+      "file": ".claude/skills/alerts/scripts/run-alerts.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "ageDays",
+      "file": ".claude/skills/session-ecosystem-audit/scripts/checkers/integration-config.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "ageDays",
+      "file": "scripts/check-backlog-health.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "ageDays",
+      "file": "scripts/debt/generate-metrics.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "ageDays",
+      "file": "scripts/health/checkers/test-coverage.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/hooks/pre-commit-agent-compliance.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/alerts/scripts/run-alerts.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/doc-ecosystem-audit/scripts/checkers/content-quality.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/doc-ecosystem-audit/scripts/checkers/coverage-completeness.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/doc-ecosystem-audit/scripts/checkers/generation-pipeline.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/hook-ecosystem-audit/scripts/checkers/cicd-pipeline.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/hook-ecosystem-audit/scripts/checkers/functional-correctness.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/hook-ecosystem-audit/scripts/checkers/state-integration.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/skill-ecosystem-audit/scripts/checkers/agent-orchestration.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/skill-ecosystem-audit/scripts/checkers/structural-compliance.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": ".claude/skills/tdms-ecosystem-audit/scripts/checkers/pipeline-correctness.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/audit/transform-jsonl-schema.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/audit/validate-audit-integration.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/check-agent-compliance.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/check-cross-doc-deps.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/check-document-sync.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/check-roadmap-hygiene.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/debt/clean-intake.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/mcp/sonarcloud-server.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/multi-ai/fix-schema.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/reviews/validate-jsonl-schemas.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/validate-audit.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "issues",
+      "file": "scripts/validate-phase-completion.js",
+      "addedAt": "2026-04-04",
+      "reason": "false positive — unrelated function/variable with same name, not a propagation miss"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/check-mcp-servers.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/commit-tracker.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/deploy-safeguard.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/global/statusline.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/large-file-gate.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/post-read-handler.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/pre-compaction-save.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": ".claude/hooks/session-start.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45631 (lstat-symlink 8 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/check-mcp-servers.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/check-remote-session-context.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/commit-tracker.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/compact-restore.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/deploy-safeguard.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/global/statusline.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/governance-logger.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/large-file-gate.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/lib/git-utils.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/lib/rotate-state.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/lib/state-utils.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/loop-detector.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/post-read-handler.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/post-write-validator.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/pre-compaction-save.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/session-start.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/settings-guardian.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/test-tracker.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/track-agent-invocation.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/user-prompt-handler.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45635 (validate-path 20 hook files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/block-push-to-main.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/check-mcp-servers.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/check-remote-session-context.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/commit-tracker.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/compact-restore.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/decision-save-prompt.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/deploy-safeguard.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/firestore-rules-guard.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/global/gsd-check-update.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/global/statusline.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/governance-logger.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/large-file-gate.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/lib/git-utils.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/lib/inline-patterns.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/lib/rotate-state.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/lib/sanitize-input.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/lib/state-utils.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/lib/symlink-guard.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/loop-detector.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/post-read-handler.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/post-write-validator.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/pre-commit-agent-compliance.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/pre-compaction-save.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/session-start.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/settings-guardian.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/test-tracker.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/track-agent-invocation.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": ".claude/hooks/user-prompt-handler.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/archive/archive-reviews.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/archive/run-consolidation.v1.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/archive/sync-reviews-to-jsonl.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/archive/sync-reviews-to-jsonl.v1.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/planning/render-todos.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/repo-analysis/check-tools.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/research/validate-research.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/resolve-hook-warnings.js",
+      "addedAt": "2026-04-04",
+      "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/debt/extract-audit-reports.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/debt/extract-context-debt.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/multi-ai/normalize-format.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "nextLine",
+      "file": "scripts/tasks/resolve-dependencies.js",
+      "addedAt": "2026-04-05",
+      "reason": "false positive — unrelated local variable with same name, not a propagation miss"
     }
   ]
 }

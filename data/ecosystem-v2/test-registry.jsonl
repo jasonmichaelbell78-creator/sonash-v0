@@ -47,7 +47,6 @@
 {"path":"tests/hooks/decision-save-prompt.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"decision-save-prompt","description":"unit test for decision-save-prompt"}
 {"path":"tests/hooks/global/gsd-check-update.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"gsd-check-update","description":"unit test for gsd-check-update"}
 {"path":"tests/hooks/global/statusline.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"statusline","description":"unit test for statusline"}
-{"path":"tests/hooks/gsd-context-monitor.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"gsd-context-monitor","description":"unit test for gsd-context-monitor"}
 {"path":"tests/hooks/lib/git-utils.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"git-utils","description":"unit test for git-utils"}
 {"path":"tests/hooks/lib/inline-patterns.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"inline-patterns","description":"unit test for inline-patterns"}
 {"path":"tests/hooks/lib/rotate-state.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"rotate-state","description":"unit test for rotate-state"}
@@ -59,7 +58,6 @@
 {"path":"tests/hooks/pre-compaction-save.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"pre-compaction-save","description":"unit test for pre-compaction-save"}
 {"path":"tests/hooks/session-start.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"session-start","description":"unit test for session-start"}
 {"path":"tests/hooks/state-utils.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"state-utils","description":"unit test for state-utils"}
-{"path":"tests/hooks/stop-serena-dashboard.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"stop-serena-dashboard","description":"unit test for stop-serena-dashboard"}
 {"path":"tests/hooks/track-agent-invocation.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"track-agent-invocation","description":"unit test for track-agent-invocation"}
 {"path":"tests/hooks/user-prompt-handler.test.ts","source_type":"test_file","type":"unit","owner":"hooks","target":"user-prompt-handler","description":"unit test for user-prompt-handler"}
 {"path":"tests/scripts/debt/assign-roadmap-refs.test.ts","source_type":"test_file","type":"unit","owner":"debt","target":"assign-roadmap-refs","description":"unit test for assign-roadmap-refs"}
@@ -99,6 +97,7 @@
 {"path":"tests/scripts/lib/generate-content-hash.property.test.ts","source_type":"test_file","type":"property","owner":"shared-lib","target":"generate-content-hash","description":"property test for generate-content-hash"}
 {"path":"tests/scripts/lib/generate-content-hash.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"generate-content-hash","description":"unit test for generate-content-hash"}
 {"path":"tests/scripts/lib/learning-router.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"learning-router","description":"unit test for learning-router"}
+{"path":"tests/scripts/lib/load-propagation-registry.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"load-propagation-registry","description":"unit test for load-propagation-registry"}
 {"path":"tests/scripts/lib/normalize-category.property.test.ts","source_type":"test_file","type":"property","owner":"shared-lib","target":"normalize-category","description":"property test for normalize-category"}
 {"path":"tests/scripts/lib/normalize-category.test.ts","source_type":"test_file","type":"unit","owner":"shared-lib","target":"normalize-category","description":"unit test for normalize-category"}
 {"path":"tests/scripts/lib/normalize-file-path.property.test.ts","source_type":"test_file","type":"property","owner":"shared-lib","target":"normalize-file-path","description":"property test for normalize-file-path"}
@@ -132,7 +131,6 @@
 {"path":"tests/scripts/planning/read-jsonl.test.ts","source_type":"test_file","type":"unit","owner":"planning","target":"read-jsonl","description":"unit test for read-jsonl"}
 {"path":"tests/scripts/planning/validate-jsonl-md-sync.test.ts","source_type":"test_file","type":"unit","owner":"planning","target":"validate-jsonl-md-sync","description":"unit test for validate-jsonl-md-sync"}
 {"path":"tests/scripts/velocity/generate-report.test.ts","source_type":"test_file","type":"unit","owner":"velocity","target":"generate-report","description":"unit test for generate-report"}
-{"path":"tests/scripts/velocity/track-session.test.ts","source_type":"test_file","type":"unit","owner":"velocity","target":"track-session","description":"unit test for track-session"}
 {"path":"tests/scripts/secrets/decrypt-secrets.test.ts","source_type":"test_file","type":"unit","owner":"secrets","target":"decrypt-secrets","description":"unit test for decrypt-secrets"}
 {"path":"tests/scripts/secrets/encrypt-secrets.test.ts","source_type":"test_file","type":"unit","owner":"secrets","target":"encrypt-secrets","description":"unit test for encrypt-secrets"}
 {"path":"tests/scripts/config/load-config.test.ts","source_type":"test_file","type":"unit","owner":"config","target":"load-config","description":"unit test for load-config"}
@@ -240,6 +238,7 @@
 {"path":"tests/callable-errors.test.ts","source_type":"test_file","type":"unit","owner":"app","target":"callable-errors","description":"unit test for callable-errors"}
 {"path":"tests/collections.test.ts","source_type":"test_file","type":"unit","owner":"app","target":"collections","description":"unit test for collections"}
 {"path":"tests/cross-doc-deps.test.js","source_type":"test_file","type":"unit","owner":"app","target":"cross-doc-deps","description":"unit test for cross-doc-deps"}
+{"path":"tests/enforcement/check-3689cfd62f77.test.js","source_type":"test_file","type":"unit","owner":"app","target":"check-3689cfd62f77","description":"unit test for check-3689cfd62f77"}
 {"path":"tests/enforcement-manifest.test.ts","source_type":"test_file","type":"unit","owner":"app","target":"enforcement-manifest","description":"unit test for enforcement-manifest"}
 {"path":"tests/error-knowledge-base.test.ts","source_type":"test_file","type":"unit","owner":"app","target":"error-knowledge-base","description":"unit test for error-knowledge-base"}
 {"path":"tests/escalate-deferred.test.ts","source_type":"test_file","type":"unit","owner":"app","target":"escalate-deferred","description":"unit test for escalate-deferred"}
@@ -392,6 +391,7 @@
 {"path":".claude/skills/audit-process/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-process","target":"audit-process","description":"Skill: audit-process"}
 {"path":".claude/skills/audit-refactoring/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-refactoring","target":"audit-refactoring","description":"Skill: audit-refactoring"}
 {"path":".claude/skills/audit-security/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-security","target":"audit-security","description":"Skill: audit-security"}
+{"path":".claude/skills/brainstorm/SKILL.md","source_type":"skill_command","type":"skill","owner":"brainstorm","target":"brainstorm","description":"Skill: brainstorm"}
 {"path":".claude/skills/checkpoint/SKILL.md","source_type":"skill_command","type":"skill","owner":"checkpoint","target":"checkpoint","description":"Skill: checkpoint"}
 {"path":".claude/skills/code-reviewer/SKILL.md","source_type":"skill_command","type":"skill","owner":"code-reviewer","target":"code-reviewer","description":"Skill: code-reviewer"}
 {"path":".claude/skills/comprehensive-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"comprehensive-ecosystem-audit","target":"comprehensive-ecosystem-audit","description":"Skill: comprehensive-ecosystem-audit"}
@@ -402,6 +402,7 @@
 {"path":".claude/skills/debt-runner/SKILL.md","source_type":"skill_command","type":"skill","owner":"debt-runner","target":"debt-runner","description":"Skill: debt-runner"}
 {"path":".claude/skills/decrypt-secrets/SKILL.md","source_type":"skill_command","type":"skill","owner":"decrypt-secrets","target":"decrypt-secrets","description":"Skill: decrypt-secrets"}
 {"path":".claude/skills/deep-plan/SKILL.md","source_type":"skill_command","type":"skill","owner":"deep-plan","target":"deep-plan","description":"Skill: deep-plan"}
+{"path":".claude/skills/deep-research/SKILL.md","source_type":"skill_command","type":"skill","owner":"deep-research","target":"deep-research","description":"Skill: deep-research"}
 {"path":".claude/skills/developer-growth-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"developer-growth-analysis","target":"developer-growth-analysis","description":"Skill: developer-growth-analysis"}
 {"path":".claude/skills/doc-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"doc-ecosystem-audit","target":"doc-ecosystem-audit","description":"Skill: doc-ecosystem-audit"}
 {"path":".claude/skills/doc-optimizer/SKILL.md","source_type":"skill_command","type":"skill","owner":"doc-optimizer","target":"doc-optimizer","description":"Skill: doc-optimizer"}
@@ -411,6 +412,7 @@
 {"path":".claude/skills/find-skills/SKILL.md","source_type":"skill_command","type":"skill","owner":"find-skills","target":"find-skills","description":"Skill: find-skills"}
 {"path":".claude/skills/frontend-design/SKILL.md","source_type":"skill_command","type":"skill","owner":"frontend-design","target":"frontend-design","description":"Skill: frontend-design"}
 {"path":".claude/skills/gh-fix-ci/SKILL.md","source_type":"skill_command","type":"skill","owner":"gh-fix-ci","target":"gh-fix-ci","description":"Skill: gh-fix-ci"}
+{"path":".claude/skills/github-health/SKILL.md","source_type":"skill_command","type":"skill","owner":"github-health","target":"github-health","description":"Skill: github-health"}
 {"path":".claude/skills/health-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"health-ecosystem-audit","target":"health-ecosystem-audit","description":"Skill: health-ecosystem-audit"}
 {"path":".claude/skills/hook-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"hook-ecosystem-audit","target":"hook-ecosystem-audit","description":"Skill: hook-ecosystem-audit"}
 {"path":".claude/skills/market-research-reports/SKILL.md","source_type":"skill_command","type":"skill","owner":"market-research-reports","target":"market-research-reports","description":"Skill: market-research-reports"}
@@ -421,6 +423,7 @@
 {"path":".claude/skills/pr-review/SKILL.md","source_type":"skill_command","type":"skill","owner":"pr-review","target":"pr-review","description":"Skill: pr-review"}
 {"path":".claude/skills/pre-commit-fixer/SKILL.md","source_type":"skill_command","type":"skill","owner":"pre-commit-fixer","target":"pre-commit-fixer","description":"Skill: pre-commit-fixer"}
 {"path":".claude/skills/quick-fix/SKILL.md","source_type":"skill_command","type":"skill","owner":"quick-fix","target":"quick-fix","description":"Skill: quick-fix"}
+{"path":".claude/skills/repo-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"repo-analysis","target":"repo-analysis","description":"Skill: repo-analysis"}
 {"path":".claude/skills/script-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"script-ecosystem-audit","target":"script-ecosystem-audit","description":"Skill: script-ecosystem-audit"}
 {"path":".claude/skills/session-begin/SKILL.md","source_type":"skill_command","type":"skill","owner":"session-begin","target":"session-begin","description":"Skill: session-begin"}
 {"path":".claude/skills/session-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"session-ecosystem-audit","target":"session-ecosystem-audit","description":"Skill: session-ecosystem-audit"}
@@ -429,11 +432,13 @@
 {"path":".claude/skills/skill-creator/SKILL.md","source_type":"skill_command","type":"skill","owner":"skill-creator","target":"skill-creator","description":"Skill: skill-creator"}
 {"path":".claude/skills/skill-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"skill-ecosystem-audit","target":"skill-ecosystem-audit","description":"Skill: skill-ecosystem-audit"}
 {"path":".claude/skills/sonarcloud/SKILL.md","source_type":"skill_command","type":"skill","owner":"sonarcloud","target":"sonarcloud","description":"Skill: sonarcloud"}
+{"path":".claude/skills/sonash-context/SKILL.md","source_type":"skill_command","type":"skill","owner":"sonash-context","target":"sonash-context","description":"Skill: sonash-context"}
 {"path":".claude/skills/system-test/SKILL.md","source_type":"skill_command","type":"skill","owner":"system-test","target":"system-test","description":"Skill: system-test"}
 {"path":".claude/skills/systematic-debugging/SKILL.md","source_type":"skill_command","type":"skill","owner":"systematic-debugging","target":"systematic-debugging","description":"Skill: systematic-debugging"}
 {"path":".claude/skills/task-next/SKILL.md","source_type":"skill_command","type":"skill","owner":"task-next","target":"task-next","description":"Skill: task-next"}
 {"path":".claude/skills/tdms-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"tdms-ecosystem-audit","target":"tdms-ecosystem-audit","description":"Skill: tdms-ecosystem-audit"}
 {"path":".claude/skills/test-suite/SKILL.md","source_type":"skill_command","type":"skill","owner":"test-suite","target":"test-suite","description":"Skill: test-suite"}
+{"path":".claude/skills/todo/SKILL.md","source_type":"skill_command","type":"skill","owner":"todo","target":"todo","description":"Skill: todo"}
 {"path":".claude/skills/ui-design-system/SKILL.md","source_type":"skill_command","type":"skill","owner":"ui-design-system","target":"ui-design-system","description":"Skill: ui-design-system"}
 {"path":".claude/skills/using-superpowers/SKILL.md","source_type":"skill_command","type":"skill","owner":"using-superpowers","target":"using-superpowers","description":"Skill: using-superpowers"}
 {"path":".claude/skills/ux-researcher-designer/SKILL.md","source_type":"skill_command","type":"skill","owner":"ux-researcher-designer","target":"ux-researcher-designer","description":"Skill: ux-researcher-designer"}
@@ -473,6 +478,7 @@
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:validate","description":"npm run reviews:validate"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:render","description":"npm run reviews:render"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:sync","description":"npm run reviews:sync"}
+{"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:sync-check","description":"npm run reviews:sync-check"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:check-archive","description":"npm run reviews:check-archive"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:archive","description":"npm run reviews:archive"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"reviews:repair","description":"npm run reviews:repair"}
@@ -502,6 +508,7 @@
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"format","description":"npm run format"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"format:check","description":"npm run format:check"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"hooks:test","description":"npm run hooks:test"}
+{"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"test:gates","description":"npm run test:gates"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"docs:headers","description":"npm run docs:headers"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"docs:lint","description":"npm run docs:lint"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"docs:external-links","description":"npm run docs:external-links"}
@@ -516,28 +523,37 @@
 {"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"6:Check code formatting (Prettier)","description":"CI step: Check code formatting (Prettier)"}
 {"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"7:Check for circular dependencies","description":"CI step: Check for circular dependencies"}
 {"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"8:Check for unused dependencies/exports","description":"CI step: Check for unused dependencies/exports"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"9:Get changed files for pattern check","description":"CI step: Get changed files for pattern check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"10:Pattern compliance check (PR - changed files only)","description":"CI step: Pattern compliance check (PR - changed files only)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"11:Pattern compliance check (PR - no relevant files changed)","description":"CI step: Pattern compliance check (PR - no relevant files changed)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"12:Pattern compliance check (push to main)","description":"CI step: Pattern compliance check (push to main)"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"13:Pattern test suite","description":"CI step: Pattern test suite"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"14:GitHub optimization wave tests","description":"CI step: GitHub optimization wave tests"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"15:Documentation check","description":"CI step: Documentation check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"16:Validate CANON schema","description":"CI step: Validate CANON schema"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"17:Validate audit files","description":"CI step: Validate audit files"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"18:Validate technical debt schema","description":"CI step: Validate technical debt schema"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"19:Check ROADMAP debt references","description":"CI step: Check ROADMAP debt references"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"20:Verify technical debt views current","description":"CI step: Verify technical debt views current"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"21:Type check","description":"CI step: Type check"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"22:Run tests with coverage","description":"CI step: Run tests with coverage"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"23:Enforce coverage thresholds","description":"CI step: Enforce coverage thresholds"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"24:Check test coverage completeness","description":"CI step: Check test coverage completeness"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"25:Upload coverage to Codecov","description":"CI step: Upload coverage to Codecov"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"26:Upload coverage report","description":"CI step: Upload coverage report"}
-{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"27:Checkout code","description":"CI step: Checkout code"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"28:Setup Node.js","description":"CI step: Setup Node.js"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"29:Install dependencies","description":"CI step: Install dependencies"}
-{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"30:Build application","description":"CI step: Build application"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"9:Checkout code","description":"CI step: Checkout code"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"10:Setup Node.js","description":"CI step: Setup Node.js"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"11:Install dependencies","description":"CI step: Install dependencies"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"12:Type check","description":"CI step: Type check"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"13:Build review scripts","description":"CI step: Build review scripts"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"14:Run tests with coverage","description":"CI step: Run tests with coverage"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"15:Enforce coverage thresholds","description":"CI step: Enforce coverage thresholds"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"16:Check test coverage completeness","description":"CI step: Check test coverage completeness"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"17:Pattern test suite","description":"CI step: Pattern test suite"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"18:GitHub optimization wave tests","description":"CI step: GitHub optimization wave tests"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"19:Upload coverage to Codecov","description":"CI step: Upload coverage to Codecov"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"20:Upload coverage report","description":"CI step: Upload coverage report"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"21:Checkout code","description":"CI step: Checkout code"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"22:Setup Node.js","description":"CI step: Setup Node.js"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"23:Install dependencies","description":"CI step: Install dependencies"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"24:Get changed files for pattern check","description":"CI step: Get changed files for pattern check"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"25:Pattern compliance check (PR - changed files only)","description":"CI step: Pattern compliance check (PR - changed files only)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"26:Pattern compliance check (PR - no relevant files changed)","description":"CI step: Pattern compliance check (PR - no relevant files changed)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"27:Pattern compliance check (push to main)","description":"CI step: Pattern compliance check (push to main)"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"28:Security pattern check","description":"CI step: Security pattern check"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"29:Gitleaks secret scan","description":"CI step: Gitleaks secret scan"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"30:Documentation check","description":"CI step: Documentation check"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"31:Validate CANON schema","description":"CI step: Validate CANON schema"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"32:Validate audit files","description":"CI step: Validate audit files"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"33:Validate technical debt schema","description":"CI step: Validate technical debt schema"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"34:Check ROADMAP debt references","description":"CI step: Check ROADMAP debt references"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"35:Verify technical debt views current","description":"CI step: Verify technical debt views current"}
+{"path":".github/workflows/ci.yml","source_type":"gate_check","type":"gate","owner":"ci","target":"36:Checkout code","description":"CI step: Checkout code"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"37:Setup Node.js","description":"CI step: Setup Node.js"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"38:Install dependencies","description":"CI step: Install dependencies"}
+{"path":".github/workflows/ci.yml","source_type":"ci_step","type":"ci","owner":"ci","target":"39:Build application","description":"CI step: Build application"}
 {"path":"scripts/health/checkers/code-quality.js","source_type":"health_checker","type":"checker","owner":"health","target":"code-quality","description":"Health checker: code-quality"}
 {"path":"scripts/health/checkers/data-effectiveness.js","source_type":"health_checker","type":"checker","owner":"health","target":"data-effectiveness","description":"Health checker: data-effectiveness"}
 {"path":"scripts/health/checkers/debt-health.js","source_type":"health_checker","type":"checker","owner":"health","target":"debt-health","description":"Health checker: debt-health"}

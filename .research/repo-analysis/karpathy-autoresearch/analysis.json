@@ -1,0 +1,190 @@
+{
+  "repo": "karpathy/autoresearch",
+  "url": "https://github.com/karpathy/autoresearch",
+  "analyzed_at": "2026-04-03",
+  "depth": "quick-scan",
+  "metadata": {
+    "created": "2026-03-06",
+    "pushed_at": "2026-03-26",
+    "age_days": 28,
+    "language": "Python",
+    "license": null,
+    "stars": 65023,
+    "forks": 9260,
+    "watchers": 541,
+    "contributors": 8,
+    "commits": 36,
+    "open_issues": 171,
+    "size_kb": 530,
+    "description": "AI agents running research on single-GPU nanochat training automatically",
+    "topics": [],
+    "files": [
+      "prepare.py",
+      "train.py",
+      "program.md",
+      "analysis.ipynb",
+      "pyproject.toml",
+      "uv.lock",
+      ".gitignore",
+      ".python-version",
+      "README.md",
+      "progress.png"
+    ]
+  },
+  "dependencies": {
+    "runtime": [
+      "kernels>=0.11.7",
+      "matplotlib>=3.10.8",
+      "numpy>=2.2.6",
+      "pandas>=2.3.3",
+      "pyarrow>=21.0.0",
+      "requests>=2.32.0",
+      "rustbpe>=0.1.0",
+      "tiktoken>=0.11.0",
+      "torch==2.9.1"
+    ],
+    "package_manager": "uv",
+    "python_version": ">=3.10"
+  },
+  "dimensions": {
+    "QS-01": {
+      "name": "Activity & recency",
+      "score": 85,
+      "band": "Excellent",
+      "detail": "36 commits in 28 days, last push 8 days ago"
+    },
+    "QS-02": {
+      "name": "Engagement trajectory",
+      "score": 99,
+      "band": "Excellent",
+      "detail": "65K stars in 28 days — viral growth"
+    },
+    "QS-03": {
+      "name": "Archived status",
+      "score": 100,
+      "band": "Excellent",
+      "detail": "Active, not archived"
+    },
+    "QS-04": {
+      "name": "License",
+      "score": 0,
+      "band": "Critical",
+      "detail": "NO LICENSE — all rights reserved by default"
+    },
+    "QS-05": {
+      "name": "CI/CD pass rate",
+      "score": 15,
+      "band": "Critical",
+      "detail": "20 runs, all failures (Copilot code review only)"
+    },
+    "QS-06": {
+      "name": "Branch protection",
+      "score": 0,
+      "band": "Critical",
+      "detail": "No branch protection rules"
+    },
+    "QS-07": {
+      "name": "Dependabot alerts",
+      "score": 10,
+      "band": "Critical",
+      "detail": "Dependabot disabled"
+    },
+    "QS-08": { "name": "Code scanning", "score": 10, "band": "Critical", "detail": "Not enabled" },
+    "QS-09": {
+      "name": "Secret scanning",
+      "score": 10,
+      "band": "Critical",
+      "detail": "Not enabled"
+    },
+    "QS-10": {
+      "name": "Community health",
+      "score": 28,
+      "band": "Needs Work",
+      "detail": "28/100 — README only"
+    },
+    "QS-11": {
+      "name": "CONTRIBUTING/SECURITY",
+      "score": 0,
+      "band": "Critical",
+      "detail": "Neither file present"
+    },
+    "QS-12": {
+      "name": "Contributor count",
+      "score": 25,
+      "band": "Needs Work",
+      "detail": "8 contributors, bus factor ~1 (Karpathy)"
+    },
+    "QS-13": {
+      "name": "Merge hygiene",
+      "score": 30,
+      "band": "Needs Work",
+      "detail": "All merge strategies enabled, no branch-on-merge delete"
+    },
+    "QS-14": {
+      "name": "OpenSSF score",
+      "score": null,
+      "band": "N/A",
+      "detail": "Not indexed (repo too new)"
+    },
+    "QS-15": {
+      "name": "SBOM",
+      "score": 20,
+      "band": "Needs Work",
+      "detail": "Dependency graph not enabled, 9 deps from pyproject.toml"
+    },
+    "QS-16": {
+      "name": "Known CVEs",
+      "score": 70,
+      "band": "Healthy",
+      "detail": "Mainstream deps (torch, numpy), low CVE risk"
+    },
+    "QS-17": {
+      "name": "Fork-to-star ratio",
+      "score": 90,
+      "band": "Excellent",
+      "detail": "14.2% — high experimentation signal"
+    },
+    "QS-18": {
+      "name": "Watcher-to-star ratio",
+      "score": 65,
+      "band": "Healthy",
+      "detail": "0.83% — normal for viral repos"
+    }
+  },
+  "summary_bands": {
+    "Security": {
+      "band": "Critical",
+      "score": 9,
+      "detail": "No license, no security features, no scanning, no branch protection"
+    },
+    "Reliability": {
+      "band": "Needs Work",
+      "score": 30,
+      "detail": "No CI/CD, no tests, no quality gates"
+    },
+    "Maintainability": {
+      "band": "Healthy",
+      "score": 75,
+      "detail": "Small codebase (3 files), clear separation of concerns"
+    },
+    "Documentation": {
+      "band": "Healthy",
+      "score": 72,
+      "detail": "Excellent README, clear program.md, but no API docs or CONTRIBUTING"
+    },
+    "Process": {
+      "band": "Critical",
+      "score": 15,
+      "detail": "No branch protection, no review process, no contributor guidelines"
+    },
+    "Velocity": {
+      "band": "Excellent",
+      "score": 95,
+      "detail": "65K stars in 28 days, 171 open issues, massive community interest"
+    }
+  },
+  "absence_patterns": ["SECURITY_FACADE"],
+  "absence_detail": {
+    "SECURITY_FACADE": "Has 'Copilot code review' workflow (20 runs, all failing) but no actual security infrastructure — no scanning, no branch protection, no dependency monitoring"
+  }
+}

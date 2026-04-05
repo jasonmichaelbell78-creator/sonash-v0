@@ -39,7 +39,7 @@ const ROOT = join(__dirname, "..");
 // ---------------------------------------------------------------------------
 let sanitizeError;
 try {
-  ({ sanitizeError } = require("./lib/sanitize-error"));
+  ({ sanitizeError } = require("./lib/sanitize-error.cjs"));
 } catch {
   /* eslint-disable no-control-regex -- intentional: strip control chars in fallback */
   sanitizeError = (err) =>
@@ -451,7 +451,8 @@ function main() {
 
   const reportedViolations = filterByBaseline(violations);
   printReport(reportedViolations, jsFiles.length);
-  process.exit(reportedViolations.length > 0 ? 1 : 0);
+  const exitCode = reportedViolations.length > 0 ? 1 : 0;
+  process.exit(exitCode);
 }
 
 main();

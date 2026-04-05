@@ -1,0 +1,41 @@
+{
+  "repo": "codecrafters-io/build-your-own-x",
+  "generated": "2026-04-03",
+  "adoption_verdict": {
+    "band": "Extract",
+    "score": 45,
+    "rationale": "Valuable as a curated reference but not as a dependency. No license blocks redistribution. Content is decaying (link rot). Extract the curation taxonomy and link format, not the content itself."
+  },
+  "candidates": [
+    {
+      "name": "35-Category Tutorial Taxonomy",
+      "novelty": "Medium",
+      "portability": 12,
+      "adoption_readiness": "High",
+      "quality_signal": "Medium",
+      "effort": "E0",
+      "description": "35 technology categories organized for 'build from scratch' learning: 3D Renderer, AI Model, Blockchain, Database, Docker, Emulator, Git, Neural Network, OS, Programming Language, Regex Engine, Shell, Web Browser, Web Server, etc.",
+      "relevance_to_sonash": "Could inform a 'learning path' feature or skill taxonomy. The categories map well to agent capabilities."
+    },
+    {
+      "name": "Curated Link Format Pattern",
+      "novelty": "Low",
+      "portability": 8,
+      "adoption_readiness": "High",
+      "quality_signal": "Medium",
+      "effort": "E0",
+      "description": "Consistent format: **Language**: _Title_ (link). Table of contents with anchor links. Simple, scannable, community-contributable.",
+      "relevance_to_sonash": "Low — standard awesome-list format. Already well-known pattern."
+    },
+    {
+      "name": "Issue Template for Link Submissions",
+      "novelty": "Low",
+      "portability": 6,
+      "adoption_readiness": "High",
+      "quality_signal": "Low",
+      "effort": "E0",
+      "description": "ISSUE_TEMPLATE.md structured for tutorial link submissions with category and language fields.",
+      "relevance_to_sonash": "Low direct relevance."
+    }
+  ]
+}

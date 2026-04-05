@@ -1,6 +1,6 @@
 # Learning Effectiveness Metrics
 
-**Last Updated:** 2026-04-03
+**Last Updated:** 2026-04-05
 
 ---
 
@@ -27,17 +27,17 @@ This is a **Tier 2 metrics document** - reference during:
 
 ## Current Analysis
 
-**Review Range:** #353 - #504 (10 reviews) **Analysis Date:** 2026-04-03
+**Review Range:** #353 - #504 (10 reviews) **Analysis Date:** 2026-04-05
 
 ### Key Metrics
 
 | Metric                    | Value |
 | ------------------------- | ----- |
-| Learning Effectiveness    | 89.6% |
-| Patterns Learned          | 362   |
-| Patterns Automated        | 41    |
+| Learning Effectiveness    | 88.9% |
+| Patterns Learned          | 358   |
+| Patterns Automated        | 42    |
 | Patterns Failing          | 0     |
-| Critical Pattern Success  | 96.7% |
+| Critical Pattern Success  | 96.2% |
 | Automation Coverage       | 16.4% |
 | Total Documented Patterns | 450   |
 | Total Automated Patterns  | 74    |
@@ -66,9 +66,9 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Status       | Count | Description                                  |
 | ------------ | ----- | -------------------------------------------- |
-| ✅ LEARNED   | 362   | Pattern never recurred after documentation   |
-| 🔧 AUTOMATED | 41    | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK      | 47    | Pattern recurred 1-2 times - needs attention |
+| ✅ LEARNED   | 358   | Pattern never recurred after documentation   |
+| 🔧 AUTOMATED | 42    | Pattern recurred but now enforced by tooling |
+| 🟡 WEAK      | 50    | Pattern recurred 1-2 times - needs attention |
 | 🔴 FAILED    | 0     | Pattern recurred 3+ times - needs automation |
 
 ---
@@ -77,4 +77,4 @@ This is a **Tier 2 metrics document** - reference during:
 
 | Version | Date       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
-| 2.0     | 2026-04-03 | Rewritten to focus on Claude's learning effectiveness |
+| 2.0     | 2026-04-05 | Rewritten to focus on Claude's learning effectiveness |

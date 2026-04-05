@@ -27,17 +27,16 @@ const path = require("node:path");
 
 let sanitizeError;
 try {
-  ({ sanitizeError } = require("./lib/sanitize-error"));
+  ({ sanitizeError } = require("./lib/sanitize-error.cjs"));
 } catch {
   sanitizeError = (err) => (err instanceof Error ? err.message : String(err)).slice(0, 200);
 }
 
-let safeWriteFileSync;
-try {
-  ({ safeWriteFileSync } = require("./lib/safe-fs"));
-} catch {
-  safeWriteFileSync = (p, d, o) => fs.writeFileSync(p, d, o);
-}
+// safe-fs is required for symlink-guarded writes. No silent fallback — a
+// fallback that writes without lstat-checking symlinks would reintroduce the
+// attack vector safe-fs was built to prevent.
+// eslint-disable-next-line security/detect-non-literal-require
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 const ROOT = path.resolve(__dirname, "..");
 const OUTPUT = path.join(ROOT, "data", "ecosystem-v2", "test-registry.jsonl");

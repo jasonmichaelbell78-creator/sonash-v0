@@ -1,0 +1,5 @@
+{"timestamp":"2026-04-04T13:23:24.181Z","mode":"quick","grade":"F","color":"RED","issues":{"p0":1,"p1":7,"p2":0,"p3":2},"totalIssues":10,"cachePercent":46,"openPRs":0,"depAlerts":0,"secretAlerts":7,"branches":2,"ciState":"FAILURE"}
+{"timestamp":"2026-04-04T13:23:48.547Z","mode":"quick","grade":"F","color":"RED","issues":{"p0":1,"p1":6,"p2":0,"p3":2},"totalIssues":9,"cachePercent":46,"openPRs":0,"depAlerts":0,"secretAlerts":6,"branches":2,"ciState":"FAILURE"}
+{"timestamp":"2026-04-04T13:24:12.765Z","mode":"quick","grade":"F","color":"RED","issues":{"p0":1,"p1":6,"p2":0,"p3":2},"totalIssues":9,"cachePercent":46,"openPRs":0,"depAlerts":0,"secretAlerts":6,"branches":2,"ciState":"FAILURE"}
+{"timestamp":"2026-04-04T13:32:51.100Z","mode":"quick","grade":"F","color":"RED","issues":{"p0":1,"p1":6,"p2":0,"p3":2},"totalIssues":9,"cachePercent":46,"openPRs":0,"depAlerts":0,"secretAlerts":6,"branches":2,"ciState":"FAILURE"}
+{"timestamp":"2026-04-05T03:41:24.952Z","actor":"jason","mode":"quick","grade":"F","color":"RED","issues":{"p0":1,"p1":0,"p2":0,"p3":1},"totalIssues":2,"cachePercent":8,"openPRs":1,"depAlerts":0,"secretAlerts":0,"branches":3,"ciState":"FAILURE"}

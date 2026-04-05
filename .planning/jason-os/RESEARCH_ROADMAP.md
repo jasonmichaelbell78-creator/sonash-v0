@@ -1,18 +1,19 @@
 # JASON-OS Research Roadmap — Status Tracker
 
-**Last Updated:** 2026-04-01 **Current Tier:** 1 (Foundation) **Current
-Position:** Not started
+**Last Updated:** 2026-04-03 **Current Tier:** 1 (Foundation) **Current
+Position:** Domain 02a ongoing (repo-analysis scouting)
 
 ## Domain Status
 
 ### Tier 1: Foundation
 
-| #   | Domain                   | Status      | Sessions | Key Findings |
-| --- | ------------------------ | ----------- | -------- | ------------ |
-| 01  | Internal Archaeology     | not started | —        | —            |
-| 02  | External Landscape       | not started | —        | —            |
-| 03  | Existing Work Evaluation | not started | —        | —            |
-| 04  | Design Philosophy        | not started | —        | —            |
+| #   | Domain                     | Status      | Sessions | Key Findings                   |
+| --- | -------------------------- | ----------- | -------- | ------------------------------ |
+| 01  | Internal Archaeology       | not started | —        | —                              |
+| 02  | External Landscape         | not started | —        | —                              |
+| 02a | External Adoption Scouting | ongoing     | —        | repo-analysis runs in progress |
+| 03  | Existing Work Evaluation   | not started | —        | —                              |
+| 04  | Design Philosophy          | not started | —        | —                              |
 
 ### Tier 2: Core Technical
 
@@ -38,6 +39,7 @@ Position:** Not started
 
 ## Milestones
 
+- [x] Domain 02a initiated → repo-analysis scouting ongoing (2026-04-03)
 - [ ] Tier 1 complete → Reassessment Checkpoint 1
 - [ ] Tier 2 complete → Reassessment Checkpoint 2
 - [ ] Tier 3 complete → Reassessment Checkpoint 3 (Final)
@@ -46,7 +48,8 @@ Position:** Not started
 ## Next Action
 
 Start Domain 01 (Internal Archaeology) and/or Domain 02 (External Landscape).
-These are independent and can run in parallel across sessions/locales.
+These are independent and can run in parallel across sessions/locales. Domain
+02a (External Adoption Scouting) is already ongoing via repo-analysis runs.
 
 ## Blocked Domains
 
