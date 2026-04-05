@@ -516,8 +516,6 @@ npm audit fix
 | `node scripts/sync-claude-settings.js --export` | Claude settings sync       | Export local settings to repo template                |
 | `node scripts/sync-claude-settings.js --diff`   | Claude settings sync       | Compare local vs repo settings                        |
 | `node scripts/tasks/resolve-dependencies.js`    | Dependency-aware task next | Kahn's topological sort on ROADMAP.md `[depends:]`    |
-| `node scripts/velocity/track-session.js`        | Velocity tracking          | Capture session completions to JSONL                  |
-| `node scripts/velocity/generate-report.js`      | Velocity report            | Rolling avg, trend, burn-down from JSONL              |
 
 ### Prettier (Code Formatting)
 
