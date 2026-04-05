@@ -183,7 +183,7 @@ const GLOBAL_EXCLUDE = [
   /^scripts\/check-docs-light\.js$/,
   /^scripts\/check-document-sync\.js$/,
   /^scripts\/check-review-needed\.js$/,
-  /^scripts\/generate-documentation-index\.js$/,
+  /^scripts\/generate-documentation-index\.mjs$/,
   /^scripts\/normalize-canon-ids\.js$/,
   /^scripts\/add-false-positive\.js$/,
   /^scripts\/validate-audit\.js$/,

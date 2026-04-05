@@ -684,10 +684,51 @@ function filterByBaseline(violations) {
   return filtered;
 }
 
+// ---------------------------------------------------------------------------
+// Diagnostic capture (DEBT-45635B)
+// ---------------------------------------------------------------------------
+// DEBT-45635 reports intermittent exit 2 from pre-push cognitive-cc checks
+// with no reproducer. These handlers capture the stack + context to
+// .claude/state/cc-check-last-error.json so the next occurrence is debuggable
+// without requiring the script to be re-run in verbose mode.
+let currentStage = "init";
+
+function writeErrorDiagnostic(kind, err) {
+  try {
+    const diagPath = join(ROOT, ".claude", "state", "cc-check-last-error.json");
+    const payload = {
+      timestamp: new Date().toISOString(),
+      kind, // "uncaughtException" | "unhandledRejection" | "main-throw"
+      stage: currentStage,
+      argv: process.argv.slice(2),
+      cwd: process.cwd(),
+      error: sanitizeError(err),
+      stack: err && err.stack ? String(err.stack).split("\n").slice(0, 20).join("\n") : null,
+    };
+    safeWriteFileSync(diagPath, JSON.stringify(payload, null, 2));
+    console.error(`[check-cc] Diagnostic written to ${relative(ROOT, diagPath)}`);
+  } catch {
+    // Never let diagnostic writing itself crash the process
+  }
+}
+
+process.on("uncaughtException", (err) => {
+  console.error(`[check-cc] Uncaught exception (stage=${currentStage}):`, sanitizeError(err));
+  writeErrorDiagnostic("uncaughtException", err);
+  process.exit(2);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error(`[check-cc] Unhandled rejection (stage=${currentStage}):`, sanitizeError(reason));
+  writeErrorDiagnostic("unhandledRejection", reason);
+  process.exit(2);
+});
+
 function main() {
   console.log(`[check-cc] Cognitive complexity check (threshold: ${THRESHOLD})`);
   console.log();
 
+  currentStage = "get-changed-files";
   const jsFiles = filterJsFiles(getChangedFiles());
 
   if (jsFiles.length === 0) {
@@ -701,17 +742,27 @@ function main() {
     console.log();
   }
 
+  currentStage = "analyze-files";
   const { totalFunctions, parseErrors, violations, allResults } = analyzeFiles(jsFiles);
 
   if (UPDATE_BASELINE) {
+    currentStage = "write-baseline";
     writeBaseline(allResults);
     printReport(violations, totalFunctions, parseErrors, jsFiles.length);
     process.exit(0);
   }
 
+  currentStage = "filter-baseline";
   const reportedViolations = filterByBaseline(violations);
+  currentStage = "report";
   printReport(reportedViolations, totalFunctions, parseErrors, jsFiles.length);
   process.exit(reportedViolations.length > 0 ? 1 : 0);
 }
 
-main();
+try {
+  main();
+} catch (err) {
+  console.error(`[check-cc] Error in main (stage=${currentStage}):`, sanitizeError(err));
+  writeErrorDiagnostic("main-throw", err);
+  process.exit(2);
+}

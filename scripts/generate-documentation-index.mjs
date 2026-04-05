@@ -84,6 +84,18 @@ for (const [k, v] of Object.entries(FILE_OVERRIDES_RAW)) {
 const args = process.argv.slice(2);
 const jsonOutput = args.includes("--json");
 const verbose = args.includes("--verbose");
+const perfEnabled = args.includes("--perf");
+
+// --perf: stage-level timing for DEBT-45637 investigation
+const perfStages = [];
+function timeStage(name, fn) {
+  if (!perfEnabled) return fn();
+  const start = process.hrtime.bigint();
+  const result = fn();
+  const end = process.hrtime.bigint();
+  perfStages.push({ name, ms: Number(end - start) / 1_000_000 });
+  return result;
+}
 
 /**
  * Check if a path is in an archive directory
@@ -1024,35 +1036,42 @@ function log(message) {
  * Main execution
  */
 function main() {
+  const wallStart = process.hrtime.bigint();
+
   log("📚 Documentation Index Generator");
   log("================================");
   log("");
 
   // Find all markdown files (separated into active and archived)
   log("🔍 Scanning for markdown files...");
-  const { active: activeFiles, archived: archivedFiles } = findMarkdownFiles(ROOT);
+  const { active: activeFiles, archived: archivedFiles } = timeStage("scan", () =>
+    findMarkdownFiles(ROOT)
+  );
   log(`   Found ${activeFiles.length} active files, ${archivedFiles.length} archived files`);
 
   // Batch-fetch git dates in one call (replaces per-file git log spawns)
-  prefetchGitDates();
+  timeStage("git-dates", () => prefetchGitDates());
 
   // Process each active file (archived files just get listed, not processed)
   log("📄 Processing active files...");
-  const docs = [];
-  for (const file of activeFiles) {
-    if (verbose && !jsonOutput) {
-      console.log(`   Processing: ${file}`);
+  const docs = timeStage("process-files", () => {
+    const result = [];
+    for (const file of activeFiles) {
+      if (verbose && !jsonOutput) {
+        console.log(`   Processing: ${file}`);
+      }
+      const doc = processFile(file);
+      if (doc) {
+        result.push(doc);
+      }
     }
-    const doc = processFile(file);
-    if (doc) {
-      docs.push(doc);
-    }
-  }
+    return result;
+  });
   log(`   Processed ${docs.length} active documents`);
 
   // Build reference graph (only for active docs)
   log("🔗 Building reference graph...");
-  const referenceGraph = buildReferenceGraph(docs);
+  const referenceGraph = timeStage("reference-graph", () => buildReferenceGraph(docs));
 
   let totalLinks = 0;
   for (const [, refs] of referenceGraph) {
@@ -1062,7 +1081,7 @@ function main() {
 
   // Generate output
   if (jsonOutput) {
-    const output = {
+    const output = timeStage("render-json", () => ({
       generated: new Date().toISOString(),
       activeDocuments: docs.length,
       archivedDocuments: archivedFiles.length,
@@ -1075,15 +1094,17 @@ function main() {
         },
       })),
       archived: archivedFiles,
-    };
+    }));
     console.log(JSON.stringify(output, null, 2));
   } else {
     log("📝 Generating markdown index...");
-    const markdown = generateMarkdown(docs, referenceGraph, archivedFiles);
+    const markdown = timeStage("render-markdown", () =>
+      generateMarkdown(docs, referenceGraph, archivedFiles)
+    );
 
     const outputPath = join(ROOT, CONFIG.outputFile);
     try {
-      safeWriteFileSync(outputPath, markdown, "utf-8");
+      timeStage("write", () => safeWriteFileSync(outputPath, markdown, "utf-8"));
       log(`   Written to ${CONFIG.outputFile}`);
     } catch (writeError) {
       console.error(
@@ -1105,6 +1126,21 @@ function main() {
       ([, refs]) => refs.inbound.length === 0
     ).length;
     log(`   ⚠️  Orphaned docs: ${orphaned}`);
+  }
+
+  // --perf summary
+  if (perfEnabled) {
+    const wallMs = Number(process.hrtime.bigint() - wallStart) / 1_000_000;
+    console.log("");
+    console.log("⏱️  Stage timings (--perf):");
+    const measured = perfStages.reduce((sum, s) => sum + s.ms, 0);
+    for (const s of perfStages) {
+      const pct = ((s.ms / wallMs) * 100).toFixed(1);
+      console.log(`   ${s.name.padEnd(18)} ${s.ms.toFixed(0).padStart(7)} ms  (${pct}%)`);
+    }
+    const other = wallMs - measured;
+    console.log(`   ${"other/overhead".padEnd(18)} ${other.toFixed(0).padStart(7)} ms`);
+    console.log(`   ${"TOTAL wall".padEnd(18)} ${wallMs.toFixed(0).padStart(7)} ms`);
   }
 }
 

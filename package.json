@@ -25,7 +25,7 @@
     "docs:check": "node scripts/check-docs-light.js",
     "docs:archive": "node scripts/archive-doc.js",
     "docs:sync-check": "node scripts/check-document-sync.js",
-    "docs:index": "node scripts/generate-documentation-index.js",
+    "docs:index": "node scripts/generate-documentation-index.mjs",
     "roadmap:validate": "node scripts/check-roadmap-health.js",
     "roadmap:hygiene": "node scripts/check-roadmap-hygiene.js",
     "review:check": "node scripts/check-review-needed.js",
