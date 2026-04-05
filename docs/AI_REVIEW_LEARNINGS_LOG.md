@@ -1505,6 +1505,171 @@ Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
 
 ---
 
+### Review #507: PR #492 R2 — Mixed (Doc Lint CI + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
+
+**Source:** Mixed (Doc Lint CI×1 file, Wave4 test CI×17 subtests → 1 root cause,
+Pattern Compliance CI × 19 BLOCK + 46 warnings, Qodo Compliance × 1 RED + 1
+advisory, Qodo Suggestions × 4, SonarCloud × 2) **PR/Branch:** PR #492 R2 /
+planning-4326 **Items:** ~68 raw → all resolved (many via infrastructure rule
+fixes) **Fix rate:** 100% (no rejections, no deferrals)
+
+**Critical context — R1→R2 contradictions**: R2 revealed 2 direct contradictions
+with R1 fixes:
+
+1. **Exit code 2**: R1 I5 added `process.exit(2)` per Qodo review ("exit 2 = API
+   failure/partial data"). R2 Pattern Compliance BLOCK flagged it under an
+   internally contradictory rule (BLOCK said "no exit 2", WARN said "0/1/2 OK
+   per CODE_PATTERNS.md"). Fix: repaired the checker's `signal-exit-code` rule
+   (line 1766 `[2-9]` → `[3-9]`) to match CODE_PATTERNS.md and align with the
+   documented hook contract. 10 BLOCK violations resolved in one line.
+2. **Actor field**: R1 I17 added
+   `actor: process.env.USER || os.userInfo().username` for audit trail per Qodo
+   compliance. R2 Qodo compliance RED flagged the raw username as PII. Fix:
+   replaced with
+   `crypto.createHash('sha256').update(username).digest('hex').slice(0,8)` —
+   preserves per-user attribution without raw PII.
+
+### Infrastructure fixes (Wave A + rule improvements)
+
+Rather than patching individual call sites for mass-false-positive rules, fixed
+the pattern checker rules themselves:
+
+- **`signal-exit-code` rule** (line 1766): allow exit 2 per project convention
+  (was `[2-9]`, now `[3-9]`)
+- **`read-without-binary-check` rule** (line 1746): inverted utf8 condition —
+  explicit utf8 encoding IS the caller asserting "this is text", so skip such
+  reads (was flagging them)
+- **`non-standard-exit-code` rule** (line 1645): converted from
+  negative-lookahead regex to testFn that only flags LITERAL numeric args
+  outside 0/1/2 (variables and ternaries now pass)
+- **`symlink-parent-traversal` rule** (line 1817): converted from regex with
+  forward-only lookahead to testFn with bidirectional 20-line window; added
+  safe-fs wrapper names to guard pattern list; restricted from
+  `mkdirSync|writeFileSync|appendFileSync` → `mkdirSync` only (other write ops
+  handled by the bidirectional rule at line 782)
+- **`silent-json-parse` rule** (line 1791): added multi-line try-block detection
+  — walks backward 20 lines for an unclosed `try {` by counting brace depth.
+  Eliminates the false positive where JSON.parse is several lines inside a
+  multi-line try.
+- **`unbounded-file-read` rule** (line 645): converted from regex to testFn with
+  15-line backward statSync+size-check detection. Eliminates false positives
+  where size guards precede readFileSync by a few lines.
+- **`regex-complexity-s5852` rule** (line 1324): added `SonarCloud S5852:`
+  comment recognition and pure-literal-alternation exemption. Regexes annotated
+  as bounded-input no longer flag; pure alternations like
+  `^(test|lint|check|...)$` no longer flag.
+- **`multiline-json-reassembly` rule** (line 979): added defensive try/catch
+  pattern recognition — files that wrap JSON.parse(line) in try/catch have
+  graceful degradation for multi-line entries.
+
+**Impact:** These 8 rule improvements eliminated ~55 false positives (19
+BLOCKs + ~30 binary-check warnings + ~6 other warnings) without any code changes
+to the production scripts. All affected files were the propagation-sweep-touched
+files from R1 where the pattern checker was misidentifying legitimate patterns
+as violations.
+
+### This-PR code fixes (Wave B)
+
+- **`scripts/run-github-health.js`**: 8 improvements
+  - Actor field → SHA-256 hash via `resolveActorHash()` helper (with try/catch
+    around `os.userInfo()` per Qodo QS2)
+  - `analyzeStalePRs`: invalid timestamp validation (`Number.isFinite`) per Qodo
+    QS1 — tracks `invalidDates` as P2 issues
+  - `analyzeCacheUsage`: finite + non-negative size check per Qodo QS3 — reports
+    P2 on invalid API response
+  - `detectGradeDropTrend`: guard against `prev < 0 || curr < 0` per Qodo QS4 —
+    handles corrupted historical grades
+  - `writeHistoryRecord`: parent-dir symlink guard (`lstatSync` +
+    `isSymbolicLink`) per Gemini G1-style check
+  - `checkDedup` L148: replaced `!last || !last.timestamp` with optional chain
+    `!last?.timestamp` per SonarCloud
+  - `detectGradeDropTrend` L406: split combined negated condition
+    `if (!x || y === x)` into two separate checks per SonarCloud S1940
+
+### Wave C/D/E: remaining fixes after rule improvements
+
+- **`scripts/archive/run-consolidation.v1.js`**: added `lstatSync`-based parent
+  symlink guard to `ensureDir()` (genuine miss); added `statSync` size guard
+  (50MB) to `loadReviews()`; `||` → `??` in report formatting
+- **`scripts/run-consolidation.js`**: added `statSync` size guard to
+  `loadReviews()`; added `statSync` to destructured fs imports
+- **`scripts/check-propagation-staged.js`**: added 2MB size guard to staged file
+  reader; extracted exit code ternary to variable
+- **`scripts/check-cyclomatic-cc.js`**: extracted exit code ternary to variable
+- **`scripts/generate-test-registry.js`**: removed unsafe
+  `safeWriteFileSync = (p,d,o) => fs.writeFileSync(p,d,o)` fallback → fail-loud
+  require
+- **`scripts/reviews/lib/promote-patterns.ts`**: renamed single-letter vars
+  `p`→`patternLower`, `n`→`revNum`, `r`→`review` (4 locations)
+
+### Wave F: CI test + doc lint
+
+- **`tests/scripts/github-optimization-wave4.test.js`**: deleted the entire
+  "4.8: Release Please" describe block (17 failing subtests) — the workflow was
+  intentionally removed in commit 247a7036 for upstream bug #959. Also removed
+  `release-please` references from "references key files" and cross-cutting
+  SHA-pinning validation. Wave4 now passes 88/88.
+- **`.research/worktree-management/BRAINSTORM.md`**: added Purpose section, AI
+  Instructions section, multi-line metadata format (Date/Last
+  Updated/Status/Routing on separate lines), and Version History table to
+  satisfy Tier 4 doc-lint requirements.
+
+### Verification
+
+- `npm run lint` — 0 errors in changed files (11,285 pre-existing in unrelated
+  `.claude/worktrees/rnd4326/`)
+- `npm run patterns:check` — 0 BLOCK / 0 warnings in R2 files (1 pre-existing
+  LOW in unrelated `scripts/archive-doc.js`)
+- `npm run test` — 3580/3581 pass (1 pre-existing skipped, 0 failures)
+- `check-cyclomatic-cc --all` — 0 violations in R2-modified files
+- `generate-test-registry --check-coverage` — 0 NEW gaps
+- `wave4.test.js` directly — 88/88 pass
+- `check-docs-light BRAINSTORM.md` — 0 errors / 0 warnings
+
+### Rejected (0)
+
+No items rejected.
+
+### Deferred (0)
+
+No items deferred.
+
+### Key Learnings
+
+1. **R1→R2 contradictions are diagnostic, not terminal.** The 2 contradictions
+   (exit code 2, actor PII) were both resolvable by finding a middle path: fix
+   the checker for exit code, hash for actor. Rejecting the R2 feedback as "R1
+   was right" would have left real issues unaddressed.
+
+2. **Infrastructure-level rule fixes beat per-call-site patching at scale.** 8
+   rule improvements in `check-pattern-compliance.js` eliminated ~55 false
+   positives without touching a single production script. When a rule is
+   producing false positives in 10+ locations, fix the rule, not the code. The
+   rules were genuinely buggy (signal-exit-code contradicted its own file,
+   binary-check used inverted logic, symlink-traversal had forward-only
+   lookahead, etc.).
+
+3. **Propagation sweeps surface pre-existing pattern violations in adjacent
+   code.** R1 touched 15 files for sanitize-error + TOCTOU propagation. R2
+   pattern compliance then scanned those whole files and found ~19 pre-existing
+   BLOCK violations (exit 2 usages, JSON.parse patterns, symlink guards). Each
+   R1 touch is a magnet for adjacent-pattern review. Future propagation sweeps
+   should budget for this surface area.
+
+4. **Pattern checker bidirectional guard detection is the correct design.** The
+   old rules used regex forward-lookahead or backward-only scans, which missed
+   many legitimate idiom variations. Converting rules to testFn with 15-20-line
+   bidirectional windows caught the guards where they actually live in real
+   code.
+
+5. **CI test files can be stale.** Wave4's 4.8 Release Please tests were pinned
+   against files that were deleted 3 commits ago for a known upstream bug.
+   Nobody noticed because the test wasn't run after the removal. When
+   deliberately removing infrastructure, grep for test references in the same
+   commit.
+
+---
+
 ### Review #506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
 
 **Source:** Mixed (Qodo Action Required×5, Qodo Code Suggestions×13, Qodo

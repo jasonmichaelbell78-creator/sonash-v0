@@ -465,143 +465,14 @@ describe("4.7: OpenSSF Scorecard", () => {
 });
 
 // =============================================================================
-// 4.8: Release Please
+// 4.8: Release Please — REMOVED
+// The Release Please workflow was deliberately removed in commit 247a7036
+// ("chore: remove Release Please workflow") due to upstream bug
+// googleapis/release-please-action#959 (open since March 2024). The
+// .github/workflows/release-please.yml, .github/release-please-config.json,
+// and .release-please-manifest.json files no longer exist and these tests
+// have been deleted. Re-add them if the workflow is ever restored.
 // =============================================================================
-describe("4.8: Release Please", () => {
-  describe("workflow", () => {
-    const content = readFile(".github/workflows/release-please.yml");
-
-    it("file exists", () => {
-      assert.ok(content !== null);
-    });
-
-    it("has release-please action SHA-pinned", () => {
-      assert.ok(
-        content.includes(
-          "googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38"
-        )
-      );
-    });
-
-    it("runs on push to main", () => {
-      assert.ok(content.includes("branches: [main]"));
-    });
-
-    it("has contents write permission", () => {
-      assert.ok(content.includes("contents: write"));
-    });
-
-    it("has pull-requests write permission", () => {
-      assert.ok(content.includes("pull-requests: write"));
-    });
-
-    it("references config file", () => {
-      assert.ok(content.includes("release-please-config.json"));
-    });
-
-    it("has Purpose header in comments", () => {
-      assert.ok(content.includes("Purpose:"));
-    });
-
-    it("has Version History in comments", () => {
-      assert.ok(content.includes("Version History"));
-    });
-  });
-
-  describe("config", () => {
-    const configPath = path.join(ROOT, ".github", "release-please-config.json");
-
-    it("file exists", () => {
-      assert.ok(fs.existsSync(configPath));
-    });
-
-    it("is valid JSON", () => {
-      let content;
-      try {
-        content = fs.readFileSync(configPath, "utf8");
-      } catch (err) {
-        assert.fail(`Failed to read ${configPath}: ${err}`);
-      }
-      assert.doesNotThrow(() => JSON.parse(content), "Should be valid JSON");
-    });
-
-    it("has packages configuration", () => {
-      let content;
-      try {
-        content = fs.readFileSync(configPath, "utf8");
-      } catch (err) {
-        assert.fail(`Failed to read ${configPath}: ${err}`);
-      }
-      const config = JSON.parse(content);
-      assert.ok(config.packages, "Should have packages key");
-      assert.ok(config.packages["."], "Should have root package config");
-    });
-
-    it("has release-type node", () => {
-      let content;
-      try {
-        content = fs.readFileSync(configPath, "utf8");
-      } catch (err) {
-        assert.fail(`Failed to read ${configPath}: ${err}`);
-      }
-      const config = JSON.parse(content);
-      assert.equal(config.packages["."]["release-type"], "node");
-    });
-
-    it("has changelog sections", () => {
-      let content;
-      try {
-        content = fs.readFileSync(configPath, "utf8");
-      } catch (err) {
-        assert.fail(`Failed to read ${configPath}: ${err}`);
-      }
-      const config = JSON.parse(content);
-      const sections = config.packages["."]["changelog-sections"];
-      assert.ok(Array.isArray(sections), "changelog-sections should be array");
-      assert.ok(sections.length >= 5, "Should have at least 5 sections");
-
-      const types = new Set(sections.map((s) => s.type));
-      assert.ok(types.has("feat"), "Should have feat section");
-      assert.ok(types.has("fix"), "Should have fix section");
-    });
-  });
-
-  describe("manifest", () => {
-    const manifestPath = path.join(ROOT, ".release-please-manifest.json");
-
-    it("file exists", () => {
-      assert.ok(fs.existsSync(manifestPath));
-    });
-
-    it("is valid JSON", () => {
-      let content;
-      try {
-        content = fs.readFileSync(manifestPath, "utf8");
-      } catch (err) {
-        assert.fail(`Failed to read ${manifestPath}: ${err}`);
-      }
-      assert.doesNotThrow(() => JSON.parse(content), "Should be valid JSON");
-    });
-
-    it("has root version matching package.json", () => {
-      let content;
-      try {
-        content = fs.readFileSync(manifestPath, "utf8");
-      } catch (err) {
-        assert.fail(`Failed to read ${manifestPath}: ${err}`);
-      }
-      const manifest = JSON.parse(content);
-      assert.ok(manifest["."], "Should have root entry");
-      let pkg;
-      try {
-        pkg = JSON.parse(fs.readFileSync(path.join(ROOT, "package.json"), "utf8"));
-      } catch (err) {
-        assert.fail(`Failed to read package.json: ${err}`);
-      }
-      assert.equal(manifest["."], pkg.version, "Should match package.json version");
-    });
-  });
-});
 
 // =============================================================================
 // 4.10: GitHub Guide
@@ -647,7 +518,7 @@ describe("4.10: GitHub Guide", () => {
       "pull_request_template.md",
       "release.yml",
       "scorecard.yml",
-      "release-please",
+      // "release-please" removed — workflow deleted in commit 247a7036 (upstream bug #959)
       "codecov.yml",
     ];
 
@@ -664,7 +535,7 @@ describe("Cross-cutting: SHA-pinned actions", () => {
   const workflows = [
     ".github/workflows/ci.yml",
     ".github/workflows/scorecard.yml",
-    ".github/workflows/release-please.yml",
+    // .github/workflows/release-please.yml removed in commit 247a7036 (upstream bug #959)
   ];
 
   for (const wf of workflows) {

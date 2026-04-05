@@ -177,6 +177,7 @@ function getStagedFiles() {
 }
 
 function readOverrideFilesAsLines(stagedFiles, baseDir) {
+  const MAX_STAGED_FILE_BYTES = 2 * 1024 * 1024; // 2 MB — staged code files are normally <100 KB
   const lines = [];
   for (const f of stagedFiles) {
     const absPath = path.resolve(baseDir, f);
@@ -184,6 +185,14 @@ function readOverrideFilesAsLines(stagedFiles, baseDir) {
       // CLAUDE.md Section 5: lstatSync symlink guard
       const stat = lstatSync(absPath);
       if (stat.isSymbolicLink()) continue;
+      // Size guard to prevent OOM on large files (generated artifacts, etc.)
+      if (stat.size > MAX_STAGED_FILE_BYTES) {
+        if (VERBOSE)
+          console.warn(
+            `[propagation-staged] Skipping ${f} — exceeds ${MAX_STAGED_FILE_BYTES} bytes`
+          );
+        continue;
+      }
 
       const content = readFileSync(absPath, "utf8");
       for (const line of content.split("\n")) {
@@ -620,7 +629,8 @@ function main() {
     console.log();
     printGroupedWarnings(grouped);
 
-    process.exit(determineExitCode(blocked));
+    const exitCode = determineExitCode(blocked);
+    process.exit(exitCode);
   } catch (err) {
     console.error(`[propagation-staged] Script error: ${sanitizeError(err)}`);
     process.exit(2);

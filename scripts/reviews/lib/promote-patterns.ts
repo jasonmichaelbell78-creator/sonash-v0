@@ -183,20 +183,24 @@ export function filterAlreadyPromoted(
  * Uses keyword-based matching similar to run-consolidation.js categorizePatterns.
  */
 export function categorizePattern(pattern: string): string {
-  const p = pattern.toLowerCase();
-  if (/security|injection|ssrf|xss|traversal|redos|sanitiz|escape|prototype|symlink/.test(p)) {
+  const patternLower = pattern.toLowerCase();
+  if (
+    /security|injection|ssrf|xss|traversal|redos|sanitiz|escape|prototype|symlink/.test(
+      patternLower
+    )
+  ) {
     return "Security";
   }
-  if (/typescript|eslint|type|nullable|error[\s-]?handling|try[\s.-]?catch/.test(p)) {
+  if (/typescript|eslint|type|nullable|error[\s-]?handling|try[\s.-]?catch/.test(patternLower)) {
     return "JavaScript/TypeScript";
   }
-  if (/shell|bash|cross-platform|crlf/.test(p)) {
+  if (/shell|bash|cross-platform|crlf/.test(patternLower)) {
     return "Bash/Shell";
   }
-  if (/ci|github.actions|pre-commit|pre-push|automation|workflow/.test(p)) {
+  if (/ci|github.actions|pre-commit|pre-push|automation|workflow/.test(patternLower)) {
     return "CI/Automation";
   }
-  if (/documentation|markdown|link|docs/.test(p)) {
+  if (/documentation|markdown|link|docs/.test(patternLower)) {
     return "Documentation";
   }
   return "General";
@@ -458,9 +462,9 @@ function writePromotedPatterns(
 function updateConsolidationIfNeeded(projectRoot: string, reviews: ReviewRecordType[]): void {
   let best: { id: string; n: number } | null = null;
   for (const r of reviews) {
-    const n = parseRevNumber(r.id);
-    if (n === null) continue;
-    if (!best || n > best.n) best = { id: r.id, n };
+    const revNum = parseRevNumber(r.id);
+    if (revNum === null) continue;
+    if (!best || revNum > best.n) best = { id: r.id, n: revNum };
   }
   if (best) {
     saveConsolidationState(projectRoot, best.id);
@@ -504,10 +508,10 @@ export function promotePatterns(options: {
   const recurring =
     lastProcessedNum === null
       ? recurringAll
-      : recurringAll.filter((p) =>
-          p.reviewIds.some((id) => {
-            const n = parseRevNumber(id);
-            return n === null ? true : n > lastProcessedNum;
+      : recurringAll.filter((pattern) =>
+          pattern.reviewIds.some((id) => {
+            const revNum = parseRevNumber(id);
+            return revNum === null ? true : revNum > lastProcessedNum;
           })
         );
 
@@ -515,9 +519,9 @@ export function promotePatterns(options: {
   const reviews =
     lastProcessedNum === null
       ? allReviews
-      : allReviews.filter((r) => {
-          const n = parseRevNumber(r.id);
-          return n === null ? true : n > lastProcessedNum;
+      : allReviews.filter((review) => {
+          const revNum = parseRevNumber(review.id);
+          return revNum === null ? true : revNum > lastProcessedNum;
         });
 
   if (recurring.length === 0) {

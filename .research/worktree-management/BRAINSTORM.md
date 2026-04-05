@@ -1,7 +1,31 @@
 # Brainstorm: Worktree Management + Parallel Claude Code Instances
 
-**Date:** 2026-04-02 **Status:** Paused (testing Direction F) **Routing:** TBD —
-depends on `claude -w` test results
+**Date:** 2026-04-02 **Last Updated:** 2026-04-05 **Status:** Paused (testing
+Direction F) **Routing:** TBD — depends on `claude -w` test results
+
+## Purpose
+
+This brainstorm explores how to run two Claude Code sessions on different
+branches simultaneously without state interference. It documents the problem
+space, anti-goals, landscape analysis, candidate directions, and the chosen path
+(Direction F, pending test results). Captures the discovery that
+`claude --worktree` (native since v2.1.49) has not been exercised and may
+obviate manual workarounds.
+
+## AI Instructions
+
+When working with worktree-related features in this codebase:
+
+- Prefer `claude --worktree <name>` (native flag) over conversational
+  `git worktree add` for parallel Claude Code instances
+- Do NOT overwrite `.claude/state/*.jsonl` files from a worktree without
+  checking for concurrent writes (shared state between main and worktree
+  instances)
+- Hook scripts that reference `scripts/` must use repo-relative paths, not
+  `path.resolve(__dirname, "..")` style — worktrees may resolve those
+  differently
+- Check `process.env.CLAUDE_PROJECT_DIR` to determine whether the current
+  session is in a worktree
 
 ## Problem Space
 
@@ -137,3 +161,10 @@ behavior, this is the answer. If #31872 manifests, fall back to G, then B.
 3. Does the statusline render properly in worktree mode?
 4. Can both instances write to shared JSONL state files safely?
 5. Do hooks resolve `scripts/` paths correctly from worktree directory?
+
+## Version History
+
+| Version | Date       | Changes                                                                                             |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-04-05 | Added Purpose section, Last Updated metadata, and Version History (doc-lint compliance, PR #492 R2) |
+| 1.0     | 2026-04-02 | Initial brainstorm: 6 directions (A-F), paused at Direction F for `claude -w` testing               |

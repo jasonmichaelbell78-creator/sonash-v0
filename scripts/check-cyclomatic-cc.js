@@ -451,7 +451,8 @@ function main() {
 
   const reportedViolations = filterByBaseline(violations);
   printReport(reportedViolations, jsFiles.length);
-  process.exit(reportedViolations.length > 0 ? 1 : 0);
+  const exitCode = reportedViolations.length > 0 ? 1 : 0;
+  process.exit(exitCode);
 }
 
 main();

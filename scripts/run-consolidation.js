@@ -27,7 +27,7 @@
 const fs = require("node:fs"); // catch-verified: core module
 const path = require("node:path"); // catch-verified: core module
 const cp = require("node:child_process"); // catch-verified: core module
-const { existsSync, readFileSync, mkdirSync, rmSync } = fs; // require() destructure
+const { existsSync, readFileSync, mkdirSync, rmSync, statSync } = fs; // require() destructure
 const { copyFileSync } = fs; // require() destructure
 const { join } = path; // require() destructure
 const { execFileSync } = cp; // require() destructure
@@ -179,6 +179,13 @@ function ensureDir(dir) {
 function loadReviews() {
   if (!existsSync(REVIEWS_FILE)) return [];
   try {
+    // Size guard to prevent OOM on pathologically large JSONL files.
+    const MAX_BYTES = 50 * 1024 * 1024; // 50 MB
+    const stat = statSync(REVIEWS_FILE);
+    if (stat.size > MAX_BYTES) {
+      log(`⚠️  reviews.jsonl exceeds ${MAX_BYTES} bytes — skipping`, c.yellow);
+      return [];
+    }
     return readFileSync(REVIEWS_FILE, "utf8")
       .trim()
       .split("\n")

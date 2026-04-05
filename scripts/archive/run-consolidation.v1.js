@@ -26,7 +26,7 @@
 const fs = require("node:fs"); // catch-verified: core module
 const path = require("node:path"); // catch-verified: core module
 const cp = require("node:child_process"); // catch-verified: core module
-const { existsSync, readFileSync, mkdirSync, rmSync } = fs; // require() destructure
+const { existsSync, readFileSync, mkdirSync, rmSync, lstatSync } = fs; // require() destructure
 const { copyFileSync } = fs; // require() destructure
 const { join } = path; // require() destructure
 const { execFileSync } = cp; // require() destructure
@@ -172,6 +172,18 @@ function writeState(state) {
 }
 
 function ensureDir(dir) {
+  // Symlink guard on parent dir — refuse if parent has been replaced with
+  // a symlink (attacker redirect). lstatSync detects symlinks, doesn't follow.
+  try {
+    const parent = path.dirname(dir);
+    if (lstatSync(parent).isSymbolicLink()) {
+      console.warn(`[v1] Refusing mkdir under symlinked parent: ${parent}`);
+      return;
+    }
+  } catch (err) {
+    if (err.code !== "ENOENT") throw err;
+    // Parent missing is fine — recursive mkdirSync will create it.
+  }
   // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
   mkdirSync(dir, { recursive: true });
 }
@@ -183,6 +195,13 @@ function ensureDir(dir) {
 function loadReviews() {
   if (!existsSync(REVIEWS_FILE)) return [];
   try {
+    // Size guard to prevent OOM on pathologically large JSONL files.
+    const MAX_BYTES = 50 * 1024 * 1024; // 50 MB
+    const stat = fs.statSync(REVIEWS_FILE);
+    if (stat.size > MAX_BYTES) {
+      console.warn(`[v1] reviews.jsonl exceeds ${MAX_BYTES} bytes — skipping`);
+      return [];
+    }
     return readFileSync(REVIEWS_FILE, "utf8")
       .trim()
       .split("\n")
@@ -347,7 +366,7 @@ function generateReport(reviews, patterns, categories) {
   let report = `\n${c.bold}📊 Consolidation Analysis Report${c.reset}\n`;
   report += "═".repeat(50) + "\n\n";
   report += `${c.bold}Reviews analyzed:${c.reset} ${reviews.length}\n`;
-  report += `Reviews: #${reviews[0]?.id || "?"} - #${reviews[reviews.length - 1]?.id || "?"}\n\n`;
+  report += `Reviews: #${reviews[0]?.id ?? "?"} - #${reviews[reviews.length - 1]?.id ?? "?"}\n\n`;
   report += `${c.bold}Recurring patterns (${MIN_PATTERN_OCCURRENCES}+ mentions):${c.reset}\n`;
 
   if (recurring.length === 0) {

@@ -160,3 +160,4 @@
 {"agent":"dispute-resolver","description":"Resolve disputes and strong challenges","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:26:34.679Z"}
 {"agent":"deep-research-searcher","description":"V1 vs V2 comparison — what changed","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:36:04.190Z"}
 {"agent":"deep-research-searcher","description":"V1 vs V2 comparison — consistency check","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:36:23.266Z"}
+{"agent":"code-reviewer","description":"Review propagation sweep + cherry-pick changes","sessionId":"session-1775346080524","user":"jason","outcome":"invoked","timestamp":"2026-04-05T03:42:47.653Z"}

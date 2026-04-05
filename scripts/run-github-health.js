@@ -20,6 +20,7 @@
 "use strict";
 
 const { execFileSync } = require("node:child_process");
+const crypto = require("node:crypto");
 const os = require("node:os");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -145,7 +146,7 @@ function checkDedup() {
     const entries = readJsonl(HISTORY_FILE, { safe: true, quiet: true });
     if (entries.length === 0) return null;
     const last = entries[entries.length - 1];
-    if (!last || !last.timestamp) return null;
+    if (!last?.timestamp) return null;
 
     const lastMs = new Date(last.timestamp).getTime();
     if (!Number.isFinite(lastMs)) return null;
@@ -305,14 +306,24 @@ function analyzeStalePRs(snapshot, issues, details) {
 
   const now = Date.now();
   let stalePRs = 0;
+  let invalidDates = 0;
   for (const pr of prs.nodes || []) {
     // Use updatedAt (activity) rather than createdAt (creation) so long-running
     // but actively maintained PRs are not flagged as stale.
     const basisTs = pr.updatedAt || pr.createdAt;
-    const ageDays = (now - new Date(basisTs).getTime()) / 86400000;
+    const basisMs = basisTs ? new Date(basisTs).getTime() : NaN;
+    if (!Number.isFinite(basisMs)) {
+      invalidDates++;
+      continue;
+    }
+    const ageDays = (now - basisMs) / 86400000;
     const isBot = pr.author?.login === "dependabot[bot]";
     const threshold = isBot ? STALE_PR_DAYS_BOT : STALE_PR_DAYS_HUMAN;
     if (ageDays > threshold) stalePRs++;
+  }
+  if (invalidDates > 0) {
+    issues.p2 += invalidDates;
+    details.push(`  P2  ${invalidDates} PR(s) had invalid timestamps (staleness uncertain)`);
   }
   if (stalePRs > 0) {
     issues.p2 += stalePRs;
@@ -341,7 +352,16 @@ function analyzeSecretAlerts(secretCount, issues, details) {
 
 function analyzeCacheUsage(cacheData, issues, details) {
   if (!cacheData) return null;
-  const sizeBytes = cacheData.active_caches_size_in_bytes || 0;
+
+  const sizeBytesRaw = cacheData.active_caches_size_in_bytes;
+  const sizeBytes = typeof sizeBytesRaw === "number" ? sizeBytesRaw : Number(sizeBytesRaw);
+
+  if (!Number.isFinite(sizeBytes) || sizeBytes < 0) {
+    issues.p2++;
+    details.push("  P2  Actions cache usage unavailable (invalid API response)");
+    return null;
+  }
+
   const cachePercent = Math.round((sizeBytes / CACHE_LIMIT_BYTES) * 100);
   if (cachePercent >= 80) {
     issues.p2++;
@@ -383,10 +403,12 @@ function printResult({ color, grade, totalIssues, parts, details, errors }) {
 }
 
 function detectGradeDropTrend(lastEntry, grade) {
-  if (!lastEntry.grade || grade === lastEntry.grade) return null;
+  if (!lastEntry.grade) return null;
+  if (grade === lastEntry.grade) return null;
   const gradeOrder = "ABCDF";
   const prev = gradeOrder.indexOf(lastEntry.grade);
   const curr = gradeOrder.indexOf(grade);
+  if (prev < 0 || curr < 0) return null;
   if (curr - prev < 2) return null;
   return `Grade dropped ${lastEntry.grade} -> ${grade}`;
 }
@@ -422,6 +444,25 @@ function detectTrends(lastEntry, snapshot, cachePercent, grade, issues) {
   return candidates.filter((t) => t !== null);
 }
 
+/**
+ * Compute an 8-char SHA-256 hash of the local username for attribution without
+ * storing raw PII. Wrapped in try/catch because os.userInfo() can throw in some
+ * CI containers.
+ */
+function resolveActorHash() {
+  let username = process.env.USER || process.env.USERNAME || "";
+  if (!username) {
+    try {
+      username = os.userInfo().username || "";
+    } catch {
+      // os.userInfo() can throw EACCES/ENOENT in restricted CI containers.
+      username = "";
+    }
+  }
+  if (!username) return "unknown";
+  return crypto.createHash("sha256").update(username).digest("hex").slice(0, 8);
+}
+
 function buildHistoryRecord({
   grade,
   color,
@@ -435,8 +476,10 @@ function buildHistoryRecord({
 }) {
   return {
     timestamp: new Date().toISOString(),
-    // Actor context makes history entries attributable (audit trail).
-    actor: process.env.USER || process.env.USERNAME || os.userInfo().username || "unknown",
+    // Actor attribution via SHA-256 hash (first 8 chars) — preserves audit
+    // trail correlation without storing raw username (PII). Hash is stable
+    // per-user so entries are still attributable across runs.
+    actor: resolveActorHash(),
     mode: "quick",
     grade,
     color,
@@ -454,6 +497,20 @@ function buildHistoryRecord({
 
 function writeHistoryRecord(record) {
   try {
+    // Symlink guard on STATE_DIR parent — refuse to create state dir if the
+    // parent has been replaced with a symlink (attacker redirect). Use lstat
+    // so symlinks themselves are detected, not followed.
+    const parentDir = path.dirname(STATE_DIR);
+    try {
+      const parentStat = fs.lstatSync(parentDir);
+      if (parentStat.isSymbolicLink()) {
+        console.error("  !!  History write refused: state parent dir is a symlink");
+        return;
+      }
+    } catch (err) {
+      if (err.code !== "ENOENT") throw err;
+      // Parent missing is fine — recursive mkdirSync will create it.
+    }
     // Direct mkdirSync with {recursive:true} is idempotent — no existsSync
     // pre-check needed (and pre-checks introduce TOCTOU races).
     fs.mkdirSync(STATE_DIR, { recursive: true });
