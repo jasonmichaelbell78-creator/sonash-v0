@@ -249,23 +249,21 @@ npm run hooks:health -- --end
 Run these commands sequentially. If any command fails, note the failure and
 continue with the remaining commands.
 
-| #   | Command                                                                | Purpose                 | Output                     | Skip if                  |
-| --- | ---------------------------------------------------------------------- | ----------------------- | -------------------------- | ------------------------ |
-| a   | `node scripts/velocity/track-session.js`                               | Velocity tracking       | velocity-log.jsonl         | No roadmap items changed |
-| b   | `npm run reviews:sync -- --apply`                                      | Review sync (v1 bridge) | reviews.jsonl              | Never skip               |
-| c   | `node .claude/skills/ecosystem-health/scripts/run-ecosystem-health.js` | Health score snapshot   | ecosystem-health-log.jsonl | Never skip               |
-| d   | `node scripts/debt/consolidate-all.js`                                 | TDMS consolidation      | MASTER_DEBT.jsonl          | Never skip               |
-| e   | `node scripts/debt/generate-metrics.js`                                | TDMS metrics            | metrics.json, METRICS.md   | Never skip               |
+| #   | Command                                                                | Purpose                 | Output                     | Skip if    |
+| --- | ---------------------------------------------------------------------- | ----------------------- | -------------------------- | ---------- |
+| a   | `npm run reviews:sync -- --apply`                                      | Review sync (v1 bridge) | reviews.jsonl              | Never skip |
+| b   | `node .claude/skills/ecosystem-health/scripts/run-ecosystem-health.js` | Health score snapshot   | ecosystem-health-log.jsonl | Never skip |
+| c   | `node scripts/debt/consolidate-all.js`                                 | TDMS consolidation      | MASTER_DEBT.jsonl          | Never skip |
+| d   | `node scripts/debt/generate-metrics.js`                                | TDMS metrics            | metrics.json, METRICS.md   | Never skip |
 
-**Ecosystem health triage check (SHOULD):** After 7c, check if
+**Ecosystem health triage check (SHOULD):** After 7b, check if
 `.claude/state/task-ecosystem-health-triage.state.json` exists. If it does, read
 it and include in session summary: "N dimensions triaged (M fixed, K deferred)."
 If the file doesn't exist, skip silently (triage wasn't run this session).
 
-**Show to user:** Health score dashboard (7c), velocity summary (7a), and
-ecosystem health triage results (if any). Summarize other output only if errors
-occurred. If health score degraded since last check, note in session summary
-(Step 2).
+**Show to user:** Health score dashboard (7b) and ecosystem health triage
+results (if any). Summarize other output only if errors occurred. If health
+score degraded since last check, note in session summary (Step 2).
 
 > **Note:** Learning consolidation runs automatically during SessionStart when
 > threshold is reached (10+ reviews). No action needed here.

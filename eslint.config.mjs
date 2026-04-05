@@ -43,6 +43,7 @@ export default [
       ".claude/hooks/gsd-*",
       ".claude/gsd-file-manifest.json",
       ".worktrees/**",
+      ".claude/worktrees/**",
       ".claude/tmp/**",
       "tsconfig*.json",
       // Note: functions/ has its own eslint.config.mjs with backend-appropriate rules

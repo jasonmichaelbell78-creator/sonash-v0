@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2133)
+## NEW (2137)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -731,6 +731,10 @@
 | DEBT-45623 | Upgrade TypeScript 5.x to 6.x in functions                      | S2       | refactoring              |
 | DEBT-45629 | Statusline lacks width-aware line reflow                        | S2       | engineering-productivity |
 | DEBT-45634 | Add update-item.js to TDMS toolkit                              | S2       | refactoring              |
+| DEBT-45635 | cognitive-cc exit 2 + trigger detector window bug               | S2       | process                  |
+| DEBT-45636 | Review lifecycle: 9 data integrity findings                     | S2       | process                  |
+| DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)     | S2       | performance              |
+| DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...    | S2       | process                  |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

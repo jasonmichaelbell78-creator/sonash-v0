@@ -1096,10 +1096,12 @@ executePipelineScript(
 );
 
 // 5. Ratchet baselines (tighten thresholds on improvement, check-only mode)
+// Timeout bumped from 20s -> 60s (Session #263): Windows fnm node startup overhead
+// + 3500+ file scan exceeded 20s consistently, causing ETIMEDOUT in hook-warnings.
 executePipelineScript(
   ["scripts/ratchet-baselines.js", "--check-only"],
   "Ratchet baselines",
-  20000,
+  60000,
   "node scripts/ratchet-baselines.js --check-only --verbose"
 );
 
