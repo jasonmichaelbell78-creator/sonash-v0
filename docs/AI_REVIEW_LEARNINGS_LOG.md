@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#41)</summary>
+
+- **Date:** 2026-04-05
+- **Reviews consolidated:** #rev-18-#review-pr492-r2
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#40)</summary>
 
 - **Date:** 2026-04-04
@@ -1323,6 +1332,199 @@ deduplicated, non-overlapping ranges):
 - exit-code-2
 - tdms-data-quality
 - path-disclosure-fix
+
+---
+
+### Review review-pr492-r1: PR #492 R1 - Mixed (Qodo + Suggestions + Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 28    | 27    | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 12    | 9     | 7       |
+
+**Patterns:**
+
+- graphql-variables-repo-slug
+- sanitize-error-cjs-propagation-2nd-recurrence
+- toctou-existsSync-mkdirSync-4th-recurrence
+- cc-99-refactor-run-github-health
+- secret-alerts-paginate
+- regex-allow-dots-repo-name
+- null-snapshot-p2-not-green
+- exit-code-2-api-failures
+- stale-pr-updatedAt-basis
+- dedup-timestamp-finite-check
+- actor-in-history-record
+- no-silent-safeappend-fallback
+- no-remote-url-in-error
+- reviews-archive-id-string-dedup
+- agent-invocations-lowercase
+- deploy-env-conditional-main
+- sonar-s4036-batch-ack-nosonar
+- single-commit-propagation-sweep
+
+**Learnings:**
+
+- TOCTOU existsSync+mkdirSync is 4th-PR recurrence — direct
+  mkdirSync({recursive:true}) is idempotent
+- sanitize-error ESM/CJS mismatch is 2nd-PR recurrence — always use .cjs wrapper
+  for CJS scripts
+- CC refactor must precede logic changes in same file (retro bulk-448-470)
+- Propagation sweep caught 7 more sanitize-error files and 5 more TOCTOU files
+  beyond what reviewer flagged
+- Multi-source convergence (4 reviewers on GraphQL injection) is strongest
+  signal, auto-elevate
+
+---
+
+### Review review-pr492-r2: PR #492 R2 - Mixed (Doc Lint + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
+
+**Date:** 2026-04-05 | **PR:** #492 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 68    | 68    | 0        | 0        |
+
+**Patterns:**
+
+- r1-r2-contradiction-exit-code
+- r1-r2-contradiction-actor-pii
+- pattern-checker-rule-bugs-8-fixes
+- signal-exit-code-[2-9]-to-[3-9]
+- binary-check-utf8-condition-inverted
+- symlink-traversal-bidirectional-testfn
+- silent-json-parse-multiline-try-detection
+- unbounded-read-statsync-size-guard-detection
+- regex-complexity-bounded-comment-recognition
+- multiline-jsonl-trycatch-recognition
+- sha256-hash-actor-for-pii-compliance
+- invalid-pr-timestamp-guard
+- cache-size-finite-check
+- grade-index-bounds-check
+- parent-symlink-guard-history
+- safe-fs-fail-loud-no-fallback
+- size-guard-staged-file-reader
+- release-please-stale-test-deletion
+- doc-lint-brainstorm-metadata
+- single-letter-var-rename-propagation
+
+**Learnings:**
+
+- R1->R2 contradictions resolved by middle path (SHA-256 hash for actor, checker
+  rule fix for exit code)
+- Infrastructure-level rule fixes eliminated ~55 FPs without touching production
+  scripts
+- Propagation sweeps surface pre-existing pattern violations in adjacent code
+- Bidirectional guard detection is correct pattern checker design
+- CI test files can be stale after infrastructure removal
+
+---
+
+### Review 507: PR #492 R2 — Mixed (Doc Lint CI + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
+
+**Date:** 2026-04-05 | **PR:** #492 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 20    | 0     | 0        | 0        |
+
+---
+
+### Review 67: PR #491 R2 (Mixed: CI + Qodo) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Pattern checker false positives: `symlink-parent-traversal` regex only
+- `silent-json-parse` line-level check missed try/catch on prior line. Added
+- `mkdirSync` before `isSafeToWrite` check: genuine TOCTOU in run-alerts.js
+- Exit code 2→1: run-consolidation.js used non-standard exit(2). Fixed.
+- TDMS data quality: 239 duplicate `audit:hash-*` entries, 412 evidence field
+- Path disclosure: R1 fix logged full `ARCHIVE_DIR` path to stderr. Removed.
+- Rejected exit code revert suggestions: contradicts CI pattern compliance gate.
+
+---
+
+### Review 66: PR #491 R1 (Mixed: SonarCloud + Qodo + Gemini) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Unguarded symlink delete: `rmSync` in run-consolidation.js cleanup path
+- Repomix bloat: 113K lines of packed external repos committed to git. Fix:
+- Dead code: `PATTERN_KEYWORDS` array (40 regexes) defined but never referenced
+- Exit code doc mismatch: header documented `2 = error` but code used
+- `String.raw` for escaped backslashes: SonarCloud S6638 — use `String.raw`
+- Test hardening: readFileSync try/catch, Array→Set for `.has()` lookups.
+- Rejected node:test→Jest suggestion: SoNash uses node:test, not Jest.
+
+---
+
+### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review 64: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
+
+**Date:** unknown | **PR:** #397 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
+- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
+- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
+- sanitizeError import paths: 5 hooks + rotate-state.js used
+- Source traceability false-negative: `checkSourceTraceability()` only checked
+- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
+- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
+- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
+- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
 
 ## Key Patterns
 
