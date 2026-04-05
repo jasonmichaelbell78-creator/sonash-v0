@@ -27,7 +27,7 @@
 const fs = require("node:fs"); // catch-verified: core module
 const path = require("node:path"); // catch-verified: core module
 const cp = require("node:child_process"); // catch-verified: core module
-const { existsSync, readFileSync, mkdirSync, rmSync, statSync } = fs; // require() destructure
+const { existsSync, readFileSync, mkdirSync, rmSync, lstatSync } = fs; // require() destructure
 const { copyFileSync } = fs; // require() destructure
 const { join } = path; // require() destructure
 const { execFileSync } = cp; // require() destructure
@@ -179,9 +179,15 @@ function ensureDir(dir) {
 function loadReviews() {
   if (!existsSync(REVIEWS_FILE)) return [];
   try {
-    // Size guard to prevent OOM on pathologically large JSONL files.
+    // Symlink guard + size guard in one step: lstatSync does NOT follow
+    // symlinks (avoids TOCTOU via symlink swap). If the target is a symlink,
+    // refuse to read it; otherwise use the same stat for the size check.
     const MAX_BYTES = 50 * 1024 * 1024; // 50 MB
-    const stat = statSync(REVIEWS_FILE);
+    const stat = lstatSync(REVIEWS_FILE);
+    if (stat.isSymbolicLink()) {
+      log(`⚠️  reviews.jsonl is a symlink — refusing to read`, c.yellow);
+      return [];
+    }
     if (stat.size > MAX_BYTES) {
       log(`⚠️  reviews.jsonl exceeds ${MAX_BYTES} bytes — skipping`, c.yellow);
       return [];

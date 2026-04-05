@@ -195,9 +195,14 @@ function ensureDir(dir) {
 function loadReviews() {
   if (!existsSync(REVIEWS_FILE)) return [];
   try {
-    // Size guard to prevent OOM on pathologically large JSONL files.
+    // Symlink guard + size guard in one step: lstatSync does NOT follow
+    // symlinks (avoids TOCTOU via symlink swap).
     const MAX_BYTES = 50 * 1024 * 1024; // 50 MB
-    const stat = fs.statSync(REVIEWS_FILE);
+    const stat = lstatSync(REVIEWS_FILE);
+    if (stat.isSymbolicLink()) {
+      console.warn(`[v1] reviews.jsonl is a symlink — refusing to read`);
+      return [];
+    }
     if (stat.size > MAX_BYTES) {
       console.warn(`[v1] reviews.jsonl exceeds ${MAX_BYTES} bytes — skipping`);
       return [];

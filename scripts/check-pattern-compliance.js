@@ -641,15 +641,17 @@ const ANTI_PATTERNS = [
   },
 
   // Unbounded file reads (reading entire file into memory)
-  // Uses testFn to look backward ~15 lines for a size guard (statSync + size
-  // comparison). Regex-only detection missed size guards that live in a
-  // preceding statement (the common idiom).
+  // Uses testFn to look backward ~15 lines for a size-guard idiom (an explicit
+  // `.size` comparison or MAX_* constant reference). The comparison itself
+  // signals that a guard is in place — we don't require a specific call site
+  // name (this keeps the rule agnostic to lstat vs fstat vs stat).
   {
     id: "unbounded-file-read",
     severity: "medium",
     testFn: (content) => {
       const lines = content.split("\n");
       const matches = [];
+      const guardRe = /\.size\s*[><]=?|MAX_BYTES|MAX_SIZE|MAX_GAP/;
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         // Match readFileSync immediately followed by .split('\n') on the
@@ -659,21 +661,13 @@ const ANTI_PATTERNS = [
         if (!/\.split\s*\(\s*['"`]\\n['"`]\s*\)/.test(window)) continue;
         // Skip if there's an explicit slice/MAX_LINES truncation nearby
         if (/slice|MAX_LINES/.test(window)) continue;
-        // Look backward up to 15 lines for a size guard:
-        //   statSync(...) + .size > or .size >= or MAX_ or stat.size
+        // Look backward up to 15 lines for a size-guard comparison
         const backStart = Math.max(0, i - 15);
         let hasSizeGuard = false;
         for (let j = backStart; j < i; j++) {
-          if (/statSync\s*\(/.test(lines[j])) {
-            // Confirm the following lines use .size in a comparison
-            const checkEnd = Math.min(lines.length, j + 6);
-            for (let k = j; k < checkEnd; k++) {
-              if (/\.size\s*[><]=?|MAX_BYTES|MAX_SIZE|MAX_GAP/.test(lines[k])) {
-                hasSizeGuard = true;
-                break;
-              }
-            }
-            if (hasSizeGuard) break;
+          if (guardRe.test(lines[j])) {
+            hasSizeGuard = true;
+            break;
           }
         }
         if (!hasSizeGuard) {
