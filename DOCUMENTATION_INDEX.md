@@ -203,7 +203,7 @@ _Essential project-level documentation_
 | [Security Policy](SECURITY.md)                          | Security policy for SoNash — vulnerability reporting, suppor...  | ↓1 ↑0      | 2026-03-19    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-03-22    |
 | [SoNash Future Roadmap](ROADMAP_FUTURE.md)              | Detailed specifications for future milestones (M2-M10). For      | ↓1 ↑4      | 2026-03-20    |
-| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓19 ↑18    | 2026-03-25    |
+| [SoNash Product Roadmap](ROADMAP.md)                    | <!-- prettier-ignore-start -->                                   | ↓19 ↑18    | 2026-04-05    |
 | [SoNash Roadmap Log](ROADMAP_LOG.md)                    | -                                                                | ↓4 ↑6      | 2026-03-20    |
 
 ### Core Documentation (Tier 2)

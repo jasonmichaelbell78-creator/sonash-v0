@@ -998,7 +998,7 @@ function regenerateHookWarnings() {
 
 // Resolve stale warnings before regenerating the view
 try {
-  execFileSync("node", [path.join(projectDir, "scripts", "resolve-hook-warnings.js")], {
+  execFileSync(process.execPath, [path.join(projectDir, "scripts", "resolve-hook-warnings.js")], {
     cwd: projectDir,
     stdio: "pipe",
     timeout: 15000,

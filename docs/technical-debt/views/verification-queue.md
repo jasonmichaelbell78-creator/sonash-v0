@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2137
+**Items Needing Verification:** 2135
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -734,9 +734,7 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45623 | Upgrade TypeScript 5.x to 6.x in functions                      | S2       | functions/package.json                                                           | 28        |
 | DEBT-45629 | Statusline lacks width-aware line reflow                        | S2       | tools/statusline/render.go                                                       | 12        |
 | DEBT-45634 | Add update-item.js to TDMS toolkit                              | S2       | scripts/debt/                                                                    | 0         |
-| DEBT-45635 | cognitive-cc exit 2 + trigger detector window bug               | S2       | scripts/check-cc.js                                                              | 0         |
 | DEBT-45636 | Review lifecycle: 9 data integrity findings                     | S2       | scripts/review-lifecycle.js                                                      | 0         |
-| DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)     | S2       | scripts/generate-documentation-index.js                                          | 0         |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...    | S2       | scripts/verify-enforcement.js                                                    | 0         |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
