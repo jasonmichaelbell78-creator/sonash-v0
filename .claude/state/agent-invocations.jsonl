@@ -144,3 +144,19 @@
 {"agent":"explore","description":"Existing files and state inventory","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T22:12:25.240Z"}
 {"agent":"explore","description":"Scripts and hooks impact search","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T22:12:33.033Z"}
 {"agent":"code-reviewer","description":"Review install-tools.sh changes","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:17:06.922Z"}
+{"agent":"deep-research-searcher","description":"SQ1 state machine research","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:25:10.287Z"}
+{"agent":"deep-research-searcher","description":"SQ2 auto-advance watcher","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:25:32.140Z"}
+{"agent":"deep-research-searcher","description":"SQ3 cross-project findings flow","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:25:56.068Z"}
+{"agent":"deep-research-searcher","description":"SQ4 /todo UX split","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:26:50.931Z"}
+{"agent":"deep-research-searcher","description":"SQ5 schema versioning","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:37:58.575Z"}
+{"agent":"deep-research-searcher","description":"SQ6 dev dashboard integration","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:38:27.530Z"}
+{"agent":"deep-research-searcher","description":"SQ7 scouting governance","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:38:59.842Z"}
+{"agent":"deep-research-searcher","description":"SQ8 CL integration","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:40:21.859Z"}
+{"agent":"deep-research-synthesizer","description":"Phase 2 synthesis","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:50:43.025Z"}
+{"agent":"deep-research-verifier","description":"V1 verify SQ1-SQ4 claims","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:07:02.140Z"}
+{"agent":"deep-research-verifier","description":"V2 verify SQ5-SQ8 claims","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:07:17.742Z"}
+{"agent":"contrarian-challenger","description":"Contrarian challenge","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:07:52.466Z"}
+{"agent":"otb-challenger","description":"Out-of-the-box challenge","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:08:18.760Z"}
+{"agent":"dispute-resolver","description":"Resolve disputes and strong challenges","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:26:34.679Z"}
+{"agent":"deep-research-searcher","description":"V1 vs V2 comparison — what changed","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:36:04.190Z"}
+{"agent":"deep-research-searcher","description":"V1 vs V2 comparison — consistency check","sessionId":"session-1775309235521","user":"jason","outcome":"invoked","timestamp":"2026-04-05T00:36:23.266Z"}
