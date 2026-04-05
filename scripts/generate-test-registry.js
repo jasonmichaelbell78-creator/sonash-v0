@@ -27,7 +27,7 @@ const path = require("node:path");
 
 let sanitizeError;
 try {
-  ({ sanitizeError } = require("./lib/sanitize-error"));
+  ({ sanitizeError } = require("./lib/sanitize-error.cjs"));
 } catch {
   sanitizeError = (err) => (err instanceof Error ? err.message : String(err)).slice(0, 200);
 }

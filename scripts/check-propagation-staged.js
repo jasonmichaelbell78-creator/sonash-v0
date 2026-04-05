@@ -48,7 +48,7 @@ const { minimatch } = require("minimatch");
 // ---------------------------------------------------------------------------
 let sanitizeError;
 try {
-  const mod = require("./lib/sanitize-error");
+  const mod = require("./lib/sanitize-error.cjs");
   sanitizeError = typeof mod.sanitizeError === "function" ? mod.sanitizeError : mod;
 } catch {
   sanitizeError = (err) => {

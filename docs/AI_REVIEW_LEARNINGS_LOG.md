@@ -366,16 +366,7 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
-<summary>Previous Consolidation (#39)</summary>
-
-- **Date:** 2026-04-04
-- **Reviews consolidated:** #rev-18-#review-pr491-r2
-- **Recurring patterns:**
-  - No recurring patterns above threshold
-
-</details>
-<details>
-<summary>Previous Consolidation (#38)</summary>
+<summary>Previous Consolidation (#40)</summary>
 
 - **Date:** 2026-04-04
 - **Reviews consolidated:** #rev-18-#review-pr491-r2
@@ -1511,6 +1502,103 @@ Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
   detection to prevent cascading
 - pr-review skill Rule 6 updated: "pre-existing" no longer auto-dismissible;
   must present user with fix (+ effort estimate) or DEBT options
+
+---
+
+### Review #506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Source:** Mixed (Qodo Action Required×5, Qodo Code Suggestions×13, Qodo
+Compliance×6, Gemini×2, SonarCloud×9, CI test-coverage×1) **PR/Branch:** PR #492
+/ planning-4326 **Items:** 28 (after dedup of 36 raw findings) — 0 CRITICAL / 12
+MAJOR / 9 MINOR / 7 TRIVIAL **Origin:** All 28 are This-PR (no DAS blocks
+required) **Fix rate:** 27 fixed + 1 batch-acknowledged (SonarCloud S4036) =
+100%
+
+**Key fixes (scripts/run-github-health.js — 20 items, one file):**
+
+- **Security (5):** GraphQL variables for `$owner`/`$name` with `SLUG_ALLOWLIST`
+  regex (4-source converged: Qodo×2, Gemini, compliance), `.cjs` wrapper for
+  sanitize-error import (repeat pattern, 2nd PR), `existsSync` TOCTOU pre-check
+  removed from history dir creation (repeat pattern, 4th PR in a row), unsafe
+  fallback `safeAppendFileSync` removed (fail-loud on missing safe-fs), remote
+  URL no longer echoed in `getRepoSlug` error
+- **Correctness (7):** `getRepoSlug` regex now permits dots in names
+  (`octokit/rest.js`) and strips `.git` via unified pattern with allowlist;
+  secret-scanning count uses `--paginate` with line-counted output (404 → null
+  not 0); null snapshot reported as P2 issue (no false GREEN); exit code 2 for
+  API errors (header doc updated); stale PR detection uses `updatedAt` not
+  `createdAt`; `checkDedup` validates timestamp via `Number.isFinite`; history
+  record includes `actor` field for audit trail
+- **CC (1):** `main()` refactored from CC 99 → <15 via extraction of
+  `ensureGhAvailable`, `resolveRepoOrExit`, `runApiCalls`, `analyzeSnapshot`,
+  `fetchCoreSnapshot`, `fetchSecretAlertsCount`, `fetchCacheUsage`,
+  `analyzeDependabot`, `analyzeCIState`, `analyzeStalePRs`,
+  `analyzeConfigHygiene`, `analyzeSecretAlerts`, `analyzeCacheUsage`,
+  `buildSummaryParts`, `printResult`, `buildHistoryRecord`,
+  `writeHistoryRecord`; `detectTrends` decomposed into 4 single-trend helpers to
+  stay ≤15
+- **Style (6):** NOSONAR annotations for 3×S4036 PATH hotspots with
+  justification, Array#push consolidation (S6661), prefer optional chaining
+  (S6582), `Number.parseInt` over `parseInt` (S7773), inverted negated condition
+  (S1940)
+
+**Propagation sweeps (MANDATORY — 3rd-and-4th PR recurrence patterns):**
+
+- `require('./lib/sanitize-error')` → `.cjs` in **8 files total**:
+  run-github-health, check-propagation-staged, check-skill-audit-status,
+  check-cyclomatic-cc, hook-report, search-capabilities, generate-test-registry,
+  debt/verify-resolutions, lib/load-propagation-registry
+- `if (!existsSync(dir)) mkdirSync(dir, {recursive:true})` TOCTOU → direct
+  idempotent `mkdirSync` in **6 files total**: run-github-health, session-start
+  (3 locations), reviews/lib/promote-patterns, check-pattern-compliance,
+  run-consolidation, archive/run-consolidation.v1
+
+**Data integrity (4 items):**
+
+- reviews-archive.jsonl: deduped triple `id:65` → single `review-pr489-r2`;
+  fixed `id:64 pr:397` → `pr:489`; added `pr:491` to `id:66`/`id:67`; all
+  converted to string IDs
+- agent-invocations.jsonl: lowercased `Explore` → `explore` (2 recent entries)
+
+**Test coverage (I20):** Added `tests/scripts/run-github-health.test.ts` (26
+tests, 6 suites) covering `parseRepoSlug` (including the `rest.js` regression
+guard and allowlist enforcement), `computeGrade`, `gradeToColor`,
+`computeExitCode`, `isValidDedupTimestamp`, `resolvePrStalenessBasis`. Follows
+established tests/scripts re-implementation convention. Unblocks
+generate-test-registry --check-coverage gate. All tests pass.
+
+**Workflow + docs:** `deploy-firebase.yml` `environment: Production` is now
+conditional on `github.ref_name == 'main'`; duplicate "Previous Consolidation
+(#38)" and (#39) blocks removed from this log (both identical to #40).
+
+**Rejected (0):** No items rejected — entire review actioned.
+
+**Batch-acknowledged (1):** SonarCloud S4036 (3 hotspots) marked with inline
+`NOSONAR(javascript:S4036)` annotations and justification: `execFileSync` calls
+use fixed binary names (`gh`, `git`), trusted argument arrays, and
+`windowsHide:true`. Known false-positive per `.qodo/pr-agent.toml` and
+`.gemini/styleguide.md` suppression categories.
+
+**Key Learnings:**
+
+- **TOCTOU existsSync+mkdirSync is the 4th-PR-in-a-row recurrence.** Direct
+  `mkdirSync({recursive:true})` is idempotent; there is never a reason to
+  pre-check with `existsSync`. Consider a repo-wide lint rule.
+- **sanitize-error ESM/CJS mismatch is the 2nd-PR recurrence.** Every CJS script
+  must use `scripts/lib/sanitize-error.cjs` (the wrapper) — NEVER
+  `./lib/sanitize-error` (the ESM source). Easy to miss because the weak
+  fallback catches the throw and degrades silently.
+- **CC refactor must precede logic changes in the same file.** Extracting
+  helpers first (then adding logic) keeps per-helper CC ≤15 and avoids the R2
+  "logic fix pushes CC over threshold" churn documented in retro bulk-448-470.
+- **Propagation sweeps catch files that initial reviewer didn't see.** Qodo
+  flagged 1 instance of each pattern; the sweep found 7 more sanitize-error
+  files and 5 more TOCTOU instances. Single-commit propagation (vs. follow-up
+  PRs) eliminates the entire recurrence class in one pass.
+- **Multi-source convergence is the strongest signal.** GraphQL injection (I9)
+  was flagged by 4 reviewers simultaneously. Auto-elevation to MAJOR was
+  correct; fix should be immediate regardless of the "security-medium" label on
+  any single report.
 
 ---
 

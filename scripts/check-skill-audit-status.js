@@ -18,7 +18,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { sanitizeError } = require("./lib/sanitize-error");
+const { sanitizeError } = require("./lib/sanitize-error.cjs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const SKILLS_DIR = path.join(PROJECT_ROOT, ".claude", "skills");

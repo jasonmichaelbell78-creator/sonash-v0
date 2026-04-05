@@ -366,7 +366,8 @@ function saveConsolidationState(projectRoot: string, lastProcessedId: string): v
     state.lastPromotionProcessedId = lastProcessedId;
     state.lastPromotionDate = new Date().toISOString().split("T")[0];
     const dir = path.dirname(statePath);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
+    fs.mkdirSync(dir, { recursive: true });
     const tmpPath = `${statePath}.tmp-${process.pid}-${Date.now()}`;
     fs.writeFileSync(tmpPath, JSON.stringify(state, null, 2) + "\n", "utf8");
     try {

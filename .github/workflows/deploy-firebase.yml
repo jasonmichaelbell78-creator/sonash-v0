@@ -79,7 +79,10 @@ jobs:
     if: ${{ github.event_name != 'pull_request_target' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    environment: Production
+    # Only apply the Production environment protection rules on pushes to main.
+    # On other branches (PR heads, planning branches) the deploy job runs
+    # without environment gating so Scorecard/release CI can validate builds.
+    environment: ${{ github.ref_name == 'main' && 'Production' || '' }}
 
     permissions:
       contents: read

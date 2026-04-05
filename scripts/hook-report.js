@@ -15,7 +15,7 @@
  */
 
 const fs = require("node:fs");
-const { sanitizeError } = require("./lib/sanitize-error");
+const { sanitizeError } = require("./lib/sanitize-error.cjs");
 
 // Check scope metadata — which checks run on what
 const CHECK_SCOPES = {

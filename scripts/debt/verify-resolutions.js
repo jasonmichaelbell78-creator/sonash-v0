@@ -20,7 +20,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { sanitizeError } = require("../lib/sanitize-error");
+const { sanitizeError } = require("../lib/sanitize-error.cjs");
 const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");

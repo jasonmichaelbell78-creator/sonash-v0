@@ -99,7 +99,8 @@ function saveWarnedFiles(warned) {
       return;
     }
 
-    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
+    mkdirSync(dir, { recursive: true });
 
     // Verify target and tmp are not symlinks (prevent symlink-clobber attacks)
     if (isSymlink(WARNED_FILES_PATH) || isSymlink(tmpPath)) {

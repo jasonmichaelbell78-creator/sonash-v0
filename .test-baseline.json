@@ -24,6 +24,11 @@
       "note": "deprecated backup hook, not actively used"
     },
     {
+      "path": ".claude/hooks/backup/pattern-check.js",
+      "lines": 143,
+      "note": "deprecated backup hook, not actively used"
+    },
+    {
       "path": ".claude/hooks/pre-commit-agent-compliance.js",
       "lines": 146
     },

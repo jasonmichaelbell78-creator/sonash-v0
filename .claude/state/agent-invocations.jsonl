@@ -1,7 +1,7 @@
 {"agent":"deep-research-searcher","description":"SQ3c: Plugin marketplaces and ecosystems","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:40:20.639Z"}
 {"agent":"deep-research-searcher","description":"SQ4a: Academic LLM memory patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:40:36.172Z"}
 {"agent":"deep-research-searcher","description":"CL verify 4 medium-confidence claims","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:43:41.676Z"}
-{"agent":"Explore","description":"Explore skill creation patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:52:44.730Z"}
+{"agent":"explore","description":"Explore skill creation patterns","sessionId":"session-1774962296908","timestamp":"2026-03-31T13:52:44.730Z"}
 {"agent":"deep-research-searcher","description":"SQ3a-1: GitHub Claude Code memory repos","sessionId":"session-1774966639630","timestamp":"2026-03-31T15:33:04.368Z"}
 {"agent":"deep-research-searcher","description":"SQ3a-2: GitHub non-Claude agent memory","sessionId":"session-1774966639630","timestamp":"2026-03-31T15:33:12.461Z"}
 {"agent":"deep-research-searcher","description":"SQ3b-1: Reddit + HN memory discussions","sessionId":"session-1774966639630","timestamp":"2026-03-31T15:33:22.600Z"}
@@ -53,27 +53,27 @@
 {"agent":"deep-research-searcher","description":"Second contrarian challenge","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:22.587Z"}
 {"agent":"deep-research-searcher","description":"Outside-the-box challenge on research","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:41.735Z"}
 {"agent":"deep-research-searcher","description":"Second OTB challenge","sessionId":"session-1774982436800","timestamp":"2026-03-31T19:02:51.551Z"}
-{"agent":"Explore","description":"Find github-health research","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:10:54.549Z"}
-{"agent":"Explore","description":"Find research-discovery-standard artifacts","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:16:14.416Z"}
-{"agent":"Explore","description":"Find learnings system artifacts","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:31:15.788Z"}
-{"agent":"Explore","description":"Check status of active plans","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:42:15.411Z"}
+{"agent":"explore","description":"Find github-health research","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:10:54.549Z"}
+{"agent":"explore","description":"Find research-discovery-standard artifacts","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:16:14.416Z"}
+{"agent":"explore","description":"Find learnings system artifacts","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:31:15.788Z"}
+{"agent":"explore","description":"Check status of active plans","sessionId":"session-1775053233972","timestamp":"2026-04-01T15:42:15.411Z"}
 {"agent":"security-auditor","description":"Pilot test sonash-context injection","sessionId":"session-1775058294437","timestamp":"2026-04-01T15:46:25.151Z"}
 {"agent":"deep-research-searcher","description":"Verify searcher agent resolves","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:19:50.439Z"}
-{"agent":"Explore","description":"Explore existing skill patterns","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:24:12.343Z"}
-{"agent":"Explore","description":"Step 4: Cross-reference audit","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:24:47.178Z"}
+{"agent":"explore","description":"Explore existing skill patterns","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:24:12.343Z"}
+{"agent":"explore","description":"Step 4: Cross-reference audit","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:24:47.178Z"}
 {"agent":"general-purpose","description":"Step 15: Create verifier agent","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:44:30.893Z"}
 {"agent":"general-purpose","description":"Step 16: Create challenger agents","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:45:14.071Z"}
 {"agent":"general-purpose","description":"Step 17: Create dispute-resolver","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:45:47.796Z"}
 {"agent":"general-purpose","description":"Steps 18-19: Gap pursuer + synthesizer","sessionId":"session-1775058294437","timestamp":"2026-04-01T16:46:47.091Z"}
 {"agent":"code-reviewer","description":"Code review script changes","sessionId":"session-1775078923779","timestamp":"2026-04-01T22:04:24.588Z"}
 {"agent":"deep-research-searcher","description":"Research Claude Code OS landscape","sessionId":"session-1775078923779","timestamp":"2026-04-01T23:41:41.532Z"}
-{"agent":"Explore","description":"Explore OS-portable artifacts","sessionId":"session-1775078923779","timestamp":"2026-04-01T23:42:24.119Z"}
-{"agent":"Explore","description":"Triage plans and research for JASON-OS","sessionId":"session-1775078923779","timestamp":"2026-04-02T00:30:08.760Z"}
+{"agent":"explore","description":"Explore OS-portable artifacts","sessionId":"session-1775078923779","timestamp":"2026-04-01T23:42:24.119Z"}
+{"agent":"explore","description":"Triage plans and research for JASON-OS","sessionId":"session-1775078923779","timestamp":"2026-04-02T00:30:08.760Z"}
 {"agent":"claude-code-guide","description":"Research no-flicker mode in Claude Code 2.1.89","sessionId":"session-1775125078548","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T10:37:06.345Z"}
-{"agent":"Explore","description":"Explore session-start hook integration point","sessionId":"session-1775125078548","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T10:57:36.438Z"}
+{"agent":"explore","description":"Explore session-start hook integration point","sessionId":"session-1775125078548","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T10:57:36.438Z"}
 {"agent":"claude-code-guide","description":"Research terminal emulators for Windows Claude Code","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:07:41.566Z"}
-{"agent":"Explore","description":"Explore .claude directory structure and dependencies","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:41:48.754Z"}
-{"agent":"Explore","description":"Explore git worktree usage and Claude Code docs","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:43:06.241Z"}
+{"agent":"explore","description":"Explore .claude directory structure and dependencies","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:41:48.754Z"}
+{"agent":"explore","description":"Explore git worktree usage and Claude Code docs","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:43:06.241Z"}
 {"agent":"deep-research-searcher","description":"Research Claude Code worktree support","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T13:45:06.593Z"}
 {"agent":"fullstack-developer","description":"Build repo-analysis SKILL.md scaffold","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:37:56.506Z"}
 {"agent":"fullstack-developer","description":"Build repo-analysis tool scripts","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T14:38:07.440Z"}
@@ -82,9 +82,9 @@
 {"agent":"fullstack-developer","description":"Fix sanitizeError propagation in hook files","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:19:08.337Z"}
 {"agent":"fullstack-developer","description":"Fix lstat-symlink propagation in hook files","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:19:18.769Z"}
 {"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:34.220Z"}
-{"agent":"Explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:34.301Z"}
+{"agent":"explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:34.301Z"}
 {"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:50.667Z"}
-{"agent":"Explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:50.752Z"}
+{"agent":"explore","description":"Search codebase","sessionId":"session-1775133135812","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:24:50.752Z"}
 {"agent":"general-purpose","description":"Generate multi-layer-memory sources.jsonl","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:13.200Z"}
 {"agent":"general-purpose","description":"Find missing dev-dashboard claims","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:17.706Z"}
 {"agent":"general-purpose","description":"Find missing value-extraction claims","sessionId":"session-1775151815108","user":"jbell","outcome":"invoked","timestamp":"2026-04-02T17:59:20.157Z"}
@@ -114,28 +114,29 @@
 {"agent":"fullstack-developer","description":"Propagation: validate-path pattern","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:56:32.661Z"}
 {"agent":"fullstack-developer","description":"Propagation: refuse-symlink pattern","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T00:56:42.564Z"}
 {"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:05:18.928Z"}
-{"agent":"Explore","description":"Search codebase","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:05:19.009Z"}
+{"agent":"explore","description":"Search codebase","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:05:19.009Z"}
 {"agent":"code-reviewer","description":"Review script changes","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:22:13.546Z"}
-{"agent":"Explore","description":"Search codebase","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:22:13.623Z"}
+{"agent":"explore","description":"Search codebase","sessionId":"session-1775169268563","user":"jason","outcome":"invoked","timestamp":"2026-04-03T01:22:13.623Z"}
 {"agent":"code-reviewer","description":"Code review of alerts fixes","sessionId":"session-1775211547313","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:34:27.980Z"}
 {"agent":"security-auditor","description":"Security audit of CLI-Anything","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:17.390Z"}
 {"agent":"test-engineer","description":"Test framework analysis","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:24.191Z"}
 {"agent":"explore","description":"Codebase architecture mapping","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:32.610Z"}
 {"agent":"documentation-expert","description":"Documentation quality analysis","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:56:38.893Z"}
 {"agent":"documentation-expert","description":"Documentation quality re-scan","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T12:57:18.307Z"}
-{"agent":"Explore","description":"Trace repo-analysis dependencies","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T14:56:04.406Z"}
+{"agent":"explore","description":"Trace repo-analysis dependencies","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T14:56:04.406Z"}
 {"agent":"fullstack-developer","description":"Apply SKILL.md v2.0 changes","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T15:09:29.275Z"}
 {"agent":"security-auditor","description":"Security audit CLI-Anything v2","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T15:43:56.808Z"}
 {"agent":"test-engineer","description":"Test analysis CLI-Anything v2","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T15:44:01.979Z"}
 {"agent":"explore","description":"Architecture mapping v2","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T15:44:07.430Z"}
 {"agent":"documentation-expert","description":"Doc quality analysis v2","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T15:44:11.304Z"}
-{"agent":"Explore","description":"Find all background agent usage","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:09:22.645Z"}
+{"agent":"explore","description":"Find all background agent usage","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:09:22.645Z"}
 {"agent":"fullstack-developer","description":"Fix deep-research write-to-disk","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:18:15.920Z"}
 {"agent":"fullstack-developer","description":"Fix doc-optimizer write-to-disk","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:18:22.829Z"}
 {"agent":"fullstack-developer","description":"Fix audit-process write-to-disk","sessionId":"session-1775220175821","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:18:28.453Z"}
 {"agent":"security-auditor","description":"Security + architecture scan MemSkill","sessionId":"session-1775234762147","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:51:48.807Z"}
 {"agent":"explore","description":"Doc + code quality scan MemSkill","sessionId":"session-1775234762147","user":"jbell","outcome":"invoked","timestamp":"2026-04-03T16:51:53.970Z"}
-{"agent":"Explore","description":"Explore skill structure patterns","sessionId":"session-1775256251870","user":"jason","outcome":"invoked","timestamp":"2026-04-03T23:27:24.459Z"}
-{"agent":"Explore","description":"Verify phase completeness","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T13:30:25.468Z"}
+{"agent":"explore","description":"Explore skill structure patterns","sessionId":"session-1775256251870","user":"jason","outcome":"invoked","timestamp":"2026-04-03T23:27:24.459Z"}
+{"agent":"explore","description":"Verify phase completeness","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T13:30:25.468Z"}
 {"agent":"code-reviewer","description":"Audit decisions coverage","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T13:32:26.852Z"}
 {"agent":"code-reviewer","description":"Grep-verify all 20 decisions","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T16:58:54.248Z"}
+{"agent":"code-reviewer","description":"Review install-tools.sh changes","sessionId":"session-1775308520961","user":"jason","outcome":"invoked","timestamp":"2026-04-04T23:17:06.922Z"}

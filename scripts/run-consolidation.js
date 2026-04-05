@@ -167,8 +167,9 @@ function writeState(state) {
 }
 
 function ensureDir(dir) {
-  if (!isSafeToWrite(dir) || (existsSync(dir) && !isSafeToWrite(dir))) return;
-  if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+  if (!isSafeToWrite(dir)) return;
+  // Idempotent mkdir — no existsSync pre-check (TOCTOU-safe).
+  mkdirSync(dir, { recursive: true });
 }
 
 // =============================================================================
