@@ -6,7 +6,7 @@ const path = require("node:path");
 const { sanitizeError } = require("./sanitize-error.js");
 const { validatePathInDir } = require("./security-helpers.js");
 
-const ROOT = path.resolve(__dirname, "..", "..");
+const ROOT = path.join(__dirname, "..", "..");
 
 /**
  * Collect JS require/import references from .js files in a directory (recursive).
@@ -31,7 +31,7 @@ function extractJsImports(file, content) {
 
 function collectJsReferences(dir) {
   const refs = new Map();
-  const files = walkDir(path.resolve(ROOT, dir), [".js", ".mjs", ".cjs"]);
+  const files = walkDir(path.join(ROOT, dir), [".js", ".mjs", ".cjs"]);
   for (const file of files) {
     let content;
     try {
@@ -53,7 +53,7 @@ function collectJsReferences(dir) {
  */
 function collectMdReferences(dir) {
   const refs = new Map();
-  const absDir = path.resolve(ROOT, dir);
+  const absDir = path.join(ROOT, dir);
   const files = walkDir(absDir, ".md");
 
   // Patterns for different reference types
@@ -101,7 +101,13 @@ function collectMdReferences(dir) {
  */
 function collectJsonReferences(filePath) {
   const refs = new Map();
-  const absPath = path.resolve(ROOT, filePath);
+  let safePath;
+  try {
+    safePath = validatePathInDir(ROOT, filePath);
+  } catch {
+    return refs;
+  }
+  const absPath = path.join(ROOT, safePath);
   let content;
   try {
     content = fs.readFileSync(absPath, "utf8");
@@ -131,7 +137,7 @@ function collectJsonReferences(filePath) {
  */
 function collectYamlReferences(dir) {
   const refs = new Map();
-  const absDir = path.resolve(ROOT, dir);
+  const absDir = path.join(ROOT, dir);
   let files;
   try {
     files = fs.readdirSync(absDir).filter((f) => f.endsWith(".yml") || f.endsWith(".yaml"));
@@ -268,11 +274,11 @@ function walkDir(dir, ext) {
 function resolveRelative(fromFile, spec) {
   const dir = path.dirname(fromFile);
   const candidates = [
-    path.resolve(dir, spec),
-    path.resolve(dir, spec + ".js"),
-    path.resolve(dir, spec + ".cjs"),
-    path.resolve(dir, spec + ".mjs"),
-    path.resolve(dir, spec, "index.js"),
+    path.join(dir, spec),
+    path.join(dir, spec + ".js"),
+    path.join(dir, spec + ".cjs"),
+    path.join(dir, spec + ".mjs"),
+    path.join(dir, spec, "index.js"),
   ];
   for (const c of candidates) {
     try {
@@ -305,7 +311,7 @@ function resolveAsFilePath(ref) {
     return null;
   }
 
-  const abs = path.resolve(ROOT, noAnchor);
+  const abs = path.join(ROOT, noAnchor);
   try {
     fs.statSync(abs);
     return abs;

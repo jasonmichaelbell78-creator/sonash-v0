@@ -156,7 +156,7 @@ function findDeadWorkflowRefs(content, workflowRel) {
     const scriptPath = m[1].trim();
     if (!isContainedPath(scriptPath)) continue;
     try {
-      fs.statSync(path.resolve(ROOT, scriptPath));
+      fs.statSync(path.join(ROOT, scriptPath));
     } catch {
       findings.push({
         file: scriptPath,
@@ -431,7 +431,7 @@ function scanSkills(graph) {
 
     // Check if any other skill references this one via file path
     const skillMdPath = path.join(skillsDir, skillName, "SKILL.md");
-    const fileRefs = graph.get(path.resolve(skillMdPath));
+    const fileRefs = graph.get(skillMdPath);
     if (fileRefs?.size > 0) continue;
 
     findings.push({
@@ -623,8 +623,12 @@ function getPkgScriptReferencedFiles() {
       let m;
       scriptPathRe.lastIndex = 0;
       while ((m = scriptPathRe.exec(val)) !== null) {
-        const abs = path.resolve(ROOT, m[1]);
-        referenced.add(abs);
+        try {
+          const rel = validatePathInDir(ROOT, m[1]);
+          referenced.add(path.join(ROOT, rel));
+        } catch {
+          continue;
+        }
       }
     }
   } catch {
@@ -644,9 +648,13 @@ function findDeadNpmScripts() {
       scriptPathRe.lastIndex = 0;
       while ((m = scriptPathRe.exec(val)) !== null) {
         const target = m[1];
-        const abs = path.resolve(ROOT, target);
         try {
-          fs.statSync(abs);
+          validatePathInDir(ROOT, target);
+        } catch {
+          continue;
+        }
+        try {
+          fs.statSync(path.join(ROOT, target));
         } catch {
           dead.push({ name, target });
         }

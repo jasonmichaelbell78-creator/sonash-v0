@@ -16,7 +16,7 @@ const path = require("node:path");
 const { sanitizeError } = require("./lib/sanitize-error.js");
 const { safeWriteFileSync } = require("./lib/safe-fs.js");
 
-const ROOT = path.resolve(__dirname, "..");
+const ROOT = path.join(__dirname, "..");
 const FINDINGS_PATH = path.join(ROOT, ".planning", "orphan-detection", "findings.jsonl");
 const REPORT_PATH = path.join(ROOT, ".planning", "orphan-detection", "REPORT.md");
 
