@@ -1,0 +1,13 @@
+{
+  "lastRun": "2026-03-06T03:06:47.637Z",
+  "mode": "full",
+  "grade": "A",
+  "score": 92,
+  "totalAlerts": 10,
+  "decisions": {
+    "fixed": 16,
+    "deferred": 0,
+    "ignored": 3,
+    "acknowledged": 5
+  }
+}
