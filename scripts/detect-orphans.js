@@ -183,7 +183,12 @@ function scanWorkflows(graph) {
   }
 
   for (const file of files) {
-    const safeFile = validatePathInDir(wfDir, file);
+    let safeFile;
+    try {
+      safeFile = validatePathInDir(wfDir, file);
+    } catch {
+      continue; // validatePathInDir rejects traversal — skip invalid filenames
+    }
     const absFile = path.join(wfDir, safeFile);
     const rel = `.github/workflows/${safeFile}`;
     let content;
@@ -375,7 +380,8 @@ function scanAgents(graph) {
       const agentName = file.replace(".md", "");
 
       if (graph.get(absFile)?.size > 0 || graph.get(`ref:${agentName}`)?.size > 0) continue;
-      if (claudeMd.includes(agentName)) continue;
+      const nameRe = new RegExp(`\\b${agentName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+      if (nameRe.test(claudeMd)) continue;
 
       findings.push({
         file: rel,
@@ -541,20 +547,29 @@ function scanResearch(graph) {
 
 // ── Git Recency ──────────────────────────────────────────────────────────────
 
+const gitRecencyCache = new Map();
+
 function getGitRecency(filePath) {
+  if (gitRecencyCache.has(filePath)) return gitRecencyCache.get(filePath);
+  let result;
   try {
     const stdout = execFileSync("git", ["log", "-1", "--format=%aI", "--", filePath], {
       cwd: ROOT,
       encoding: "utf8",
       timeout: 5000,
     }).trim();
-    if (!stdout) return { lastModified: null, daysSinceModified: null };
-    const lastDate = new Date(stdout);
-    const days = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
-    return { lastModified: stdout, daysSinceModified: days };
+    if (!stdout) {
+      result = { lastModified: null, daysSinceModified: null };
+    } else {
+      const lastDate = new Date(stdout);
+      const days = Math.floor((Date.now() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
+      result = { lastModified: stdout, daysSinceModified: days };
+    }
   } catch {
-    return { lastModified: null, daysSinceModified: null };
+    result = { lastModified: null, daysSinceModified: null };
   }
+  gitRecencyCache.set(filePath, result);
+  return result;
 }
 
 function adjustConfidenceByRecency(finding) {

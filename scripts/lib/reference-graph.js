@@ -149,7 +149,12 @@ function collectYamlReferences(dir) {
   const npmRunRe = /npm\s+run\s+([\w:.-]+)/g;
 
   for (const file of files) {
-    const safeFile = validatePathInDir(absDir, file); // containment check
+    let safeFile;
+    try {
+      safeFile = validatePathInDir(absDir, file);
+    } catch {
+      continue; // validatePathInDir rejects traversal — skip invalid filenames
+    }
     const absFile = path.join(absDir, safeFile);
     const found = new Set();
     let content;
@@ -206,7 +211,9 @@ function mergeResolvedEdges(incoming, refs) {
       const normalized = String(ref).replaceAll("\\", "/").replace(/^\.\//, "").trim();
       const resolved = resolveAsFilePath(normalized);
       if (resolved) addEdge(incoming, resolved, source);
-      addEdge(incoming, `ref:${normalized}`, source);
+      if (normalized && normalized.length <= 500 && !/^\.\.(?:[\\/]|$)/.test(normalized)) {
+        addEdge(incoming, `ref:${normalized}`, source);
+      }
     }
   }
 }

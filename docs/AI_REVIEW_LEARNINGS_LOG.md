@@ -3854,3 +3854,26 @@ stale-rejected, 1 already-fixed)
   try/catch. One malformed line shouldn't break the entire parse.
 - **cache-repeated-file-reads** — When reading the same file inside a loop
   (e.g., CLAUDE.md per agent), hoist the read before the loop.
+
+---
+
+### Review #69 — PR #494 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-06 | **PR:** #494 | **Source:** mixed | **Round:** R3
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 22    | 5     | 0        | 17       |
+
+**Severity:** 0C / 0M / 5m / 1T
+
+**Patterns:**
+
+- **word-boundary-agent-match** — Use `\b` regex instead of `includes()` for
+  agent name lookups to prevent substring false positives.
+- **validatePathInDir-try-catch** — Wrap `validatePathInDir()` in try/catch when
+  iterating directory entries. One invalid filename shouldn't crash the scan.
+- **guard-raw-ref-keys** — Validate ref strings before adding to graph: reject
+  empty, >500 chars, and traversal patterns.
+- **cache-git-recency** — Cache `execFileSync("git", ["log", ...])` results per
+  file path to avoid redundant subprocess calls.
