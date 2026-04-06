@@ -966,6 +966,10 @@ Applied in order. First match wins.
    --> `application`; otherwise --> `library`
 6. **Default fallback**: `library`
 
+**Ambiguity handling:** If signals are evenly split between two types with no
+clear primary, default to `library` and set `repo_type_secondary`. Log the
+ambiguity in the state file.
+
 ### Secondary Type
 
 If secondary signals are strong but don't win primary classification, set

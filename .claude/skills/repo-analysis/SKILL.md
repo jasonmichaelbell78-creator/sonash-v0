@@ -1,15 +1,14 @@
 ---
 name: repo-analysis
 description: >-
-  Analyze external GitHub repositories through dual lenses: Creator View
-  (knowledge, insights, comparisons to your work) and Engineer View (health,
-  security, process). Three depth tiers: Quick Scan (API-only default), Standard
-  (clone + static), Deep (12-month history + temporal). Outputs to
-  .research/repo-analysis/<repo-slug>/.
+  Dual-lens repo analysis: Creator View (knowledge, insights, home-repo
+  comparison) + Engineer View (health, security, process). Three tiers
+  (Quick/Standard/Deep). Link mining for curated lists. Fit separation via dual
+  scoring lenses. Outputs to .research/repo-analysis/<repo-slug>/.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.0
+**Document Version:** 4.1
 **Last Updated:** 2026-04-05
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -51,6 +50,10 @@ fitness. Both views are always produced; Creator View comes first.
 - User needs a structured health report for a dependency decision
 - Triage of multiple candidate repos (Quick Scan each)
 
+**When NOT to Use:** Cross-repo synthesis -> `/repo-synthesis` | Home repo audit
+-> `/audit-comprehensive` | Domain/technology research -> `/deep-research` |
+Quick dependency check -> `gh api` directly.
+
 > See [REFERENCE.md](./REFERENCE.md) for dimension catalog, tool stack, output
 > schemas, absence patterns, Creator View specification, and guard rails.
 
@@ -62,7 +65,8 @@ fitness. Both views are always produced; Creator View comes first.
 `--lens=adoption|creator` (override auto-detected primary lens)
 
 **Output:** `.research/repo-analysis/<repo-slug>/` — analysis.json,
-findings.jsonl, value-map.json, trends.jsonl, summary.md, repomix-output.txt
+findings.jsonl, value-map.json, trends.jsonl, summary.md, creator-view.md,
+research-index.jsonl, mined-links.jsonl (curated-list only), repomix-output.txt
 (gitignored).
 
 ---
@@ -92,8 +96,9 @@ Phase markers: `========== PHASE N: [NAME] ==========`
 API-only, under 30 seconds. 18 dimensions (QS-01 through QS-18). See
 REFERENCE.md Section 1.1 for full dimension catalog and API batch structure.
 
-**Process:** Validate → 3 parallel API batches → compute dimensions → score 6
-summary bands → absence pattern classifier → write artifacts → present inline.
+**Process:** Validate → 3 parallel API batches → classify repo type (Section 5b)
+→ compute dimensions → score 6 summary bands → absence pattern classifier →
+write artifacts → present inline.
 
 **Lightweight creator lens (MUST):** After computing health dimensions, read the
 repo description and README (via Contents API, first 200 lines). Write 2-3
@@ -102,8 +107,10 @@ teaser, not the full Creator View — enough to judge whether Standard/Deep is
 worth the time.
 
 **Interactive gate:** "Quick Scan complete. [health bands]. Run Standard/Deep
-for full Creator + Engineer analysis? [y/N]" For `curated-list` repos: enriched
-gate showing link count and link mining option. See REFERENCE.md Section 16.
+for full Creator + Engineer analysis? (Standard ~5-10 min, Deep ~15-20 min)
+[y/N]" For `curated-list` repos: enriched gate showing link count and link
+mining option. See REFERENCE.md Section 16. If `--depth=standard|deep` specified
+at invocation, skip this gate.
 
 ---
 
@@ -153,50 +160,34 @@ The primary analytical output. Written in conversational prose, not tables.
 
 Load before writing Creator View — these enable direct comparison:
 
-- `CLAUDE.md` (conventions, stack, architecture)
+- `SESSION_CONTEXT.md` (primary — current sprint)
 - `ROADMAP.md` (project direction, planned features)
-- `SESSION_CONTEXT.md` (current sprint, active work)
+- `CLAUDE.md` (conventions, stack, architecture)
 - `.claude/skills/` directory listing (active skills)
 - Active project memories from MEMORY.md
+- MEMORY.md entries about the target repo or its domain (SHOULD)
 
 MAY load additional context when comparison requires deeper understanding.
 
 **Creator View sections (MUST produce all 6):**
 
-### 1. What This Repo Understands (+ Blindspots)
+1. **What This Repo Understands (+ Blindspots)** — Knowledge, methodology,
+   insights. What it KNOWS, not what it does. Include blindspot analysis.
+2. **What's Relevant To Your Work** — Direct home-repo comparison with file
+   refs.
+3. **Where Your Approach Differs** — Classify as
+   **Ahead**/**Different**/**Behind**.
+4. **The Challenge** — THE thing you should seriously consider. Say so if
+   nothing.
+5. **Knowledge Candidates** — Tiered (T1 active, T2 systems, T3 lower). Added to
+   `value-map.json`.
+6. **What's Worth Avoiding** — Anti-ideas with evidence. See REFERENCE.md 14.8.
 
-Deep, conversational analysis of the repo's knowledge, methodology, and
-insights. Not what it DOES (that's the Engineer View) — what it KNOWS. Includes
-blindspot analysis: what they DON'T know, problems they didn't solve, domains
-they didn't enter. Contrast strengthens both halves.
+Write output to `creator-view.md`. **Self-verify (SHOULD):** Re-read generated
+Creator View; verify each home repo claim (file paths, skill names, projects)
+references something that exists.
 
-### 2. What's Relevant To Your Work
-
-Direct comparison to home repo. "They do X, you do Y." Reference specific files,
-skills, or approaches in your codebase. Connect to active projects.
-
-### 3. Where Your Approach Differs
-
-Classify each meaningful difference as **Ahead**, **Different**, or **Behind**.
-
-### 4. The Challenge
-
-Opinionated. "THE thing from this repo you should seriously consider." If
-nothing genuinely challenges your approach, say so explicitly.
-
-### 5. Knowledge Candidates
-
-What could you LEARN from deeper engagement? Tiered: Tier 1 (active projects),
-Tier 2 (systems understanding), Tier 3 (lower priority). Added to
-`value-map.json` alongside pattern candidates.
-
-### 6. What's Worth Avoiding
-
-Anti-ideas and cautionary learnings. Not "what's wrong with this repo" — "what
-patterns or decisions should you consciously NOT replicate?" Each anti-idea
-cites specific evidence. See REFERENCE.md Section 14.8.
-
-Check existing analyses in `.research/repo-analysis/` for cross-references.
+(SHOULD) Check existing analyses in `.research/repo-analysis/` for cross-refs.
 
 ---
 
@@ -207,7 +198,8 @@ depth: Depth 0 (parse markdown, score against home context), Depth 1 (HEAD-first
 fetch, interactive gate), Depth 2 (targeted deep-dive on selected links). Output
 to `mined-links.jsonl`. See REFERENCE.md Section 16 for full spec: markdown
 parsing rules, rate limiting (HEAD at 5 req/sec, full fetch at 1 req/sec),
-scoring logic, and interactive gates.
+scoring logic, and interactive gates. If Depth 1 fetch fails for >50% of links,
+abort Depth 1 and present Depth 0 results.
 
 ---
 
@@ -239,6 +231,13 @@ candidates use extraction effort E0-E1 (reading/studying, not porting code).
 Append discovered repo relationships to
 `.research/repo-analysis/reading-chain.jsonl`. Populate `related_repos[]` in
 value-map.json for any repos referenced during analysis.
+
+## Artifact Verification (before routing)
+
+Verify all expected artifacts exist based on scan depth and repo type.
+Checklist: analysis.json, findings.jsonl, value-map.json, creator-view.md,
+summary.md, mined-links.jsonl (curated-list only). Flag missing artifacts before
+presenting routing menu.
 
 ---
 
@@ -275,7 +274,7 @@ phase-level resume.
 ## Integration
 
 - **Upstream:** `/deep-research`, `/brainstorm`
-- **Downstream:** `/deep-plan`, TDMS, project memory
+- **Downstream:** `/deep-plan`, `/repo-synthesis`, TDMS, project memory
 - **Neighbors:** `/audit-comprehensive` (home repo), dimension agents
 - **References:** [REFERENCE.md](./REFERENCE.md),
   [BRAINSTORM.md](../../.research/archive/repo-analysis-knowledge/BRAINSTORM.md)
@@ -291,6 +290,7 @@ After routing: "Any observations about the analysis quality or process?"
 
 ---
 
-_v4.0 | 2026-04-05 | Creator View v2: dual lens, 6 sections, link mining, fit
-separation, repo type classification. See REFERENCE.md v4.0. Prior history in
-REFERENCE.md Section 10._
+_v4.1 | 2026-04-05 | Apply 17 skill-audit decisions: gate skip, effort
+estimates, artifact verification, When NOT to Use, creator-view.md output,
+self-verify, link mining failure guard, /repo-synthesis downstream. See
+REFERENCE.md v4.0._
