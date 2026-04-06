@@ -74,7 +74,7 @@ export default [
   },
   // Node.js scripts configuration (ES modules that define their own __filename/__dirname)
   {
-    files: ["scripts/**/*.js"],
+    files: ["scripts/**/*.js", "scripts/**/*.mjs"],
     languageOptions: {
       sourceType: "module",
       globals: {

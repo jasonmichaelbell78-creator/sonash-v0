@@ -89,6 +89,31 @@ function resolveBaseRef() {
 }
 
 /**
+ * Try to get changed files using the upstream tracking branch (@{u}..HEAD).
+ *
+ * This is the correct push-window for pre-push context: only commits that
+ * are actually about to be pushed are considered. Returns null when the
+ * current branch has no upstream (new branch, never pushed).
+ *
+ * Fixes DEBT-45635: previously used merge-base..HEAD which included ALL
+ * commits on the branch since divergence, causing trigger recurrence on
+ * every push until the branch was merged.
+ */
+function tryUpstreamDiff() {
+  const upstreamResult = spawnSync(
+    "git",
+    ["rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}"],
+    { encoding: "utf-8", timeout: 3000 }
+  );
+  if (upstreamResult.status !== 0 || !upstreamResult.stdout) return null;
+
+  const upstream = upstreamResult.stdout.trim();
+  if (!upstream) return null;
+
+  return tryGitDiff(["diff", "--name-only", `${upstream}..HEAD`]);
+}
+
+/**
  * Try to get changed files using merge-base against a base ref
  */
 function tryMergeBaseDiff(baseRef) {
@@ -107,23 +132,31 @@ function tryMergeBaseDiff(baseRef) {
 // Returns null on complete failure (fail-closed for security)
 // Uses spawnSync with shell:false to prevent command injection
 function getStagedFiles() {
+  // Preferred: use the upstream tracking branch as the push window.
+  // Covers the common case where a feature branch has been pushed at least
+  // once — `@{u}..HEAD` returns exactly the commits being pushed this time.
+  const upstreamFiles = tryUpstreamDiff();
+  if (upstreamFiles) return upstreamFiles;
+
   const baseRef = resolveBaseRef();
 
   if (baseRef) {
-    // Try git merge-base for reliable branch divergence detection
+    // Fallback for new branches (no upstream yet): use merge-base against
+    // the main branch. On first push this covers all branch commits, which
+    // is correct — the trigger should see everything being introduced.
     const mergeBaseFiles = tryMergeBaseDiff(baseRef);
     if (mergeBaseFiles) return mergeBaseFiles;
 
-    // Fallback 1: try simple diff against base ref
+    // Fallback 2: try simple diff against base ref
     const simpleDiff = tryGitDiff(["diff", "--name-only", `${baseRef}..HEAD`]);
     if (simpleDiff) return simpleDiff;
   }
 
-  // Fallback 2: get files in last commit
+  // Fallback 3: get files in last commit
   const lastCommitDiff = tryGitDiff(["diff", "--name-only", "HEAD~1"]);
   if (lastCommitDiff) return lastCommitDiff;
 
-  // Fallback 3: staged changes only (works on initial commits / shallow clones)
+  // Fallback 4: staged changes only (works on initial commits / shallow clones)
   const cachedDiff = tryGitDiff(["diff", "--name-only", "--cached"]);
   if (cachedDiff) return cachedDiff;
 

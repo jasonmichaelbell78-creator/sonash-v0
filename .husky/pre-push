@@ -464,18 +464,20 @@ if [ -z "$_ts_in_diff" ]; then
   _tsc_skip=1
   echo "tsc|skip|0" >> "$CHECKS_TMPFILE"
 else
-  (npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc") &
+  # DEBT-45639: sync after rc write — MSYS/Windows flushes OS buffer late,
+  # causing reader to see an empty .rc file and default to a bogus exit code.
+  (npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc"; command -v sync >/dev/null 2>&1 && sync >/dev/null 2>&1 || true) &
 fi
 
 # 5b. Cyclomatic complexity via check-cyclomatic-cc.js (background, unless skipped)
 # Uses baseline from known-debt-baseline.json to suppress known debt
 if [ "$_cyc_skip" -eq 0 ] && [ -f scripts/check-cyclomatic-cc.js ]; then
-  (node scripts/check-cyclomatic-cc.js > "$_CYC_OUT" 2>&1; echo $? > "${_CYC_OUT}.rc") &
+  (node scripts/check-cyclomatic-cc.js > "$_CYC_OUT" 2>&1; echo $? > "${_CYC_OUT}.rc"; command -v sync >/dev/null 2>&1 && sync >/dev/null 2>&1 || true) &
 fi
 
 # 5c. Cognitive complexity (background, unless skipped)
 if [ "$_cog_skip" -eq 0 ] && [ -f scripts/check-cc.js ]; then
-  (node scripts/check-cc.js > "$_COG_OUT" 2>&1; echo $? > "${_COG_OUT}.rc") &
+  (node scripts/check-cc.js > "$_COG_OUT" 2>&1; echo $? > "${_COG_OUT}.rc"; command -v sync >/dev/null 2>&1 && sync >/dev/null 2>&1 || true) &
 fi
 
 # Wait for all background jobs
@@ -502,7 +504,9 @@ fi
 
 # 5b result: cyclomatic complexity (via check-cyclomatic-cc.js with baseline)
 if [ "$_cyc_skip" -eq 0 ] && [ -f scripts/check-cyclomatic-cc.js ]; then
-  _cyc_rc=$(cat "${_CYC_OUT}.rc" 2>/dev/null || echo "0")
+  # DEBT-45639: default 2 (error) — previously defaulted to 0 (pass), which
+  # silently hid race-failed reads as "check passed"
+  _cyc_rc=$(cat "${_CYC_OUT}.rc" 2>/dev/null || echo "2")
   if [ "$_cyc_rc" -eq 1 ]; then
     echo "  ❌ Cyclomatic complexity regressions (CC >15) in pushed files:"
     grep -E "FAIL|CC=" "$_CYC_OUT" | head -10

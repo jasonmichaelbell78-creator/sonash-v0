@@ -1,12 +1,31 @@
 # Hook & Session State Files Schema
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
-**Last Updated:** 2026-02-26
-**Status:** ACTIVE
+**Document Version:** 1.3
+**Last Updated:** 2026-04-05
+**Status:** STALE — detailed schemas cover ~15 of 113 files
 <!-- prettier-ignore-end -->
 
-**Source:** OPT-H006 (AI Optimization Audit)
+**Source:** OPT-H006 (AI Optimization Audit). Inventory updated Session #264.
+
+---
+
+## Current Inventory (auto-generated 2026-04-05)
+
+`.claude/state/` contains **113 files** (previously documented: ~15):
+
+| Type       | Count | Examples                                                                      |
+| ---------- | ----- | ----------------------------------------------------------------------------- |
+| `.json`    | 78    | deep-plan-\*.state.json, task-pr-\*.state.json, known-debt-baseline.json      |
+| `.jsonl`   | 25    | reviews.jsonl, commit-log.jsonl, health-score-log.jsonl, alerts-history.jsonl |
+| `.md`      | 6     | agent-research-results.md, deep-plan-findings.md                              |
+| `.archive` | 2     | hook-warnings-log.jsonl.archive, reviews.jsonl.archive                        |
+| other      | 2     | .gitignore, reviews.jsonl.bak                                                 |
+
+> Detailed schemas below cover the original ~15 core files. The remaining 98
+> files are skill/session state artifacts that follow naming conventions
+> (skill-name.state.json, skill-history.jsonl) but lack individual
+> documentation. Comprehensive documentation is tracked as future work.
 
 ---
 

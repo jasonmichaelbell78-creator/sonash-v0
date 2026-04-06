@@ -322,6 +322,31 @@
       "lines": 360
     },
     {
+      "path": "scripts/archive/migrate-ecosystem-v2.js",
+      "lines": 251,
+      "note": "archived migration script"
+    },
+    {
+      "path": "scripts/archive/migrate-retros.js",
+      "lines": 226,
+      "note": "archived migration script"
+    },
+    {
+      "path": "scripts/detect-orphans.js",
+      "lines": 771,
+      "note": "orphan detection scanner — new in PR #494"
+    },
+    {
+      "path": "scripts/lib/reference-graph.js",
+      "lines": 334,
+      "note": "cross-format reference graph builder — new in PR #494"
+    },
+    {
+      "path": "scripts/render-orphan-report.js",
+      "lines": 149,
+      "note": "orphan report renderer — new in PR #494"
+    },
+    {
       "path": "scripts/planning/render-todos.js",
       "lines": 144,
       "note": "new script — todo rendering, added in PR #487"

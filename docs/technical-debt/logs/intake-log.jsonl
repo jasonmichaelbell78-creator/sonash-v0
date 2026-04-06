@@ -94,3 +94,5 @@
 {"timestamp":"2026-04-05T17:23:24.623Z","action":"intake-manual","item_id":"DEBT-45636","file":"scripts/review-lifecycle.js","severity":"S2","category":"process"}
 {"timestamp":"2026-04-05T17:23:29.779Z","action":"intake-manual","item_id":"DEBT-45637","file":"scripts/generate-documentation-index.js","severity":"S2","category":"performance"}
 {"timestamp":"2026-04-05T17:23:35.064Z","action":"intake-manual","item_id":"DEBT-45638","file":"scripts/verify-enforcement.js","severity":"S2","category":"process"}
+{"timestamp":"2026-04-05T22:19:11.398Z","action":"intake-manual","item_id":"DEBT-45639","file":"dist-tests/tests/scripts/ecosystem-v2/","severity":"S1","category":"code-quality"}
+{"timestamp":"2026-04-05T22:19:29.264Z","action":"intake-manual","item_id":"DEBT-45640","file":"scripts/health/lib/warning-lifecycle.test.js","severity":"S2","category":"code-quality"}

@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.19 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.20 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-05 (Session #262)
+2026-04-05 (Session #264)
 
 ## Purpose
 
@@ -29,8 +29,8 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-05 **Branch**: `planning-4326` **Working On**:
-Session #262 — PR #492 R1+R2 reviews + research-discovery-standard v2.
+**Last Checkpoint**: 2026-04-05 **Branch**: `planning-4526` **Working On**:
+Session #264 — Orphan detection (T21) + cherry-picks from worktree.
 
 **Uncommitted Work**: None (session-end commit)
 
@@ -38,7 +38,7 @@ Session #262 — PR #492 R1+R2 reviews + research-discovery-standard v2.
 
 ## Session Tracking
 
-**Current Session Count**: 263 (since Jan 1, 2026)
+**Current Session Count**: 264 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,61 +48,36 @@ Session #262 — PR #492 R1+R2 reviews + research-discovery-standard v2.
 
 ## Recent Session Summaries
 
+**Session #264** (ORPHAN DETECTION T21 + CHERRY-PICKS):
+
+- **Branch**: `planning-4526` (16 commits)
+- **Orphan detection scanner (T21)**: /deep-plan (20 decisions) → built
+  `scripts/detect-orphans.js` with cross-format reference graph
+  (`scripts/lib/reference-graph.js`). Scans 9 categories (scripts, workflows,
+  hooks, state, agents, skills, docs, planning, research). 428 findings. 7
+  parallel triage agents classified all findings. Interactive resolution: 75
+  deleted (65 state files, 7 backup hooks, 3 scripts), 35 archived (28 docs, 7
+  scripts), 7 wired up. Net: 428→350. Commit `0c298c09`.
+- **T23 added**: Website analysis skill (deep-research in worktree-webcrawler).
+- **T21 progress updated**: Queued as next after T23.
+- **Cherry-picks from worktree**: repo-analysis v4.0 Creator View upgrade (30
+  decisions), skill-audit fixes v4.1, /repo-synthesis companion skill, Phase A
+  workflow state, website-analysis brainstorm + deep-research (39 agents, 175
+  claims).
+- **npm scripts added**: `orphans:detect`, `orphans:report`,
+  `planning:validate-sync`.
+
+**Session #263** (SESSION-BEGIN FIXES + /ALERTS TRIAGE + PR #493):
+
+- **Branch**: `planning-4526` (5 commits, PR #493 merged)
+- Session-begin fixes, /alerts triage, batch retro PRs #472-#493 (10 PRs, 13
+  action items). Pre-push race fix + CC baseline + DEBT-45639 intake.
+
 **Session #262** (PR #492 R1+R2 REVIEWS + RESEARCH-DISCOVERY-STANDARD v2):
 
-- **Branch**: `planning-4326` (11 commits, spanning 2026-04-04 → 2026-04-05)
-- **PR #492 R1 review**: 27 fixes applied in a single batch. Security
-  (path-traversal, symlink guards), cognitive complexity reductions, propagation
-  debt batch-ack. Commit `b15fd08b`.
-- **PR #492 R2 review**: R2 contradictions resolved + pattern checker rule bug
-  fixes. Follow-up TOCTOU cleanup — replaced `existsSync` checks with
-  `lstatSync` try/catch in OOM guards + checker rule. Commits `7731a6e7`,
-  `1819d4e6`, `5a44d2ed`.
-- **Baseline propagation cleanup**: Suppressed pre-existing patterns + FPs
-  including `nextLine` function-name false positives in
-  `known-propagation-baseline.json`. Commits `38b73ce4`, `449a142a`.
-- **research-discovery-standard v2**: Supplemental /deep-research run — 8
-  findings docs (D1-D8), 2 verification docs (V1-V2), contrarian + OTB
-  challenges, dispute resolutions, gap scan, AUDIT + RESUME + RESEARCH_OUTPUT.
-  954-line synthesis. Commits `df86826b`, `8febf48d`, `b0fe2fd6`.
-- **Artifact migration**: Migrated `BRAINSTORM.md` artifacts from `.planning/`
-  to `.research/` (jason-os, learning-analysis, worktree-management,
-  research-discovery-standard). Commit `faa5cf6e`.
-- **Commits**: 11 total — `13ec2677` (hook log update), `b15fd08b` (R1 batch),
-  `faa5cf6e` (artifact migration), `df86826b` + `8febf48d` + `b0fe2fd6` (v2
-  research), `38b73ce4` (baseline), `7731a6e7` (R2 batch), `1819d4e6` (TOCTOU),
-  `5a44d2ed` (ack), `449a142a` (baseline FPs).
-
-**Session #261** (REPO-ANALYSIS v2.0 + MEMSKILL ANALYSIS + AGENT OUTPUT FIX):
-
-- **Branch**: `work-4326` (7 commits)
-- **repo-analysis v2.0 upgrade**: 12-step plan executed. Schema alignment
-  (analysis.json, findings.jsonl, value-map.json to reality). New capabilities:
-  whole-repo adoption analysis (WR-01 through WR-06 with Adopt/Trial/Extract/
-  Avoid verdicts), extraction persistence (per-candidate results, cross-repo
-  journal, EXTRACTIONS.md), "defer all" shortcut in Extract flow.
-- **CLI-Anything Standard analysis**: 22 findings (5 high including 3 injection
-  vulns: SoX effects, Intelwatch args, GIMP Script-Fu). Verdict: Trial (62). 4
-  dimension agents, repomix 3.1MB captured. 13 extraction candidates deferred.
-- **MemSkill Standard analysis**: 15 findings (API key leak, pickle.load,
-  trust_remote_code). Verdict: Extract (38). Novel memory skills framework. 6
-  extraction candidates deferred. Repomix 665K captured.
-- **Windows agent output fix**: Discovered anthropics/claude-code#39791 — all
-  background agent output files 0 bytes on Windows without Developer Mode. Added
-  CLAUDE.md guardrail #15. Fixed 3 broken skills (deep-research v1.9,
-  doc-optimizer v1.5, audit-process v2.5). GitHub comment drafted.
-- **Cherry-picked** worktree research: Codex plugin + learning system analysis.
-- **Todos**: T10 completed (Codex deferred), T14 in-progress (worktree).
-- **Commits**: `269ab9d3` session start, `7e74fada` alerts fixes, `7b20c55b`
-  code review fixes, `7cebe10e` repo-analysis v2.0, `be932404` agent output
-  fallback + skill fixes + v2.0 re-scan, `93414d75` MemSkill analysis,
-  `22109113` cherry-picked research.
-
-**Session #260** (SESSION START + ALERTS FIXES + CODE REVIEW):
-
-- **Branch**: `work-4326` (3 commits)
-- Branch sync, /alerts --full 21 fixes, code review fixes (symlink bypass, stale
-  cleanup, depth-- typo).
+- **Branch**: `planning-4326` (11 commits)
+- PR #492 R1: 27 fixes. R2: TOCTOU cleanup. research-discovery-standard v2: 8
+  findings + 2 verification + 954-line synthesis. Artifact migration.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -110,20 +85,19 @@ Session #262 — PR #492 R1+R2 reviews + research-discovery-standard v2.
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                   |
-| ---------------------------------- | ------------- | ---------------------------------------------------------- |
-| **PR #492**                        | R1+R2 DONE    | 27 R1 fixes + R2 TOCTOU cleanup + baseline cleanup merged. |
-| **Research-Discovery-Standard v2** | RESEARCH DONE | 8 findings + 2 verification docs + synthesis. Ready.       |
-| **Repo Analysis Skill**            | v2.0 SHIPPED  | Adoption assessment, extraction persistence, schema align. |
-| **Custom Agents**                  | COMPLETE      | All 25 steps done. 6 pipeline agents, 23 agents upgraded.  |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner          |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                            |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.       |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                     |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.     |
-| **System-Wide Standardization**    | BLOCKED       | Behind plan-orchestration Wave 2                           |
+| Item                               | Status        | Progress                                                      |
+| ---------------------------------- | ------------- | ------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.         |
+| **Website Analysis (T23)**         | RESEARCHING   | Deep-research in worktree-webcrawler (39 agents, 175 claims). |
+| **Repo Analysis Skill**            | v4.1 SHIPPED  | Creator View upgrade (30 decisions), /repo-synthesis new.     |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).       |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner             |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                               |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.          |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                        |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.        |
 
-**Current Branch**: `planning-4326`
+**Current Branch**: `planning-4526`
 
 **Test Status**: 3564 tests pass, 0 fail
 
@@ -133,34 +107,30 @@ Session #262 — PR #492 R1+R2 reviews + research-discovery-standard v2.
 
 ### Immediate Priority
 
-1. **PR #492 merge** — R1+R2 reviews done, TOCTOU + baseline cleanup merged.
-   Ready for final review/merge.
-2. **Post GitHub comment** — anthropics/claude-code#39791 comment at
-   `.claude/tmp/github-comment-39791.md`. Post manually.
-3. **research-discovery-standard v2 → plan** — 954-line synthesis ready. Decide
-   whether to /deep-plan the v2 recommendations.
-4. **Review EXTRACTIONS.md** — 13 deferred candidates across 2 repos. Decide
-   which to extract when ready.
-5. **Dev dashboard implementation** — IN-PROGRESS (Session #245), 6-tab command
-   center, XL effort.
-6. **debt-runner `/deep-plan`** — Research done, needs implementation plan.
-7. **Multi-layer memory** — Research done (40 agents, 128 claims). Execute.
-8. **JASON-OS Domain 01** — Internal Archaeology via /deep-research.
+1. **Website analysis skill (T23)** — Deep-research done. /deep-plan → build.
+2. **Orphan detection v2 improvements** — Scanner misses system prompt
+   skill/agent lists (false positives). Add check for runtime-available types.
+3. **research-discovery-standard v2 → plan (T13)** — 954-line synthesis ready.
+   /deep-plan the v2 recommendations.
+4. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), 6-tab
+   command center, XL effort.
+5. **debt-runner `/deep-plan` (T3)** — Research done, needs implementation plan.
+6. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims). Execute.
+7. **JASON-OS Domain 01 (T16)** — Internal Archaeology via /deep-research.
 
 ### After Debt-Runner
 
-9. **Plan orchestration Waves 2-3** — SWS CANON + M1.6 features.
+8. **Plan orchestration Waves 2-3 (T6)** — SWS CANON + M1.6 features.
 
-### Backlog (run `/todo` for full list — 11 active, 6 completed)
+### Backlog (run `/todo` for full list — 16 active, 6 completed)
 
 ---
 
 ## Pending PR Reviews
 
-**Status**: PR #492 R1+R2 reviews processed (27 + TOCTOU/baseline fixes).
-Awaiting final review/merge.
+**Status**: No pending reviews.
 
-**Last Processed**: 2026-04-05 (Session #262)
+**Last Processed**: 2026-04-05 (Session #264)
 
 ---
 

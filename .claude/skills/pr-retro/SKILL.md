@@ -101,6 +101,12 @@ Standard preset. Agent prompt: "Start from files changed in the PR, follow
 references outward. Flag missing imports, dead code paths, untested functions,
 unwired config, missing files."
 
+**Commit verification:** CL agents MUST use `gh pr view N --json commits` (the
+GitHub API) to list PR commits — NOT `git log base..merge` range queries. PRs
+with merge-from-main commits produce interleaved history that git-log ranges
+miss, causing false MISSING verdicts. (Lesson: Session #264 batch retro — 6/6
+HIGH findings were false positives from git-log range queries.)
+
 ### 1.3 Process Results (MUST)
 
 Present before injecting into walkthrough: "CL generated N findings. Review
@@ -150,6 +156,13 @@ REFERENCE.md Section: Data Enrichment).
 - If `retros.jsonl` doesn't exist, skip and note "No prior retro data."
 - Build recurrence map from ALL retros. Recurrence >= 3: run quick CL (2-pass)
   to verify pattern still exists, then auto-tag CRITICAL.
+- **Semantic matching for recurrence:** Pattern strings in reviews.jsonl are
+  incident-unique (e.g., "toctou-existsSync-removal"). Exact-match across PRs
+  finds 0 recurrence even when the same root cause appears in 4+ PRs. Use
+  keyword stemming: split on `-`, extract root tokens (toctou, existsSync,
+  symlink, sanitize, cc-reduction), match across entries. (Lesson: Session #264
+  batch retro — 80 patterns, 0 exact-match, but learnings text explicitly said
+  "4th recurrence." Fuzzy matching would have caught it.)
 - Verify commands MUST be real shell commands, not keyword greps.
 
 **2.6** "Data gathered: N rounds from M sources. X total items found."

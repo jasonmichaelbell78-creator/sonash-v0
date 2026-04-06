@@ -1,0 +1,57 @@
+{"file":"scripts/archive/archive-reviews.js","triageAction":"DELETE","triageReason":"Already archived; reviews:archive npm script is DEPRECATED and redirects to review-lifecycle.js — this file is dead code in archive/"}
+{"file":"scripts/archive/sync-reviews-to-jsonl.v1.js","triageAction":"DELETE","triageReason":"Already archived; reviews:repair npm script calls it but is DEPRECATED — superseded by review-lifecycle.js"}
+{"file":"scripts/audit/transform-jsonl-schema.js","triageAction":"KEEP","triageReason":"Manual-run TDMS schema migration utility; used during audit JSONL format upgrades — standalone CLI tool"}
+{"file":"scripts/audit/validate-audit-integration.js","triageAction":"KEEP","triageReason":"Manual-run validation wrapper for comprehensive audits; called during audit runs to validate JSONL compliance and TDMS intake — standalone CLI tool"}
+{"file":"scripts/audit-s0-promotions.js","triageAction":"ARCHIVE","triageReason":"One-time S0 severity audit script based on specific git commit baseline (08763212); migration is complete — historical value only"}
+{"file":"scripts/check-cyclomatic-cc.js","triageAction":"KEEP","triageReason":"Called by pre-push hook (.husky/pre-push) and has npm script cc:check — active hook infrastructure"}
+{"file":"scripts/check-propagation-staged.js","triageAction":"KEEP","triageReason":"Called by pre-commit hook (.husky/pre-commit) — active hook infrastructure"}
+{"file":"scripts/compute-changelog-metrics.js","triageAction":"DELETE","triageReason":"Duplicate of scripts/reviews/compute-changelog-metrics.js; both compute PR metrics from reviews.jsonl — the reviews/ version is the canonical location"}
+{"file":"scripts/debt/backfill-hashes.js","triageAction":"ARCHIVE","triageReason":"One-time migration to backfill missing content_hash values in MASTER_DEBT.jsonl; migration is complete"}
+{"file":"scripts/debt/check-phase-status.js","triageAction":"KEEP","triageReason":"Manual-run TDMS phase status checker; reads PHASE_N_AUDIT.md files to report implementation progress — standalone utility"}
+{"file":"scripts/debt/clean-intake.js","triageAction":"KEEP","triageReason":"TDMS pipeline script for cleaning raw scattered-intake.jsonl before ingestion — part of the consolidation pipeline"}
+{"file":"scripts/debt/dedup-multi-pass.js","triageAction":"KEEP","triageReason":"Called by consolidate-all.js as part of TDMS master consolidation pipeline — active pipeline script"}
+{"file":"scripts/debt/escalate-deferred.js","triageAction":"KEEP","triageReason":"TDMS utility to auto-promote multiply-deferred items to S1; referenced by TDMS ecosystem audit checkers — active pipeline utility"}
+{"file":"scripts/debt/extract-audit-reports.js","triageAction":"KEEP","triageReason":"TDMS pipeline extraction script (Step 0b); extracts debt from Dec 2025 audit reports — part of consolidation pipeline"}
+{"file":"scripts/debt/extract-audits.js","triageAction":"KEEP","triageReason":"Called by consolidate-all.js as required extraction step — active TDMS pipeline script"}
+{"file":"scripts/debt/extract-context-debt.js","triageAction":"KEEP","triageReason":"TDMS pipeline extraction script (Step 0f); extracts debt from .claude/state/ files — part of consolidation pipeline"}
+{"file":"scripts/debt/extract-reviews.js","triageAction":"KEEP","triageReason":"Called by consolidate-all.js as required extraction step — active TDMS pipeline script"}
+{"file":"scripts/debt/extract-roadmap-debt.js","triageAction":"KEEP","triageReason":"TDMS pipeline extraction script (Step 0c); extracts debt from ROADMAP.md checkboxes — part of consolidation pipeline"}
+{"file":"scripts/debt/extract-scattered-debt.js","triageAction":"KEEP","triageReason":"TDMS pipeline extraction script (Step 0a); extracts TODO/FIXME/HACK from source — part of consolidation pipeline"}
+{"file":"scripts/debt/ingest-cleaned-intake.js","triageAction":"KEEP","triageReason":"TDMS pipeline ingestion script; deduplicates and assigns DEBT-XXXX IDs — part of consolidation pipeline"}
+{"file":"scripts/debt/intake-manual.js","triageAction":"KEEP","triageReason":"Primary TDMS intake path per CLAUDE.md memory (feedback_tdms_intake_path); referenced by pr-retro skill and TDMS docs — active CLI tool"}
+{"file":"scripts/debt/intake-pr-deferred.js","triageAction":"KEEP","triageReason":"TDMS intake for PR-deferred debt items; called by escalate-deferred.js and pr-retro skill — active CLI tool"}
+{"file":"scripts/debt/normalize-all.js","triageAction":"KEEP","triageReason":"Called by consolidate-all.js as required normalization step — active TDMS pipeline script"}
+{"file":"scripts/debt/process-review-needed.js","triageAction":"KEEP","triageReason":"TDMS pipeline script (Step 0e); processes dedup review pairs for manual review — part of consolidation pipeline"}
+{"file":"scripts/debt/reconcile-roadmap.js","triageAction":"KEEP","triageReason":"TDMS utility to replace CANON-XXXX references with DEBT-XXXX IDs in ROADMAP.md — active maintenance utility"}
+{"file":"scripts/debt/resolve-item.js","triageAction":"KEEP","triageReason":"TDMS resolution script; marks individual debt items as resolved or false-positive — active CLI tool"}
+{"file":"scripts/debt/reverify-resolved.js","triageAction":"ARCHIVE","triageReason":"One-time script to re-verify 62 specific RESOLVED items flagged by resolution audit; batch is complete"}
+{"file":"scripts/debt/sync-sonarcloud.js","triageAction":"KEEP","triageReason":"Active SonarCloud integration for TDMS; referenced by sonarcloud skill and TDMS ecosystem audit — active sync utility"}
+{"file":"scripts/generate-claude-antipatterns.js","triageAction":"KEEP","triageReason":"CLI wrapper that updates CLAUDE.md Section 4 with top anti-patterns; manual-run maintenance utility"}
+{"file":"scripts/generate-fix-template-stubs.js","triageAction":"KEEP","triageReason":"CLI wrapper that appends template skeletons to FIX_TEMPLATES.md for promoted patterns; manual-run utility"}
+{"file":"scripts/health/lib/health-log.js","triageAction":"KEEP","triageReason":"Library imported by health ecosystem audit checkers (consumer-integration.js, data-persistence.js) and run-ecosystem-health.js — active health infrastructure"}
+{"file":"scripts/health/lib/mid-session-alerts.js","triageAction":"KEEP","triageReason":"Called by commit-tracker.js hook as async subprocess; referenced by health ecosystem audit checkers — active alert infrastructure"}
+{"file":"scripts/hook-report.js","triageAction":"KEEP","triageReason":"Called by both pre-commit and pre-push hooks to generate post-hook summary reports — active hook infrastructure"}
+{"file":"scripts/lib/ai-pattern-checks.js","triageAction":"REVIEW","triageReason":"Has a test file but no runtime callers found outside its own file and test; header says used by audit skills but no require/import found — may be dead or loaded dynamically"}
+{"file":"scripts/lib/confidence-classifier.js","triageAction":"KEEP","triageReason":"Imported by scripts/refine-scaffolds.js and has test coverage — active library"}
+{"file":"scripts/lib/learning-router.js","triageAction":"KEEP","triageReason":"Imported by route-lifecycle-gaps.js, route-enforcement-gaps.js, and has multiple test files — active library"}
+{"file":"scripts/metrics/dedup-review-metrics.js","triageAction":"KEEP","triageReason":"Manual-run utility for deduplicating review-metrics.jsonl; referenced in verified-patterns.json — active maintenance utility"}
+{"file":"scripts/multi-ai/extract-agent-findings.js","triageAction":"KEEP","triageReason":"CLI tool for extracting JSONL findings from agent outputs; referenced in audit standards docs and has test coverage — active utility"}
+{"file":"scripts/planning/backfill-tenet-evidence.js","triageAction":"KEEP","triageReason":"Backfills tenet evidence arrays from decisions.jsonl; called from planning pipeline — active planning utility"}
+{"file":"scripts/planning/decompose-state.js","triageAction":"ARCHIVE","triageReason":"One-time migration script that decomposed deep-plan.state.json into purpose-specific JSONL files per D77; migration is complete"}
+{"file":"scripts/planning/generate-decisions.js","triageAction":"KEEP","triageReason":"Called by validate-jsonl-md-sync.js to regenerate DECISIONS.md from JSONL source — active planning generator"}
+{"file":"scripts/planning/generate-discovery-record.js","triageAction":"KEEP","triageReason":"Called by validate-jsonl-md-sync.js to regenerate DISCOVERY_RECORD.md from JSONL source — active planning generator"}
+{"file":"scripts/planning/validate-jsonl-md-sync.js","triageAction":"WIRE-UP","triageReason":"Validates MD views match JSONL sources per D84/D85 enforcement; designed for pre-commit but not wired into .husky/pre-commit — needs hook integration"}
+{"file":"scripts/ratchet-baselines.js","triageAction":"KEEP","triageReason":"Called by session-start.js hook (--check-only); ratchets violation baselines — active hook infrastructure"}
+{"file":"scripts/refine-scaffolds.js","triageAction":"KEEP","triageReason":"Classifies scaffolded learning-routes and promotes/refines them; imports confidence-classifier — active automation gap closure utility"}
+{"file":"scripts/repair-archives.js","triageAction":"ARCHIVE","triageReason":"One-time repair script for overlapping review archive files; archives were already repaired and restructured"}
+{"file":"scripts/repo-analysis/check-tools.js","triageAction":"WIRE-UP","triageReason":"Tool availability checker for /repo-analysis skill per D6; referenced in PLAN.md but not in SKILL.md — needs skill reference"}
+{"file":"scripts/resolve-hook-warnings.js","triageAction":"KEEP","triageReason":"Called by session-start.js hook to check/resolve warning conditions — active session infrastructure"}
+{"file":"scripts/reviews/compute-changelog-metrics.js","triageAction":"KEEP","triageReason":"Canonical location for changelog metric computation; referenced by pipeline-consistency.test.js — active review utility"}
+{"file":"scripts/reviews/migrate-ecosystem-v2.js","triageAction":"ARCHIVE","triageReason":"One-time migration to recover orphaned review records from split-brain bug; migration complete per v1.0 header"}
+{"file":"scripts/reviews/migrate-retros.js","triageAction":"ARCHIVE","triageReason":"One-time migration that extracted retro data from markdown to retros.jsonl; migration data is hardcoded — complete"}
+{"file":"scripts/reviews/validate-jsonl-schemas.js","triageAction":"KEEP","triageReason":"Validates ecosystem JSONL files against Zod schemas; has test coverage and addresses DEBT-11312 — active validation utility"}
+{"file":"scripts/rotate-jsonl.js","triageAction":"KEEP","triageReason":"Called by session-start.js hook for JSONL rotation per rotation policy — active session infrastructure"}
+{"file":"scripts/run-github-health.js","triageAction":"KEEP","triageReason":"Called by session-begin skill for quick GitHub health check; referenced in github-health SKILL.md — active session infrastructure"}
+{"file":"scripts/secrets/decrypt-secrets.js","triageAction":"KEEP","triageReason":"Called by session-start.js hook and decrypt-secrets skill for remote session token restoration — active security utility"}
+{"file":"scripts/secrets/encrypt-secrets.js","triageAction":"KEEP","triageReason":"Companion to decrypt-secrets.js; encrypts .env.local for safe git commit — active security utility"}
+{"file":"scripts/tasks/resolve-dependencies.js","triageAction":"KEEP","triageReason":"Dependency-aware task ordering from ROADMAP.md; referenced by task-next skill and session-begin skill — active planning utility"}

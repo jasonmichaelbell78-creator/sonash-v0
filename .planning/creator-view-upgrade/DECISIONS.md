@@ -1,0 +1,81 @@
+# DECISIONS: Creator View Comprehensive Upgrade
+
+**Date:** 2026-04-05 **Session:** #263 **Total decisions:** 30 **Scope:**
+repo-analysis Creator View v2 + companion /repo-synthesis skill
+
+---
+
+## Schema & Architecture Foundations
+
+| #   | Decision                          | Choice                                                                                                                                             | Rationale                                                                                                                                        |
+| --- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1   | Fit-separation model (G8)         | Two score fields per candidate: `objective_score` (0-100) + `personal_fit_score` (0-100) in value-map.json. Ranking computed on read.              | Non-disruptive addition to existing schema. Preserves flexibility to sort by either axis or weighted blend.                                      |
+| 2   | Link-mining output location (G1)  | Separate `mined-links.jsonl` per repo output directory. Not in value-map.json.                                                                     | 500-1000+ entries would bloat value-map.json. Different schema from pattern/knowledge candidates. JSONL allows streaming/incremental processing. |
+| 3   | Repo type classification (G1)     | Enum in `analysis.json`: `library \| application \| curated-list \| registry \| documentation-hub \| monorepo`. Replaces absence-pattern approach. | CURATED_LIST is a repo TYPE, not an absence. Provides routing for type-specific behaviors (link mining, scoring lens).                           |
+| 4   | Scoring lens architecture (G10)   | Dual output — both adoption + creator lenses always computed. Repo-type-inferred default shown as primary, other as secondary.                     | Both perspectives valuable. Library maintainer evaluating a research repo wants both lenses.                                                     |
+| 5   | Anti-ideas placement (G9)         | New 6th Creator View section ("What's Worth Avoiding") + `cautionary` category in findings.jsonl.                                                  | Anti-ideas are warnings, not comparisons. Deserve dedicated prose section + structured tracking for EXTRACTIONS.md/TDMS consumption.             |
+| 6   | Schema versioning (cross-cutting) | `schema_version: "2.0"` field in all output files. Migration-on-rescan — re-scan IS the migration. Old files archived.                             | All 6 repos scheduled for re-scan anyway. Migration scripts on AI-generated prose artifacts are fragile.                                         |
+
+## Detection & Classification
+
+| #   | Decision                           | Choice                                                                                                                      | Rationale                                                                        |
+| --- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| 7   | Repo type detection heuristic (G1) | Signal matrix: README size, code-to-markdown ratio, topic tags, file count, link density. 3+ strong signals = curated-list. | Multiple signals avoid false positives. Works with API data in Quick Scan.       |
+| 28  | Mixed-type repos                   | Primary + secondary type: `repo_type` + `repo_type_secondary`. Primary drives behavior, secondary informational.            | Avoids multi-type routing complexity. Preserves information for synthesis skill. |
+
+## Link Mining Pipeline (G1)
+
+| #   | Decision                 | Choice                                                                                                                                                           | Rationale                                                                                                          |
+| --- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| 8   | Recursion depth          | Depth 0 default (parse markdown). Depth 1 opt-in via interactive gate with budget. Targeted Depth 2 on high-value links from Depth 1 results.                    | Progressive deepening. Depth 0 already high-value (structured data from markdown). Depth 2 selective, user-driven. |
+| 9   | Relevance scoring        | Category matching + keyword overlap with home context at Depth 0. Scores labeled `confidence: "low"` (metadata) vs `"high"` (fetched at Depth 1).                | Honest about what we know at each depth level.                                                                     |
+| 10  | mined-links.jsonl schema | `{title, url, category, source_line, description, objective_score, personal_fit_score, personal_fit_projects[], confidence, depth, fetch_status, tags[], notes}` | Comprehensive without bloat. Tracks fetch state for incremental deepening.                                         |
+| 29  | Rate limiting            | HEAD-first with selective full fetch. HEAD at 5 req/sec for existence + headers, full fetch at 1 req/sec only for high-relevance links. ~5 min for 850 links.    | 10x faster than naive full-fetch. Less resource-intensive for target sites.                                        |
+
+## Creator View Structure
+
+| #   | Decision                         | Choice                                                                                                                                                            | Rationale                                                                                                    |
+| --- | -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| 11  | Negative-space detection (G4)    | Fold into Section 1 (What This Repo Understands) as natural complement — what they know AND what they're blind to.                                                | Contrast strengthens both halves. Section 3 stays about your approach; Section 6 stays about warnings.       |
+| 12  | Section count                    | 6 sections: (1) Understands + Blindspots, (2) Relevant, (3) Differs (Ahead/Different/Behind), (4) Challenge, (5) Knowledge Candidates, (6) What's Worth Avoiding. | Challenge stays prominent and separate. Knowledge Candidates in both prose and value-map.json.               |
+| 15  | Recency weighting (G3)           | SESSION_CONTEXT.md as primary fit input, ROADMAP.md secondary for direction. Formalize loading order in spec.                                                     | Relies on user-declared currency, not file timestamps. Already how it worked in practice.                    |
+| 22  | Brilliant-but-off-sprint display | Badges in tables (`[ACTIVE-SPRINT]` / `[PARK]` / `[EVERGREEN]`) + prose callout in Section 5 Knowledge Candidates.                                                | Badges for quick scanning, prose for context on why high-objective but low-fit candidates are worth parking. |
+
+## Scoring & Verdicts
+
+| #   | Decision                  | Choice                                                                                                                                                            | Rationale                                                                                                                    |
+| --- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 19  | Creator lens weight table | Security 5%, Reliability 10%, Maintainability 15%, Documentation 25%, Process 5%, Velocity 5%, **Knowledge 35%**. 7 dimensions (asymmetric vs adoption lens's 6). | Creator lens values knowledge as primary dimension. Adoption lens doesn't need Knowledge at 0% — the asymmetry IS the point. |
+| 20  | Creator lens verdicts     | **Study** (80+) / **Explore** (60-79) / **Extract** (40-59) / **Note** (0-39).                                                                                    | Maps to adoption score ranges but with learning-appropriate labels. "Study" signals deeper commitment.                       |
+
+## Cross-Repo & Synthesis
+
+| #   | Decision                          | Choice                                                                                                                                                                                                  | Rationale                                                                                                |
+| --- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| 13  | Synthesis architecture (G2/G5/G7) | Hybrid — repo-analysis does lightweight cross-repo awareness (cross-references, "see also"). Companion `/repo-synthesis` skill does heavy synthesis. Auto-offered by repo-analysis when 3+ repos exist. | Per-repo analysis shouldn't load all other outputs. But completely ignoring other repos loses easy wins. |
+| 14  | Reading chain (G7)                | Per-repo `related_repos[]` in value-map.json for raw discoveries + cross-repo `reading-chain.jsonl` for aggregation.                                                                                    | Capture at source, aggregate cross-repo. Synthesis skill reads reading-chain.jsonl.                      |
+| 16  | Mental-model-shift tracking (G6)  | Defer to synthesis skill output. No per-scan capture. G6 emerges as a section of the synthesis report.                                                                                                  | Shape is genuinely unknown. Better to let it emerge from cross-repo analysis than to predefine a schema. |
+| 17  | Ecosystem meta-patterns (G5)      | Lightweight `ecosystem_tags[]` in analysis.json per-repo. Heavy pattern detection in synthesis skill.                                                                                                   | Tags are cheap to produce during analysis. Give synthesis skill structured input.                        |
+| 24  | Fit computation timing            | Scan-time baking for per-repo artifacts (deterministic). Synthesis-time refresh as overlay (always current). Synthesis skill doesn't modify repo-analysis artifacts.                                    | Reproducible per-repo snapshots. Synthesis adds current-fit perspective without touching source files.   |
+
+## Display & UX
+
+| #   | Decision                   | Choice                                                                                                                                               | Rationale                                                    |
+| --- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| 18  | EXTRACTIONS.md update (G8) | Classification badge in summary table (`active-sprint` / `park-for-later` / `evergreen`). Both scores in per-repo detail tables.                     | Summary stays scannable. Detail tables preserve precision.   |
+| 21  | Quick Scan impact          | Repo type classification + dual scoring + partial ecosystem tags + cross-references run in Quick Scan. Enriched gate message for curated-list repos. | Tells user WHY Standard matters for this specific repo type. |
+
+## Companion Skill & Implementation
+
+| #   | Decision                      | Choice                                                                                                                                                                                                                                                                                                    | Rationale                                                                                              |
+| --- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 23  | Synthesis skill scope         | 6 outputs: emergent themes (G2), ecosystem gaps (G5), reading chain (G7), mental model evolution (G6), fit portfolio view, cross-repo knowledge map. Input contract: value-map.json, mined-links.jsonl, analysis.json, reading-chain.jsonl, EXTRACTIONS.md, extraction-journal.jsonl, creator-view prose. | Defines the output contracts repo-analysis must produce.                                               |
+| 26  | Synthesis skill location      | Separate directory: `.claude/skills/repo-synthesis/SKILL.md` + `REFERENCE.md`.                                                                                                                                                                                                                            | Different invocation pattern, independent lifecycle, skill-creator expects one SKILL.md per directory. |
+| 27  | Synthesis skill design timing | Designed in THIS deep-plan. Implementation via separate skill-creator session (Task B).                                                                                                                                                                                                                   | Contract is already defined. Skeleton spec enables future implementation.                              |
+
+## Rollout & Process
+
+| #   | Decision             | Choice                                                                                                                                                                                  | Rationale                                                                                  |
+| --- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| 25  | Rollout order        | A1 (schema) → A2 (CV structure) → A3 (scoring) → A4 (display) → A5 (link mining) → A6 (cross-repo) → A7 (synthesis skill). Final audit comprehensive with context-dependency following. | Dependency-driven ordering. Schema first because everything references it.                 |
+| 30  | Implementation scope | Two separate skill-creator invocations: Task A (repo-analysis update, A1-A6) then Task B (repo-synthesis creation, A7). Review checkpoint between.                                      | Focused sessions produce better results. Verify output contracts before building consumer. |

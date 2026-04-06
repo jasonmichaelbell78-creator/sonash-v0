@@ -1,12 +1,35 @@
 # Extraction Candidates -- Cross-Repo Summary
 
-Generated: 2026-04-03 | Total: 21 candidates across 4 repos
+Generated: 2026-04-03 | Updated: 2026-04-05 | Total: 29 candidates across 6
+repos
 
 ## Extracted (0)
 
 _None yet._
 
-## Deferred (18)
+## Deferred (26)
+
+### public-apis/public-apis (2 candidates) -- Verdict: Extract (44) [Quick Scan only]
+
+| Candidate                              | Novelty | Effort | Notes                                                                                                                                                                                                                                                                                           |
+| -------------------------------------- | ------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Scheduled Link Validation Workflow     | Low     | E0     | `.github/workflows/validate_links.yml` + Python `requests`-based link checker in `scripts/`. Transferable pattern for any link-rot-sensitive artifact (docs/\*, skill-indexes, README). ~100 LOC. Not clone-inspected — Quick Scan inference from workflow list + SBOM.                         |
+| Curated-List Stagnation Case Study (K) | High    | E0     | 419K stars + 2 commits/90 days + 1191 open issues + PR approval gate stuck = full lifecycle lesson: community momentum → commercial capture (APILayer) → approval bottleneck → celebrity stagnation. Cautionary context for any future JASON-OS skill registry or community distribution model. |
+
+**Note:** Cross-reference with `codecrafters-io/build-your-own-x` "35-Category
+Tutorial Taxonomy" — public-apis uses a similar 35+ category structure. Not
+duplicated here.
+
+### teng-lin/notebooklm-py (6 candidates) -- Verdict: Trial (60)
+
+| Candidate                                | Novelty | Effort | Notes                                                                                                                                                                                                                                            |
+| ---------------------------------------- | ------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Skill Install + Version Stamping (P1)    | High    | E2     | `skill.py` (~280 lines) reads SKILL.md from package data, stamps `<!-- vX.Y.Z -->` into frontmatter, writes to ~/.claude/skills/ and ~/.agents/skills/. Status cmd detects drift. Directly retires cross_locale_config problem. Needs Node port. |
+| Autonomy Rules Section in SKILL.md (P2)  | Medium  | E1     | Structured section splitting every command into "Run automatically" vs "Ask before running" with per-command reasons. Retrofit candidate for add-debt, pr-review, session-end, audit-\* skills. ~30 min per skill.                               |
+| Nightly RPC Health Check (P3)            | Medium  | E2     | `rpc-health.yml` round-trips 35+ method IDs against Google, auto-files GitHub issue with `rpc-breakage` label on mismatch. Latent value — activates when you identify an external contract to monitor (Claude tool API, MCP health, etc).        |
+| Ambient CLAUDE.md PR Workflow (P5)       | Medium  | E1     | Mandatory 4-step PR workflow (monitor CI → check reviews → fix + reply with SHA → verify mergeStateStatus CLEAN) embedded in CLAUDE.md as ambient guidance vs your invoked /pr-review. Design philosophy decision.                               |
+| Embedded Task() Subagent Patterns (P6)   | Medium  | E1     | SKILL.md workflows include literal `Task(prompt=..., subagent_type=...)` invocations copy-pasteable by agents. Reduces agent cognitive load from "design task prompt" to "fill parameters". Retrofit for long-running skill workflows.           |
+| Open Skills Ecosystem Investigation (K9) | High?   | E1     | README references `npx skills add teng-lin/notebooklm-py` and "open skills ecosystem". Unverified — could be real skill registry relevant to JASON-OS distribution, or aspirational naming. 15-min web research needed before acting.            |
 
 ### HKUDS/CLI-Anything (7 candidates) -- Verdict: Trial (62)
 

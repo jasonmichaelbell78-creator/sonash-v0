@@ -27,6 +27,13 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-04 Sessions
 
+### Session #260 (2026-04-05)
+
+**Focus**: Session start + alerts fixes + code review
+
+- Branch sync, /alerts --full 21 fixes, code review fixes (symlink bypass, stale
+  cleanup, depth-- typo).
+
 ### Session #259 (2026-04-03)
 
 **Focus**: Research integrity completion + PR #489 R1+R2 reviews

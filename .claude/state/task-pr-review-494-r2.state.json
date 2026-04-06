@@ -1,0 +1,14 @@
+{
+  "pr": 494,
+  "round": 2,
+  "review_number": 68,
+  "source": "mixed",
+  "total": 10,
+  "fixed": 7,
+  "deferred": 0,
+  "rejected": 3,
+  "severity": { "critical": 0, "major": 2, "minor": 3, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "completed_at": "2026-04-06T17:00:00Z"
+}

@@ -25,7 +25,7 @@
     "docs:check": "node scripts/check-docs-light.js",
     "docs:archive": "node scripts/archive-doc.js",
     "docs:sync-check": "node scripts/check-document-sync.js",
-    "docs:index": "node scripts/generate-documentation-index.js",
+    "docs:index": "node scripts/generate-documentation-index.mjs",
     "roadmap:validate": "node scripts/check-roadmap-health.js",
     "roadmap:hygiene": "node scripts/check-roadmap-hygiene.js",
     "review:check": "node scripts/check-review-needed.js",
@@ -124,7 +124,10 @@
     "patterns:promote": "node scripts/promote-patterns.js",
     "ecosystem-audit": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js",
     "ecosystem-audit:check": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --check",
-    "ecosystem-audit:summary": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --summary"
+    "ecosystem-audit:summary": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --summary",
+    "orphans:detect": "node scripts/detect-orphans.js",
+    "orphans:report": "node scripts/render-orphan-report.js",
+    "planning:validate-sync": "node scripts/planning/validate-jsonl-md-sync.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

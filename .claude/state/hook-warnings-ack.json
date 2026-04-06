@@ -1,16 +1,9 @@
 {
   "acknowledged": {
-    "settings-guardian": "2026-03-29T16:41:18.433Z",
-    "deploy-safeguard": "2026-03-29T22:00:00.000Z",
-    "large-file-gate": "2026-03-29T22:00:00.000Z",
-    "pr-creep": "2026-04-05T14:00:00.000Z",
-    "session-end-missing": "2026-04-05T14:50:00.000Z",
-    "review-lifecycle": "2026-04-05T14:50:00.000Z",
-    "tdms-s0": "2026-04-05T14:50:00.000Z",
-    "pipeline-ratchet-baselines": "2026-04-05T14:50:00.000Z",
-    "cli-tools-missing": "2026-03-31T11:10:00.000Z",
-    "propagation-staged": "2026-04-05T05:08:01.407Z",
-    "trigger": "2026-04-05T18:00:00.000Z"
+    "pr-creep": "2026-04-06T11:42:03.316Z",
+    "propagation-staged": "2026-04-06T11:42:03.316Z",
+    "trigger": "2026-04-06T11:42:03.316Z",
+    "session-end-missing": "2026-04-06T11:42:03.316Z"
   },
-  "lastCleared": "2026-04-05T18:00:00.000Z"
+  "lastCleared": "2026-04-06T11:42:03.315Z"
 }

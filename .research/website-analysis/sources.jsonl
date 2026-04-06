@@ -1,0 +1,22 @@
+{"id": "D1a", "title": "Static Content Extraction Tools (No JS Rendering)", "file": "findings/D1a-static-extractors.md", "sources_count": 8, "confidence_distribution": {"HIGH": 8, "MEDIUM": 2, "LOW": 1}}
+{"id": "D1b", "title": "JavaScript-Rendered Content Extraction Tools", "file": "findings/D1b-js-extractors.md", "sources_count": 9, "confidence_distribution": {"HIGH": 7, "MEDIUM": 3, "LOW": 1}}
+{"id": "D2a", "title": "JavaScript Detection and Rendering Decision", "file": "findings/D2a-js-detection.md", "sources_count": 7, "confidence_distribution": {"HIGH": 6, "MEDIUM": 3, "LOW": 0}}
+{"id": "D2b", "title": "Playwright MCP Tool Inventory and Limits", "file": "findings/D2b-playwright-limits.md", "sources_count": 5, "confidence_distribution": {"HIGH": 5, "MEDIUM": 2, "LOW": 0}}
+{"id": "D3", "title": "Compliance Gates (robots.txt, ToS, GDPR, llms.txt)", "file": "findings/D3-compliance-gates.md", "sources_count": 11, "confidence_distribution": {"HIGH": 8, "MEDIUM": 3, "LOW": 1}}
+{"id": "D4a", "title": "Creator Value Axes for Website Analysis", "file": "findings/D4a-creator-value-axes.md", "sources_count": 9, "confidence_distribution": {"HIGH": 7, "MEDIUM": 4, "LOW": 1}}
+{"id": "D4b", "title": "Creator View Structure and Section Design", "file": "findings/D4b-creator-structure.md", "sources_count": 8, "confidence_distribution": {"HIGH": 6, "MEDIUM": 4, "LOW": 1}}
+{"id": "D5", "title": "Site Classification Taxonomy and Auto-Detection", "file": "findings/D5-classification.md", "sources_count": 10, "confidence_distribution": {"HIGH": 9, "MEDIUM": 2, "LOW": 0}}
+{"id": "D6", "title": "Link Scoring and Mining Algorithm", "file": "findings/D6-link-scoring.md", "sources_count": 8, "confidence_distribution": {"HIGH": 7, "MEDIUM": 3, "LOW": 0}}
+{"id": "D7", "title": "Engineer View Design (Freshness, Trust, Readability)", "file": "findings/D7-engineer-view.md", "sources_count": 9, "confidence_distribution": {"HIGH": 7, "MEDIUM": 3, "LOW": 2}}
+{"id": "D8", "title": "Anti-patterns, Absence Patterns, and Bias Mitigation", "file": "findings/D8-antipatterns.md", "sources_count": 12, "confidence_distribution": {"HIGH": 7, "MEDIUM": 6, "LOW": 3}}
+{"id": "D9a", "title": "Link Density Analysis and Cross-site Trigger Thresholds", "file": "findings/D9a-link-density.md", "sources_count": 7, "confidence_distribution": {"HIGH": 5, "MEDIUM": 3, "LOW": 1}}
+{"id": "D9b", "title": "Cross-site Synthesis Methodology", "file": "findings/D9b-synthesis-method.md", "sources_count": 9, "confidence_distribution": {"HIGH": 6, "MEDIUM": 4, "LOW": 1}}
+{"id": "D10a", "title": "Expedition Mode UX and Navigation Design", "file": "findings/D10a-expedition-ux.md", "sources_count": 8, "confidence_distribution": {"HIGH": 7, "MEDIUM": 3, "LOW": 1}}
+{"id": "D10b", "title": "Expedition State Management and Resume Protocol", "file": "findings/D10b-expedition-state.md", "sources_count": 7, "confidence_distribution": {"HIGH": 6, "MEDIUM": 3, "LOW": 1}}
+{"id": "D11a", "title": "Obsidian and Vault Storage MCP Integration", "file": "findings/D11a-obsidian.md", "sources_count": 8, "confidence_distribution": {"HIGH": 6, "MEDIUM": 3, "LOW": 1}}
+{"id": "D11b", "title": "NotebookLM Alternatives and Storage Architecture", "file": "findings/D11b-notebooklm-alternatives.md", "sources_count": 9, "confidence_distribution": {"HIGH": 7, "MEDIUM": 3, "LOW": 1}}
+{"id": "D11c", "title": "Integration Patterns with Claude Code Memory System", "file": "findings/D11c-integration-patterns.md", "sources_count": 7, "confidence_distribution": {"HIGH": 6, "MEDIUM": 3, "LOW": 1}}
+{"id": "D12", "title": "Storage Schema and Artifact Structure", "file": "findings/D12-structure.md", "sources_count": 6, "confidence_distribution": {"HIGH": 7, "MEDIUM": 2, "LOW": 0}}
+{"id": "D13a", "title": "AI Extraction Tools (Firecrawl, Crawl4AI, Jina, Diffbot)", "file": "findings/D13a-ai-extraction.md", "sources_count": 10, "confidence_distribution": {"HIGH": 8, "MEDIUM": 3, "LOW": 1}}
+{"id": "D13b", "title": "AI Analysis Tools (Perplexity, Exa, Google AI Overviews, Tavily)", "file": "findings/D13b-ai-analysis.md", "sources_count": 11, "confidence_distribution": {"HIGH": 9, "MEDIUM": 3, "LOW": 0}}
+{"id": "D14", "title": "Metadata Extraction (Open Graph, JSON-LD, Cheerio Pipeline)", "file": "findings/D14-metadata.md", "sources_count": 8, "confidence_distribution": {"HIGH": 8, "MEDIUM": 1, "LOW": 0}}
