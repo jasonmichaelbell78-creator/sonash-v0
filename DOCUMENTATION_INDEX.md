@@ -207,7 +207,7 @@ _Essential project-level documentation_
 
 | Document                                                | Description                                                      | References | Last Modified |
 | ------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓6 ↑9      | 2026-04-03    |
+| [AI Context & Rules for SoNash](CLAUDE.md)              | Core rules and constraints loaded on every AI turn. Kept min...  | ↓6 ↑9      | 2026-04-06    |
 | [Changelog](CHANGELOG.md)                               | - generate-views.js no longer overwrites MASTER_DEBT.jsonl.      | ↓0 ↑0      | 2026-03-22    |
 | [Code of Conduct](CODE_OF_CONDUCT.md)                   | This document establishes the standards of behavior expected...  | ↓1 ↑0      | 2026-03-20    |
 | [Contributing to SoNash](CONTRIBUTING.md)               | Guidelines for contributing to SoNash. We welcome bug report...  | ↓0 ↑8      | 2026-03-19    |
@@ -305,7 +305,7 @@ _Planning & Active_
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-03-19    |
-| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-04-05    |
+| [Learning Effectiveness Metrics](docs/LEARNING_METRICS.md)                                             | This document tracks Claude's learning effectiveness - wheth... | ↓0 ↑0      | 2026-04-06    |
 | [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-03-19    |
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓1 ↑2      | 2026-03-19    |
 | [Testing Plan](docs/TESTING_CHECKLIST.md)                                                              | Comprehensive testing guidance for the SoNash application, i... | ↓5 ↑1      | 2026-03-19    |
@@ -439,9 +439,9 @@ _Claude Code skills_
 | [Python MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/python_mcp_server.md)                                 | This document provides Python-specific best practices and ex...   | ↓1 ↑0      | 2026-01-12    |
 | [quick-fix](.claude/skills/quick-fix/SKILL.md)                                                                                      | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-24    |
 | [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓2 ↑0      | 2026-04-05    |
-| [Repo Synthesis Reference](.claude/skills/repo-synthesis/REFERENCE.md)                                                              | Identify recurring patterns, dominant themes, and contrarian      | ↓1 ↑0      | 2026-04-05    |
-| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓0 ↑1      | 2026-04-05    |
-| [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | Cross-repo intelligence from your analyzed repositories. Whe...   | ↓0 ↑2      | 2026-04-05    |
+| [Repo Synthesis Reference](.claude/skills/repo-synthesis/REFERENCE.md)                                                              | Identify recurring patterns, dominant themes, and contrarian      | ↓1 ↑0      | 2026-04-06    |
+| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓0 ↑1      | 2026-04-06    |
+| [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | Cross-repo intelligence from your analyzed repositories. Whe...   | ↓0 ↑2      | 2026-04-06    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-03-10    |
