@@ -1,6 +1,6 @@
 # Session Context
 
-**Document Version**: 8.20 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.21 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
 2026-04-06 (Session #265)
 
@@ -30,9 +30,8 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-04-06 **Branch**: `planning-4626` **Working On**:
-Session #265 — repo-analysis v4.2 + 6 repo re-runs + repo-synthesis v1.1
-alignment. Skill audit of repo-synthesis started (mismatches fixed, 12
-categories pending).
+Session #265 — repo-synthesis v1.2 skill audit complete (47 decisions). Cherry-
+picked website-analysis/synthesis skills + cross-locale state files.
 
 **Uncommitted Work**: None (session-end commit)
 
@@ -50,36 +49,30 @@ categories pending).
 
 ## Recent Session Summaries
 
+**Session #265** (REPO-SYNTHESIS SKILL AUDIT + CHERRY-PICKS):
+
+- **Branch**: `planning-4626` (5 commits)
+- **Repo-synthesis v1.2 skill audit**: 12 categories, 47 decisions (all
+  accepted), score 76→95/120. Added self-audit phase (was 3/10), verification
+  pass with T20 tally, warm-up/progress/closure UX, pause/resume, candidate cap,
+  contradiction handling, inference disclosure. Merged redundant Phase 3 into
+  2.5. Extracted guard rails to REFERENCE.md. Added synthesis.json schema. Fixed
+  3 skill-creator gaps. Commit `0f4ce507`.
+- **Cherry-picks**: website-analysis + website-synthesis skills (`7cfb8f60`),
+  un-ignore cross-locale state files + CLI reference doc (`8c9ca3a8`).
+- **CLAUDE.md updated**: Added repo-synthesis + website-analysis trigger rows.
+
 **Session #264** (ORPHAN DETECTION T21 + CHERRY-PICKS):
 
 - **Branch**: `planning-4526` (16 commits)
-- **Orphan detection scanner (T21)**: /deep-plan (20 decisions) → built
-  `scripts/detect-orphans.js` with cross-format reference graph
-  (`scripts/lib/reference-graph.js`). Scans 9 categories (scripts, workflows,
-  hooks, state, agents, skills, docs, planning, research). 428 findings. 7
-  parallel triage agents classified all findings. Interactive resolution: 75
-  deleted (65 state files, 7 backup hooks, 3 scripts), 35 archived (28 docs, 7
-  scripts), 7 wired up. Net: 428→350. Commit `0c298c09`.
-- **T23 added**: Website analysis skill (deep-research in worktree-webcrawler).
-- **T21 progress updated**: Queued as next after T23.
-- **Cherry-picks from worktree**: repo-analysis v4.0 Creator View upgrade (30
-  decisions), skill-audit fixes v4.1, /repo-synthesis companion skill, Phase A
-  workflow state, website-analysis brainstorm + deep-research (39 agents, 175
-  claims).
-- **npm scripts added**: `orphans:detect`, `orphans:report`,
-  `planning:validate-sync`.
+- Orphan detection scanner (T21): 428 findings, 110 resolved. Cherry-picks from
+  worktree: repo-analysis v4.0, skill-audit v4.1, repo-synthesis, website
+  analysis brainstorm + deep-research.
 
 **Session #263** (SESSION-BEGIN FIXES + /ALERTS TRIAGE + PR #493):
 
 - **Branch**: `planning-4526` (5 commits, PR #493 merged)
-- Session-begin fixes, /alerts triage, batch retro PRs #472-#493 (10 PRs, 13
-  action items). Pre-push race fix + CC baseline + DEBT-45639 intake.
-
-**Session #262** (PR #492 R1+R2 REVIEWS + RESEARCH-DISCOVERY-STANDARD v2):
-
-- **Branch**: `planning-4326` (11 commits)
-- PR #492 R1: 27 fixes. R2: TOCTOU cleanup. research-discovery-standard v2: 8
-  findings + 2 verification + 954-line synthesis. Artifact migration.
+- Session-begin fixes, /alerts triage, batch retro PRs #472-#493.
 
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
@@ -87,17 +80,17 @@ categories pending).
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                      |
-| ---------------------------------- | ------------- | ------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.         |
-| **Website Analysis (T23)**         | RESEARCHING   | Deep-research in worktree-webcrawler (39 agents, 175 claims). |
-| **Repo Analysis Skill**            | v4.1 SHIPPED  | Creator View upgrade (30 decisions), /repo-synthesis new.     |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).       |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner             |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                               |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.          |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                        |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.        |
+| Item                               | Status        | Progress                                                       |
+| ---------------------------------- | ------------- | -------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.          |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.         |
+| **Repo Analysis Skill**            | v4.2 SHIPPED  | 6 repos analyzed. /repo-synthesis v1.2 audited (47 decisions). |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).        |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner              |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.           |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                         |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.         |
 
 **Current Branch**: `planning-4626`
 
@@ -109,16 +102,16 @@ categories pending).
 
 ### Immediate Priority
 
-1. **Website analysis skill (T23)** — Deep-research done. /deep-plan → build.
-2. **Orphan detection v2 improvements** — Scanner misses system prompt
+1. **Run /repo-synthesis on 6 repos** — Skill v1.2 audited and ready. First
+   cross-repo synthesis with v4.2 baselines.
+2. **Website analysis (T23)** — Skills built. Test with first URL analysis.
+3. **Orphan detection v2 improvements** — Scanner misses system prompt
    skill/agent lists (false positives). Add check for runtime-available types.
-3. **research-discovery-standard v2 → plan (T13)** — 954-line synthesis ready.
-   /deep-plan the v2 recommendations.
-4. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), 6-tab
-   command center, XL effort.
-5. **debt-runner `/deep-plan` (T3)** — Research done, needs implementation plan.
-6. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims). Execute.
-7. **JASON-OS Domain 01 (T16)** — Internal Archaeology via /deep-research.
+4. **research-discovery-standard v2 → plan (T13)** — 954-line synthesis ready.
+5. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
+6. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+7. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
+8. **JASON-OS Domain 01 (T16)** — Internal Archaeology via /deep-research.
 
 ### After Debt-Runner
 
