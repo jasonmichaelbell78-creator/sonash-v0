@@ -141,8 +141,10 @@ resume detection on re-invocation.
     "status": "PROCEED|WARN|HARD_BLOCK",
     "robots_txt": "allowed|disallowed|not_found",
     "cf_mitigated": false,
-    "x_robots_tag": "none|noindex|nofollow",
+    "x_robots_tag": "none|noindex|nofollow|noindex, nofollow|<raw header value>",
     "llms_txt": "not_found|allowed|restricted",
+    "rss_available": false,
+    "rss_url": "string|null",
     "notes": "Optional compliance details"
   }
 }
@@ -207,7 +209,7 @@ extensions.
 | `schema_version` | string | Yes      | Schema version (`"1.0"`)                                                      |
 | `id`             | string | Yes      | Finding ID (F001, F002, etc.)                                                 |
 | `severity`       | string | Yes      | `high`, `medium`, `low`, or `info`                                            |
-| `category`       | string | No       | `content`, `technical`, `compliance`, `absence`, or `cautionary`              |
+| `category`       | string | Yes      | `content`, `technical`, `compliance`, `absence`, or `cautionary`              |
 | `dimension`      | string | Yes      | Value axis or engineer dimension ID                                           |
 | `title`          | string | Yes      | Short finding title                                                           |
 | `detail`         | string | Yes      | Full description with evidence                                                |
@@ -1459,11 +1461,11 @@ average but a 20 Technical Health is flagged:
 ### 6.4 Display Format
 
 ```
-Creator Verdict: Study (85) -- deep engagement recommended
+Creator Verdict: Study (82) -- deep engagement recommended
   Content Quality:  Excellent (88)
-  Technical Health: Healthy (62)
+  Technical Health: Critical (20)
   Creator Value:    Excellent (92)
-  Critical floor:   Technical Health (62)
+  Critical floor:   Technical Health (20)
 ```
 
 ---
@@ -1663,7 +1665,7 @@ Windows MAX_PATH compliant. Used for output directory naming.
 2. Lowercase the entire string
 3. Replace path separators (/) with double-hyphens (--)
 4. Replace all non-alphanumeric characters (except hyphens) with single hyphens
-5. Collapse consecutive hyphens to single hyphen
+5. Collapse runs of 3+ consecutive hyphens to single hyphen (preserve `--` path separators)
 6. Strip leading/trailing hyphens
 7. Truncate to 80 characters at a word boundary
 8. If truncated OR known collision risk:
@@ -1676,7 +1678,7 @@ Windows MAX_PATH compliant. Used for output directory naming.
 
 ```
 Windows MAX_PATH = 260 characters
-Workspace prefix:  ~80 chars (C:\Users\jason\Workspace\dev-projects\sonash-v0\)
+Workspace prefix:  ~80 chars (C:\Users\<user>\Workspace\dev-projects\<project>\)
 .research/ prefix: ~30 chars (.research/website-analysis/)
 Site slug:         max 80 chars
 Nested files:      ~50 chars (expedition-20260406.meta.json)

@@ -95,6 +95,8 @@ serviceAccountKey.json
 .claude/hooks/.session-end-cooldown.json
 .claude/hooks/.multistep-dedup.json
 .claude/hooks/.fetch-cache.json
+.claude/hooks/.session-state.json
+.claude/hooks/.commit-tracker-state.json
 .claude/state/reviews.jsonl
 .claude/state/pr-ecosystem-audit.jsonl
 .claude/state/code-reviewer-session.json

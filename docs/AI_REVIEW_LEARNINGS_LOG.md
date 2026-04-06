@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.118 **Created:** 2026-01-02 **Last Updated:**
-2026-04-03
+**Document Version:** 17.119 **Created:** 2026-01-02 **Last Updated:**
+2026-04-06
 
 ## Purpose
 
@@ -3738,3 +3738,29 @@ stale-rejected, 1 already-fixed)
   empty, >500 chars, and traversal patterns.
 - **cache-git-recency** — Cache `execFileSync("git", ["log", ...])` results per
   file path to avoid redundant subprocess calls.
+
+### Review #70 — PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini)
+
+**Date:** 2026-04-06 | **PR:** #498 | **Source:** mixed | **Round:** R1
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 21    | 16    | 2        | 3        |
+
+**Severity:** 0C / 3M / 8m / 10T
+
+**Patterns:**
+
+- **volatile-state-tracking** — Don't commit files that contain timestamps or
+  are rewritten by hooks (`.session-state.json`, `.commit-tracker-state.json`).
+  Add to `.gitignore` and `git rm --cached`.
+- **reviews-jsonl-integrity** — Every reviews.jsonl record must satisfy
+  `fixed + deferred + rejected == total`. Remove duplicate/placeholder records.
+- **extraction-journal-normalize** — Normalize categorical fields (novelty,
+  relevance) to consistent lowercase. No compound values (`low-medium`), no
+  uncertainty markers (`High?`). Fully qualify embedded URLs.
+- **skill-schema-consistency** — Schema examples must match schema definitions
+  (scoring example contradicted description). Schema fields referenced in later
+  sections must appear in the main definition (rss fields, x_robots_tag combos).
+- **slug-algorithm-separator-preservation** — When collapsing consecutive
+  hyphens, preserve `--` path separators (collapse 3+ only).

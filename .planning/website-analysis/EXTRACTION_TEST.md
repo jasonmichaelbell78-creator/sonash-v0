@@ -213,7 +213,7 @@ const roots = numbers.map((num) => Math.sqrt(num));
   "H3: Using map to reformat objects in an array",
   "H3: Using parseInt() with map()"
 ]
-````
+```
 
 ---
 
@@ -613,3 +613,4 @@ navigation sidebar included.
 | Content mediation  | Model-processed | Raw (unmediated)                  | Raw (flat text)          | Raw (noisy pandoc)       |
 | Screenshot         | No              | Yes (auto)                        | Separate call            | No                       |
 | Auth support       | No              | Persistent profiles               | Storage state            | No                       |
+````
