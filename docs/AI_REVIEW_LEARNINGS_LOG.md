@@ -3829,3 +3829,28 @@ stale-rejected, 1 already-fixed)
   `.js`/`.mjs`/`.cjs` scanning consistency.
 - **sync-guard-in-subshells** — `sync` in background subshells needs
   `command -v` guard for portability across shell environments.
+
+---
+
+### Review #68 — PR #494 R2 (Mixed: Qodo Compliance + Suggestions + SonarCloud)
+
+**Date:** 2026-04-06 | **PR:** #494 | **Source:** mixed | **Round:** R2
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 7     | 0        | 3        |
+
+**Severity:** 0C / 2M / 3m / 2T
+
+**Patterns:**
+
+- **diagnostic-data-sanitization** — Never write `process.argv` or
+  `process.cwd()` to diagnostic files. Use `argc` (count only) and sanitize
+  stack traces.
+- **cross-platform-path-normalization** — Normalize `\` to `/` before path
+  resolution in reference graphs. Windows markdown files may contain
+  backslashes.
+- **jsonl-per-line-resilience** — Parse JSONL files line-by-line with per-line
+  try/catch. One malformed line shouldn't break the entire parse.
+- **cache-repeated-file-reads** — When reading the same file inside a loop
+  (e.g., CLAUDE.md per agent), hoist the read before the loop.

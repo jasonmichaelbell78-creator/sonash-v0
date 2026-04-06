@@ -203,9 +203,10 @@ function mergeDirectEdges(incoming, refs) {
 function mergeResolvedEdges(incoming, refs) {
   for (const [source, targets] of refs) {
     for (const ref of targets) {
-      const resolved = resolveAsFilePath(ref);
+      const normalized = String(ref).replaceAll("\\", "/").replace(/^\.\//, "").trim();
+      const resolved = resolveAsFilePath(normalized);
       if (resolved) addEdge(incoming, resolved, source);
-      addEdge(incoming, `ref:${ref}`, source);
+      addEdge(incoming, `ref:${normalized}`, source);
     }
   }
 }
@@ -295,8 +296,10 @@ function resolveRelative(fromFile, spec) {
  */
 function resolveAsFilePath(ref) {
   if (!ref || typeof ref !== "string") return null;
+  // Normalize separators for cross-platform refs
+  const normalized = ref.replaceAll("\\", "/");
   // Strip leading ./ if present
-  const cleaned = ref.replace(/^\.\//, "");
+  const cleaned = normalized.replace(/^\.\//, "");
   // Skip URLs, anchors, mailto
   if (/^https?:\/\//.test(cleaned) || cleaned.startsWith("#") || cleaned.startsWith("mailto:"))
     return null;

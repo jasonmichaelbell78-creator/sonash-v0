@@ -700,10 +700,11 @@ function writeErrorDiagnostic(kind, err) {
       timestamp: new Date().toISOString(),
       kind, // "uncaughtException" | "unhandledRejection" | "main-throw"
       stage: currentStage,
-      argv: process.argv.slice(2),
-      cwd: process.cwd(),
+      argc: process.argv.slice(2).length,
       error: sanitizeError(err),
-      stack: err?.stack ? String(err.stack).split("\n").slice(0, 20).join("\n") : null,
+      stack: err?.stack
+        ? sanitizeError(String(err.stack).split("\n").slice(0, 10).join("\n"))
+        : null,
     };
     safeWriteFileSync(diagPath, JSON.stringify(payload, null, 2));
     console.error(`[check-cc] Diagnostic written to ${relative(ROOT, diagPath)}`);

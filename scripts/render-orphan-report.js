@@ -86,17 +86,18 @@ function buildSummaryTable(findings, categories) {
 }
 
 function buildDiffSection(findings) {
-  const counts = { NEW: 0, RESOLVED: 0, UNCHANGED: 0 };
+  let newCount = 0;
+  let unchanged = 0;
   for (const f of findings) {
-    if (f.diffStatus) counts[f.diffStatus] = (counts[f.diffStatus] || 0) + 1;
+    if (f.diffStatus === "NEW") newCount++;
+    else if (f.diffStatus === "UNCHANGED") unchanged++;
   }
-  if (counts.NEW === 0 && counts.RESOLVED === 0) return [];
+  if (newCount === 0) return [];
   return [
     "## Changes Since Last Run",
     "",
-    `- **New:** ${counts.NEW}`,
-    `- **Resolved:** ${counts.RESOLVED}`,
-    `- **Unchanged:** ${counts.UNCHANGED}`,
+    `- **New:** ${newCount}`,
+    `- **Unchanged:** ${unchanged}`,
     "",
   ];
 }

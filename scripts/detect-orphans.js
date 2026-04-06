@@ -144,7 +144,7 @@ function isContainedPath(scriptPath) {
     validatePathInDir(ROOT, scriptPath);
     return true;
   } catch {
-    return false;
+    return false; // validatePathInDir throws on traversal — expected control flow
   }
 }
 
@@ -158,6 +158,7 @@ function findDeadWorkflowRefs(content, workflowRel) {
     try {
       fs.statSync(path.join(ROOT, scriptPath));
     } catch {
+      // statSync throws ENOENT when file is missing — that's what we're detecting
       findings.push({
         file: scriptPath,
         category: "workflows",
@@ -353,6 +354,13 @@ function scanAgents(graph) {
     path.join(ROOT, ".claude", "agents", "global"),
   ];
 
+  let claudeMd = "";
+  try {
+    claudeMd = fs.readFileSync(path.join(ROOT, "CLAUDE.md"), "utf8");
+  } catch {
+    // CLAUDE.md missing — skip agent name checks
+  }
+
   for (const agentDir of agentDirs) {
     let files;
     try {
@@ -366,21 +374,7 @@ function scanAgents(graph) {
       const rel = path.relative(ROOT, absFile).replaceAll("\\", "/");
       const agentName = file.replace(".md", "");
 
-      // Check for references: file path references + name-based references
-      const fileRefs = graph.get(absFile);
-      const nameRefs = graph.get(`ref:${agentName}`);
-      const hasFileRef = fileRefs?.size > 0;
-      const hasNameRef = nameRefs?.size > 0;
-
-      if (hasFileRef || hasNameRef) continue;
-
-      // Also check CLAUDE.md directly for agent name
-      let claudeMd = "";
-      try {
-        claudeMd = fs.readFileSync(path.join(ROOT, "CLAUDE.md"), "utf8");
-      } catch {
-        // skip
-      }
+      if (graph.get(absFile)?.size > 0 || graph.get(`ref:${agentName}`)?.size > 0) continue;
       if (claudeMd.includes(agentName)) continue;
 
       findings.push({
@@ -581,11 +575,15 @@ function applyDiff(findings) {
   let previousFindings;
   try {
     const raw = fs.readFileSync(FINDINGS_PATH, "utf8");
-    previousFindings = raw
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((l) => JSON.parse(l));
+    const lines = raw.trim().split("\n").filter(Boolean);
+    previousFindings = [];
+    for (const line of lines) {
+      try {
+        previousFindings.push(JSON.parse(line));
+      } catch {
+        // Skip malformed JSONL lines — keep diff resilient
+      }
+    }
   } catch {
     for (const f of findings) f.diffStatus = "NEW";
     return null;
