@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#44)</summary>
+
+- **Date:** 2026-04-05
+- **Reviews consolidated:** #64-#review-pr493-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#42)</summary>
 
 - **Date:** 2026-04-05
@@ -1537,7 +1546,42 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 66-pr493: PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint) (unknown)
+### Review review-pr493-r1: PR #493 R1 - Mixed (Qodo + Gemini + SonarCloud + Doc Lint) (2026-04-05)
+
+**Date:** 2026-04-05 | **PR:** #493 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 5     | 0        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 5     | 0       |
+
+**Patterns:**
+
+- review-metrics-rounds-mismatch
+- overbroad-suppression-pattern-rejected
+- velocity-docs-crossdoc-stale
+- session-context-known-issues-stale
+- duplicate-consolidation-entry
+- ratchet-timeout-env-configurable
+
+**Learnings:**
+
+- Review-metrics reconcile does not recompute review_rounds — manual edits need
+  npm run reviews:lifecycle
+- Suppression messagePattern uses substring .includes(), not regex — narrowing
+  must target message field not details
+- Automated session-closure scripts justify hardcoded SKIP_REASON under
+  Guardrail #14
+- Known Issues sections must update when PR resolves items
+
+---
+
+### Review 66-pr493: PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #493 | **Source:** manual
 
@@ -3721,3 +3765,58 @@ stale-rejected, 1 already-fixed)
   display only.
 - **DEVELOPMENT.md isn't auto-regenerated from code** — removing a script
   requires manual doc update. Worth a cross-doc dependency check.
+
+---
+
+### Batch Retro PRs #472-#493 (Session #264, 2026-04-05)
+
+**Scope:** 10 PRs (#493, #492, #491, #489, #488, #487, #483, #482, #477, #472)
+**Method:** Full deliverable verification (199/199 claims, 15 CL agents),
+interactive walkthrough (62 findings), 13 action items implemented.
+
+**Top Findings:**
+
+1. **CL agent git-log false positives** — 6/6 HIGH findings were false MISSING
+   verdicts caused by `git log base..merge` range queries missing commits in PRs
+   with merge-from-main interleaved. Fix: CL agents now use
+   `gh pr view --json commits`. Added to pr-retro SKILL.md.
+2. **Pattern recurrence detection broken** — 80 unique pattern strings across 10
+   PRs with 0 exact-match recurrence, despite explicit "4th recurrence" language
+   in #492 learnings. Root cause: incident-unique naming. Fix: semantic
+   keyword-stemming matching guidance added to pr-retro Step 2.5.
+3. **Prior retro verify_cmd quality** — 3 FAIL + 2 ERROR out of 22 (22%) due to
+   grep-based or truncated commands. Fixed 5 broken verify_cmds in retros.jsonl.
+4. **STATE_SCHEMA.md 8x stale** — documented 15 files, actual 113. Updated to
+   v1.3 with auto-generated inventory.
+5. **Deep-research v1.9→v2.0** — added output date/session header requirement
+   and metric substantiation rule for % claims.
+
+**Scores:** #489 (10), #491 (9), #493/#488/#487/#482 (8), #492/#483/#472 (7),
+#477 (4 — 47.5% rejection outlier)
+
+**Cross-PR Systemic Patterns:**
+
+- Review process matured: #477 (no per-round commits) → #481+ (per-round commits
+  standard)
+- #492 zero-rejection anomaly (0/116) — likely tracking gap rather than
+  exceptional quality
+- Health snapshots in PR bodies use session-start values, not merge-time values
+  (stale by definition)
+- Incomplete agent findings now explicitly prohibited (new memory rule +
+  pr-retro fill-in protocol)
+
+**Action Items Implemented (13):**
+
+1. deep-research: output date/session header requirement
+2. deep-research: metric substantiation rule (% claims must cite methodology)
+3. brainstorm: deep-research routing adapter paragraph
+4. CLAUDE.md: guardrails audit (15/15 current, no conflicts)
+5. tests/hooks/session-start.test.ts: ratchet-baselines timeout test (4 cases)
+6. reviews.jsonl: removed stale 66-pr493 zero-item stub
+7. repo-analysis REFERENCE.md: v2.0→v3.0 version bump
+8. STATE_SCHEMA.md: v1.2→v1.3 with 113-file inventory
+9. deep-research SKILL.md: v1.9→v2.0 version bump
+10. brainstorm: T20 tally cross-reference to convergence-loop skill
+11. pr-retro: CL agent commit verification via `gh pr view --json commits`
+12. pr-retro: semantic pattern recurrence matching guidance
+13. retros.jsonl: 5 broken prior verify_cmds fixed (PRs #427, #480)

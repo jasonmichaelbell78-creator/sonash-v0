@@ -9,8 +9,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.9
-**Last Updated:** 2026-04-03
+**Document Version:** 2.0
+**Last Updated:** 2026-04-05
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -118,6 +118,8 @@ PHASE 1: Parallel Research (searcher agents)
 
 PHASE 2: Synthesis (synthesizer agent)
   Writes: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json
+  RESEARCH_OUTPUT.md MUST include header: date (YYYY-MM-DD), session number,
+  topic, depth level, agent count. Undated research is untraceable.
 
 PHASE 2.5: Verification (mandatory, scales with depth)
   Spawn verification agents to test claims against filesystem.
@@ -237,6 +239,10 @@ filesystem and web sources. Agent count: L1 (2), L2 (2), L3 (3), L4 (4+). Split
 claims across agents to avoid context exhaustion. Re-spawn per Critical Rule 8.
 Each writes `findings/V<N>-<scope>.md` with per-claim verdict (4-type taxonomy:
 VERIFIED, REFUTED, UNVERIFIABLE, CONFLICTED) with evidence.
+
+**Metric substantiation rule:** Any percentage claim (e.g., "70-80% of ideal",
+"+80% improvement") MUST cite its measurement methodology, benchmark, or source.
+Unsubstantiated % claims are flagged as UNVERIFIABLE by verifiers.
 
 ---
 

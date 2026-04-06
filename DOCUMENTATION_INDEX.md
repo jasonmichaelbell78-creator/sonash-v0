@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-04-05 **Active Documents:** 1086 **Archived Documents:** 104
+**Generated:** 2026-04-06 **Active Documents:** 1086 **Archived Documents:** 104
 
 ---
 
@@ -3514,7 +3514,7 @@ Documents with no inbound links (not referenced by any other document):
 | 232  | [.claude/skills/ux-researcher-designer/SKILL.md](.claude/skills/ux-researcher-designer/SKILL.md)                                                                                                                           | ux-researcher-designer                                                                                                                   | 3    | -                                                                        |
 | 233  | [.claude/skills/validate-claude-folder/SKILL.md](.claude/skills/validate-claude-folder/SKILL.md)                                                                                                                           | validate-claude-folder                                                                                                                   | 3    | -                                                                        |
 | 234  | [.claude/skills/webapp-testing/SKILL.md](.claude/skills/webapp-testing/SKILL.md)                                                                                                                                           | webapp-testing                                                                                                                           | 3    | -                                                                        |
-| 235  | [.claude/STATE_SCHEMA.md](.claude/STATE_SCHEMA.md)                                                                                                                                                                         | Hook &amp; Session State Files Schema                                                                                                    | 4    | ACTIVE                                                                   |
+| 235  | [.claude/STATE_SCHEMA.md](.claude/STATE_SCHEMA.md)                                                                                                                                                                         | Hook &amp; Session State Files Schema                                                                                                    | 4    | STALE — detailed schemas cover ~15 of 113 files                          |
 | 236  | [.claude/state/agent-research-results.md](.claude/state/agent-research-results.md)                                                                                                                                         | agent research results                                                                                                                   | 4    | -                                                                        |
 | 237  | [.claude/state/brainstorm-t5-research.md](.claude/state/brainstorm-t5-research.md)                                                                                                                                         | Findings: Claude Code Worktrees, Parallel Instances, and Shared State                                                                    | 4    | GitHub issue #28041 is OPEN as of the research date. Native              |
 | 238  | [.claude/state/deep-plan-findings.md](.claude/state/deep-plan-findings.md)                                                                                                                                                 | Deep Plan — Full Findings Report                                                                                                         | 4    | ACTIVE                                                                   |
@@ -4494,7 +4494,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-04-05 | Auto-generated from codebase scan |
+| Auto    | 2026-04-06 | Auto-generated from codebase scan |
 
 ---
 

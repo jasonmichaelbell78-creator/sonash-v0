@@ -261,13 +261,17 @@ so, sketch the hybrid and confirm: "So the direction is: [synthesis]. Correct?"
 3. **Convergence-loop verify** (MUST) — run CL quick preset on BRAINSTORM.md
    claims about codebase state, existing systems, and feasibility. As many
    passes as needed to converge. Present T20 tally
-   (Confirmed/Corrected/Extended/New). Fix any failed claims before presenting.
+   (Confirmed/Corrected/Extended/New) — standard convergence-loop protocol, see
+   `/convergence-loop` skill for definitions. Fix any failed claims before
+   presenting.
 4. Present routing menu (MUST):
 
 ```
 Brainstorm complete. What next?
 1. /deep-plan  — plan implementation of chosen direction
-2. /deep-research — investigate open questions
+2. /deep-research — investigate open questions (adapter: pass BRAINSTORM.md
+   chosen direction + open questions as the research topic; the research
+   output dir should use the same slug as the brainstorm)
 3. Both — research first, then plan
 4. Direct implementation — direction is clear enough, just build it
 5. Save and continue later — state preserved for resume
