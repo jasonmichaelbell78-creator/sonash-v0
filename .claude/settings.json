@@ -298,6 +298,7 @@
     "padding": 2
   },
   "enabledPlugins": {
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "superpowers-chrome@superpowers-marketplace": true
   }
 }

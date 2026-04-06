@@ -210,6 +210,7 @@ Interactive tools (suggest to user when appropriate): `lazygit`, `yazi`, `fzf`.
 | New UI feature                  | Generate `.protocol.json`               | Write |
 | External repo analysis          | `repo-analysis` skill                   | Skill |
 | Cross-repo synthesis (3+ repos) | `repo-synthesis` skill                  | Skill |
+| Website/URL analysis            | `website-analysis` skill                | Skill |
 
 ### POST-TASK (before committing) `[GATE: pre-commit hook + code-reviewer]`
 
