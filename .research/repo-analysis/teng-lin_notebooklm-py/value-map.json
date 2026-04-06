@@ -1,185 +1,134 @@
 {
-  "meta": {
-    "repo": "teng-lin/notebooklm-py",
-    "scan_date": "2026-04-05",
-    "scan_depth": "standard"
+  "repo": "teng-lin/notebooklm-py",
+  "skillVersion": "4.2",
+  "generated": "2026-04-06",
+  "scoring": {
+    "adoptionLens": { "verdict": "Trial", "score": 60 },
+    "creatorLens": { "verdict": "Trial", "score": 70 }
   },
-  "pattern_candidates": [
+  "patternCandidates": [
     {
-      "id": "P1",
-      "title": "Skill install with version stamping",
-      "source_files": [
-        "src/notebooklm/cli/skill.py",
-        "src/notebooklm/cli/agent_templates.py",
-        "pyproject.toml (lines 88-90: force-include SKILL.md into wheel)"
-      ],
-      "what": "A ~280-line CLI module that reads SKILL.md from package data, stamps the CLI version as an HTML comment in the frontmatter, and writes it to ~/.claude/skills/<name>/ and ~/.agents/skills/<name>/ (or project-scoped). Plus status and uninstall subcommands with version drift detection.",
-      "why_novel": "Solves cross-locale skill drift. You currently have no distinction between canonical source and installed copy — everything is a single file in .claude/skills/. This pattern introduces that distinction cleanly with minimal code.",
-      "effort": "E2 — port Python logic to Node, replace hatchling force-include with a build step or git reference, design a canonical source location",
-      "relevance": "Very high — directly addresses cross_locale_config memory and unblocks JASON-OS portability",
-      "novelty": "High — you don't have this pattern today"
+      "name": "Skill Install + Version Stamping",
+      "novelty": "High",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/. Solves cross_locale_config.",
+      "relevance_to_home": "Directly retires cross_locale_config problem. Needs Node port."
     },
     {
-      "id": "P2",
-      "title": "Autonomy Rules section in SKILL.md",
-      "source_files": ["SKILL.md (lines ~94-127)"],
-      "what": "A structured section in the skill definition that splits every command into 'Run automatically (no confirmation)' vs 'Ask before running', with a one-line reason for each.",
-      "why_novel": "Your skills encode autonomy via project-level CLAUDE.md guardrails and per-agent tool permissions. Per-skill per-command autonomy contracts are missing. This gives agents a structured lookup table instead of inferring from prose.",
-      "effort": "E1 — add to existing high-risk skills, no infrastructure change",
-      "relevance": "High — directly applicable to add-debt, pr-review, session-end, audit-* skills",
-      "novelty": "Medium — you have the concept, not the structure"
+      "name": "Autonomy Rules Section in SKILL.md",
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "22 auto-run + 7 ask-first with per-command reasons. Structured encoding of autonomy guardrails.",
+      "relevance_to_home": "Retrofit candidate for add-debt, pr-review, session-end, audit-* skills."
     },
     {
-      "id": "P3",
-      "title": "Nightly RPC health check with auto-filed issues",
-      "source_files": [
-        ".github/workflows/rpc-health.yml",
-        "scripts/check_rpc_health.py",
-        "docs/stability.md (Automated RPC Health Check section)"
-      ],
-      "what": "Nightly workflow that verifies each of 35+ RPC method IDs still round-trips with the server. On mismatch, auto-creates a GitHub issue with bug/rpc-breakage/automated labels showing expected vs actual IDs.",
-      "why_novel": "Pattern for health-checking dependencies you don't control. Doesn't apply to Firebase (which has stable contracts) but could apply to: Claude Code tool API contract, Anthropic SDK version drift, external MCP server health, GitHub Actions API changes.",
-      "effort": "E2 — adapt to a specific external contract you care about",
-      "relevance": "Medium — latent, activates when you identify an external contract to monitor",
-      "novelty": "Medium-high"
+      "name": "Nightly RPC Health Check",
+      "novelty": "Medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "description": "rpc-health.yml: daily cron, 3 exit codes, auto-creates GitHub issues on failure.",
+      "relevance_to_home": "Pattern for external contract monitoring."
     },
     {
-      "id": "P4",
-      "title": "PyPI README link substitution at build time",
-      "source_files": [
-        "pyproject.toml (lines 60-86: tool.hatch.metadata.hooks.fancy-pypi-readme.substitutions)"
-      ],
-      "what": "Build-time regex substitutions that rewrite relative doc links in README.md to version-tagged absolute GitHub URLs. Result: PyPI README at v0.3.4 always links to v0.3.4 docs, not main.",
-      "why_novel": "Solves the 'broken links on PyPI README' problem and the 'stale version in docs' problem simultaneously. Latent value for you — relevant when you eventually publish anything.",
-      "effort": "E0 — copy-paste config adaption",
-      "relevance": "Low today, medium if you publish",
-      "novelty": "Low — tiny insight"
+      "name": "Ambient CLAUDE.md PR Workflow",
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "4-step embedded PR workflow. Alternative to invoked /pr-review.",
+      "relevance_to_home": "Design question: ambient vs invoked."
     },
     {
-      "id": "P5",
-      "title": "Ambient CLAUDE.md with mandatory PR workflow",
-      "source_files": ["CLAUDE.md (Pull Request Workflow section)"],
-      "what": "Project CLAUDE.md embeds a mandatory 4-step PR workflow (monitor CI → check review comments → address each → reply with commit SHA → verify CLEAN) that ANY Claude Code session in the repo picks up automatically.",
-      "why_novel": "Contrasts with your invoked /pr-review skill. Design question: ambient (always loaded) vs invoked (on demand) agent guidance. They answer 'critical process discipline goes ambient'. Your CLAUDE.md today has guardrails but not the step-by-step process embedded.",
-      "effort": "E1 — 30 minute edit to your own CLAUDE.md to embed highest-criticality workflows",
-      "relevance": "Medium-high",
-      "novelty": "Medium"
+      "name": "Embedded Task() Subagent Patterns",
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "SKILL.md includes literal Task() invocations for agent copy-paste.",
+      "relevance_to_home": "Retrofit for long-running skill workflows."
     },
     {
-      "id": "P6",
-      "title": "Embedded Task() subagent patterns in SKILL.md workflows",
-      "source_files": [
-        "SKILL.md ('Common Workflows' section, e.g. 'Research to Podcast (Automated with Subagent)')"
-      ],
-      "what": "Workflow sections in SKILL.md include literal Task(prompt=..., subagent_type=...) invocations that agents can copy-paste. Treats subagent spawning as a normal workflow primitive, not an escape hatch.",
-      "why_novel": "Your skills reference agents abstractly ('spawn a research agent'); theirs provide the exact invocation. Reduces agent cognitive load from 'design the task prompt' to 'fill in the parameters'.",
-      "effort": "E1 — retrofit long-running workflows in existing skills",
-      "relevance": "Medium-high for skills with async/long-running operations",
-      "novelty": "Medium"
+      "name": "Open Skills Ecosystem Investigation",
+      "novelty": "High?",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "npx skills add teng-lin/notebooklm-py. Unverified. Could be real skill registry.",
+      "relevance_to_home": "Critical for JASON-OS distribution."
     }
   ],
-  "knowledge_candidates": [
+  "knowledgeCandidates": [
     {
-      "id": "K1",
-      "title": "Skill-as-pip-package distribution model",
-      "sources": [
-        "src/notebooklm/cli/skill.py",
-        "pyproject.toml force-include",
-        "docs on skill install"
-      ],
-      "what_to_learn": "How to ship a skill as installable software: canonical source vs installed copy, version stamping, multi-target install, drift detection.",
-      "extraction_effort": "E1 — 30 min focused read",
-      "relevance_tier": 1,
-      "active_project": "JASON-OS + cross_locale_config drift problem"
-    },
-    {
-      "id": "K2",
-      "title": "SKILL.md as executable spec (full structure study)",
-      "sources": ["SKILL.md"],
-      "what_to_learn": "A 500-line template for structuring agent skills: activation triggers in frontmatter → prerequisites → parallel-agent safety → autonomy rules → quick reference → output format schemas → workflow with subagent patterns → error decision trees → exit code contracts.",
-      "extraction_effort": "E1 — 45 min read with note-taking",
-      "relevance_tier": 1,
-      "active_project": "skill-creator, future skill authoring"
-    },
-    {
-      "id": "K3",
-      "title": "Engineering discipline against undocumented APIs",
-      "sources": [
-        "docs/stability.md",
-        "docs/rpc-development.md",
-        "src/notebooklm/rpc/types.py",
-        ".github/workflows/rpc-health.yml"
-      ],
-      "what_to_learn": "How to operate robustly when you depend on an interface you don't control: single source of truth, nightly round-trip verification, user self-recovery docs, explicit stability contracts.",
-      "extraction_effort": "E1 — 30 min",
-      "relevance_tier": 1,
-      "active_project": "Future external API integrations"
-    },
-    {
-      "id": "K4",
-      "title": "Build-time README link templating",
-      "sources": ["pyproject.toml lines 60-90"],
-      "what_to_learn": "Hatchling fancy-pypi-readme substitutions. How to solve the 'README on package index has broken relative links' problem with regex substitutions.",
-      "extraction_effort": "E0 — 10 min",
-      "relevance_tier": 2,
-      "active_project": "Latent — relevant when publishing"
-    },
-    {
-      "id": "K5",
-      "title": "Ambient vs invoked agent guidance design",
-      "sources": ["CLAUDE.md (notebooklm-py) vs your own CLAUDE.md"],
-      "what_to_learn": "When should a workflow be embedded in CLAUDE.md (ambient, always-loaded) vs an invoked skill? Their answer: high-criticality process discipline goes ambient. Worth comparing with your approach.",
-      "extraction_effort": "E0 — 15 min comparative read",
-      "relevance_tier": 2,
-      "active_project": "CLAUDE.md evolution"
-    },
-    {
-      "id": "K6",
-      "title": "Three-tier test strategy with VCR",
-      "sources": [
-        "tests/conftest.py",
-        "tests/vcr_config.py",
-        "pyproject.toml pytest/coverage config"
-      ],
-      "what_to_learn": "Unit (pure) / integration (VCR-recorded HTTP) / e2e (real API, pytest-marked) with cassette recording discipline.",
-      "extraction_effort": "E1 — 20 min",
-      "relevance_tier": 2,
-      "active_project": "Conceptual — your test discipline is different but shares goals"
-    },
-    {
-      "id": "K7",
-      "title": "Click command organization at scale",
-      "sources": ["src/notebooklm/cli/ (22 modules)"],
-      "what_to_learn": "How to decompose a ~50-command CLI into named groups without losing discoverability.",
-      "extraction_effort": "E1 — 20 min browse",
-      "relevance_tier": 3,
-      "active_project": "Latent"
-    },
-    {
-      "id": "K8",
-      "title": "SourceFulltext.find_citation_context pattern",
-      "sources": ["src/notebooklm/types.py (SourceFulltext class)"],
-      "what_to_learn": "API ergonomics when the underlying data is messy — helper that locates citation snippets with position tracking and ambiguity handling.",
-      "extraction_effort": "E0 — 10 min",
-      "relevance_tier": 3,
-      "active_project": "General pattern library"
-    },
-    {
-      "id": "K9",
-      "title": "Open skills ecosystem (npx skills add ...)",
-      "sources": ["README.md mention", "external investigation needed"],
-      "what_to_learn": "Whether 'npx skills add teng-lin/notebooklm-py' references a real skills registry/distribution ecosystem, and if so, how it works. Potentially highly relevant to JASON-OS distribution.",
-      "extraction_effort": "E1 — 15 min web research",
-      "relevance_tier": 1,
-      "active_project": "JASON-OS distribution research",
-      "flag": "unverified — determine if real or aspirational"
+      "name": "AGENTS.md separation pattern",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low-medium",
+      "description": "Separate file for Codex/parallel agent guidance instead of embedding in CLAUDE.md.",
+      "relevance_to_home": "Consider if CLAUDE.md grows further."
     }
   ],
-  "ranked_top_5": [
-    "P1 (skill install pattern)",
-    "K1 (study P1 source)",
-    "P2 (autonomy rules)",
-    "K9 (open skills ecosystem investigation)",
-    "P5 (ambient CLAUDE.md workflow)"
-  ]
+  "contentCandidates": [
+    {
+      "name": "SKILL.md Autonomy Rules Section",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:SKILL.md#autonomy-rules",
+      "relevance_to_home": "Direct template for adding autonomy rules to sonash skills."
+    },
+    {
+      "name": "skill.py Install Mechanism",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:src/notebooklm/cli/skill.py",
+      "relevance_to_home": "Reference implementation for skill distribution. Port pattern to Node."
+    },
+    {
+      "name": "rpc-health.yml Workflow",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:.github/workflows/rpc-health.yml",
+      "relevance_to_home": "Complete external contract monitoring workflow. Directly transferable."
+    },
+    {
+      "name": "CLAUDE.md Agent Guidance Pattern",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:CLAUDE.md",
+      "relevance_to_home": "CLAUDE.md structure comparison + ambient PR workflow."
+    }
+  ],
+  "antiPatternCandidates": [
+    {
+      "name": "Undocumented API dependency",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Entire project wraps Google's obfuscated RPC endpoints. Prefer documented APIs for critical features.",
+      "relevance_to_home": "If JASON-OS wraps external services, use documented APIs."
+    },
+    {
+      "name": "Over-engineered install mechanism",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low-medium",
+      "description": "280 lines for 'copy a file and stamp a version.' Extract the pattern, not the complexity.",
+      "relevance_to_home": "Keep skill distribution simple."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "HKUDS/CLI-Anything",
+      "connection_type": "referenced",
+      "detail": "CLI-Anything has a notebooklm harness that wraps this repo's CLI."
+    },
+    {
+      "target_repo": "karpathy/autoresearch",
+      "connection_type": "shared-pattern",
+      "detail": "Both use Markdown instruction files for agents (SKILL.md vs program.md). Different abstraction levels."
+    }
+  ],
+  "related_repos": ["HKUDS/CLI-Anything", "karpathy/autoresearch"]
 }

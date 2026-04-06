@@ -1,0 +1,49 @@
+{
+  "agent": "security-auditor",
+  "scan_date": "2026-04-03",
+  "capture_method": "task-notification-fallback",
+  "summary": {
+    "verdict": "CONDITIONAL",
+    "total_findings": 12,
+    "by_severity": { "S0": 1, "S1": 3, "S2": 5, "S3": 3 },
+    "python_files": 31,
+    "python_lines": 12182,
+    "test_files": 0,
+    "gitignore": false,
+    "requirements_pinned": 0,
+    "api_key_leak": "llm_utils.py:133,136 — prints client.api_key to stdout on error"
+  },
+  "criticals": [
+    {
+      "id": "SEC-S0-1",
+      "title": "API key printed to stdout on every API error and retry",
+      "file": "llm_utils.py:133,136"
+    }
+  ],
+  "high": [
+    {
+      "id": "SEC-S1-1",
+      "title": "Unsafe pickle.load on checkpoint files — arbitrary code execution",
+      "file": "main.py:448-452"
+    },
+    {
+      "id": "SEC-S1-2",
+      "title": "trust_remote_code=True in model loading — arbitrary code from HuggingFace",
+      "file": "llm_utils.py:231,242"
+    },
+    {
+      "id": "SEC-S1-3",
+      "title": "Placeholder API keys as argparse defaults invite hardcoding",
+      "file": "src/config.py:225-228"
+    }
+  ],
+  "novel_concepts": {
+    "skill_bank": "Dynamic collection of meta-cognitive memory management skills (INSERT/UPDATE/DELETE/NOOP + evolved specializations)",
+    "skill_evolution": "3-stage LLM-driven: failure mining → analysis+reflection → refinement. Triggered every N epochs.",
+    "memory_construction": "PPO controller selects top-K skills per text span → Executor prompts LLM with skills+memories → MemoryBank applies actions",
+    "dual_embeddings": "Each memory item has retriever embedding (for QA) + state encoder embedding (for controller input)",
+    "seed_skills": 4,
+    "evolved_conversational": 9,
+    "evolved_embodied": 6
+  }
+}

@@ -8,8 +8,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.1
-**Last Updated:** 2026-04-05
+**Document Version:** 4.2
+**Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -79,11 +79,13 @@ PHASE 0    Quick Scan     -> API-only, <30s, 18 dimensions + lightweight creator
 GATE       Interactive    -> "Run Standard/Deep? [y/N]"
 PHASE 1    Clone+Repomix  -> Blobless clone, generate repomix IMMEDIATELY, verify
 PHASE 2    Dimension Wave -> Inline (<20 files) or agents (large repos)
+PHASE 2b   Deep Read      -> Read internal artifacts beyond code (guides, notebooks, examples, embedded docs)
 PHASE 3    History Wave   -> 12-month temporal analysis (Deep only)
-PHASE 4    Creator View   -> Load home context, compare, challenge, knowledge map
-PHASE 4b   Link Mining    -> Parse, score, fetch links (curated-list/registry only)
+PHASE 4    Creator View   -> Load home context + Deep Read + Content Analysis, compare, challenge
+PHASE 4b   Content Eval   -> Evaluate embedded content (links, APIs, refs) for specific relevance
 PHASE 5    Engineer View  -> Merge dimensions, compute bands, dual-lens scoring
 PHASE 6    Value Map      -> Pattern + knowledge candidates ranked
+PHASE 6b   Coverage Audit -> Scan for unexplored content, prompt user to analyze or skip
 ROUTING    Menu           -> Extract | TDMS | Deep-plan | Memory | Adopt | Done
 ```
 
@@ -145,6 +147,36 @@ test infrastructure. See REFERENCE.md Section 1.2 for full catalog.
 
 ---
 
+## Deep Read (Phase 2b — MUST for Standard/Deep)
+
+After the dimension wave, identify and read internal artifacts beyond source
+code. A repo's knowledge lives in its documentation, examples, guides,
+notebooks, and embedded references — not just its `.py` or `.ts` files. Skipping
+these is like reviewing a library by looking at the building and ignoring the
+books.
+
+**Artifact discovery (MUST):** Scan the clone for:
+
+- Guide/tutorial documents (`guides/`, `docs/`, `examples/`, `*.md` beyond
+  README)
+- Notebooks (`.ipynb` files — read for methodology, not just code)
+- Embedded SKILL.md / instruction files (especially in monorepos with per-module
+  docs)
+- SOP/methodology documents (HARNESS.md, CONTRIBUTING.md details, architecture
+  docs)
+- Referenced external resources (arXiv papers, linked repos, datasets, blog
+  posts) — catalog these for Phase 4b evaluation
+
+**Output:** Write `deep-read.md` listing what was found, what was read, and what
+was cataloged for Phase 4b. For each artifact read, note what knowledge it
+contains that isn't visible from the code alone.
+
+**Feed forward:** Deep Read findings feed directly into Creator View (Phase 4).
+The Creator View's "What's Relevant To Your Work" section MUST reference
+specific internal artifacts, not just top-level observations.
+
+---
+
 ## History Wave (Phase 3 — Deep only)
 
 12-month temporal analysis: commit velocity, contributor health, churn hotspots.
@@ -155,6 +187,9 @@ See REFERENCE.md Sections 1.4 and 7 for temporal fingerprint specification.
 ## Creator View (Phase 4 — MUST for Standard/Deep)
 
 The primary analytical output. Written in conversational prose, not tables.
+Creator View is informed by THREE upstream inputs: home repo context, Deep Read
+artifacts (Phase 2b), and Content Evaluation results (Phase 4b). Do not write
+Creator View until Phase 4b completes — the content analysis shapes relevance.
 
 **Home repo context loading (MUST):**
 
@@ -169,12 +204,24 @@ Load before writing Creator View — these enable direct comparison:
 
 MAY load additional context when comparison requires deeper understanding.
 
+**Phase ordering for Creator View inputs:**
+
+1. Run Phase 4b (Content Evaluation) FIRST — it produces the content relevance
+   data that Creator View Section 2 needs.
+2. Load Deep Read results from Phase 2b — internal artifacts already analyzed.
+3. Load home repo context.
+4. Write Creator View with all three inputs available.
+
 **Creator View sections (MUST produce all 6):**
 
 1. **What This Repo Understands (+ Blindspots)** — Knowledge, methodology,
    insights. What it KNOWS, not what it does. Include blindspot analysis.
 2. **What's Relevant To Your Work** — Direct home-repo comparison with file
-   refs.
+   refs. **MUST reference specific content** from Deep Read and Content
+   Evaluation — specific tutorials, APIs, guides, papers, or internal docs that
+   are relevant, not just category-level observations. A curated-list repo's
+   value IS its links; a framework repo's value IS its internal docs. Surface
+   the actual items, not just the container.
 3. **Where Your Approach Differs** — Classify as
    **Ahead**/**Different**/**Behind**.
 4. **The Challenge** — THE thing you should seriously consider. Say so if
@@ -191,15 +238,71 @@ references something that exists.
 
 ---
 
-## Link Mining (Phase 4b — curated-list/registry only)
+## Content Evaluation (Phase 4b — MUST for Standard/Deep)
 
-Conditional on `repo_type` being `curated-list` or `registry`. Progressive
-depth: Depth 0 (parse markdown, score against home context), Depth 1 (HEAD-first
-fetch, interactive gate), Depth 2 (targeted deep-dive on selected links). Output
-to `mined-links.jsonl`. See REFERENCE.md Section 16 for full spec: markdown
-parsing rules, rate limiting (HEAD at 5 req/sec, full fetch at 1 req/sec),
-scoring logic, and interactive gates. If Depth 1 fetch fails for >50% of links,
-abort Depth 1 and present Depth 0 results.
+Evaluate the repo's embedded content for specific relevance to home context.
+This phase runs BEFORE Creator View (Phase 4) and feeds into it. A repo's value
+often lives in its references, not its code.
+
+**Applies to ALL repo types** (not just curated-list):
+
+### For curated-list/registry repos:
+
+The repo's value IS its links. Evaluate them, not just count them.
+
+- **Depth 0 (MUST):** Parse entries, classify by category, score categories
+  against home context (SoNash features, JASON-OS domains, current roadmap).
+- **Depth 1 (MUST for medium/high categories):** Evaluate individual entries
+  within relevant categories. For each: name, what it does, auth requirements,
+  specific applicability to home work. Filter structured metadata (auth type,
+  HTTPS, CORS) to surface zero-friction integration candidates.
+- **Depth 2 (interactive gate):** Targeted deep-dive on selected entries. Fetch
+  docs, test endpoints, evaluate quality. Gate: "N entries look relevant.
+  Deep-dive? [Y/N/Select]"
+
+Output to `mined-links.jsonl` (curated-list) or `content-eval.jsonl` (other).
+See REFERENCE.md Section 16 for link mining spec. If Depth 1 fetch fails for
+
+> 50% of links, abort Depth 1 and present Depth 0 results.
+
+### For framework/library/tool repos:
+
+Evaluate internal documentation artifacts identified in Deep Read (Phase 2b):
+
+- **Guides and tutorials:** Read each. Note which are relevant to home work.
+- **Per-module docs** (e.g., 37 SKILL.md files in cli-anything): Sample
+  representative examples. Compare against home equivalents. Identify the
+  best-built and worst-built examples.
+- **Embedded SKILL.md / instruction files:** Read and compare against home
+  SKILL.md format. Note structural differences.
+
+### For research/experimental repos:
+
+Evaluate referenced external resources:
+
+- **Papers/arXiv references:** Summarize relevance. Note if the paper's
+  methodology applies to home work.
+- **Linked repos** (forks, parent repos, related projects): Catalog with
+  one-line relevance assessment.
+- **Datasets/models referenced:** Note if accessible and applicable.
+- **Notebooks:** Read for methodology patterns, not just code.
+
+### Output
+
+Write `content-eval.jsonl` with one entry per evaluated item:
+
+```json
+{
+  "category": "guide|api|tutorial|paper|repo|notebook|skill-file",
+  "name": "...",
+  "url": "...",
+  "relevance": "high|medium|low|none",
+  "applicability": "...",
+  "home_connection": "..."
+}
+```
+
+This output feeds directly into Creator View Section 2.
 
 ---
 
@@ -220,24 +323,147 @@ marked. Override with `--lens`. See REFERENCE.md Section 4.
 
 ## Value Map (Phase 6)
 
-Generate `value-map.json` with two candidate types:
+Generate `value-map.json` with four candidate types:
 
 - **Pattern candidates:** Code, architecture, tooling to extract (existing)
 - **Knowledge candidates:** Understanding, methodology, insights to learn (new)
+- **Content candidates:** Specific items FROM the repo's content (tutorials,
+  APIs, guides, papers) that have direct home applicability. These are promoted
+  from `content-eval.jsonl` — any item rated `high` relevance in Phase 4b MUST
+  become a content candidate in value-map.json AND an extraction entry in both
+  EXTRACTIONS.md and extraction-journal.jsonl.
+- **Anti-pattern candidates:** Cautionary lessons from Creator View Section 6
+  ("What's Worth Avoiding"). What NOT to do is as valuable as what to do. Each
+  anti-pattern in Section 6 that is actionable (not just observational) MUST
+  become an anti-pattern candidate.
 
-Both use the same ranking fields (novelty, effort, relevance). Knowledge
+All four types use the same ranking fields (novelty, effort, relevance). Content
+candidates include a `url` field pointing to the specific resource. Knowledge
 candidates use extraction effort E0-E1 (reading/studying, not porting code).
+Anti-pattern candidates use effort E0 (they're lessons, not work).
+
+**Content promotion rule (MUST):** Do not leave high-relevance content buried in
+content-eval.jsonl. The whole point of evaluating content is to surface
+actionable items. If a tutorial, API, paper, or guide is worth calling out in
+Creator View Section 2, it's worth tracking as an extraction candidate.
+
+**Anti-pattern promotion rule (MUST):** Do not leave actionable warnings buried
+in creator-view.md. If a "What's Worth Avoiding" item could prevent a future
+mistake, track it in value-map.json and extraction files.
 
 Append discovered repo relationships to
 `.research/repo-analysis/reading-chain.jsonl`. Populate `related_repos[]` in
 value-map.json for any repos referenced during analysis.
 
+**Cross-repo connections (MUST):** Add `cross_repo_connections[]` to
+value-map.json. For each connection to another analyzed repo, record:
+
+```json
+{
+  "target_repo": "owner/name",
+  "connection_type": "shared-pattern|complementary|overlapping-finding|referenced",
+  "detail": "..."
+}
+```
+
+These connections feed `/repo-synthesis`. Flag connection points even if the
+target repo hasn't been analyzed yet — they become leads for future analysis.
+
+## Coverage Audit (Phase 6b — MUST for Standard/Deep)
+
+After all artifacts are written, scan for content that exists in the repo but
+was NOT analyzed during this run. This is the safety net that catches edge cases
+and ensures nothing important falls through the cracks.
+
+**Scan for:**
+
+1. **Referenced but unfollowed links** — URLs in README, docs, or code comments
+   that point to external resources (papers, repos, datasets, blog posts) not
+   evaluated in Phase 4b.
+2. **Internal artifacts not read** — guides, notebooks, examples, config files,
+   embedded docs discovered in Phase 2b but not read during analysis.
+3. **Structured data not queried** — metadata fields (auth types, categories,
+   registry entries, dependency lists) that could have been filtered against
+   home context but weren't.
+4. **Cross-repo connections not traced** — references to other repos (analyzed
+   or not) whose content relationships weren't explored.
+5. **Anomalies** — anything unusual: unexpectedly large files, hidden
+   directories, generated artifacts, binary blobs, config files that suggest
+   undocumented features.
+
+**Output format:** Present as an interactive prompt:
+
+```
+Coverage Audit: N unexplored items found.
+
+  [A] Referenced links not evaluated (M items)
+      - arXiv 2602.02474 (referenced in value-map)
+      - https://github.com/karpathy/nanochat (parent repo)
+  [B] Internal docs not read (K items)
+      - guides/mcp-backend.md
+      - guides/skill-generation.md
+  [C] Structured data not queried (J items)
+      - 807 no-auth APIs not filtered for SoNash applicability
+  [D] Cross-repo connections (L items)
+      - memskill arXiv → autoresearch methodology overlap?
+  [E] Anomalies (P items)
+      - analysis.ipynb (8.4KB notebook, methodology patterns)
+
+Analyze all / Select categories / Skip? [A/S/N]
+```
+
+**If user selects Analyze or specific categories:** Run the additional analysis,
+update affected artifacts (creator-view.md, value-map.json, content-eval.jsonl),
+and re-verify.
+
+**If user selects Skip:** Record skipped items in `coverage-audit.jsonl` for
+future reference. Do not silently discard — the record ensures the next run or
+`/repo-synthesis` knows what was deferred.
+
+## Cross-Repo Extraction Tracking (MUST for Standard/Deep)
+
+After writing value-map.json, update both cross-repo extraction files:
+
+1. **EXTRACTIONS.md** (`.research/repo-analysis/EXTRACTIONS.md`) —
+   Human-readable cross-repo summary. Update the repo's section with current
+   candidates (pattern
+   - knowledge), verdict, scan depth, and skill version. Update header totals
+     (candidate count, deferred count). Add cross-reference notes where
+     candidates overlap with other repos.
+
+2. **extraction-journal.jsonl**
+   (`.research/repo-analysis/extraction-journal.jsonl`) — Machine-readable
+   per-candidate records. One line per candidate with schema:
+   ```json
+   {
+     "repo": "owner/name",
+     "candidate": "Name",
+     "type": "pattern|knowledge|content|anti-pattern",
+     "status": "deferred|extracted|skipped",
+     "decision": "defer|extract|skip",
+     "decision_date": "YYYY-MM-DD",
+     "extracted_to": null,
+     "notes": "...",
+     "novelty": "High|Medium|Low",
+     "effort": "E0|E1|E2",
+     "relevance": "high|medium|low"
+   }
+   ```
+   Remove stale entries for the repo being re-analyzed. Write fresh entries for
+   all candidates in value-map.json.
+
+Both files are canonical — EXTRACTIONS.md is the reading interface,
+extraction-journal.jsonl is the data interface. Neither is derived from the
+other. Both MUST be updated on every Standard/Deep analysis.
+
 ## Artifact Verification (before routing)
 
 Verify all expected artifacts exist based on scan depth and repo type.
 Checklist: analysis.json, findings.jsonl, value-map.json, creator-view.md,
-summary.md, mined-links.jsonl (curated-list only). Flag missing artifacts before
-presenting routing menu.
+summary.md, deep-read.md, content-eval.jsonl (or mined-links.jsonl for
+curated-list), coverage-audit.jsonl, EXTRACTIONS.md updated,
+extraction-journal.jsonl updated. Flag missing artifacts before presenting
+routing menu.
 
 ---
 
@@ -290,7 +516,9 @@ After routing: "Any observations about the analysis quality or process?"
 
 ---
 
-_v4.1 | 2026-04-05 | Apply 17 skill-audit decisions: gate skip, effort
-estimates, artifact verification, When NOT to Use, creator-view.md output,
-self-verify, link mining failure guard, /repo-synthesis downstream. See
-REFERENCE.md v4.0._
+_v4.2 | 2026-04-06 | 4-gap fix: Phase 2b Deep Read (internal artifacts beyond
+code), Phase 4b expanded to Content Evaluation (all repo types, not just
+curated-list), Creator View informed by content analysis, Phase 6b Coverage
+Audit (scan for unexplored content with interactive prompt),
+cross_repo_connections in value-map, extraction tracking (EXTRACTIONS.md +
+extraction-journal.jsonl). See v4.1 for prior changes._

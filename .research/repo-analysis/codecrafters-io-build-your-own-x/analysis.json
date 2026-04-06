@@ -1,22 +1,25 @@
 {
   "repo": "codecrafters-io/build-your-own-x",
   "url": "https://github.com/codecrafters-io/build-your-own-x",
-  "analyzed_at": "2026-04-03",
-  "depth": "quick-scan",
+  "skillVersion": "4.1",
+  "scanDepth": "standard",
+  "date": "2026-04-06",
+  "repoType": "curated-list",
+  "classification": {
+    "type": "curated-list",
+    "confidence": "high",
+    "signals": ["Markdown-only", "awesome-list topic", "link-collection README", "35+ categories"]
+  },
   "metadata": {
-    "created": "2018-05-09",
-    "pushed_at": "2026-02-21",
-    "age_days": 2887,
-    "language": "Markdown",
-    "license": null,
-    "stars": 485915,
-    "forks": 45710,
-    "watchers": 6562,
+    "stars": 486577,
+    "forks": 45783,
+    "openIssues": 462,
     "contributors": 30,
-    "commits": 611,
-    "open_issues": 460,
-    "size_kb": 1201,
-    "description": "Master programming by recreating your favorite technologies from scratch.",
+    "language": "Markdown",
+    "license": "none",
+    "created": "2018-05-09T12:03:18Z",
+    "lastPush": "2026-02-21T09:34:54Z",
+    "size": 1201,
     "topics": [
       "awesome-list",
       "free",
@@ -25,137 +28,58 @@
       "tutorial-exercises",
       "tutorials"
     ],
-    "files": ["README.md", "ISSUE_TEMPLATE.md", ".gitattributes", "codecrafters-banner.png"]
+    "defaultBranch": "master",
+    "recentCommits90d": 1,
+    "openPRs": 1,
+    "releases": 0
   },
   "dimensions": {
-    "QS-01": {
-      "name": "Activity & recency",
-      "score": 45,
-      "band": "Needs Work",
-      "detail": "Last push 41 days ago. 611 commits over 8 years (~76/year). Slowing."
-    },
-    "QS-02": {
-      "name": "Engagement trajectory",
-      "score": 99,
-      "band": "Excellent",
-      "detail": "486K stars — top 10 most starred repos on GitHub"
-    },
-    "QS-03": {
-      "name": "Archived status",
-      "score": 100,
-      "band": "Excellent",
-      "detail": "Not archived"
-    },
-    "QS-04": {
-      "name": "License",
-      "score": 0,
-      "band": "Critical",
-      "detail": "NO LICENSE — all rights reserved by default"
-    },
-    "QS-05": {
-      "name": "CI/CD pass rate",
-      "score": 20,
-      "band": "Critical",
-      "detail": "4 total runs (3 fail, 1 pass). Copilot code review only."
-    },
-    "QS-06": {
-      "name": "Branch protection",
-      "score": 0,
-      "band": "Critical",
-      "detail": "No branch protection rules"
-    },
-    "QS-07": {
-      "name": "Dependabot alerts",
-      "score": null,
-      "band": "N/A",
-      "detail": "No code dependencies (Markdown repo)"
-    },
-    "QS-08": { "name": "Code scanning", "score": null, "band": "N/A", "detail": "No code to scan" },
-    "QS-09": {
-      "name": "Secret scanning",
-      "score": null,
-      "band": "N/A",
-      "detail": "N/A for Markdown repo"
-    },
-    "QS-10": {
-      "name": "Community health",
-      "score": 25,
-      "band": "Needs Work",
-      "detail": "25/100 — README + SECURITY only"
-    },
-    "QS-11": {
-      "name": "CONTRIBUTING/SECURITY",
-      "score": 50,
-      "band": "Needs Work",
-      "detail": "SECURITY present (issue template), no CONTRIBUTING"
-    },
-    "QS-12": {
-      "name": "Contributor count",
-      "score": 40,
-      "band": "Needs Work",
-      "detail": "30 contributors. Managed by codecrafters-io org."
-    },
-    "QS-13": {
-      "name": "Merge hygiene",
+    "QS-01-stars": { "value": 486577, "band": "Exceptional" },
+    "QS-02-forks": { "value": 45783, "band": "Exceptional" },
+    "QS-03-openIssues": { "value": 462, "band": "High" },
+    "QS-04-recentCommits": { "value": 1, "band": "Very Low" },
+    "QS-05-contributors": { "value": 30, "band": "Moderate" },
+    "QS-06-language": { "value": "Markdown", "band": "Single" },
+    "QS-07-license": { "value": "none", "band": "Missing" },
+    "QS-08-lastPush": { "value": "2026-02-21", "band": "Moderately Stale", "daysSince": 44 },
+    "QS-09-age": { "value": "2018-05-09", "band": "Mature", "years": 7.9 },
+    "QS-10-size": { "value": 1201, "band": "Small" },
+    "QS-11-topics": { "value": 6, "band": "Well-Tagged" },
+    "QS-12-wiki": { "value": false },
+    "QS-13-pages": { "value": false },
+    "QS-14-releases": { "value": 0, "band": "None" },
+    "QS-15-openPRs": { "value": 1, "band": "Low" },
+    "QS-16-forkRatio": { "value": 0.094, "band": "Normal" },
+    "QS-17-issueToStar": { "value": 0.00095, "band": "Very Low" },
+    "QS-18-description": { "value": "present", "band": "Good" }
+  },
+  "summaryBands": {
+    "security": { "band": "N/A", "score": null, "note": "Curated list — no executable code" },
+    "reliability": { "band": "Low", "score": 25, "note": "1 commit/90d, no releases" },
+    "maintainability": {
+      "band": "Low",
       "score": 30,
-      "band": "Needs Work",
-      "detail": "No branch protection, default merge settings"
+      "note": "Markdown only, sparse commits, bottleneck maintainer"
     },
-    "QS-14": { "name": "OpenSSF score", "score": null, "band": "N/A", "detail": "Not indexed" },
-    "QS-15": { "name": "SBOM", "score": null, "band": "N/A", "detail": "No code dependencies" },
-    "QS-16": {
-      "name": "Known CVEs",
-      "score": null,
-      "band": "N/A",
-      "detail": "No code dependencies"
+    "documentation": {
+      "band": "Strong",
+      "score": 80,
+      "note": "Extensive categorized README, clear taxonomy"
     },
-    "QS-17": {
-      "name": "Fork-to-star ratio",
-      "score": 70,
-      "band": "Healthy",
-      "detail": "9.4% — moderate for curated list"
+    "process": {
+      "band": "Weak",
+      "score": 20,
+      "note": "No license, no releases, commercial ownership"
     },
-    "QS-18": {
-      "name": "Watcher-to-star ratio",
-      "score": 55,
-      "band": "Needs Work",
-      "detail": "1.35% — typical for list repos"
-    }
+    "velocity": { "band": "Very Low", "score": 10, "note": "1 commit in 90 days, stagnating" }
   },
-  "summary_bands": {
-    "Security": {
-      "band": "Critical",
-      "score": 5,
-      "detail": "No license, no branch protection. N/A for most security dimensions (no code)."
-    },
-    "Reliability": {
-      "band": "N/A",
-      "score": null,
-      "detail": "Markdown-only repo — no code, no tests, no CI applicable"
-    },
-    "Maintainability": {
-      "band": "Healthy",
-      "score": 70,
-      "detail": "Single README.md, well-organized by category. Simple to maintain."
-    },
-    "Documentation": {
-      "band": "Excellent",
-      "score": 90,
-      "detail": "The entire repo IS documentation. Comprehensive curated tutorial list."
-    },
-    "Process": {
-      "band": "Needs Work",
-      "score": 25,
-      "detail": "No branch protection, no CONTRIBUTING, 460 open issues, 30 open PRs"
-    },
-    "Velocity": {
-      "band": "Needs Work",
-      "score": 45,
-      "detail": "41 days since last push. 611 commits in 8 years. Maintenance mode."
-    }
+  "absencePattern": {
+    "type": "celebrity-stagnation",
+    "description": "Massive stars + minimal recent activity + commercial capture by codecrafters-io. 462 open issues with 1 commit in 90 days indicates bottlenecked maintenance."
   },
-  "absence_patterns": ["SECURITY_FACADE"],
-  "absence_detail": {
-    "SECURITY_FACADE": "Copilot code review workflow (4 runs, 3 failing) on a Markdown-only repo. No functional CI."
+  "creatorLens": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge.",
+  "scoring": {
+    "adoptionLens": { "verdict": "Extract", "score": 44 },
+    "creatorLens": { "verdict": "Extract", "score": 45 }
   }
 }

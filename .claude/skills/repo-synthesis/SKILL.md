@@ -54,15 +54,18 @@ and what's brilliant regardless of your current sprint.
 
 **Input artifacts** (consumed from `.research/repo-analysis/*/`):
 
-| Artifact                   | Required | Purpose                                    |
-| -------------------------- | -------- | ------------------------------------------ |
-| `analysis.json`            | MUST     | Repo type, ecosystem tags, dimensions      |
-| `value-map.json`           | MUST     | Candidates with dual scores, related repos |
-| `creator-view.md`          | MUST     | Prose analysis for thematic extraction     |
-| `mined-links.jsonl`        | MAY      | Link mining results (curated-list repos)   |
-| `reading-chain.jsonl`      | SHOULD   | Cross-repo relationship graph              |
-| `EXTRACTIONS.md`           | SHOULD   | Candidate summary with fit badges          |
-| `extraction-journal.jsonl` | SHOULD   | Decision history                           |
+| Artifact                   | Required | Purpose                                                                                           |
+| -------------------------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `analysis.json`            | MUST     | Repo type, scoring, dimensions, absence patterns                                                  |
+| `value-map.json`           | MUST     | 4 candidate types (pattern/knowledge/content/anti-pattern), cross_repo_connections, related_repos |
+| `creator-view.md`          | MUST     | Prose analysis for thematic extraction                                                            |
+| `content-eval.jsonl`       | MUST     | Individual content items evaluated for relevance                                                  |
+| `deep-read.md`             | SHOULD   | Internal artifacts read beyond code                                                               |
+| `coverage-audit.jsonl`     | SHOULD   | What was and wasn't analyzed — deferred items                                                     |
+| `mined-links.jsonl`        | MAY      | Link mining results (curated-list repos)                                                          |
+| `reading-chain.jsonl`      | SHOULD   | Cross-repo relationship graph                                                                     |
+| `EXTRACTIONS.md`           | SHOULD   | Cross-repo candidate summary (all 4 types)                                                        |
+| `extraction-journal.jsonl` | SHOULD   | Per-candidate decision history                                                                    |
 
 **Output:** `.research/repo-analysis/SYNTHESIS.md` (primary) +
 `.research/repo-analysis/synthesis.json` (structured)
@@ -86,10 +89,11 @@ Phase markers: `========== PHASE N: [NAME] ==========`
 
 ## Validate
 
-Check `.research/repo-analysis/*/analysis.json` — count repos with v2.0
-artifacts. If fewer than 3: report count and exit. If some repos have v1.0
-artifacts (no `schema_version`): warn about limited synthesis capability but
-proceed. List repos being synthesized.
+Check `.research/repo-analysis/*/analysis.json` — count repos with v4.2
+artifacts (check `skillVersion` field). If fewer than 3: report count and exit.
+If some repos have older skill versions: warn about limited synthesis capability
+(missing content-eval, deep-read, coverage-audit) but proceed. List repos being
+synthesized with their skill versions.
 
 **Missing artifact handling (MUST):** For each repo, verify MUST artifacts
 exist. If `creator-view.md` or `value-map.json` missing: exclude repo from
@@ -102,12 +106,22 @@ abort.
 
 Read all artifacts from each repo directory. Build internal structures:
 
-- **Candidate pool:** All candidates from all value-map.json files, tagged by
-  source repo. Preserve both `objective_score` and `personal_fit_score`.
-- **Tag cloud:** Aggregate `ecosystem_tags` from all analysis.json files.
-- **Relationship graph:** Load `reading-chain.jsonl` + all `related_repos[]`.
+- **Candidate pool:** All candidates from all value-map.json files across ALL 4
+  types (patternCandidates, knowledgeCandidates, contentCandidates,
+  antiPatternCandidates), tagged by source repo and type. Preserve
+  novelty/effort/relevance fields.
+- **Content items:** All entries from content-eval.jsonl files — these are the
+  specific tutorials, APIs, guides, papers evaluated for relevance.
+- **Anti-patterns:** All antiPatternCandidates — what NOT to do, across repos.
+- **Tag cloud:** Aggregate repo types and topics from all analysis.json files.
+- **Relationship graph:** Load `reading-chain.jsonl` + all `related_repos[]` +
+  all `cross_repo_connections[]` (typed: shared-pattern, complementary,
+  referenced, overlapping-finding).
 - **Prose corpus:** All `creator-view.md` files for thematic analysis.
+- **Deep read corpus:** All `deep-read.md` files for internal artifact insights.
 - **Link pool:** All `mined-links.jsonl` entries (curated-list repos only).
+- **Coverage gaps:** All `coverage-audit.jsonl` files — what was deferred,
+  flagged for investigation, or skipped across all repos.
 
 Update state file.
 
@@ -117,13 +131,20 @@ Update state file.
 
 ### 2.1 Emergent Themes Report
 
-Read all Creator View prose chronologically. Identify:
+Read all Creator View prose AND content-eval.jsonl entries chronologically.
+Themes emerge from prose AND from specific content items. Identify:
 
 - Recurring themes across 3+ repos (e.g., "agent autonomy," "skill
   distribution")
 - Dominant patterns (what most repos agree on)
 - Contrarian signals (what one repo does that contradicts the rest)
 - Surprising connections between repos that weren't linked in reading-chain
+- **Content-level themes:** Recurring content types (tutorials, APIs, guides,
+  papers) that point to the same domain — even if the repos themselves are
+  different. E.g., "3 repos surface React-related content" or "2 repos
+  independently flag skill distribution mechanisms."
+- **Anti-pattern themes:** Recurring warnings from antiPatternCandidates — what
+  multiple repos independently caution against.
 
 Output: conversational prose. Not a list of themes — a narrative that tells the
 story of what these repos collectively teach. See REFERENCE.md Section 1.
@@ -141,8 +162,9 @@ potential impact. See REFERENCE.md Section 2.
 
 ### 2.3 Reading Chain
 
-Read `reading-chain.jsonl` + all `related_repos[]`. Produce an ordered study
-sequence:
+Read `reading-chain.jsonl` + all `related_repos[]` + all
+`cross_repo_connections[]` (typed relationships: shared-pattern, complementary,
+referenced, overlapping-finding). Produce an ordered study sequence:
 
 - Start with the highest-objective-score repo
 - Follow relationship edges (inspired-by, uses, extends)
@@ -165,14 +187,19 @@ from the data. See REFERENCE.md Section 4.
 
 ### 2.5 Fit Portfolio View
 
-Aggregate ALL candidates across all repos. For each candidate:
+Aggregate ALL candidates across all repos — all 4 types (pattern, knowledge,
+content, anti-pattern). For each candidate:
 
-1. Keep original `objective_score` (scan-time, deterministic)
-2. Recompute `personal_fit_score` against current `SESSION_CONTEXT.md` (Phase 3)
-3. Reclassify `fit_class` based on refreshed scores
+1. Keep original scoring fields (`novelty`, `effort`, `relevance`) from
+   value-map.json. These are the scan-time assessments.
+2. Compute `synthesis_fit_score` against current `SESSION_CONTEXT.md` (Phase 3)
+   using relevance + home-context alignment.
+3. Classify `fit_class` based on synthesis scoring.
 
-Sort by `objective_score` descending — the "what's brilliant regardless of
-sprint" view. Group into fit classes with refreshed badges.
+Content candidates include URLs — these are the actionable items. Anti-pattern
+candidates flag what to avoid — group separately.
+
+Sort by relevance descending within each type. Group into fit classes.
 
 Output: ranked portfolio table + narrative highlighting top candidates whose fit
 changed since scan. See REFERENCE.md Section 5.
@@ -270,6 +297,11 @@ which sections are complete. On resume, skip completed sections.
 After follow-up: "Any observations about the synthesis quality or process?"
 
 ---
+
+_v1.1 | 2026-04-06 | Align with repo-analysis v4.2: add 3 new input artifacts
+(deep-read.md, content-eval.jsonl, coverage-audit.jsonl), 4 candidate types
+(pattern/knowledge/content/anti-pattern), cross_repo_connections in reading
+chain, content-level + anti-pattern themes, fix fit portfolio scoring model._
 
 _v1.0 | 2026-04-05 | Initial creation from 30-decision deep-plan. Companion to
 repo-analysis v4.1. 6 synthesis outputs, fit refresh, conversational style._

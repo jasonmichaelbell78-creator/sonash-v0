@@ -1,0 +1,113 @@
+{
+  "repo": "public-apis/public-apis",
+  "skillVersion": "4.2",
+  "generated": "2026-04-06",
+  "scoring": {
+    "adoptionLens": { "verdict": "Extract", "score": 42 },
+    "creatorLens": { "verdict": "Extract", "score": 48 }
+  },
+  "patternCandidates": [
+    {
+      "name": "Link Validation Workflow",
+      "novelty": "Low",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "validate_links.yml + scripts/validate/links.py (273 lines) + tests (172 lines). Scheduled + on-push URL liveness checking using Python requests.",
+      "relevance_to_home": "Transferable for docs/*, skill-indexes, README, EXTRACTIONS.md link checking."
+    },
+    {
+      "name": "Structured Catalog Format (enum columns)",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "API|Description|Auth|HTTPS|CORS table format with constrained enum values. Machine-parseable and human-readable.",
+      "relevance_to_home": "Reference if JASON-OS publishes a skill/tool catalog."
+    },
+    {
+      "name": "Format Validation Script Pattern",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "format.py (277 lines) with regex-based format enforcement, category structure validation, alphabetical ordering. Simpler version of patterns:check.",
+      "relevance_to_home": "Already have more sophisticated equivalent."
+    }
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "Celebrity stagnation with infrastructure (cross-repo)",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Second data point alongside codecrafters. Same trajectory but WITH validation scripts, CI, tests. Proves automation alone doesn't prevent stagnation — you also need active maintenance. Merge with codecrafters stagnation entry.",
+      "relevance_to_home": "Reinforces: quality infrastructure is necessary but not sufficient. Active maintenance is the key differentiator."
+    },
+    {
+      "name": "Validation without maintenance trap",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Format validation scripts ensure structural integrity of new entries, but don't ensure entries are current, links are live, or categories are relevant. The missing piece is lifecycle management.",
+      "relevance_to_home": "Applies to your own automation — patterns:check prevents format decay but doesn't prevent content decay."
+    }
+  ],
+  "contentCandidates": [
+    {
+      "name": "Google Calendar API",
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "high",
+      "url": "https://developers.google.com/google-apps/calendar/",
+      "relevance_to_home": "Direct SoNash integration candidate. OAuth via Firebase Auth. Milestones, meetings, check-ins."
+    },
+    {
+      "name": "Open-Meteo Weather API (no auth)",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "https://open-meteo.com/",
+      "relevance_to_home": "Zero-friction weather data for mood-weather correlation journaling."
+    },
+    {
+      "name": "Google Cloud Natural Language API",
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "url": "https://cloud.google.com/natural-language/docs/",
+      "relevance_to_home": "Journal sentiment analysis. Same cloud ecosystem as Firebase."
+    },
+    {
+      "name": "validate_links.yml workflow",
+      "novelty": "Low",
+      "effort": "E1",
+      "relevance": "high",
+      "url": "local:.github/workflows/validate_links.yml",
+      "relevance_to_home": "29-line daily link checker. Port to sonash for docs/SKILL_INDEX/EXTRACTIONS link integrity."
+    }
+  ],
+  "antiPatternCandidates": [
+    {
+      "name": "Sponsor-first README pattern",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "10 APILayer promoted APIs before community content. Erodes trust. If JASON-OS has partners, keep them separate from the content index.",
+      "relevance_to_home": "If JASON-OS ever has sponsors or partners."
+    },
+    {
+      "name": "Validation without maintenance trap",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Format validation scripts ensure structural integrity but not content freshness. Missing piece: lifecycle management. patterns:check prevents format decay but not content decay.",
+      "relevance_to_home": "Applies to your own automation. Validation is necessary but not sufficient."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "codecrafters-io/build-your-own-x",
+      "connection_type": "shared-pattern",
+      "detail": "Both curated lists with celebrity stagnation. public-apis has validation infrastructure; codecrafters doesn't. Proves automation alone doesn't prevent stagnation."
+    }
+  ],
+  "related_repos": ["codecrafters-io/build-your-own-x"]
+}

@@ -1,0 +1,6 @@
+{"type":"paper-not-fetched","item":"arXiv 2602.02474","decision":"flagged-investigate","reason":"Core theory paper. MUST read before T4 execution. High-priority deferred.","decision_date":"2026-04-06"}
+{"type":"skill-files-not-fully-read","count":13,"items":"13 of 15 skill files not read individually. Sampled 2 (capture_activity_details, insert). Consistent 5-section format confirmed.","decision":"partial","reason":"Format confirmed from samples. Full reading recommended before T4 execution.","decision_date":"2026-04-06"}
+{"type":"code-not-read","count":31,"items":"31 Python files including 42KB main.py","decision":"skip","reason":"Academic code quality. Extract concepts from docs and skills, not code.","decision_date":"2026-04-06"}
+{"type":"internal-artifact","item":"docs/index.html (project page)","decision":"skip","reason":"Academic presentation of paper results. Content covered by README.","decision_date":"2026-04-06"}
+{"type":"internal-artifact","item":"data/longmemeval_s_splits.json","decision":"skip","reason":"Evaluation data splits. Not applicable to home work.","decision_date":"2026-04-06"}
+{"type":"external-reference","item":"HuggingFace collection (XaiverZ/memskill)","decision":"skip","reason":"Model weights and datasets. ML-specific.","decision_date":"2026-04-06"}

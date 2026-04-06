@@ -1,58 +1,68 @@
-# codecrafters-io/build-your-own-x — Deep Analysis
+# Engineer View: codecrafters-io/build-your-own-x
 
-**Analyzed:** 2026-04-03 | **Depth:** Deep (clone + temporal) | **Age:** 8 years
+**Analyzed:** 2026-04-06 | **Skill Version:** 4.1 | **Depth:** Standard
 
-> Master programming by recreating your favorite technologies from scratch.
+---
 
-## Health Summary
+## Summary Bands
 
-| Dimension       | Band              | Score  | Detail                                                |
-| --------------- | ----------------- | ------ | ----------------------------------------------------- |
-| Security        | **Critical** (5)  | 5/100  | No license, no branch protection                      |
-| Reliability     | N/A               | —      | Markdown-only repo — no code                          |
-| Maintainability | Healthy (70)      | 70/100 | Single README, well-organized 35 categories           |
-| Documentation   | Excellent (82)    | 82/100 | The entire repo IS documentation. 363 tutorial links. |
-| Process         | **Critical** (15) | 15/100 | 460 open issues, 30 open PRs, no CONTRIBUTING         |
-| Velocity        | **Critical** (10) | 10/100 | 1 commit in 12 months. Effectively dormant.           |
+| Dimension       | Band     | Score | Detail                                                                                                                  |
+| --------------- | -------- | ----- | ----------------------------------------------------------------------------------------------------------------------- |
+| Security        | N/A      | —     | Markdown-only repo. No executable code, no dependencies.                                                                |
+| Reliability     | Low      | 25    | 1 commit in 90 days. No releases. No CI producing artifacts.                                                            |
+| Maintainability | Moderate | 50    | Single README.md with clear taxonomy. Easy to understand, hard to maintain at scale (390 links, no link validation).    |
+| Documentation   | Strong   | 80    | The repo IS documentation. 31 categories, 390 curated links, clear submission criteria in issue template.               |
+| Process         | Weak     | 20    | No LICENSE file (CC0 declared inline only). No CONTRIBUTING.md. No branch protection. 462 open issues.                  |
+| Velocity        | Very Low | 10    | 1 commit in last 90 days. Celebrity stagnation pattern. Commercial ownership (codecrafters-io) with minimal investment. |
 
-## Temporal Fingerprint (Deep)
+## Absence Pattern: Celebrity Stagnation
 
-- **611 commits, 8 years.** Peak: 327 commits in 2018 (creation year).
-- **1 commit in last 12 months** — practically dormant.
-- **Ownership transfer:** Originally by Daniel Stefanovic (320 commits), now
-  under codecrafters-io org. Banner promotes paid platform.
-- **Bus factor = 0.** No active maintainer. Last meaningful activity was a PR
-  merge in Feb 2026.
-- **Lifecycle:** Mature/dormant curated list. Content still valuable but
-  actively decaying (link rot expected after 8 years).
+486K stars with 1 commit/90 days. Acquired by codecrafters-io from original
+creator Daniel Stefanovic. Commercial banner added. Maintenance has not scaled
+with community interest. 462 open issues are mostly link submissions that aren't
+being processed.
 
-## Key Findings
+## Adoption Assessment
 
-1. **NO LICENSE** (Critical). 486K-star repo with no license. 45,710 forks in
-   legal gray zone.
-2. **Effectively unmaintained.** 460 open issues, 30 open PRs, 1 commit in 12
-   months. Community contributions are not being processed.
-3. **Commercial overlay.** codecrafters.io banner and interspersed platform
-   links. The repo serves as a marketing funnel for their paid service.
-4. **Content quality is high but decaying.** 363 tutorial links across 35
-   categories. After 8 years, significant link rot is expected. No automation to
-   detect broken links.
-5. **Security Facade.** Copilot code review workflow on a Markdown-only repo (3
-   of 4 runs failed).
+### Scoring (dual-lens)
 
-## Absence Patterns
+| Factor              | Rating   | Notes                                 |
+| ------------------- | -------- | ------------------------------------- |
+| WR-01 Activity      | Very Low | 1 commit/90d                          |
+| WR-02 Community     | Moderate | 30 contributors, but bottlenecked     |
+| WR-03 Quality       | Moderate | Good taxonomy, no link validation     |
+| WR-04 Security      | N/A      | No code                               |
+| WR-05 Documentation | Strong   | Self-documenting                      |
+| WR-06 Maintenance   | Low      | Stagnating under commercial ownership |
 
-- **SECURITY_FACADE:** Non-functional CI on a Markdown repo.
+**Adoption Verdict: Extract (44)** Extract the taxonomy structure and relevant
+tutorial links. Don't treat as an active reference — the collection is
+increasingly stale.
 
-## Adoption Verdict: Extract (45)
+**Creator Verdict: Extract (45)** Extract the "build from scratch" philosophy
+and taxonomy design. Apply the stagnation case study to your own skill lifecycle
+planning.
 
-**Low extraction value for JASON-OS.** The 35-category taxonomy is mildly
-interesting as a learning path reference, but the content itself is a curated
-link list — not patterns, code, or methodology. No license blocks redistribution
-anyway.
+## Findings
 
-| Candidate                     | Novelty | Effort | Relevance               |
-| ----------------------------- | ------- | ------ | ----------------------- |
-| 35-Category Tutorial Taxonomy | Medium  | E0     | Learning path reference |
-| Curated Link Format           | Low     | E0     | Standard awesome-list   |
-| Issue Template Pattern        | Low     | E0     | Low relevance           |
+| ID   | Severity | Category | Title                                               |
+| ---- | -------- | -------- | --------------------------------------------------- |
+| F001 | Critical | license  | No LICENSE file (CC0 in README only)                |
+| F002 | Medium   | process  | 462 open issues, bottlenecked maintenance           |
+| F003 | Medium   | velocity | 44 days since last push, decelerating               |
+| F004 | Low      | process  | No CONTRIBUTING.md despite 30+ contributors         |
+| F005 | Info     | design   | Ultra-minimal structure (4 files)                   |
+| F006 | Info     | pattern  | Copilot code review on Markdown repo (3/4 failures) |
+| F007 | Info     | license  | CC0 declared inline but not machine-readable        |
+
+## Link Mining Summary (Depth 0)
+
+367 unique URLs across 31 categories. Home-relevant categories:
+
+- **Medium:** Shell (7), CLI Tools (9), Git (5), Front-end Framework (14),
+  Operating System (18)
+- **Low:** Database (13), Search Engine (6), Neural Network (16), Regex (9)
+- **None/Low:** Blockchain (20), Bot (15), Text Editor (6)
+
+Depth 1 (HEAD-first link validation) not performed. Recommend if specific
+categories are selected for extraction.

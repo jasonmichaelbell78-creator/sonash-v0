@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "repo": "teng-lin/notebooklm-py",
+    "url": "https://github.com/teng-lin/notebooklm-py",
+    "scan_date": "2026-04-05",
+    "scan_depth": "quick",
+    "scan_version": "3.0"
+  },
+  "repo": {
+    "description": "Unofficial Python API and agentic skill for Google NotebookLM. Full programmatic access to NotebookLM's features—including capabilities the web UI doesn't expose—via Python, CLI, and AI agents like Claude Code, Codex, and OpenClaw.",
+    "language": "Python",
+    "license": "MIT",
+    "created_at": "2026-01-07T15:27:19Z",
+    "pushed_at": "2026-04-05T13:33:15Z",
+    "age_days": 88,
+    "size_kb": 26535,
+    "stars": 9228,
+    "forks": 1184,
+    "open_issues": 35,
+    "contributors": 12,
+    "is_fork": false,
+    "is_archived": false,
+    "languages": { "Python": 2196282 },
+    "topics": [
+      "agentic-skill",
+      "api",
+      "claude",
+      "claude-skills",
+      "google-notebooklm",
+      "notebooklm",
+      "notebooklm-api",
+      "notebooklm-skill",
+      "openclaw-skills",
+      "podcast-generator",
+      "python",
+      "python-api",
+      "sdk",
+      "skills"
+    ]
+  },
+  "dimensions": {
+    "QS-01_activity_pulse": {
+      "score": 98,
+      "band": "Excellent",
+      "detail": "Pushed today (2026-04-05). 1828 total workflow runs in 88 days."
+    },
+    "QS-02_engagement_trajectory": {
+      "score": 98,
+      "band": "Excellent",
+      "detail": "9228 stars and 1184 forks in 88 days. Trendshift featured. Highly viral trajectory."
+    },
+    "QS-03_archived_status": {
+      "score": 100,
+      "band": "Excellent",
+      "detail": "Not archived, not disabled, active development."
+    },
+    "QS-04_license": {
+      "score": 100,
+      "band": "Excellent",
+      "detail": "MIT license (permissive, LICENSE file present)."
+    },
+    "QS-05_ci_pass_rate": {
+      "score": 65,
+      "band": "Healthy",
+      "detail": "7 active workflows. CodeQL 20/20 pass, Nightly E2E 4/4, RPC Health 2/2. Test workflow flaky: 11/20 pass (45% failure). Verify 2/2 pass."
+    },
+    "QS-06_branch_protection": {
+      "score": 20,
+      "band": "Needs Work",
+      "detail": "No branch protection rules on main. Solo-maintainer repo."
+    },
+    "QS-07_dependabot_alerts": {
+      "score": null,
+      "band": "Unverified",
+      "detail": "403 — requires admin access. Dependabot is configured (workflow active)."
+    },
+    "QS-08_code_scanning_alerts": {
+      "score": null,
+      "band": "Unverified",
+      "detail": "403 — requires admin access. CodeQL workflow passing 20/20."
+    },
+    "QS-09_secret_scanning_alerts": {
+      "score": null,
+      "band": "Unverified",
+      "detail": "403 — requires admin access."
+    },
+    "QS-10_community_health": {
+      "score": 71,
+      "band": "Healthy",
+      "detail": "Community profile 71/100. README, LICENSE, CONTRIBUTING, SECURITY.md, CHANGELOG.md present. Missing: CoC, issue template, PR template."
+    },
+    "QS-11_contributing_security": {
+      "score": 95,
+      "band": "Excellent",
+      "detail": "CONTRIBUTING.md (4.6KB), SECURITY.md (3.4KB), CHANGELOG.md (21KB), CLAUDE.md (7.6KB), AGENTS.md (2.2KB), SKILL.md (26.8KB) — extensive agent-facing docs."
+    },
+    "QS-12_contributor_count": {
+      "score": 40,
+      "band": "Needs Work",
+      "detail": "12 contributors but top committer (teng-lin) has 551 commits vs 21 for #2. Bus factor ~1. Dependabot bot counted."
+    },
+    "QS-13_merge_hygiene": {
+      "score": null,
+      "band": "Unverified",
+      "detail": "Merge flags return null (likely org default)."
+    },
+    "QS-14_openssf_scorecard": {
+      "score": null,
+      "band": "Not Indexed",
+      "detail": "404 — repo not yet indexed by OpenSSF Scorecard (new repo, 88 days old)."
+    },
+    "QS-15_sbom_deps": {
+      "score": 70,
+      "band": "Healthy",
+      "detail": "56 direct+transitive dependencies visible. Modern Python stack: mypy, vcrpy, httpcore, packaging, etc."
+    },
+    "QS-16_deps_cves": {
+      "score": null,
+      "band": "Unverified",
+      "detail": "Not scanned in Quick Scan."
+    },
+    "QS-17_fork_star_ratio": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "12.8% fork-to-star ratio (1184/9228). Strong engagement — users are forking, not just starring."
+    },
+    "QS-18_watcher_star_ratio": {
+      "score": 45,
+      "band": "Needs Work",
+      "detail": "54 subscribers / 9228 stars = 0.6%. Low operational use signal (people star but don't subscribe to updates)."
+    }
+  },
+  "summary_bands": {
+    "Security": {
+      "score": 55,
+      "band": "Needs Work",
+      "detail": "CodeQL active + SECURITY.md present, but no branch protection and alert visibility blocked. Uses undocumented Google APIs (disclosed risk)."
+    },
+    "Reliability": {
+      "score": 60,
+      "band": "Healthy",
+      "detail": "Nightly E2E + RPC health checks + CodeQL all green. Test workflow 45% failure rate is concerning flakiness."
+    },
+    "Maintainability": {
+      "score": 68,
+      "band": "Healthy",
+      "detail": "Extensive docs, modern tooling (uv.lock, pre-commit, pyproject). Bus factor 1 pulls score down."
+    },
+    "Documentation": {
+      "score": 94,
+      "band": "Excellent",
+      "detail": "README 11KB + SKILL.md 27KB + CLAUDE.md 8KB + AGENTS.md 2KB + SECURITY + CONTRIBUTING + CHANGELOG 21KB + docs/. Agent-facing docs are top-tier."
+    },
+    "Process": {
+      "score": 55,
+      "band": "Needs Work",
+      "detail": "Pre-commit + Dependabot + CodeQL + CI enforced. But no branch protection, no CoC, no issue/PR templates."
+    },
+    "Velocity": {
+      "score": 98,
+      "band": "Excellent",
+      "detail": "3-month-old repo at 9228 stars, pushed today, 100 issues triaged (72 PRs), 1828 CI runs."
+    }
+  },
+  "absence_patterns": [
+    {
+      "pattern": "SOLO_MAINTAINER",
+      "confidence": "High",
+      "evidence": "551 commits from teng-lin vs 21 from #2 contributor. Classic solo-with-contributors pattern."
+    },
+    {
+      "pattern": "FLAKY_TEST_ACCEPTED",
+      "confidence": "Medium",
+      "evidence": "Test workflow 45% failure rate over last 20 runs. Nightly E2E + Verify pass consistently, suggesting Test flakiness is known and tolerated."
+    }
+  ],
+  "creator_lens_quick": "This repo understands how to ship a single capability across three audiences simultaneously: it exposes NotebookLM as a Python SDK, a CLI, AND as an installable Claude Code / Codex / OpenClaw skill — all from one codebase. The `notebooklm skill install` command and `npx skills add teng-lin/notebooklm-py` hint at a skills distribution ecosystem worth investigating for your own skill-sharing aspirations."
+}

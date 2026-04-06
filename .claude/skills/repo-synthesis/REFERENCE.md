@@ -220,26 +220,25 @@ includes only:
 
 **Purpose:** All candidates ranked by objective score with refreshed fit badges.
 
-**Refresh logic (Decision #24):**
+**Refresh logic (Decision #24, updated for v4.2):**
+
+v4.2 candidates use `novelty/effort/relevance` fields (not numeric scores).
+There are 4 candidate types: pattern, knowledge, content, anti-pattern.
 
 1. Load current `SESSION_CONTEXT.md` — extract active sprint items, current
    projects, immediate priorities
 2. Load `ROADMAP.md` — extract directional goals
-3. For each candidate across all repos:
-   - Keep `objective_score` (scan-time, immutable)
-   - Recompute `personal_fit_score`:
-     - Direct keyword match with active sprint items → +30
-     - Domain overlap with ROADMAP direction → +20
-     - Mentioned in current session context → +20
-     - General relevance to home repo stack → +10
-     - Base: 20 (everything has some learning value)
-     - Cap at 100
-   - Reclassify `fit_class`:
-     - `personal_fit_score >= 60` → `active-sprint`
-     - `personal_fit_score < 60 AND objective_score >= 60` → `park-for-later`
-     - Both >= 40 → `evergreen`
-     - Otherwise → `not-relevant`
-4. Flag candidates whose `fit_class` changed from scan-time
+3. For each candidate across all repos (ALL 4 types):
+   - Keep scan-time `relevance` (high/medium/low) and `novelty`
+     (High/Medium/Low)
+   - Compute `synthesis_fit`:
+     - `relevance: high` + keyword match with active sprint → `active-sprint`
+     - `relevance: high` + no sprint match → `park-for-later`
+     - `relevance: medium` + any sprint/roadmap match → `evergreen`
+     - `relevance: low` or no match → `not-relevant`
+   - Content candidates with URLs get a `actionable` flag (can be acted on now)
+   - Anti-pattern candidates get a `caution` flag (applies to current work?)
+4. Flag candidates whose synthesis_fit differs from scan-time relevance
 
 **Output format:**
 
@@ -345,19 +344,35 @@ priorities shifted to X..."]
 
 ## 7. Input Contract (cross-reference)
 
-All input artifacts are produced by `/repo-analysis` v4.0+. Schemas defined in:
+All input artifacts are produced by `/repo-analysis` v4.2+. Schemas defined in
+repo-analysis REFERENCE.md.
 
-- `analysis.json` → repo-analysis REFERENCE.md Section 3.1
-- `value-map.json` → repo-analysis REFERENCE.md Section 3.3
-- `findings.jsonl` → repo-analysis REFERENCE.md Section 3.2
-- `mined-links.jsonl` → repo-analysis REFERENCE.md Section 3.7
-- `reading-chain.jsonl` → repo-analysis REFERENCE.md Section 3.8
-- `EXTRACTIONS.md` → repo-analysis REFERENCE.md Section 3.6.3
-- `extraction-journal.jsonl` → repo-analysis REFERENCE.md Section 3.6.2
+**Per-repo artifacts:**
 
-**Version handling:** Files without `schema_version` are v1.0. Synthesis
-processes them with reduced capability (no ecosystem_tags, no fit scores, no
-repo_type). Warn user but don't abort.
+| Artifact               | Required | v4.2 Schema Notes                                                                                                                                                                                     |
+| ---------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `analysis.json`        | MUST     | `skillVersion`, `repoType`, `scoring.adoptionLens/creatorLens`                                                                                                                                        |
+| `value-map.json`       | MUST     | 4 candidate arrays: `patternCandidates`, `knowledgeCandidates`, `contentCandidates`, `antiPatternCandidates`. Plus `cross_repo_connections[]`. Fields: novelty/effort/relevance (not numeric scores). |
+| `creator-view.md`      | MUST     | 6 sections. Section 2 references specific content items.                                                                                                                                              |
+| `content-eval.jsonl`   | MUST     | Per-item evaluation: category/name/url/relevance/applicability/home_connection                                                                                                                        |
+| `deep-read.md`         | SHOULD   | Internal artifact inventory and findings                                                                                                                                                              |
+| `coverage-audit.jsonl` | SHOULD   | Deferred/skipped/flagged items per repo                                                                                                                                                               |
+| `findings.jsonl`       | SHOULD   | Engineer View findings                                                                                                                                                                                |
+| `mined-links.jsonl`    | MAY      | Curated-list repos only                                                                                                                                                                               |
+
+**Cross-repo artifacts:**
+
+| Artifact                   | Required | Notes                                                                                         |
+| -------------------------- | -------- | --------------------------------------------------------------------------------------------- |
+| `EXTRACTIONS.md`           | SHOULD   | Human-readable cross-repo summary. 4 candidate types (P/K/C/AP).                              |
+| `extraction-journal.jsonl` | SHOULD   | Machine-readable per-candidate records. `type` field: pattern/knowledge/content/anti-pattern. |
+| `reading-chain.jsonl`      | SHOULD   | Cross-repo relationship graph                                                                 |
+
+**Version handling:** Check `skillVersion` in analysis.json. Repos with versions
+older than 4.2 will be missing content-eval.jsonl, deep-read.md,
+coverage-audit.jsonl, contentCandidates, antiPatternCandidates, and
+cross_repo_connections. Warn user about reduced synthesis capability but
+proceed.
 
 ---
 
@@ -394,8 +409,10 @@ repo_type). Warn user but don't abort.
 
 ## 9. Version History
 
-| Version | Date       | Description                                                  |
-| ------- | ---------- | ------------------------------------------------------------ |
-| 1.0     | 2026-04-05 | Initial creation. Companion to repo-analysis v4.1.           |
-|         |            | 6 synthesis outputs, fit refresh, conversational.            |
-|         |            | Source: 30-decision deep-plan, Decisions #13/16/23/24/26/27. |
+| Version | Date       | Description                                                   |
+| ------- | ---------- | ------------------------------------------------------------- |
+| 1.1     | 2026-04-06 | Align with repo-analysis v4.2: 3 new input artifacts,         |
+|         |            | 4 candidate types, cross_repo_connections, updated fit logic. |
+| 1.0     | 2026-04-05 | Initial creation. Companion to repo-analysis v4.1.            |
+|         |            | 6 synthesis outputs, fit refresh, conversational.             |
+|         |            | Source: 30-decision deep-plan, Decisions #13/16/23/24/26/27.  |

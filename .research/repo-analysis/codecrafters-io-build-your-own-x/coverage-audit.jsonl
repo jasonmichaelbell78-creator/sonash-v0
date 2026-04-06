@@ -1,0 +1,4 @@
+{"type":"unevaluated-links","count":374,"reason":"Low/no-relevance categories (Blockchain, Bot, AR, Voxel, etc.). 16 of 390 individually evaluated in content-eval.jsonl.","decision":"skip","decision_date":"2026-04-06"}
+{"type":"cross-repo-connection","item":"public-apis similar category structure","reason":"Already noted in EXTRACTIONS.md cross-reference.","decision":"captured","decision_date":"2026-04-06"}
+{"type":"cross-repo-connection","item":"codecrafters.io commercial parent","reason":"Commercial site, not a repo. Noted in absence pattern (commercial capture).","decision":"skip","decision_date":"2026-04-06"}
+{"type":"anomaly","item":"ISSUE_TEMPLATE has 25 categories vs README 31","reason":"Staleness signal documented in deep-read.md.","decision":"captured","decision_date":"2026-04-06"}

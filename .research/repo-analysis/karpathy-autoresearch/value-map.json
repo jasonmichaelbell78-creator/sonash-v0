@@ -1,61 +1,131 @@
 {
   "repo": "karpathy/autoresearch",
-  "generated": "2026-04-03",
-  "adoption_verdict": {
-    "band": "Extract",
-    "score": 62,
-    "rationale": "Brilliant patterns to learn from, but no license blocks direct code adoption. Extract concepts and methodology, don't import as a dependency."
+  "skillVersion": "4.2",
+  "generated": "2026-04-06",
+  "scoring": {
+    "adoptionLens": { "verdict": "Extract", "score": 55 },
+    "creatorLens": { "verdict": "Extract", "score": 72 }
   },
-  "candidates": [
+  "patternCandidates": [
     {
       "name": "program.md Agent Instruction Pattern",
       "novelty": "High",
-      "portability": 14,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
       "effort": "E0",
-      "description": "Structured AI agent skill file with setup protocol, experiment loop (keep/discard), autonomy instructions (NEVER STOP), crash recovery, output parsing, TSV logging. The most complete open-source example of an autonomous research agent instruction set.",
-      "relevance_to_sonash": "Directly applicable to JASON-OS agent skills. Compare against sonash SKILL.md format. The experiment loop pattern (modify, run, evaluate, keep/discard) is generalizable beyond ML training."
+      "relevance": "high",
+      "description": "114-line autonomous research protocol: setup, experiment loop, keep/discard, crash recovery, NEVER STOP, simplicity criterion, TSV logging. Compare against SKILL.md.",
+      "relevance_to_home": "Direct comparison to SKILL.md format. When is a protocol better than a workflow?"
     },
     {
-      "name": "Fixed-Budget Experimentation Pattern",
+      "name": "Fixed-Budget Experimentation",
       "novelty": "High",
-      "portability": 12,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
       "effort": "E0",
-      "description": "Fixed 5-minute time budget makes experiments comparable regardless of what changes. Decouples 'how long' from 'how good'. Single metric (val_bpb) as ground truth. Git branch per experiment run with keep/discard semantics.",
-      "relevance_to_sonash": "Applicable to any automated optimization loop. Could be adapted for performance benchmarking, prompt optimization, or configuration tuning."
+      "relevance": "high",
+      "description": "Fixed 5-min time budget makes all experiments directly comparable. ~12/hour, ~100 overnight. Generalizable to any time-bounded agent work.",
+      "relevance_to_home": "Apply to skill-audit, deep-research searchers, any agent with a time dimension."
     },
     {
-      "name": "3-File Architecture (Immutable + Mutable + Instructions)",
+      "name": "3-File Architecture (Immutable/Editable/Instructions)",
       "novelty": "Medium",
-      "portability": 10,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
       "effort": "E0",
-      "description": "prepare.py (read-only infrastructure) + train.py (agent-editable target) + program.md (instructions). Clear contract: agent knows exactly what it can and cannot modify. Reduces search space for autonomous agents.",
-      "relevance_to_sonash": "Pattern for any agent-driven code modification workflow. Defines clear 'editable zones' to constrain agent autonomy."
-    },
-    {
-      "name": "Results TSV Logging Convention",
-      "novelty": "Low",
-      "portability": 8,
-      "adoption_readiness": "High",
-      "quality_signal": "Medium",
-      "effort": "E0",
-      "description": "Simple TSV format: commit hash, metric, memory, status (keep/discard/crash), description. Untracked by git. Human-readable experiment log.",
-      "relevance_to_sonash": "Pattern exists in sonash already (JSONL). TSV is simpler but less structured. Low extraction value."
+      "relevance": "medium",
+      "description": "prepare.py (don't touch) + train.py (agent edits) + program.md (human edits). Clean editable-zone contract.",
+      "relevance_to_home": "Compare against GSD plan + source pattern. Explicit zone contracts."
     },
     {
       "name": "Autonomous Crash Recovery Protocol",
       "novelty": "Medium",
-      "portability": 10,
-      "adoption_readiness": "High",
-      "quality_signal": "Medium",
       "effort": "E0",
-      "description": "Agent reads stack trace on crash, attempts fix, reverts if unfixable. Timeout detection (>10 min = kill). Never-stop semantics. Explicit instructions for crash vs discard vs fix decisions.",
-      "relevance_to_sonash": "Relevant for GSD executor, background agent error recovery, and autonomous debugging loops."
+      "relevance": "medium",
+      "description": "Read stack trace, attempt fix, revert if unfixable. Simpler than checkpoint+resume for low-cost tasks.",
+      "relevance_to_home": "Alternative to GSD checkpoint pattern for low-stakes agent work."
+    },
+    {
+      "name": "Results TSV Logging Convention",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "commit/val_bpb/memory_gb/status/description. Already have JSONL equivalent.",
+      "relevance_to_home": "Low extraction value. JSONL is better for our use case."
     }
-  ]
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "Simplicity criterion for JASON-OS",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "'Removing something and getting equal or better results is a great outcome.' Apply to every new skill, agent, or infrastructure addition. The uncomfortable question: for each piece of complexity, what does it buy?",
+      "relevance_to_home": "Growth discipline for 72-skill, 38-agent ecosystem."
+    },
+    {
+      "name": "Autonomy spectrum design",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "NEVER STOP (autoresearch) vs explicit approval gates (CLAUDE.md Guardrail #2). JASON-OS needs to find the right point: autonomous within phases, gated between phases.",
+      "relevance_to_home": "JASON-OS autonomy model design decision."
+    },
+    {
+      "name": "Protocol vs workflow design space",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "program.md (protocol: one agent, one metric, infinite loop) vs SKILL.md (workflow: multi-agent, multi-phase, convergence). Different tools for different constraint spaces. When to use which?",
+      "relevance_to_home": "Informs skill format evolution and JASON-OS design."
+    }
+  ],
+  "contentCandidates": [
+    {
+      "name": "analysis.ipynb — Experiment Results Methodology",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:analysis.ipynb",
+      "relevance_to_home": "Framework for analyzing agent experiment history. Apply to review-metrics.jsonl, learning-routes.jsonl progress visualization."
+    },
+    {
+      "name": "Hidden Multi-Agent Architecture (.gitignore)",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:.gitignore",
+      "relevance_to_home": "worktrees/ + queue/ + generated CLAUDE.md/AGENTS.md. Multi-agent experiment infrastructure. Mirrors your worktree usage."
+    }
+  ],
+  "antiPatternCandidates": [
+    {
+      "name": "No-license-on-purpose trap",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low-medium",
+      "description": "Karpathy can get away with no license because he's Karpathy. 9,611 forks in legal ambiguity. Don't follow this example for JASON-OS.",
+      "relevance_to_home": "Always include LICENSE if publishing."
+    },
+    {
+      "name": "Single-metric optimization trap",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "val_bpb is clean because the problem has one unambiguous metric. Most real work has competing metrics. Don't flatten multi-objective problems into one number to look like autoresearch.",
+      "relevance_to_home": "Skill-audit, agent quality, code review — all have multiple dimensions. Don't collapse them."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "teng-lin/notebooklm-py",
+      "connection_type": "shared-pattern",
+      "detail": "Both use Markdown instruction files for agents (program.md vs SKILL.md). Different abstraction levels."
+    },
+    {
+      "target_repo": "HKUDS/CLI-Anything",
+      "connection_type": "complementary",
+      "detail": "Autoresearch is agent-AS-researcher. CLI-Anything is agent-AS-operator. Different agent roles."
+    },
+    {
+      "target_repo": "ViktorAxelsen/MemSkill",
+      "connection_type": "shared-pattern",
+      "detail": "Both involve autonomous agent improvement loops. MemSkill: skill evolution. Autoresearch: experiment evolution."
+    }
+  ],
+  "related_repos": ["teng-lin/notebooklm-py", "HKUDS/CLI-Anything", "ViktorAxelsen/MemSkill"]
 }

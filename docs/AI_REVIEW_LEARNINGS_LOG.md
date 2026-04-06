@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#46)</summary>
+
+- **Date:** 2026-04-06
+- **Reviews consolidated:** #64-#review-pr493-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#45)</summary>
 
 - **Date:** 2026-04-06
@@ -1102,60 +1111,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review rev-18: PR #470 R5 — Mixed Qodo+SonarCloud (2026-03-26) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #470 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 0     | 0        | 6        |
-
----
-
-### Review rev-19: PR #472 R1 — Mixed (2026-03-26) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #472 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 13    | 12    | 0        | 1        |
-
----
-
-### Review rev-20: PR #472 R2 — Qodo (2026-03-26) (2026-03-26)
-
-**Date:** 2026-03-26 | **PR:** #472 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 6     | 2        | 0        |
-
----
-
-### Review backfill-477-r1: PR #477 R1 — Mixed DocLint+SonarCloud+Qodo+Gemini (2026-03-28) (2026-03-28)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 14    | 0        | 7        |
-
----
-
-### Review backfill-477-r2: PR #477 R2 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 4     | 0        | 8        |
-
----
-
 ### Review backfill-477-r3: PR #477 R3 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
 
 > **Completeness:** partial **Missing fields:** severity
@@ -1362,6 +1317,16 @@ deduplicated, non-overlapping ranges):
 
 ---
 
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 20    | 0     | 0        | 0        |
+
+---
+
 ### Review review-pr492-r1: PR #492 R1 - Mixed (Qodo + Suggestions + Compliance + Gemini + SonarCloud + CI) (2026-04-04)
 
 **Date:** 2026-04-04 | **PR:** #492 | **Source:** mixed
@@ -1411,6 +1376,16 @@ deduplicated, non-overlapping ranges):
 
 ---
 
+### Review 507: PR #492 R2 — Mixed (Doc Lint CI + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
+
+**Date:** 2026-04-05 | **PR:** #492 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
 ### Review review-pr492-r2: PR #492 R2 - Mixed (Doc Lint + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
 
 **Date:** 2026-04-05 | **PR:** #492 | **Source:** mixed
@@ -1454,107 +1429,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 507: PR #492 R2 — Mixed (Doc Lint CI + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
-
-**Date:** 2026-04-05 | **PR:** #492 | **Source:** ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
-
----
-
-### Review 67: PR #491 R2 (Mixed: CI + Qodo) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Pattern checker false positives: `symlink-parent-traversal` regex only
-- `silent-json-parse` line-level check missed try/catch on prior line. Added
-- `mkdirSync` before `isSafeToWrite` check: genuine TOCTOU in run-alerts.js
-- Exit code 2→1: run-consolidation.js used non-standard exit(2). Fixed.
-- TDMS data quality: 239 duplicate `audit:hash-*` entries, 412 evidence field
-- Path disclosure: R1 fix logged full `ARCHIVE_DIR` path to stderr. Removed.
-- Rejected exit code revert suggestions: contradicts CI pattern compliance gate.
-
----
-
-### Review 66: PR #491 R1 (Mixed: SonarCloud + Qodo + Gemini) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Unguarded symlink delete: `rmSync` in run-consolidation.js cleanup path
-- Repomix bloat: 113K lines of packed external repos committed to git. Fix:
-- Dead code: `PATTERN_KEYWORDS` array (40 regexes) defined but never referenced
-- Exit code doc mismatch: header documented `2 = error` but code used
-- `String.raw` for escaped backslashes: SonarCloud S6638 — use `String.raw`
-- Test hardening: readFileSync try/catch, Array→Set for `.has()` lookups.
-- Rejected node:test→Jest suggestion: SoNash uses node:test, not Jest.
-
----
-
-### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
-- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
-- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
-- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
-- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
-- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
-
----
-
-### Review 64: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
-
-**Date:** unknown | **PR:** #397 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
-- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
-- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
-- sanitizeError import paths: 5 hooks + rotate-state.js used
-- Source traceability false-negative: `checkSourceTraceability()` only checked
-- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
-- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
-- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
-- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
-
----
-
 ### Review review-pr493-r1: PR #493 R1 - Mixed (Qodo + Gemini + SonarCloud + Doc Lint) (2026-04-05)
 
 **Date:** 2026-04-05 | **PR:** #493 | **Source:** mixed
@@ -1587,37 +1461,6 @@ deduplicated, non-overlapping ranges):
 - Automated session-closure scripts justify hardcoded SKIP_REASON under
   Guardrail #14
 - Known Issues sections must update when PR resolves items
-
----
-
-### Review 66-pr493: PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint) (unknown) (unknown)
-
-**Date:** unknown | **PR:** #493 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 67-pr494: PR #494 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
-
-**Date:** unknown | **PR:** #494 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- eslint-mjs-globals
-- existsSync-to-statSync
-- path-traversal-in-reference-graph
-- nan-timeout-guard
-- composite-diff-key
-- backtick-command-capture
-- walkdir-multi-ext
-- sync-guard-in-subshells
 
 ## Key Patterns
 

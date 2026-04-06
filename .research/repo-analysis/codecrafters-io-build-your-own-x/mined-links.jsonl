@@ -1,0 +1,17 @@
+{"category":"Shell","linkCount":7,"homeRelevance":"medium","reason":"JASON-OS may need custom dispatch. C and Rust shell tutorials are canonical.","topLinks":["https://brennan.io/2015/01/16/write-a-shell-in-c/","https://www.joshmcguigan.com/blog/build-your-own-shell-rust/"]}
+{"category":"Database","linkCount":13,"homeRelevance":"low","reason":"SoNash uses Firestore. Conceptual value only for understanding query engines.","topLinks":["https://cstack.github.io/db_tutorial/","https://build-your-own.org/database/"]}
+{"category":"Command-Line Tool","linkCount":9,"homeRelevance":"medium","reason":"Statusline is Go CLI. Go CLI tutorials directly applicable.","topLinks":["https://flaviocopes.com/go-git-contributions/","https://rust-cli.github.io/book/index.html"]}
+{"category":"Search Engine","linkCount":6,"homeRelevance":"low","reason":"SoNash has no search feature yet. Future relevance if journal search added.","topLinks":["https://boyter.org/2010/08/build-vector-space-search-engine-python/"]}
+{"category":"Template Engine","linkCount":5,"homeRelevance":"low","reason":"Next.js handles templating. Conceptual interest only.","topLinks":[]}
+{"category":"Neural Network","linkCount":16,"homeRelevance":"low","reason":"No ML in SoNash. Karpathy's Neural Networks: Zero to Hero is a general knowledge resource.","topLinks":["https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ"]}
+{"category":"Web Server","linkCount":11,"homeRelevance":"low","reason":"Next.js handles serving. Node.js web server tutorials have conceptual value.","topLinks":["https://build-your-own.org/webserver/"]}
+{"category":"Programming Language","linkCount":25,"homeRelevance":"low","reason":"No PL work in roadmap. Crafting Interpreters is a general classic.","topLinks":["http://www.craftinginterpreters.com/"]}
+{"category":"Git","linkCount":5,"homeRelevance":"medium","reason":"Heavy git workflow in sonash. Understanding git internals useful for hook design.","topLinks":["https://www.loomcom.com/blog/0110_build_your_own_git.html"]}
+{"category":"Docker","linkCount":6,"homeRelevance":"low","reason":"No containerization in SoNash stack currently.","topLinks":[]}
+{"category":"Front-end Framework","linkCount":14,"homeRelevance":"medium","reason":"React 19 in stack. Understanding React internals (virtual DOM, reconciler) has direct value.","topLinks":["https://pomb.us/build-your-own-react/","https://github.com/hexacta/didact"]}
+{"category":"Regex Engine","linkCount":9,"homeRelevance":"low","reason":"Pattern compliance uses regex heavily. Understanding engine internals could help with performance.","topLinks":["https://swtch.com/~rsc/regexp/regexp1.html"]}
+{"category":"Text Editor","linkCount":6,"homeRelevance":"low","reason":"No text editor in roadmap.","topLinks":[]}
+{"category":"Operating System","linkCount":18,"homeRelevance":"low-medium","reason":"JASON-OS is metaphorical, not literal. But OS concepts (process scheduling, memory management) inform agent orchestration design.","topLinks":["https://os.phil-opp.com/"]}
+{"category":"Bot","linkCount":15,"homeRelevance":"low","reason":"No bot features in roadmap.","topLinks":[]}
+{"category":"Blockchain","linkCount":20,"homeRelevance":"none","reason":"No blockchain in stack or roadmap.","topLinks":[]}
+{"category":"AI Model","linkCount":3,"homeRelevance":"low","reason":"LLM-from-scratch tutorial relevant for understanding Claude, not for building.","topLinks":["https://github.com/rasbt/LLMs-from-scratch"]}
