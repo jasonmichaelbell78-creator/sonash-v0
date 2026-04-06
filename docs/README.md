@@ -154,6 +154,10 @@ All templates now in `docs/audits/multi-ai/templates/`:
 | **PR_WORKFLOW_CHECKLIST.md**   | Complete PR workflow with checkboxes        | `docs/PR_WORKFLOW_CHECKLIST.md`   |
 | **AI_REVIEW_PROCESS.md**       | CodeRabbit review processing workflow       | `docs/AI_REVIEW_PROCESS.md`       |
 | **DOCUMENTATION_STANDARDS.md** | Documentation structure and standards       | `docs/DOCUMENTATION_STANDARDS.md` |
+| **CLI_USER_GUIDE.md**          | CLI usage guide for the application         | `docs/CLI_USER_GUIDE.md`          |
+| **DOCUMENT_DEPENDENCIES.md**   | Cross-document dependency tracking          | `docs/DOCUMENT_DEPENDENCIES.md`   |
+| **GITHUB_GUIDE.md**            | GitHub workflow and contribution guide      | `docs/GITHUB_GUIDE.md`            |
+| **REVIEW_POLICY_INDEX.md**     | Review policy reference index               | `docs/REVIEW_POLICY_INDEX.md`     |
 | **claude.md**                  | Claude-specific AI rules and stack versions | `/claude.md`                      |
 
 ### Code Quality & Analysis

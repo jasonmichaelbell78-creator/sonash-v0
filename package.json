@@ -124,7 +124,10 @@
     "patterns:promote": "node scripts/promote-patterns.js",
     "ecosystem-audit": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js",
     "ecosystem-audit:check": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --check",
-    "ecosystem-audit:summary": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --summary"
+    "ecosystem-audit:summary": "node .claude/skills/pr-ecosystem-audit/scripts/run-pr-ecosystem-audit.js --summary",
+    "orphans:detect": "node scripts/detect-orphans.js",
+    "orphans:report": "node scripts/render-orphan-report.js",
+    "planning:validate-sync": "node scripts/planning/validate-jsonl-md-sync.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [

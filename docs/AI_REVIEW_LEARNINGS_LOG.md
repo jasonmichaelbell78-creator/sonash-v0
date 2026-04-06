@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#45)</summary>
+
+- **Date:** 2026-04-06
+- **Reviews consolidated:** #64-#review-pr493-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#44)</summary>
 
 - **Date:** 2026-04-05
@@ -1581,7 +1590,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 66-pr493: PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint) (unknown) (unknown)
+### Review 66-pr493: PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint) (unknown) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #493 | **Source:** manual
 

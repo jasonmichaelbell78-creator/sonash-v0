@@ -114,7 +114,8 @@ for full Creator + Engineer analysis? [y/N]"
 3. For Deep: `git fetch --unshallow` or `--shallow-since="1 year ago"`
 4. Update state file.
 
-> See REFERENCE.md for LFS check, monorepo detection, tool availability.
+> See REFERENCE.md for LFS check, monorepo detection, tool availability. Tool
+> availability: `node scripts/repo-analysis/check-tools.js`
 
 ---
 

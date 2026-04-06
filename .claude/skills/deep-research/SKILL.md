@@ -227,8 +227,9 @@ expected FINDINGS.md files are non-empty. If any are still 0 bytes after
 fallback capture, list the empty files to the user and ask whether to proceed
 with partial data or re-run the failed searchers.
 
-Spawn synthesizer with findings_dir, output_dir, topic, depth, sub_questions.
-Verify: RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json.
+Spawn synthesizer (`subagent_type="deep-research-synthesizer"`) with
+findings_dir, output_dir, topic, depth, sub_questions. Verify:
+RESEARCH_OUTPUT.md, claims.jsonl, sources.jsonl, metadata.json.
 
 ---
 

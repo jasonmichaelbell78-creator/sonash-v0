@@ -1,0 +1,213 @@
+{"file":"docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md","triageAction":"ARCHIVE","triageReason":"Requirements doc from March 2026; likely completed or superseded. Historical reference only."}
+{"file":"docs/agent_docs/AGENT_ORCHESTRATION.md","triageAction":"KEEP","triageReason":"Directly referenced by CLAUDE.md Section 7 and Section 8 reference table. Active guidance doc."}
+{"file":"docs/agent_docs/CONTEXT_PRESERVATION.md","triageAction":"KEEP","triageReason":"Directly referenced by CLAUDE.md Section 8 reference table. Active guidance doc."}
+{"file":"docs/agent_docs/FIX_TEMPLATES.md","triageAction":"KEEP","triageReason":"Agent-facing reference doc under agent_docs/. Used by code-reviewer and pre-commit-fixer skills."}
+{"file":"docs/agent_docs/POSITIVE_PATTERNS.md","triageAction":"KEEP","triageReason":"Agent-facing reference doc under agent_docs/. Used for code review pattern matching."}
+{"file":"docs/agent_docs/PRE_GENERATION_CHECKLIST.md","triageAction":"KEEP","triageReason":"Directly referenced by CLAUDE.md Section 5 (Behavioral Checklist). Active enforcement doc."}
+{"file":"docs/agent_docs/SECURITY_CHECKLIST.md","triageAction":"KEEP","triageReason":"Directly referenced by CLAUDE.md Section 5 (Pre-Write Checklist). Active enforcement doc."}
+{"file":"docs/agent_docs/SKILL_AGENT_POLICY.md","triageAction":"KEEP","triageReason":"Agent-facing policy doc under agent_docs/. Referenced by skill-creator and audit skills."}
+{"file":"docs/agent_docs/SKILL_ECOSYSTEM_AUDIT_IDEAS.md","triageAction":"ARCHIVE","triageReason":"Ideation doc for skill ecosystem audit. Audit skill already ships; ideas likely consumed."}
+{"file":"docs/agent_docs/TESTING_SYSTEM.md","triageAction":"KEEP","triageReason":"Agent-facing reference doc under agent_docs/. Documents test framework for agent use."}
+{"file":"docs/agent_docs/TOKEN_MONITORING.md","triageAction":"KEEP","triageReason":"Agent-facing reference doc under agent_docs/. Documents token monitoring for session management."}
+{"file":"docs/aggregation/MASTER_ISSUE_LIST.md","triageAction":"ARCHIVE","triageReason":"Aggregated issue list from Feb 2026 mining effort. 35 days old, likely superseded by TDMS."}
+{"file":"docs/aggregation/mining-agent1-data-quality.md","triageAction":"ARCHIVE","triageReason":"Mining agent output from Feb 2026 aggregation effort. One-time analysis, historical only."}
+{"file":"docs/aggregation/mining-agent2-pipeline-flow.md","triageAction":"ARCHIVE","triageReason":"Mining agent output from aggregation effort. One-time analysis, historical only."}
+{"file":"docs/aggregation/mining-agent3-retro-actions.md","triageAction":"ARCHIVE","triageReason":"Mining agent output from aggregation effort. One-time analysis, historical only."}
+{"file":"docs/aggregation/mining-agent4-integration.md","triageAction":"ARCHIVE","triageReason":"Mining agent output from aggregation effort. One-time analysis, historical only."}
+{"file":"docs/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md","triageAction":"ARCHIVE","triageReason":"Diagnosis report from aggregation effort. Superseded by pr-ecosystem-audit skill."}
+{"file":"docs/AI_REVIEW_LEARNINGS_LOG.md","triageAction":"KEEP","triageReason":"Actively updated (modified today). Generated/maintained by review lifecycle scripts. Live data."}
+{"file":"docs/AI_REVIEW_PROCESS.md","triageAction":"WIRE-UP","triageReason":"Documents the AI review process. Should be linked from REVIEW_POLICY_INDEX.md or DOCUMENTATION_INDEX.md."}
+{"file":"docs/APPCHECK_SETUP.md","triageAction":"KEEP","triageReason":"Setup guide for App Check, a core security requirement per CLAUDE.md Section 2."}
+{"file":"docs/archive/2025-dec-reports/AGGREGATED_6MODEL_REPORT.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical multi-model audit report. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/APP_CHECK_DIAGNOSIS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical App Check diagnosis. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/ARCHITECTURAL_REFACTOR.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical architectural refactor report. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/ARCHITECTURE_IMPROVEMENT_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical architecture plan. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/BILLING_ALERTS_SETUP.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical billing setup guide. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/CODE_ANALYSIS_REPORT.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical code analysis. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/CONSOLIDATED_CODE_ANALYSIS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical consolidated analysis. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/DEPENDENCY_ANALYSIS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical dependency analysis. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/ESLINT_WARNINGS_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical ESLint cleanup plan. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical journal system update. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical library analysis. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical refactoring plan. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical refactor summary. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/ROADMAP_COMPARISON_ANALYSIS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical roadmap comparison. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/ROADMAP_INTEGRATION_SUMMARY.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical roadmap integration. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/ULTRA_THINKING_REVIEW.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical ultra-thinking review. Archive is correct location."}
+{"file":"docs/archive/2025-dec-reports/XSS_PROTECTION_VERIFICATION.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical XSS verification. Archive is correct location."}
+{"file":"docs/archive/2026-02-21-sprint-workflow-skill-design.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical sprint workflow skill design. Archive is correct location."}
+{"file":"docs/archive/2026-jan-deprecated/ANTIGRAVITY_GUIDE.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Explicitly deprecated content, archive is correct."}
+{"file":"docs/archive/2026-jan-deprecated/ARCHIVE_NOTE.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Explains deprecation context."}
+{"file":"docs/archive/2026-jan-deprecated/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Historical brainstorm content."}
+{"file":"docs/archive/2026-jan-deprecated/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Historical brainstorm content."}
+{"file":"docs/archive/2026-jan-deprecated/CUSTOM_SLASH_COMMANDS_GUIDE.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Historical slash commands guide."}
+{"file":"docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Historical PR review template."}
+{"file":"docs/archive/2026-jan-deprecated/ROADMAP_INTEGRATION.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Historical roadmap integration."}
+{"file":"docs/archive/2026-jan-deprecated/SLASH_COMMANDS.md","triageAction":"KEEP","triageReason":"Already in archive/deprecated. Historical slash commands reference."}
+{"file":"docs/archive/AI_HANDOFF-2026-01-02.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical AI handoff document."}
+{"file":"docs/archive/AI_STANDARDIZED_REPORT.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical standardized report."}
+{"file":"docs/archive/APPCHECK_FRESH_SETUP.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical App Check setup doc."}
+{"file":"docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical architecture review from Dec 2025."}
+{"file":"docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical architecture review from Dec 2025."}
+{"file":"docs/archive/ARCHIVE_INDEX.md","triageAction":"KEEP","triageReason":"Index file for the archive directory. Serves as navigation aid for archived content."}
+{"file":"docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical multi-AI refactoring plan conversation."}
+{"file":"docs/archive/completed-decisions/ADR-001-integrated-improvement-plan-approach.md","triageAction":"KEEP","triageReason":"Already in archive/completed-decisions. ADR with historical decision value."}
+{"file":"docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/completed-plans. Completed plan, archive is correct location."}
+{"file":"docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/completed-plans. Completed plan, archive is correct location."}
+{"file":"docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/completed-plans. Completed plan, archive is correct location."}
+{"file":"docs/archive/completed-plans/sonarcloud-cleanup-sprint.md","triageAction":"KEEP","triageReason":"Already in archive/completed-plans. Completed plan, archive is correct location."}
+{"file":"docs/archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/completed-plans. Completed TDMS plan, archive is correct location."}
+{"file":"docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md","triageAction":"KEEP","triageReason":"Already in archive/completed-plans. Completed testing checklist, archive is correct."}
+{"file":"docs/archive/consolidated-2025-12-19/AI_HANDOFF.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical handoff from Dec 2025."}
+{"file":"docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical handoff from Dec 2024."}
+{"file":"docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Index for consolidated archive."}
+{"file":"docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical feature decisions."}
+{"file":"docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical journal system proposal."}
+{"file":"docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical project status."}
+{"file":"docs/archive/consolidated-2025-12-19/ROADMAP_V3.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical roadmap version."}
+{"file":"docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical journal architecture doc."}
+{"file":"docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md","triageAction":"KEEP","triageReason":"Already in archive/consolidated. Historical web enhancements roadmap."}
+{"file":"docs/archive/expansion-ideation/README.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Index for expansion ideation modules."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 1 - Step Work Depth.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content with potential future value."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 10 – Safety & Harm Reduction.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 11 – Visionary - Dream Big Bets.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 2 – Sponsor Tooling & Connection.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 3 – Nashville Advantage (Local Utility).md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 4 – Offline, Privacy & Trust.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 5 – Journaling & Insights.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 6 – Recovery Knowledge Base.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 7 – Exports & Reports.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 8 – Personalization.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Module 9 – Daily Engagement & Habits.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Modules 12-14 The Final Gaps.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion - Technical Modules.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Product ideation content."}
+{"file":"docs/archive/expansion-ideation/SoNash Expansion Full Ideation All Modules 1.20.26.md","triageAction":"KEEP","triageReason":"Already in archive/expansion-ideation. Full ideation compilation."}
+{"file":"docs/archive/EXPANSION_EVALUATION_TRACKER.md","triageAction":"KEEP","triageReason":"Already in archive/. Expansion evaluation tracker, historical reference."}
+{"file":"docs/archive/firestore-rules.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical firestore rules documentation."}
+{"file":"docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical prompt template."}
+{"file":"docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md","triageAction":"KEEP","triageReason":"Already in archive/handoffs. Historical handoff from Dec 2025."}
+{"file":"docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md","triageAction":"KEEP","triageReason":"Already in archive/handoffs. Historical handoff from Dec 2025."}
+{"file":"docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md","triageAction":"KEEP","triageReason":"Already in archive/handoffs. Historical handoff from Dec 2025."}
+{"file":"docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md","triageAction":"KEEP","triageReason":"Already in archive/handoffs. Historical handoff from Dec 2025."}
+{"file":"docs/archive/HOOKIFY_STRATEGY.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical hook migration strategy."}
+{"file":"docs/archive/IMPLEMENTATION_PROMPTS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical implementation prompts."}
+{"file":"docs/archive/legacy_task_list_2025_12_12.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical legacy task list."}
+{"file":"docs/archive/local-resources-review.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical local resources review."}
+{"file":"docs/archive/MCP_SERVER_AUDIT.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical MCP server audit."}
+{"file":"docs/archive/Monetization_Research_Phase1_Results.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical monetization research results."}
+{"file":"docs/archive/PLAN_MAP.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical plan mapping document."}
+{"file":"docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical reCAPTCHA problem summary."}
+{"file":"docs/archive/Refactoring_PR_Plan.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical refactoring PR plan."}
+{"file":"docs/archive/RETROS_378-416.md","triageAction":"KEEP","triageReason":"Already in archive/. Archived PR retrospectives batch."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_1-40.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data, superseded by JSONL format."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_139-195.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_196-259.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_260-299.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_300-341.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_342-383.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_384-423.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_390-476.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_42-138.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/reviews-markdown-legacy/REVIEWS_424-457.md","triageAction":"KEEP","triageReason":"Already in archive/reviews-markdown-legacy. Legacy review data."}
+{"file":"docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical consolidated code review."}
+{"file":"docs/archive/SoNash_Technical_Ideation_Multi_AI 1.20.26.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical multi-AI technical ideation."}
+{"file":"docs/archive/SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical admin panel enhancement v1.0."}
+{"file":"docs/archive/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical admin panel enhancement v1.1."}
+{"file":"docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical admin panel enhancement v1.2."}
+{"file":"docs/archive/SoNash__Phase1_ClaudeCode_Prompt__2025-12-22.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical Claude Code prompt v1."}
+{"file":"docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical Claude Code prompt v1.2."}
+{"file":"docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical Claude Code prompt v1.3."}
+{"file":"docs/archive/SUPABASE_MIGRATION_ANALYSIS.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical Supabase migration analysis."}
+{"file":"docs/archive/superseded-plans/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/superseded-plans. Superseded plan, archive is correct."}
+{"file":"docs/archive/superseded-plans/M1.6_SUPPORT_TAB_PLAN.md","triageAction":"KEEP","triageReason":"Already in archive/superseded-plans. Superseded plan, archive is correct."}
+{"file":"docs/archive/TESTING_CHECKLIST.md","triageAction":"KEEP","triageReason":"Already in archive/. Historical testing checklist."}
+{"file":"docs/audits/AUDIT_ECOSYSTEM_CODIFICATION.md","triageAction":"KEEP","triageReason":"Audit ecosystem design doc. Referenced by audit skills for ecosystem patterns."}
+{"file":"docs/audits/AUDIT_STANDARDS.md","triageAction":"KEEP","triageReason":"Defines audit quality standards. Active reference for all audit skills."}
+{"file":"docs/audits/AUDIT_TRACKER.md","triageAction":"KEEP","triageReason":"Tracks completed audits. Active reference doc, updated March 2026."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/ai-optimization-audit.md","triageAction":"ARCHIVE","triageReason":"Comprehensive audit finding from Feb 2026. One-time audit output, 42 days old."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/code-audit.md","triageAction":"ARCHIVE","triageReason":"Comprehensive audit finding from Feb 2026. One-time audit output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/COMPREHENSIVE_AUDIT_REPORT.md","triageAction":"ARCHIVE","triageReason":"Comprehensive audit aggregate report from Feb 2026. One-time output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/DEDUP_VS_MASTER_DEBT.md","triageAction":"ARCHIVE","triageReason":"Dedup analysis from Feb 2026 audit. One-time analysis output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/documentation-audit.md","triageAction":"ARCHIVE","triageReason":"Documentation audit finding from Feb 2026. One-time audit output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/engineering-productivity-audit.md","triageAction":"ARCHIVE","triageReason":"Engineering productivity audit from Feb 2026. One-time audit output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/enhancements-audit.md","triageAction":"ARCHIVE","triageReason":"Enhancements audit from Feb 2026. One-time audit output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/MASTER_DEBT_DEDUP_REPORT.md","triageAction":"ARCHIVE","triageReason":"Master debt dedup report from Feb 2026 audit. One-time output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/performance-audit.md","triageAction":"ARCHIVE","triageReason":"Performance audit from Feb 2026. One-time audit output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/process-audit.md","triageAction":"ARCHIVE","triageReason":"Process audit from Feb 2026. One-time audit output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/refactoring-audit.md","triageAction":"ARCHIVE","triageReason":"Refactoring audit from Feb 2026. One-time audit output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/REVIEW_DECISIONS.md","triageAction":"ARCHIVE","triageReason":"Review decisions from Feb 2026 audit. One-time triage output."}
+{"file":"docs/audits/comprehensive/audit-2026-02-22/security-audit.md","triageAction":"ARCHIVE","triageReason":"Security audit from Feb 2026. One-time audit output."}
+{"file":"docs/audits/multi-ai/COORDINATOR.md","triageAction":"KEEP","triageReason":"Multi-AI audit coordinator template. Active reference for multi-ai-audit skill."}
+{"file":"docs/audits/multi-ai/maa-2026-02-17-182d43/final/SUMMARY.md","triageAction":"ARCHIVE","triageReason":"Multi-AI audit results from Feb 2026. One-time audit output, 46 days old."}
+{"file":"docs/audits/multi-ai/README.md","triageAction":"KEEP","triageReason":"README for multi-AI audit system. Navigation/reference doc for audit infrastructure."}
+{"file":"docs/audits/multi-ai/templates/AGGREGATOR.md","triageAction":"KEEP","triageReason":"Multi-AI audit aggregator template. Active template used by multi-ai-audit skill."}
+{"file":"docs/audits/multi-ai/templates/AI_OPTIMIZATION_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for AI optimization domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/CODE_REVIEW_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for code review domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/DOCUMENTATION_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for documentation domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/ENGINEERING_PRODUCTIVITY_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for engineering productivity domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for enhancement domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/PERFORMANCE_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for performance domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/PROCESS_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for process domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/REFACTORING_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for refactoring domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/SECURITY_AUDIT.md","triageAction":"KEEP","triageReason":"Multi-AI audit template for security domain. Active template."}
+{"file":"docs/audits/multi-ai/templates/SHARED_TEMPLATE_BASE.md","triageAction":"KEEP","triageReason":"Base template shared by all multi-AI audit templates. Active infrastructure."}
+{"file":"docs/audits/README.md","triageAction":"KEEP","triageReason":"README for audits directory. Navigation doc for audit infrastructure."}
+{"file":"docs/audits/RESULTS_INDEX.md","triageAction":"KEEP","triageReason":"Index of all audit results. Navigation doc for audit outputs."}
+{"file":"docs/audits/single-session/agent-quality/audit-2026-03-17/AGENT_QUALITY_REPORT.md","triageAction":"ARCHIVE","triageReason":"Agent quality audit from March 2026. One-time audit output, 19 days old."}
+{"file":"docs/audits/single-session/ai-optimization/audit-2026-02-12-legacy/SUMMARY.md","triageAction":"ARCHIVE","triageReason":"Legacy AI optimization audit from Feb 2026. One-time audit output, superseded."}
+{"file":"docs/audits/single-session/ai-optimization/audit-2026-02-13/SUMMARY.md","triageAction":"ARCHIVE","triageReason":"AI optimization audit from Feb 2026. One-time audit output."}
+{"file":"docs/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md","triageAction":"ARCHIVE","triageReason":"AI optimization audit report from Feb 2026. One-time audit output."}
+{"file":"docs/audits/single-session/ai-optimization/audit-2026-02-14/REVIEW_DECISIONS.md","triageAction":"ARCHIVE","triageReason":"Review decisions from Feb 2026 audit. One-time triage output."}
+{"file":"docs/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md","triageAction":"ARCHIVE","triageReason":"Automation audit from Feb 2026. One-time audit output, 55 days old."}
+{"file":"docs/audits/system-test/audit-2026-02-19/PLAN_INDEX.md","triageAction":"ARCHIVE","triageReason":"System test plan index from Feb 2026. One-time audit artifact, 43 days old."}
+{"file":"docs/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md","triageAction":"ARCHIVE","triageReason":"System test review decisions from Feb 2026. One-time triage output."}
+{"file":"docs/CLI_USER_GUIDE.md","triageAction":"WIRE-UP","triageReason":"CLI user guide updated 8 days ago. Active doc, should be linked from DOCUMENTATION_INDEX.md."}
+{"file":"docs/decisions/README.md","triageAction":"KEEP","triageReason":"README for decisions directory. Navigation doc for ADR records."}
+{"file":"docs/DOCUMENT_DEPENDENCIES.md","triageAction":"WIRE-UP","triageReason":"Cross-doc dependency map. Should be linked from DOCUMENTATION_INDEX.md; used by docs:check scripts."}
+{"file":"docs/FIREBASE_CHANGE_POLICY.md","triageAction":"KEEP","triageReason":"Firebase change policy. Active operational reference for Firebase modifications."}
+{"file":"docs/GITHUB_GUIDE.md","triageAction":"WIRE-UP","triageReason":"GitHub workflow guide. Active doc, should be linked from DOCUMENTATION_INDEX.md."}
+{"file":"docs/GLOBAL_SECURITY_STANDARDS.md","triageAction":"KEEP","triageReason":"Global security standards. Active security reference doc."}
+{"file":"docs/INCIDENT_RESPONSE.md","triageAction":"KEEP","triageReason":"Incident response guide. Active operational reference doc."}
+{"file":"docs/LEARNING_METRICS.md","triageAction":"KEEP","triageReason":"Actively updated (modified today). Generated by learning effectiveness scripts. Live data."}
+{"file":"docs/MCP_SETUP.md","triageAction":"KEEP","triageReason":"MCP server setup guide. Active operational reference for MCP configuration."}
+{"file":"docs/OPERATIONAL_VISIBILITY_SPRINT.md","triageAction":"ARCHIVE","triageReason":"Sprint plan for operational visibility. Likely completed; sprint plans are time-bound."}
+{"file":"docs/patterns/context-preservation-pattern.md","triageAction":"KEEP","triageReason":"Architecture pattern doc. Active reference for context preservation design pattern."}
+{"file":"docs/plans/IMPLEMENTATION_PLAN.md","triageAction":"REVIEW","triageReason":"Generic name. Could be active or completed. Needs human check on current relevance."}
+{"file":"docs/plans/LIGHTHOUSE_INTEGRATION_PLAN.md","triageAction":"REVIEW","triageReason":"Lighthouse integration plan. Unclear if this has been implemented or is still planned."}
+{"file":"docs/plans/TESTING_INFRASTRUCTURE_CHECKLIST.md","triageAction":"KEEP","triageReason":"Testing infrastructure checklist. Active reference for test setup verification."}
+{"file":"docs/plans/TESTING_USER_MANUAL.md","triageAction":"KEEP","triageReason":"Testing user manual. Active reference for test workflows."}
+{"file":"docs/plans/TRACK_A_TESTING_CHECKLIST.md","triageAction":"ARCHIVE","triageReason":"Track A testing checklist also exists in archive/completed-plans. Likely duplicate of archived version."}
+{"file":"docs/PR_ECOSYSTEM_V2_CHANGELOG.md","triageAction":"KEEP","triageReason":"PR ecosystem V2 changelog. Active reference for PR review system history."}
+{"file":"docs/PR_WORKFLOW_CHECKLIST.md","triageAction":"WIRE-UP","triageReason":"PR workflow checklist. Active doc, should be linked from PR_ECOSYSTEM or DOCUMENTATION_INDEX."}
+{"file":"docs/README.md","triageAction":"KEEP","triageReason":"Root README for docs directory. Navigation hub for documentation tree."}
+{"file":"docs/RECAPTCHA_REMOVAL_GUIDE.md","triageAction":"ARCHIVE","triageReason":"reCAPTCHA removal guide, 50 days old. Likely completed one-time task."}
+{"file":"docs/REVIEW_POLICY_ARCHITECTURE.md","triageAction":"KEEP","triageReason":"Review policy architecture. Active reference for PR review system design."}
+{"file":"docs/REVIEW_POLICY_INDEX.md","triageAction":"WIRE-UP","triageReason":"Index for review policy docs. Should be linked from DOCUMENTATION_INDEX.md or docs/README.md."}
+{"file":"docs/REVIEW_POLICY_QUICK_REF.md","triageAction":"KEEP","triageReason":"Quick reference for review policy. Active reference doc."}
+{"file":"docs/REVIEW_POLICY_VISUAL_GUIDE.md","triageAction":"KEEP","triageReason":"Visual guide for review policy. Active reference doc."}
+{"file":"docs/SENTRY_INTEGRATION_GUIDE.md","triageAction":"REVIEW","triageReason":"Sentry integration guide. Unclear if Sentry is currently integrated or this is a future plan."}
+{"file":"docs/SERVER_SIDE_SECURITY.md","triageAction":"KEEP","triageReason":"Server-side security guide. Active security reference, 80 days old but content likely stable."}
+{"file":"docs/SESSION_DECISIONS.md","triageAction":"ARCHIVE","triageReason":"Session decisions from Jan 2026, 71 days old. Superseded by newer session context."}
+{"file":"docs/SESSION_HISTORY.md","triageAction":"KEEP","triageReason":"Directly referenced by CLAUDE.md version history link. Active session history record, modified today."}
+{"file":"docs/SLASH_COMMANDS_REFERENCE.md","triageAction":"ARCHIVE","triageReason":"Slash commands reference. Likely superseded by skill system and /help command."}
+{"file":"docs/SONARCLOUD_CLEANUP_RUNBOOK.md","triageAction":"KEEP","triageReason":"SonarCloud cleanup runbook. Active operational reference for recurring SonarCloud work."}
+{"file":"docs/superpowers/plans/2026-03-14-automation-gap-closure.md","triageAction":"KEEP","triageReason":"Superpowers plan artifact. Generated by superpowers skill framework, managed by that system."}
+{"file":"docs/superpowers/specs/2026-03-14-automation-gap-closure-design.md","triageAction":"KEEP","triageReason":"Superpowers spec artifact. Generated by superpowers skill framework, managed by that system."}
+{"file":"docs/superpowers/specs/sws reevaluation conversation.md","triageAction":"ARCHIVE","triageReason":"SWS reevaluation conversation log. One-time conversation artifact, historical only."}
+{"file":"docs/technical-debt/FINAL_SYSTEM_AUDIT.md","triageAction":"ARCHIVE","triageReason":"Final system audit for TDMS. One-time report, likely superseded by ongoing TDMS operations."}
+{"file":"docs/technical-debt/INDEX.md","triageAction":"KEEP","triageReason":"Generated by scripts/debt/generate-views.js. Auto-maintained TDMS index, modified today."}
+{"file":"docs/technical-debt/METRICS.md","triageAction":"KEEP","triageReason":"Generated by scripts/debt/generate-metrics.js. Auto-maintained TDMS metrics, modified today."}
+{"file":"docs/technical-debt/views/by-category.md","triageAction":"KEEP","triageReason":"Generated by scripts/debt/generate-views.js. Auto-maintained TDMS view, modified today."}
+{"file":"docs/technical-debt/views/by-severity.md","triageAction":"KEEP","triageReason":"Generated by scripts/debt/generate-views.js. Auto-maintained TDMS view, modified today."}
+{"file":"docs/technical-debt/views/by-status.md","triageAction":"KEEP","triageReason":"Generated by scripts/debt/generate-views.js. Auto-maintained TDMS view, modified today."}
+{"file":"docs/technical-debt/views/unplaced-items.md","triageAction":"KEEP","triageReason":"Generated by scripts/debt/generate-views.js. Auto-maintained TDMS view."}
+{"file":"docs/technical-debt/views/verification-queue.md","triageAction":"KEEP","triageReason":"Generated by scripts/debt/generate-views.js. Auto-maintained TDMS view, modified today."}
+{"file":"docs/templates/CANONICAL_DOC_TEMPLATE.md","triageAction":"KEEP","triageReason":"Doc template used by doc generators and documentation standards. Active infrastructure."}
+{"file":"docs/templates/CANON_QUICK_REFERENCE.md","triageAction":"KEEP","triageReason":"Quick reference for canonical doc standards. Active reference for doc creation."}
+{"file":"docs/templates/FOUNDATION_DOC_TEMPLATE.md","triageAction":"KEEP","triageReason":"Foundation doc template. Active infrastructure used by doc generators."}
+{"file":"docs/templates/GUIDE_DOC_TEMPLATE.md","triageAction":"KEEP","triageReason":"Guide doc template. Active infrastructure used by doc generators."}
+{"file":"docs/templates/PLANNING_DOC_TEMPLATE.md","triageAction":"KEEP","triageReason":"Planning doc template. Active infrastructure used by doc generators."}
+{"file":"docs/templates/REFERENCE_DOC_TEMPLATE.md","triageAction":"KEEP","triageReason":"Reference doc template. Active infrastructure used by doc generators."}
+{"file":"docs/templates/TEMPLATE.md","triageAction":"KEEP","triageReason":"Base template. Active infrastructure used by doc generators."}
+{"file":"docs/TESTING_CHECKLIST.md","triageAction":"KEEP","triageReason":"Top-level testing checklist. Active reference for manual testing workflows."}
+{"file":"docs/TRIGGERS.md","triageAction":"KEEP","triageReason":"Trigger definitions doc, modified 6 days ago. Active reference for skill/agent triggers."}
