@@ -298,15 +298,14 @@ function resolveAsFilePath(ref) {
   const noAnchor = cleaned.split("#")[0];
   if (!noAnchor) return null;
 
-  // Path traversal guard (CODE_PATTERNS.md)
-  if (/^\.\.(?:[\\/]|$)/.test(noAnchor)) return null;
+  // Path containment check (CODE_PATTERNS.md)
+  try {
+    validatePathInDir(ROOT, noAnchor);
+  } catch {
+    return null;
+  }
 
   const abs = path.resolve(ROOT, noAnchor);
-
-  // Containment check: must remain inside repo root
-  const rel = path.relative(ROOT, abs);
-  if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) return null;
-
   try {
     fs.statSync(abs);
     return abs;

@@ -140,10 +140,12 @@ function scanScripts(graph) {
 }
 
 function isContainedPath(scriptPath) {
-  if (/^\.\.(?:[\\/]|$)/.test(scriptPath)) return false;
-  const abs = path.resolve(ROOT, scriptPath);
-  const rel = path.relative(ROOT, abs);
-  return !(/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel));
+  try {
+    validatePathInDir(ROOT, scriptPath);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function findDeadWorkflowRefs(content, workflowRel) {
