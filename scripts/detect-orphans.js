@@ -93,48 +93,39 @@ async function main() {
 
 // ── Category Scanners ────────────────────────────────────────────────────────
 
+function isSkippableScript(rel) {
+  return (
+    rel.includes("__tests__/") ||
+    rel.includes("/test/") ||
+    rel.endsWith(".test.js") ||
+    rel.includes("/dist/")
+  );
+}
+
 function scanScripts(graph) {
   const findings = [];
-  const scriptsDir = path.join(ROOT, "scripts");
-  const allFiles = walkDir(scriptsDir, ".js");
-
-  // Load package.json scripts for cross-check
+  const allFiles = walkDir(path.join(ROOT, "scripts"), [".js", ".mjs", ".cjs"]);
   const pkgScriptRefs = getPkgScriptReferencedFiles();
 
   for (const file of allFiles) {
-    const rel = path.relative(ROOT, file).replace(/\\/g, "/");
-    // Skip test files for orphan detection (tests reference source, not vice versa)
-    if (rel.includes("__tests__/") || rel.includes("/test/") || rel.endsWith(".test.js")) continue;
-    // Skip dist directories
-    if (rel.includes("/dist/")) continue;
+    const rel = path.relative(ROOT, file).replaceAll("\\", "/");
+    if (isSkippableScript(rel)) continue;
+    if (graph.get(file)?.size > 0 || pkgScriptRefs.has(file) || isInHookConfig(rel)) continue;
 
-    const incomingEdges = graph.get(file);
-    const inPkgScripts = pkgScriptRefs.has(file);
-    const inHookConfig = isInHookConfig(rel);
-
-    if (incomingEdges?.size > 0 || inPkgScripts || inHookConfig) continue;
-
-    // This file has no incoming references
     const isArchive = rel.includes("/archive/");
-    let confidence = isArchive ? "HIGH" : "MEDIUM";
-    const proposedAction = isArchive ? "delete" : "review";
-    const reason = isArchive
-      ? "In archive/ with no references"
-      : "No incoming references from other scripts, package.json, or hooks";
-
     findings.push({
       file: rel,
       category: "scripts",
-      confidence,
-      proposedAction,
-      reason,
+      confidence: isArchive ? "HIGH" : "MEDIUM",
+      proposedAction: isArchive ? "delete" : "review",
+      reason: isArchive
+        ? "In archive/ with no references"
+        : "No incoming references from other scripts, package.json, or hooks",
       references: [],
     });
   }
 
-  // Sub-check: dead npm scripts (reference files that don't exist)
-  const deadNpmScripts = findDeadNpmScripts();
-  for (const { name, target } of deadNpmScripts) {
+  for (const { name, target } of findDeadNpmScripts()) {
     findings.push({
       file: target,
       category: "scripts",
@@ -145,6 +136,36 @@ function scanScripts(graph) {
     });
   }
 
+  return findings;
+}
+
+function isContainedPath(scriptPath) {
+  if (/^\.\.(?:[\\/]|$)/.test(scriptPath)) return false;
+  const abs = path.resolve(ROOT, scriptPath);
+  const rel = path.relative(ROOT, abs);
+  return !(/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel));
+}
+
+function findDeadWorkflowRefs(content, workflowRel) {
+  const findings = [];
+  const scriptRe = /(?:node|npx)\s+(scripts\/[^\s;|&"']+)/g;
+  let m;
+  while ((m = scriptRe.exec(content)) !== null) {
+    const scriptPath = m[1].trim();
+    if (!isContainedPath(scriptPath)) continue;
+    try {
+      fs.statSync(path.resolve(ROOT, scriptPath));
+    } catch {
+      findings.push({
+        file: scriptPath,
+        category: "workflows",
+        confidence: "HIGH",
+        proposedAction: "wire-up",
+        reason: `Referenced in ${workflowRel} but file does not exist`,
+        references: [workflowRel],
+      });
+    }
+  }
   return findings;
 }
 
@@ -159,7 +180,7 @@ function scanWorkflows(graph) {
   }
 
   for (const file of files) {
-    const safeFile = validatePathInDir(wfDir, file); // containment check
+    const safeFile = validatePathInDir(wfDir, file);
     const absFile = path.join(wfDir, safeFile);
     const rel = `.github/workflows/${safeFile}`;
     let content;
@@ -169,29 +190,8 @@ function scanWorkflows(graph) {
       continue;
     }
 
-    // Check for dead script references in run: steps
-    const scriptRe = /(?:node|npx)\s+(scripts\/[^\s;|&"']+)/g;
-    let m;
-    while ((m = scriptRe.exec(content)) !== null) {
-      const scriptPath = m[1].trim();
-      const absScript = path.resolve(ROOT, scriptPath);
-      try {
-        if (!fs.existsSync(absScript)) {
-          findings.push({
-            file: scriptPath,
-            category: "workflows",
-            confidence: "HIGH",
-            proposedAction: "wire-up",
-            reason: `Referenced in ${rel} but file does not exist`,
-            references: [rel],
-          });
-        }
-      } catch {
-        // existsSync race — skip
-      }
-    }
+    findings.push(...findDeadWorkflowRefs(content, rel));
 
-    // Check if workflow has no triggers (disabled)
     if (!content.includes("on:")) {
       findings.push({
         file: rel,
@@ -207,6 +207,35 @@ function scanWorkflows(graph) {
   return findings;
 }
 
+function scanHookSubdir(graph, hooksDir, subdir) {
+  const findings = [];
+  const subdirPath = path.join(hooksDir, subdir);
+  let subFiles;
+  try {
+    subFiles = fs.readdirSync(subdirPath).filter((f) => f.endsWith(".js"));
+  } catch {
+    return findings;
+  }
+  const isBackup = subdir === "backup";
+  for (const file of subFiles) {
+    const safeFile = validatePathInDir(subdirPath, file);
+    const absFile = path.join(subdirPath, safeFile);
+    if (graph.get(absFile)?.size > 0) continue;
+
+    findings.push({
+      file: `.claude/hooks/${subdir}/${safeFile}`,
+      category: "hooks",
+      confidence: isBackup ? "HIGH" : "MEDIUM",
+      proposedAction: isBackup ? "delete" : "review",
+      reason: isBackup
+        ? "Backup hook file with no references"
+        : "Hook lib utility not imported by any handler",
+      references: [],
+    });
+  }
+  return findings;
+}
+
 function scanHooks(graph) {
   const findings = [];
   const hooksDir = path.join(ROOT, ".claude", "hooks");
@@ -217,22 +246,15 @@ function scanHooks(graph) {
     return findings;
   }
 
-  // Get registered hooks from settings.json
   const registeredHandlers = getRegisteredHookHandlers();
 
   for (const handler of allHandlers) {
-    const rel = `.claude/hooks/${handler}`;
-    const isRegistered = registeredHandlers.has(handler);
-
-    if (isRegistered) continue;
-
-    // Check if imported by any registered handler
+    if (registeredHandlers.has(handler)) continue;
     const absFile = path.join(hooksDir, handler);
-    const incomingEdges = graph.get(absFile);
-    if (incomingEdges?.size > 0) continue;
+    if (graph.get(absFile)?.size > 0) continue;
 
     findings.push({
-      file: rel,
+      file: `.claude/hooks/${handler}`,
       category: "hooks",
       confidence: "MEDIUM",
       proposedAction: "review",
@@ -242,40 +264,47 @@ function scanHooks(graph) {
     });
   }
 
-  // Also check lib/ and backup/ subdirectories
   for (const subdir of ["lib", "backup"]) {
-    const subdirPath = path.join(hooksDir, subdir);
-    let subFiles;
-    try {
-      subFiles = fs.readdirSync(subdirPath).filter((f) => f.endsWith(".js"));
-    } catch {
-      continue;
-    }
-    for (const file of subFiles) {
-      const safeFile = validatePathInDir(subdirPath, file); // containment check
-      const rel = `.claude/hooks/${subdir}/${safeFile}`;
-      const absFile = path.join(subdirPath, safeFile);
-      const incomingEdges = graph.get(absFile);
-      if (incomingEdges?.size > 0) continue;
-
-      const isBackup = subdir === "backup";
-      findings.push({
-        file: rel,
-        category: "hooks",
-        confidence: isBackup ? "HIGH" : "MEDIUM",
-        proposedAction: isBackup ? "delete" : "review",
-        reason: isBackup
-          ? "Backup hook file with no references"
-          : "Hook lib utility not imported by any handler",
-        references: [],
-      });
-    }
+    findings.push(...scanHookSubdir(graph, hooksDir, subdir));
   }
 
   return findings;
 }
 
-function scanStateFiles(graph) {
+function collectBasenameRefs(searchDirs, entries) {
+  const found = new Set();
+  const fileEntries = entries.filter((e) => !e.isDirectory());
+  for (const dir of searchDirs) {
+    const files = walkDir(dir, [".js", ".mjs", ".md"]);
+    for (const file of files) {
+      let content;
+      try {
+        content = fs.readFileSync(file, "utf8");
+      } catch {
+        continue;
+      }
+      for (const entry of fileEntries) {
+        if (content.includes(entry.name)) found.add(entry.name);
+      }
+    }
+  }
+  return found;
+}
+
+const STATE_WELL_KNOWN = new Set([
+  "reviews.jsonl",
+  "consolidation.json",
+  "learning-routes.jsonl",
+  "review-metrics.jsonl",
+  "commit-log.jsonl",
+  "hook-runs.jsonl",
+  "hook-warnings-log.jsonl",
+  "agent-invocations.jsonl",
+]);
+
+const SESSION_STATE_PREFIXES = ["deep-plan.", "deep-research.", "brainstorm."];
+
+function scanStateFiles() {
   const findings = [];
   const stateDir = path.join(ROOT, ".claude", "state");
   let files;
@@ -285,73 +314,23 @@ function scanStateFiles(graph) {
     return findings;
   }
 
-  // Well-known operational files that are always active
-  const wellKnown = new Set([
-    "reviews.jsonl",
-    "consolidation.json",
-    "learning-routes.jsonl",
-    "review-metrics.jsonl",
-    "commit-log.jsonl",
-    "hook-runs.jsonl",
-    "hook-warnings-log.jsonl",
-    "agent-invocations.jsonl",
-  ]);
-
-  // Scan all scripts for state file basename references
-  const scriptsDir = path.join(ROOT, "scripts");
-  const allScripts = walkDir(scriptsDir, ".js");
-  const hooksScripts = walkDir(path.join(ROOT, ".claude", "hooks"), ".js");
-  const allScannable = [...allScripts, ...hooksScripts];
-
-  const referencedBasenames = new Set();
-  for (const scriptFile of allScannable) {
-    let content;
-    try {
-      content = fs.readFileSync(scriptFile, "utf8");
-    } catch {
-      continue;
-    }
-    for (const entry of files) {
-      if (entry.isDirectory()) continue;
-      if (content.includes(entry.name)) {
-        referencedBasenames.add(entry.name);
-      }
-    }
-  }
-
-  // Also check skill .md files for state file references
-  const skillMds = walkDir(path.join(ROOT, ".claude", "skills"), ".md");
-  for (const mdFile of skillMds) {
-    let content;
-    try {
-      content = fs.readFileSync(mdFile, "utf8");
-    } catch {
-      continue;
-    }
-    for (const entry of files) {
-      if (entry.isDirectory()) continue;
-      if (content.includes(entry.name)) {
-        referencedBasenames.add(entry.name);
-      }
-    }
-  }
+  const referencedBasenames = collectBasenameRefs(
+    [
+      path.join(ROOT, "scripts"),
+      path.join(ROOT, ".claude", "hooks"),
+      path.join(ROOT, ".claude", "skills"),
+    ],
+    files
+  );
 
   for (const entry of files) {
     if (entry.isDirectory()) continue;
     const name = entry.name;
-    const rel = `.claude/state/${name}`;
+    if (STATE_WELL_KNOWN.has(name) || referencedBasenames.has(name)) continue;
 
-    if (wellKnown.has(name)) continue;
-    if (referencedBasenames.has(name)) continue;
-
-    // Check if it's a session state file (deep-plan, brainstorm, etc.)
-    const isSessionState =
-      name.startsWith("deep-plan.") ||
-      name.startsWith("deep-research.") ||
-      name.startsWith("brainstorm.");
-
+    const isSessionState = SESSION_STATE_PREFIXES.some((p) => name.startsWith(p));
     findings.push({
-      file: rel,
+      file: `.claude/state/${name}`,
       category: "state-files",
       confidence: "MEDIUM",
       proposedAction: isSessionState ? "delete" : "review",
@@ -382,8 +361,8 @@ function scanAgents(graph) {
 
     for (const file of files) {
       const absFile = path.join(agentDir, file);
-      const rel = path.relative(ROOT, absFile).replace(/\\/g, "/");
-      const agentName = file.replace(/\.md$/, "");
+      const rel = path.relative(ROOT, absFile).replaceAll("\\", "/");
+      const agentName = file.replace(".md", "");
 
       // Check for references: file path references + name-based references
       const fileRefs = graph.get(absFile);
@@ -472,7 +451,7 @@ function scanDocs(graph) {
   const allFiles = walkDir(docsDir, ".md");
 
   for (const file of allFiles) {
-    const rel = path.relative(ROOT, file).replace(/\\/g, "/");
+    const rel = path.relative(ROOT, file).replaceAll("\\", "/");
 
     // Check for incoming references (markdown links, skill refs, CLAUDE.md)
     const fileRefs = graph.get(file);
@@ -496,97 +475,72 @@ function scanDocs(graph) {
   return findings;
 }
 
-function scanPlanning(graph) {
-  const findings = [];
-  const planDir = path.join(ROOT, ".planning");
+function findTodoMatch(todos, dirName) {
+  const term = dirName.replaceAll("-", " ");
+  return todos.find(
+    (t) => t.title?.toLowerCase().includes(term) || t.description?.toLowerCase().includes(term)
+  );
+}
+
+function isTodoCompleted(todo) {
+  return todo?.status === "completed" || todo?.status === "archived";
+}
+
+function hasGraphRef(graph, baseDir, dirName) {
+  return (
+    graph.get(`ref:${baseDir}/${dirName}/`)?.size > 0 ||
+    graph.get(`ref:${baseDir}/${dirName}`)?.size > 0
+  );
+}
+
+function scanDirWithTodos(graph, baseDir, category, completedReason, defaultReason) {
   let dirs;
   try {
-    dirs = fs.readdirSync(planDir, { withFileTypes: true }).filter((d) => d.isDirectory());
+    dirs = fs
+      .readdirSync(path.join(ROOT, baseDir), { withFileTypes: true })
+      .filter((d) => d.isDirectory());
   } catch {
-    return findings;
+    return [];
   }
 
   const todos = loadTodos();
-
+  const findings = [];
   for (const dir of dirs) {
-    const dirName = dir.name;
-    const rel = `.planning/${dirName}/`;
+    const todo = findTodoMatch(todos, dir.name);
+    if (todo && !isTodoCompleted(todo)) continue;
+    if (hasGraphRef(graph, baseDir, dir.name)) continue;
 
-    const matchingTodo = todos.find(
-      (t) =>
-        t.title?.toLowerCase().includes(dirName.replace(/-/g, " ")) ||
-        t.description?.toLowerCase().includes(dirName.replace(/-/g, " "))
-    );
-
-    const todoCompleted =
-      matchingTodo?.status === "completed" || matchingTodo?.status === "archived";
-    const todoAbsent = !matchingTodo;
-
-    if (!todoCompleted && !todoAbsent) continue; // Active todo — not orphaned
-
-    // Check if any active skill or plan references this directory
-    const dirRef = graph.get(`ref:${rel}`) || graph.get(`ref:.planning/${dirName}`);
-    if (dirRef?.size > 0) continue;
-
+    const completed = isTodoCompleted(todo);
     findings.push({
-      file: rel,
-      category: "planning",
-      confidence: todoCompleted ? "MEDIUM" : "LOW",
-      proposedAction: todoCompleted ? "archive" : "review",
-      reason: todoCompleted
-        ? "Planning directory for completed todo, no active references"
-        : "Planning directory with no matching todo and no active references",
-      references: matchingTodo ? [`todo:${matchingTodo.id}`] : [],
+      file: `${baseDir}/${dir.name}/`,
+      category,
+      confidence: completed ? "MEDIUM" : "LOW",
+      proposedAction: completed ? "archive" : "review",
+      reason: completed ? completedReason : defaultReason,
+      references: todo ? [`todo:${todo.id}`] : [],
     });
   }
-
   return findings;
 }
 
+function scanPlanning(graph) {
+  return scanDirWithTodos(
+    graph,
+    ".planning",
+    "planning",
+    "Planning directory for completed todo, no active references",
+    "Planning directory with no matching todo and no active references"
+  );
+}
+
 function scanResearch(graph) {
-  const findings = [];
-  const researchDir = path.join(ROOT, ".research");
-  let dirs;
-  try {
-    dirs = fs.readdirSync(researchDir, { withFileTypes: true }).filter((d) => d.isDirectory());
-  } catch {
-    return findings;
-  }
-
-  const todos = loadTodos();
-
-  for (const dir of dirs) {
-    const dirName = dir.name;
-    const rel = `.research/${dirName}/`;
-
-    const matchingTodo = todos.find(
-      (t) =>
-        t.title?.toLowerCase().includes(dirName.replace(/-/g, " ")) ||
-        t.description?.toLowerCase().includes(dirName.replace(/-/g, " "))
-    );
-
-    const todoCompleted =
-      matchingTodo?.status === "completed" || matchingTodo?.status === "archived";
-    const todoAbsent = !matchingTodo;
-
-    if (!todoCompleted && !todoAbsent) continue;
-
-    const dirRef = graph.get(`ref:${rel}`) || graph.get(`ref:.research/${dirName}`);
-    if (dirRef?.size > 0) continue;
-
-    findings.push({
-      file: rel,
-      category: "research",
-      confidence: todoCompleted ? "MEDIUM" : "LOW",
-      proposedAction: todoCompleted ? "archive" : "review",
-      reason: todoCompleted
-        ? "Research directory for completed initiative, no active references"
-        : "Research directory with no matching todo and no active references",
-      references: matchingTodo ? [`todo:${matchingTodo.id}`] : [],
-    });
-  }
-
-  return findings;
+  return scanDirWithTodos(
+    graph,
+    ".research",
+    "research",
+    "Research directory for completed initiative, no active references",
+    "Research directory with no matching todo and no active references"
+  );
 }
 
 // ── Git Recency ──────────────────────────────────────────────────────────────
@@ -635,13 +589,14 @@ function applyDiff(findings) {
     return null;
   }
 
-  const prevSet = new Set(previousFindings.map((f) => f.file));
-  const currSet = new Set(findings.map((f) => f.file));
+  const diffKey = (f) => `${f.category}:${f.file}`;
+  const prevSet = new Set(previousFindings.map(diffKey));
+  const currSet = new Set(findings.map(diffKey));
 
   let newCount = 0;
   let unchanged = 0;
   for (const f of findings) {
-    if (prevSet.has(f.file)) {
+    if (prevSet.has(diffKey(f))) {
       f.diffStatus = "UNCHANGED";
       unchanged++;
     } else {
@@ -650,7 +605,7 @@ function applyDiff(findings) {
     }
   }
 
-  const resolved = previousFindings.filter((f) => !currSet.has(f.file)).length;
+  const resolved = previousFindings.filter((f) => !currSet.has(diffKey(f))).length;
   return { new: newCount, resolved, unchanged };
 }
 
@@ -689,11 +644,9 @@ function findDeadNpmScripts() {
         const target = m[1];
         const abs = path.resolve(ROOT, target);
         try {
-          if (!fs.existsSync(abs)) {
-            dead.push({ name, target });
-          }
+          fs.statSync(abs);
         } catch {
-          // existsSync race — skip
+          dead.push({ name, target });
         }
       }
     }

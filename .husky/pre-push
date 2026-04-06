@@ -466,18 +466,18 @@ if [ -z "$_ts_in_diff" ]; then
 else
   # DEBT-45639: sync after rc write — MSYS/Windows flushes OS buffer late,
   # causing reader to see an empty .rc file and default to a bogus exit code.
-  (npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc"; sync) &
+  (npx tsc --noEmit > "$_TSC_OUT" 2>&1; echo $? > "${_TSC_OUT}.rc"; command -v sync >/dev/null 2>&1 && sync >/dev/null 2>&1 || true) &
 fi
 
 # 5b. Cyclomatic complexity via check-cyclomatic-cc.js (background, unless skipped)
 # Uses baseline from known-debt-baseline.json to suppress known debt
 if [ "$_cyc_skip" -eq 0 ] && [ -f scripts/check-cyclomatic-cc.js ]; then
-  (node scripts/check-cyclomatic-cc.js > "$_CYC_OUT" 2>&1; echo $? > "${_CYC_OUT}.rc"; sync) &
+  (node scripts/check-cyclomatic-cc.js > "$_CYC_OUT" 2>&1; echo $? > "${_CYC_OUT}.rc"; command -v sync >/dev/null 2>&1 && sync >/dev/null 2>&1 || true) &
 fi
 
 # 5c. Cognitive complexity (background, unless skipped)
 if [ "$_cog_skip" -eq 0 ] && [ -f scripts/check-cc.js ]; then
-  (node scripts/check-cc.js > "$_COG_OUT" 2>&1; echo $? > "${_COG_OUT}.rc"; sync) &
+  (node scripts/check-cc.js > "$_COG_OUT" 2>&1; echo $? > "${_COG_OUT}.rc"; command -v sync >/dev/null 2>&1 && sync >/dev/null 2>&1 || true) &
 fi
 
 # Wait for all background jobs

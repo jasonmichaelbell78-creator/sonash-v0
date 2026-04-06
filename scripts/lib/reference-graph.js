@@ -12,16 +12,27 @@ const ROOT = path.resolve(__dirname, "..", "..");
  * Collect JS require/import references from .js files in a directory (recursive).
  * Returns Map<absoluteSourceFile, Set<resolvedTargetPath>>
  */
-function collectJsReferences(dir) {
-  const refs = new Map();
-  const absDir = path.resolve(ROOT, dir);
-  const files = walkDir(absDir, ".js");
-
+function extractJsImports(file, content) {
   const requireRe = /require\(\s*['"]([^'"]+)['"]\s*\)/g;
   const importRe = /(?:import|from)\s+['"]([^'"]+)['"]/g;
+  const outgoing = new Set();
+  for (const re of [requireRe, importRe]) {
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(content)) !== null) {
+      if (m[1].startsWith(".")) {
+        const resolved = resolveRelative(file, m[1]);
+        if (resolved) outgoing.add(resolved);
+      }
+    }
+  }
+  return outgoing;
+}
 
+function collectJsReferences(dir) {
+  const refs = new Map();
+  const files = walkDir(path.resolve(ROOT, dir), [".js", ".mjs", ".cjs"]);
   for (const file of files) {
-    const outgoing = new Set();
     let content;
     try {
       content = fs.readFileSync(file, "utf8");
@@ -29,19 +40,7 @@ function collectJsReferences(dir) {
       console.warn(`  warn: cannot read ${path.relative(ROOT, file)}: ${sanitizeError(err)}`);
       continue;
     }
-
-    for (const re of [requireRe, importRe]) {
-      re.lastIndex = 0;
-      let m;
-      while ((m = re.exec(content)) !== null) {
-        const spec = m[1];
-        if (spec.startsWith(".")) {
-          const resolved = resolveRelative(file, spec);
-          if (resolved) outgoing.add(resolved);
-        }
-      }
-    }
-    refs.set(file, outgoing);
+    refs.set(file, extractJsImports(file, content));
   }
   return refs;
 }
@@ -61,10 +60,10 @@ function collectMdReferences(dir) {
   const patterns = [
     // Markdown links: [text](relative/path)
     /\[(?:[^\]]*)\]\(([^)]+)\)/g,
-    // Backtick commands: `node scripts/path.js` or `npm run something`
-    /`(?:node|npx|npm run)\s+([^`]+)`/g,
-    // Quoted paths: "scripts/foo.js" or '.claude/hooks/bar.js'
-    /["'](\.\/?(?:scripts|\.claude|\.github|docs|\.planning|\.research)\/[^"']+)["']/g,
+    // Backtick commands: `node scripts/path.js` — capture first token only (strip args)
+    /`(?:node|npx)\s+([^\s`]+)/g,
+    // Quoted paths: "scripts/foo.js" or '.claude/hooks/bar.js' (with or without ./ prefix)
+    /["'](?:\.\/)?((scripts|\.claude|\.github|docs|\.planning|\.research)\/[^"'\s]+)["']/g,
     // Slash-commands: /skill-name (word boundary, not in URLs)
     /(?:^|\s)\/([a-z][\w-]*(?::[a-z][\w-]*)?)(?:\s|$|[.,;)])/gm,
     // Agent subagent_type references: subagent_type=name or subagent_type="name"
@@ -114,7 +113,7 @@ function collectJsonReferences(filePath) {
   try {
     const found = new Set();
     // Extract all string values that look like file paths or commands
-    const pathRe = /["']([^"']*(?:scripts\/|\.claude\/|\.github\/|node\s+)[^"']*)["']/g;
+    const pathRe = /["']((?:scripts|\.claude|\.github)\/[^"'\s]+)["']/g;
     let m;
     while ((m = pathRe.exec(content)) !== null) {
       found.add(m[1].trim());
@@ -174,6 +173,38 @@ function collectYamlReferences(dir) {
 }
 
 /**
+ * Add a single edge to the incoming-edge map.
+ */
+function addEdge(incoming, target, source) {
+  if (!incoming.has(target)) incoming.set(target, new Set());
+  incoming.get(target).add(source);
+}
+
+/**
+ * Merge direct edges (JS require/import) into the graph.
+ */
+function mergeDirectEdges(incoming, refs) {
+  for (const [source, targets] of refs) {
+    for (const target of targets) {
+      addEdge(incoming, target, source);
+    }
+  }
+}
+
+/**
+ * Merge refs that need path resolution + raw-key storage into the graph.
+ */
+function mergeResolvedEdges(incoming, refs) {
+  for (const [source, targets] of refs) {
+    for (const ref of targets) {
+      const resolved = resolveAsFilePath(ref);
+      if (resolved) addEdge(incoming, resolved, source);
+      addEdge(incoming, `ref:${ref}`, source);
+    }
+  }
+}
+
+/**
  * Build a unified incoming-edge graph: Map<targetFile, Set<sourceFile>>
  * A target with zero incoming edges is an orphan candidate.
  */
@@ -183,68 +214,22 @@ function buildGraph() {
   const incoming = new Map();
 
   // 1. JS references (scripts, hooks)
-  const jsDirs = ["scripts", ".claude/hooks"];
-  for (const dir of jsDirs) {
-    const jsRefs = collectJsReferences(dir);
-    for (const [source, targets] of jsRefs) {
-      for (const target of targets) {
-        if (!incoming.has(target)) incoming.set(target, new Set());
-        incoming.get(target).add(source);
-      }
-    }
+  for (const dir of ["scripts", ".claude/hooks"]) {
+    mergeDirectEdges(incoming, collectJsReferences(dir));
   }
 
   // 2. Markdown references (skills, agents, docs)
-  const mdDirs = [".claude/skills", ".claude/agents", "docs"];
-  for (const dir of mdDirs) {
-    const mdRefs = collectMdReferences(dir);
-    for (const [source, targets] of mdRefs) {
-      for (const ref of targets) {
-        // Try to resolve as file path
-        const resolved = resolveAsFilePath(ref);
-        if (resolved) {
-          if (!incoming.has(resolved)) incoming.set(resolved, new Set());
-          incoming.get(resolved).add(source);
-        }
-        // Also store raw reference for skill/agent name matching
-        const rawKey = `ref:${ref}`;
-        if (!incoming.has(rawKey)) incoming.set(rawKey, new Set());
-        incoming.get(rawKey).add(source);
-      }
-    }
+  for (const dir of [".claude/skills", ".claude/agents", "docs"]) {
+    mergeResolvedEdges(incoming, collectMdReferences(dir));
   }
 
   // 3. JSON config references
   for (const file of [".claude/settings.json", "package.json"]) {
-    const jsonRefs = collectJsonReferences(file);
-    for (const [source, targets] of jsonRefs) {
-      for (const ref of targets) {
-        const resolved = resolveAsFilePath(ref);
-        if (resolved) {
-          if (!incoming.has(resolved)) incoming.set(resolved, new Set());
-          incoming.get(resolved).add(source);
-        }
-        const rawKey = `ref:${ref}`;
-        if (!incoming.has(rawKey)) incoming.set(rawKey, new Set());
-        incoming.get(rawKey).add(source);
-      }
-    }
+    mergeResolvedEdges(incoming, collectJsonReferences(file));
   }
 
   // 4. YAML workflow references
-  const yamlRefs = collectYamlReferences(".github/workflows");
-  for (const [source, targets] of yamlRefs) {
-    for (const ref of targets) {
-      const resolved = resolveAsFilePath(ref);
-      if (resolved) {
-        if (!incoming.has(resolved)) incoming.set(resolved, new Set());
-        incoming.get(resolved).add(source);
-      }
-      const rawKey = `ref:${ref}`;
-      if (!incoming.has(rawKey)) incoming.set(rawKey, new Set());
-      incoming.get(rawKey).add(source);
-    }
-  }
+  mergeResolvedEdges(incoming, collectYamlReferences(".github/workflows"));
 
   console.log(`  Graph built: ${incoming.size} nodes with incoming edges`);
   return incoming;
@@ -256,6 +241,7 @@ function buildGraph() {
  * Walk a directory recursively, collecting files with the given extension.
  */
 function walkDir(dir, ext) {
+  const exts = Array.isArray(ext) ? ext : [ext];
   const results = [];
   let entries;
   try {
@@ -268,8 +254,8 @@ function walkDir(dir, ext) {
     if (entry.isDirectory()) {
       if (entry.name === "node_modules" || entry.name === "dist" || entry.name === "dist-tests")
         continue;
-      results.push(...walkDir(full, ext));
-    } else if (entry.name.endsWith(ext)) {
+      results.push(...walkDir(full, exts));
+    } else if (exts.some((e) => entry.name.endsWith(e))) {
       results.push(full);
     }
   }
@@ -290,7 +276,7 @@ function resolveRelative(fromFile, spec) {
   ];
   for (const c of candidates) {
     try {
-      if (fs.existsSync(c) && fs.statSync(c).isFile()) return c;
+      if (fs.statSync(c).isFile()) return c;
     } catch {
       continue;
     }
@@ -312,11 +298,20 @@ function resolveAsFilePath(ref) {
   const noAnchor = cleaned.split("#")[0];
   if (!noAnchor) return null;
 
+  // Path traversal guard (CODE_PATTERNS.md)
+  if (/^\.\.(?:[\\/]|$)/.test(noAnchor)) return null;
+
   const abs = path.resolve(ROOT, noAnchor);
+
+  // Containment check: must remain inside repo root
+  const rel = path.relative(ROOT, abs);
+  if (/^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) return null;
+
   try {
-    if (fs.existsSync(abs)) return abs;
+    fs.statSync(abs);
+    return abs;
   } catch {
-    // fall through
+    // file does not exist
   }
   return null;
 }

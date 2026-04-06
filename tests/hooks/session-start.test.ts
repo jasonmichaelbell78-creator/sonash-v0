@@ -166,14 +166,15 @@ describe("detectEnvironmentType", () => {
   });
 });
 
+function resolveRatchetTimeout(env: Record<string, string | undefined>): number {
+  const parsed = Number.parseInt((env.RATCHET_BASELINES_TIMEOUT_MS as string) || "60000", 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : 60000;
+}
+
 describe("ratchet-baselines timeout (Session #263 fix)", () => {
   // Session #263 raised timeout 20s → 60s after ETIMEDOUT on Windows fnm startup.
   // The hook reads RATCHET_BASELINES_TIMEOUT_MS env or defaults to 60000.
   // This test exercises the same parseInt logic used at session-start.js:1105.
-
-  function resolveRatchetTimeout(env: Record<string, string | undefined>): number {
-    return Number.parseInt((env.RATCHET_BASELINES_TIMEOUT_MS as string) || "60000", 10);
-  }
 
   test("defaults to 60000ms when env var not set", () => {
     assert.equal(resolveRatchetTimeout({}), 60000);
@@ -188,11 +189,15 @@ describe("ratchet-baselines timeout (Session #263 fix)", () => {
     assert.equal(resolveRatchetTimeout({ RATCHET_BASELINES_TIMEOUT_MS: "30000" }), 30000);
   });
 
-  test("handles non-numeric gracefully (NaN → still parses)", () => {
-    // parseInt("abc", 10) → NaN; caller should guard but we test the current behavior
-    assert.equal(
-      Number.isNaN(resolveRatchetTimeout({ RATCHET_BASELINES_TIMEOUT_MS: "abc" })),
-      true
-    );
+  test("falls back to 60000ms for non-numeric values", () => {
+    assert.equal(resolveRatchetTimeout({ RATCHET_BASELINES_TIMEOUT_MS: "abc" }), 60000);
+  });
+
+  test("falls back to 60000ms for negative values", () => {
+    assert.equal(resolveRatchetTimeout({ RATCHET_BASELINES_TIMEOUT_MS: "-5000" }), 60000);
+  });
+
+  test("falls back to 60000ms for zero", () => {
+    assert.equal(resolveRatchetTimeout({ RATCHET_BASELINES_TIMEOUT_MS: "0" }), 60000);
   });
 });

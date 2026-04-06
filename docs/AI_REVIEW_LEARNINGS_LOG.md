@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#45)</summary>
+
+- **Date:** 2026-04-06
+- **Reviews consolidated:** #64-#review-pr493-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#44)</summary>
 
 - **Date:** 2026-04-05
@@ -1588,6 +1597,27 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
+
+---
+
+### Review 67-pr494: PR #494 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
+
+**Date:** unknown | **PR:** #494 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- eslint-mjs-globals
+- existsSync-to-statSync
+- path-traversal-in-reference-graph
+- nan-timeout-guard
+- composite-diff-key
+- backtick-command-capture
+- walkdir-multi-ext
+- sync-guard-in-subshells
 
 ## Key Patterns
 
@@ -3765,3 +3795,37 @@ stale-rejected, 1 already-fixed)
   display only.
 - **DEVELOPMENT.md isn't auto-regenerated from code** — removing a script
   requires manual doc update. Worth a cross-doc dependency check.
+
+---
+
+### Review #67 — PR #494 R1 (Mixed: Qodo + Gemini + SonarCloud + CI)
+
+**Date:** 2026-04-06 | **PR:** #494 | **Source:** mixed | **Round:** R1
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 28    | 17    | 5        | 6        |
+
+**Severity:** 2C / 5M / 7m / 14T
+
+**Patterns:**
+
+- **eslint-mjs-globals** — `.mjs` files under `scripts/` lacked node globals in
+  ESLint flat config. Fix: extend `files` glob to include `*.mjs`.
+- **existsSync-to-statSync** — TOCTOU compliance: replace `existsSync`
+  pre-checks with `try { statSync() }` in new scripts. Propagation sweep
+  confirmed 0 remaining.
+- **path-traversal-in-reference-graph** — New `resolveAsFilePath` lacked
+  containment check. Added `path.relative` + segment-based traversal guard per
+  CODE_PATTERNS.md.
+- **nan-timeout-guard** — `parseInt` result must be validated with
+  `Number.isFinite` before passing to `execFileSync` timeout. NaN disables
+  timeouts.
+- **composite-diff-key** — Incremental diff tracking using only `file` as
+  identity collapses multi-category findings. Fix: `${category}:${file}`.
+- **backtick-command-capture** — Regex capturing backtick commands must extract
+  first token only (not full arg string) for file path resolution.
+- **walkdir-multi-ext** — `walkDir` should accept array of extensions for
+  `.js`/`.mjs`/`.cjs` scanning consistency.
+- **sync-guard-in-subshells** — `sync` in background subshells needs
+  `command -v` guard for portability across shell environments.
