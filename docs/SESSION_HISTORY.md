@@ -27,6 +27,14 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-04 Sessions
 
+### Session #262 (2026-04-06)
+
+**Focus**: PR #492 R1+R2 reviews + research-discovery-standard v2
+
+- Branch: `planning-4326` (11 commits)
+- PR #492 R1: 27 fixes. R2: TOCTOU cleanup. research-discovery-standard v2: 8
+  findings + 2 verification + 954-line synthesis. Artifact migration.
+
 ### Session #260 (2026-04-05)
 
 **Focus**: Session start + alerts fixes + code review

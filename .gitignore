@@ -63,10 +63,8 @@ dataconnect/
 scripts/suggested-patterns.json
 
 # ephemeral session state (pattern graduation, scratchpad)
-.claude/state/warned-files.json
 .claude/state/session-notes.json
 .claude/state/handoff.json
-.claude/state/alerts-baseline.json
 .claude/state/hook-runs.jsonl
 .claude/state/commit-failures.jsonl
 
@@ -89,7 +87,6 @@ serviceAccountKey.json
 .claude/.lockfile-hash
 .claude/.functions-lockfile-hash
 .claude/hooks/.context-tracking-state.json
-.claude/hooks/.session-state.json
 .claude/hooks/.agent-trigger-state.json
 .claude/hooks/.session-agents.json
 .claude/hooks/.alerts-cooldown.json
@@ -98,6 +95,8 @@ serviceAccountKey.json
 .claude/hooks/.session-end-cooldown.json
 .claude/hooks/.multistep-dedup.json
 .claude/hooks/.fetch-cache.json
+.claude/hooks/.session-state.json
+.claude/hooks/.commit-tracker-state.json
 .claude/state/reviews.jsonl
 .claude/state/pr-ecosystem-audit.jsonl
 .claude/state/code-reviewer-session.json
@@ -128,11 +127,8 @@ nul
 
 # Session alert state files
 .claude/pending-alerts.json
-.claude/hook-warnings.json
-.claude/alerts-acknowledged.json
 .claude/pending-mcp-save.json
 .claude/hooks/.auto-save-state.json
-.claude/hooks/.commit-tracker-state.json
 .claude/hooks/.handoff-state.json
 
 # Raw agent research transcripts (contain PII: local paths, session IDs)

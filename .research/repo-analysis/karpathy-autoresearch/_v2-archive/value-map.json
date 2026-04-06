@@ -1,0 +1,61 @@
+{
+  "repo": "karpathy/autoresearch",
+  "generated": "2026-04-03",
+  "adoption_verdict": {
+    "band": "Extract",
+    "score": 62,
+    "rationale": "Brilliant patterns to learn from, but no license blocks direct code adoption. Extract concepts and methodology, don't import as a dependency."
+  },
+  "candidates": [
+    {
+      "name": "program.md Agent Instruction Pattern",
+      "novelty": "High",
+      "portability": 14,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "effort": "E0",
+      "description": "Structured AI agent skill file with setup protocol, experiment loop (keep/discard), autonomy instructions (NEVER STOP), crash recovery, output parsing, TSV logging. The most complete open-source example of an autonomous research agent instruction set.",
+      "relevance_to_sonash": "Directly applicable to JASON-OS agent skills. Compare against sonash SKILL.md format. The experiment loop pattern (modify, run, evaluate, keep/discard) is generalizable beyond ML training."
+    },
+    {
+      "name": "Fixed-Budget Experimentation Pattern",
+      "novelty": "High",
+      "portability": 12,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "effort": "E0",
+      "description": "Fixed 5-minute time budget makes experiments comparable regardless of what changes. Decouples 'how long' from 'how good'. Single metric (val_bpb) as ground truth. Git branch per experiment run with keep/discard semantics.",
+      "relevance_to_sonash": "Applicable to any automated optimization loop. Could be adapted for performance benchmarking, prompt optimization, or configuration tuning."
+    },
+    {
+      "name": "3-File Architecture (Immutable + Mutable + Instructions)",
+      "novelty": "Medium",
+      "portability": 10,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "effort": "E0",
+      "description": "prepare.py (read-only infrastructure) + train.py (agent-editable target) + program.md (instructions). Clear contract: agent knows exactly what it can and cannot modify. Reduces search space for autonomous agents.",
+      "relevance_to_sonash": "Pattern for any agent-driven code modification workflow. Defines clear 'editable zones' to constrain agent autonomy."
+    },
+    {
+      "name": "Results TSV Logging Convention",
+      "novelty": "Low",
+      "portability": 8,
+      "adoption_readiness": "High",
+      "quality_signal": "Medium",
+      "effort": "E0",
+      "description": "Simple TSV format: commit hash, metric, memory, status (keep/discard/crash), description. Untracked by git. Human-readable experiment log.",
+      "relevance_to_sonash": "Pattern exists in sonash already (JSONL). TSV is simpler but less structured. Low extraction value."
+    },
+    {
+      "name": "Autonomous Crash Recovery Protocol",
+      "novelty": "Medium",
+      "portability": 10,
+      "adoption_readiness": "High",
+      "quality_signal": "Medium",
+      "effort": "E0",
+      "description": "Agent reads stack trace on crash, attempts fix, reverts if unfixable. Timeout detection (>10 min = kill). Never-stop semantics. Explicit instructions for crash vs discard vs fix decisions.",
+      "relevance_to_sonash": "Relevant for GSD executor, background agent error recovery, and autonomous debugging loops."
+    }
+  ]
+}

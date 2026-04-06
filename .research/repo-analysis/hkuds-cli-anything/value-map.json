@@ -1,90 +1,166 @@
 {
   "repo": "HKUDS/CLI-Anything",
-  "scan_date": "2026-04-03",
-  "extraction_candidates": [
+  "skillVersion": "4.2",
+  "generated": "2026-04-06",
+  "scoring": {
+    "adoptionLens": { "verdict": "Trial", "score": 62 },
+    "creatorLens": { "verdict": "Trial", "score": 68 }
+  },
+  "patternCandidates": [
     {
-      "rank": 1,
-      "name": "HARNESS.md Methodology",
-      "location": "cli-anything-plugin/HARNESS.md + guides/",
-      "description": "7-phase SOP for turning GUI applications into agent-native CLI interfaces. Covers codebase analysis, CLI design, implementation patterns, REPL integration, session management, and publishing.",
-      "pattern_novelty": "High",
-      "code_portability": 14,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
-      "extraction_effort": "E0",
-      "notes": "Methodology doc -- direct copy. Applicable to any project building agent-native tooling."
+      "name": "HARNESS.md 7-Phase SOP",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Systematic methodology for wrapping GUI apps as agent-native CLIs. 7 phases: codebase analysis → CLI architecture → implementation → backend integration → export → session → REPL + SKILL.md generation.",
+      "relevance_to_home": "Directly applicable to JASON-OS Domain 02a (Tool Integration)."
     },
     {
-      "rank": 2,
-      "name": "SKILL.md Format",
-      "location": "*/agent-harness/cli_anything/*/skills/SKILL.md (28 examples)",
-      "description": "Standardized AI-discoverable skill definition format. Tells agents what commands exist, what they do, and how to invoke them. Consistent across 28 harnesses.",
-      "pattern_novelty": "High",
-      "code_portability": 12,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
-      "extraction_effort": "E0",
-      "notes": "Format definition is portable. Could adopt for sonash-v0 skill files or any agent-facing tool."
+      "name": "SKILL.md Command Catalog Format",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "37 SKILL.md files. Flat command references for agent discoverability. Different design than sonash workflow-definition SKILL.md.",
+      "relevance_to_home": "Compare command-catalog vs workflow-definition approaches."
     },
     {
-      "rank": 3,
-      "name": "ReplSkin Unified Terminal UI",
-      "location": "cli-anything-plugin/repl_skin.py",
-      "description": "Reusable REPL skin with prompt_toolkit integration, styled output (success/error/warning/info/table/progress), auto-detection of SKILL.md, command history.",
-      "pattern_novelty": "Medium",
-      "code_portability": 10,
-      "adoption_readiness": "Medium",
-      "quality_signal": "Medium",
-      "extraction_effort": "E1",
-      "notes": "Python-specific. Would need adaptation for Node/TypeScript projects."
+      "name": ".claude-plugin/marketplace.json",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "First public Claude Code plugin format reference. marketplace.json + plugin source dir.",
+      "relevance_to_home": "Direct reference for JASON-OS distribution."
     },
     {
-      "rank": 4,
-      "name": "Registry + CLI-Hub Pattern",
-      "location": "registry.json + docs/hub/",
-      "description": "Single JSON registry file that powers a static discovery site. Each entry has name, version, category, install command, entry point. Hub auto-updates on merge.",
-      "pattern_novelty": "Medium",
-      "code_portability": 13,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
-      "extraction_effort": "E1",
-      "notes": "Pattern is highly portable. Good model for any tool ecosystem with a discovery hub."
+      "name": "Registry + CLI-Hub Distribution",
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "registry.json (35 entries) → static hub → pip install. Agent-discoverable catalog via meta-skill.",
+      "relevance_to_home": "Model for JASON-OS skill distribution."
     },
     {
-      "rank": 5,
+      "name": "ReplSkin Terminal UI",
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Python prompt_toolkit branded REPL. Master copy in plugin, distributed to harnesses.",
+      "relevance_to_home": "Pattern portable, code Python-specific."
+    },
+    {
       "name": "Codec Allowlist Pattern",
-      "location": "kdenlive/agent-harness/cli_anything/kdenlive/utils/melt_backend.py",
-      "description": "frozenset-based allowlist validation for subprocess arguments. Prevents injection by restricting values to known-safe set.",
-      "pattern_novelty": "Low",
-      "code_portability": 8,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
-      "extraction_effort": "E0",
-      "notes": "Simple pattern but well-implemented. Applicable to any subprocess validation."
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "frozenset-based subprocess arg validation.",
+      "relevance_to_home": "Similar to existing sonash security patterns."
     },
     {
-      "rank": 6,
-      "name": "Skill Generator Scaffolding",
-      "location": "cli-anything-plugin/skill_generator.py + templates/",
-      "description": "Scaffolding tool that generates new harness boilerplate from templates. Reduces ramp-up time for contributors.",
-      "pattern_novelty": "Medium",
-      "code_portability": 6,
-      "adoption_readiness": "Medium",
-      "quality_signal": "Medium",
-      "extraction_effort": "E2",
-      "notes": "Heavily tied to CLI-Anything structure. Pattern more portable than code."
-    },
-    {
-      "rank": 7,
-      "name": "Claude Plugin Marketplace Integration",
-      "location": ".claude-plugin/marketplace.json",
-      "description": "Minimal config for Claude Code plugin discovery. Points to the cli-anything-plugin source directory.",
-      "pattern_novelty": "High",
-      "code_portability": 14,
-      "adoption_readiness": "High",
-      "quality_signal": "Medium",
-      "extraction_effort": "E0",
-      "notes": "Novel -- one of the first Claude Code plugin marketplace entries. Format reference for building plugins."
+      "name": "Skill Generator (Jinja2)",
+      "novelty": "Medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "description": "Auto-generates SKILL.md from CLI introspection using Jinja2 templates.",
+      "relevance_to_home": "Pattern portable to Node/TS."
     }
-  ]
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "Agent-native software methodology",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Core insight: AI agents can't use GUI software, wrap it systematically. HARNESS.md is the how-to.",
+      "relevance_to_home": "Foundational for JASON-OS Domain 02a."
+    },
+    {
+      "name": "Build-vs-integrate decision for JASON-OS",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Should JASON-OS invoke CLI-Anything harnesses (Python) or generate Node/TS wrappers using same methodology?",
+      "relevance_to_home": "Critical JASON-OS architecture decision."
+    },
+    {
+      "name": "Quality treadmill case study",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "28K stars in 29 days, 35 harnesses, 0 CI test enforcement. Growth outpacing quality gates. Opposite lesson from build-your-own-x stagnation.",
+      "relevance_to_home": "Your quality infrastructure prevents this pattern."
+    }
+  ],
+  "contentCandidates": [
+    {
+      "name": "MCP Backend Pattern (guides/mcp-backend.md)",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:cli-anything-plugin/guides/mcp-backend.md",
+      "relevance_to_home": "Wrapping MCP servers as CLI backends. You have 3 MCP servers. Directly applicable to JASON-OS."
+    },
+    {
+      "name": "Skill Auto-Generation (guides/skill-generation.md)",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:cli-anything-plugin/guides/skill-generation.md",
+      "relevance_to_home": "Auto-generate SKILL.md from CLI introspection. Could inform /skill-creator automation."
+    },
+    {
+      "name": "Mermaid Harness (lightest-weight example)",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:mermaid/agent-harness/",
+      "relevance_to_home": "No local binary required. Ready to use for agent-driven diagram generation."
+    },
+    {
+      "name": "Exa Harness (AI search alternative)",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "local:exa/agent-harness/",
+      "relevance_to_home": "Structured content extraction. Alternative/complement for /deep-research searchers."
+    }
+  ],
+  "antiPatternCandidates": [
+    {
+      "name": "No CI for tests pattern",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "74 test files, 1839+ tests, zero CI enforcement. Tests exist for documentation, not quality gates. Don't regress on your pre-commit/CI enforcement if adopting patterns.",
+      "relevance_to_home": "Your pre-commit hooks and pattern checker ARE the enforcement CLI-Anything lacks."
+    },
+    {
+      "name": "Monorepo without shared test infrastructure",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "35 independent packages, 0 conftest.py, no shared runner. A change to repl_skin.py can't be verified against 35 consumers. If JASON-OS distributes skills as packages, plan shared testing.",
+      "relevance_to_home": "Skill testing strategy if JASON-OS distributes."
+    },
+    {
+      "name": "Growing faster than quality gates",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "28K stars in 29 days with 30+ contributors and no automated quality enforcement. Same trajectory as build-your-own-x stagnation, just faster.",
+      "relevance_to_home": "Your quality infrastructure prevents this. Don't remove it."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "teng-lin/notebooklm-py",
+      "connection_type": "referenced",
+      "detail": "notebooklm harness wraps notebooklm-py CLI. Build-vs-integrate decision point."
+    },
+    {
+      "target_repo": "codecrafters-io/build-your-own-x",
+      "connection_type": "complementary",
+      "detail": "CLI-Anything wraps existing software; build-your-own-x teaches building from scratch. Opposite approaches to 'understanding systems'."
+    }
+  ],
+  "related_repos": ["teng-lin/notebooklm-py", "codecrafters-io/build-your-own-x"]
 }

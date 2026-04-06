@@ -1,78 +1,124 @@
 {
   "repo": "ViktorAxelsen/MemSkill",
-  "scan_date": "2026-04-03",
-  "extraction_candidates": [
+  "skillVersion": "4.2",
+  "generated": "2026-04-06",
+  "scoring": {
+    "adoptionLens": { "verdict": "Extract", "score": 38 },
+    "creatorLens": { "verdict": "Extract", "score": 75 }
+  },
+  "patternCandidates": [
     {
-      "rank": 1,
       "name": "Meta-Memory Skills Framework",
-      "location": "arXiv 2602.02474 + skills/ directory",
-      "description": "The core concept: skills about HOW to remember rather than WHAT to remember. Skill-conditioned memory construction where a controller selects relevant skills per text span and an executor applies them in one pass. 15 evolved skill files demonstrate the output.",
-      "pattern_novelty": "High",
-      "code_portability": 11,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
-      "extraction_effort": "E0",
-      "notes": "Concept is language-agnostic. The 5-section Markdown skill format (Description, Purpose, When to Use, How to Apply, Constraints) is directly portable. Read the paper for full framework."
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Skills about HOW to remember. Core concept for JASON-OS memory.",
+      "relevance_to_home": "Paradigm shift for auto-memory design."
     },
     {
-      "rank": 2,
-      "name": "Skill Evolution Loop (Designer)",
-      "location": "src/designer.py + prompts/designer_prompts.py",
-      "description": "3-stage LLM-driven skill evolution: (1) failure mining with clustering, (2) analysis + reflection loop with self-critique, (3) refinement producing concrete skill mutations. Triggered periodically, not on every step.",
-      "pattern_novelty": "High",
-      "code_portability": 9,
-      "adoption_readiness": "Medium",
-      "quality_signal": "High",
-      "extraction_effort": "E1",
-      "notes": "Designer prompts are the most portable artifact. The two-stage analysis+reflection pattern is applicable to any self-improving system. Python-specific PPO integration less portable."
+      "name": "Skill Evolution Loop",
+      "novelty": "High",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Mine failures, analyze, refine skills, propose new ones. Self-improving.",
+      "relevance_to_home": "General-purpose self-improvement for any skill."
     },
     {
-      "rank": 3,
-      "name": "Skill Bank Markdown Format",
-      "location": "skills/conversational_skills/ + skills/embodied_task_skills/",
-      "description": "Standardized 5-section Markdown format for serialized memory skills: Title, Description, Purpose, When to Use, How to Apply, Constraints + Action type declaration. 15 examples across 2 domains.",
-      "pattern_novelty": "Medium",
-      "code_portability": 14,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
-      "extraction_effort": "E0",
-      "notes": "Direct copy. Compare against sonash-v0 SKILL.md format. Could inform memory skill file format for JASON-OS."
+      "name": "Skill Bank 5-Section Format",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Description/Purpose/When to Use/How to Apply/Constraints. Compare against SKILL.md.",
+      "relevance_to_home": "Memory skill format template."
     },
     {
-      "rank": 4,
       "name": "Designer Prompt Templates",
-      "location": "prompts/designer_prompts.py + prompts/designer_prompts_interactive.py",
-      "description": "Two-stage prompts: Stage 1 classifies failures as storage/retrieval/quality failures with structured JSON output. Stage 1b is a reflection loop critiquing the analysis. Stage 2 produces concrete skill mutations. ~18KB of prompt engineering.",
-      "pattern_novelty": "High",
-      "code_portability": 13,
-      "adoption_readiness": "High",
-      "quality_signal": "High",
-      "extraction_effort": "E0",
-      "notes": "Pure text prompts — maximally portable. The failure classification taxonomy (storage vs retrieval vs quality) is a useful framework for any memory system debugging."
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "18KB failure classification + mutation prompts.",
+      "relevance_to_home": "Methodology for skill refinement."
     },
     {
-      "rank": 5,
       "name": "Dual-Embedding Memory Bank",
-      "location": "src/memory_bank.py",
-      "description": "Each memory item carries two embeddings: a retriever embedding (for QA/search) and a state encoder embedding (for the PPO controller's input). Enables different views of the same memory for different consumers.",
-      "pattern_novelty": "Medium",
-      "code_portability": 7,
-      "adoption_readiness": "Low",
-      "quality_signal": "Medium",
-      "extraction_effort": "E2",
-      "notes": "Concept portable, implementation tied to FAISS + PyTorch. The dual-view pattern is interesting for any multi-consumer memory system."
+      "novelty": "Medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "description": "Content + context embeddings per memory item.",
+      "relevance_to_home": "Concept portable, code tied to FAISS+PyTorch."
     },
     {
-      "rank": 6,
       "name": "Operation Templates with Meta-Info",
-      "location": "prompts/operation_templates.py",
-      "description": "Seed skill definitions with usage tracking: usage_count, avg_reward, recent_rewards (deque), recent_usage_ema, created_at, last_modified. Enables data-driven skill selection and evolution.",
-      "pattern_novelty": "Medium",
-      "code_portability": 10,
-      "adoption_readiness": "Medium",
-      "quality_signal": "Medium",
-      "extraction_effort": "E1",
-      "notes": "The meta_info tracking pattern (usage + reward + EMA) is applicable to any skill/tool selection system. Portable as a design pattern."
+      "novelty": "Medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Usage + reward + EMA tracking for skill selection.",
+      "relevance_to_home": "Tool/skill selection system."
     }
-  ]
+  ],
+  "contentCandidates": [
+    {
+      "name": "15 Memory Skill Templates",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:skills/",
+      "relevance_to_home": "Direct templates for JASON-OS memory operations. 8 conversational + 7 embodied."
+    },
+    {
+      "name": "capture_activity_details.md",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:skills/conversational_skills/capture_activity_details.md",
+      "relevance_to_home": "Template for capturing activity details with temporal context. Applicable to auto-memory."
+    },
+    {
+      "name": "insert.md",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "local:skills/conversational_skills/insert.md",
+      "relevance_to_home": "Memory insert with duplicate avoidance, fact splitting, quality criteria."
+    },
+    {
+      "name": "arXiv 2602.02474 (NOT FETCHED)",
+      "novelty": "High",
+      "effort": "E1",
+      "relevance": "high",
+      "url": "https://arxiv.org/abs/2602.02474",
+      "relevance_to_home": "Core theory. MUST read before T4 execution."
+    }
+  ],
+  "antiPatternCandidates": [
+    {
+      "name": "Academic code quality in production",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "42KB monolith, zero tests, no version pins, unsafe deserialization. Extract concepts, not code.",
+      "relevance_to_home": "Never adopt research code directly."
+    },
+    {
+      "name": "Research artifact as dependency",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Paper companion code won't be maintained. Extract knowledge, don't depend.",
+      "relevance_to_home": "Plan for knowledge extraction, not library adoption."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "karpathy/autoresearch",
+      "connection_type": "shared-pattern",
+      "detail": "Both involve autonomous agent improvement. MemSkill: skill evolution. Autoresearch: experiment evolution."
+    },
+    {
+      "target_repo": "teng-lin/notebooklm-py",
+      "connection_type": "complementary",
+      "detail": "MemSkill provides the memory theory. notebooklm-py provides the skill distribution mechanism. Together they inform JASON-OS memory + distribution."
+    }
+  ],
+  "related_repos": ["karpathy/autoresearch", "teng-lin/notebooklm-py"]
 }

@@ -1,13 +1,13 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-04-05
+**Document Version:** 1.2
+**Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 # Repo Synthesis Reference
 
-Output specifications, input contracts, synthesis heuristics, and state schema
-for the `/repo-synthesis` skill.
+Output specifications, input contracts, synthesis heuristics, state schema,
+guard rails, and complete synthesis.json schema for the `/repo-synthesis` skill.
 
 ---
 
@@ -172,6 +172,7 @@ consider studying.
 **Heuristics:**
 
 - Order Creator Views by `scan_date` in analysis.json
+- When multiple repos share a scan_date, order alphabetically by repo name
 - Track evolution vectors:
   - **Interest shift:** What was Tier 3 in early scans but Tier 1 in later
     scans?
@@ -218,28 +219,27 @@ includes only:
 
 ## 5. Fit Portfolio View
 
-**Purpose:** All candidates ranked by objective score with refreshed fit badges.
+**Purpose:** All candidates ranked by relevance with refreshed fit classes.
 
-**Refresh logic (Decision #24):**
+**Refresh logic (updated for v4.2):**
+
+v4.2 candidates use `novelty/effort/relevance` fields (not numeric scores).
+There are 4 candidate types: pattern, knowledge, content, anti-pattern.
 
 1. Load current `SESSION_CONTEXT.md` — extract active sprint items, current
    projects, immediate priorities
 2. Load `ROADMAP.md` — extract directional goals
-3. For each candidate across all repos:
-   - Keep `objective_score` (scan-time, immutable)
-   - Recompute `personal_fit_score`:
-     - Direct keyword match with active sprint items → +30
-     - Domain overlap with ROADMAP direction → +20
-     - Mentioned in current session context → +20
-     - General relevance to home repo stack → +10
-     - Base: 20 (everything has some learning value)
-     - Cap at 100
-   - Reclassify `fit_class`:
-     - `personal_fit_score >= 60` → `active-sprint`
-     - `personal_fit_score < 60 AND objective_score >= 60` → `park-for-later`
-     - Both >= 40 → `evergreen`
-     - Otherwise → `not-relevant`
-4. Flag candidates whose `fit_class` changed from scan-time
+3. For each candidate across all repos (ALL 4 types):
+   - Keep scan-time `relevance` (high/medium/low) and `novelty`
+     (High/Medium/Low)
+   - Compute `synthesis_fit`:
+     - `relevance: high` + keyword match with active sprint → `active-sprint`
+     - `relevance: high` + no sprint match → `park-for-later`
+     - `relevance: medium` + any sprint/roadmap match → `evergreen`
+     - `relevance: low` or no match → `not-relevant`
+   - Content candidates with URLs get an `actionable` flag
+   - Anti-pattern candidates get a `caution` flag (applies to current work?)
+4. Flag candidates whose synthesis_fit differs from scan-time relevance
 
 **Output format:**
 
@@ -248,9 +248,9 @@ includes only:
 
 ### [ACTIVE-SPRINT] (N candidates)
 
-| Repo   | Candidate     | Obj | Fit (refreshed) | Change               |
-| ------ | ------------- | --- | --------------- | -------------------- |
-| repo-A | Skill Install | 88  | 72 ↑ (was 25)   | park → active-sprint |
+| Repo   | Candidate     | Type    | Novelty | Fit (refreshed) | Change   |
+| ------ | ------------- | ------- | ------- | --------------- | -------- |
+| repo-A | Skill Install | pattern | High    | active-sprint   | was park |
 
 ### [PARK] (N candidates)
 
@@ -273,12 +273,14 @@ priorities shifted to X..."]
       {
         "repo": "owner/repo",
         "name": "string",
-        "objective_score": 88,
-        "original_fit_score": 25,
-        "refreshed_fit_score": 72,
-        "original_fit_class": "park-for-later",
-        "refreshed_fit_class": "active-sprint",
-        "changed": true
+        "type": "pattern|knowledge|content|anti-pattern",
+        "novelty": "High|Medium|Low",
+        "relevance": "high|medium|low",
+        "synthesis_fit": "active-sprint|park-for-later|evergreen|not-relevant",
+        "scan_relevance": "high|medium|low",
+        "changed": true,
+        "actionable": false,
+        "caution": false
       }
     ]
   }
@@ -343,32 +345,105 @@ priorities shifted to X..."]
 
 ---
 
-## 7. Input Contract (cross-reference)
+## 7. Complete synthesis.json Schema
 
-All input artifacts are produced by `/repo-analysis` v4.0+. Schemas defined in:
+Top-level structure combining all 6 output sections:
 
-- `analysis.json` → repo-analysis REFERENCE.md Section 3.1
-- `value-map.json` → repo-analysis REFERENCE.md Section 3.3
-- `findings.jsonl` → repo-analysis REFERENCE.md Section 3.2
-- `mined-links.jsonl` → repo-analysis REFERENCE.md Section 3.7
-- `reading-chain.jsonl` → repo-analysis REFERENCE.md Section 3.8
-- `EXTRACTIONS.md` → repo-analysis REFERENCE.md Section 3.6.3
-- `extraction-journal.jsonl` → repo-analysis REFERENCE.md Section 3.6.2
+```json
+{
+  "version": "1.2",
+  "generated_at": "ISO8601",
+  "repos_included": ["owner/repo"],
+  "repos_excluded": [],
+  "focus": null,
+  "themes": [],
+  "ecosystem_gaps": [],
+  "reading_chain": [],
+  "mental_model": {
+    "interest_shifts": [],
+    "confidence_shifts": [],
+    "emerging_focus_tags": [],
+    "scan_count": 0,
+    "date_range": "string"
+  },
+  "fit_portfolio": {
+    "refreshed_at": "ISO8601",
+    "session_context_hash": "string",
+    "candidates": []
+  },
+  "knowledge_map": {
+    "covered": [],
+    "gaps": []
+  }
+}
+```
 
-**Version handling:** Files without `schema_version` are v1.0. Synthesis
-processes them with reduced capability (no ecosystem_tags, no fit scores, no
-repo_type). Warn user but don't abort.
+**Required keys:** `version`, `generated_at`, `repos_included`. All 6 output
+keys MUST be present (empty arrays/objects if `--focus` excluded them).
 
 ---
 
-## 8. State File Schema
+## 8. Input Contract (cross-reference)
+
+All input artifacts are produced by `/repo-analysis` v4.2+. Schemas defined in
+repo-analysis REFERENCE.md.
+
+**Per-repo artifacts:**
+
+| Artifact               | Required | v4.2 Schema Notes                               |
+| ---------------------- | -------- | ----------------------------------------------- |
+| `analysis.json`        | MUST     | `skillVersion`, `repoType`, `scoring` lenses    |
+| `value-map.json`       | MUST     | 4 candidate arrays + `cross_repo_connections[]` |
+| `creator-view.md`      | MUST     | 6 sections. Section 2 references content items. |
+| `content-eval.jsonl`   | MUST     | category/name/url/relevance/applicability       |
+| `deep-read.md`         | SHOULD   | Internal artifact inventory and findings        |
+| `coverage-audit.jsonl` | SHOULD   | Deferred/skipped/flagged items per repo         |
+| `findings.jsonl`       | SHOULD   | Engineer View findings                          |
+| `mined-links.jsonl`    | MAY      | Curated-list repos only                         |
+
+**Cross-repo artifacts (root of `.research/repo-analysis/`):**
+
+| Artifact                   | Required | Notes                                   |
+| -------------------------- | -------- | --------------------------------------- |
+| `EXTRACTIONS.md`           | SHOULD   | 4 candidate types (P/K/C/AP)            |
+| `extraction-journal.jsonl` | SHOULD   | Per-candidate records with `type` field |
+| `reading-chain.jsonl`      | SHOULD   | Cross-repo relationship graph           |
+
+**Version handling:** Check `skillVersion` in analysis.json. Repos older than
+4.2 will be missing content-eval.jsonl, deep-read.md, coverage-audit.jsonl,
+contentCandidates, antiPatternCandidates, and cross_repo_connections. Warn about
+reduced synthesis capability but proceed.
+
+---
+
+## 9. Guard Rails
+
+- **<3 repos:** Abort with clear message, suggest more scans.
+- **2 repos with `--min-repos=2`:** Produces a comparison, not a synthesis. Use
+  when repos are directly related (upstream/fork, competing implementations).
+  Themes and Mental Model Evolution will be thin — consider
+  `--focus=gaps|portfolio`.
+- **Mixed schema versions:** Warn, proceed with available data, note
+  limitations.
+- **Stale fit scores:** Always refresh — never present scan-time fit as current.
+- **Missing artifacts:** Exclude repo with warning, don't silently degrade.
+- **Empty artifacts:** Warn when MUST artifacts have no meaningful content.
+- **Candidate pool >100:** Present top 50 inline, full list in synthesis.json.
+- **Web search unavailable:** Note gap without suggestion.
+- **Contradictions between repos:** Route to Contrarian Signal, don't resolve.
+- **Scope:** This skill synthesizes. It does NOT re-analyze, re-clone, or modify
+  per-repo artifacts.
+
+---
+
+## 10. State File Schema
 
 **Path:** `.claude/state/repo-synthesis.state.json`
 
 ```json
 {
   "skill": "repo-synthesis",
-  "version": "1.0",
+  "version": "1.2",
   "status": "in-progress|complete|failed",
   "phase": 0,
   "repos_loaded": ["owner/repo"],
@@ -384,7 +459,17 @@ repo_type). Warn user but don't abort.
     "map"
   ],
   "focus": null,
+  "follow_up_actions": [
+    {
+      "action": "explore-theme",
+      "target": "agent-autonomy",
+      "rationale": "user reason",
+      "status": "complete|pending",
+      "delegated": false
+    }
+  ],
   "refreshed_at": "ISO8601",
+  "process_feedback": null,
   "startedAt": "ISO8601",
   "completedAt": null
 }
@@ -392,10 +477,23 @@ repo_type). Warn user but don't abort.
 
 ---
 
-## 9. Version History
+## 11. Compaction Resilience
 
-| Version | Date       | Description                                                  |
-| ------- | ---------- | ------------------------------------------------------------ |
-| 1.0     | 2026-04-05 | Initial creation. Companion to repo-analysis v4.1.           |
-|         |            | 6 synthesis outputs, fit refresh, conversational.            |
-|         |            | Source: 30-decision deep-plan, Decisions #13/16/23/24/26/27. |
+Each output section writes to SYNTHESIS.md incrementally. State file tracks
+which sections are complete. On resume, skip completed sections. State file
+updated after every phase boundary and every output section.
+
+---
+
+## 12. Version History
+
+| Version | Date       | Description                                             |
+| ------- | ---------- | ------------------------------------------------------- |
+| 1.2     | 2026-04-06 | Skill audit (47 decisions): add synthesis.json schema,  |
+|         |            | guard rails, 2-repo guidance, follow_up_actions in      |
+|         |            | state, version bump to 1.2.                             |
+| 1.1     | 2026-04-06 | Align with repo-analysis v4.2: 3 new input artifacts,   |
+|         |            | 4 candidate types, cross_repo_connections, updated fit. |
+| 1.0     | 2026-04-05 | Initial creation. Companion to repo-analysis v4.1.      |
+|         |            | 6 synthesis outputs, fit refresh, conversational.       |
+|         |            | Source: 30-decision deep-plan, Decisions #13/16/23/24.  |

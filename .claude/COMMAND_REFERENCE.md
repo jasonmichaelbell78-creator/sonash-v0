@@ -15,78 +15,80 @@
 
 Source: `.claude/skills/*/SKILL.md`
 
-| Skill                             | Description                                                                               |
-| --------------------------------- | ----------------------------------------------------------------------------------------- |
-| `/audit-code`                     | Single-session code review audit                                                          |
-| `/audit-documentation`            | Multi-stage parallel documentation audit (18 agents)                                      |
-| `/audit-performance`              | Single-session performance audit                                                          |
-| `/audit-process`                  | Multi-stage automation/process audit                                                      |
-| `/audit-refactoring`              | Single-session refactoring audit                                                          |
-| `/audit-security`                 | Single-session security audit                                                             |
-| `/audit-agent-quality`            | Hybrid agent audit — structural + behavioral review                                       |
-| `/audit-enhancements`             | Comprehensive enhancement audit                                                           |
-| `/audit-engineering-productivity` | Engineering productivity audit                                                            |
-| `/audit-ai-optimization`          | AI optimization audit                                                                     |
-| `/audit-comprehensive`            | Run all 9 domain audits in staged waves                                                   |
-| `/system-test`                    | 23-domain interactive system/repo test plan                                               |
-| `/audit-aggregator`               | Aggregate and deduplicate audit findings                                                  |
-| `/audit-health`                   | Meta-check for audit system health                                                        |
-| `/create-audit`                   | Interactive wizard to scaffold new audit type                                             |
-| `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                                                     |
-| `/brainstorm`                     | Creative discovery phase — explore directions before deep-plan or deep-research           |
-| `/deep-plan`                      | Discovery-first planning with exhaustive Q&A and decision record                          |
-| `/deep-research`                  | Multi-agent research engine with parallel search, verification, and downstream adapters   |
-| `/doc-optimizer`                  | Scan docs, auto-fix formatting/headers/links                                              |
-| `/docs-maintain`                  | Check doc sync and auto-update artifacts                                                  |
-| `/pr-review`                      | PR code review processor                                                                  |
-| `/pr-retro`                       | PR review retrospective with interactive findings walkthrough                             |
-| `/session-begin`                  | Session startup verification checklist                                                    |
-| `/session-end`                    | Session end verification checklist                                                        |
-| `/alerts`                         | Intelligent health dashboard with scoring                                                 |
-| `/ecosystem-health`               | 8-category composite health scoring with 13-dimension drill-down                          |
-| `/pr-ecosystem-audit`             | PR ecosystem diagnostic (18 categories, 5 domains)                                        |
-| `/health-ecosystem-audit`         | Health monitoring ecosystem diagnostic (25 categories, 6 domains)                         |
-| `/hook-ecosystem-audit`           | Hook ecosystem diagnostic (19 categories, 6 domains)                                      |
-| `/tdms-ecosystem-audit`           | TDMS pipeline diagnostic (16 categories, 5 domains)                                       |
-| `/session-ecosystem-audit`        | Session system diagnostic (16 categories, 5 domains)                                      |
-| `/skill-ecosystem-audit`          | Skill ecosystem diagnostic (21 categories, 5 domains)                                     |
-| `/doc-ecosystem-audit`            | Documentation ecosystem diagnostic (16 categories, 5 domains)                             |
-| `/script-ecosystem-audit`         | Script infrastructure diagnostic (18 categories, 5 domains)                               |
-| `/comprehensive-ecosystem-audit`  | Run all 8 ecosystem audits in staged waves with unified report                            |
-| `/convergence-loop`               | Multi-pass verification of claims via agent discovery, T20 tallies, composable behaviors  |
-| `/data-effectiveness-audit`       | Lifecycle scoring audit for data system effectiveness (C/S/R/A, 0-12)                     |
-| `/debt-runner`                    | Interactive TDMS orchestrator with 7 modes (verify, sync, plan, health, dedup, etc.)      |
-| `/checkpoint`                     | Save session state for recovery                                                           |
-| `/quick-fix`                      | Auto-suggest fixes for pre-commit failures                                                |
-| `/pre-commit-fixer`               | Fix pre-commit hook failures and retry                                                    |
-| `/code-reviewer`                  | Code review for SoNash                                                                    |
-| `/content-research-writer`        | Research and write content                                                                |
-| `/developer-growth-analysis`      | Analyze Claude Code chat history for growth                                               |
-| `/excel-analysis`                 | Analyze Excel spreadsheets                                                                |
-| `/find-skills`                    | Discover and install agent skills                                                         |
-| `/frontend-design`                | Production-grade frontend interfaces                                                      |
-| `/sonarcloud`                     | SonarCloud integration                                                                    |
-| `/systematic-debugging`           | Systematic bug investigation                                                              |
-| `/task-next`                      | Show next tasks from ROADMAP.md                                                           |
-| `/test-suite`                     | Multi-phase UI testing orchestration                                                      |
-| `/todo`                           | Cross-session todo management with JSONL persistence                                      |
-| `/add-debt`                       | Add items to MASTER_DEBT.jsonl                                                            |
-| `/skill-creator`                  | Structured workflow for creating or updating skills                                       |
-| `/skill-audit`                    | Interactive behavioral quality audit for individual skills                                |
-| `/mcp-builder`                    | Guide for creating MCP servers                                                            |
-| `/validate-claude-folder`         | Validate .claude folder consistency                                                       |
-| `/artifacts-builder`              | Build multi-component claude.ai artifacts                                                 |
-| `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions                                                    |
-| `/gh-fix-ci`                      | Fix failing GitHub CI actions                                                             |
-| `/github-health`                  | 7-phase GitHub health assessment with per-finding triage and inline fixes                 |
-| `/market-research-reports`        | Generate market research reports                                                          |
-| `/ui-design-system`               | Design system components toolkit                                                          |
-| `/repo-analysis`                  | Dual-lens repo analysis: Creator View + Engineer View, 3 tiers, link mining, dual scoring |
-| `/repo-synthesis`                 | Cross-repo synthesis: emergent themes, ecosystem gaps, reading chains, fit portfolio      |
-| `/using-superpowers`              | Claude skills usage guide                                                                 |
-| `/ux-researcher-designer`         | UX research and design toolkit                                                            |
-| `/webapp-testing`                 | Web application testing with Playwright                                                   |
-| `sonash-context`                  | Shared project context injected into agents via `skills:` field (not user-invocable)      |
+| Skill                             | Description                                                                                |
+| --------------------------------- | ------------------------------------------------------------------------------------------ |
+| `/audit-code`                     | Single-session code review audit                                                           |
+| `/audit-documentation`            | Multi-stage parallel documentation audit (18 agents)                                       |
+| `/audit-performance`              | Single-session performance audit                                                           |
+| `/audit-process`                  | Multi-stage automation/process audit                                                       |
+| `/audit-refactoring`              | Single-session refactoring audit                                                           |
+| `/audit-security`                 | Single-session security audit                                                              |
+| `/audit-agent-quality`            | Hybrid agent audit — structural + behavioral review                                        |
+| `/audit-enhancements`             | Comprehensive enhancement audit                                                            |
+| `/audit-engineering-productivity` | Engineering productivity audit                                                             |
+| `/audit-ai-optimization`          | AI optimization audit                                                                      |
+| `/audit-comprehensive`            | Run all 9 domain audits in staged waves                                                    |
+| `/system-test`                    | 23-domain interactive system/repo test plan                                                |
+| `/audit-aggregator`               | Aggregate and deduplicate audit findings                                                   |
+| `/audit-health`                   | Meta-check for audit system health                                                         |
+| `/create-audit`                   | Interactive wizard to scaffold new audit type                                              |
+| `/multi-ai-audit`                 | Multi-AI consensus audit orchestrator                                                      |
+| `/brainstorm`                     | Creative discovery phase — explore directions before deep-plan or deep-research            |
+| `/deep-plan`                      | Discovery-first planning with exhaustive Q&A and decision record                           |
+| `/deep-research`                  | Multi-agent research engine with parallel search, verification, and downstream adapters    |
+| `/doc-optimizer`                  | Scan docs, auto-fix formatting/headers/links                                               |
+| `/docs-maintain`                  | Check doc sync and auto-update artifacts                                                   |
+| `/pr-review`                      | PR code review processor                                                                   |
+| `/pr-retro`                       | PR review retrospective with interactive findings walkthrough                              |
+| `/session-begin`                  | Session startup verification checklist                                                     |
+| `/session-end`                    | Session end verification checklist                                                         |
+| `/alerts`                         | Intelligent health dashboard with scoring                                                  |
+| `/ecosystem-health`               | 8-category composite health scoring with 13-dimension drill-down                           |
+| `/pr-ecosystem-audit`             | PR ecosystem diagnostic (18 categories, 5 domains)                                         |
+| `/health-ecosystem-audit`         | Health monitoring ecosystem diagnostic (25 categories, 6 domains)                          |
+| `/hook-ecosystem-audit`           | Hook ecosystem diagnostic (19 categories, 6 domains)                                       |
+| `/tdms-ecosystem-audit`           | TDMS pipeline diagnostic (16 categories, 5 domains)                                        |
+| `/session-ecosystem-audit`        | Session system diagnostic (16 categories, 5 domains)                                       |
+| `/skill-ecosystem-audit`          | Skill ecosystem diagnostic (21 categories, 5 domains)                                      |
+| `/doc-ecosystem-audit`            | Documentation ecosystem diagnostic (16 categories, 5 domains)                              |
+| `/script-ecosystem-audit`         | Script infrastructure diagnostic (18 categories, 5 domains)                                |
+| `/comprehensive-ecosystem-audit`  | Run all 8 ecosystem audits in staged waves with unified report                             |
+| `/convergence-loop`               | Multi-pass verification of claims via agent discovery, T20 tallies, composable behaviors   |
+| `/data-effectiveness-audit`       | Lifecycle scoring audit for data system effectiveness (C/S/R/A, 0-12)                      |
+| `/debt-runner`                    | Interactive TDMS orchestrator with 7 modes (verify, sync, plan, health, dedup, etc.)       |
+| `/checkpoint`                     | Save session state for recovery                                                            |
+| `/quick-fix`                      | Auto-suggest fixes for pre-commit failures                                                 |
+| `/pre-commit-fixer`               | Fix pre-commit hook failures and retry                                                     |
+| `/code-reviewer`                  | Code review for SoNash                                                                     |
+| `/content-research-writer`        | Research and write content                                                                 |
+| `/developer-growth-analysis`      | Analyze Claude Code chat history for growth                                                |
+| `/excel-analysis`                 | Analyze Excel spreadsheets                                                                 |
+| `/find-skills`                    | Discover and install agent skills                                                          |
+| `/frontend-design`                | Production-grade frontend interfaces                                                       |
+| `/sonarcloud`                     | SonarCloud integration                                                                     |
+| `/systematic-debugging`           | Systematic bug investigation                                                               |
+| `/task-next`                      | Show next tasks from ROADMAP.md                                                            |
+| `/test-suite`                     | Multi-phase UI testing orchestration                                                       |
+| `/todo`                           | Cross-session todo management with JSONL persistence                                       |
+| `/add-debt`                       | Add items to MASTER_DEBT.jsonl                                                             |
+| `/skill-creator`                  | Structured workflow for creating or updating skills                                        |
+| `/skill-audit`                    | Interactive behavioral quality audit for individual skills                                 |
+| `/mcp-builder`                    | Guide for creating MCP servers                                                             |
+| `/validate-claude-folder`         | Validate .claude folder consistency                                                        |
+| `/artifacts-builder`              | Build multi-component claude.ai artifacts                                                  |
+| `/decrypt-secrets`                | Decrypt MCP tokens for remote sessions                                                     |
+| `/gh-fix-ci`                      | Fix failing GitHub CI actions                                                              |
+| `/github-health`                  | 7-phase GitHub health assessment with per-finding triage and inline fixes                  |
+| `/market-research-reports`        | Generate market research reports                                                           |
+| `/ui-design-system`               | Design system components toolkit                                                           |
+| `/repo-analysis`                  | Dual-lens repo analysis: Creator View + Engineer View, 3 tiers, link mining, dual scoring  |
+| `/repo-synthesis`                 | Cross-repo synthesis: emergent themes, ecosystem gaps, reading chains, fit portfolio       |
+| `/using-superpowers`              | Claude skills usage guide                                                                  |
+| `/ux-researcher-designer`         | UX research and design toolkit                                                             |
+| `/webapp-testing`                 | Web application testing with Playwright                                                    |
+| `/website-analysis`               | Creator-first website analysis: dual-lens, 3 tiers, 4 modes, superpowers-chrome extraction |
+| `/website-synthesis`              | Cross-site synthesis: thematic/narrative/matrix/meta-pattern paradigms, 3+ sites           |
+| `sonash-context`                  | Shared project context injected into agents via `skills:` field (not user-invocable)       |
 
 ## System Commands
 
@@ -164,6 +166,7 @@ Source: `.husky/`
 
 | Version | Date         | Change                                                             |
 | ------- | ------------ | ------------------------------------------------------------------ |
+| 8.0     | 2026-04-06   | Added /website-analysis, /website-synthesis (68 skills)            |
 | 7.0     | 2026-04-05   | Added /repo-synthesis, updated /repo-analysis v4.1 (66 skills)     |
 | 6.0     | 2026-04-02   | Added /repo-analysis skill (65 skills)                             |
 | 5.9     | 2026-03-24   | Added convergence-loop, data-effectiveness-audit, debt-runner (64) |

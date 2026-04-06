@@ -1,0 +1,56 @@
+{
+  "agent": "explore",
+  "scan_date": "2026-04-03",
+  "capture_method": "task-notification-fallback",
+  "summary": {
+    "total_files": 82,
+    "python_files": 31,
+    "shell_scripts": 6,
+    "skill_md_files": 15,
+    "prompt_files": 4,
+    "test_files": 0,
+    "readme_lines": 360,
+    "requirements_packages": 18,
+    "requirements_version_pinned": 0,
+    "main_py_size_kb": 42,
+    "trainer_py_size_kb": 102,
+    "checkpoint_version": 4,
+    "type_hints": "Consistent in src/, partial in top-level scripts",
+    "docstrings": "Present on all classes and most public methods in src/",
+    "error_handling": "18 try/except in trainer, 10 in executor, no bare except",
+    "test_presence": false,
+    "api_key_leak": "llm_utils.py line 133 logs client.api_key to stdout"
+  },
+  "architecture": {
+    "entry_point": "main.py (42KB — unusually large, handles loading+splitting+coordination)",
+    "core_modules": [
+      "src/config.py",
+      "src/controller.py (PPO agent)",
+      "src/designer.py (skill evolution)",
+      "src/executor.py (LLM memory actions)",
+      "src/memory_bank.py (dual embeddings)",
+      "src/operation_bank.py (skill bank)",
+      "src/trainer.py (102KB orchestration)"
+    ],
+    "data_processing": "src/data_processing/ with per-dataset processors (LoCoMo, LongMemEval, HotpotQA, ALFWorld)",
+    "evaluation": "src/eval/ with per-dataset evaluators + factory pattern",
+    "prompts": "prompts/ with designer_prompts.py (two-stage analysis+reflection), operation_templates.py (seed skills), prompt_pool.py (QA+judge)"
+  },
+  "skills_directory": {
+    "total": 15,
+    "conversational": 9,
+    "embodied": 6,
+    "format": "5-section Markdown: Title, Description, Purpose, When to Use, How to Apply, Constraints + Action type declaration",
+    "relationship": "Serialized human-readable form of operation_bank entries. Seed skills in operation_templates.py; evolved skills exported as .md files"
+  },
+  "novel_concepts": [
+    "Meta-memory skills: skills about HOW to remember, not WHAT to remember",
+    "Skill-conditioned memory construction: compose relevant skills per span, construct in one pass",
+    "Skill evolution from hard cases: mine failures, cluster, LLM-analyze, mutate skill bank",
+    "PPO controller for skill selection (actor-critic with GAE)",
+    "Two-stage designer: analysis+reflection loop → refinement",
+    "Operation templates with meta_info tracking (usage_count, avg_reward, EMA)",
+    "Dual embedding memory bank (content + context embeddings)"
+  ],
+  "data_flow": "main.py → trainer → (data_processing → DataSample) → (PPOController selects skills) → (Executor builds prompt + calls LLM) → (MemoryBank apply actions) → (eval scores) → (PPO update) → (Designer evolves skills periodically)"
+}

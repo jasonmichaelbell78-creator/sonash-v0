@@ -1,96 +1,69 @@
-# Quick Scan: public-apis/public-apis
+# Engineer View: public-apis/public-apis
 
-**Scan date:** 2026-04-05 | **Depth:** quick | **Rate limit:** OK
+**Analyzed:** 2026-04-06 | **Skill Version:** 4.1 | **Depth:** Standard
 
-## Snapshot
+---
 
-|                        |                                      |
-| ---------------------- | ------------------------------------ |
-| **Description**        | A collective list of free APIs       |
-| **Language / License** | Python (40KB) + Shell (1.4KB) / MIT  |
-| **Age**                | 10 years (created 2016-03-20)        |
-| **Stars / Forks**      | **419,392 / 45,617** (top-20 GitHub) |
-| **Subscribers**        | 4,572                                |
-| **Open issues**        | **1,191**                            |
-| **Contributors**       | 10 visible, top 2 = 1,509 commits    |
-| **Last push**          | 18 days ago                          |
-| **README size**        | **195KB**                            |
+## Summary Bands
 
-## Health Bands
+| Dimension       | Band     | Score | Detail                                                                                                                |
+| --------------- | -------- | ----- | --------------------------------------------------------------------------------------------------------------------- |
+| Security        | Good     | 65    | MIT license. Python validation scripts with no injection vectors. OpenSSF 2.3/10 (low for hygiene, low blast radius). |
+| Reliability     | Moderate | 50    | 3 CI workflows + tests (638 lines). But 1 commit/90 days — maintenance declining.                                     |
+| Maintainability | Moderate | 55    | 1,490 entries in single README. Format validation prevents structural decay. Link rot inevitable.                     |
+| Documentation   | Strong   | 75    | CONTRIBUTING.md with structured format. 40+ categories. 13 topics. PR/issue templates.                                |
+| Process         | Weak     | 25    | 1,197 open issues. PR approval bottleneck (14/15 runs action_required). Commercial overlay.                           |
+| Velocity        | Very Low | 10    | 1 commit in 90 days. 10 years old. Celebrity stagnation with commercial capture.                                      |
 
-| Dimension       | Band       | Score             |
-| --------------- | ---------- | ----------------- |
-| Security        | Needs Work | 35                |
-| Reliability     | Needs Work | 40                |
-| Maintainability | Needs Work | 30                |
-| Documentation   | Healthy    | 75                |
-| Process         | Needs Work | 38                |
-| Velocity        | Needs Work | 50 (split signal) |
+## Key Stats
 
-**OpenSSF Scorecard: 2.3/10** (scored 2026-03-30)
+| Metric         | Value                                        |
+| -------------- | -------------------------------------------- |
+| Stars          | 419,594                                      |
+| Forks          | 45,644                                       |
+| API Entries    | ~1,490 across 40+ categories                 |
+| Python Scripts | 1,193 lines (format.py + links.py + tests)   |
+| CI Workflows   | 3 (push test, package test, link validation) |
+| Test Lines     | 638 (466 format + 172 links)                 |
+| License        | MIT                                          |
+| Age            | 10 years                                     |
+| Open Issues    | 1,197                                        |
 
-## Key Signals
+## Absence Pattern: Celebrity Stagnation (with Infrastructure)
 
-- **Celebrity stagnation**: 419K stars + 45K forks, but OpenSSF reports only 2
-  commits and 0 issue activity in the last 90 days. Massive social signal,
-  near-zero throughput.
-- **Approval gate bottleneck**: 14/15 recent PR-triggered workflow runs have
-  conclusion `action_required` — workflows require maintainer approval for PRs
-  from forks, and that gate isn't moving. Code-Review OpenSSF score: 1/10 (4/29
-  changesets approved).
-- **Commercial capture**: README opens with prominent APILayer sponsorship and a
-  product table before the community index. Curated list became a lead-gen
-  surface.
-- **Link validation tooling**: Scheduled GitHub Actions workflow
-  `Validate links` runs on cron to catch link rot. Recent run: 1/1 failure.
-- **Minimal dependencies**: Only 8 deps (`requests`, `urllib3`, `certifi`,
-  `idna`, `charset-normalizer` + 2 actions + self). Python tooling is just the
-  link validator.
-- **1,191 open issues** — huge triage backlog.
+Same trajectory as codecrafters (massive engagement + minimal maintenance), but
+with better infrastructure. Format validation scripts + CI workflows + tests
+prove that **automation alone doesn't prevent stagnation** — you also need
+active maintenance. The PR approval bottleneck (14/15 action_required) means
+community contributions can't land even when automation passes.
 
-## Absence Patterns
+## Adoption Assessment (dual-lens)
 
-- **CELEBRITY_STAGNATION** (High): Top-20 stars + near-zero commit velocity.
-- **COMMERCIAL_CAPTURE** (High): APILayer sponsorship precedes community content
-  in README.
-- **APPROVAL_GATE_BOTTLENECK** (High): CI gated on manual approval, approval
-  rate near zero.
+| Factor              | Rating   | Notes                                                        |
+| ------------------- | -------- | ------------------------------------------------------------ |
+| WR-01 Activity      | Very Low | 1 commit/90d. 19 days since last push.                       |
+| WR-02 Community     | Stagnant | 30 contributors historically. 1,197 open issues unprocessed. |
+| WR-03 Quality       | Moderate | Format validation is real. Content freshness is unknown.     |
+| WR-04 Security      | Moderate | MIT license. OpenSSF 2.3/10 but low blast radius.            |
+| WR-05 Documentation | Strong   | CONTRIBUTING.md, templates, structured format.               |
+| WR-06 Maintenance   | Very Low | Celebrity stagnation with commercial capture.                |
 
-## Creator Lens (Lightweight)
+**Adoption Verdict: Extract (42)** Extract the link validation workflow pattern
+and structured catalog format. Content itself is increasingly stale.
 
-This repo understands **how to structure a massive curated list so it stays
-navigable** — alphabetized index → 35+ categories → per-category tables with
-Description/Auth/HTTPS/CORS columns. It also understands that a curated list
-needs continuous link validation to avoid rot, and they have dedicated GitHub
-Actions tooling for it.
+**Creator Verdict: Extract (48)** Second celebrity stagnation data point (with
+codecrafters). Proves validation without maintenance is insufficient. Link
+checker is the concrete extractable.
 
-What it teaches, perhaps unintentionally, is **the full lifecycle of a
-curated-list project**: community momentum → commercial sponsorship → approval
-bottleneck → celebrity stagnation. **419K stars does not mean alive.**
+## Findings
 
-For your purposes (JASON-OS, skills distribution), the extractable value is
-low-to-moderate:
-
-- The link-validation workflow is a transferable pattern
-- The 35-category taxonomy overlaps with your existing
-  `codecrafters-io/build-your-own-x` tracker entry
-- The "what a stagnant awesome-list looks like" is useful cautionary context for
-  any future community-distributed skill registry
-
-## Unverified (403 / not applicable)
-
-Dependabot / code-scanning / secret-scanning alerts: 403 (need admin). Workflow
-pass rate: can't compute (all `action_required`).
-
-## Interactive Gate
-
-Quick Scan complete. This repo is primarily **cautionary context** rather than a
-high-value extraction target. Extractable candidates are thin: link validation
-workflow, taxonomy (overlaps existing entry), and a lesson about curated-list
-stagnation.
-
-Standard scan would clone the 195KB README + Python scripts and examine the
-validation tooling in detail. Deep is overkill.
-
-Run **Standard**, **Quick-only** (close with just this summary), or **skip**
-(cleanup and move to next repo)?
+| ID   | Severity | Category        | Title                                                                        |
+| ---- | -------- | --------------- | ---------------------------------------------------------------------------- |
+| F001 | High     | velocity        | Celebrity stagnation — 420K stars, 1 commit/90d                              |
+| F002 | High     | process         | PR approval bottleneck — 14/15 runs action_required                          |
+| F003 | Medium   | security        | OpenSSF Scorecard 2.3/10                                                     |
+| F004 | Medium   | process         | Commercial capture — APILayer sponsorship before content                     |
+| F005 | Medium   | maintainability | Bus factor 2 — top 2 contributors dominate                                   |
+| F006 | Low      | relevance       | POSITIVE: Link validation via scheduled workflow — transferable pattern      |
+| F007 | Low      | relevance       | POSITIVE: Format validation scripts (format.py + links.py + 638 lines tests) |
+| F008 | Info     | engagement      | Massive absolute engagement — 420K stars, top-20 GitHub repo                 |

@@ -1,0 +1,90 @@
+{
+  "repo": "HKUDS/CLI-Anything",
+  "scan_date": "2026-04-03",
+  "extraction_candidates": [
+    {
+      "rank": 1,
+      "name": "HARNESS.md Methodology",
+      "location": "cli-anything-plugin/HARNESS.md + guides/",
+      "description": "7-phase SOP for turning GUI applications into agent-native CLI interfaces. Covers codebase analysis, CLI design, implementation patterns, REPL integration, session management, and publishing.",
+      "pattern_novelty": "High",
+      "code_portability": 14,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "notes": "Methodology doc -- direct copy. Applicable to any project building agent-native tooling."
+    },
+    {
+      "rank": 2,
+      "name": "SKILL.md Format",
+      "location": "*/agent-harness/cli_anything/*/skills/SKILL.md (28 examples)",
+      "description": "Standardized AI-discoverable skill definition format. Tells agents what commands exist, what they do, and how to invoke them. Consistent across 28 harnesses.",
+      "pattern_novelty": "High",
+      "code_portability": 12,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "notes": "Format definition is portable. Could adopt for sonash-v0 skill files or any agent-facing tool."
+    },
+    {
+      "rank": 3,
+      "name": "ReplSkin Unified Terminal UI",
+      "location": "cli-anything-plugin/repl_skin.py",
+      "description": "Reusable REPL skin with prompt_toolkit integration, styled output (success/error/warning/info/table/progress), auto-detection of SKILL.md, command history.",
+      "pattern_novelty": "Medium",
+      "code_portability": 10,
+      "adoption_readiness": "Medium",
+      "quality_signal": "Medium",
+      "extraction_effort": "E1",
+      "notes": "Python-specific. Would need adaptation for Node/TypeScript projects."
+    },
+    {
+      "rank": 4,
+      "name": "Registry + CLI-Hub Pattern",
+      "location": "registry.json + docs/hub/",
+      "description": "Single JSON registry file that powers a static discovery site. Each entry has name, version, category, install command, entry point. Hub auto-updates on merge.",
+      "pattern_novelty": "Medium",
+      "code_portability": 13,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E1",
+      "notes": "Pattern is highly portable. Good model for any tool ecosystem with a discovery hub."
+    },
+    {
+      "rank": 5,
+      "name": "Codec Allowlist Pattern",
+      "location": "kdenlive/agent-harness/cli_anything/kdenlive/utils/melt_backend.py",
+      "description": "frozenset-based allowlist validation for subprocess arguments. Prevents injection by restricting values to known-safe set.",
+      "pattern_novelty": "Low",
+      "code_portability": 8,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "notes": "Simple pattern but well-implemented. Applicable to any subprocess validation."
+    },
+    {
+      "rank": 6,
+      "name": "Skill Generator Scaffolding",
+      "location": "cli-anything-plugin/skill_generator.py + templates/",
+      "description": "Scaffolding tool that generates new harness boilerplate from templates. Reduces ramp-up time for contributors.",
+      "pattern_novelty": "Medium",
+      "code_portability": 6,
+      "adoption_readiness": "Medium",
+      "quality_signal": "Medium",
+      "extraction_effort": "E2",
+      "notes": "Heavily tied to CLI-Anything structure. Pattern more portable than code."
+    },
+    {
+      "rank": 7,
+      "name": "Claude Plugin Marketplace Integration",
+      "location": ".claude-plugin/marketplace.json",
+      "description": "Minimal config for Claude Code plugin discovery. Points to the cli-anything-plugin source directory.",
+      "pattern_novelty": "High",
+      "code_portability": 14,
+      "adoption_readiness": "High",
+      "quality_signal": "Medium",
+      "extraction_effort": "E0",
+      "notes": "Novel -- one of the first Claude Code plugin marketplace entries. Format reference for building plugins."
+    }
+  ]
+}

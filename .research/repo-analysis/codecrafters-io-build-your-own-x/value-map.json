@@ -1,41 +1,121 @@
 {
   "repo": "codecrafters-io/build-your-own-x",
-  "generated": "2026-04-03",
-  "adoption_verdict": {
-    "band": "Extract",
-    "score": 45,
-    "rationale": "Valuable as a curated reference but not as a dependency. No license blocks redistribution. Content is decaying (link rot). Extract the curation taxonomy and link format, not the content itself."
+  "skillVersion": "4.2",
+  "generated": "2026-04-06",
+  "scoring": {
+    "adoptionLens": { "verdict": "Extract", "score": 44 },
+    "creatorLens": { "verdict": "Extract", "score": 45 }
   },
-  "candidates": [
+  "patternCandidates": [
     {
-      "name": "35-Category Tutorial Taxonomy",
+      "name": "31-Category Tutorial Taxonomy",
       "novelty": "Medium",
-      "portability": 12,
-      "adoption_readiness": "High",
-      "quality_signal": "Medium",
       "effort": "E0",
-      "description": "35 technology categories organized for 'build from scratch' learning: 3D Renderer, AI Model, Blockchain, Database, Docker, Emulator, Git, Neural Network, OS, Programming Language, Regex Engine, Shell, Web Browser, Web Server, etc.",
-      "relevance_to_sonash": "Could inform a 'learning path' feature or skill taxonomy. The categories map well to agent capabilities."
+      "relevance": "medium",
+      "description": "31 technology categories organized for 'build from scratch' learning. Useful as a reference for organizing skill categories or learning paths.",
+      "relevance_to_home": "Cross-reference against 72-skill index for category gap analysis."
     },
     {
       "name": "Curated Link Format Pattern",
       "novelty": "Low",
-      "portability": 8,
-      "adoption_readiness": "High",
-      "quality_signal": "Medium",
       "effort": "E0",
-      "description": "Consistent format: **Language**: _Title_ (link). Table of contents with anchor links. Simple, scannable, community-contributable.",
-      "relevance_to_sonash": "Low — standard awesome-list format. Already well-known pattern."
+      "relevance": "low",
+      "description": "**Language**: _Title_ (link) format with ToC anchors. Standard awesome-list pattern.",
+      "relevance_to_home": "Already well-known. Low extraction value."
+    }
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "Skill retirement process design",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "This repo is a case study in what happens when a curated collection grows without a retirement/archival process. 486K stars, 462 open issues, 1 commit/90d. Apply this lesson to JASON-OS skill lifecycle.",
+      "relevance_to_home": "Directly applicable to managing 72+ skills. Prevention of stagnation pattern."
     },
     {
-      "name": "Issue Template for Link Submissions",
-      "novelty": "Low",
-      "portability": 6,
-      "adoption_readiness": "High",
-      "quality_signal": "Low",
+      "name": "'Build from scratch' framing for Domain 01",
+      "novelty": "Medium",
       "effort": "E0",
-      "description": "ISSUE_TEMPLATE.md structured for tutorial link submissions with category and language fields.",
-      "relevance_to_sonash": "Low direct relevance."
+      "relevance": "medium",
+      "description": "Feynman principle applied to system understanding. Structure JASON-OS Internal Archaeology as 'how each system was built' narratives rather than 'what exists' inventories.",
+      "relevance_to_home": "Reframe Domain 01 output format. Narrative > inventory."
+    },
+    {
+      "name": "Celebrity stagnation lifecycle",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Full lifecycle: community enthusiasm → commercial acquisition → maintenance bottleneck → dormancy. Useful as a cautionary case study for any future community distribution model.",
+      "relevance_to_home": "Relevant if JASON-OS skills are ever published/shared."
+    },
+    {
+      "name": "Shell/CLI tutorial collection",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low-medium",
+      "description": "7 shell tutorials (C, Go, Rust). Canonical references if JASON-OS needs custom command dispatch.",
+      "relevance_to_home": "Defer until JASON-OS architecture solidifies."
     }
-  ]
+  ],
+  "contentCandidates": [
+    {
+      "name": "Build Your Own React (Pomber)",
+      "novelty": "High",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://pomb.us/build-your-own-react/",
+      "relevance_to_home": "React 19 in SoNash. Fiber, reconciliation, hooks from scratch."
+    },
+    {
+      "name": "Didact: DIY React",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://github.com/hexacta/didact",
+      "relevance_to_home": "Virtual DOM diffing. Complementary to Pomber."
+    },
+    {
+      "name": "Write Yourself a Git",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "https://wyag.thber.com/",
+      "relevance_to_home": "Git object model. Better hook/worktree design."
+    },
+    {
+      "name": "Regex Matching Can Be Simple and Fast",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "https://swtch.com/~rsc/regexp/regexp1.html",
+      "relevance_to_home": "NFA/DFA theory for check-pattern-compliance.js."
+    }
+  ],
+  "antiPatternCandidates": [
+    {
+      "name": "Single-file-everything pattern",
+      "novelty": "Medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "390 links in one README.md. Works at small scale, unmaintainable at large scale. Watch for same impulse in EXTRACTIONS.md, MEMORY.md, SKILL_INDEX.md.",
+      "relevance_to_home": "Applies to any artifact that becomes a dumping ground for 'everything of type X'."
+    },
+    {
+      "name": "Inline license without LICENSE file",
+      "novelty": "Low",
+      "effort": "E0",
+      "relevance": "low-medium",
+      "description": "CC0 in README footer but no LICENSE file. GitHub API reports 'no license'. Automated tools can't detect it. Always include a machine-readable LICENSE file.",
+      "relevance_to_home": "If JASON-OS skills are ever published, include actual LICENSE files."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "public-apis/public-apis",
+      "connection_type": "shared-pattern",
+      "detail": "Both are curated lists with celebrity stagnation. public-apis has validation scripts that codecrafters lacks."
+    }
+  ],
+  "related_repos": ["public-apis/public-apis"]
 }

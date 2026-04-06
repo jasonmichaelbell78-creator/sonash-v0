@@ -1,27 +1,31 @@
 {
-  "meta": {
-    "repo": "public-apis/public-apis",
-    "url": "https://github.com/public-apis/public-apis",
-    "scan_date": "2026-04-05",
-    "scan_depth": "quick",
-    "scan_version": "3.0"
+  "repo": "public-apis/public-apis",
+  "url": "https://github.com/public-apis/public-apis",
+  "skillVersion": "4.1",
+  "scanDepth": "standard",
+  "date": "2026-04-06",
+  "repoType": "curated-list",
+  "classification": {
+    "type": "curated-list",
+    "confidence": "high",
+    "signals": [
+      "API catalog in README",
+      "40+ categories",
+      "1490 entries",
+      "format validation scripts"
+    ]
   },
-  "repo": {
-    "description": "A collective list of free APIs",
+  "metadata": {
+    "stars": 419594,
+    "forks": 45644,
+    "openIssues": 1197,
+    "contributors": 30,
     "language": "Python",
-    "license": "MIT",
-    "created_at": "2016-03-20T23:49:42Z",
-    "pushed_at": "2026-03-18T16:28:22Z",
-    "age_days": 3668,
-    "size_kb": 4962,
-    "stars": 419392,
-    "forks": 45617,
-    "subscribers": 4572,
-    "open_issues": 1191,
-    "contributors_visible": 10,
-    "is_fork": false,
-    "is_archived": false,
     "languages": { "Python": 40479, "Shell": 1352 },
+    "license": "MIT",
+    "created": "2016-03-20T23:49:42Z",
+    "lastPush": "2026-03-18T16:28:22Z",
+    "size": 4962,
     "topics": [
       "api",
       "apis",
@@ -36,148 +40,71 @@
       "public-apis",
       "resources",
       "software"
-    ]
+    ],
+    "defaultBranch": "master",
+    "recentCommits90d": 1,
+    "openPRs": 1,
+    "releases": 0
   },
   "dimensions": {
-    "QS-01_activity_pulse": {
-      "score": 38,
-      "band": "Needs Work",
-      "detail": "Pushed 18 days ago. OpenSSF reports 2 commits and 0 issue activity in last 90 days. Maintained score 1/10."
+    "QS-01-stars": { "value": 419594, "band": "Exceptional" },
+    "QS-02-forks": { "value": 45644, "band": "Exceptional" },
+    "QS-03-openIssues": { "value": 1197, "band": "Very High" },
+    "QS-04-recentCommits": { "value": 1, "band": "Very Low" },
+    "QS-05-contributors": { "value": 30, "band": "Moderate" },
+    "QS-06-language": { "value": "Python", "band": "Dual" },
+    "QS-07-license": { "value": "MIT", "band": "Strong" },
+    "QS-08-lastPush": { "value": "2026-03-18", "band": "Moderately Stale", "daysSince": 19 },
+    "QS-09-age": { "value": "2016-03-20", "band": "Mature", "years": 10.0 },
+    "QS-10-size": { "value": 4962, "band": "Small" },
+    "QS-11-topics": { "value": 13, "band": "Well-Tagged" },
+    "QS-12-wiki": { "value": false },
+    "QS-13-pages": { "value": false },
+    "QS-14-releases": { "value": 0, "band": "None" },
+    "QS-15-openPRs": { "value": 1, "band": "Low" },
+    "QS-16-forkRatio": { "value": 0.109, "band": "Normal" },
+    "QS-17-issueToStar": { "value": 0.0029, "band": "Low" },
+    "QS-18-description": { "value": "present", "band": "Good" }
+  },
+  "summaryBands": {
+    "security": {
+      "band": "Good",
+      "score": 65,
+      "note": "MIT license. Python validation scripts with no obvious injection vectors."
     },
-    "QS-02_engagement_trajectory": {
-      "score": 100,
-      "band": "Excellent",
-      "detail": "419,392 stars, 45,617 forks, 4,572 watchers. Top-20 starred repo on GitHub."
+    "reliability": {
+      "band": "Moderate",
+      "score": 50,
+      "note": "3 CI workflows + tests. But 1 commit in 90 days — maintenance declining."
     },
-    "QS-03_archived_status": {
-      "score": 100,
-      "band": "Excellent",
-      "detail": "Not archived, not disabled — but effectively in slow-maintenance mode."
-    },
-    "QS-04_license": {
-      "score": 100,
-      "band": "Excellent",
-      "detail": "MIT. OpenSSF License check 10/10."
-    },
-    "QS-05_ci_pass_rate": {
-      "score": null,
-      "band": "Unverified",
-      "detail": "14/15 recent PR-triggered workflow runs have conclusion 'action_required' — PRs queued awaiting maintainer approval to run CI. Scheduled 'Validate links' workflow: 1/1 failure in recent runs."
-    },
-    "QS-06_branch_protection": {
-      "score": 0,
-      "band": "Needs Work",
-      "detail": "No branch protection on master. OpenSSF Branch-Protection score 0/10."
-    },
-    "QS-07_dependabot_alerts": {
-      "score": null,
-      "band": "Unverified",
-      "detail": "403 blocked (need admin access). Dependabot config status unknown."
-    },
-    "QS-08_code_scanning_alerts": {
-      "score": null,
-      "band": "Unverified",
-      "detail": "403 blocked. OpenSSF SAST score 0/10 — no SAST tool on commits."
-    },
-    "QS-09_secret_scanning_alerts": {
-      "score": null,
-      "band": "Unverified",
-      "detail": "403 blocked."
-    },
-    "QS-10_community_health": {
-      "score": 62,
-      "band": "Healthy",
-      "detail": "README + LICENSE + CONTRIBUTING + issue template + PR template. Missing: CoC, SECURITY.md."
-    },
-    "QS-11_contributing_security": {
+    "maintainability": {
+      "band": "Moderate",
       "score": 55,
-      "band": "Needs Work",
-      "detail": "CONTRIBUTING.md present (6.4KB). No SECURITY.md (OpenSSF Security-Policy 0/10). Issue template + PR template present."
+      "note": "1,490 entries in single README. Format validation scripts help. Link rot inevitable at scale."
     },
-    "QS-12_contributor_count": {
-      "score": 35,
-      "band": "Needs Work",
-      "detail": "10 visible contributors. Top 2: matheusfelipeog (826), davemachado (683) — together 1509 commits. Next 8 all ≤150 commits each. Effective bus factor 2."
+    "documentation": {
+      "band": "Strong",
+      "score": 75,
+      "note": "CONTRIBUTING.md with structured format. 40+ categories. Well-tagged."
     },
-    "QS-13_merge_hygiene": {
+    "process": {
+      "band": "Weak",
       "score": 25,
-      "band": "Needs Work",
-      "detail": "OpenSSF Code-Review 1/10 — only 4/29 recent changesets have approved human review. PR merge process is broken — PRs queue for maintainer gate, don't get reviewed."
+      "note": "1,197 open issues. PRs bottlenecked. Commercial overlay (APILayer). No releases."
     },
-    "QS-14_openssf_scorecard": {
-      "score": 23,
-      "band": "Needs Work",
-      "detail": "OpenSSF Scorecard 2.3/10. Scored 2026-03-30. Only License (10) and Binary-Artifacts (10) are high. Zeros across CII-Best-Practices, Security-Policy, Fuzzing, Branch-Protection, SAST. Code-Review and Maintained both 1/10."
-    },
-    "QS-15_sbom_deps": {
-      "score": 80,
-      "band": "Excellent",
-      "detail": "Only 8 dependencies (certifi, requests, idna, urllib3, charset-normalizer + 2 actions + self). Minimal attack surface — tooling is just a link validator."
-    },
-    "QS-16_deps_cves": {
-      "score": null,
-      "band": "Unverified",
-      "detail": "Not scanned in Quick Scan."
-    },
-    "QS-17_fork_star_ratio": {
-      "score": 75,
-      "band": "Healthy",
-      "detail": "10.9% fork-to-star ratio (45,617/419,392). Strong engagement but stars outpace forks at this scale, which is normal for curated lists."
-    },
-    "QS-18_watcher_star_ratio": {
-      "score": 50,
-      "band": "Needs Work",
-      "detail": "1.1% subscriber-to-star ratio (4,572/419,392). Low percentage but high absolute count (4,572 watchers is still substantial)."
+    "velocity": {
+      "band": "Very Low",
+      "score": 10,
+      "note": "1 commit in 90 days. 10 years old. Celebrity stagnation."
     }
   },
-  "summary_bands": {
-    "Security": {
-      "score": 35,
-      "band": "Needs Work",
-      "detail": "OpenSSF 2.3/10. No branch protection, no SAST, no security policy, no fuzzing. Low blast radius because it's a curated list not runtime code — but hygiene is genuinely poor."
-    },
-    "Reliability": {
-      "score": 40,
-      "band": "Needs Work",
-      "detail": "Link validator is scheduled (good pattern) but last run failed. All PR workflows require manual approval before running — queue of 1,191 open issues suggests approval bottleneck is chronic."
-    },
-    "Maintainability": {
-      "score": 30,
-      "band": "Needs Work",
-      "detail": "1,191 open issues, 2 commits in last 90 days, OpenSSF Maintained 1/10. Functionally in slow-maintenance mode despite 419K star social signal."
-    },
-    "Documentation": {
-      "score": 75,
-      "band": "Healthy",
-      "detail": "README.md is 195KB — the README IS the product. CONTRIBUTING.md 6.4KB explains format. No developer/architecture docs, but the repo doesn't need them."
-    },
-    "Process": {
-      "score": 38,
-      "band": "Needs Work",
-      "detail": "Has issue + PR templates, CONTRIBUTING guide, scheduled link validation, PR workflow gating. But Code-Review score 1/10 indicates the review gate is broken in practice — PRs queue up and don't get merged."
-    },
-    "Velocity": {
-      "score": 50,
-      "band": "Needs Work",
-      "detail": "Split signal: 419K stars + 45K forks (engagement velocity is off the charts) but 2 commits in 90 days + 1191 open issues (merge velocity is near zero). The social proof and the actual throughput diverge dramatically."
-    }
+  "absencePattern": {
+    "type": "celebrity-stagnation",
+    "description": "420K stars, 1,197 open issues, 1 commit/90 days. Commercial capture by APILayer. PR approval bottleneck. Same pattern as codecrafters but with more infrastructure (validation scripts, CI)."
   },
-  "absence_patterns": [
-    {
-      "pattern": "CELEBRITY_STAGNATION",
-      "confidence": "High",
-      "evidence": "419K stars + 45K forks but 2 commits in 90 days + 1191 open issues + 14/15 recent PRs stuck in 'action_required'. The social signal is massive but the actual maintenance throughput is near zero."
-    },
-    {
-      "pattern": "COMMERCIAL_CAPTURE",
-      "confidence": "High",
-      "evidence": "README opens with prominent APILayer sponsorship and product table before the community index. Curated community content became a lead-gen surface for APILayer products."
-    },
-    {
-      "pattern": "APPROVAL_GATE_BOTTLENECK",
-      "confidence": "High",
-      "evidence": "All 14 recent PR-triggered workflow runs have conclusion 'action_required' — workflows configured to require manual approval for PRs from forks, combined with low maintainer throughput, means CI never runs on contributions."
-    }
-  ],
-  "creator_lens_quick": "This repo understands how to structure a massive curated list so it stays navigable (alphabetized index → 35+ categories → per-category tables with Description/Auth/HTTPS/CORS columns). It also understands that a curated list needs continuous link validation to avoid rot — they have a scheduled GitHub Actions workflow dedicated just to checking URLs. What it teaches, perhaps unintentionally, is the full lifecycle of a curated-list project: community momentum → commercial sponsorship → approval bottleneck → celebrity stagnation. 419K stars does not mean alive."
+  "creatorLens": "This repo understands that developers need a single, searchable catalog of free APIs organized by domain. The structured format (API|Description|Auth|HTTPS|CORS) is machine-parseable by design. The Python validation scripts enforce format consistency at PR time — a quality gate that codecrafters lacks.",
+  "scoring": {
+    "adoptionLens": { "verdict": "Extract", "score": 42 },
+    "creatorLens": { "verdict": "Extract", "score": 48 }
+  }
 }

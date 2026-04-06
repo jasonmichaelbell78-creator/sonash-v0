@@ -89,6 +89,10 @@ Workflow structure, phase design, output artifacts.
 - "Are there files or processes that could become orphaned if execution is
   partial? What downstream skills consume this skill's output, and what format
   do they expect?"
+- "Does the skill make interpretive claims or subjective assessments? If yes,
+  should it disclose these as inferences the user may override?" (S-audit gap)
+- "Does the skill need a pause/resume protocol for long-running execution? What
+  state must be saved to enable clean resume?" (S-audit gap)
 
 ### Category 3: Attention & Prompt Engineering
 
@@ -164,6 +168,8 @@ non-negotiable; SHOULD items may be skipped with documented rationale.
 12. MUST (if state files): Resume detection on re-invocation (S27)
 13. MUST (Standard/Complex): Self-audit phase present as penultimate phase
 14. MUST (if downstream consumers): Self-audit includes contract verification
+15. MUST (if companions): SKILL.md includes read directive pointing to
+    REFERENCE.md
 
 ### Behavioral Quality
 

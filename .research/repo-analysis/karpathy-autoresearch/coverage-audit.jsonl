@@ -1,0 +1,7 @@
+{"type":"internal-artifact","item":"train.py full read (630 lines)","decision":"partial","reason":"Read first 60 lines (model config, architecture). Full model implementation is ML-specific, not applicable to home work. GPT architecture patterns not transferable to Node/TS.","decision_date":"2026-04-06"}
+{"type":"internal-artifact","item":"prepare.py full read (389 lines)","decision":"partial","reason":"Read first 40 lines (constants, config). Data loading and tokenizer code is ML-specific.","decision_date":"2026-04-06"}
+{"type":"external-reference","item":"karpathy tweets (2)","decision":"skip","reason":"Context on project origin. Social media, not technical reference.","decision_date":"2026-04-06"}
+{"type":"external-reference","item":"Dummy's Guide tweet","decision":"skip","reason":"Community explainer for newcomers. Not relevant to home work.","decision_date":"2026-04-06"}
+{"type":"external-reference","item":"jsegov/autoresearch-win-rtx (Windows fork)","decision":"skip","reason":"Windows RTX adaptation. Interesting as platform fork but code is ML-specific.","decision_date":"2026-04-06"}
+{"type":"external-reference","item":"trevin-creator/autoresearch-mlx (MLX fork)","decision":"skip","reason":"Apple Silicon adaptation. Same reasoning as Windows fork.","decision_date":"2026-04-06"}
+{"type":"anomaly","item":".gitignore includes CLAUDE.md and AGENTS.md","decision":"captured","reason":"Reveals hidden multi-agent architecture. Documented in deep-read.md and content-eval.jsonl as high-relevance finding.","decision_date":"2026-04-06"}

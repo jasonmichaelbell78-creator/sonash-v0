@@ -1,0 +1,78 @@
+{
+  "repo": "ViktorAxelsen/MemSkill",
+  "scan_date": "2026-04-03",
+  "extraction_candidates": [
+    {
+      "rank": 1,
+      "name": "Meta-Memory Skills Framework",
+      "location": "arXiv 2602.02474 + skills/ directory",
+      "description": "The core concept: skills about HOW to remember rather than WHAT to remember. Skill-conditioned memory construction where a controller selects relevant skills per text span and an executor applies them in one pass. 15 evolved skill files demonstrate the output.",
+      "pattern_novelty": "High",
+      "code_portability": 11,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "notes": "Concept is language-agnostic. The 5-section Markdown skill format (Description, Purpose, When to Use, How to Apply, Constraints) is directly portable. Read the paper for full framework."
+    },
+    {
+      "rank": 2,
+      "name": "Skill Evolution Loop (Designer)",
+      "location": "src/designer.py + prompts/designer_prompts.py",
+      "description": "3-stage LLM-driven skill evolution: (1) failure mining with clustering, (2) analysis + reflection loop with self-critique, (3) refinement producing concrete skill mutations. Triggered periodically, not on every step.",
+      "pattern_novelty": "High",
+      "code_portability": 9,
+      "adoption_readiness": "Medium",
+      "quality_signal": "High",
+      "extraction_effort": "E1",
+      "notes": "Designer prompts are the most portable artifact. The two-stage analysis+reflection pattern is applicable to any self-improving system. Python-specific PPO integration less portable."
+    },
+    {
+      "rank": 3,
+      "name": "Skill Bank Markdown Format",
+      "location": "skills/conversational_skills/ + skills/embodied_task_skills/",
+      "description": "Standardized 5-section Markdown format for serialized memory skills: Title, Description, Purpose, When to Use, How to Apply, Constraints + Action type declaration. 15 examples across 2 domains.",
+      "pattern_novelty": "Medium",
+      "code_portability": 14,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "notes": "Direct copy. Compare against sonash-v0 SKILL.md format. Could inform memory skill file format for JASON-OS."
+    },
+    {
+      "rank": 4,
+      "name": "Designer Prompt Templates",
+      "location": "prompts/designer_prompts.py + prompts/designer_prompts_interactive.py",
+      "description": "Two-stage prompts: Stage 1 classifies failures as storage/retrieval/quality failures with structured JSON output. Stage 1b is a reflection loop critiquing the analysis. Stage 2 produces concrete skill mutations. ~18KB of prompt engineering.",
+      "pattern_novelty": "High",
+      "code_portability": 13,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "notes": "Pure text prompts — maximally portable. The failure classification taxonomy (storage vs retrieval vs quality) is a useful framework for any memory system debugging."
+    },
+    {
+      "rank": 5,
+      "name": "Dual-Embedding Memory Bank",
+      "location": "src/memory_bank.py",
+      "description": "Each memory item carries two embeddings: a retriever embedding (for QA/search) and a state encoder embedding (for the PPO controller's input). Enables different views of the same memory for different consumers.",
+      "pattern_novelty": "Medium",
+      "code_portability": 7,
+      "adoption_readiness": "Low",
+      "quality_signal": "Medium",
+      "extraction_effort": "E2",
+      "notes": "Concept portable, implementation tied to FAISS + PyTorch. The dual-view pattern is interesting for any multi-consumer memory system."
+    },
+    {
+      "rank": 6,
+      "name": "Operation Templates with Meta-Info",
+      "location": "prompts/operation_templates.py",
+      "description": "Seed skill definitions with usage tracking: usage_count, avg_reward, recent_rewards (deque), recent_usage_ema, created_at, last_modified. Enables data-driven skill selection and evolution.",
+      "pattern_novelty": "Medium",
+      "code_portability": 10,
+      "adoption_readiness": "Medium",
+      "quality_signal": "Medium",
+      "extraction_effort": "E1",
+      "notes": "The meta_info tracking pattern (usage + reward + EMA) is applicable to any skill/tool selection system. Portable as a design pattern."
+    }
+  ]
+}

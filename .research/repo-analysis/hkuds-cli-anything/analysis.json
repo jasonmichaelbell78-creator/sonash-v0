@@ -1,230 +1,102 @@
 {
-  "meta": {
-    "repo": "HKUDS/CLI-Anything",
-    "url": "https://github.com/HKUDS/CLI-Anything",
-    "scan_date": "2026-04-03",
-    "scan_depth": "standard",
-    "scan_version": "2.0",
-    "clone_dir": "/tmp/repo-analysis-hkuds-cli-anything/",
-    "files_cloned": 796
+  "repo": "HKUDS/CLI-Anything",
+  "url": "https://github.com/HKUDS/CLI-Anything",
+  "skillVersion": "4.1",
+  "scanDepth": "standard",
+  "date": "2026-04-06",
+  "repoType": "framework",
+  "classification": {
+    "type": "framework",
+    "confidence": "high",
+    "signals": [
+      "Python package",
+      "CLI generation tool",
+      "registry/hub pattern",
+      "SKILL.md generation"
+    ]
   },
-  "repo": {
-    "description": "CLI-Anything: Making ALL Software Agent-Native -- CLI-Hub",
+  "metadata": {
+    "stars": 28591,
+    "forks": 2716,
+    "openIssues": 73,
+    "contributors": 30,
     "language": "Python",
-    "license": "Apache-2.0",
-    "created_at": "2026-03-08T13:52:57Z",
-    "pushed_at": "2026-04-03T11:13:23Z",
-    "age_days": 26,
-    "size_kb": 22982,
-    "stars": 27589,
-    "forks": 2586,
-    "open_issues": 74,
-    "contributors": 44,
-    "subscribers": 132,
-    "is_fork": false,
-    "is_archived": false,
-    "default_branch": "main",
     "languages": {
-      "Python": 4772855,
+      "Python": 4918030,
       "C#": 177101,
       "JavaScript": 31014,
       "Shell": 16265,
       "PowerShell": 793
-    }
+    },
+    "license": "Apache-2.0",
+    "created": "2026-03-08T13:52:57Z",
+    "lastPush": "2026-04-06T13:18:55Z",
+    "size": 23010,
+    "topics": [],
+    "defaultBranch": "main",
+    "recentCommits90d": 1,
+    "openPRs": 1,
+    "releases": 1
   },
   "dimensions": {
-    "QS-01_activity_pulse": {
+    "QS-01-stars": { "value": 28591, "band": "Very High" },
+    "QS-02-forks": { "value": 2716, "band": "High" },
+    "QS-03-openIssues": { "value": 73, "band": "Moderate" },
+    "QS-04-recentCommits": { "value": "active today", "band": "Very High" },
+    "QS-05-contributors": { "value": 30, "band": "Moderate" },
+    "QS-06-language": { "value": "Python", "band": "Multi-language" },
+    "QS-07-license": { "value": "Apache-2.0", "band": "Strong" },
+    "QS-08-lastPush": { "value": "2026-04-06", "band": "Active", "daysSince": 0 },
+    "QS-09-age": { "value": "2026-03-08", "band": "Very New", "days": 29 },
+    "QS-10-size": { "value": 23010, "band": "Medium" },
+    "QS-11-topics": { "value": 0, "band": "Missing" },
+    "QS-12-wiki": { "value": false },
+    "QS-13-pages": { "value": false },
+    "QS-14-releases": { "value": 1, "band": "Minimal" },
+    "QS-15-openPRs": { "value": 1, "band": "Low" },
+    "QS-16-forkRatio": { "value": 0.095, "band": "Normal" },
+    "QS-17-issueToStar": { "value": 0.0026, "band": "Low" },
+    "QS-18-description": { "value": "present", "band": "Good" }
+  },
+  "summaryBands": {
+    "security": {
+      "band": "Good",
+      "score": 70,
+      "note": "Apache-2.0 license. Python package with dependencies."
+    },
+    "reliability": {
+      "band": "Good",
+      "score": 70,
+      "note": "1,839 passing tests claimed. Active development."
+    },
+    "maintainability": {
+      "band": "Moderate",
+      "score": 55,
+      "note": "23MB repo, ~5MB Python. Multi-language. Growing fast."
+    },
+    "documentation": {
+      "band": "Strong",
+      "score": 80,
+      "note": "Detailed README, HARNESS.md methodology, SKILL.md generation, CLI-Hub site."
+    },
+    "process": {
+      "band": "Good",
+      "score": 65,
+      "note": "Apache-2.0, CONTRIBUTING.md, active PR merging, 1 release."
+    },
+    "velocity": {
+      "band": "Very High",
       "score": 95,
-      "band": "Excellent",
-      "detail": "Multiple commits per day, pushed today."
-    },
-    "QS-02_star_velocity": {
-      "score": 98,
-      "band": "Excellent",
-      "detail": "27,589 stars in 26 days (~1,061/day)."
-    },
-    "QS-03_fork_ratio": {
-      "score": 72,
-      "band": "Healthy",
-      "detail": "2,586 forks / 27,589 stars = 9.4%."
-    },
-    "QS-04_issue_health": {
-      "score": 55,
-      "band": "Needs Work",
-      "detail": "74 open issues. Feature requests visible. No triage labels."
-    },
-    "QS-05_pr_throughput": {
-      "score": 80,
-      "band": "Excellent",
-      "detail": "Active merge activity. Community PRs merged regularly."
-    },
-    "QS-06_release_cadence": {
-      "score": 40,
-      "band": "Needs Work",
-      "detail": "Only 1 release (v0.2.0) in 26 days."
-    },
-    "QS-07_contributor_diversity": {
-      "score": 78,
-      "band": "Healthy",
-      "detail": "44 contributors. Mix of maintainer and community."
-    },
-    "QS-08_license": { "score": 90, "band": "Excellent", "detail": "Apache-2.0." },
-    "QS-09_community_health": {
-      "score": 70,
-      "band": "Healthy",
-      "detail": "75% GitHub profile. Missing Code of Conduct."
-    },
-    "QS-10_documentation": {
-      "score": 78,
-      "band": "Healthy",
-      "detail": "Multi-language README, CONTRIBUTING, SECURITY, per-harness docs."
-    },
-    "QS-11_ci_quality": {
-      "score": 30,
-      "band": "Needs Work",
-      "detail": "Only deploy-pages.yml. No test CI. Copilot review on PRs."
-    },
-    "QS-12_security_posture": {
-      "score": 55,
-      "band": "Needs Work",
-      "detail": "SECURITY.md with threat model. 0 shell=True in 122 subprocess calls. But no SAST CI."
-    },
-    "QS-15_code_scanning": {
-      "score": 20,
-      "band": "Critical",
-      "detail": "No SAST workflow for subprocess-heavy codebase."
-    },
-    "ST-01_subprocess_safety": {
-      "score": 88,
-      "band": "Excellent",
-      "detail": "122 subprocess calls, 0 shell=True. Click.Path validation. Codec allowlists."
-    },
-    "ST-02_test_coverage": {
-      "score": 82,
-      "band": "Excellent",
-      "detail": "2,707 test functions (1,854 unit, 740 e2e). All 31 harnesses have tests."
-    },
-    "ST-03_test_ci_enforcement": {
-      "score": 15,
-      "band": "Critical",
-      "detail": "2,707 tests exist but no CI workflow runs them."
-    },
-    "ST-04_code_structure": {
-      "score": 85,
-      "band": "Excellent",
-      "detail": "31/31 harnesses follow consistent layout. 28/33 registry entries have SKILL.md."
-    },
-    "ST-05_code_reuse": {
-      "score": 70,
-      "band": "Healthy",
-      "detail": "repl_skin.py copied not imported. HARNESS.md SOP followed. No shared package."
-    },
-    "ST-06_plugin_architecture": {
-      "score": 75,
-      "band": "Healthy",
-      "detail": "cli-anything-plugin/ + .claude-plugin/marketplace.json. Novel agent-native plugin ecosystem."
-    },
-    "ST-07_credential_handling": {
-      "score": 60,
-      "band": "Needs Work",
-      "detail": "Inconsistent: AdGuardHome JSON config vs env vars. No shared standard."
-    },
-    "ST-08_path_safety": {
-      "score": 72,
-      "band": "Healthy",
-      "detail": "Click.Path validation. os.path.abspath normalization. No shared traversal guard."
-    },
-    "ST-09_type_safety": {
-      "score": 55,
-      "band": "Needs Work",
-      "detail": "Type hints in some files. No mypy/pyright/ruff config."
-    },
-    "ST-10_dependency_isolation": {
-      "score": 78,
-      "band": "Healthy",
-      "detail": "Each harness independently installable. Click is universal framework."
-    },
-    "ST-11_error_handling": {
-      "score": 68,
-      "band": "Healthy",
-      "detail": "Backend modules include RuntimeError with install instructions."
-    },
-    "ST-12_registry_quality": {
-      "score": 80,
-      "band": "Excellent",
-      "detail": "33 entries with consistent schema. Categories, install commands, contributor attribution."
-    },
-    "ST-13_methodology_docs": {
-      "score": 90,
-      "band": "Excellent",
-      "detail": "HARNESS.md: 7-phase SOP with code examples. Novel contribution."
-    },
-    "ST-14_scaffolding": {
-      "score": 75,
-      "band": "Healthy",
-      "detail": "skill_generation/ + cli-anything-plugin/skill_generator.py + templates."
-    },
-    "ST-15_monorepo_coordination": {
-      "score": 35,
-      "band": "Needs Work",
-      "detail": "No monorepo tooling. No root test runner. No shared CI matrix."
+      "note": "29 days old, 28K stars, daily commits, community contributions."
     }
   },
-  "summary_bands": {
-    "Security": { "score": 58, "band": "Needs Work" },
-    "Reliability": { "score": 70, "band": "Healthy" },
-    "Maintainability": { "score": 76, "band": "Healthy" },
-    "Documentation": { "score": 82, "band": "Excellent" },
-    "Process": { "score": 48, "band": "Needs Work" },
-    "Velocity": { "score": 95, "band": "Excellent" }
+  "absencePattern": {
+    "type": "none",
+    "description": "No absence patterns detected. Rapidly growing project with active maintenance."
   },
-  "absence_patterns": [
-    {
-      "pattern": "SECURITY_FACADE",
-      "confidence": "Medium",
-      "evidence": "SECURITY.md backed by real code mitigations (0 shell=True, allowlists). Gap is CI enforcement."
-    },
-    {
-      "pattern": "TEST_THEATER",
-      "confidence": "Low",
-      "evidence": "2,707 real test functions. Gap is CI automation, not test quality."
-    }
-  ],
-  "adoption_assessment": {
-    "verdict": "Trial",
-    "verdict_score": 62,
-    "dimensions": {
-      "WR-01_stack_compatibility": {
-        "score": 55,
-        "band": "Needs Work",
-        "detail": "Python ecosystem. Our stack is Node/TypeScript. Individual harnesses installable via pip but not native to our toolchain. Claude Code plugin format (.claude-plugin/) is directly compatible."
-      },
-      "WR-02_integration_complexity": {
-        "score": 70,
-        "band": "Healthy",
-        "detail": "Plugin install is one command. Each harness is self-contained with no cross-dependencies. Claude Code marketplace.json integration is minimal config. Main friction: Python runtime required."
-      },
-      "WR-03_maintenance_burden": {
-        "score": 50,
-        "band": "Needs Work",
-        "detail": "26-day-old project with 1 release. No SemVer stability guarantee. Fast-moving codebase with breaking changes possible. Copy-paste repl_skin.py means updates require 31+ file touches."
-      },
-      "WR-04_lock_in_risk": {
-        "score": 85,
-        "band": "Excellent",
-        "detail": "Apache-2.0 license. No proprietary formats. Harnesses wrap open-source software via subprocess. Data stays local. Easy to fork or replace individual harnesses."
-      },
-      "WR-05_value_to_cost": {
-        "score": 65,
-        "band": "Healthy",
-        "detail": "Unique value: agent-native CLI wrapping methodology (HARNESS.md) is novel. 33 ready-made harnesses. Cost: Python dependency, immature CI/release process, maintenance uncertainty. For methodology extraction: high value, low cost. For ecosystem adoption: moderate value, moderate cost."
-      },
-      "WR-06_ecosystem_maturity": {
-        "score": 45,
-        "band": "Needs Work",
-        "detail": "26 days old. 27.5k stars but only 1 release. No SLA, no LTS, no enterprise adoption visible. Community growing fast but governance lags. HARNESS.md methodology is mature; project infrastructure is not."
-      }
-    },
-    "recommendation": "Trial for Claude Code plugin integration and methodology extraction. Do not adopt as core infrastructure dependency until release cadence and CI mature."
+  "creatorLens": "This repo understands that the next wave of software users will be AI agents, not humans. It provides a systematic methodology (HARNESS.md) for wrapping any desktop application in a CLI that agents can invoke. The 7-phase SOP, SKILL.md generation, and CLI-Hub registry represent a complete ecosystem for agent-native software — directly relevant to JASON-OS's vision of AI-operated workflows.",
+  "scoring": {
+    "adoptionLens": { "verdict": "Trial", "score": 62 },
+    "creatorLens": { "verdict": "Trial", "score": 68 }
   }
 }
