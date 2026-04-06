@@ -1,14 +1,15 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 3.0
+**Document Version:** 4.0
 **Last Updated:** 2026-04-05
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 # Repo Analysis Reference
 
-Dimension catalog, tool stack, output schemas, absence pattern definitions,
-temporal fingerprint specification, scoring bands, and guard rail rules for the
-repo-analysis skill.
+Dimension catalog, tool stack, output schemas, repo type classification, absence
+pattern definitions, temporal fingerprint specification, dual-lens scoring
+bands, Creator View specification, link mining pipeline, cross-repo awareness,
+and guard rail rules for the repo-analysis skill.
 
 ---
 
@@ -197,8 +198,11 @@ diversity). Other dimensions require clone.
 
 ## 3. Output Schemas
 
-Four primary artifacts plus one injectable Markdown summary. All written to
-`.research/repo-analysis/<repo-slug>/`.
+Eight primary artifacts plus one injectable Markdown summary. All written to
+`.research/repo-analysis/<repo-slug>/`. All v2.0 artifacts include a
+`schema_version` field. Files without `schema_version` are implicitly v1.0 and
+will be migrated on re-scan (re-scan IS the migration; old files archived to
+`archive/`).
 
 ### 3.1 `analysis.json`
 
@@ -207,6 +211,7 @@ the Compare resume option.
 
 ```json
 {
+  "schema_version": "2.0",
   "meta": {
     "repo": "OWNER/REPO",
     "url": "https://github.com/OWNER/REPO",
@@ -216,6 +221,9 @@ the Compare resume option.
     "clone_dir": "/tmp/repo-analysis-<slug>/",
     "files_cloned": 796
   },
+  "repo_type": "library|application|curated-list|registry|documentation-hub|monorepo",
+  "repo_type_secondary": "string|null",
+  "ecosystem_tags": ["agent-architecture", "skill-framework"],
   "repo": {
     "description": "string",
     "language": "Python",
@@ -297,23 +305,27 @@ the Compare resume option.
 
 **Field definitions:**
 
-| Field                                | Type   | Description                                                   |
-| ------------------------------------ | ------ | ------------------------------------------------------------- |
-| `meta.repo`                          | string | GitHub `OWNER/REPO` identifier                                |
-| `meta.url`                           | string | Full GitHub URL                                               |
-| `meta.scan_date`                     | string | Date of analysis (YYYY-MM-DD)                                 |
-| `meta.scan_depth`                    | string | Depth tier: `quick`, `standard`, or `deep`                    |
-| `meta.scan_version`                  | string | Skill version used for this analysis                          |
-| `meta.clone_dir`                     | string | Clone location (null for Quick Scan)                          |
-| `meta.files_cloned`                  | number | Number of files in clone (null for Quick Scan)                |
-| `repo.*`                             | object | GitHub metadata (description, language, license, stars, etc.) |
-| `dimensions.*`                       | object | Per-dimension: score (0-100), band, and detail string         |
-| `summary_bands.*`                    | object | 6-dimension summary: Security, Reliability, etc.              |
-| `absence_patterns`                   | array  | Objects with pattern name, confidence, and evidence           |
-| `adoption_assessment`                | object | Whole-repo adoption verdict + WR dimensions (see Sec 1.3)     |
-| `adoption_assessment.verdict`        | string | Adopt / Trial / Extract / Avoid                               |
-| `adoption_assessment.verdict_score`  | number | Weighted average of WR dimensions, 0-100                      |
-| `adoption_assessment.recommendation` | string | One-sentence adoption recommendation                          |
+| Field                                | Type   | Description                                                                                         |
+| ------------------------------------ | ------ | --------------------------------------------------------------------------------------------------- |
+| `schema_version`                     | string | Schema version (`"2.0"`). Absent = v1.0 (legacy)                                                    |
+| `repo_type`                          | string | Primary type: library/application/curated-list/registry/documentation-hub/monorepo (see Section 5b) |
+| `repo_type_secondary`                | string | Secondary type (null if single-type). Informational only                                            |
+| `ecosystem_tags`                     | array  | Lightweight tags for synthesis skill (e.g., `["agent-architecture", "skill-framework"]`)            |
+| `meta.repo`                          | string | GitHub `OWNER/REPO` identifier                                                                      |
+| `meta.url`                           | string | Full GitHub URL                                                                                     |
+| `meta.scan_date`                     | string | Date of analysis (YYYY-MM-DD)                                                                       |
+| `meta.scan_depth`                    | string | Depth tier: `quick`, `standard`, or `deep`                                                          |
+| `meta.scan_version`                  | string | Skill version used for this analysis                                                                |
+| `meta.clone_dir`                     | string | Clone location (null for Quick Scan)                                                                |
+| `meta.files_cloned`                  | number | Number of files in clone (null for Quick Scan)                                                      |
+| `repo.*`                             | object | GitHub metadata (description, language, license, stars, etc.)                                       |
+| `dimensions.*`                       | object | Per-dimension: score (0-100), band, and detail string                                               |
+| `summary_bands.*`                    | object | 6-dimension summary: Security, Reliability, etc.                                                    |
+| `absence_patterns`                   | array  | Objects with pattern name, confidence, and evidence                                                 |
+| `adoption_assessment`                | object | Whole-repo adoption verdict + WR dimensions (see Sec 1.3)                                           |
+| `adoption_assessment.verdict`        | string | Adopt / Trial / Extract / Avoid                                                                     |
+| `adoption_assessment.verdict_score`  | number | Weighted average of WR dimensions, 0-100                                                            |
+| `adoption_assessment.recommendation` | string | One-sentence adoption recommendation                                                                |
 
 **Critical Health Metric:** The minimum score across all 6 summary dimensions. A
 repo with a 90 average but a 15 security score is `Critical` regardless of
@@ -327,6 +339,7 @@ One record per finding. Uses a lightweight analysis-native format. TDMS intake
 
 ```jsonl
 {
+  "schema_version": "2.0",
   "id": "F001",
   "severity": "high|medium|low|info",
   "dimension": "QS-15|ST-01|WR-03",
@@ -340,8 +353,10 @@ One record per finding. Uses a lightweight analysis-native format. TDMS intake
 
 | Field            | Type   | Required | Description                              |
 | ---------------- | ------ | -------- | ---------------------------------------- |
+| `schema_version` | string | Yes      | Schema version (`"2.0"`)                 |
 | `id`             | string | Yes      | Finding ID (F001, F002, etc.)            |
 | `severity`       | string | Yes      | `high`, `medium`, `low`, or `info`       |
+| `category`       | string | No       | Optional: `cautionary` for anti-ideas    |
 | `dimension`      | string | Yes      | Dimension ID (e.g., QS-15, ST-01, WR-03) |
 | `title`          | string | Yes      | Short finding title                      |
 | `detail`         | string | Yes      | Full description with evidence           |
@@ -371,6 +386,7 @@ user acts on candidates.
 
 ```json
 {
+  "schema_version": "2.0",
   "repo": "OWNER/REPO",
   "scan_date": "YYYY-MM-DD",
   "extraction_candidates": [
@@ -384,10 +400,20 @@ user acts on candidates.
       "adoption_readiness": "High|Med|Low",
       "quality_signal": "High|Med|Low",
       "extraction_effort": "E0|E1|E2|E3",
+      "objective_score": 85,
+      "personal_fit_score": 25,
+      "fit_class": "active-sprint|park-for-later|evergreen|not-relevant",
       "notes": "Portability concerns, adaptation requirements, context",
       "status": "identified|selected|extracted|integrated|skipped",
       "decision_date": "ISO8601 or null",
       "decision_notes": "Why this decision was made"
+    }
+  ],
+  "related_repos": [
+    {
+      "url": "https://github.com/owner/repo",
+      "relationship": "inspired-by|uses|similar-to|contrast|extends|referenced-in",
+      "discovery_context": "How this relationship was discovered"
     }
   ]
 }
@@ -395,18 +421,29 @@ user acts on candidates.
 
 **Required fields:**
 
-| Field                | Type   | Description                                            |
-| -------------------- | ------ | ------------------------------------------------------ |
-| `rank`               | number | Priority rank by composite value signal                |
-| `name`               | string | Short descriptive name for the extraction candidate    |
-| `location`           | string | Source file(s) or directory in the analyzed repo       |
-| `description`        | string | What the component/pattern does and why it matters     |
-| `pattern_novelty`    | string | Does this repo do something we do not? High/Med/Low    |
-| `code_portability`   | number | 0-15 score (5-dimension rubric, see Section 6)         |
-| `adoption_readiness` | string | License, deps overlap, stack match: High/Med/Low       |
-| `quality_signal`     | string | Is this pattern better than what we have? High/Med/Low |
-| `extraction_effort`  | string | E0 (copy-paste) through E3 (significant adaptation)    |
-| `notes`              | string | Portability concerns, adaptation requirements, context |
+| Field                | Type   | Description                                                                                                 |
+| -------------------- | ------ | ----------------------------------------------------------------------------------------------------------- |
+| `rank`               | number | Priority rank by composite value signal                                                                     |
+| `name`               | string | Short descriptive name for the extraction candidate                                                         |
+| `location`           | string | Source file(s) or directory in the analyzed repo                                                            |
+| `description`        | string | What the component/pattern does and why it matters                                                          |
+| `pattern_novelty`    | string | Does this repo do something we do not? High/Med/Low                                                         |
+| `code_portability`   | number | 0-15 score (5-dimension rubric, see Section 6)                                                              |
+| `adoption_readiness` | string | License, deps overlap, stack match: High/Med/Low                                                            |
+| `quality_signal`     | string | Is this pattern better than what we have? High/Med/Low                                                      |
+| `extraction_effort`  | string | E0 (copy-paste) through E3 (significant adaptation)                                                         |
+| `objective_score`    | number | Objective brilliance score (0-100). Context-independent                                                     |
+| `personal_fit_score` | number | Personal fit to active projects (0-100). Sprint-dependent                                                   |
+| `fit_class`          | string | Derived: `active-sprint` (fit≥60), `park-for-later` (fit<60, obj≥60), `evergreen` (both≥40), `not-relevant` |
+| `notes`              | string | Portability concerns, adaptation requirements, context                                                      |
+
+**Related repos (discovered during analysis):**
+
+| Field                               | Type   | Description                                                |
+| ----------------------------------- | ------ | ---------------------------------------------------------- |
+| `related_repos[].url`               | string | GitHub URL of related repo                                 |
+| `related_repos[].relationship`      | string | inspired-by/uses/similar-to/contrast/extends/referenced-in |
+| `related_repos[].discovery_context` | string | How this relationship was discovered                       |
 
 **Extraction tracking fields (added during Extract routing flow):**
 
@@ -442,6 +479,7 @@ same repo.
 
 ```jsonl
 {
+  "schema_version": "2.0",
   "analysis_id": "uuid",
   "timestamp": "ISO8601",
   "repo": "github.com/org/repo",
@@ -554,6 +592,7 @@ Append-only log across ALL repos analyzed. One line per extraction decision.
 
 ```jsonl
 {
+  "schema_version": "2.0",
   "repo": "HKUDS/CLI-Anything",
   "candidate": "HARNESS.md Methodology",
   "status": "selected",
@@ -564,15 +603,16 @@ Append-only log across ALL repos analyzed. One line per extraction decision.
 }
 ```
 
-| Field           | Type   | Description                              |
-| --------------- | ------ | ---------------------------------------- |
-| `repo`          | string | Source repo                              |
-| `candidate`     | string | Candidate name from value-map            |
-| `status`        | string | Current status                           |
-| `decision`      | string | extract / skip / defer                   |
-| `decision_date` | string | When the decision was made               |
-| `extracted_to`  | string | Destination path (null if not extracted) |
-| `notes`         | string | Optional context about the candidate     |
+| Field            | Type   | Description                              |
+| ---------------- | ------ | ---------------------------------------- |
+| `schema_version` | string | Schema version (`"2.0"`)                 |
+| `repo`           | string | Source repo                              |
+| `candidate`      | string | Candidate name from value-map            |
+| `status`         | string | Current status                           |
+| `decision`       | string | extract / skip / defer                   |
+| `decision_date`  | string | When the decision was made               |
+| `extracted_to`   | string | Destination path (null if not extracted) |
+| `notes`          | string | Optional context about the candidate     |
 
 #### 3.6.3 `EXTRACTIONS.md` (Human-Readable Summary)
 
@@ -584,7 +624,7 @@ flow. Grouped by status for quick scanning.
 ```markdown
 # Extraction Candidates — Cross-Repo Summary
 
-Generated: 2026-04-03 | Total: 7 candidates across 1 repo
+Generated: 2026-04-05 | Total: 7 candidates across 1 repo
 
 ## Extracted (0)
 
@@ -594,17 +634,118 @@ _None yet._
 
 ### HKUDS/CLI-Anything (7 candidates) -- Verdict: Trial (62)
 
-| Candidate              | Novelty | Effort | Notes                                                       |
-| ---------------------- | ------- | ------ | ----------------------------------------------------------- |
-| HARNESS.md Methodology | High    | E0     | 7-phase SOP for agent-native CLI wrapping.                  |
-| SKILL.md Format        | High    | E0     | AI-discoverable skill definition. Compare against existing. |
+| Candidate              | Novelty | Effort | Fit             | Notes                                                       |
+| ---------------------- | ------- | ------ | --------------- | ----------------------------------------------------------- |
+| HARNESS.md Methodology | High    | E0     | [ACTIVE-SPRINT] | 7-phase SOP for agent-native CLI wrapping.                  |
+| SKILL.md Format        | High    | E0     | [PARK]          | AI-discoverable skill definition. Compare against existing. |
+| Plugin Marketplace     | High    | E2     | [PARK]          | Brilliant but not current sprint.                           |
 
 _(truncated for brevity)_
+
+#### Per-Repo Detail: HKUDS/CLI-Anything
+
+| Candidate              | Novelty | Effort | Obj | Fit | Notes                                       |
+| ---------------------- | ------- | ------ | --- | --- | ------------------------------------------- |
+| HARNESS.md Methodology | High    | E0     | 92  | 78  | Directly applicable to JASON-OS agent work. |
+| SKILL.md Format        | High    | E0     | 88  | 25  | High objective, low fit to current sprint.  |
+| Plugin Marketplace     | High    | E2     | 85  | 30  | Brilliant but not current sprint.           |
 
 ## Skipped (3)
 
 ...
 ```
+
+**Fit badge derivation rules** (see Section 14.7 for full derivation table):
+
+- `personal_fit_score >= 60` --> `[ACTIVE-SPRINT]`
+- `personal_fit_score < 60 AND objective_score >= 60` --> `[PARK]`
+- `objective_score >= 40 AND personal_fit_score >= 40` --> `[EVERGREEN]`
+- Otherwise --> no badge (low value)
+
+### 3.7 `mined-links.jsonl`
+
+**Location:** `.research/repo-analysis/<slug>/mined-links.jsonl`
+
+One record per link extracted during the Link Mining Pipeline (Section 16).
+Produced conditionally when `repo_type` is `curated-list` or `registry`.
+Supports incremental deepening: Depth 0 entries have `confidence: "low"`,
+upgraded to `"high"` after Depth 1 fetching.
+
+```jsonl
+{
+  "schema_version": "2.0",
+  "title": "FastAPI",
+  "url": "https://github.com/tiangolo/fastapi",
+  "category": "Web Frameworks > Python",
+  "source_line": "- [FastAPI](https://github.com/tiangolo/fastapi) - Modern, fast web framework for building APIs with Python.",
+  "description": "Modern, fast web framework for building APIs with Python.",
+  "objective_score": 88,
+  "personal_fit_score": 35,
+  "personal_fit_projects": [
+    "sonash-v0"
+  ],
+  "confidence": "low|high",
+  "depth": 0,
+  "fetch_status": "not_fetched|success|failed|rate_limited",
+  "tags": [
+    "python",
+    "web-framework",
+    "async"
+  ],
+  "notes": "Optional analyst notes"
+}
+```
+
+**Field definitions:**
+
+| Field                   | Type   | Required | Description                                                      |
+| ----------------------- | ------ | -------- | ---------------------------------------------------------------- |
+| `title`                 | string | Yes      | Link title (from markdown text or fetched page title)            |
+| `url`                   | string | Yes      | Target URL                                                       |
+| `category`              | string | Yes      | Category from source repo's taxonomy (heading-based)             |
+| `source_line`           | string | Yes      | Raw markdown line where link was found                           |
+| `description`           | string | Yes      | Description (from markdown context or fetched meta)              |
+| `objective_score`       | number | Yes      | Context-independent quality/relevance score (0-100)              |
+| `personal_fit_score`    | number | Yes      | Fit to active projects (0-100), scored against home context      |
+| `personal_fit_projects` | array  | Yes      | Which active projects this link is relevant to                   |
+| `confidence`            | string | Yes      | `"low"` (Depth 0, metadata only) or `"high"` (Depth 1+, fetched) |
+| `depth`                 | number | Yes      | 0 (parsed), 1 (HEAD+selective fetch), 2 (targeted deep-dive)     |
+| `fetch_status`          | string | Yes      | `not_fetched`, `success`, `failed`, or `rate_limited`            |
+| `tags`                  | array  | Yes      | Descriptive tags for filtering and synthesis                     |
+| `notes`                 | string | No       | Optional analyst notes or context                                |
+
+### 3.8 `reading-chain.jsonl`
+
+**Location:** `.research/repo-analysis/reading-chain.jsonl` (cross-repo, NOT
+per-slug)
+
+Append-only log of relationships between analyzed repos. Populated during Phase
+4 (Creator View) and Phase 6 (Value Map) when cross-repo relationships are
+discovered. Consumed by the `/repo-synthesis` skill for reading chain generation
+and cross-repo knowledge maps.
+
+```jsonl
+{
+  "schema_version": "2.0",
+  "from_repo": "sindresorhus/awesome-nodejs",
+  "to_repo": "tiangolo/fastapi",
+  "relationship": "referenced-in",
+  "discovery_context": "Listed in awesome-nodejs Web Frameworks section",
+  "discovered_during": "sindresorhus/awesome-nodejs scan",
+  "date": "2026-04-05"
+}
+```
+
+**Field definitions:**
+
+| Field               | Type   | Required | Description                                                                 |
+| ------------------- | ------ | -------- | --------------------------------------------------------------------------- |
+| `from_repo`         | string | Yes      | Source repo (`owner/repo` format)                                           |
+| `to_repo`           | string | Yes      | Target repo (`owner/repo` format)                                           |
+| `relationship`      | string | Yes      | `inspired-by`, `uses`, `similar-to`, `contrast`, `extends`, `referenced-in` |
+| `discovery_context` | string | Yes      | How this relationship was discovered                                        |
+| `discovered_during` | string | Yes      | Which repo scan discovered this (`owner/repo scan`)                         |
+| `date`              | string | Yes      | ISO 8601 date of discovery                                                  |
 
 ---
 
@@ -620,21 +761,83 @@ score as the headline.
 | 60-79  | Healthy    | Acceptable; targeted improvements | `Healthy (74)`    |
 | 80-100 | Excellent  | Strong across dimension           | `Excellent (88)`  |
 
-**Band application:** Each of the 6 summary dimensions (Security, Reliability,
-Maintainability, Documentation, Process, Velocity) receives an independent band.
-The overall band is computed from the weighted average. The Critical Health
-Metric (minimum across all dimensions) is a mandatory secondary display.
+**Band application:** Each summary dimension receives an independent band. The
+overall band is computed from the weighted average using the active lens. The
+Critical Health Metric (minimum across all dimensions) is a mandatory secondary
+display.
 
-**Weight defaults** (configurable per analysis):
+### 4.1 Adoption Lens Scoring
 
-| Dimension       | Default Weight | Coverage                                            |
-| --------------- | -------------- | --------------------------------------------------- |
-| Security        | 25%            | SAST, supply chain, secrets, OpenSSF score          |
-| Reliability     | 20%            | Error handling, test coverage, type safety          |
-| Maintainability | 20%            | Complexity, duplication, dead code, naming          |
-| Documentation   | 10%            | README, CONTRIBUTING, API docs, inline comments     |
-| Process         | 15%            | CI/CD, branch protection, merge hygiene             |
-| Velocity        | 10%            | Commit frequency, PR turnaround, contributor health |
+6 dimensions. Used when evaluating a repo as a dependency or integration target.
+
+| Dimension       | Weight | Coverage                                            |
+| --------------- | ------ | --------------------------------------------------- |
+| Security        | 25%    | SAST, supply chain, secrets, OpenSSF score          |
+| Reliability     | 20%    | Error handling, test coverage, type safety          |
+| Maintainability | 20%    | Complexity, duplication, dead code, naming          |
+| Documentation   | 10%    | README, CONTRIBUTING, API docs, inline comments     |
+| Process         | 15%    | CI/CD, branch protection, merge hygiene             |
+| Velocity        | 10%    | Commit frequency, PR turnaround, contributor health |
+
+### 4.2 Creator Lens Scoring
+
+7 dimensions (adds Knowledge). Used when evaluating a repo as a learning source
+or creative reference.
+
+| Dimension       | Weight | Coverage                                   |
+| --------------- | ------ | ------------------------------------------ |
+| Security        | 5%     | Irrelevant for learning                    |
+| Reliability     | 10%    | Nice-to-have                               |
+| Maintainability | 15%    | Clean code easier to learn from            |
+| Documentation   | 25%    | How you learn from a repo                  |
+| Process         | 5%     | CI/CD irrelevant for learning              |
+| Velocity        | 5%     | Active dev nice-to-have                    |
+| Knowledge       | 35%    | KN-01 through KN-05 composite (Section 13) |
+
+### 4.3 Lens Selection Logic
+
+Both lenses are always computed. The primary lens is inferred from `repo_type`
+(Section 5b):
+
+| Repo Type           | Primary Lens |
+| ------------------- | ------------ |
+| `library`           | Adoption     |
+| `application`       | Adoption     |
+| `monorepo`          | Adoption     |
+| `curated-list`      | Creator      |
+| `registry`          | Creator      |
+| `documentation-hub` | Creator      |
+
+User override at scan time: `--lens=adoption|creator`
+
+### 4.4 Verdict Tables
+
+**Adoption lens verdicts:**
+
+| Score | Verdict | Interpretation                                           |
+| ----- | ------- | -------------------------------------------------------- |
+| 75+   | Adopt   | Integrate as-is, benefits clearly outweigh costs         |
+| 55-74 | Trial   | Worth a proof-of-concept, some concerns to address first |
+| 30-54 | Extract | Don't adopt whole -- cherry-pick valuable parts instead  |
+| 0-29  | Avoid   | Costs outweigh benefits, build or find alternatives      |
+
+**Creator lens verdicts:**
+
+| Score | Verdict | Interpretation                            |
+| ----- | ------- | ----------------------------------------- |
+| 80+   | Study   | Deep engagement recommended               |
+| 60-79 | Explore | Worth exploring, selective deep-dives     |
+| 40-59 | Extract | Cherry-pick specific insights or patterns |
+| 0-39  | Note    | Record existence, low learning priority   |
+
+### 4.5 Display Format
+
+Both lenses always shown. Primary lens marked with `[PRIMARY]`.
+
+```
+Adoption Lens: Trial (62) — viable dependency with caveats
+Creator Lens:  Study (85) — deep engagement recommended [PRIMARY]
+```
 
 ---
 
@@ -725,6 +928,98 @@ evidence for each detected pattern in `findings.jsonl`.
 **Display:** Both in-dimension (within the relevant dimension's findings) AND as
 a standalone summary list in `summary.md`. Cross-cutting signals deserve both
 standalone visibility and in-context relevance.
+
+---
+
+## 5b. Repo Type Classification
+
+Classifies the repository into a primary type that drives scoring lens selection
+(Section 4.3), conditional phases (link mining, Section 16), and display format.
+Classification runs during Quick Scan (Phase 0) using API data and is optionally
+refined during Standard mode (Phase 1) with full file access.
+
+### Detection Signal Matrix
+
+Signals are evaluated using GitHub API data (no clone required for Quick Scan).
+
+| Signal                                                             | Source                    | Strength |
+| ------------------------------------------------------------------ | ------------------------- | -------- |
+| README size > 50KB                                                 | Contents API `size` field | Strong   |
+| Code-to-markdown ratio < 0.2                                       | Tree API file extensions  | Strong   |
+| Topics include "awesome"/"list"/"resources"/"curated"/"collection" | REST metadata `topics`    | Strong   |
+| < 20 code files outside docs/scripts/                              | Tree API                  | Moderate |
+| External link density > 5 per KB in README                         | Contents API + parse      | Strong   |
+| Single top-level README + category dirs                            | Tree API                  | Moderate |
+
+### Classification Thresholds
+
+Applied in order. First match wins.
+
+1. **`curated-list`**: 3+ strong signals, OR 2 strong + 1 moderate
+2. **`monorepo`**: Presence of `turbo.json`, `nx.json`, `pnpm-workspace.yaml`,
+   `lerna.json`, or `rush.json`
+3. **`registry`**: Structured data files (JSON/YAML) with URL fields + web
+   frontend (detected from topics or file structure)
+4. **`documentation-hub`**: Code-to-docs ratio > 0.3 but < 0.7, README > 10KB
+5. **`library` vs `application`**: Primary language present, code-to-markdown
+   ratio > 0.7. Distinguish by: CLI entry point or `bin` field in package.json
+   --> `application`; otherwise --> `library`
+6. **Default fallback**: `library`
+
+### Secondary Type
+
+If secondary signals are strong but don't win primary classification, set
+`repo_type_secondary` in `analysis.json`. The secondary type is informational
+only -- it does not drive phase routing or lens selection.
+
+Example: build-your-own-x has primary = `curated-list`, secondary =
+`documentation-hub` (extensive how-to content alongside the link catalog).
+
+### Library vs Application Distinction
+
+For repos classified as code-primary (not curated-list, registry, or
+documentation-hub):
+
+| Signal                                    | Classification |
+| ----------------------------------------- | -------------- |
+| `bin` field in package.json               | `application`  |
+| CLI entry point (main.go, src/cli.ts)     | `application`  |
+| `main` field + no `bin` in package.json   | `library`      |
+| Exported module with API surface          | `library`      |
+| Docker/Kubernetes configs + service entry | `application`  |
+| No clear signal                           | `library`      |
+
+### Monorepo and Registry Detection
+
+**Monorepo markers** (any one sufficient):
+
+- `turbo.json` (Turborepo)
+- `nx.json` (Nx)
+- `pnpm-workspace.yaml` (pnpm workspaces)
+- `rush.json` (Rush)
+- `package.json` with `workspaces` field (npm/Yarn/Bun)
+- `WORKSPACE` or `WORKSPACE.bazel` (Bazel)
+- `Cargo.toml` with `[workspace]` (Rust)
+
+**Registry markers** (2+ required):
+
+- Structured data directory (JSON/YAML files with `url` or `homepage` fields)
+- Web frontend or API serving the data
+- Submission/contribution template referencing data format
+
+### Standard Mode Refinement
+
+After clone (Phase 1), re-evaluate type with full file access. Override Quick
+Scan classification if clone data contradicts API-only assessment. Log any
+classification change in the state file:
+
+```json
+{
+  "repo_type_quick_scan": "library",
+  "repo_type_refined": "documentation-hub",
+  "refinement_reason": "Clone revealed 60% markdown content not visible via Tree API truncation"
+}
+```
 
 ---
 
@@ -1050,7 +1345,7 @@ Compare within segment, not globally.
 
 ---
 
-## 12. Research Index
+## 12b. Research Index
 
 **Location:** `.research/research-index.jsonl`
 
@@ -1127,15 +1422,18 @@ It captures what the repo KNOWS and how it relates to your work.
 
 ### 14.2 Home Repo Context Loading
 
-Before writing any Creator View section, load:
+Before writing any Creator View section, load home context in explicit priority
+order. Higher-priority sources override lower when signals conflict.
 
-**MUST load:**
+**Priority ranking (MUST load all):**
 
-- `CLAUDE.md` — conventions, stack, architecture constraints
-- `ROADMAP.md` — project direction, planned features, vision
-- `SESSION_CONTEXT.md` — current sprint, active work
-- `.claude/skills/` directory listing — active skills inventory
-- Active project memories from MEMORY.md — project initiatives
+1. **`SESSION_CONTEXT.md`** (primary) — current sprint, active work, immediate
+   priorities. This is the primary input for personal fit scoring.
+2. **`ROADMAP.md`** (secondary) — project direction, planned features, vision.
+   Provides medium-term context for fit assessment.
+3. **`CLAUDE.md`** — conventions, stack, architecture constraints
+4. **`.claude/skills/`** directory listing — active skills inventory
+5. **Active project memories from MEMORY.md** — project initiatives, decisions
 
 **MAY load (when comparison requires deeper context):**
 
@@ -1143,12 +1441,13 @@ Before writing any Creator View section, load:
 - Agent definitions for agent-architecture comparison
 - Specific source files when the external repo has a direct equivalent
 
-### 14.3 Section: What This Repo Understands
+### 14.3 Section: What This Repo Understands (+ Blindspots)
 
 Deep analysis of the repo's embedded knowledge. Not WHAT it does (features,
-functionality) — what it KNOWS (mental models, techniques, philosophies).
+functionality) — what it KNOWS (mental models, techniques, philosophies). The
+natural complement: what they DON'T know, haven't solved, or are blind to.
 
-**Prompts to explore:**
+**Knowledge prompts:**
 
 - What problem does this repo solve, and what understanding of that problem does
   it demonstrate?
@@ -1156,6 +1455,12 @@ functionality) — what it KNOWS (mental models, techniques, philosophies).
 - What would a developer learn by studying this codebase that they couldn't
   learn from documentation alone?
 - What methodologies or approaches does this repo embody?
+
+**Blindspot prompts:**
+
+- What problems does this repo NOT solve that it arguably should?
+- What failure modes or edge cases has this repo not anticipated?
+- What domains adjacent to their core work have they not entered?
 
 ### 14.4 Section: What's Relevant To Your Work
 
@@ -1206,6 +1511,49 @@ to gain.
 Added to `value-map.json` alongside pattern candidates. Knowledge candidates use
 extraction effort E0 (read/study) or E1 (experiment/prototype).
 
+**Brilliant-but-off-sprint callout:** After the tiered listing, include a
+dedicated paragraph identifying candidates with high objective score but low
+personal fit. These are "brilliant but off-sprint" -- worth parking, not
+discarding. For each, explain why it scored high objectively and why it doesn't
+fit the current sprint. Frame as "worth parking, not discarding" with specific
+reasoning for why each is high-objective.
+
+**Fit badge derivation (used in value-map.json and EXTRACTIONS.md):**
+
+| Condition                                            | Badge             |
+| ---------------------------------------------------- | ----------------- |
+| `personal_fit_score >= 60`                           | `[ACTIVE-SPRINT]` |
+| `personal_fit_score < 60 AND objective_score >= 60`  | `[PARK]`          |
+| `objective_score >= 40 AND personal_fit_score >= 40` | `[EVERGREEN]`     |
+| Otherwise                                            | (no badge)        |
+
+### 14.8 Section: What's Worth Avoiding
+
+Cautionary learnings and anti-ideas. Not "what's wrong with this repo" (that's
+the Engineer View) — "what patterns, approaches, or decisions from this repo
+should you consciously NOT replicate?"
+
+**Content categories:**
+
+- **Anti-patterns embedded in the codebase or process.** Patterns that work for
+  them but are fundamentally flawed or would fail at different scale.
+- **Cultural or organizational decisions that led to negative outcomes.** How
+  governance, contribution policy, or community management created problems.
+- **Approaches that worked for them but would fail in your context.** Context-
+  dependent solutions that don't transfer.
+- **Cautionary case studies.** Named patterns like CELEBRITY_STAGNATION from
+  public-apis — real examples of failure modes worth remembering.
+
+**Rules:**
+
+- Every anti-idea MUST cite specific evidence from the repo (file, commit,
+  issue, PR, or observable pattern).
+- Findings tagged with `category: "cautionary"` in `findings.jsonl` feed this
+  section.
+- Not a criticism section. Frame as "what to avoid doing yourself" not "what
+  they did wrong."
+- Only when warranted. If no cautionary learnings exist, say so explicitly.
+
 ---
 
 ## 15. Standard/Deep Process Details
@@ -1253,10 +1601,147 @@ Max 4 concurrent. See Section 10 for agent allocation.
 
 ---
 
-## 16. Version History
+## 16. Link Mining Pipeline
+
+Conditional phase (Phase 4b in SKILL.md) that runs only when `repo_type` is
+`curated-list` or `registry`. Extracts, scores, and optionally fetches links
+found in the repository's markdown files. Output: `mined-links.jsonl` (Section
+3.7).
+
+### 16.1 Phase 4b Process (10 Steps)
+
+```
+4b.1  Parse markdown structure --> extract all links with context
+4b.2  Categorize links using source repo's own category structure
+4b.3  Score at Depth 0 (category match + keyword overlap with home context)
+4b.4  Write mined-links.jsonl with confidence: "low"
+4b.5  Interactive gate: "[N] links extracted. Fetch and verify? ~[M] min. [y/N]"
+4b.6  If yes --> Depth 1: HEAD-first (5 req/sec), selective full fetch (1 req/sec)
+4b.7  Update mined-links.jsonl: confidence --> "high", fetch_status updated
+4b.8  Present top-N by personal_fit_score with [ACTIVE-SPRINT]/[PARK] badges
+4b.9  Interactive gate: "Targeted deep-dive on specific links? [select/N]"
+4b.10 If yes --> Depth 2: full fetch + analysis on selected links only
+```
+
+### 16.2 Markdown Parsing Rules
+
+Three link formats detected, in order of prevalence in curated lists:
+
+**List format** (most common in awesome-lists):
+
+```markdown
+- [Title](URL) - Description
+- [Title](URL) -- Description
+```
+
+**Table format:**
+
+```markdown
+| Name    | URL                                 | Description          |
+| ------- | ----------------------------------- | -------------------- |
+| FastAPI | https://github.com/tiangolo/fastapi | Modern web framework |
+```
+
+**Heading-based categories:**
+
+```markdown
+## Category Name
+
+### Subcategory Name
+
+- [Title](URL) - Description
+```
+
+The source repo's category taxonomy is preserved in the `category` field of
+`mined-links.jsonl`. Heading hierarchy maps to category path (e.g.,
+`"Web Frameworks > Python"`).
+
+### 16.3 Depth 1 -- HEAD-First Strategy
+
+Designed for efficiency when processing 500-1000+ links from large curated
+lists. Estimated time: ~5 minutes for 850 links.
+
+1. **Group links by domain.** Links to the same domain share rate limit budget.
+2. **HEAD request at 5 req/sec**, max 5 concurrent per domain. Record:
+   - HTTP status code
+   - Content-Type header
+   - Content-Length header
+   - Title from headers (if available)
+3. **Filter for full fetch.** Only full-fetch links where:
+   - Depth 0 `personal_fit_score >= 40`, OR
+   - Depth 0 `objective_score >= 70`
+4. **Full fetch filtered links at 1 req/sec.** Extract:
+   - Page title (from `<title>` tag)
+   - Meta description
+   - Open Graph tags (`og:title`, `og:description`, `og:image`)
+   - First 500 characters of body text
+5. **Re-score with enriched data.** Update `confidence: "high"` in
+   `mined-links.jsonl`.
+
+### 16.4 Depth 2 -- Targeted Deep-Dive
+
+User selects specific links from Depth 1 results. For each selected link:
+
+1. Full page fetch and analysis
+2. Follow internal links one level (links within the same domain)
+3. Write enriched findings to `mined-links.jsonl` with `depth: 2`
+
+### 16.5 Home Context for Link Scoring
+
+Same loading order as Creator View (Section 14.2):
+
+1. `SESSION_CONTEXT.md` (primary) -- active sprint items populate
+   `personal_fit_projects[]`
+2. `ROADMAP.md` (secondary) -- project direction for medium-term relevance
+3. `CLAUDE.md` -- stack constraints for compatibility filtering
+
+---
+
+## 17. Cross-Repo Awareness
+
+Lightweight cross-referencing during per-repo analysis. Not full synthesis
+(that's `/repo-synthesis`) -- just awareness of what's already been analyzed and
+how repos relate.
+
+### 17.1 During Phase 4 (Creator View)
+
+1. Check `.research/repo-analysis/*/value-map.json` for existing analyses
+2. If matches found (similar `ecosystem_tags`, overlapping candidates):
+   - Add cross-reference notes in Creator View Section 2 (What's Relevant)
+   - Example: "This repo's rate limiter pattern is similar to what you found in
+     fastapi/fastapi (analyzed 2026-03-15). Their approach differs in..."
+3. Populate `related_repos[]` in `value-map.json` for any relationships
+   discovered
+
+### 17.2 During Phase 6 (Value Map Generation)
+
+1. Append to `.research/repo-analysis/reading-chain.jsonl` (Section 3.8) for any
+   repo relationships discovered during analysis
+2. Check `reading-chain.jsonl` for existing chains that this repo extends
+3. If this repo was referenced by a previously-analyzed repo, note the
+   back-reference
+
+### 17.3 Synthesis Auto-Offer
+
+After analysis completion, if 3+ repos have been analyzed:
+
+```
+"You've analyzed [N] repos. Cross-repo synthesis available via /repo-synthesis.
+Run now? [y/N]"
+```
+
+Check: `ls .research/repo-analysis/*/analysis.json | wc -l >= 3`
+
+---
+
+## 18. Version History
 
 | Version | Date       | Description                                         |
 | ------- | ---------- | --------------------------------------------------- |
+| 4.0     | 2026-04-05 | Creator View v2: dual scoring lens, 6-section CV,   |
+|         |            | repo type classification, link mining pipeline,     |
+|         |            | fit separation, anti-ideas, cross-repo awareness,   |
+|         |            | reading chain. 30-decision deep-plan.               |
 | 3.0     | 2026-04-03 | Dual-lens rewrite: Creator View + Engineer View.    |
 |         |            | Knowledge dimensions (KN-01-05). No silent skips.   |
 |         |            | Inline analysis for small repos. Repomix mandatory. |

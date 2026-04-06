@@ -9,8 +9,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.0
-**Last Updated:** 2026-04-03
+**Document Version:** 4.0
+**Last Updated:** 2026-04-05
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -58,7 +58,8 @@ fitness. Both views are always produced; Creator View comes first.
 
 **Argument:** `/repo-analysis <github-url>`
 
-**Flags:** `--depth=quick` (default) | `--depth=standard` | `--depth=deep`
+**Flags:** `--depth=quick` (default) | `--depth=standard` | `--depth=deep` |
+`--lens=adoption|creator` (override auto-detected primary lens)
 
 **Output:** `.research/repo-analysis/<repo-slug>/` — analysis.json,
 findings.jsonl, value-map.json, trends.jsonl, summary.md, repomix-output.txt
@@ -76,7 +77,8 @@ PHASE 1    Clone+Repomix  -> Blobless clone, generate repomix IMMEDIATELY, verif
 PHASE 2    Dimension Wave -> Inline (<20 files) or agents (large repos)
 PHASE 3    History Wave   -> 12-month temporal analysis (Deep only)
 PHASE 4    Creator View   -> Load home context, compare, challenge, knowledge map
-PHASE 5    Engineer View  -> Merge dimensions, compute bands, adoption assessment
+PHASE 4b   Link Mining    -> Parse, score, fetch links (curated-list/registry only)
+PHASE 5    Engineer View  -> Merge dimensions, compute bands, dual-lens scoring
 PHASE 6    Value Map      -> Pattern + knowledge candidates ranked
 ROUTING    Menu           -> Extract | TDMS | Deep-plan | Memory | Adopt | Done
 ```
@@ -100,7 +102,8 @@ teaser, not the full Creator View — enough to judge whether Standard/Deep is
 worth the time.
 
 **Interactive gate:** "Quick Scan complete. [health bands]. Run Standard/Deep
-for full Creator + Engineer analysis? [y/N]"
+for full Creator + Engineer analysis? [y/N]" For `curated-list` repos: enriched
+gate showing link count and link mining option. See REFERENCE.md Section 16.
 
 ---
 
@@ -158,45 +161,53 @@ Load before writing Creator View — these enable direct comparison:
 
 MAY load additional context when comparison requires deeper understanding.
 
-**Creator View sections (MUST produce all 5):**
+**Creator View sections (MUST produce all 6):**
 
-### 1. What This Repo Understands
+### 1. What This Repo Understands (+ Blindspots)
 
 Deep, conversational analysis of the repo's knowledge, methodology, and
-insights. Not what it DOES (that's the Engineer View) — what it KNOWS. What
-mental models, techniques, or philosophies are embedded in the code and docs?
+insights. Not what it DOES (that's the Engineer View) — what it KNOWS. Includes
+blindspot analysis: what they DON'T know, problems they didn't solve, domains
+they didn't enter. Contrast strengthens both halves.
 
 ### 2. What's Relevant To Your Work
 
 Direct comparison to home repo. "They do X, you do Y." Reference specific files,
-skills, or approaches in your codebase. Connect to active projects (JASON-OS,
-current sprint work).
+skills, or approaches in your codebase. Connect to active projects.
 
 ### 3. Where Your Approach Differs
 
-Classify each meaningful difference as:
-
-- **Ahead:** You've already solved this better than they have.
-- **Different:** Valid alternative approach — neither is wrong.
-- **Behind:** They've figured out something you haven't.
+Classify each meaningful difference as **Ahead**, **Different**, or **Behind**.
 
 ### 4. The Challenge
 
-Opinionated. "THE thing from this repo you should seriously consider." Not
-neutral observations — a specific recommendation with reasoning. Only when
-warranted. If nothing genuinely challenges your approach, say so: "No
-significant challenges to current approach identified."
+Opinionated. "THE thing from this repo you should seriously consider." If
+nothing genuinely challenges your approach, say so explicitly.
 
 ### 5. Knowledge Candidates
 
-What could you LEARN from deeper engagement with this repo? Not code to extract
-— understanding to gain. Tiered by relevance:
+What could you LEARN from deeper engagement? Tiered: Tier 1 (active projects),
+Tier 2 (systems understanding), Tier 3 (lower priority). Added to
+`value-map.json` alongside pattern candidates.
 
-- **Tier 1:** Directly relevant to active projects
-- **Tier 2:** Deepens systems understanding
-- **Tier 3:** Interesting but lower priority
+### 6. What's Worth Avoiding
 
-These are added to `value-map.json` alongside pattern candidates.
+Anti-ideas and cautionary learnings. Not "what's wrong with this repo" — "what
+patterns or decisions should you consciously NOT replicate?" Each anti-idea
+cites specific evidence. See REFERENCE.md Section 14.8.
+
+Check existing analyses in `.research/repo-analysis/` for cross-references.
+
+---
+
+## Link Mining (Phase 4b — curated-list/registry only)
+
+Conditional on `repo_type` being `curated-list` or `registry`. Progressive
+depth: Depth 0 (parse markdown, score against home context), Depth 1 (HEAD-first
+fetch, interactive gate), Depth 2 (targeted deep-dive on selected links). Output
+to `mined-links.jsonl`. See REFERENCE.md Section 16 for full spec: markdown
+parsing rules, rate limiting (HEAD at 5 req/sec, full fetch at 1 req/sec),
+scoring logic, and interactive gates.
 
 ---
 
@@ -208,6 +219,10 @@ pattern definitions.
 
 6 summary dimensions: Security, Reliability, Maintainability, Documentation,
 Process, Velocity. Adoption assessment: Adopt/Trial/Extract/Avoid.
+
+Two scoring lenses always computed: adoption (default for library/application)
+and creator (default for curated-list/documentation-hub). Both shown, primary
+marked. Override with `--lens`. See REFERENCE.md Section 4.
 
 ---
 
@@ -221,21 +236,26 @@ Generate `value-map.json` with two candidate types:
 Both use the same ranking fields (novelty, effort, relevance). Knowledge
 candidates use extraction effort E0-E1 (reading/studying, not porting code).
 
+Append discovered repo relationships to
+`.research/repo-analysis/reading-chain.jsonl`. Populate `related_repos[]` in
+value-map.json for any repos referenced during analysis.
+
 ---
 
 ## Routing Menu
 
-Presented after Standard or Deep. 7 options:
+Presented after Standard or Deep. 8 options:
 
-| Option                  | Action                                           |
-| ----------------------- | ------------------------------------------------ |
-| **1. Extract value**    | Load repomix + value-map. Present candidates.    |
-| **2. Send to TDMS**     | Transform findings to TDMS format. Opt-in only.  |
-| **3. Deep-plan this**   | Inject analysis as research context.             |
-| **4. Save to memory**   | Persist key findings as project memory.          |
-| **5. Adoption verdict** | Full WR-01 through WR-06 assessment.             |
-| **6. Explore insights** | Deeper conversation about Creator View findings. |
-| **7. Done**             | Cleanup, confirm artifacts, exit.                |
+| Option                      | Action                                           |
+| --------------------------- | ------------------------------------------------ |
+| **1. Extract value**        | Load repomix + value-map. Present candidates.    |
+| **2. Send to TDMS**         | Transform findings to TDMS format. Opt-in only.  |
+| **3. Deep-plan this**       | Inject analysis as research context.             |
+| **4. Save to memory**       | Persist key findings as project memory.          |
+| **5. Adoption verdict**     | Full WR-01 through WR-06 assessment.             |
+| **6. Explore insights**     | Deeper conversation about Creator View findings. |
+| **7. Done**                 | Cleanup, confirm artifacts, exit.                |
+| **8. Cross-repo synthesis** | If 3+ repos analyzed, offer /repo-synthesis.     |
 
 ---
 
@@ -271,4 +291,6 @@ After routing: "Any observations about the analysis quality or process?"
 
 ---
 
-_Version history moved to REFERENCE.md Section 10._
+_v4.0 | 2026-04-05 | Creator View v2: dual lens, 6 sections, link mining, fit
+separation, repo type classification. See REFERENCE.md v4.0. Prior history in
+REFERENCE.md Section 10._
