@@ -2308,7 +2308,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-05    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-06    |
 
 ### scripts (Tier 4)
 
