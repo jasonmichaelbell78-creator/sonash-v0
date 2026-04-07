@@ -1,0 +1,9 @@
+{"category":"internal_docs","item":"CI workflows (9 files)","status":"partially_read","note":"claude.yml read. ci.yml, codeql-analysis.yml, release.yml, partition-benchmark.yaml not read. CI architecture may inform T28 testing strategy but lower priority than extraction patterns"}
+{"category":"internal_docs","item":"environment.yml (conda config)","status":"not_read","note":"Conda environment definition. Low relevance — T28 is TypeScript-based"}
+{"category":"internal_docs","item":".github/actions/ (custom actions)","status":"not_read","note":"Custom GitHub Actions. May contain reusable CI patterns"}
+{"category":"referenced_links","item":"docs.unstructured.io (external docs site)","status":"not_fetched","note":"Comprehensive external documentation. Not fetched — would require web browsing. Category-level assessment from README sufficient for T28 architectural reference"}
+{"category":"referenced_links","item":"unstructured-ingest repo","status":"not_analyzed","note":"40+ connectors. Queued implicitly via T28 plan but not as a standalone repo analysis. High relevance for T28 connector layer"}
+{"category":"referenced_links","item":"unstructured-inference repo","status":"not_analyzed","note":"ML models for document layout detection. Medium relevance for T28 — only if processing complex PDFs"}
+{"category":"cross_repo","item":"Claude Code CI integration","status":"read","note":"They use claude-code-action@beta in CI for @claude mentions on issues/PRs. Interesting adoption signal but not directly relevant to T28 extraction patterns"}
+{"category":"anomalies","item":"discord-test/ directory in root","status":"not_read","note":"Unusual root-level directory. Likely Discord bot testing artifacts"}
+{"category":"anomalies","item":"typings/ directory","status":"not_read","note":"Type stubs directory. May contain custom type definitions for untyped dependencies"}

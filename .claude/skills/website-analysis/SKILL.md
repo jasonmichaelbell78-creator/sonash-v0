@@ -236,8 +236,8 @@ Readiness
 
 After Standard/Deep, present:
 
-1. **Extract knowledge** — pick from value-map, write extraction-journal.jsonl,
-   regenerate EXTRACTIONS.md
+1. **Extract knowledge** — pick from value-map, write
+   `.research/extraction-journal.jsonl`, regenerate `.research/EXTRACTIONS.md`
 2. **Start Expedition** — launch Expedition mode from analyzed page
 3. **Deep-plan this** — inject analysis.json + SITE-ANALYSIS.md as
    `## Research Context` in deep-plan DIAGNOSIS.md

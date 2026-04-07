@@ -633,7 +633,7 @@ Written when user acts on a candidate in the Extract routing flow.
 Append-only log across ALL analyzed entities (repos and websites). One line per
 extraction decision. Uses unified v2.0 schema shared with website-analysis.
 Legacy files at `.research/repo-analysis/extraction-journal.jsonl` have been
-migrated to the canonical location.
+removed. All data lives at the canonical location only.
 
 ```jsonl
 {
@@ -671,8 +671,8 @@ migrated to the canonical location.
 
 #### 3.6.3 `EXTRACTIONS.md` (Human-Readable Summary)
 
-**Location:** `.research/EXTRACTIONS.md` (canonical root path). Legacy files at
-`.research/repo-analysis/EXTRACTIONS.md` remain valid.
+**Location:** `.research/EXTRACTIONS.md` (canonical root path only). Legacy
+files at `.research/repo-analysis/EXTRACTIONS.md` have been removed.
 
 Auto-regenerated from `extraction-journal.jsonl` after each Extract routing
 flow. Grouped by status for quick scanning.

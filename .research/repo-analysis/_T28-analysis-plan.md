@@ -48,30 +48,30 @@ Output: `.research/repo-analysis/_gap-agent-{cluster}.md`
 
 ### Cluster A: Multi-format extraction (architectural references)
 
-| #   | Repo                                             | Depth       | Status  |
-| --- | ------------------------------------------------ | ----------- | ------- |
-| 1   | `unstructured-io/unstructured`                   | QS→Standard | pending |
-| 2   | `DS4SD/docling`                                  | QS→triage   | pending |
-| 3   | `jina-ai/reader`                                 | QS→triage   | pending |
-|     | **Gap agent A:** multi-format normalization gaps | background  | pending |
+| #   | Repo                                             | Depth      | Status   |
+| --- | ------------------------------------------------ | ---------- | -------- |
+| 1   | `unstructured-io/unstructured`                   | Standard   | **done** |
+| 2   | `DS4SD/docling`                                  | Standard   | **done** |
+| 3   | `jina-ai/reader`                                 | QS only    | **done** |
+|     | **Gap agent A:** multi-format normalization gaps | background | **done** |
 
 ### Cluster B: PDF/document + image/OCR
 
-| #   | Repo                                            | Depth      | Status  |
-| --- | ----------------------------------------------- | ---------- | ------- |
-| 4   | `VikParuchuri/marker`                           | QS→triage  | pending |
-| 5   | `VikParuchuri/surya`                            | QS→triage  | pending |
-| 10  | `tesseract-ocr/tesseract`                       | QS→triage  | pending |
-| 11  | `opendatalab/MinerU`                            | QS→triage  | pending |
-|     | **Gap agent B:** document/image extraction gaps | background | pending |
+| #   | Repo                                            | Depth      | Status   |
+| --- | ----------------------------------------------- | ---------- | -------- |
+| 4   | `VikParuchuri/marker`                           | QS only    | **done** |
+| 5   | `VikParuchuri/surya`                            | QS only    | **done** |
+| 10  | `tesseract-ocr/tesseract`                       | QS only    | **done** |
+| 11  | `opendatalab/MinerU`                            | QS only    | **done** |
+|     | **Gap agent B:** document/image extraction gaps | background | **done** |
 
 ### Cluster C: Web crawling
 
-| #   | Repo                                      | Depth      | Status  |
-| --- | ----------------------------------------- | ---------- | ------- |
-| 6   | `mendableai/firecrawl`                    | QS→triage  | pending |
-| 7   | `unclecode/crawl4ai`                      | QS→triage  | pending |
-|     | **Gap agent C:** web crawling for AI gaps | background | pending |
+| #   | Repo                                      | Depth      | Status   |
+| --- | ----------------------------------------- | ---------- | -------- |
+| 6   | `mendableai/firecrawl`                    | QS only    | **done** |
+| 7   | `unclecode/crawl4ai`                      | QS only    | **done** |
+|     | **Gap agent C:** web crawling for AI gaps | background | **done** |
 
 ### Cluster D: Audio/podcast + universal download
 
@@ -83,24 +83,24 @@ Output: `.research/repo-analysis/_gap-agent-{cluster}.md`
 
 ### Cluster E: Wiki + MCP + API
 
-| #   | Repo                                                | Depth      | Status  |
-| --- | --------------------------------------------------- | ---------- | ------- |
-| 12  | `outline/outline`                                   | QS→triage  | pending |
-| 13  | `tobi/qmd`                                          | QS→triage  | pending |
-| 14  | `modelcontextprotocol/servers`                      | QS→triage  | pending |
-| 15  | `punkpeye/awesome-mcp-servers`                      | QS→triage  | pending |
-| 16  | `swagger-api/swagger-parser`                        | QS→triage  | pending |
-|     | **Gap agent E:** structured content extraction gaps | background | pending |
+| #   | Repo                                                | Depth      | Status   |
+| --- | --------------------------------------------------- | ---------- | -------- |
+| 12  | `outline/outline`                                   | QS only    | **done** |
+| 13  | `tobi/qmd`                                          | QS only    | **done** |
+| 14  | `modelcontextprotocol/servers`                      | skipped    | **done** |
+| 15  | `punkpeye/awesome-mcp-servers`                      | skipped    | **done** |
+| 16  | `swagger-api/swagger-parser`                        | skipped    | **done** |
+|     | **Gap agent E:** structured content extraction gaps | merged E+F | pending  |
 
 ### Cluster F: Chat/forum + social media + CLI
 
-| #   | Repo                                           | Depth      | Status  |
-| --- | ---------------------------------------------- | ---------- | ------- |
-| 17  | `ArchiveBox/ArchiveBox`                        | QS→triage  | pending |
-| 18  | `zedeus/nitter`                                | QS→triage  | pending |
-| 19  | `JustAnotherArchivist/snscrape`                | QS→triage  | pending |
-| 20  | `tldr-pages/tldr`                              | QS→triage  | pending |
-|     | **Gap agent F:** ephemeral/social content gaps | background | pending |
+| #   | Repo                                         | Depth   | Status   |
+| --- | -------------------------------------------- | ------- | -------- |
+| 17  | `ArchiveBox/ArchiveBox`                      | QS only | **done** |
+| 18  | `zedeus/nitter`                              | QS only | **done** |
+| 19  | `JustAnotherArchivist/snscrape`              | skipped | **done** |
+| 20  | `tldr-pages/tldr`                            | skipped | **done** |
+|     | **Gap agent E+F:** wiki/social/archival gaps | merged  | **done** |
 
 ### Back-end pass
 

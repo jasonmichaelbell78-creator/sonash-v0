@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "zedeus/nitter",
+  "url": "https://github.com/zedeus/nitter",
+  "analyzedAt": "2026-04-07T17:15:00Z",
+  "depth": "quick",
+  "repoType": "application",
+  "repoSubtype": "social-media-proxy",
+  "metadata": {
+    "stars": 12717,
+    "language": "Nim",
+    "license": "AGPL-3.0",
+    "lastPush": "2026-03-31T05:36:07Z",
+    "archived": false,
+    "fork": false
+  },
+  "summaryBands": {
+    "security": { "band": "B", "score": 72 },
+    "reliability": { "band": "B", "score": 68 },
+    "maintainability": { "band": "B", "score": 70 },
+    "documentation": { "band": "B", "score": 72 },
+    "process": { "band": "B", "score": 65 },
+    "velocity": { "band": "B", "score": 65 }
+  },
+  "creatorLens": "Nitter teaches the METHODOLOGY of social media extraction without official API access. Key pattern: uses Twitter's unofficial API (no dev account), requires session tokens from real accounts. All requests proxy through backend — client never talks to Twitter. RSS feed generation from Twitter timelines. The methodology lesson for T28: social media extraction requires (1) authenticated session management, (2) proxy architecture (requests go through your backend), (3) constant adaptation (Twitter removed previous methods, now requires real accounts). This is adversarial extraction — the platform actively fights you.",
+  "context": {
+    "t28Relevance": "Social media extraction methodology: session token auth, proxy architecture, adversarial platform adaptation. RSS feed generation from social timelines.",
+    "cluster": "F",
+    "notablePatterns": [
+      "Unofficial API usage with session tokens (no dev account)",
+      "Proxy architecture: all requests through backend, client never contacts platform",
+      "RSS feed generation from social media timelines",
+      "Constant adaptation required: Twitter actively removes access methods",
+      "Privacy-first: prevents IP tracking and JavaScript fingerprinting",
+      "15x lighter than native Twitter, 2-4x faster page loads"
+    ]
+  }
+}

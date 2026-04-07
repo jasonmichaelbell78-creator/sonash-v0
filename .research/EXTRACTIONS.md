@@ -2,7 +2,7 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 142 candidates **By decision:** defer: 119,
+**Schema version:** 2.0 | **Total:** 168 candidates **By decision:** defer: 145,
 investigate: 2, extract: 20, skip: 1
 
 ---
@@ -228,3 +228,39 @@ investigate: 2, extract: 20, skip: 1
 | 44-site supported platform catalog     | knowledge | defer    | 2026-04-07 | medium  | E0     | medium    | -            | YouTube, TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, +30 more. T27 scope ref.           |
 | Per-site CI workflow pattern           | pattern   | defer    | 2026-04-07 | high    | E1     | medium    | -            | 46 GitHub Actions workflows — one per site. Remarkable CI for multi-platform tools.                |
 | lux CLI as video acquisition tool      | tool      | defer    | 2026-04-07 | medium  | E0     | medium    | -            | go install lux. Downloads video from 44 sites. T27 Layer 0 for non-YouTube platforms.              |
+
+## unstructured-io/unstructured (repo)
+
+| Candidate                                       | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                   |
+| ----------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------- |
+| Auto-routing via type detection                 | pattern      | defer    | 2026-04-07 | high    | E2     | high      | -            | partition() auto-detects file type via libmagic, routes to format-specific partitioner. |
+| Self-describing FileType registry               | pattern      | defer    | 2026-04-07 | high    | E2     | high      | -            | Enum declaring deps, extras, MIME types, extensions. Adding format = 1 enum member.     |
+| Strategy fallback chain                         | pattern      | defer    | 2026-04-07 | medium  | E1     | high      | -            | AUTO→HI_RES→OCR_ONLY→FAST with dependency checking and graceful degradation.            |
+| Graceful dependency checking                    | pattern      | defer    | 2026-04-07 | medium  | E1     | high      | -            | dependency_exists() runtime check + log warning + fallback.                             |
+| Golden-file snapshot testing                    | pattern      | defer    | 2026-04-07 | medium  | E2     | medium    | -            | 40+ connector types tested via expected markdown output comparison.                     |
+| Element type hierarchy with metadata            | knowledge    | defer    | 2026-04-07 | medium  | E1     | high      | -            | Dataclass elements with coordinates, data source provenance, permissions.               |
+| Chunking with table isolation                   | knowledge    | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Tables isolated from text, headers carried across continuation chunks.                  |
+| Text cleaning pipeline                          | knowledge    | defer    | 2026-04-07 | low     | E0     | medium    | -            | Bullet normalization, ligature replacement, whitespace cleanup.                         |
+| S3-backed performance benchmarking              | knowledge    | defer    | 2026-04-07 | medium  | E1     | low       | -            | Benchmark results tagged with architecture/instance/hash.                               |
+| unstructured-ingest connector ecosystem         | content      | defer    | 2026-04-07 | high    | E1     | high      | -            | 40+ source connectors. T28 connector layer reference.                                   |
+| Don't replicate ontology V2                     | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Pydantic HTML intermediate repr acknowledged as over-engineered by team.                |
+| Don't build per-format parsers in TypeScript    | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 30+ partitioners = years of edge cases. Delegate parsing, focus on orchestration.       |
+| Don't fragment extraction+analysis across repos | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Embedding moved to unstructured-ingest, fragmenting DX. Keep T28 unified.               |
+
+## DS4SD/docling (repo)
+
+| Candidate                                         | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                    |
+| ------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ---------------------------------------------------------------------------------------- |
+| DoclingDocument tree structure                    | knowledge    | defer    | 2026-04-07 | high    | E1     | high      | -            | Pydantic tree-structured unified doc repr. Body/furniture, reading order, JSON pointers. |
+| Backend + Pipeline separation pattern             | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | Backends parse formats, pipelines orchestrate stages. T28 separation reference.          |
+| Plugin system via pluggy                          | pattern      | defer    | 2026-04-07 | high    | E2     | high      | -            | Third-party extensibility via setuptools entrypoints.                                    |
+| docling-mcp as extraction backend                 | content      | defer    | 2026-04-07 | high    | E1     | high      | -            | MCP server wrapping docling conversion. T28 document extraction backend.                 |
+| ASR pipeline → unified output                     | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Whisper Turbo → DoclingDocument. Same output as PDF/DOCX.                                |
+| Use docling instead of building extractors        | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Delegate document extraction to docling via MCP.                                         |
+| Serializer hierarchy pattern                      | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | BaseDocSerializer → per-format serializers.                                              |
+| Enrichment pipeline (toggleable)                  | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Optional post-processing: code, formula, picture enrichment.                             |
+| Thread-safe pipeline design                       | knowledge    | defer    | 2026-04-07 | medium  | E0     | low       | -            | Per-run isolation, bounded queues, back-pressure.                                        |
+| InputFormat enum (17 types)                       | knowledge    | defer    | 2026-04-07 | low     | E0     | medium    | -            | Compare with unstructured FileType. Simpler, paired with FormatOption.                   |
+| Don't replicate multi-package split prematurely   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 5 packages for 57K-star library. T28 has one user — start monolithic.                    |
+| Don't build plugin system before you have plugins | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Build hardcoded extractors first, plugins later.                                         |
+| Don't adopt DoclingDocument wholesale             | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Optimized for single-doc. T28 needs cross-source analysis schema.                        |
