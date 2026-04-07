@@ -49,3 +49,10 @@
 {"timestamp":"2026-04-06T18:30:50.477Z","check":"doc-header","reason":"Automated session-end commit","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
 {"timestamp":"2026-04-06T18:30:57.725Z","check":"doc-header","reason":"automated session-end commit  only SESSION_CONTEXT.md","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
 {"timestamp":"2026-04-06T18:30:58.205Z","check":"doc-index","reason":"automated session-end commit  only SESSION_CONTEXT.md","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
+{"timestamp":"2026-04-07T18:34:33.827Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip to unblock learning-router fix","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
+{"timestamp":"2026-04-07T18:36:21.786Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
+{"timestamp":"2026-04-07T18:36:37.684Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
+{"timestamp":"2026-04-07T18:38:15.017Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
+{"timestamp":"2026-04-07T18:42:59.328Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
+{"timestamp":"2026-04-07T18:43:20.784Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
+{"timestamp":"2026-04-07T18:46:09.965Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}

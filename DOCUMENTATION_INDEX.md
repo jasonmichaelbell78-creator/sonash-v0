@@ -2056,9 +2056,9 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                                   | Description | References | Last Modified |
-| -------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Brainstorm: Learning Analysis](.research/learning-analysis/BRAINSTORM.md) | -           | ↓0 ↑0      | 2026-04-05    |
+| Document                                                                                   | Description | References | Last Modified |
+| ------------------------------------------------------------------------------------------ | ----------- | ---------- | ------------- |
+| [Brainstorm: Behavioral Compliance Measurement](.research/learning-analysis/BRAINSTORM.md) | -           | ↓0 ↑0      | 2026-04-07    |
 
 ### .research > learning-system-effectiveness (Tier 4)
 
@@ -3545,7 +3545,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Ruleset Overlap/Conflict Analysis and Optimal Consolidated Configuration](.research/github-health/findings/D9-rulesets.md)
 - [V2: API & Configuration Verification](.research/github-health/findings/V2-api-config.md)
 - [V3: Skill Design, Metrics, and Integration Verification](.research/github-health/findings/V3-skill-metrics.md)
-- [Brainstorm: Learning Analysis](.research/learning-analysis/BRAINSTORM.md)
+- [Brainstorm: Behavioral Compliance Measurement](.research/learning-analysis/BRAINSTORM.md)
 - [Research Report: Learning System Effectiveness in AI-Directed Development](.research/learning-system-effectiveness/RESEARCH_OUTPUT.md)
 - [Findings: Knowledge Management Theory Applied to AI-Directed Development](.research/learning-system-effectiveness/findings/D10-km-theory.md)
 - [Findings: Case Studies of Teams Measuring and Improving Learning/Quality Systems](.research/learning-system-effectiveness/findings/D11-case-studies.md)
@@ -4675,7 +4675,7 @@ Documents with no inbound links (not referenced by any other document):
 | 874  | [.research/github-health/RESEARCH_OUTPUT.md](.research/github-health/RESEARCH_OUTPUT.md)                                                                                                                                   | GitHub Health Skill — Research Report                                                                                                    | 4    | ACTIVE                                                                   |
 | 875  | [.research/github-health/RESEARCH_PLAN.md](.research/github-health/RESEARCH_PLAN.md)                                                                                                                                       | Research Plan: GitHub Health Skill                                                                                                       | 4    | ACTIVE                                                                   |
 | 876  | [.research/jason-os/BRAINSTORM.md](.research/jason-os/BRAINSTORM.md)                                                                                                                                                       | Brainstorm: JASON-OS                                                                                                                     | 4    | Complete **Routing:**                                                    |
-| 877  | [.research/learning-analysis/BRAINSTORM.md](.research/learning-analysis/BRAINSTORM.md)                                                                                                                                     | Brainstorm: Learning Analysis                                                                                                            | 4    | PAUSED — routed to /deep-research before direction selection             |
+| 877  | [.research/learning-analysis/BRAINSTORM.md](.research/learning-analysis/BRAINSTORM.md)                                                                                                                                     | Brainstorm: Behavioral Compliance Measurement                                                                                            | 4    | PAUSED — Phase 1 \(Diverge\) in progress, 12 questions asked **Date:**   |
 | 878  | [.research/learning-system-effectiveness/findings/D10-km-theory.md](.research/learning-system-effectiveness/findings/D10-km-theory.md)                                                                                     | Findings: Knowledge Management Theory Applied to AI-Directed Development                                                                 | 4    | -                                                                        |
 | 879  | [.research/learning-system-effectiveness/findings/D11-case-studies.md](.research/learning-system-effectiveness/findings/D11-case-studies.md)                                                                               | Findings: Case Studies of Teams Measuring and Improving Learning/Quality Systems                                                         | 4    | -                                                                        |
 | 880  | [.research/learning-system-effectiveness/findings/D1a-ai-tool-features.md](.research/learning-system-effectiveness/findings/D1a-ai-tool-features.md)                                                                       | Findings: How AI Coding Tools Handle Learning From Mistakes — Features and Approaches                                                    | 4    | -                                                                        |

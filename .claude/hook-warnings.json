@@ -1,36 +1,6 @@
 {
   "warnings": [
     {
-      "hook": "pre-push",
-      "type": "trigger",
-      "severity": "warning",
-      "message": "Skill/agent files modified",
-      "action": "Validate",
-      "timestamp": "2026-04-07T01:57:28.819Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 2
-    },
-    {
-      "hook": "session-start",
-      "type": "review-lifecycle",
-      "severity": "warning",
-      "message": "Review lifecycle validation issues found",
-      "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-06T20:00:23.395Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 4
-    },
-    {
-      "hook": "session-start",
-      "type": "tdms-s0",
-      "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-06T20:00:23.395Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 4
-    },
-    {
       "hook": "session-start",
       "type": "mcp-secrets",
       "severity": "warning",
@@ -42,23 +12,23 @@
     },
     {
       "hook": "session-start",
+      "type": "review-lifecycle",
+      "severity": "warning",
+      "message": "Review lifecycle validation issues found",
+      "action": "npm run reviews:lifecycle",
+      "timestamp": "2026-04-06T17:00:26.106Z",
+      "occurrences": 8,
+      "occurrences_since_ack": 3
+    },
+    {
+      "hook": "session-start",
       "type": "tdms-s0",
       "severity": "warning",
       "message": "S0: 26 critical debt items",
       "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-07T09:16:16.787Z",
-      "occurrences": 11,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "propagation-staged",
-      "severity": "error",
-      "message": "BLOCK-severity propagation misses in staged files",
-      "action": "Stage sibling files or fix the old pattern",
-      "timestamp": "2026-04-07T09:19:39.169Z",
-      "occurrences": 2,
-      "occurrences_since_ack": 1
+      "timestamp": "2026-04-06T17:00:26.106Z",
+      "occurrences": 8,
+      "occurrences_since_ack": 3
     },
     {
       "hook": "pre-commit",
@@ -66,18 +36,8 @@
       "severity": "warning",
       "message": "Agent compliance warnings - code changed without agent review",
       "action": "Use code-reviewer agent for modified code",
-      "timestamp": "2026-04-07T09:19:44.247Z",
+      "timestamp": "2026-04-07T18:34:45.484Z",
       "occurrences": 1,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-push",
-      "type": "trigger",
-      "severity": "warning",
-      "message": "Skill/agent files modified",
-      "action": "Validate",
-      "timestamp": "2026-04-07T10:30:03.688Z",
-      "occurrences": 4,
       "occurrences_since_ack": 1
     }
   ]

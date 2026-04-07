@@ -125,28 +125,7 @@
 {"agent":"general-purpose","description":"Write REFERENCE.md for website-analysis","sessionId":"session-1775484435792","user":"jason","outcome":"invoked","timestamp":"2026-04-06T15:09:59.164Z"}
 {"agent":"general-purpose","description":"Write website-synthesis companion skill","sessionId":"session-1775484435792","user":"jason","outcome":"invoked","timestamp":"2026-04-06T15:10:15.777Z"}
 {"agent":"code-reviewer","description":"Audit website-analysis skill files","sessionId":"session-1775484435792","user":"jason","outcome":"invoked","timestamp":"2026-04-06T15:24:48.989Z"}
-{"agent":"deep-research-searcher","description":"SQ-001: Architecture comparison","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:11:58.992Z"}
-{"agent":"deep-research-searcher","description":"SQ-002: Phase/workflow comparison","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:12:06.299Z"}
-{"agent":"deep-research-searcher","description":"SQ-003: Agent orchestration comparison","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:12:13.612Z"}
-{"agent":"deep-research-searcher","description":"SQ-004: Scoring models comparison","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:12:20.657Z"}
-{"agent":"deep-research-searcher","description":"SQ-005: Output artifacts comparison","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:19:52.485Z"}
-{"agent":"deep-research-searcher","description":"SQ-006: Synthesis skill design","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:19:59.939Z"}
-{"agent":"deep-research-searcher","description":"SQ-007: UX and interaction design","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:20:07.779Z"}
-{"agent":"deep-research-searcher","description":"SQ-008: Guard rails and resilience","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:20:16.868Z"}
-{"agent":"deep-research-searcher","description":"SQ-009: Dual-lens design comparison","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:29:00.527Z"}
-{"agent":"deep-research-searcher","description":"SQ-010: Integration and routing","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:29:09.877Z"}
-{"agent":"deep-research-synthesizer","description":"Synthesize 10 findings into report","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:33:50.853Z"}
-{"agent":"deep-research-verifier","description":"Verify claims C-001 to C-030","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:45:33.524Z"}
-{"agent":"deep-research-verifier","description":"Verify claims C-031 to C-060","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T20:45:38.228Z"}
-{"agent":"deep-research-verifier","description":"Re-verify claims C-001 to C-030","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T21:02:19.412Z"}
-{"agent":"deep-research-verifier","description":"Re-verify claims C-031 to C-060","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T21:03:20.558Z"}
-{"agent":"contrarian-challenger","description":"Challenge research findings (1/2)","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T21:08:01.976Z"}
-{"agent":"contrarian-challenger","description":"Challenge research findings (2/2)","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T21:08:07.587Z"}
-{"agent":"otb-challenger","description":"Out-of-the-box challenge (1/2)","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T21:08:15.128Z"}
-{"agent":"otb-challenger","description":"Out-of-the-box challenge (2/2)","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-06T21:08:23.102Z"}
-{"agent":"general-purpose","description":"Converge repo-analysis skill files","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-07T01:43:38.826Z"}
-{"agent":"general-purpose","description":"Converge website-analysis skill files","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-07T01:43:44.042Z"}
-{"agent":"general-purpose","description":"Converge repo-synthesis skill files","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-07T01:43:55.921Z"}
-{"agent":"general-purpose","description":"Converge website-synthesis skill files","sessionId":"session-1775505617659","user":"jason","outcome":"invoked","timestamp":"2026-04-07T01:44:08.597Z"}
-{"agent":"Explore","description":"Explore alert/warning systems","sessionId":"session-1775550408035","user":"jason","outcome":"invoked","timestamp":"2026-04-07T08:50:05.380Z"}
-{"agent":"code-reviewer","description":"Review append-hook-warning change","sessionId":"session-1775550408035","user":"jason","outcome":"invoked","timestamp":"2026-04-07T09:27:31.657Z"}
+{"agent":"Explore","description":"Mine fix categories from learnings log","sessionId":"session-1775576543597","user":"jason","outcome":"invoked","timestamp":"2026-04-07T16:59:24.919Z"}
+{"agent":"Explore","description":"Mine rejection patterns from learnings log","sessionId":"session-1775576543597","user":"jason","outcome":"invoked","timestamp":"2026-04-07T16:59:34.292Z"}
+{"agent":"Explore","description":"Cross-reference patterns with enforcement","sessionId":"session-1775576543597","user":"jason","outcome":"invoked","timestamp":"2026-04-07T16:59:48.030Z"}
+{"agent":"Explore","description":"Explore behavioral enforcement systems","sessionId":"session-1775576543597","user":"jason","outcome":"invoked","timestamp":"2026-04-07T19:22:13.039Z"}
