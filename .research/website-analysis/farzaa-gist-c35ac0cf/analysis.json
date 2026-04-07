@@ -1,0 +1,73 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "url": "https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d",
+    "domain": "gist.github.com",
+    "slug": "farzaa-gist-c35ac0cf",
+    "scan_date": "2026-04-07",
+    "scan_depth": "standard",
+    "scan_mode": "page",
+    "scan_version": "1.0",
+    "extraction_mode": "superpowers-chrome",
+    "pages_analyzed": 1
+  },
+  "site_type": "Blog",
+  "site_type_secondary": "Documentation",
+  "site_type_confidence": 0.8,
+  "ecosystem_tags": [
+    "claude-code",
+    "skill",
+    "personal-wiki",
+    "knowledge-management",
+    "llm-wiki",
+    "obsidian",
+    "subagents"
+  ],
+  "tech_stack": ["GitHub Gist", "Markdown", "Claude Code Skills"],
+  "site": {
+    "title": "Personal Knowledge Wiki Skill",
+    "description": "Claude Code skill for compiling personal data into a knowledge wiki",
+    "author": "farzaa",
+    "language": "en",
+    "last_modified": null,
+    "has_rss": false,
+    "rss_url": null
+  },
+  "value_axes": {
+    "actionability": 92,
+    "novelty": 70,
+    "evidence_quality": 35,
+    "technical_depth": 78,
+    "recency": 60,
+    "relevance_to_stack": 90,
+    "cross_reference_density": 10,
+    "synthesis_quality": 75,
+    "ecosystem_coverage": 55,
+    "contrarian_signal": 50,
+    "teaching_quality": 80,
+    "reproducibility": 95,
+    "strategic_fit": 82
+  },
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 67,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 80,
+    "fit_classification": "active-sprint"
+  },
+  "absence_patterns": [
+    "No session continuity or compaction handling",
+    "No schema versioning or migration path",
+    "No evidence of real-world testing at scale",
+    "No discussion of context window limits during absorb",
+    "No integration with external tools (MCP, search engines)"
+  ],
+  "key_claims": [
+    "Writer identity produces better knowledge synthesis than filing clerk identity",
+    "Anti-cramming and anti-thinning balance produces optimal wiki density",
+    "15-entry checkpoint cycle maintains quality during long absorb runs",
+    "Parallel 5-agent batches are optimal for cleanup audits",
+    "Concept articles (patterns/themes) are the most valuable wiki pages",
+    "Diary-driven structure is the most common quality problem"
+  ]
+}

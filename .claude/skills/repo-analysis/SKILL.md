@@ -8,10 +8,12 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.2
+**Document Version:** 4.3
 **Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+**Shared conventions:** See `.claude/skills/shared/CONVENTIONS.md`
 
 # Repo Analysis
 
@@ -74,7 +76,7 @@ research-index.jsonl, mined-links.jsonl (curated-list only), repomix-output.txt
 ## Process Overview
 
 ```
-VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork?
+VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback?
 PHASE 0    Quick Scan     -> API-only, <30s, 18 dimensions + lightweight creator lens
 GATE       Interactive    -> "Run Standard/Deep? [y/N]"
 PHASE 1    Clone+Repomix  -> Blobless clone, generate repomix IMMEDIATELY, verify
@@ -351,9 +353,9 @@ Creator View Section 2, it's worth tracking as an extraction candidate.
 in creator-view.md. If a "What's Worth Avoiding" item could prevent a future
 mistake, track it in value-map.json and extraction files.
 
-Append discovered repo relationships to
-`.research/repo-analysis/reading-chain.jsonl`. Populate `related_repos[]` in
-value-map.json for any repos referenced during analysis.
+Append discovered repo relationships to `.research/reading-chain.jsonl`
+(canonical root path). Populate `related_repos[]` in value-map.json for any
+repos referenced during analysis.
 
 **Cross-repo connections (MUST):** Add `cross_repo_connections[]` to
 value-map.json. For each connection to another analyzed repo, record:
@@ -424,28 +426,29 @@ future reference. Do not silently discard — the record ensures the next run or
 
 After writing value-map.json, update both cross-repo extraction files:
 
-1. **EXTRACTIONS.md** (`.research/repo-analysis/EXTRACTIONS.md`) —
-   Human-readable cross-repo summary. Update the repo's section with current
-   candidates (pattern
+1. **EXTRACTIONS.md** (`.research/EXTRACTIONS.md`) — Human-readable cross-repo
+   summary. Update the repo's section with current candidates (pattern
    - knowledge), verdict, scan depth, and skill version. Update header totals
      (candidate count, deferred count). Add cross-reference notes where
      candidates overlap with other repos.
 
-2. **extraction-journal.jsonl**
-   (`.research/repo-analysis/extraction-journal.jsonl`) — Machine-readable
-   per-candidate records. One line per candidate with schema:
+2. **extraction-journal.jsonl** (`.research/extraction-journal.jsonl`) —
+   Machine-readable per-candidate records. Unified v2.0 schema shared with
+   website-analysis. One line per candidate:
    ```json
    {
-     "repo": "owner/name",
+     "schema_version": "2.0",
+     "source_type": "repo",
+     "source": "owner/name",
      "candidate": "Name",
-     "type": "pattern|knowledge|content|anti-pattern",
-     "status": "deferred|extracted|skipped",
-     "decision": "defer|extract|skip",
+     "type": "pattern|knowledge|content|anti-pattern|tool",
+     "decision": "defer|extract|skip|investigate",
      "decision_date": "YYYY-MM-DD",
      "extracted_to": null,
+     "extracted_at": null,
      "notes": "...",
-     "novelty": "High|Medium|Low",
-     "effort": "E0|E1|E2",
+     "novelty": "high|medium|low",
+     "effort": "E0|E1|E2|E3",
      "relevance": "high|medium|low"
    }
    ```
@@ -453,17 +456,28 @@ After writing value-map.json, update both cross-repo extraction files:
    all candidates in value-map.json.
 
 Both files are canonical — EXTRACTIONS.md is the reading interface,
-extraction-journal.jsonl is the data interface. Neither is derived from the
-other. Both MUST be updated on every Standard/Deep analysis.
+extraction-journal.jsonl is the data interface. EXTRACTIONS.md is auto-generated
+from the journal. Both MUST be updated on every Standard/Deep analysis.
 
-## Artifact Verification (before routing)
+## Self-Audit (MUST, before routing)
 
-Verify all expected artifacts exist based on scan depth and repo type.
-Checklist: analysis.json, findings.jsonl, value-map.json, creator-view.md,
-summary.md, deep-read.md, content-eval.jsonl (or mined-links.jsonl for
-curated-list), coverage-audit.jsonl, EXTRACTIONS.md updated,
-extraction-journal.jsonl updated. Flag missing artifacts before presenting
-routing menu.
+Before presenting the routing menu, run the self-audit minimum floor per
+CONVENTIONS.md Section 8, plus domain-specific checks:
+
+1. **Artifact presence:** All MUST files exist and are non-empty (analysis.json,
+   findings.jsonl, value-map.json, creator-view.md, summary.md, deep-read.md,
+   content-eval.jsonl or mined-links.jsonl, coverage-audit.jsonl,
+   EXTRACTIONS.md, extraction-journal.jsonl)
+2. **Schema contract:** analysis.json validates against canonical schema
+   (`.claude/skills/schemas/analysis-schema.ts`)
+3. **Completeness:** All phases that ran produced output
+4. **Schema drift detection:** Check `skillVersion` in analysis.json matches
+   expected version
+5. **Regression check:** If prior analysis exists for this repo, compare finding
+   count delta — flag significant changes
+6. **REFERENCE.md contract:** Verify output structure matches documented schema
+
+Report any failures to user before routing.
 
 ---
 
@@ -479,7 +493,7 @@ Presented after Standard or Deep. 8 options:
 | **4. Save to memory**       | Persist key findings as project memory.          |
 | **5. Adoption verdict**     | Full WR-01 through WR-06 assessment.             |
 | **6. Explore insights**     | Deeper conversation about Creator View findings. |
-| **7. Done**                 | Cleanup, confirm artifacts, exit.                |
+| **7. Done**                 | Cleanup, confirm artifacts, track invocation.    |
 | **8. Cross-repo synthesis** | If 3+ repos analyzed, offer /repo-synthesis.     |
 
 ---
@@ -512,9 +526,21 @@ flagging, large repo handling, monorepo detection, no silent skips.
 
 ## Retro
 
-After routing: "Any observations about the analysis quality or process?"
+Before presenting the routing menu, ask: "What worked well? What would you
+change next time?" Save the response to `process_feedback` field in the state
+file. This persists across sessions and enables process improvement.
+
+On "Done" routing, track invocation:
+
+```bash
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"repo-analysis","type":"skill","success":true,"context":{"repo":"TARGET_REPO","depth":"DEPTH"}}'
+```
 
 ---
+
+_v4.3 | 2026-04-06 | Convergence: CONVENTIONS.md ref, self-audit phase, schema
+drift fix, artifact path alignment, agent_budget removal, retro persistence,
+invocation tracking. Per DECISIONS.md #1-20._
 
 _v4.2 | 2026-04-06 | 4-gap fix: Phase 2b Deep Read (internal artifacts beyond
 code), Phase 4b expanded to Content Evaluation (all repo types, not just

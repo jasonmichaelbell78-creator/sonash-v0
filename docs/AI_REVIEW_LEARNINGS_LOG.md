@@ -366,6 +366,24 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#50)</summary>
+
+- **Date:** 2026-04-07
+- **Reviews consolidated:** #70-#review-pr498-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#49)</summary>
+
+- **Date:** 2026-04-07
+- **Reviews consolidated:** #backfill-477-r3-#review-pr498-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#48)</summary>
 
 - **Date:** 2026-04-06
@@ -1335,16 +1353,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
-
----
-
 ### Review review-pr492-r1: PR #492 R1 - Mixed (Qodo + Suggestions + Compliance + Gemini + SonarCloud + CI) (2026-04-04)
 
 **Date:** 2026-04-04 | **PR:** #492 | **Source:** mixed
@@ -1479,6 +1487,77 @@ deduplicated, non-overlapping ranges):
 - Automated session-closure scripts justify hardcoded SKIP_REASON under
   Guardrail #14
 - Known Issues sections must update when PR resolves items
+
+---
+
+### Review review-pr498-r1: PR #498 R1 - Mixed (Qodo + Qodo Compliance + Gemini) (2026-04-06)
+
+**Date:** 2026-04-06 | **PR:** #498 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 21    | 16    | 2        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 3     | 8     | 10      |
+
+**Patterns:**
+
+- volatile-state-tracking
+- reviews-jsonl-integrity
+- extraction-journal-normalize
+- skill-schema-consistency
+- slug-algorithm-separator-preservation
+
+**Learnings:**
+
+- Volatile state files (.session-state.json, .commit-tracker-state.json) must be
+  .gitignored, not tracked
+- reviews.jsonl disposition integrity: fixed+deferred+rejected must equal total
+- Categorical fields in JSONL must use consistent lowercase without compound
+  values or uncertainty markers
+- Skill schema examples must be internally consistent with definitions
+
+---
+
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 20    | 0     | 0        | 0        |
+
+---
+
+### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
+
+**Date:** unknown | **PR:** #498 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- volatile-state-tracking
+- reviews-jsonl-integrity
+- extraction-journal-normalize
+- skill-schema-consistency
+- slug-algorithm-separator-preservation
 
 ## Key Patterns
 
@@ -1658,6 +1737,59 @@ Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
   detection to prevent cascading
 - pr-review skill Rule 6 updated: "pre-existing" no longer auto-dismissible;
   must present user with fix (+ effort estimate) or DEBT options
+
+---
+
+### Review #509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
+
+**Source:** Mixed (SonarCloud×1, Qodo Compliance×5, Qodo Suggestions×4, CI×1)
+**PR/Branch:** PR #488 R2 / planning-4626 **Items:** 11 raw → 5 unique after
+dedup, 6 rejected **Fix rate:** 100% (5/5 fixed, 0 deferred)
+
+- **statSync doesn't detect symlinks** — R1 fix used `statSync()` which follows
+  symlinks, making `st.isSymbolicLink()` always false. Must use `lstatSync()`.
+  Critical security regression introduced in the fix itself.
+- **Extract shared code to reduce CC** — `outputDashboard` and `updateMetrics`
+  had identical 20-line warning-reading blocks. Extracted to `readWarningsLog()`
+  which also brought `outputDashboard` CC from 16 to under 15.
+- **One-off migration scripts belong in test baseline** — Scripts like
+  `reclassify-learning-routes.js` are run-once utilities. Adding to
+  `.test-baseline.json` with a note is the correct path.
+
+**Key Learning:** When adding safety guards (symlink, size), verify the guard
+actually works — `statSync` follows symlinks, `lstatSync` does not. The guard
+was syntactically correct but semantically broken.
+
+---
+
+### Review #508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
+
+**Source:** Mixed (SonarCloud×8, Qodo×4 bugs + 6 compliance + 10 suggestions,
+Gemini×2, CI×1) **PR/Branch:** PR #499 R1 / planning-4626 **Items:** 31 raw → 14
+unique after dedup, 10 rejected **Fix rate:** 100% (14/14 fixed, 0 deferred)
+
+- **isDuplicateWarning guard logic inverted** — `return true` on symlink/size
+  guards in `isDuplicateWarning()` was suppressing all new warnings instead of
+  just skipping cross-session dedup. Changed to `return false` so warnings still
+  get recorded when dedup can't be safely performed.
+- **CC reduction via function extraction** — `isDuplicateWarning` had CC 21 (>15
+  allowed). Extracted `hasMatchInWarningsLog()` helper to bring both functions
+  under threshold. The helper also makes the guard logic (symlink, size)
+  clearer.
+- **Unbounded JSONL reads need size guards** —
+  `analyze-learning-effectiveness.js` read warnings logs without size checks.
+  Added `statSync` + 10MB guard consistent with other scripts' patterns.
+- **Health checker must respect signal column** — metrics table includes a
+  Signal column (`insufficient_data`/`ok`). Parsing only the numeric value
+  scored empty data as healthy. Now skips metric when signal is
+  `insufficient_data`.
+- **Multi-source convergence strengthens signal** — 4 items were flagged by 2+
+  sources (Qodo + SonarCloud, Gemini + Qodo). Multi-source agreement reliably
+  identified real bugs vs noise.
+
+**Key Learning:** When guard conditions in dedup/safety logic trigger, the
+default should be to allow the primary action (recording warnings) and skip the
+expensive secondary operation (cross-session dedup), not suppress both.
 
 ---
 

@@ -1,0 +1,147 @@
+{
+  "repo": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+  "analysisDate": "2026-04-07",
+  "depth": "standard",
+  "skillVersion": "4.3",
+  "candidates": [
+    {
+      "name": "faster-whisper local transcription pipeline",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "detail": "Complete local Whisper lifecycle: CUDA detection, large-v3 model, beam_size=10, vad_filter=True, segment iteration with tqdm, metadata capture (timestamps, avg_logprob). ~50 lines covering all operational edge cases.",
+      "source_file": "bulk_transcribe_youtube_videos_from_playlist.py"
+    },
+    {
+      "name": "Whisper tuned params (beam_size=10, vad_filter)",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "beam_size=10 (vs default 5) for accuracy. vad_filter=True to skip silence and prevent Whisper hallucination-on-silence issue. These are tuned production params, not defaults."
+    },
+    {
+      "name": "Caption-first + Whisper-fallback architecture",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "Insight from cross-repo analysis: both bedrock and this repo skip captions and go straight to transcription. pytubefix has yt.captions — use captions for ~80% of videos, Whisper only as fallback. Dramatically cheaper and faster."
+    },
+    {
+      "name": "Async download + sync GPU transcription pattern",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "asyncio.Semaphore(4) for concurrent downloads, sequential GPU transcription. Correct architecture — network I/O parallelizes, GPU compute doesn't."
+    },
+    {
+      "name": "faster-whisper library reference",
+      "type": "content",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://github.com/SYSTRAN/faster-whisper",
+      "detail": "CTranslate2 Whisper implementation. 4x faster than OpenAI whisper. GPU + CPU. The local transcription engine for T27."
+    },
+    {
+      "name": "CUDA/GPU detection + CPU fallback pattern",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "detail": "numba.cuda.is_available() check, Anaconda toolkit path detection, float16 vs auto compute type selection. Real-world GPU setup complexity."
+    },
+    {
+      "name": "SpaCy + compromise.js two-stage NLP",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "detail": "Server-side SpaCy for sentence splitting during transcription, client-side compromise.js for paragraph restructuring in reader. Two complementary NLP stages."
+    },
+    {
+      "name": "API vs local cost tradeoff ($0.006/min)",
+      "type": "knowledge",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "detail": "OpenAI Whisper API: $0.006/min, less accurate. Local faster-whisper: free, more accurate, requires GPU. 1-hour video = $0.36 API vs $0 local. Concrete data for T27 architecture decision."
+    },
+    {
+      "name": "compromise.js client-side NLP",
+      "type": "content",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "https://github.com/spencermountain/compromise",
+      "detail": "75KB client-side NLP. Sentence/paragraph detection in browser. 11K+ stars. Potential for SoNash frontend text processing."
+    },
+    {
+      "name": "Monolithic single-file tool anti-pattern",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "280 lines, no CLI, no config file, hard-coded vars. Works for personal use, impossible to integrate. T27 pipeline must be modular handlers."
+    },
+    {
+      "name": "Skip-captions-always anti-pattern",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "Both bedrock and this repo transcribe every video from scratch. pytubefix has caption extraction. Check captions first — ~80% of YouTube videos have them. Don't Whisper what's already text."
+    },
+    {
+      "name": "Hard-coded source config anti-pattern",
+      "type": "anti-pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "detail": "Module-level variables for config including API keys. No CLI args, no env vars. Anti-twelve-factor."
+    }
+  ],
+  "related_repos": [
+    "SYSTRAN/faster-whisper",
+    "JuanBindez/pytubefix",
+    "spencermountain/compromise",
+    "ksharlandjiev/bedrock-summarize-audio-video-text"
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "connection_type": "complementary",
+      "detail": "Local Whisper vs AWS Transcribe. Both use pytubefix. Both skip captions. Together they map the full cloud-vs-local spectrum for T27. This repo is the local-first reference, bedrock is the managed-service reference."
+    },
+    {
+      "target_repo": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "connection_type": "complementary",
+      "detail": "AWS-MEF does frame extraction + visual analysis. This repo does audio extraction + Whisper transcription. Different media modalities for T27."
+    },
+    {
+      "target_repo": "JuanBindez/pytubefix",
+      "connection_type": "shared-pattern",
+      "detail": "Second independent repo choosing pytubefix for YouTube download. Cross-validates library choice. Also uses Playlist class for batch processing."
+    },
+    {
+      "target_repo": "SYSTRAN/faster-whisper",
+      "connection_type": "referenced",
+      "detail": "Core transcription engine. Not analyzed yet — potential deep-dive target for T27."
+    }
+  ]
+}

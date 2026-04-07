@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "outline/outline",
+  "url": "https://github.com/outline/outline",
+  "analyzedAt": "2026-04-07T17:15:00Z",
+  "depth": "quick",
+  "repoType": "application",
+  "repoSubtype": "knowledge-base-product",
+  "metadata": {
+    "stars": 37981,
+    "language": "TypeScript",
+    "license": "NOASSERTION",
+    "lastPush": "2026-04-07T15:23:46Z",
+    "archived": false,
+    "fork": false
+  },
+  "summaryBands": {
+    "security": { "band": "B", "score": 72 },
+    "reliability": { "band": "A", "score": 90 },
+    "maintainability": { "band": "A", "score": 85 },
+    "documentation": { "band": "B", "score": 78 },
+    "process": { "band": "A", "score": 85 },
+    "velocity": { "band": "A", "score": 90 }
+  },
+  "creatorLens": "Outline is a knowledge base PRODUCT, not an extraction tool. It teaches wiki page structure (hierarchy, collections, search, real-time collaboration, Markdown-native storage) but not how to extract FROM wikis. Relevant for understanding what wiki content looks like structurally — nested documents, collections, permissions — which informs T28's wiki source type schema. TypeScript/React/Node.js.",
+  "context": {
+    "t28Relevance": "Teaches wiki content STRUCTURE (what to expect when extracting from knowledge bases). Not an extraction tool itself.",
+    "cluster": "E",
+    "notablePatterns": [
+      "Document hierarchy: collections → documents → nested documents",
+      "Markdown-native storage with real-time collaboration",
+      "Full-text search + API for programmatic access",
+      "Permissions model on documents/collections"
+    ]
+  }
+}

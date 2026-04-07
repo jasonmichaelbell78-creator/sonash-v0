@@ -8,10 +8,12 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+**Shared conventions:** See `.claude/skills/shared/CONVENTIONS.md`
 
 # Repo Synthesis
 
@@ -23,7 +25,7 @@ and what's brilliant regardless of your current sprint.
 ## Critical Rules (MUST follow)
 
 1. **Minimum 3 repos.** Do NOT run with fewer than 3 analyzed repos (override
-   with `--min-repos=N`). See REFERENCE.md Section 9 for 2-repo guidance.
+   with `--min-repos=N`). See REFERENCE.md Section 10 for 2-repo guidance.
 2. **Read, don't re-analyze.** Consume existing artifacts. Never re-clone,
    re-scan, or regenerate repo-analysis output. If artifacts are missing, report
    which repo lacks what and suggest re-scanning.
@@ -31,6 +33,8 @@ and what's brilliant regardless of your current sprint.
    written as you'd explain insights to a colleague, not as a compliance report.
 4. **State file on every phase.** Synthesis can be long. Compaction will happen.
 5. **Write-to-disk-first.** Each output written before proceeding to the next.
+6. **No silent skips.** After every SHOULD step, verify output exists. Retry
+   once, then report. Never silently continue. See CONVENTIONS.md Section 7.
 
 ## When to Use
 
@@ -165,7 +169,9 @@ Update state file.
 ## Phase 2: Produce Outputs (MUST, or --focus subset)
 
 > Read `.claude/skills/repo-synthesis/REFERENCE.md` for output format
-> specifications, JSON schemas, and heuristics for each synthesis section.
+> specifications, JSON schemas, and heuristics for each synthesis section. Apply
+> convergence confidence scoring (REFERENCE.md Section 7) to all interpretive
+> claims: themes, gaps, and knowledge map assertions.
 
 **Write conversationally, not clinically (Critical Rule #3).** These are
 synthesized interpretations — after each section, note: "Override or rerank if
@@ -203,8 +209,9 @@ shifts, emerging focus.
 Aggregate ALL candidates across all repos — all 4 types. For each candidate:
 
 1. Keep original `novelty`, `effort`, `relevance` from value-map.json.
-2. Load current `SESSION_CONTEXT.md` and `ROADMAP.md` (MUST — do not use
-   scan-time fit scores).
+2. Load all 5 home context sources (MUST — do not use scan-time fit scores):
+   `SESSION_CONTEXT.md`, `ROADMAP.md`, `CLAUDE.md`, `.claude/skills/` listing,
+   `MEMORY.md` user/project entries. See CONVENTIONS.md Section 9.
 3. Compute `synthesis_fit`:
    - `relevance: high` + active sprint keyword match → `active-sprint`
    - `relevance: high` + no sprint match → `park-for-later`
@@ -212,8 +219,9 @@ Aggregate ALL candidates across all repos — all 4 types. For each candidate:
    - `relevance: low` or no match → `not-relevant`
 4. Flag candidates whose synthesis_fit differs from scan-time relevance.
 
-**Candidate cap (MUST):** If total >100, present top 50 by relevance: "Showing
-top 50 of N. Full list in synthesis.json."
+**No artificial caps.** Present ALL candidates. Group by tier (T1/T2/T3), then
+by type (pattern/knowledge/content/anti-pattern) for readability. Never truncate
+— the user decides what to filter, not the skill.
 
 ### 2.6 Cross-Repo Knowledge Map
 
@@ -319,6 +327,10 @@ outputs), exit.
   [repo-analysis REFERENCE.md](../repo-analysis/REFERENCE.md)
 
 ---
+
+_v1.3 | 2026-04-06 | Convergence plan: add CONVENTIONS.md reference, convergence
+confidence scoring (REFERENCE.md Section 7), schema_version key, no-silent-skips
+rule, expand home context to 5 sources, Decision Coverage Map appendix._
 
 _v1.2 | 2026-04-06 | Skill audit (47 decisions): add self-audit phase,
 verification pass, warm-up/progress/closure, pause/resume, candidate cap,

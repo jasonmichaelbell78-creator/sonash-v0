@@ -1,109 +1,98 @@
-# Brainstorm: Learning Analysis
+# Brainstorm: Behavioral Compliance Measurement
 
-**Status:** PAUSED — routed to /deep-research before direction selection
-**Date:** 2026-04-03 **Phase reached:** 3 (Converge — deferred to research)
+**Status:** PAUSED — Phase 1 (Diverge) in progress, 12 questions asked **Date:**
+2026-04-07 **Phase reached:** 1 (mid-discovery)
 
 ---
 
 ## Landscape Summary
 
-SoNash has 11 learning capture systems, 13 application systems, and 7 traced
-knowledge flows. Capture is strong; application is partial; feedback loops are
-mostly broken.
+SoNash has 14 CLAUDE.md behavioral guardrails. 7 have some automated enforcement
+(hooks, agent compliance checks). 7 are purely probabilistic (system prompt
+only). The PRE_GENERATION_CHECKLIST.md defines 6 proxy metrics that are never
+automatically collected. Data infrastructure (JSONL, hooks, state files) is
+mature — the measurement layer on top is absent.
 
-### Critical Finding
+No AI tool in the industry has published evidence of behavioral learning
+measurement.
 
-The "89.2% learning effectiveness" metric is misleading. It measures pattern
-existence, not pattern impact. Formula:
-`(patterns not seen again + automated) / total`. Most "learned" patterns
-(356/444) simply weren't encountered again — no evidence enforcement prevented
-them.
+### Key Reframe
 
-### Learning-Router Bottleneck
-
-39 patterns in learning-routes.jsonl. 38 stuck at "refined." 1 reached
-"enforced" (test failing). 0 verified. The graduation pipeline exists in code
-but nothing moves through it.
-
-### Key Gaps
-
-| Flow                            | Automation |
-| ------------------------------- | ---------- |
-| PR review → pattern enforcement | ~70%       |
-| Session corrections → behavior  | ~40%       |
-| Audit findings → enforcement    | ~30%       |
-| PR retro → learning capture     | ~10%       |
-| Pre-commit failures → learning  | 0%         |
-| SonarCloud → pattern docs       | 0%         |
-| Behavioral guardrails (8/14)    | 0%         |
+The question is NOT "make Claude learn" (structurally impossible without weight
+updates). The question IS: **which behavioral corrections keep recurring despite
+being documented, and which can be moved from Layer 3 (probabilistic) to Layer 2
+(semi-deterministic) via hooks?**
 
 ---
 
-## Directions Explored (5)
+## Discovery So Far (12 Questions)
 
-### A: "Prove It or Kill It"
+### User Answers
 
-Ruthless audit. Every system gets 30 days to demonstrate measurable impact. What
-can't prove value gets removed.
+1. **Which corrections recur?** User doesn't know — feedback memory system
+   captures corrections but doesn't surface recurrence patterns. This is itself
+   a finding.
+2. **How do you notice violations?** Both in the moment and after the fact.
+3. **Comfortable with behavioral hooks?** Yes, as long as not overbearing.
+4. **Success definition:** (c) Behavioral rules that enforce themselves, will
+   accept (b) fewer correction moments.
+5. **Anti-goals:** No change (system that doesn't improve anything).
+6. **Proxy metric collection valuable?** Yes, as long as hook interruption cost
+   doesn't exceed correction cost. Key constraint: low-friction detection only.
+7. **Which patterns feel detectable?** Edit-without-read (a) selected. Others
+   not selected — unclear if "not a problem" or "not detectable."
+8. **JSONL for feedback memories?** Open to it, already migrating other systems.
+9. **Why only (a)?** Unanswered — paused here.
+10. **edit-without-read action?** Unanswered.
+11. **Hybrid markdown + JSONL index?** Unanswered.
+12. **Session scoring comfort?** Unanswered.
 
-### B: "Close the Loops"
+### Key Constraints Discovered
 
-Keep systems, fix broken connections. Wire pre-commit → learning entries,
-SonarCloud → CODE_PATTERNS, graduate the learning-router.
-
-### C: "Single Pane of Glass"
-
-One dashboard answering "are mistakes declining?" Don't change underlying
-systems — change visibility. Problem: underlying data doesn't support this yet.
-
-### D: "Burn It Down and Build Simple"
-
-Replace 444 patterns with the 20 that actually recur. Delete learning-router,
-lifecycle-scores, review-metrics, effectiveness analyzer. Problem: don't know
-which 20 matter without data that doesn't exist.
-
-### E: "Hybrid — Prove Then Invest"
-
-Sequenced: audit (tag PROVEN/UNPROVEN/ORPHANED) → close loops for survivors →
-add dashboard. Problem: "prove" phase needs violation-count data that requires
-weeks of collection.
+- **Cost-benefit threshold:** A hook that interrupts more than the correction it
+  prevents is net negative. Constrains to warnings in hook summaries, not
+  blocking gates.
+- **Detection scope:** Hooks fire on tool calls (Read, Write, Edit, Bash). Can
+  see what Claude does, not what Claude thinks. Limits detection to
+  tool-call-sequence patterns.
+- **Recurrence visibility gap:** User doesn't know which corrections recur.
+  First deliverable should surface this.
 
 ---
 
-## Contrarian Checkpoint (Critical)
+## Emerging Direction (not yet evaluated)
 
-**The real question none of the directions answer:**
+**"Promotion pipeline"** — move behavioral patterns from probabilistic
+(CLAUDE.md) to semi-deterministic (hooks) one at a time, based on recurrence
+data:
 
-Is the learning system's job to:
+1. Build recurrence analysis over feedback memories (which corrections repeat?)
+2. For the top recurring patterns, assess hook-detectability
+3. For detectable ones, build low-friction hooks (warnings, not blocks)
+4. Measure whether hook introduction reduces the correction
 
-1. **Prevent code mistakes** (check-pattern-compliance, pre-commit hooks)
-2. **Make Claude a better collaborator** (memory system, behavioral guardrails)
-
-These are different problems requiring different solutions. Mixing them under
-one "learning" umbrella may be why the system feels incoherent. 8/14 CLAUDE.md
-behavioral guardrails have zero automated enforcement.
+This mirrors the code-side ratchet approach but adapted for behavioral patterns.
 
 ---
 
 ## Anti-Goals
 
-- No metrics for metrics' sake — must be actionable
-- No added complexity that isn't maintainable
-- No manual processes — must be automated
-- Not opposed to adding OR removing — let evidence decide
+- No change (system that doesn't improve anything)
+- Over-interruption (hooks that cost more than the corrections they prevent)
 
 ---
 
-## Decision: Route to /deep-research
+## Open Questions (for resumption)
 
-Open questions:
+1. Which of the 30+ feedback memories are actually recurring vs one-time fixes?
+2. Can impl-before-plan (guardrail #2) be detected via tool-call sequence?
+3. What's the right action for edit-without-read detection? (warning vs block)
+4. Should session quality be scored, or is that too judgmental?
+5. Hybrid markdown + JSONL for feedback memories — architecture?
 
-1. Effective learning infra in AI-directed dev — models from other projects?
-2. Code-level enforcement vs. behavioral improvement — same or different
-   systems?
-3. Minimum viable learning system that proves its own value?
-4. Retroactive measurement using existing git/PR data?
-5. Measuring dev tool effectiveness without A/B tests?
+---
 
-**Next:** Run `/deep-research` on these questions, then return to select
-direction.
+## Resume Instructions
+
+Re-invoke `/brainstorm behavioral compliance measurement` to resume from Phase 1
+mid-discovery (Q9-12 unanswered, directions not yet generated).

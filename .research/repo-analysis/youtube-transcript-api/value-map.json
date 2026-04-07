@@ -1,0 +1,141 @@
+{
+  "repo": "jdepoix/youtube-transcript-api",
+  "analysisDate": "2026-04-07",
+  "depth": "standard",
+  "skillVersion": "4.3",
+  "candidates": [
+    {
+      "name": "youtube-transcript-api as T27 primary extraction layer",
+      "type": "tool",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "pip install youtube-transcript-api. One-line caption fetch with language selection, translation, SRT/WebVTT output. 7K stars, MIT, 100% coverage, 2 deps. First adoption recommendation in analysis series.",
+      "url": "https://pypi.org/project/youtube-transcript-api/"
+    },
+    {
+      "name": "Innertube API reverse-engineering approach",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "YouTube captions fetched via undocumented /youtubei/v1/player API with ANDROID client context. No API key needed. Fragile (YouTube can change), but library maintains compatibility across 8 years."
+    },
+    {
+      "name": "Context-aware error hierarchy pattern",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "detail": "15+ specific exception types with CAUSE_MESSAGE templates. RequestBlocked.cause adapts message based on proxy config type. Each error explains why it happened AND what to do. Gold standard for content extraction error handling.",
+      "source_file": "youtube_transcript_api/_errors.py"
+    },
+    {
+      "name": "IP ban workaround operational guide",
+      "type": "content",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://github.com/jdepoix/youtube-transcript-api#working-around-ip-bans-requestblocked-or-ipblocked-exception",
+      "detail": "Production-tested guide to handling YouTube IP blocks: generic proxies, Webshare rotating residential IPs, retry strategies. The operational knowledge T27 needs."
+    },
+    {
+      "name": "Three-layer T27 extraction architecture",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "Cross-repo synthesis insight: Layer 1 = youtube-transcript-api (instant, free, ~80%). Layer 2 = pytubefix captions (backup). Layer 3 = faster-whisper (local GPU, uncaptioned only). First time 3 analyzed repos compose into a clear architecture."
+    },
+    {
+      "name": "Proxy rotation infrastructure (Webshare)",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "detail": "ProxyConfig ABC -> GenericProxyConfig, WebshareProxyConfig. Rotating residential IPs, retry-on-429, connection-close for forced rotation. Production proxy pattern.",
+      "source_file": "youtube_transcript_api/proxies.py"
+    },
+    {
+      "name": "SRT/WebVTT timestamp formatting",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "detail": "Clean timestamp conversion with SRT (comma separator) vs WebVTT (dot separator) formatting. Proper subtitle file generation.",
+      "source_file": "youtube_transcript_api/formatters.py"
+    },
+    {
+      "name": "Manual vs auto-generated transcript priority",
+      "type": "knowledge",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "detail": "find_transcript() checks manually_created first, then generated. Manual = human-verified quality. Auto-generated may have errors. Quality hierarchy baked into architecture."
+    },
+    {
+      "name": "100% coverage + 2-dep library packaging",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "detail": "Poetry with lock file, py.typed marker, --fail-under=100, only requests + defusedxml runtime deps. Reference for well-packaged Python library."
+    },
+    {
+      "name": "Don't build your own transcript fetcher (anti-pattern)",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "8 years and 399 commits maintaining compatibility with YouTube's changing API. Cookie auth broke, consent flow changed, innertube API evolved. Use the library, don't replicate the maintenance burden."
+    },
+    {
+      "name": "Ignore IP blocking for bulk extraction (anti-pattern)",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "YouTube blocks bulk requests. The extensive proxy infrastructure exists because this is the #1 operational challenge. Plan for it from the start."
+    }
+  ],
+  "related_repos": [
+    "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+    "ksharlandjiev/bedrock-summarize-audio-video-text",
+    "JuanBindez/pytubefix",
+    "SYSTRAN/faster-whisper",
+    "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws"
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "connection_type": "complementary",
+      "detail": "This repo is Layer 1 (captions, instant). Bulk-transcribe is Layer 3 (Whisper, GPU fallback). Together they cover captioned AND uncaptioned videos."
+    },
+    {
+      "target_repo": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "connection_type": "complementary",
+      "detail": "This repo is local/free caption extraction. Bedrock is AWS-managed transcription. Different cost/complexity tradeoffs for T27 architecture."
+    },
+    {
+      "target_repo": "JuanBindez/pytubefix",
+      "connection_type": "complementary",
+      "detail": "pytubefix provides playlist enumeration + video metadata that this repo doesn't. Also has its own caption extraction (yt.captions) as backup Layer 2. Use together: pytubefix for discovery, youtube-transcript-api for extraction."
+    },
+    {
+      "target_repo": "SYSTRAN/faster-whisper",
+      "connection_type": "complementary",
+      "detail": "faster-whisper is the Layer 3 fallback when transcripts are unavailable (TranscriptsDisabled/NoTranscriptFound exceptions). Not analyzed yet."
+    }
+  ]
+}

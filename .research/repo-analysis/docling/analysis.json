@@ -1,0 +1,136 @@
+{
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "DS4SD/docling",
+  "url": "https://github.com/DS4SD/docling",
+  "analyzedAt": "2026-04-07T15:30:00Z",
+  "depth": "standard",
+  "repoType": "framework",
+  "repoSubtype": "multi-format-document-intelligence",
+  "metadata": {
+    "stars": 57196,
+    "forks": 3888,
+    "watchers": 205,
+    "contributors": 201,
+    "openIssues": 875,
+    "language": "Python",
+    "license": "MIT",
+    "created": "2024-07-09T07:50:26Z",
+    "lastPush": "2026-04-07T14:22:03Z",
+    "size": 261480,
+    "archived": false,
+    "fork": false,
+    "defaultBranch": "main",
+    "topics": [
+      "ai",
+      "convert",
+      "document-parser",
+      "document-parsing",
+      "documents",
+      "docx",
+      "html",
+      "markdown",
+      "pdf",
+      "pdf-converter",
+      "pdf-to-json",
+      "pdf-to-text",
+      "pptx",
+      "tables",
+      "xlsx"
+    ],
+    "homepage": "https://docling-project.github.io/docling",
+    "hasDiscussions": true,
+    "hasWiki": false
+  },
+  "dimensions": {
+    "QS-01-stars": {
+      "value": 57196,
+      "band": "A+",
+      "note": "Exceptional — 4x unstructured in <2 years"
+    },
+    "QS-02-forkRatio": { "value": 0.068, "band": "B", "note": "6.8% — healthy" },
+    "QS-03-recency": {
+      "value": "2026-04-07",
+      "band": "A",
+      "note": "Pushed today, released today (v2.85.0)"
+    },
+    "QS-04-releaseCadence": {
+      "value": "5 releases in 18 days",
+      "band": "A",
+      "note": "Very active, weekly+ releases"
+    },
+    "QS-05-issueHealth": { "value": 875, "band": "C", "note": "High open issues — growth pains" },
+    "QS-06-contributorCount": { "value": 201, "band": "A", "note": "200+ contributors" },
+    "QS-07-license": { "value": "MIT", "band": "A", "note": "Maximally permissive" },
+    "QS-08-documentation": {
+      "value": "extensive",
+      "band": "A",
+      "note": "MkDocs site, examples, integrations, concepts docs"
+    },
+    "QS-09-cicd": { "value": "present", "band": "A", "note": ".github + pre-commit" },
+    "QS-10-security": {
+      "value": "openssf-badge",
+      "band": "A",
+      "note": "OpenSSF Best Practices badge"
+    },
+    "QS-11-testInfra": { "value": "present", "band": "A", "note": "tests/ directory" },
+    "QS-12-codeOrg": {
+      "value": "clean",
+      "band": "A",
+      "note": "Single package, docs, tests. Clean root"
+    },
+    "QS-13-repoSize": { "value": 261480, "band": "C", "note": "261MB — very large" },
+    "QS-14-topicCoverage": { "value": 15, "band": "A", "note": "Good discoverability" },
+    "QS-15-community": {
+      "value": "active",
+      "band": "A",
+      "note": "Discussions, Discord, LF AI Foundation, Dosu bot"
+    },
+    "QS-16-depManagement": {
+      "value": "modern",
+      "band": "A",
+      "note": "uv + pyproject.toml + uv.lock + ruff"
+    },
+    "QS-17-archiveStatus": { "value": false, "band": "A", "note": "Active" },
+    "QS-18-forkStatus": { "value": false, "band": "A", "note": "Original project" }
+  },
+  "summaryBands": {
+    "security": {
+      "band": "A",
+      "score": 94,
+      "note": "OpenSSF Best Practices badge, pre-commit, Docker"
+    },
+    "reliability": {
+      "band": "A",
+      "score": 96,
+      "note": "Released today, 5 releases in 18 days, IBM Research backing"
+    },
+    "maintainability": {
+      "band": "B",
+      "score": 75,
+      "note": "Clean structure but massive codebase. 875 open issues"
+    },
+    "documentation": {
+      "band": "A",
+      "score": 95,
+      "note": "MkDocs site with examples, integrations, concepts, recipes"
+    },
+    "process": {
+      "band": "A",
+      "score": 92,
+      "note": "Pre-commit, CITATION.cff, MAINTAINERS.md, LF AI governance"
+    },
+    "velocity": {
+      "band": "A",
+      "score": 98,
+      "note": "57K stars in <2 years, 201 contributors, weekly releases"
+    }
+  },
+  "absencePattern": "none",
+  "creatorLens": "Docling understands document intelligence beyond extraction — it combines ML-based layout understanding (Heron model, GraniteDocling VLM), multi-format parsing (PDF+DOCX+PPTX+audio+images+LaTeX), structured information extraction, and gen AI ecosystem integration (LangChain, LlamaIndex, MCP server) into a unified DoclingDocument representation. The arXiv paper (2408.09869) and IBM Research backing signal deep academic rigor behind the engineering.",
+  "context": {
+    "t28Relevance": "Primary competitor to unstructured — broader scope, newer, faster growth. Direct architectural comparison needed.",
+    "cluster": "A",
+    "analysisNumber": 2
+  }
+}

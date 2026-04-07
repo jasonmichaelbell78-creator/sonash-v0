@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "unclecode/crawl4ai",
+  "url": "https://github.com/unclecode/crawl4ai",
+  "analyzedAt": "2026-04-07T17:00:00Z",
+  "depth": "quick",
+  "repoType": "library",
+  "repoSubtype": "llm-web-crawler",
+  "metadata": {
+    "stars": 63528,
+    "forks": 6500,
+    "contributors": 72,
+    "language": "Python",
+    "license": "Apache-2.0",
+    "lastPush": "2026-04-06T08:26:44Z",
+    "size": 150468,
+    "openIssues": 60,
+    "archived": false,
+    "fork": false
+  },
+  "summaryBands": {
+    "security": { "band": "B", "score": 75 },
+    "reliability": { "band": "A", "score": 90 },
+    "maintainability": { "band": "A", "score": 82 },
+    "documentation": { "band": "A", "score": 85 },
+    "process": { "band": "B", "score": 78 },
+    "velocity": { "band": "A", "score": 88 }
+  },
+  "absencePattern": "none",
+  "creatorLens": "Crawl4ai understands the operational realities of web crawling that document parsers ignore: anti-bot detection (3-tier with proxy escalation), crash recovery for long crawls (resume_state + on_state_change callbacks), deep crawl strategies (BFS/DFS with max-pages), Shadow DOM flattening, consent popup removal. The resume_state pattern directly addresses Gap Agent A Q5 (progressive/resumable extraction). Apache-2.0 is a major advantage over firecrawl's AGPL.",
+  "context": {
+    "t28Relevance": "Fills Gap Agent A Q5 (progressive/resumable extraction) via resume_state. Anti-bot and crash recovery are real-world operational patterns. Apache-2.0.",
+    "cluster": "C",
+    "notablePatterns": [
+      "resume_state + on_state_change — crash recovery for long-running crawls",
+      "3-tier anti-bot detection with proxy escalation",
+      "Deep crawl BFS/DFS strategies with max-pages",
+      "Shadow DOM flattening",
+      "Prefetch mode (5-10x faster URL discovery)",
+      "Async browser pool with caching",
+      "LLM extraction with natural language questions"
+    ]
+  }
+}

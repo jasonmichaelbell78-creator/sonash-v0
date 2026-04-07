@@ -1,0 +1,9 @@
+{"category":"referenced_links","item":"arXiv:2408.09869 (Docling Technical Report)","status":"not_fetched","note":"Academic paper. Would add ML architecture details but extraction patterns already captured from code/docs"}
+{"category":"referenced_links","item":"docling-core repo (types package)","status":"not_analyzed","note":"DoclingDocument Pydantic types live here. High relevance but would require separate repo analysis"}
+{"category":"referenced_links","item":"docling-mcp repo","status":"not_analyzed","note":"MCP server implementation. High relevance — flagged as content candidate already"}
+{"category":"referenced_links","item":"DocTags paper (arXiv:2503.11576)","status":"not_fetched","note":"DocTags format specification. Medium relevance for T28 output format design"}
+{"category":"internal_docs","item":"docs/examples/ (code examples)","status":"not_read","note":"Example scripts for various use cases. Lower priority — patterns already captured from concept docs"}
+{"category":"internal_docs","item":"docs/faq/index.md","status":"not_read","note":"FAQ. May contain gotchas but unlikely to add architectural insights"}
+{"category":"internal_docs","item":".actor/ directory","status":"not_read","note":"Apify actor configuration. Specific to Apify platform integration"}
+{"category":"internal_docs","item":"docs/usage/jobkit.md","status":"not_read","note":"JobKit usage. May contain batch processing patterns"}
+{"category":"cross_repo","item":"GraniteDocling (ibm-granite/granite-docling-258M)","status":"not_analyzed","note":"HuggingFace model. VLM for document understanding. Model architecture not analyzed"}

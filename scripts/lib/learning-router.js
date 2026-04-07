@@ -323,6 +323,12 @@ function trackRouting(learning, result, options) {
     scaffold: {
       targetFile: result.targetFile,
       status: result.status,
+      generatedCode:
+        result.entry || // verified-pattern: the pattern entry object
+        result.script || // hook-gate: the script string
+        result.annotation || // claude-md-annotation: the annotation string
+        result.rule || // lint-rule: the rule object
+        null,
     },
     status: "scaffolded",
   };

@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "external_links": [
+    {
+      "url": "https://tolkiengateway.net/wiki/Main_Page",
+      "context": "Example of a comprehensive fan wiki built by volunteers — used to illustrate the wiki pattern at scale",
+      "relevance_score": 25,
+      "type": "example"
+    },
+    {
+      "url": "https://github.com/tobi/qmd",
+      "context": "Local markdown search engine with BM25/vector hybrid search and MCP server. Recommended tooling for wiki search at scale.",
+      "relevance_score": 75,
+      "type": "tool"
+    },
+    {
+      "url": "https://zettelkasten.de/introduction/",
+      "context": "Mentioned in comments — Zettelkasten method as complementary framework for knowledge organization",
+      "relevance_score": 50,
+      "type": "reference"
+    }
+  ],
+  "high_relevance_count": 1,
+  "total_external": 3
+}

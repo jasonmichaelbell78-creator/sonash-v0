@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "url": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+  "site_slug": "kieranklaassen-gist-4f2aba89",
+  "title": "Claude Code Swarm Orchestration Skill",
+  "author": "kieranklaassen",
+  "description": "Complete guide to multi-agent coordination with TeammateTool, Task system, spawn backends, 6 orchestration patterns, and 13 team operations. Documents Claude Code's built-in swarm capabilities.",
+  "og_title": "Claude Code Swarm Orchestration Skill",
+  "canonical": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+  "word_count": 4980,
+  "links_count": 186,
+  "code_blocks": 82,
+  "tables": 1,
+  "headings_count": 85,
+  "scan_date": "2026-04-07",
+  "compliance": {
+    "status": "WARN",
+    "reason": "Wildcard robots.txt restricts gist paths; no explicit Anthropic/Claude blocks. User-initiated.",
+    "robots_txt_checked": true,
+    "cf_mitigated": false
+  },
+  "extraction_method": "superpowers-chrome + WebFetch"
+}

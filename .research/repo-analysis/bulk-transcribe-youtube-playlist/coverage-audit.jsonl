@@ -1,0 +1,4 @@
+{"category":"internal_not_read","item":"transcript_reader.html (full)","detail":"Read first 60 lines. Full file has Bootstrap, jQuery, compromise.js integration with font/theme controls. Rest is standard HTML/JS.","priority":"low"}
+{"category":"external_not_followed","item":"SYSTRAN/faster-whisper","detail":"Core transcription engine. 13K+ stars. CTranslate2 backend. High-value T27 target for deeper analysis.","priority":"high"}
+{"category":"external_not_followed","item":"spencermountain/compromise","detail":"Client-side NLP library. 11K+ stars. Used in transcript reader. Medium relevance for SoNash.","priority":"low"}
+{"category":"external_not_followed","item":"README Whisper model configuration section","detail":"Extended README section after line 200 with model config details. Not fully read.","priority":"medium"}

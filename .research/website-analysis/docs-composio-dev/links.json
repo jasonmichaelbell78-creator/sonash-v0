@@ -1,0 +1,31 @@
+{
+  "schema_version": "1.0",
+  "external_links": [
+    {
+      "url": "https://github.com/composiohq/composio",
+      "context": "Main Composio GitHub repo — open source SDK",
+      "relevance_score": 60,
+      "type": "repo"
+    },
+    {
+      "url": "https://skills.sh/composiohq/skills/composio",
+      "context": "Composio as a Claude Code skill via skills.sh marketplace",
+      "relevance_score": 75,
+      "type": "tool"
+    },
+    {
+      "url": "https://docs.composio.dev/llms.txt",
+      "context": "AI-readable site index in llms.txt format",
+      "relevance_score": 50,
+      "type": "reference"
+    },
+    {
+      "url": "https://platform.composio.dev/auth",
+      "context": "Composio playground — browser-based tool testing",
+      "relevance_score": 30,
+      "type": "tool"
+    }
+  ],
+  "high_relevance_count": 1,
+  "total_external": 4
+}

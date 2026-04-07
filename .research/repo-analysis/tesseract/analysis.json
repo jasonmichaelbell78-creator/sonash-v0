@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "tesseract-ocr/tesseract",
+  "url": "https://github.com/tesseract-ocr/tesseract",
+  "analyzedAt": "2026-04-07T16:30:00Z",
+  "depth": "quick",
+  "repoType": "library",
+  "repoSubtype": "ocr-engine",
+  "metadata": {
+    "stars": 73360,
+    "forks": 10584,
+    "contributors": 197,
+    "language": "C++",
+    "license": "Apache-2.0",
+    "lastPush": "2026-03-29T17:08:42Z",
+    "size": 53817,
+    "openIssues": 475,
+    "archived": false,
+    "fork": false
+  },
+  "summaryBands": {
+    "security": { "band": "B", "score": 70 },
+    "reliability": { "band": "A", "score": 90 },
+    "maintainability": { "band": "B", "score": 75 },
+    "documentation": { "band": "B", "score": 72 },
+    "process": { "band": "B", "score": 70 },
+    "velocity": { "band": "B", "score": 65 }
+  },
+  "absencePattern": "mature-stable",
+  "creatorLens": "Foundational OCR engine used by both unstructured and docling. Architectural lessons already captured via those analyses. No new T28 patterns to extract.",
+  "context": {
+    "t28Relevance": "Skip — foundational tool, not architectural reference",
+    "cluster": "B"
+  }
+}

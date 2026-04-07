@@ -8,10 +8,12 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+**Shared conventions:** See `.claude/skills/shared/CONVENTIONS.md`
 
 # Website Synthesis
 
@@ -38,6 +40,12 @@ and trends visible only at scale.
 7. **Write-to-disk-first.** Each output written before proceeding to the next.
 8. **Thematic saturation stopping rule.** When 3 consecutive sites yield no new
    themes during thematic synthesis, synthesis is complete for that paradigm.
+9. **No silent skips.** After every SHOULD step, verify output exists. Retry
+   once, then report. Never silently continue. See CONVENTIONS.md Section 7.
+10. **Load all 5 home context sources before Creator-facing output.** MUST load:
+    SESSION_CONTEXT.md, ROADMAP.md, CLAUDE.md, `.claude/skills/` listing,
+    MEMORY.md user entries. Required for fit scoring and relevance assessment.
+    See CONVENTIONS.md Section 9.
 
 ## When to Use
 
@@ -121,15 +129,37 @@ pattern taxonomy.
 ## Process Overview
 
 ```
+WARM-UP    Scope       -> Site count, paradigm, prior feedback, estimate
 VALIDATE   Check       -> 3+ sites? Artifacts present? Rate missing data
 PHASE 1    Load        -> Read all artifacts, build internal graph
 PHASE 2    Synthesize  -> Produce outputs per paradigm (or --focus subset)
+PHASE 2.5  Self-Audit  -> Verify synthesis quality, T20 tally, tier distribution
 PHASE 3    Signals     -> Detect convergence, divergence, gaps, trends
 PHASE 4    Present     -> Write synthesis.md + synthesis.json, present, actions
 VERIFY     Artifacts   -> Check all outputs produced
 ```
 
 Phase markers: `========== PHASE N: [NAME] ==========`
+
+---
+
+## Warm-up
+
+Present synthesis scope before beginning work:
+
+- **Site count:** Number of analyzed sites found in
+  `.research/website-analysis/`
+- **Candidate count estimate:** Total candidates across all value-map.json files
+- **Selected paradigm:** The paradigm being used (from `--paradigm` flag or
+  default thematic)
+- **Estimated duration:** Brief/moderate/extended based on site count and
+  paradigm
+
+**Prior feedback replay:** If a state file exists at
+`.claude/state/website-synthesis.state.json` with a `process_feedback` field,
+present: "Last run feedback: {process_feedback}"
+
+Wait for user acknowledgment before proceeding.
 
 ---
 
@@ -189,6 +219,43 @@ Update state file after each output section.
 
 ---
 
+## Phase 2.5: Self-Audit (MUST)
+
+Verify synthesis quality before proceeding. Minimum floor per CONVENTIONS.md
+plus domain-specific checks.
+
+**Minimum floor (CONVENTIONS.md Section 8):**
+
+1. **Artifact presence:** All outputs from Phase 2 exist and are non-empty
+2. **Schema contract:** Synthesis output matches expected paradigm structure
+3. **Completeness:** All paradigm sections produced expected output
+
+**Domain-specific checks:**
+
+4. **Theme evidence check:** Each theme MUST be supported by 3+ independent
+   sites. Themes with fewer sources are downgraded to "tentative" with a
+   warning.
+5. **Source tier distribution:** If >50% of evidence supporting themes comes
+   from T4 sources, flag as "weakly supported synthesis" and warn user before
+   proceeding.
+
+**T20 tally:** After verification, produce a tally of findings:
+
+```
+T20 Tally: Confirmed: N | Corrected: N | Extended: N | New: N
+```
+
+- **Confirmed:** Theme/signal from Phase 2 verified as-is
+- **Corrected:** Theme/signal adjusted after audit (evidence was weaker/wrong)
+- **Extended:** Theme/signal strengthened with additional evidence found
+- **New:** New theme/signal discovered during audit not in Phase 2
+
+See REFERENCE.md for T20 tally thresholds and format detail.
+
+Update state file.
+
+---
+
 ## Phase 3: Signal Detection (MUST)
 
 Apply signal detection across all sites regardless of paradigm:
@@ -241,7 +308,8 @@ Flag missing outputs before presenting follow-up actions.
 **Path:** `.claude/state/website-synthesis.state.json`
 
 Update after every phase. On re-invocation: offer Resume/Re-run. Resume skips
-completed outputs. Schema in REFERENCE.md.
+completed outputs. Includes `process_feedback` field for retro persistence (see
+Retro section). Schema in REFERENCE.md.
 
 ## Compaction Resilience
 
@@ -277,7 +345,9 @@ cd scripts/reviews && npx tsx write-invocation.ts --data \
 
 ## Retro
 
-After follow-up: "Any observations about the synthesis quality or process?"
+Before presenting the routing menu, ask: "What worked well? What would you
+change next time?" Save the response to `process_feedback` in the state file.
+This feedback is replayed in WARM-UP on the next invocation.
 
 ---
 
@@ -285,6 +355,10 @@ After follow-up: "Any observations about the synthesis quality or process?"
 
 | Version | Date       | Description                                             |
 | ------- | ---------- | ------------------------------------------------------- |
+| 1.1     | 2026-04-06 | Convergence plan: CONVENTIONS.md ref, WARM-UP phase,    |
+|         |            | Phase 2.5 Self-Audit with T20 tally, no-silent-skips    |
+|         |            | rule, 5 home context sources, retro persistence,        |
+|         |            | process_feedback in state. Source: PLAN.md Steps 1-6.   |
 | 1.0     | 2026-04-06 | Initial creation. Companion to website-analysis v1.0.   |
 |         |            | 4 paradigms, source weighting, signal detection.        |
 |         |            | Source: DECISIONS.md #19/#20, RESEARCH_OUTPUT.md Sec 9. |

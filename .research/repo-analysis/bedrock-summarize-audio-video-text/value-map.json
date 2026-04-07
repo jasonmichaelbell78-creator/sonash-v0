@@ -1,0 +1,126 @@
+{
+  "repo": "ksharlandjiev/bedrock-summarize-audio-video-text",
+  "analysisDate": "2026-04-07",
+  "depth": "standard",
+  "skillVersion": "4.3",
+  "candidates": [
+    {
+      "name": "YouTube audio extraction pipeline",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "detail": "pytubefix download + moviepy audio extraction to MP3. Full lifecycle in ~30 lines. Reference for T27 YouTube content extraction.",
+      "source_file": "src/handlers/readers/youtube_reader_handler.py"
+    },
+    {
+      "name": "Amazon Transcribe async job lifecycle",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "Start transcription job -> poll -> fetch transcript from S3 -> cleanup. Shows speaker labels, language config, S3 output routing. Reference for T27 speech-to-text options.",
+      "source_file": "src/handlers/processors/amazon_transcribe_handler.py"
+    },
+    {
+      "name": "PII tokenize/untokenize round-trip pattern",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "detail": "Comprehend PII detection -> token replacement (T1/T2/T3) -> token map persistence -> LLM processing with tokens -> untokenization. Preserves context while anonymizing. Prompt template instructs model to use tokens as names."
+    },
+    {
+      "name": "Chain of Responsibility + Factory handler composition",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "detail": "Reader/processor/writer handler taxonomy with set_next() chaining. Factory with lazy import and caching. Clean pipeline composition model."
+    },
+    {
+      "name": "AST-based handler auto-discovery",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "detail": "HandlerFactory.discover_handlers walks handler tree, parses Python ASTs to find AbstractHandler subclasses, registers for lazy import. Zero-config extension model.",
+      "source_file": "src/handlers/handler_factory.py"
+    },
+    {
+      "name": "JSONPath model-agnostic invocation config",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "medium",
+      "detail": "Environment-driven model request/response mapping via JSONPath expressions. Same code invokes Claude v2, Claude 3, or Titan by changing env vars.",
+      "source_file": "src/utils/bedrock.py"
+    },
+    {
+      "name": "Amazon Transcribe API reference",
+      "type": "content",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://docs.aws.amazon.com/transcribe/",
+      "detail": "Core speech-to-text service API. Handler demonstrates full async lifecycle with speaker diarization."
+    },
+    {
+      "name": "pytubefix YouTube download + caption library",
+      "type": "content",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://github.com/JuanBindez/pytubefix",
+      "detail": "1.5K stars, MIT, actively maintained (Mar 2026). Key T27 capabilities: (1) Built-in caption/subtitle extraction to SRT — may skip Whisper/Transcribe for captioned videos, (2) Audio-only stream download, (3) Playlist + Channel enumeration, (4) Search API with filters, (5) AsyncYouTube for non-blocking agent use, (6) OAuth for age-restricted content."
+    },
+    {
+      "name": "AWS-coupled extraction anti-pattern",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "detail": "5+ AWS service dependencies (Transcribe, Textract, Comprehend, Bedrock, S3, Rekognition) create vendor lock-in, billing complexity, and failure surface. Prefer local-first alternatives (Whisper, Tesseract, spaCy) for portable tools. The repo itself has a commented-out Whisper handler hinting at this direction."
+    },
+    {
+      "name": "Blocking poll anti-pattern",
+      "type": "anti-pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "detail": "Transcribe handler polls with time.sleep(30) in a blocking while loop. Acceptable for CLI, but must not be copied into agent pipelines. Use async callbacks or event-driven patterns instead."
+    }
+  ],
+  "related_repos": [
+    "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+    "aws-samples/amazon-bedrock-workshop",
+    "JuanBindez/pytubefix"
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "connection_type": "complementary",
+      "detail": "AWS-MEF is the enterprise frame extraction architecture. This repo is the practical multi-format extraction toolkit. Together they cover T27 from both the video-specific (frames, scenes, shots) and general-content (YouTube, PDF, web, email) angles."
+    },
+    {
+      "target_repo": "aws-samples/amazon-bedrock-workshop",
+      "connection_type": "referenced",
+      "detail": "Acknowledged in README as inspiration source. General Bedrock getting-started, not analyzed."
+    },
+    {
+      "target_repo": "JuanBindez/pytubefix",
+      "connection_type": "shared-pattern",
+      "detail": "Core dependency for YouTube download. Active YouTube extraction library. Not analyzed yet — potential future repo-analysis target for T27."
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "skillVersion": "4.3",
+  "repo": {
+    "full_name": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+    "html_url": "https://github.com/Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+    "description": "Easily take an entire YouTube playlist and turn it into high quality transcripts using Whisper.",
+    "language": "Python",
+    "stars": 664,
+    "forks": 82,
+    "watchers": 664,
+    "created_at": "2023-11-12T00:21:54Z",
+    "pushed_at": "2025-02-27T11:20:47Z",
+    "archived": false,
+    "fork": false,
+    "license": "MIT",
+    "topics": ["playlists", "transcription", "transcripts", "whisper", "youtube"],
+    "default_branch": "main",
+    "size_kb": 2065,
+    "total_commits": 24,
+    "contributor_count": 1,
+    "file_count": 13
+  },
+  "depth": "quick",
+  "analysisDate": "2026-04-07",
+  "repoType": "utility-tool",
+  "dimensions": {
+    "QS-01_activity_recency": {
+      "score": 2,
+      "max": 5,
+      "detail": "Last push Feb 2025 (~14 months ago). 24 total commits."
+    },
+    "QS-02_engagement": {
+      "score": 3,
+      "max": 5,
+      "detail": "664 stars, 82 forks. Popular utility for its niche."
+    },
+    "QS-03_archived_abandoned": {
+      "score": 4,
+      "max": 5,
+      "detail": "Not archived. Still getting stars (last updated Apr 2026). Functionally complete."
+    },
+    "QS-04_license": { "score": 5, "max": 5, "detail": "MIT license." },
+    "QS-05_cicd": { "score": 0, "max": 5, "detail": "Zero workflow runs." },
+    "QS-06_branch_protection": { "score": 0, "max": 5, "detail": "No branch protection rules." },
+    "QS-07_dependabot": { "score": 0, "max": 5, "detail": "Not available." },
+    "QS-08_code_scanning": { "score": 0, "max": 5, "detail": "Not configured." },
+    "QS-09_secret_scanning": { "score": 0, "max": 5, "detail": "Not available." },
+    "QS-10_community_health": { "score": 2, "max": 5, "detail": "42/100." },
+    "QS-11_contributing_security": { "score": 0, "max": 5, "detail": "Neither present." },
+    "QS-12_contributor_count": { "score": 1, "max": 5, "detail": "1 contributor. Bus factor = 1." },
+    "QS-14_openssf": { "score": 0, "max": 5, "detail": "Not indexed." },
+    "QS-17_fork_to_star": {
+      "score": 2,
+      "max": 5,
+      "detail": "82/664 = 0.12. Lower fork ratio — people star but don't modify."
+    }
+  },
+  "summaryBands": {
+    "security": { "band": "Critical", "score": 5, "max": 100 },
+    "reliability": { "band": "Low", "score": 18, "max": 100 },
+    "maintainability": { "band": "Moderate", "score": 35, "max": 100 },
+    "documentation": { "band": "Moderate", "score": 45, "max": 100 },
+    "process": { "band": "Critical", "score": 5, "max": 100 },
+    "velocity": { "band": "Low", "score": 20, "max": 100 }
+  },
+  "absencePattern": "popular-utility-script",
+  "creatorLens": "This repo understands that bulk YouTube transcription needs to be local-first (Whisper), GPU-accelerated (CUDA/faster-whisper), and playlist-aware. It demonstrates the complete pipeline: YouTube URL -> audio download -> Whisper transcription -> NLP sentence splitting (SpaCy or regex) -> structured output (text/CSV/JSON with timestamps and confidence scores). The transcript reader HTML shows UX awareness beyond raw transcription. It's the practical, local-first complement to AWS Transcribe approaches — exactly the T27 reference for Whisper-based extraction."
+}

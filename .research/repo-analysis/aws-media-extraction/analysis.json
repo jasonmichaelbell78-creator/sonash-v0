@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "repo": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+    "scan_date": "2026-04-07",
+    "scan_depth": "quick",
+    "skillVersion": "4.3"
+  },
+  "repo": {
+    "name": "guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+    "full_name": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+    "description": "Demonstrates how to accelerate content analysis workflows by automating video metadata extraction, intelligence gathering, and content moderation",
+    "language": "Python",
+    "stars": 13,
+    "forks": 14,
+    "license": "MIT-0",
+    "created": "2024-04-17",
+    "updated": "2025-02-26",
+    "archived": false,
+    "file_count": 163,
+    "contributors": 4,
+    "commits": 30,
+    "topics": [],
+    "size_kb": 13118,
+    "type": "application",
+    "type_secondary": "reference-architecture"
+  },
+  "quick_scan": {
+    "health_bands": {
+      "security": "Healthy (65)",
+      "reliability": "Needs Work (45)",
+      "maintainability": "Needs Work (50)",
+      "documentation": "Healthy (75)",
+      "process": "Critical (25)",
+      "velocity": "Critical (15)"
+    },
+    "adoption_verdict": "Extract",
+    "adoption_score": 42,
+    "creator_verdict": "Extract (42)"
+  }
+}

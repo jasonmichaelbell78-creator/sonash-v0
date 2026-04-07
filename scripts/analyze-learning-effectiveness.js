@@ -837,28 +837,49 @@ class LearningEffectivenessAnalyzer {
   outputDashboard() {
     const firstReview = this.reviews[0].number;
     const lastReview = this.reviews[this.reviews.length - 1].number;
-    const summary = this.results.summary;
     const trends = this.results.learningTrends;
 
     console.log("╔════════════════════════════════════════════════════════════════════════╗");
-    console.log("║            CLAUDE'S LEARNING EFFECTIVENESS DASHBOARD                  ║");
+    console.log("║            LEARNING SYSTEM — MINIMUM VIABLE METRICS                   ║");
     console.log("╚════════════════════════════════════════════════════════════════════════╝\n");
 
     console.log(
-      `📊 Analysis Period: Review #${firstReview} - #${lastReview} (${this.reviews.length} reviews)\n`
+      `Analysis Period: Review #${firstReview} - #${lastReview} (${this.reviews.length} reviews)\n`
     );
 
-    // Key metrics
-    console.log("┌───────────────────────────────────────────────────────────────────────┐");
-    console.log("│ KEY LEARNING METRICS                                                  │");
-    console.log("├───────────────────────────────────────────────────────────────────────┤");
-    console.log(`│ Learning Effectiveness:     ${summary.learningEffectiveness.padEnd(44)}│`);
-    console.log(`│ Patterns Learned:           ${String(summary.patternsLearned).padEnd(44)}│`);
-    console.log(`│ Patterns Automated:         ${String(summary.patternsAutomated).padEnd(44)}│`);
-    console.log(`│ Patterns Failing:           ${String(summary.patternsFailing).padEnd(44)}│`);
-    console.log(`│ Critical Pattern Success:   ${summary.criticalPatternRate.padEnd(44)}│`);
-    console.log(`│ Automation Coverage:        ${summary.automationCoverage.padEnd(44)}│`);
-    console.log("└───────────────────────────────────────────────────────────────────────┘\n");
+    // Read warnings for MVM display
+    const mvmWarnings = readWarningsLog();
+    const vprResult = calculateViolationsPerPr(mvmWarnings);
+    const recResult = calculateRecurrenceRate(mvmWarnings);
+    const nowMs = Date.now();
+    const msDay = 86400000;
+    const thisWeek = Array.from({ length: 7 }, (_, i) => {
+      const dayStart = nowMs - (6 - i) * msDay;
+      const dayEnd = dayStart + msDay;
+      return mvmWarnings.filter((w) => {
+        const t = new Date(w.timestamp).getTime();
+        return t >= dayStart && t < dayEnd;
+      }).length;
+    });
+    const lastWeek = Array.from({ length: 7 }, (_, i) => {
+      const dayStart = nowMs - (13 - i) * msDay;
+      const dayEnd = dayStart + msDay;
+      return mvmWarnings.filter((w) => {
+        const t = new Date(w.timestamp).getTime();
+        return t >= dayStart && t < dayEnd;
+      }).length;
+    });
+    const trendResult = calculateTrend(thisWeek, lastWeek);
+    const trendSign = trendResult.changePercent >= 0 ? "+" : "";
+
+    console.log(`  Violations/PR (30d):     ${vprResult.violationsPerPr}`);
+    console.log(
+      `  Recurring categories:    ${recResult.recurringCategories}/${recResult.totalCategories}`
+    );
+    console.log(
+      `  Week-over-week:          ${trendResult.direction} (${trendSign}${trendResult.changePercent}%)`
+    );
+    console.log(`  Data points:             ${mvmWarnings.length} warnings\n`);
 
     // Pattern Learning Status Table
     console.log("📈 PATTERN LEARNING STATUS\n");
@@ -1147,86 +1168,50 @@ class LearningEffectivenessAnalyzer {
    */
   async updateMetrics() {
     const now = new Date().toISOString().split("T")[0];
-    const firstReview = this.reviews[0].number;
-    const lastReview = this.reviews[this.reviews.length - 1].number;
-    const summary = this.results.summary;
 
-    const content = `# Learning Effectiveness Metrics
+    // Read hook-warnings-log.jsonl (current + archive)
+    const warnings = readWarningsLog();
 
-**Last Updated:** ${now}
+    // Calculate MVMs
+    const vprResult = calculateViolationsPerPr(warnings);
+    const recResult = calculateRecurrenceRate(warnings);
 
----
+    // Build week buckets for trend (last 14 days, split into 2 x 7-day windows)
+    const now7 = Date.now();
+    const msDay = 86400000;
+    const thisWeek = Array.from({ length: 7 }, (_, i) => {
+      const dayStart = now7 - (6 - i) * msDay;
+      const dayEnd = dayStart + msDay;
+      return warnings.filter((w) => {
+        const t = new Date(w.timestamp).getTime();
+        return t >= dayStart && t < dayEnd;
+      }).length;
+    });
+    const lastWeek = Array.from({ length: 7 }, (_, i) => {
+      const dayStart = now7 - (13 - i) * msDay;
+      const dayEnd = dayStart + msDay;
+      return warnings.filter((w) => {
+        const t = new Date(w.timestamp).getTime();
+        return t >= dayStart && t < dayEnd;
+      }).length;
+    });
+    const trendResult = calculateTrend(thisWeek, lastWeek);
 
-## Purpose
+    const vprSignal = vprResult.signal;
+    const recSignal = recResult.recurrenceRate > 0.6 ? "high" : "ok";
+    const recPct = (recResult.recurrenceRate * 100).toFixed(1);
 
-This document tracks Claude's learning effectiveness - whether documented patterns prevent recurring issues. It provides actionable metrics to guide automation priorities and documentation improvements.
+    const content = `# Learning Metrics (Minimum Viable)
 
-**Auto-generated by:** \`scripts/analyze-learning-effectiveness.js\`
-**Update frequency:** After consolidation (every 10 reviews) or manual analysis
+**Updated:** ${now}
+**Data source:** hook-warnings-log.jsonl (${warnings.length} entries)
 
----
-
-## AI Instructions
-
-This is a **Tier 2 metrics document** - reference during:
-
-- **Post-consolidation**: Check if patterns are being learned
-- **Session planning**: Prioritize automation for failing patterns
-- **Pattern updates**: Validate that documentation improvements work
-
----
-
-## Current Analysis
-
-**Review Range:** #${firstReview} - #${lastReview} (${this.reviews.length} reviews)
-**Analysis Date:** ${now}
-
-### Key Metrics
-
-| Metric                    | Value                                                           |
-| ------------------------- | --------------------------------------------------------------- |
-| Learning Effectiveness    | ${summary.learningEffectiveness}                                |
-| Patterns Learned          | ${summary.patternsLearned}                                      |
-| Patterns Automated        | ${summary.patternsAutomated}                                    |
-| Patterns Failing          | ${summary.patternsFailing}                                      |
-| Critical Pattern Success  | ${summary.criticalPatternRate}                                  |
-| Automation Coverage       | ${summary.automationCoverage}                                   |
-| Total Documented Patterns | ${summary.totalDocumentedPatterns}                              |
-| Total Automated Patterns  | ${summary.totalAutomatedPatterns}                               |
-
-### Top Recommended Actions
-
-${this.results.suggestions
-  .slice(0, 5)
-  .map((s, i) => {
-    const category = escapeMd(s.category, 20);
-    const title = escapeMd(s.title, 80);
-    const description = escapeMd(s.description, 150);
-    const action = escapeMd(s.action, 150);
-    return `${i + 1}. **[${category}]** ${title}
-   - ${description}
-   - Action: ${action}`;
-  })
-  .join("\n\n")}
-
----
-
-## Pattern Learning Status Summary
-
-| Status     | Count | Description                              |
-| ---------- | ----- | ---------------------------------------- |
-| ✅ LEARNED | ${summary.patternsLearned}     | Pattern never recurred after documentation |
-| 🔧 AUTOMATED | ${summary.patternsAutomated}   | Pattern recurred but now enforced by tooling |
-| 🟡 WEAK    | ${summary.patternsWeak}     | Pattern recurred 1-2 times - needs attention |
-| 🔴 FAILED  | ${summary.patternsFailing}     | Pattern recurred 3+ times - needs automation |
-
----
-
-## Version History
-
-| Version | Date       | Description                              |
-| ------- | ---------- | ---------------------------------------- |
-| 2.0     | ${now}     | Rewritten to focus on Claude's learning effectiveness |
+| Metric | Value | Signal |
+| --- | --- | --- |
+| Violations per PR (30-day) | ${vprResult.violationsPerPr} | ${vprSignal} |
+| Recurring categories | ${recResult.recurringCategories}/${recResult.totalCategories} (${recPct}%) | ${recSignal} |
+| Week-over-week trend | ${trendResult.direction} (${trendResult.changePercent >= 0 ? "+" : ""}${trendResult.changePercent}%) | ${trendResult.direction} |
+| Total warnings (all time) | ${warnings.length} | — |
 `;
 
     safeWriteFile(METRICS_FILE, content, { allowOverwrite: true });
@@ -1314,4 +1299,92 @@ if (require.main === module) {
   });
 }
 
-module.exports = { LearningEffectivenessAnalyzer };
+/**
+ * Calculate violations per PR over a rolling window.
+ * @param {Array<{timestamp: string, pr?: string}>} warnings
+ * @param {{windowDays?: number}} [options]
+ */
+function calculateViolationsPerPr(warnings, options = {}) {
+  const windowDays = options.windowDays || 30;
+  const cutoff = new Date(Date.now() - windowDays * 86400000);
+  const recent = warnings.filter((w) => new Date(w.timestamp) >= cutoff);
+  if (recent.length < 2) {
+    return { violationsPerPr: 0, prCount: 0, totalViolations: 0, signal: "insufficient_data" };
+  }
+  const prs = new Set(recent.map((w) => w.pr).filter(Boolean));
+  const prCount = Math.max(prs.size, 1);
+  const violationsPerPr = +(recent.length / prCount).toFixed(2);
+  return { violationsPerPr, prCount, totalViolations: recent.length, signal: "ok" };
+}
+
+/**
+ * Calculate recurrence rate (categories that appear more than once).
+ * @param {Array<{category: string}>} warnings
+ */
+function calculateRecurrenceRate(warnings) {
+  const counts = {};
+  for (const w of warnings) {
+    counts[w.category] = (counts[w.category] || 0) + 1;
+  }
+  const totalCategories = Object.keys(counts).length;
+  const recurringCategories = Object.values(counts).filter((c) => c > 1).length;
+  const recurrenceRate =
+    totalCategories > 0 ? +(recurringCategories / totalCategories).toFixed(3) : 0;
+  return { recurringCategories, totalCategories, recurrenceRate };
+}
+
+/**
+ * Calculate week-over-week trend from daily violation counts.
+ * @param {number[]} thisWeek - daily counts for current week
+ * @param {number[]} lastWeek - daily counts for prior week
+ */
+function calculateTrend(thisWeek, lastWeek) {
+  const sumThis = thisWeek.reduce((a, b) => a + b, 0);
+  const sumLast = lastWeek.reduce((a, b) => a + b, 0);
+  if (sumLast === 0) {
+    return { direction: sumThis === 0 ? "stable" : "rising", changePercent: sumThis > 0 ? 100 : 0 };
+  }
+  const changePercent = +(((sumThis - sumLast) / sumLast) * 100).toFixed(1);
+  let direction = "stable";
+  if (changePercent < -10) direction = "declining";
+  else if (changePercent > 10) direction = "rising";
+  return { direction, changePercent };
+}
+
+/**
+ * Read and parse hook-warnings-log.jsonl (current + archive).
+ * Guards against symlinks and files >10MB.
+ */
+function readWarningsLog() {
+  const warningsLogPath = join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
+  const archivePath = warningsLogPath + ".archive";
+  let rawLines = [];
+  for (const filePath of [warningsLogPath, archivePath]) {
+    try {
+      const st = lstatSync(filePath);
+      if (st.isSymbolicLink() || st.size > 10 * 1024 * 1024) continue;
+      const text = readFileSync(filePath, "utf8");
+      rawLines = rawLines.concat(text.split("\n").filter((l) => l.trim()));
+    } catch {
+      // file may not exist — skip silently
+    }
+  }
+  const warnings = [];
+  for (const line of rawLines) {
+    try {
+      const entry = JSON.parse(line);
+      warnings.push({ ...entry, category: entry.type || entry.category || "unknown" });
+    } catch {
+      // skip malformed lines
+    }
+  }
+  return warnings;
+}
+
+// Export MVM functions for testing
+module.exports = {
+  LearningEffectivenessAnalyzer,
+  calculateViolationsPerPr,
+  calculateRecurrenceRate,
+  calculateTrend,
+};

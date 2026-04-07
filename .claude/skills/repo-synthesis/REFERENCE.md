@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
+**Document Version:** 1.3
 **Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -226,10 +226,13 @@ includes only:
 v4.2 candidates use `novelty/effort/relevance` fields (not numeric scores).
 There are 4 candidate types: pattern, knowledge, content, anti-pattern.
 
-1. Load current `SESSION_CONTEXT.md` — extract active sprint items, current
-   projects, immediate priorities
-2. Load `ROADMAP.md` — extract directional goals
-3. For each candidate across all repos (ALL 4 types):
+1. Load all 5 home context sources (MUST — see CONVENTIONS.md Section 9):
+   - `SESSION_CONTEXT.md` — active sprint items, current projects, priorities
+   - `ROADMAP.md` — directional goals
+   - `CLAUDE.md` — conventions, stack, architecture constraints
+   - `.claude/skills/` listing — active skills inventory
+   - `MEMORY.md` user/project entries — project initiatives, decisions
+2. For each candidate across all repos (ALL 4 types):
    - Keep scan-time `relevance` (high/medium/low) and `novelty`
      (High/Medium/Low)
    - Compute `synthesis_fit`:
@@ -239,7 +242,7 @@ There are 4 candidate types: pattern, knowledge, content, anti-pattern.
      - `relevance: low` or no match → `not-relevant`
    - Content candidates with URLs get an `actionable` flag
    - Anti-pattern candidates get a `caution` flag (applies to current work?)
-4. Flag candidates whose synthesis_fit differs from scan-time relevance
+3. Flag candidates whose synthesis_fit differs from scan-time relevance
 
 **Output format:**
 
@@ -345,13 +348,45 @@ priorities shifted to X..."]
 
 ---
 
-## 7. Complete synthesis.json Schema
+## 7. Convergence Confidence Scoring
+
+**Purpose:** Assign confidence levels to synthesized claims (themes, gaps,
+patterns) based on how many independent repos confirm them.
+
+**Confidence thresholds:**
+
+| Level      | Agreement Count | Treatment                                      |
+| ---------- | --------------- | ---------------------------------------------- |
+| **HIGH**   | 3+ repos        | Present as established finding                 |
+| **MEDIUM** | 2 repos         | Present with caveat: "confirmed by 2 repos"    |
+| **LOW**    | 1 repo          | Flag as "single-source" — may be repo-specific |
+
+**Independence check (MUST):** Repos that fork from each other count as 1
+source, not 2. Check `related_repos[]` in value-map.json for `fork-of` or
+`forked-by` relationships. If two repos share a fork relationship, consolidate
+their evidence as a single source for confidence scoring purposes.
+
+**No tier weighting:** All repos are first-party artifacts analyzed by the same
+skill pipeline. Unlike web content (where source authority varies), repo
+artifacts have uniform trust. Confidence is purely a function of independent
+agreement count.
+
+**Application:** Apply convergence confidence to:
+
+- Each emergent theme (Section 1)
+- Each ecosystem gap claim (Section 2)
+- Each knowledge map coverage assertion (Section 6)
+- Reading chain transitions are exempt (they are structural, not interpretive)
+
+---
+
+## 8. Complete synthesis.json Schema
 
 Top-level structure combining all 6 output sections:
 
 ```json
 {
-  "version": "1.2",
+  "schema_version": "1.3",
   "generated_at": "ISO8601",
   "repos_included": ["owner/repo"],
   "repos_excluded": [],
@@ -378,12 +413,12 @@ Top-level structure combining all 6 output sections:
 }
 ```
 
-**Required keys:** `version`, `generated_at`, `repos_included`. All 6 output
-keys MUST be present (empty arrays/objects if `--focus` excluded them).
+**Required keys:** `schema_version`, `generated_at`, `repos_included`. All 6
+output keys MUST be present (empty arrays/objects if `--focus` excluded them).
 
 ---
 
-## 8. Input Contract (cross-reference)
+## 9. Input Contract (cross-reference)
 
 All input artifacts are produced by `/repo-analysis` v4.2+. Schemas defined in
 repo-analysis REFERENCE.md.
@@ -416,7 +451,7 @@ reduced synthesis capability but proceed.
 
 ---
 
-## 9. Guard Rails
+## 10. Guard Rails
 
 - **<3 repos:** Abort with clear message, suggest more scans.
 - **2 repos with `--min-repos=2`:** Produces a comparison, not a synthesis. Use
@@ -428,7 +463,7 @@ reduced synthesis capability but proceed.
 - **Stale fit scores:** Always refresh — never present scan-time fit as current.
 - **Missing artifacts:** Exclude repo with warning, don't silently degrade.
 - **Empty artifacts:** Warn when MUST artifacts have no meaningful content.
-- **Candidate pool >100:** Present top 50 inline, full list in synthesis.json.
+- **Candidate pool:** Present ALL candidates grouped by tier and type. No caps.
 - **Web search unavailable:** Note gap without suggestion.
 - **Contradictions between repos:** Route to Contrarian Signal, don't resolve.
 - **Scope:** This skill synthesizes. It does NOT re-analyze, re-clone, or modify
@@ -436,7 +471,7 @@ reduced synthesis capability but proceed.
 
 ---
 
-## 10. State File Schema
+## 11. State File Schema
 
 **Path:** `.claude/state/repo-synthesis.state.json`
 
@@ -477,7 +512,7 @@ reduced synthesis capability but proceed.
 
 ---
 
-## 11. Compaction Resilience
+## 12. Compaction Resilience
 
 Each output section writes to SYNTHESIS.md incrementally. State file tracks
 which sections are complete. On resume, skip completed sections. State file
@@ -485,10 +520,13 @@ updated after every phase boundary and every output section.
 
 ---
 
-## 12. Version History
+## 13. Version History
 
 | Version | Date       | Description                                             |
 | ------- | ---------- | ------------------------------------------------------- |
+| 1.3     | 2026-04-06 | Convergence plan: add Section 7 (convergence scoring),  |
+|         |            | schema_version key, 5 home context sources, Decision    |
+|         |            | Coverage Map appendix. Renumber sections 8-13.          |
 | 1.2     | 2026-04-06 | Skill audit (47 decisions): add synthesis.json schema,  |
 |         |            | guard rails, 2-repo guidance, follow_up_actions in      |
 |         |            | state, version bump to 1.2.                             |
@@ -497,3 +535,33 @@ updated after every phase boundary and every output section.
 | 1.0     | 2026-04-05 | Initial creation. Companion to repo-analysis v4.1.      |
 |         |            | 6 synthesis outputs, fit refresh, conversational.       |
 |         |            | Source: 30-decision deep-plan, Decisions #13/16/23/24.  |
+
+---
+
+## Appendix A: Decision Coverage Map
+
+Maps key design decisions to their implementation location in SKILL.md and
+REFERENCE.md. Source: 30-decision deep-plan + 47-decision skill audit +
+20-decision convergence plan.
+
+| #     | Decision                          | Implementation Location                                          |
+| ----- | --------------------------------- | ---------------------------------------------------------------- |
+| DP-13 | Warm-up phase with scope estimate | SKILL.md: Warm-Up section                                        |
+| DP-16 | Fit refresh at synthesis time     | SKILL.md: Phase 2 Section 2.5; REFERENCE.md: Section 5           |
+| DP-23 | Conversational prose style        | SKILL.md: Critical Rule #3; CONVENTIONS.md Section 3             |
+| DP-24 | 6 synthesis outputs               | SKILL.md: Phase 2 (6 subsections); REFERENCE.md: Sections 1-6    |
+| SA-V  | Verification pass (T20 tally)     | SKILL.md: Phase 2.5                                              |
+| SA-SA | Self-audit phase                  | SKILL.md: Phase 3; CONVENTIONS.md Section 8                      |
+| SA-RP | Retro persistence                 | SKILL.md: Retro section; REFERENCE.md: Section 11 (state schema) |
+| SA-DL | Delegation protocol               | SKILL.md: Phase 4 (follow-up actions)                            |
+| SA-RC | Reading chain construction        | REFERENCE.md: Section 3 (algorithm)                              |
+| SA-ME | Mental model evolution            | REFERENCE.md: Section 4 (heuristics)                             |
+| SA-CH | Candidate handling (4 types)      | REFERENCE.md: Section 5 (refresh logic)                          |
+| SA-SS | State schema with resume          | REFERENCE.md: Section 11                                         |
+| CP-7  | No silent skips                   | SKILL.md: Critical Rule #6; CONVENTIONS.md Section 7             |
+| CP-10 | Convergence confidence scoring    | REFERENCE.md: Section 7                                          |
+| CP-12 | 5 home context sources            | SKILL.md: Phase 2 Section 2.5; REFERENCE.md: Section 5           |
+| CP-16 | schema_version key                | REFERENCE.md: Section 8 (synthesis.json schema)                  |
+
+**Key:** DP = deep-plan decision, SA = skill-audit decision, CP = convergence
+plan decision.

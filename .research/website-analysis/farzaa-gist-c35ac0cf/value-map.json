@@ -1,0 +1,71 @@
+{
+  "schema_version": "1.0",
+  "candidates": [
+    {
+      "id": "K1",
+      "title": "Anti-cramming / anti-thinning balance for knowledge skills",
+      "type": "design-principle",
+      "description": "When to split vs enrich. If adding third paragraph about sub-topic, split. If stub exists with 4 entries mentioning it, enrich. Directly applicable to how /repo-synthesis and /website-synthesis decide granularity of output.",
+      "confidence": "HIGH",
+      "effort": "E0",
+      "personal_fit": 78,
+      "extraction_action": "Evaluate EXTRACTIONS.md entries — are any cramming (too many candidates in one source) or thinning (stubs without depth)?",
+      "finding_refs": ["F2"]
+    },
+    {
+      "id": "K2",
+      "title": "15-entry checkpoint cycle pattern",
+      "type": "workflow-pattern",
+      "description": "Periodic maintenance rhythm during long operations. Every N items: rebuild indexes, audit quality, check for anti-patterns. Maps to session-end but could be applied mid-session during batch operations.",
+      "confidence": "HIGH",
+      "effort": "E0",
+      "personal_fit": 72,
+      "extraction_action": "Compare to convergence loop checkpoints. Could /deep-research benefit from a mid-pipeline quality gate every N findings?",
+      "finding_refs": ["F3"]
+    },
+    {
+      "id": "K3",
+      "title": "Parallel subagent cleanup workflow (5-batch audit)",
+      "type": "workflow-pattern",
+      "description": "Spawn batches of 5 agents, each audits one article across 6 dimensions (structure, length, tone, quotes, coherence, links). Deduplicate findings, then execute fixes. Directly comparable to our code-reviewer + skill-audit patterns.",
+      "confidence": "HIGH",
+      "effort": "E1",
+      "personal_fit": 70,
+      "extraction_action": "Compare agent batch size (5) against our parallelization patterns. Could /skill-audit or /doc-optimizer use this batched audit pattern?",
+      "finding_refs": ["F4"]
+    },
+    {
+      "id": "K4",
+      "title": "Writer-not-filing-clerk identity framing",
+      "type": "design-principle",
+      "description": "Identity statement shapes every operation: 'what does this mean and how does it connect' vs 'where do I file this'. Applicable to how analysis/synthesis skills should frame their output — synthesis not filing.",
+      "confidence": "MEDIUM",
+      "effort": "E0",
+      "personal_fit": 65,
+      "extraction_action": "Evaluate: do our skills produce synthesis or filing? Does /repo-analysis create understanding or categorization?",
+      "finding_refs": ["F6"]
+    },
+    {
+      "id": "K5",
+      "title": "Concurrency safety rules for LLM file ops",
+      "type": "pattern",
+      "description": "Re-read before editing, never delete without reading, rebuild indices only at command end. Practical wisdom already partially captured in CLAUDE.md guardrails but more specific to wiki-style operations.",
+      "confidence": "HIGH",
+      "effort": "E0",
+      "personal_fit": 55,
+      "extraction_action": "Compare against CLAUDE.md guardrail #12 (verify file state against filesystem). Any gaps?",
+      "finding_refs": ["F8"]
+    },
+    {
+      "id": "K6",
+      "title": "7-command skill architecture as T24 reference design",
+      "type": "architecture-pattern",
+      "description": "The ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize command set is a concrete instantiation of Karpathy's ingest-query-lint triad, with more granularity. Direct reference for T24 synthesis adoption skill design.",
+      "confidence": "HIGH",
+      "effort": "E1",
+      "personal_fit": 82,
+      "extraction_action": "Map these 7 commands to T24 synthesis adoption skill commands. Which map directly, which need adaptation, which are missing?",
+      "finding_refs": ["F1"]
+    }
+  ]
+}

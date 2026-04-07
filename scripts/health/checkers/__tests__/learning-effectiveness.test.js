@@ -42,19 +42,19 @@ else delete require.cache[UTILS_PATH];
 
 function makeContent(overrides = {}) {
   const f = {
-    effectiveness: 88.5,
-    automation: 32,
-    failing: 3,
-    learned: 15,
-    critical: 92,
+    violationsPerPr: 2.5,
+    vprSignal: "ok",
+    recurringCats: 5,
+    totalCats: 10,
+    recPct: "50.0",
+    recSignal: "ok",
     ...overrides,
   };
   return [
-    `| Learning Effectiveness | ${f.effectiveness}% |`,
-    `| Automation Coverage | ${f.automation}% |`,
-    `| Patterns Failing | ${f.failing} |`,
-    `| Patterns Learned | ${f.learned} |`,
-    `| Critical Pattern Success | ${f.critical}% |`,
+    "| Metric | Value | Signal |",
+    "| --- | --- | --- |",
+    `| Violations per PR (30-day) | ${f.violationsPerPr} | ${f.vprSignal} |`,
+    `| Recurring categories | ${f.recurringCats}/${f.totalCats} (${f.recPct}%) | ${f.recSignal} |`,
   ].join("\n");
 }
 
@@ -72,20 +72,18 @@ describe("checkLearningEffectiveness", () => {
     }
   });
 
-  it("returns no_data=false when file is present (failing_patterns and learned_count always included)", () => {
+  it("returns no_data=true when file has no matching metrics", () => {
     realFs.readFileSync = () => "# Nothing useful here\n\nJust text.";
     try {
       const r = checkLearningEffectiveness();
-      assert.equal(r.no_data, false);
-      assert.ok("failing_patterns" in r.metrics);
-      assert.ok("learned_count" in r.metrics);
+      assert.equal(r.no_data, true);
     } finally {
       realFs.readFileSync = origReadFileSync;
     }
   });
 
-  it("returns no_data=false when at least one field is found", () => {
-    realFs.readFileSync = () => "| Patterns Failing | 2 |";
+  it("returns no_data=false when at least one metric is found", () => {
+    realFs.readFileSync = () => "| Violations per PR (30-day) | 3.5 | ok |";
     try {
       assert.equal(checkLearningEffectiveness().no_data, false);
     } finally {
@@ -93,62 +91,54 @@ describe("checkLearningEffectiveness", () => {
     }
   });
 
-  it("parses effectiveness correctly", () => {
-    realFs.readFileSync = () => makeContent({ effectiveness: 91.5 });
+  it("parses violations_per_pr correctly", () => {
+    realFs.readFileSync = () => makeContent({ violationsPerPr: 1.25 });
     try {
       const r = checkLearningEffectiveness();
-      assert.ok("effectiveness" in r.metrics);
-      assert.equal(r.metrics.effectiveness.value, 91.5);
+      assert.ok("violations_per_pr" in r.metrics);
+      assert.equal(r.metrics.violations_per_pr.value, 1.25);
     } finally {
       realFs.readFileSync = origReadFileSync;
     }
   });
 
-  it("parses automation_coverage correctly", () => {
-    realFs.readFileSync = () => makeContent({ automation: 28.5 });
+  it("parses recurrence_rate correctly", () => {
+    realFs.readFileSync = () => makeContent({ recPct: "33.3" });
     try {
       const r = checkLearningEffectiveness();
-      assert.ok("automation_coverage" in r.metrics);
-      assert.equal(r.metrics.automation_coverage.value, 28.5);
+      assert.ok("recurrence_rate" in r.metrics);
+      assert.equal(r.metrics.recurrence_rate.value, 33.3);
     } finally {
       realFs.readFileSync = origReadFileSync;
     }
   });
 
-  it("parses failing_patterns correctly", () => {
-    realFs.readFileSync = () => makeContent({ failing: 7 });
-    try {
-      assert.equal(checkLearningEffectiveness().metrics.failing_patterns.value, 7);
-    } finally {
-      realFs.readFileSync = origReadFileSync;
-    }
-  });
-
-  it("parses learned_count correctly", () => {
-    realFs.readFileSync = () => makeContent({ learned: 22 });
-    try {
-      assert.equal(checkLearningEffectiveness().metrics.learned_count.value, 22);
-    } finally {
-      realFs.readFileSync = origReadFileSync;
-    }
-  });
-
-  it("parses critical_success correctly", () => {
-    realFs.readFileSync = () => makeContent({ critical: 96 });
+  it("skips violations_per_pr when signal is insufficient_data", () => {
+    realFs.readFileSync = () => makeContent({ vprSignal: "insufficient_data" });
     try {
       const r = checkLearningEffectiveness();
-      assert.ok("critical_success" in r.metrics);
-      assert.equal(r.metrics.critical_success.value, 96);
+      assert.ok(!("violations_per_pr" in r.metrics));
     } finally {
       realFs.readFileSync = origReadFileSync;
     }
   });
 
-  it("omits effectiveness key when not present in file", () => {
-    realFs.readFileSync = () => "| Patterns Failing | 1 |\n| Patterns Learned | 10 |";
+  it("still includes recurrence_rate when vpr signal is insufficient_data", () => {
+    realFs.readFileSync = () => makeContent({ vprSignal: "insufficient_data" });
     try {
       const r = checkLearningEffectiveness();
-      assert.ok(!("effectiveness" in r.metrics));
+      assert.ok("recurrence_rate" in r.metrics);
+      assert.equal(r.no_data, false);
+    } finally {
+      realFs.readFileSync = origReadFileSync;
+    }
+  });
+
+  it("omits violations_per_pr when not present in file", () => {
+    realFs.readFileSync = () => "| Recurring categories | 3/8 (37.5%) | ok |";
+    try {
+      const r = checkLearningEffectiveness();
+      assert.ok(!("violations_per_pr" in r.metrics));
     } finally {
       realFs.readFileSync = origReadFileSync;
     }
@@ -157,11 +147,8 @@ describe("checkLearningEffectiveness", () => {
   it("all metric scores are in [0, 100]", () => {
     realFs.readFileSync = () =>
       makeContent({
-        effectiveness: 50,
-        automation: 5,
-        failing: 15,
-        learned: 2,
-        critical: 55,
+        violationsPerPr: 4,
+        recPct: "55.0",
       });
     try {
       const r = checkLearningEffectiveness();
@@ -176,10 +163,21 @@ describe("checkLearningEffectiveness", () => {
     }
   });
 
-  it("failing_patterns is always present with value 0 when not in file", () => {
-    realFs.readFileSync = () => "| Learning Effectiveness | 85.0% |";
+  it("scores violations_per_pr as good when value is low", () => {
+    realFs.readFileSync = () => makeContent({ violationsPerPr: 0.5 });
     try {
-      assert.equal(checkLearningEffectiveness().metrics.failing_patterns.value, 0);
+      const r = checkLearningEffectiveness();
+      assert.equal(r.metrics.violations_per_pr.rating, "good");
+    } finally {
+      realFs.readFileSync = origReadFileSync;
+    }
+  });
+
+  it("scores recurrence_rate as poor when value is high", () => {
+    realFs.readFileSync = () => makeContent({ recPct: "75.0" });
+    try {
+      const r = checkLearningEffectiveness();
+      assert.equal(r.metrics.recurrence_rate.rating, "poor");
     } finally {
       realFs.readFileSync = origReadFileSync;
     }

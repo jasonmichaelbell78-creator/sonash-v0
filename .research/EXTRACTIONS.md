@@ -1,0 +1,266 @@
+# Extraction Candidates — Cross-Entity Summary
+
+Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
+
+**Schema version:** 2.0 | **Total:** 168 candidates **By decision:** defer: 145,
+investigate: 2, extract: 20, skip: 1
+
+---
+
+## codecrafters-io/build-your-own-x (repo)
+
+| Candidate                                        | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ------------------------------------------------ | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Build Your Own React (Pomber)                    | content      | defer    | 2026-04-06 | high    | E0     | high      | -            | https://pomb.us/build-your-own-react/. Canonical React-from-scratch tutorial. Fiber, reconciliation, hooks. Directly app |
+| Didact: DIY React                                | content      | defer    | 2026-04-06 | medium  | E0     | high      | -            | https://github.com/hexacta/didact. Virtual DOM diffing focus. Complementary to Pomber. Understanding re-render behavior. |
+| Write Yourself a Git                             | content      | defer    | 2026-04-06 | medium  | E0     | medium    | -            | https://wyag.thb.lt. Python git-from-scratch. Understanding object model helps design better hook/worktree infrastructur |
+| Regex Matching Can Be Simple and Fast (Russ Cox) | content      | defer    | 2026-04-06 | medium  | E0     | medium    | -            | https://swtch.com/~rsc/regexp/regexp1.html. NFA/DFA theory. Directly applicable to check-pattern-compliance.js regex per |
+| 31-Category Tutorial Taxonomy                    | pattern      | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 390 links across 31 domains. 16 individually evaluated in content-eval.jsonl. Cross-reference against 72-skill index.    |
+| Curated Link Format Pattern                      | pattern      | defer    | 2026-04-06 | low     | E0     | low       | -            | Standard awesome-list format. Low extraction value.                                                                      |
+| Skill Retirement Process Design                  | knowledge    | defer    | 2026-04-06 | high    | E0     | high      | -            | Case study: 486K stars, 462 open issues, 1 commit/90d. What happens when a curated collection grows without retirement/a |
+| Build from Scratch Framing for Domain 01         | knowledge    | defer    | 2026-04-06 | medium  | E0     | medium    | -            | Feynman principle applied to system understanding. Structure JASON-OS Internal Archaeology (Domain 01) as 'how each syst |
+| Celebrity Stagnation Lifecycle                   | knowledge    | defer    | 2026-04-06 | medium  | E0     | medium    | -            | Community enthusiasm → commercial acquisition → maintenance bottleneck → dormancy. Cross-ref: overlaps with public-apis  |
+| Shell/CLI Tutorial Collection                    | knowledge    | defer    | 2026-04-06 | low     | E0     | medium    | -            | 7 shell tutorials (C, Go, Rust). Canonical references if JASON-OS needs custom command dispatch. Defer until architectur |
+| Single-File-Everything Anti-Pattern              | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 390 links in one README.md. Watch for same impulse in EXTRACTIONS.md, MEMORY.md, SKILL_INDEX.md — when a single file bec |
+| Inline License Without LICENSE File              | anti-pattern | defer    | 2026-04-06 | low     | E0     | medium    | -            | CC0 in README but no LICENSE file. GitHub API can't detect it. Always include machine-readable LICENSE if publishing.    |
+
+## HKUDS/CLI-Anything (repo)
+
+| Candidate                                | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ---------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| HARNESS.md 7-Phase SOP                   | pattern      | defer    | 2026-04-06 | high    | E0     | high      | -            | Systematic methodology for wrapping GUI apps as agent-native CLIs. Directly applicable to JASON-OS Domain 02a.           |
+| SKILL.md Command Catalog Format          | pattern      | defer    | 2026-04-06 | high    | E0     | high      | -            | 37 SKILL.md files. Flat command references vs sonash workflow definitions. Design space comparison for skill format evol |
+| .claude-plugin/marketplace.json          | pattern      | defer    | 2026-04-06 | high    | E0     | high      | -            | First public Claude Code plugin format reference. Compare against sonash .claude-plugin/ structure.                      |
+| Registry + CLI-Hub Distribution          | pattern      | defer    | 2026-04-06 | medium  | E1     | medium    | -            | registry.json (35 CLIs) → static hub → pip install. Agent-discoverable via meta-skill. Model for JASON-OS skill distribu |
+| ReplSkin Terminal UI                     | pattern      | defer    | 2026-04-06 | medium  | E1     | medium    | -            | Python prompt_toolkit branded REPL. Pattern portable, code Python-specific. Reference for JASON-OS interactive modes.    |
+| Codec Allowlist Pattern                  | pattern      | defer    | 2026-04-06 | low     | E0     | low       | -            | frozenset-based subprocess arg validation. Similar to existing sonash security patterns.                                 |
+| Skill Generator (Jinja2)                 | pattern      | defer    | 2026-04-06 | medium  | E2     | medium    | -            | Auto-generates SKILL.md from CLI introspection. Pattern portable to Node/TS.                                             |
+| Agent-Native Software Methodology        | knowledge    | defer    | 2026-04-06 | high    | E0     | high      | -            | Core insight: wrap GUI software systematically for agents. HARNESS.md is the how-to. Foundational for JASON-OS Domain 02 |
+| Build-vs-Integrate Decision for JASON-OS | knowledge    | defer    | 2026-04-06 | high    | E0     | high      | -            | Should JASON-OS invoke CLI-Anything harnesses (Python) or generate Node/TS wrappers using same methodology? Critical arc |
+| Quality Treadmill Case Study             | knowledge    | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 28K stars in 29d, 35 harnesses, 0 CI enforcement. Growth outpacing gates. Opposite of build-your-own-x stagnation.       |
+| MCP Backend Pattern                      | content      | defer    | 2026-04-06 | high    | E0     | high      | -            | guides/mcp-backend.md. Wrap MCP servers as CLI backends via ClientSession + stdio_client. You have 3 MCP servers. Direct |
+| Skill Auto-Generation Guide              | content      | defer    | 2026-04-06 | high    | E0     | high      | -            | guides/skill-generation.md. Introspect Click decorators → Jinja2 → SKILL.md. Could inform /skill-creator automation.     |
+| Mermaid Harness                          | content      | defer    | 2026-04-06 | medium  | E0     | high      | -            | Lightest-weight harness. No local binary (mermaid.ink cloud). Ready to use for agent-driven diagrams.                    |
+| Exa Harness                              | content      | defer    | 2026-04-06 | medium  | E0     | medium    | -            | AI search + structured extraction via Exa API. Alternative/complement for /deep-research searchers.                      |
+| No-CI-for-Tests Anti-Pattern             | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 74 test files, zero CI enforcement. Tests as documentation, not quality gates. Don't regress on pre-commit enforcement.  |
+| Monorepo Without Shared Testing          | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 35 packages, 0 conftest.py, no shared runner. Plan shared testing if JASON-OS distributes skills as packages.            |
+| Growing Faster Than Quality Gates        | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 28K stars/29d with no automated enforcement. Same trajectory as celebrity stagnation, faster.                            |
+
+## ViktorAxelsen/MemSkill (repo)
+
+| Candidate                          | Type         | Decision    | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                               |
+| ---------------------------------- | ------------ | ----------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------------------- |
+| Meta-Memory Skills Framework       | pattern      | defer       | 2026-04-06 | high    | E0     | high      | -            | Skills about HOW to remember. Paradigm shift for auto-memory. Read arXiv 2602.02474.                |
+| Skill Evolution Loop               | pattern      | defer       | 2026-04-06 | high    | E1     | high      | -            | Mine failures → refine skills → propose new. General-purpose self-improvement.                      |
+| Skill Bank 5-Section Format        | pattern      | defer       | 2026-04-06 | medium  | E0     | medium    | -            | Description/Purpose/When to Use/How to Apply/Constraints. Compare against SKILL.md.                 |
+| Designer Prompt Templates          | pattern      | defer       | 2026-04-06 | high    | E0     | medium    | -            | 18KB failure classification + mutation prompts. Skill refinement methodology.                       |
+| Dual-Embedding Memory Bank         | pattern      | defer       | 2026-04-06 | medium  | E2     | medium    | -            | Content + context embeddings. Concept portable, code FAISS+PyTorch.                                 |
+| Operation Templates with Meta-Info | pattern      | defer       | 2026-04-06 | medium  | E1     | medium    | -            | Usage + reward + EMA tracking for skill/tool selection.                                             |
+| 15 Memory Skill Templates          | content      | defer       | 2026-04-06 | high    | E0     | high      | -            | 8 conversational + 7 embodied. Direct templates for JASON-OS memory operations. Read all before T4. |
+| capture_activity_details.md        | content      | defer       | 2026-04-06 | high    | E0     | high      | -            | Activity capture with temporal context. Template for auto-memory enhancement.                       |
+| insert.md                          | content      | defer       | 2026-04-06 | high    | E0     | high      | -            | Memory insert with duplicate avoidance + quality criteria.                                          |
+| arXiv 2602.02474                   | content      | investigate | 2026-04-06 | high    | E1     | high      | -            | Core theory paper. NOT FETCHED. MUST read before T4 execution.                                      |
+| Academic Code Quality              | anti-pattern | defer       | 2026-04-06 | medium  | E0     | medium    | -            | 42KB monolith, zero tests, no version pins. Extract concepts, not code.                             |
+| Research Artifact as Dependency    | anti-pattern | defer       | 2026-04-06 | low     | E0     | medium    | -            | Paper companion code. Won't be maintained. Extract knowledge, don't depend.                         |
+
+## karpathy/autoresearch (repo)
+
+| Candidate                                             | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| program.md Agent Instruction Pattern                  | pattern      | defer    | 2026-04-06 | high    | E0     | high      | -            | 114-line autonomous research protocol: setup, experiment loop, keep/discard, crash recovery, NEVER STOP, simplicity crit |
+| Fixed-Budget Experimentation                          | pattern      | defer    | 2026-04-06 | high    | E0     | high      | -            | Fixed 5-min time budget makes all experiments comparable. ~12/hour, ~100 overnight. Apply to any time-bounded agent work |
+| 3-File Architecture (Immutable/Editable/Instructions) | pattern      | defer    | 2026-04-06 | medium  | E0     | medium    | -            | prepare.py (don't touch) + train.py (agent edits) + program.md (human edits). Clean editable-zone contract.              |
+| Autonomous Crash Recovery Protocol                    | pattern      | defer    | 2026-04-06 | medium  | E0     | medium    | -            | Read stack trace, attempt fix, revert if unfixable. Simpler than checkpoint+resume for low-cost tasks.                   |
+| Results TSV Logging Convention                        | pattern      | defer    | 2026-04-06 | low     | E0     | low       | -            | commit/metric/memory/status/description. Already have JSONL equivalent. Low extraction value.                            |
+| Simplicity Criterion for JASON-OS                     | knowledge    | defer    | 2026-04-06 | high    | E0     | high      | -            | 'Removing something and getting equal or better results is a great outcome.' Growth discipline for 72-skill ecosystem.   |
+| Protocol vs Workflow Design Space                     | knowledge    | defer    | 2026-04-06 | high    | E0     | high      | -            | program.md (protocol: one agent, one metric, infinite loop) vs SKILL.md (workflow: multi-agent, multi-phase, convergence |
+| Autonomy Spectrum Design                              | knowledge    | defer    | 2026-04-06 | medium  | E0     | medium    | -            | NEVER STOP (autoresearch) vs explicit approval gates (CLAUDE.md #2). JASON-OS needs: autonomous within phases, gated bet |
+| analysis.ipynb Results Methodology                    | content      | defer    | 2026-04-06 | high    | E0     | high      | -            | Framework: load TSV, keep/discard rates, progress plot with running minimum, rank improvements by delta. Apply to review |
+| Hidden Multi-Agent Architecture                       | content      | defer    | 2026-04-06 | high    | E0     | high      | -            | .gitignore: worktrees/ + queue/ + generated CLAUDE.md/AGENTS.md. Multi-agent infrastructure exists but isn't shared. Mir |
+| No-License-on-Purpose Trap                            | anti-pattern | defer    | 2026-04-06 | low     | E0     | medium    | -            | Karpathy can get away with no license. You can't. Always include LICENSE if publishing JASON-OS.                         |
+| Single-Metric Optimization Trap                       | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | val_bpb works because the problem has one metric. Don't flatten multi-objective problems into one number.                |
+
+## teng-lin/notebooklm-py (repo)
+
+| Candidate                           | Type         | Decision    | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
+| ----------------------------------- | ------------ | ----------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Skill Install + Version Stamping    | pattern      | defer       | 2026-04-06 | high    | E2     | high      | -            | skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/. Solves cross_locale_config. Need  |
+| Autonomy Rules Section in SKILL.md  | pattern      | defer       | 2026-04-06 | medium  | E1     | high      | -            | 22 auto-run + 7 ask-first with per-command reasons. Retrofit candidate for add-debt, pr-review, session-end, audit-\* ski |
+| Nightly RPC Health Check            | pattern      | defer       | 2026-04-06 | medium  | E2     | medium    | -            | rpc-health.yml: daily cron, 3 exit codes, auto-creates labeled GitHub issues. External contract monitoring pattern.       |
+| Ambient CLAUDE.md PR Workflow       | pattern      | defer       | 2026-04-06 | medium  | E1     | medium    | -            | 4-step embedded PR workflow. Alternative to /pr-review. Ambient vs invoked design question.                               |
+| Embedded Task() Subagent Patterns   | pattern      | defer       | 2026-04-06 | medium  | E1     | medium    | -            | Literal Task() invocations in SKILL.md workflows. Reduces agent cognitive load.                                           |
+| Open Skills Ecosystem Investigation | pattern      | investigate | 2026-04-06 | high    | E1     | high      | -            | npx skills add teng-lin/notebooklm-py. Unverified. Critical for JASON-OS distribution if real.                            |
+| SKILL.md Autonomy Rules Template    | content      | defer       | 2026-04-06 | medium  | E0     | high      | -            | Lines 94-128. Direct template for adding autonomy rules to sonash skills.                                                 |
+| skill.py Install Mechanism          | content      | defer       | 2026-04-06 | high    | E0     | high      | -            | Reference implementation. SkillTarget dataclass, version stamping, drift detection.                                       |
+| rpc-health.yml Workflow             | content      | defer       | 2026-04-06 | medium  | E0     | high      | -            | Complete 90-line workflow. Daily cron, 3 exit codes, auto-issue creation, artifact upload.                                |
+| CLAUDE.md Agent Guidance Pattern    | content      | defer       | 2026-04-06 | medium  | E0     | high      | -            | Well-structured CLAUDE.md + ambient PR workflow. Compare against sonash CLAUDE.md v5.9.                                   |
+| AGENTS.md Separation                | knowledge    | defer       | 2026-04-06 | low     | E0     | medium    | -            | Separate file for multi-agent guidance. Consider if CLAUDE.md Section 7 grows.                                            |
+| Undocumented API Dependency         | anti-pattern | defer       | 2026-04-06 | medium  | E0     | medium    | -            | Entire project wraps obfuscated Google RPC endpoints. Prefer documented APIs.                                             |
+| Over-Engineered Install Mechanism   | anti-pattern | defer       | 2026-04-06 | low     | E0     | medium    | -            | 280 lines for copy file + stamp version. Extract pattern, not complexity.                                                 |
+
+## public-apis/public-apis (repo)
+
+| Candidate                                | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                  |
+| ---------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| Link Validation Workflow                 | pattern      | defer    | 2026-04-06 | low     | E1     | medium    | -            | validate_links.yml (29 lines) + links.py (273 lines). Daily cron link checker. Port to sonash for docs link integrity. |
+| Structured Catalog Format (enum columns) | pattern      | defer    | 2026-04-06 | low     | E0     | low       | -            | API/Desc/Auth/HTTPS/CORS with constrained enum values. Reference for JASON-OS skill/tool catalog.                      |
+| Format Validation Script Pattern         | pattern      | defer    | 2026-04-06 | low     | E0     | low       | -            | format.py (277 lines) + tests (466 lines). Regex-based format enforcement. Simpler version of patterns:check.          |
+| Google Calendar API                      | content      | defer    | 2026-04-06 | medium  | E1     | high      | -            | OAuth via Firebase Auth. Direct SoNash integration: sobriety milestones, meeting reminders, daily check-ins.           |
+| Open-Meteo Weather API                   | content      | defer    | 2026-04-06 | low     | E0     | medium    | -            | No auth, CORS yes. Zero-friction weather data for mood-weather correlation journaling.                                 |
+| Google Cloud Natural Language API        | content      | defer    | 2026-04-06 | medium  | E1     | medium    | -            | Same Firebase/Google Cloud ecosystem. Journal sentiment analysis for emotional pattern tracking.                       |
+| validate_links.yml Workflow              | content      | defer    | 2026-04-06 | low     | E1     | high      | -            | 29-line daily cron. Directly transferable for SKILL_INDEX.md, EXTRACTIONS.md, MEMORY.md link checking.                 |
+| Celebrity Stagnation with Infrastructure | knowledge    | defer    | 2026-04-06 | medium  | E0     | medium    | -            | Second data point with codecrafters. Proves automation alone doesn't prevent stagnation. MERGED cross-repo finding.    |
+| Validation Without Maintenance Trap      | anti-pattern | defer    | 2026-04-06 | medium  | E0     | high      | -            | Format validation ensures structural integrity but not content freshness. Applies to patterns:check.                   |
+| Sponsor-First README Anti-Pattern        | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 10 promoted APIs before community content. Erodes trust. Keep sponsors separate from content if JASON-OS has partners. |
+
+## https://gist.github.com/karpathy/442a6bf555914893e9891c11... (website)
+
+| Candidate                                                | Type                   | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| -------------------------------------------------------- | ---------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Three-layer architecture pattern for LLM knowledge bases | architecture-pattern   | extract  | 2026-04-07 | medium  | E0     | high      | -            | Maps to JASON-OS extraction framing. Raw sources / wiki / schema = .research/ / docs+MEMORY / CLAUDE.md+skills.          |
+| Ingest-Query-Lint operational triad                      | workflow-pattern       | extract  | 2026-04-07 | medium  | E1     | high      | -            | Ingest=/repo-analysis+/website-analysis, Query=/deep-research+/repo-synthesis, Lint=orphan detection+/alerts+health scri |
+| Answers-compound-into-wiki principle                     | design-principle       | extract  | 2026-04-07 | high    | E0     | high      | -            | Key gap: /deep-research and /brainstorm outputs archive to .research/ but don't feed back into active knowledge layer. T |
+| Index + Log dual navigation system                       | implementation-pattern | extract  | 2026-04-07 | low     | E0     | high      | -            | Already have: DOCUMENTATION_INDEX.md=index, SESSION_HISTORY.md+commit-log.jsonl=log, research-index.jsonl=research index |
+| qmd local markdown search (MCP + CLI)                    | tool                   | extract  | 2026-04-07 | high    | E1     | medium    | -            | Evaluate for JASON-OS search layer. Currently Grep+index-based. At 1000+ docs may need hybrid BM25/vector search.        |
+
+## https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c... (website)
+
+| Candidate                                             | Type             | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------- | ---------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Exploration-over-conclusion as skill design principle | design-principle | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Validates brainstorm Phase 1 philosophy. Potential: add minimum-exploration threshold to convergence loops before allowi |
+| Contemplator tag pattern (historical reference)       | pattern          | skip     | 2026-04-07 | low     | E0     | low       | -            | Claude native <thinking> blocks supersede this. Historical reference only — no action needed.                            |
+
+## https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aab... (website)
+
+| Candidate                                                  | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ---------------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Anti-cramming / anti-thinning balance for knowledge skills | design-principle     | extract  | 2026-04-07 | high    | E0     | high      | -            | When to split vs enrich. Third paragraph about sub-topic = split. Stub with 4 entries mentioning it = enrich. Apply to E |
+| 15-entry checkpoint cycle pattern                          | workflow-pattern     | extract  | 2026-04-07 | high    | E0     | high      | -            | Every N items: rebuild indexes, audit quality, check for anti-patterns. Apply to batch synthesis and /deep-research mid- |
+| Parallel subagent cleanup workflow (5-batch audit)         | workflow-pattern     | defer    | 2026-04-07 | medium  | E1     | high      | -            | 5-agent batches auditing 6 dimensions each. Compare against our parallelization patterns when building T24.              |
+| Writer-not-filing-clerk identity framing                   | design-principle     | extract  | 2026-04-07 | medium  | E0     | high      | -            | Identity shapes operations: 'what does this mean' vs 'where do I file this'. T24 synthesis adoption should synthesize, n |
+| Concurrency safety rules for LLM file ops                  | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Re-read before edit, never delete without reading, rebuild indices at end. Partially covered by CLAUDE.md #12.           |
+| 7-command skill architecture as T24 reference design       | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize. Direct reference for T24 command set. Absorb + breakdown |
+
+## https://gist.github.com/kieranklaassen/4f2aba89594a4aea4a... (website)
+
+| Candidate                                                   | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| 6-pattern orchestration taxonomy for AGENT_ORCHESTRATION.md | architecture-pattern | extract  | 2026-04-07 | medium  | E0     | high      | -            | Parallel Specialists, Pipeline, Swarm, Research+Impl, Plan Approval, Coordinated Refactoring. Map to existing skill usag |
+| Spawn backend comparison for T5 worktree management         | pattern              | extract  | 2026-04-07 | high    | E0     | high      | -            | in-process (hidden/fastest), tmux (visible/persistent), iterm2 (macOS split). Auto-detection logic. Directly relevant to |
+| TeammateTool 13-operation reference                         | pattern              | defer    | 2026-04-07 | medium  | E0     | high      | -            | Full lifecycle: spawn/discover/join/approve/write/broadcast/shutdown/cleanup. Audit .claude/teams/ against this when exp |
+| Task dependency auto-unblock for skill pipeline design      | workflow-pattern     | defer    | 2026-04-07 | high    | E1     | high      | -            | blockedBy arrays with auto-unblock on completion. Evaluate for deep-research phase sequencing — could replace manual dis |
+| Subagent vs teammate decision framework                     | design-principle     | extract  | 2026-04-07 | medium  | E0     | high      | -            | Short-lived focused = subagent. Persistent coordination with messaging = teammate. Add to AGENT_ORCHESTRATION.md as deci |
+
+## https://docs.composio.dev/docs (website)
+
+| Candidate                                             | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Meta-tool pattern for dynamic tool discovery          | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | 6 meta tools (search, get-schema, auth, execute, workbench, bash) instead of loading 1000+ definitions. Agent discovers  |
+| Native vs MCP tradeoff framework with token cost data | design-principle     | extract  | 2026-04-07 | high    | E0     | high      | -            | Native: context control + interception. MCP: simplicity. 55K tokens for 5 MCP servers. Measure current 3-server overhead |
+| llms.txt standard for AI-readable documentation       | pattern              | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Standardized llms.txt at site root for LLM consumption. Park for JASON-OS documentation strategy.                        |
+| Event trigger dual model (webhook + polling)          | pattern              | defer    | 2026-04-07 | medium  | E2     | medium    | -            | Webhook for real-time capable services, polling for those without. Park for event-driven agent features.                 |
+
+## aws-solutions-library-samples/guidance-for-media-extracti... (repo)
+
+| Candidate                                           | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| --------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Frame sampling + smart dedup pipeline               | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | moviepy frame extraction + FAISS/OpenSearch similarity dedup. Configurable FPS, 10min chunks. Claims 50% frame reduction |
+| Multi-granularity hierarchy (frame->shot->scene)    | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | Three-level temporal decomposition. Each level has summaries, timestamps, metadata. Structures video content analysis.   |
+| Toggleable per-frame ML feature extraction          | pattern              | extract  | 2026-04-07 | medium  | E0     | high      | -            | Each ML feature independently enabled via config. Adding new capabilities = adding new function to pipeline. Extensibili |
+| FAISS local dedup (no cloud dependency)             | pattern              | extract  | 2026-04-07 | medium  | E1     | high      | -            | Local vector similarity using FAISS. Same dedup quality as OpenSearch, no cloud dependency. Direct port candidate for T2 |
+| Subtitle-to-frame timestamp alignment               | pattern              | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Map subtitle segments to frame timestamps. Non-obvious multimodal alignment engineering.                                 |
+| Evaluation Service prompt template system           | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Templates for moderation, summarization, IAB classification against extracted metadata.                                  |
+| OpenSearch dependency for similarity (anti-pattern) | anti-pattern         | extract  | 2026-04-07 | medium  | E0     | medium    | -            | FAISS alternative exists in same repo. Don't add search cluster for video dedup when local works.                        |
+| No tests (anti-pattern)                             | anti-pattern         | extract  | 2026-04-07 | low     | E0     | medium    | -            | 52 Python files, 1 test. AWS reference architectures skip tests. Don't follow this pattern.                              |
+
+## ksharlandjiev/bedrock-summarize-audio-video-text (repo)
+
+| Candidate                                       | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                           |
+| ----------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------------------------------- |
+| YouTube audio extraction pipeline               | pattern      | defer    | 2026-04-07 | medium  | E1     | high      | -            | pytubefix download + moviepy audio extraction to MP3. Full lifecycle in ~30 lines. T27 reference.               |
+| Amazon Transcribe async job lifecycle           | knowledge    | defer    | 2026-04-07 | medium  | E0     | high      | -            | Start job -> poll -> fetch transcript -> cleanup. Speaker labels, S3 routing. T27 speech-to-text ref.           |
+| PII tokenize/untokenize round-trip pattern      | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | Comprehend PII -> token replacement -> persist map -> LLM with tokens -> untokenize. SoNash privacy-first.      |
+| Chain of Responsibility + Factory composition   | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Reader/processor/writer taxonomy with set_next() chaining and factory auto-discovery.                           |
+| AST-based handler auto-discovery                | pattern      | defer    | 2026-04-07 | medium  | E2     | medium    | -            | Walk handler tree, parse ASTs for subclasses, lazy import. Zero-config extension model.                         |
+| JSONPath model-agnostic invocation config       | pattern      | defer    | 2026-04-07 | low     | E1     | medium    | -            | Env-driven model request/response mapping via JSONPath. Same code for Claude v2, Claude 3, Titan.               |
+| pytubefix caption + search + async capabilities | content      | defer    | 2026-04-07 | high    | E0     | high      | -            | 1.5K stars, MIT. SRT captions, playlist/channel, search API, AsyncYouTube. May skip Whisper for captioned vids. |
+| Amazon Transcribe API reference                 | content      | defer    | 2026-04-07 | medium  | E0     | high      | -            | Handler demonstrates full async Transcribe lifecycle with speaker diarization.                                  |
+| AWS-coupled extraction anti-pattern             | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 5+ AWS service deps = vendor lock-in. Prefer local-first (Whisper, Tesseract, spaCy).                           |
+| Blocking poll anti-pattern                      | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | time.sleep(30) polling loop. Fine for CLI, never copy into agent pipelines.                                     |
+
+## Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist (repo)
+
+| Candidate                                       | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                |
+| ----------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ---------------------------------------------------------------------------------------------------- |
+| faster-whisper local transcription pipeline     | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | Complete local Whisper lifecycle: CUDA, large-v3, beam_size=10, vad_filter, tqdm, metadata. T27 ref. |
+| Whisper tuned params (beam_size=10, vad_filter) | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | beam_size=10 for accuracy, vad_filter prevents hallucination-on-silence. Production tuning.          |
+| Caption-first + Whisper-fallback architecture   | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Cross-repo insight: both repos skip captions. pytubefix has yt.captions. Caption-first ~80%.         |
+| Async download + sync GPU transcription         | pattern      | defer    | 2026-04-07 | medium  | E0     | high      | -            | asyncio.Semaphore(4) for downloads, sequential GPU. Network parallelizes, GPU doesn't.               |
+| faster-whisper library                          | content      | defer    | 2026-04-07 | high    | E0     | high      | -            | CTranslate2 Whisper. 4x faster. GPU+CPU. THE local transcription engine for T27.                     |
+| CUDA/GPU detection + CPU fallback               | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | numba.cuda, Anaconda paths, float16 vs auto. Real-world GPU setup.                                   |
+| SpaCy + compromise.js two-stage NLP             | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Server SpaCy + client compromise.js. Two NLP stages for transcript readability.                      |
+| API vs local cost tradeoff                      | knowledge    | defer    | 2026-04-07 | medium  | E0     | medium    | -            | $0.006/min API (less accurate) vs free local (GPU). 1h = $0.36 vs $0.                                |
+| compromise.js client-side NLP                   | content      | defer    | 2026-04-07 | medium  | E0     | medium    | -            | 75KB browser NLP. Sentence/paragraph detection. 11K+ stars.                                          |
+| Monolithic single-file tool (anti-pattern)      | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 280 lines, no CLI, no config. T27 must be modular handlers.                                          |
+| Skip-captions-always (anti-pattern)             | anti-pattern | defer    | 2026-04-07 | high    | E0     | high      | -            | Both repos transcribe from scratch. Check captions first (~80% have them).                           |
+| Hard-coded source config (anti-pattern)         | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | Module-level vars including API keys. No CLI/env/config.                                             |
+
+## jdepoix/youtube-transcript-api (repo)
+
+| Candidate                                    | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                  |
+| -------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | -------------------------------------------------------------------------------------- |
+| youtube-transcript-api as T27 primary layer  | tool         | defer    | 2026-04-07 | high    | E0     | high      | -            | pip install. One-line caption fetch. 7K stars, MIT, 100% coverage. First adoption rec. |
+| Innertube API reverse-engineering approach   | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Undocumented /youtubei/v1/player with ANDROID client. No API key. 8 years maintained.  |
+| Context-aware error hierarchy pattern        | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | 15+ exceptions with CAUSE_MESSAGE. RequestBlocked adapts based on proxy config.        |
+| IP ban workaround operational guide          | content      | defer    | 2026-04-07 | high    | E0     | high      | -            | Production guide: proxies, Webshare residential rotation, retries.                     |
+| Three-layer T27 extraction architecture      | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | L1=this (instant/free/~80%), L2=pytubefix (backup), L3=faster-whisper (GPU fallback).  |
+| Proxy rotation infrastructure                | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | ProxyConfig ABC + Generic + Webshare. Rotating residential IPs, retry-on-429.          |
+| Manual vs auto-generated transcript priority | knowledge    | defer    | 2026-04-07 | medium  | E0     | medium    | -            | find_transcript() checks manual first. Quality hierarchy.                              |
+| SRT/WebVTT timestamp formatting              | pattern      | defer    | 2026-04-07 | low     | E0     | medium    | -            | Clean subtitle format generation.                                                      |
+| Don't build own fetcher (anti-pattern)       | anti-pattern | defer    | 2026-04-07 | high    | E0     | high      | -            | 399 commits over 8 years. Use the library, don't replicate maintenance.                |
+| Ignore IP blocking for bulk (anti-pattern)   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | YouTube blocks bulk requests. Plan proxy infrastructure from start.                    |
+
+## iawia002/lux (repo) — Quick Scan
+
+| Candidate                              | Type      | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                              |
+| -------------------------------------- | --------- | -------- | ---------- | ------- | ------ | --------- | ------------ | -------------------------------------------------------------------------------------------------- |
+| Per-site extractor plugin architecture | pattern   | defer    | 2026-04-07 | high    | E1     | medium    | -            | extractors/site/site.go. 44 sites, each with own CI workflow. Multi-platform plugin gold standard. |
+| 44-site supported platform catalog     | knowledge | defer    | 2026-04-07 | medium  | E0     | medium    | -            | YouTube, TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, +30 more. T27 scope ref.           |
+| Per-site CI workflow pattern           | pattern   | defer    | 2026-04-07 | high    | E1     | medium    | -            | 46 GitHub Actions workflows — one per site. Remarkable CI for multi-platform tools.                |
+| lux CLI as video acquisition tool      | tool      | defer    | 2026-04-07 | medium  | E0     | medium    | -            | go install lux. Downloads video from 44 sites. T27 Layer 0 for non-YouTube platforms.              |
+
+## unstructured-io/unstructured (repo)
+
+| Candidate                                       | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                   |
+| ----------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------- |
+| Auto-routing via type detection                 | pattern      | defer    | 2026-04-07 | high    | E2     | high      | -            | partition() auto-detects file type via libmagic, routes to format-specific partitioner. |
+| Self-describing FileType registry               | pattern      | defer    | 2026-04-07 | high    | E2     | high      | -            | Enum declaring deps, extras, MIME types, extensions. Adding format = 1 enum member.     |
+| Strategy fallback chain                         | pattern      | defer    | 2026-04-07 | medium  | E1     | high      | -            | AUTO→HI_RES→OCR_ONLY→FAST with dependency checking and graceful degradation.            |
+| Graceful dependency checking                    | pattern      | defer    | 2026-04-07 | medium  | E1     | high      | -            | dependency_exists() runtime check + log warning + fallback.                             |
+| Golden-file snapshot testing                    | pattern      | defer    | 2026-04-07 | medium  | E2     | medium    | -            | 40+ connector types tested via expected markdown output comparison.                     |
+| Element type hierarchy with metadata            | knowledge    | defer    | 2026-04-07 | medium  | E1     | high      | -            | Dataclass elements with coordinates, data source provenance, permissions.               |
+| Chunking with table isolation                   | knowledge    | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Tables isolated from text, headers carried across continuation chunks.                  |
+| Text cleaning pipeline                          | knowledge    | defer    | 2026-04-07 | low     | E0     | medium    | -            | Bullet normalization, ligature replacement, whitespace cleanup.                         |
+| S3-backed performance benchmarking              | knowledge    | defer    | 2026-04-07 | medium  | E1     | low       | -            | Benchmark results tagged with architecture/instance/hash.                               |
+| unstructured-ingest connector ecosystem         | content      | defer    | 2026-04-07 | high    | E1     | high      | -            | 40+ source connectors. T28 connector layer reference.                                   |
+| Don't replicate ontology V2                     | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Pydantic HTML intermediate repr acknowledged as over-engineered by team.                |
+| Don't build per-format parsers in TypeScript    | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 30+ partitioners = years of edge cases. Delegate parsing, focus on orchestration.       |
+| Don't fragment extraction+analysis across repos | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Embedding moved to unstructured-ingest, fragmenting DX. Keep T28 unified.               |
+
+## DS4SD/docling (repo)
+
+| Candidate                                         | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                    |
+| ------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ---------------------------------------------------------------------------------------- |
+| DoclingDocument tree structure                    | knowledge    | defer    | 2026-04-07 | high    | E1     | high      | -            | Pydantic tree-structured unified doc repr. Body/furniture, reading order, JSON pointers. |
+| Backend + Pipeline separation pattern             | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | Backends parse formats, pipelines orchestrate stages. T28 separation reference.          |
+| Plugin system via pluggy                          | pattern      | defer    | 2026-04-07 | high    | E2     | high      | -            | Third-party extensibility via setuptools entrypoints.                                    |
+| docling-mcp as extraction backend                 | content      | defer    | 2026-04-07 | high    | E1     | high      | -            | MCP server wrapping docling conversion. T28 document extraction backend.                 |
+| ASR pipeline → unified output                     | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Whisper Turbo → DoclingDocument. Same output as PDF/DOCX.                                |
+| Use docling instead of building extractors        | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Delegate document extraction to docling via MCP.                                         |
+| Serializer hierarchy pattern                      | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | BaseDocSerializer → per-format serializers.                                              |
+| Enrichment pipeline (toggleable)                  | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Optional post-processing: code, formula, picture enrichment.                             |
+| Thread-safe pipeline design                       | knowledge    | defer    | 2026-04-07 | medium  | E0     | low       | -            | Per-run isolation, bounded queues, back-pressure.                                        |
+| InputFormat enum (17 types)                       | knowledge    | defer    | 2026-04-07 | low     | E0     | medium    | -            | Compare with unstructured FileType. Simpler, paired with FormatOption.                   |
+| Don't replicate multi-package split prematurely   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 5 packages for 57K-star library. T28 has one user — start monolithic.                    |
+| Don't build plugin system before you have plugins | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Build hardcoded extractors first, plugins later.                                         |
+| Don't adopt DoclingDocument wholesale             | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Optimized for single-doc. T28 needs cross-source analysis schema.                        |

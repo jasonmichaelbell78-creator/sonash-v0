@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "candidates": [
+    {
+      "id": "K1",
+      "title": "Meta-tool pattern for dynamic tool discovery",
+      "type": "architecture-pattern",
+      "description": "Instead of loading all tool definitions, provide a small set of meta tools (search, get-schema, execute). Agent discovers at runtime. Solves context window bloat. Applicable to JASON-OS: if the OS has 72+ skills, a meta-skill for discovery would be more efficient than loading all skill definitions.",
+      "confidence": "HIGH",
+      "effort": "E1",
+      "personal_fit": 78,
+      "extraction_action": "Evaluate: could JASON-OS use a meta-skill pattern? Currently all skills load via SKILL.md reading. At 100+ skills, a search-first approach avoids context bloat.",
+      "finding_refs": ["F1"]
+    },
+    {
+      "id": "K2",
+      "title": "Native vs MCP tradeoff framework with token cost data",
+      "type": "design-principle",
+      "description": "Native: context control + interception. MCP: simplicity + client-agnostic. 55K token overhead for 5 MCP servers. Decision framework for when to use which.",
+      "confidence": "HIGH",
+      "effort": "E0",
+      "personal_fit": 75,
+      "extraction_action": "Measure current MCP token overhead (3 servers). Add to AGENT_ORCHESTRATION.md or MCP reference doc as decision criteria.",
+      "finding_refs": ["F2", "F6"]
+    },
+    {
+      "id": "K3",
+      "title": "llms.txt standard for AI-readable documentation",
+      "type": "pattern",
+      "description": "Standardized llms.txt and llms-full.txt at site root for LLM consumption. If JASON-OS publishes documentation, this format makes it AI-discoverable.",
+      "confidence": "MEDIUM",
+      "effort": "E0",
+      "personal_fit": 55,
+      "extraction_action": "Park for JASON-OS documentation strategy. Evaluate llms.txt format for skill/agent docs.",
+      "finding_refs": ["F8"]
+    },
+    {
+      "id": "K4",
+      "title": "Event trigger dual model (webhook + polling) for agent reactivity",
+      "type": "pattern",
+      "description": "Webhook for real-time capable services, polling for those without. User-scoped, account-bound. Pattern for making agents event-driven rather than invocation-driven.",
+      "confidence": "HIGH",
+      "effort": "E2",
+      "personal_fit": 50,
+      "extraction_action": "Park for later. Relevant if SoNash adds event-driven features (meeting reminders, journal prompts) or JASON-OS needs external event reactions.",
+      "finding_refs": ["F4"]
+    }
+  ]
+}
