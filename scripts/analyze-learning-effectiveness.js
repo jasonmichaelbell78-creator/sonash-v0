@@ -25,7 +25,7 @@
  * Exit codes: 0 = success, 1 = errors found, 2 = fatal error
  */
 
-const { readFileSync, existsSync, readdirSync, lstatSync } = require("node:fs");
+const { readFileSync, existsSync, readdirSync, lstatSync, statSync } = require("node:fs");
 const path = require("node:path");
 const { join } = path;
 const { createInterface } = require("node:readline");
@@ -837,7 +837,6 @@ class LearningEffectivenessAnalyzer {
   outputDashboard() {
     const firstReview = this.reviews[0].number;
     const lastReview = this.reviews[this.reviews.length - 1].number;
-    const summary = this.results.summary;
     const trends = this.results.learningTrends;
 
     console.log("╔════════════════════════════════════════════════════════════════════════╗");
@@ -854,6 +853,8 @@ class LearningEffectivenessAnalyzer {
     let mvmRawLines = [];
     for (const filePath of [warningsLogPath, archivePath]) {
       try {
+        const st = statSync(filePath);
+        if (st.isSymbolicLink() || st.size > 10 * 1024 * 1024) continue;
         const text = readFileSync(filePath, "utf8");
         mvmRawLines = mvmRawLines.concat(text.split("\n").filter((l) => l.trim()));
       } catch {
@@ -1196,6 +1197,8 @@ class LearningEffectivenessAnalyzer {
 
     for (const filePath of [warningsLogPath, archivePath]) {
       try {
+        const st = statSync(filePath);
+        if (st.isSymbolicLink() || st.size > 10 * 1024 * 1024) continue;
         const text = readFileSync(filePath, "utf8");
         rawLines = rawLines.concat(text.split("\n").filter((l) => l.trim()));
       } catch {
@@ -1387,7 +1390,9 @@ function calculateTrend(thisWeek, lastWeek) {
     return { direction: sumThis === 0 ? "stable" : "rising", changePercent: sumThis > 0 ? 100 : 0 };
   }
   const changePercent = +(((sumThis - sumLast) / sumLast) * 100).toFixed(1);
-  const direction = changePercent < -10 ? "declining" : changePercent > 10 ? "rising" : "stable";
+  let direction = "stable";
+  if (changePercent < -10) direction = "declining";
+  else if (changePercent > 10) direction = "rising";
   return { direction, changePercent };
 }
 

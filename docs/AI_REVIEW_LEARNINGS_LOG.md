@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#50)</summary>
+
+- **Date:** 2026-04-07
+- **Reviews consolidated:** #70-#review-pr498-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#49)</summary>
 
 - **Date:** 2026-04-07
@@ -1728,6 +1737,37 @@ Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
   detection to prevent cascading
 - pr-review skill Rule 6 updated: "pre-existing" no longer auto-dismissible;
   must present user with fix (+ effort estimate) or DEBT options
+
+---
+
+### Review #508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
+
+**Source:** Mixed (SonarCloud×8, Qodo×4 bugs + 6 compliance + 10 suggestions,
+Gemini×2, CI×1) **PR/Branch:** PR #499 R1 / planning-4626 **Items:** 31 raw → 14
+unique after dedup, 10 rejected **Fix rate:** 100% (14/14 fixed, 0 deferred)
+
+- **isDuplicateWarning guard logic inverted** — `return true` on symlink/size
+  guards in `isDuplicateWarning()` was suppressing all new warnings instead of
+  just skipping cross-session dedup. Changed to `return false` so warnings still
+  get recorded when dedup can't be safely performed.
+- **CC reduction via function extraction** — `isDuplicateWarning` had CC 21 (>15
+  allowed). Extracted `hasMatchInWarningsLog()` helper to bring both functions
+  under threshold. The helper also makes the guard logic (symlink, size)
+  clearer.
+- **Unbounded JSONL reads need size guards** —
+  `analyze-learning-effectiveness.js` read warnings logs without size checks.
+  Added `statSync` + 10MB guard consistent with other scripts' patterns.
+- **Health checker must respect signal column** — metrics table includes a
+  Signal column (`insufficient_data`/`ok`). Parsing only the numeric value
+  scored empty data as healthy. Now skips metric when signal is
+  `insufficient_data`.
+- **Multi-source convergence strengthens signal** — 4 items were flagged by 2+
+  sources (Qodo + SonarCloud, Gemini + Qodo). Multi-source agreement reliably
+  identified real bugs vs noise.
+
+**Key Learning:** When guard conditions in dedup/safety logic trigger, the
+default should be to allow the primary action (recording warnings) and skip the
+expensive secondary operation (cross-session dedup), not suppress both.
 
 ---
 

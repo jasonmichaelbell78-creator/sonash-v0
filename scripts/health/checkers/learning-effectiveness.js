@@ -27,15 +27,18 @@ function checkLearningEffectiveness() {
     return { metrics: {}, no_data: true };
   }
 
-  // Match new MVM format: "| Violations per PR (30-day) | X.XX | ... |"
-  const vprMatch = content.match(/Violations per PR\s*\([^)]+\)\s*\|\s*([\d.]+)/);
-  // Match: "| Recurring categories | N/M (XX.X%) | ... |"
-  const recMatch = content.match(/Recurring categories\s*\|\s*\d+\/\d+\s*\(([\d.]+)%\)/);
+  // Match new MVM format: "| Violations per PR (30-day) | X.XX | signal |"
+  const vprMatch = content.match(/Violations per PR\s*\([^)]+\)\s*\|\s*([\d.]+)\s*\|\s*(\S+)/);
+  // Match: "| Recurring categories | N/M (XX.X%) | signal |"
+  const recMatch = content.match(
+    /Recurring categories\s*\|\s*\d+\/\d+\s*\(([\d.]+)%\)\s*\|\s*(\S+)/
+  );
 
   const violationsPerPr = vprMatch ? Number.parseFloat(vprMatch[1]) : null;
+  const vprSignal = vprMatch ? vprMatch[2] : null;
   const recurrenceRate = recMatch ? Number.parseFloat(recMatch[1]) : null;
 
-  if (violationsPerPr !== null) {
+  if (violationsPerPr !== null && vprSignal !== "insufficient_data") {
     metrics.violations_per_pr = {
       value: violationsPerPr,
       ...scoreMetric(violationsPerPr, BENCHMARKS.violations_per_pr),

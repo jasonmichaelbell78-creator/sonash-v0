@@ -242,7 +242,9 @@ function calculateTrend(
     return { direction: sumThis === 0 ? "stable" : "rising", changePercent: sumThis > 0 ? 100 : 0 };
   }
   const changePercent = +(((sumThis - sumLast) / sumLast) * 100).toFixed(1);
-  const direction = changePercent < -10 ? "declining" : changePercent > 10 ? "rising" : "stable";
+  let direction = "stable";
+  if (changePercent < -10) direction = "declining";
+  else if (changePercent > 10) direction = "rising";
   return { direction, changePercent };
 }
 
@@ -270,7 +272,7 @@ describe("calculateViolationsPerPr", () => {
     const result = calculateViolationsPerPr(warnings);
     assert.strictEqual(result.signal, "ok");
     assert.strictEqual(result.prCount, 2);
-    assert.strictEqual(result.violationsPerPr, 2.0);
+    assert.strictEqual(result.violationsPerPr, 2);
     assert.strictEqual(result.totalViolations, 4);
   });
 
@@ -280,7 +282,7 @@ describe("calculateViolationsPerPr", () => {
     const result = calculateViolationsPerPr(warnings);
     assert.strictEqual(result.signal, "ok");
     assert.strictEqual(result.prCount, 1);
-    assert.strictEqual(result.violationsPerPr, 3.0);
+    assert.strictEqual(result.violationsPerPr, 3);
   });
 
   it("excludes warnings outside the window", () => {
@@ -331,7 +333,7 @@ describe("calculateRecurrenceRate", () => {
     const result = calculateRecurrenceRate(warnings);
     assert.strictEqual(result.recurringCategories, 1);
     assert.strictEqual(result.totalCategories, 1);
-    assert.strictEqual(result.recurrenceRate, 1.0);
+    assert.strictEqual(result.recurrenceRate, 1);
   });
 });
 

@@ -85,10 +85,10 @@ schema — all in one place. When you add a new source type (say,
 "slack-channel"), you register it in one enum and the routing handles the rest.
 
 **The strategy fallback chain** maps directly to your Quick/Standard/Deep depth
-model. Unstructured's AUTO → HI_RES → OCR_ONLY → FAST mirrors how T28 could
+model. Unstructured's AUTO → HI*RES → OCR_ONLY → FAST mirrors how T28 could
 route: first try deep analysis, fall back to standard if deps are missing, fall
 back to quick scan if rate-limited. The key insight is that fallback should be
-_automatic and logged_, not a hard failure.
+\_automatic and logged*, not a hard failure.
 
 **The element type system with coordinates metadata** is relevant if T28 ever
 processes PDFs or images. More immediately, the pattern of typed elements with

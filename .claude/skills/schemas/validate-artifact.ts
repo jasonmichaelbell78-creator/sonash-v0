@@ -16,6 +16,9 @@ import { readFileSync } from "fs";
 import { analysisSchema } from "./analysis-schema.js";
 import { findingSchema } from "./findings-schema.js";
 import { synthesisSchema } from "./synthesis-schema.js";
+import { sanitizeError } from "../../../scripts/lib/sanitize-error.js";
+
+const VALID_TYPES = ["analysis", "findings", "synthesis"] as const;
 
 const args = process.argv.slice(2);
 const typeArg = args.find((a) => a.startsWith("--type="));
@@ -28,8 +31,13 @@ if (!typeArg || !pathArg) {
   process.exit(1);
 }
 
-const type = typeArg.split("=")[1];
-const filePath = pathArg.split("=")[1];
+const type = typeArg.substring(typeArg.indexOf("=") + 1);
+const filePath = pathArg.substring(pathArg.indexOf("=") + 1);
+
+if (!VALID_TYPES.includes(type as (typeof VALID_TYPES)[number])) {
+  console.error(`Invalid --type "${type}". Expected one of: ${VALID_TYPES.join(", ")}`);
+  process.exit(1);
+}
 
 try {
   const raw = readFileSync(filePath, "utf-8");
@@ -74,12 +82,12 @@ try {
     const result = schema.safeParse(parsed);
     if (!result.success) {
       console.error(`Validation failed:\n${JSON.stringify(result.error.issues, null, 2)}`);
-      process.exit(isLegacy ? 0 : 1); // Legacy = warning only
+      process.exit(isLegacy ? 2 : 1); // Legacy = warning only (exit 2 per docs)
     }
     console.log(`${type}: validated successfully.${isLegacy ? " (legacy mode)" : ""}`);
   }
 } catch (err) {
-  const message = err instanceof Error ? err.message : String(err);
+  const message = sanitizeError(err);
   console.error(`Error reading/parsing ${filePath}: ${message}`);
   process.exit(1);
 }
