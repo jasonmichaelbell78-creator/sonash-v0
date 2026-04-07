@@ -129,6 +129,17 @@ Automated via `npm run session:gaps` in Phase 3. If gaps detected, run
 Automated by SessionStart hook. If it failed (check hook output), run:
 `node scripts/run-consolidation.js --apply`
 
+### 2.6 Prior Research Surface (SHOULD)
+
+Check if `.research/research-index.jsonl` exists and is non-empty. If so, read
+the last 5 entries and present a brief summary:
+
+> **Prior research:** N topics analyzed. Most recent: {topic} ({date}).
+
+This is non-blocking — if the file is missing or empty, skip silently. The
+purpose is to surface prior `/repo-analysis`, `/website-analysis`, and
+`/deep-research` work so the user knows what context is available.
+
 ---
 
 ## Phase 3: Health Scripts (MUST)

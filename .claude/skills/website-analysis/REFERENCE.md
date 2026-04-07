@@ -2080,36 +2080,38 @@ Each analysis gets its own state file keyed by site slug. Examples:
   "agents_completed": 0,
   "startedAt": "ISO8601",
   "completedAt": null,
-  "resumable": true
+  "resumable": true,
+  "process_feedback": null
 }
 ```
 
 **Field definitions:**
 
-| Field                     | Type    | Description                                    |
-| ------------------------- | ------- | ---------------------------------------------- |
-| `skill`                   | string  | Always `"website-analysis"`                    |
-| `version`                 | string  | Skill version for compatibility checking       |
-| `slug`                    | string  | Site slug derived from URL (Section 9)         |
-| `target_url`              | string  | Original URL provided by user                  |
-| `target_domain`           | string  | Domain extracted from URL                      |
-| `status`                  | string  | Current status                                 |
-| `phase`                   | number  | Current phase number (0-4)                     |
-| `depth`                   | string  | Requested depth tier                           |
-| `mode`                    | string  | Operating mode                                 |
-| `phases_completed`        | array   | List of completed phase names                  |
-| `phases_failed`           | array   | List of failed phases with reason              |
-| `extraction_mode`         | string  | Which extraction pipeline was selected         |
-| `compliance_status`       | string  | Pre-flight result                              |
-| `compliance_acknowledged` | boolean | Whether user acknowledged WARN                 |
-| `pages_analyzed`          | number  | Pages analyzed so far (Site/Expedition mode)   |
-| `output_dir`              | string  | Output artifact directory                      |
-| `expedition_session_id`   | string  | Expedition session ID (null if not expedition) |
-| `agents_spawned`          | number  | Count of agents spawned this run               |
-| `agents_completed`        | number  | Count of agents that finished                  |
-| `startedAt`               | string  | ISO 8601 analysis start time                   |
-| `completedAt`             | string  | ISO 8601 completion time (null if in-progress) |
-| `resumable`               | boolean | Whether this analysis can be resumed           |
+| Field                     | Type    | Description                                     |
+| ------------------------- | ------- | ----------------------------------------------- |
+| `skill`                   | string  | Always `"website-analysis"`                     |
+| `version`                 | string  | Skill version for compatibility checking        |
+| `slug`                    | string  | Site slug derived from URL (Section 9)          |
+| `target_url`              | string  | Original URL provided by user                   |
+| `target_domain`           | string  | Domain extracted from URL                       |
+| `status`                  | string  | Current status                                  |
+| `phase`                   | number  | Current phase number (0-4)                      |
+| `depth`                   | string  | Requested depth tier                            |
+| `mode`                    | string  | Operating mode                                  |
+| `phases_completed`        | array   | List of completed phase names                   |
+| `phases_failed`           | array   | List of failed phases with reason               |
+| `extraction_mode`         | string  | Which extraction pipeline was selected          |
+| `compliance_status`       | string  | Pre-flight result                               |
+| `compliance_acknowledged` | boolean | Whether user acknowledged WARN                  |
+| `pages_analyzed`          | number  | Pages analyzed so far (Site/Expedition mode)    |
+| `output_dir`              | string  | Output artifact directory                       |
+| `expedition_session_id`   | string  | Expedition session ID (null if not expedition)  |
+| `agents_spawned`          | number  | Count of agents spawned this run                |
+| `agents_completed`        | number  | Count of agents that finished                   |
+| `startedAt`               | string  | ISO 8601 analysis start time                    |
+| `completedAt`             | string  | ISO 8601 completion time (null if in-progress)  |
+| `resumable`               | boolean | Whether this analysis can be resumed            |
+| `process_feedback`        | string  | Retro feedback from user (null until collected) |
 
 **State update protocol:** Update the state file after EVERY phase transition.
 On resume, read the state file and skip completed phases.
@@ -2218,6 +2220,7 @@ All 36 decisions from DECISIONS.md mapped to their implementation location.
 
 ## Version History
 
-| Version | Date       | Description                                                    |
-| ------- | ---------- | -------------------------------------------------------------- |
-| 1.0     | 2026-04-06 | Initial implementation. 15 sections covering all 36 decisions. |
+| Version | Date       | Description                                                     |
+| ------- | ---------- | --------------------------------------------------------------- |
+| 1.1     | 2026-04-06 | Add process_feedback to state file schema (convergence Step 13) |
+| 1.0     | 2026-04-06 | Initial implementation. 15 sections covering all 36 decisions.  |

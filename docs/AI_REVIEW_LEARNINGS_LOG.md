@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#49)</summary>
+
+- **Date:** 2026-04-06
+- **Reviews consolidated:** #backfill-477-r3-#review-pr498-r1
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#48)</summary>
 
 - **Date:** 2026-04-06
@@ -1335,16 +1344,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
-
----
-
 ### Review review-pr492-r1: PR #492 R1 - Mixed (Qodo + Suggestions + Compliance + Gemini + SonarCloud + CI) (2026-04-04)
 
 **Date:** 2026-04-04 | **PR:** #492 | **Source:** mixed
@@ -1479,6 +1478,77 @@ deduplicated, non-overlapping ranges):
 - Automated session-closure scripts justify hardcoded SKIP_REASON under
   Guardrail #14
 - Known Issues sections must update when PR resolves items
+
+---
+
+### Review review-pr498-r1: PR #498 R1 - Mixed (Qodo + Qodo Compliance + Gemini) (2026-04-06)
+
+**Date:** 2026-04-06 | **PR:** #498 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 21    | 16    | 2        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 3     | 8     | 10      |
+
+**Patterns:**
+
+- volatile-state-tracking
+- reviews-jsonl-integrity
+- extraction-journal-normalize
+- skill-schema-consistency
+- slug-algorithm-separator-preservation
+
+**Learnings:**
+
+- Volatile state files (.session-state.json, .commit-tracker-state.json) must be
+  .gitignored, not tracked
+- reviews.jsonl disposition integrity: fixed+deferred+rejected must equal total
+- Categorical fields in JSONL must use consistent lowercase without compound
+  values or uncertainty markers
+- Skill schema examples must be internally consistent with definitions
+
+---
+
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+---
+
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 20    | 0     | 0        | 0        |
+
+---
+
+### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
+
+**Date:** unknown | **PR:** #498 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- volatile-state-tracking
+- reviews-jsonl-integrity
+- extraction-journal-normalize
+- skill-schema-consistency
+- slug-algorithm-separator-preservation
 
 ## Key Patterns
 

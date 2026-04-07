@@ -1,14 +1,24 @@
 {
   "warnings": [
     {
+      "hook": "pre-push",
+      "type": "trigger",
+      "severity": "warning",
+      "message": "Skill/agent files modified",
+      "action": "Validate",
+      "timestamp": "2026-04-06T19:54:02.730Z",
+      "occurrences": 2,
+      "occurrences_since_ack": 1
+    },
+    {
       "hook": "session-start",
       "type": "mcp-secrets",
       "severity": "warning",
       "message": "Encrypted but not decrypted",
       "action": "node scripts/secrets/decrypt-secrets.js",
-      "timestamp": "2026-04-06T14:07:24.980Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 2
+      "timestamp": "2026-04-06T17:00:26.106Z",
+      "occurrences": 4,
+      "occurrences_since_ack": 3
     },
     {
       "hook": "session-start",
@@ -16,9 +26,9 @@
       "severity": "warning",
       "message": "Review lifecycle validation issues found",
       "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-06T14:07:24.980Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 2
+      "timestamp": "2026-04-06T17:00:26.106Z",
+      "occurrences": 8,
+      "occurrences_since_ack": 3
     },
     {
       "hook": "session-start",
@@ -26,18 +36,8 @@
       "severity": "warning",
       "message": "S0: 26 critical debt items",
       "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-06T14:07:24.980Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 2
-    },
-    {
-      "hook": "pre-push",
-      "type": "trigger",
-      "severity": "warning",
-      "message": "Skill/agent files modified",
-      "action": "Validate",
-      "timestamp": "2026-04-06T18:23:40.704Z",
-      "occurrences": 4,
+      "timestamp": "2026-04-06T17:00:26.106Z",
+      "occurrences": 8,
       "occurrences_since_ack": 3
     }
   ]

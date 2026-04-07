@@ -12,3 +12,4 @@
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"rev-63\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-03T10:33:43.293Z"}
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"65\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-03T11:21:24.924Z"}
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"65\" appears 3 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-03T12:45:14.096Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"506\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-06T20:00:18.650Z"}

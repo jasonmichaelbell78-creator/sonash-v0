@@ -1,0 +1,155 @@
+{
+  "topic": "Website-analysis/synthesis vs repo-analysis/synthesis — full comparative analysis",
+  "depth": "L1",
+  "questionType": "Comparative",
+  "domain": "Claude Code skill design — internal skill family alignment",
+  "startedAt": "2026-04-06T00:00:00Z",
+  "completedAt": "2026-04-06T00:00:00Z",
+  "agentCount": 17,
+  "findingsFilesRead": 10,
+  "claimCount": 60,
+  "sourceCount": 15,
+  "findingsFileList": [
+    "D01-architecture.md",
+    "D02-phases.md",
+    "D03-agents.md",
+    "D04-scoring.md",
+    "D05-output.md",
+    "D06-synthesis.md",
+    "D07-ux.md",
+    "D08-guardrails.md",
+    "D09-duallens.md",
+    "D10-integration.md"
+  ],
+  "confidenceDistribution": {
+    "HIGH": 117,
+    "MEDIUM": 5,
+    "LOW": 0,
+    "UNVERIFIED": 0
+  },
+  "selfAuditResult": {
+    "allFindingsFilesRead": true,
+    "findingsCount": 10,
+    "claimsExtracted": 60,
+    "sourcesDocumented": 15,
+    "crossCuttingThemesIdentified": true,
+    "contradictionsSurfaced": true,
+    "serendipityFindings": 7,
+    "schemaContractVerified": true
+  },
+  "crossCuttingThemes": [
+    "Analysis skills spawn agents; synthesis skills do not — clean architectural boundary",
+    "repo-analysis is the structural anchor — all others mirror its architecture",
+    "Synthesis skills split by priority: website-synthesis (analytical rigor) vs repo-synthesis (operational robustness)",
+    "Schema drift is the most critical operational gap — REFERENCE.md lags v4.2 runtime reality",
+    "Three conventions are perfectly unified: phase markers, write-to-disk-first, conversational prose",
+    "Cross-entity artifact paths are architecturally incompatible — must resolve before cross-type synthesis",
+    "repo-synthesis retro loop is the most novel UX pattern — only closed feedback loop in the suite"
+  ],
+  "contradictionsFound": 12,
+  "contradictionDetails": [
+    "Extraction journal path: website-analysis (.research/) vs repo-analysis (.research/repo-analysis/)",
+    "reading-chain.jsonl path: same conflict",
+    "EXTRACTIONS.md path: same conflict",
+    "repo-analysis REFERENCE.md v4.0 vs SKILL.md v4.2 — version mismatch",
+    "value-map.json spec (single extraction_candidates[]) vs runtime (4 typed arrays)",
+    "findings.jsonl field: 'detail' (spec) vs 'description' (runtime)",
+    "synthesis.json top-level version key: 'version' (repo-synthesis) vs 'schema_version' (website-synthesis)",
+    "Self-audit asymmetry: website-analysis and repo-synthesis have full self-audits; repo-analysis and website-synthesis do not",
+    "Depth flag syntax: --standard/--deep (website-analysis) vs --depth=standard/--depth=deep (repo-analysis)",
+    "REFERENCE.md phase numbering in repo-analysis Section 15 does not match current SKILL.md phase numbers",
+    "agent_budget.allocated field in repo-analysis state vs feedback_no_agent_budgets behavioral rule",
+    "Invocation tracking: MUST in website-analysis/website-synthesis, absent in repo-analysis/repo-synthesis"
+  ],
+  "gapsBySkill": {
+    "website-analysis": {
+      "critical": 0,
+      "high": 2,
+      "medium": 5,
+      "low": 2
+    },
+    "repo-analysis": {
+      "critical": 1,
+      "high": 5,
+      "medium": 2,
+      "low": 2
+    },
+    "website-synthesis": {
+      "critical": 1,
+      "high": 5,
+      "medium": 5,
+      "low": 1
+    },
+    "repo-synthesis": {
+      "critical": 1,
+      "high": 2,
+      "medium": 4,
+      "low": 2
+    }
+  },
+  "consumerHints": {
+    "hasStackClaims": false,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 0,
+    "primaryDeliverable": "RESEARCH_OUTPUT.md — decision matrix, gap analysis, convergence design spec",
+    "tdmsReadyItems": [
+      "C-005: repo-synthesis SKILL/REFERENCE split incomplete",
+      "C-016: website-analysis 'substantial content' threshold undefined",
+      "C-017: agent_budget.allocated vs no-budget-tracking behavioral rule tension",
+      "C-024: repo-analysis REFERENCE.md schema drift — critical spec-to-runtime gap",
+      "C-025: findings.jsonl field name drift (detail vs description)",
+      "C-026: extraction journal path conflict across skills",
+      "C-027: synthesis.json version key inconsistency",
+      "C-029: repo-analysis REFERENCE.md version behind SKILL.md",
+      "C-036: depth flag syntax inconsistency",
+      "C-040: repo-synthesis has only 5 critical rules for a complex multi-output skill",
+      "C-041: no-silent-skips absent from synthesis skill critical rules",
+      "C-043: anchoring prevention absent from repo-synthesis",
+      "C-046: website-analysis described as 'dual-lens' when it has a single verdict",
+      "C-051: invocation tracking inconsistent",
+      "C-060: repo-analysis REFERENCE.md phase numbering stale"
+    ],
+    "memoryCandidates": [
+      "C-001: Phase transition marker format is perfectly unified — protect this",
+      "C-002: Three unified critical rules across all 4 skills",
+      "C-018: 4-band categorical scale and Bands over numbers display rule",
+      "C-022: website-synthesis convergence formula (T1-T4 tier weights) — key design pattern",
+      "C-023: Fit scoring thresholds are perfectly shared — protect this",
+      "C-030: Two synthesis skills built by different priorities — rigor vs robustness",
+      "C-034: repo-synthesis unique outputs: Mental Model Evolution, Reading Chain, Ecosystem Gap Analysis, Fit Portfolio",
+      "C-035: website-synthesis unique outputs: 4 paradigms, convergence scoring, Knowledge Portfolio",
+      "C-052: research-index.jsonl is the only session-level integration point",
+      "C-053: Cross-type synthesis schema is partially aligned by design for forward compatibility"
+    ]
+  },
+  "recommendationPriorities": {
+    "priority1_doNow": [
+      "Update repo-analysis REFERENCE.md §3.3 to reflect v4.2 candidate model",
+      "Update repo-analysis REFERENCE.md §3.2 findings.jsonl field name (detail→description)",
+      "Sync repo-analysis REFERENCE.md to v4.2 and fix stale phase numbering",
+      "Add self-audit phase to website-synthesis",
+      "Add convergence scoring formula to repo-synthesis"
+    ],
+    "priority2_structural": [
+      "Unify depth flag syntax to keyed format (--depth=)",
+      "Unify synthesis.json top-level version key to schema_version",
+      "Resolve cross-entity artifact path conflict (3 files affected)",
+      "Formalize SKILL.md/REFERENCE.md split principle across all skills",
+      "Add no-silent-skips to synthesis skill Critical Rules"
+    ],
+    "priority3_crossPollination": [
+      "Add Warm-Up phase to website-synthesis",
+      "Add Phase 2.5 Verification Pass to website-synthesis",
+      "Add retro persistence to website-analysis, repo-analysis, website-synthesis",
+      "Add self-audit phase to repo-analysis",
+      "Add anchoring prevention guard to repo-synthesis",
+      "Add invocation tracking to repo-analysis and repo-synthesis",
+      "Add thematic saturation stopping rule to repo-synthesis",
+      "Add empty artifact warning to website-synthesis",
+      "Add schema version checking to website-synthesis",
+      "Add Decision Coverage Map to repo-analysis, repo-synthesis, website-synthesis"
+    ]
+  }
+}

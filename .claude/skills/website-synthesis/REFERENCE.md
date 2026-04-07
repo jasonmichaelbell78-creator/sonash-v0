@@ -1,5 +1,5 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
@@ -652,7 +652,8 @@ A cross-type synthesizer would consume both `synthesis.json` files and:
   "outputs_completed": ["paradigm", "signals", "portfolio"],
   "focus": null,
   "startedAt": "ISO8601",
-  "completedAt": null
+  "completedAt": null,
+  "process_feedback": "string|null"
 }
 ```
 
@@ -699,10 +700,108 @@ Illustrative directory structure after a thematic synthesis of 7 sites:
 
 ---
 
-## 9. Version History
+## 9. Phase 2.5: Verification Pass
+
+The Phase 2.5 Self-Audit in SKILL.md references this section for detailed
+specifications.
+
+### 9.1 T20 Tally Format
+
+After reviewing all Phase 2 synthesis output, produce a tally in this exact
+format:
+
+```
+T20 Tally: Confirmed: N | Corrected: N | Extended: N | New: N
+```
+
+**Category definitions:**
+
+| Category  | Meaning                                                        |
+| --------- | -------------------------------------------------------------- |
+| Confirmed | Theme/signal from Phase 2 verified as-is with no changes       |
+| Corrected | Theme/signal adjusted — evidence was weaker, misattributed, or |
+|           | incorrectly weighted after re-examination                      |
+| Extended  | Theme/signal strengthened with additional evidence discovered  |
+|           | during audit that was not surfaced in Phase 2                  |
+| New       | Net-new theme/signal discovered during audit that Phase 2      |
+|           | missed entirely                                                |
+
+### 9.2 Quality Threshold
+
+If the **Corrected** count exceeds 20% of total items (Confirmed + Corrected +
+Extended + New), flag a synthesis quality concern to the user:
+
+> "Phase 2.5 audit found {N} corrections out of {total} items ({pct}%). This
+> exceeds the 20% threshold. Recommend reviewing Phase 2 synthesis methodology
+> before proceeding."
+
+Present the user with options: (a) Proceed anyway, (b) Re-run Phase 2 with
+adjusted parameters, (c) Stop and investigate.
+
+### 9.3 Theme Evidence Minimum
+
+Every theme produced by Phase 2 MUST be supported by evidence from 3+
+independent sites. During the Phase 2.5 audit:
+
+1. Count the distinct independent sites supporting each theme
+2. Sites that cite each other as primary sources count as 1 source (same
+   independence rule as convergence detection in Section 2.1)
+3. Themes with fewer than 3 independent site sources are:
+   - Downgraded from "emergent" to "tentative"
+   - Flagged in the T20 tally as "Corrected"
+   - Noted in synthesis.md with a warning annotation
+
+### 9.4 Source Tier Distribution Check
+
+Calculate the percentage of evidence across all themes that comes from T4
+(Secondary aggregation) sources. If >50%:
+
+- Flag as "weakly supported synthesis" in the T20 tally
+- Warn user before proceeding to Phase 3
+- Suggest scanning higher-quality sources via `/website-analysis` to strengthen
+  evidence base
+
+---
+
+## 10. Decision Coverage Map
+
+Maps key design decisions to their implementation location in SKILL.md and
+REFERENCE.md.
+
+| #   | Decision                                                          | Location     | Section                              |
+| --- | ----------------------------------------------------------------- | ------------ | ------------------------------------ |
+| 1   | Thematic as default paradigm                                      | SKILL.md     | Synthesis Paradigms > Thematic       |
+| 2   | 4 synthesis paradigms (thematic, narrative, matrix, meta-pattern) | SKILL.md     | Synthesis Paradigms                  |
+| 3   | Source tier weighting (T1-T4, 3x to 0.5x)                         | REFERENCE.md | Section 3: Source Weighting          |
+| 4   | Convergence scoring (weighted sum by tier)                        | REFERENCE.md | Section 2.1: Convergence             |
+| 5   | Thematic saturation stopping rule (3 consecutive no-new)          | SKILL.md     | Critical Rules #8                    |
+| 6   | Minimum 3 sites requirement                                       | SKILL.md     | Critical Rules #1                    |
+| 7   | Independence verification for convergence                         | REFERENCE.md | Section 2.1: Detection method        |
+| 8   | Query fan-out (8-12 thematic questions)                           | REFERENCE.md | Section 1.1: Heuristics              |
+| 9   | T20 tally verification pass                                       | SKILL.md     | Phase 2.5 + REFERENCE.md Section 9   |
+| 10  | 20% correction threshold for quality concern                      | REFERENCE.md | Section 9.2                          |
+| 11  | Theme evidence minimum (3+ independent sites)                     | SKILL.md     | Phase 2.5 + REFERENCE.md Section 9.3 |
+| 12  | Source tier distribution warning (>50% T4)                        | SKILL.md     | Phase 2.5 + REFERENCE.md Section 9.4 |
+| 13  | State file schema with process_feedback                           | REFERENCE.md | Section 6: State File Schema         |
+| 14  | WARM-UP phase with prior feedback replay                          | SKILL.md     | Warm-up section                      |
+| 15  | 5 home context sources (CONVENTIONS.md Section 9)                 | SKILL.md     | Critical Rules #10                   |
+| 16  | No silent skips (CONVENTIONS.md Section 7)                        | SKILL.md     | Critical Rules #9                    |
+| 17  | Cross-type synthesis hooks (planned, not implemented)             | REFERENCE.md | Section 5                            |
+| 18  | Write-to-disk-first (CONVENTIONS.md Section 2)                    | SKILL.md     | Critical Rules #7                    |
+| 19  | Conversational prose (CONVENTIONS.md Section 3)                   | SKILL.md     | Critical Rules #4                    |
+| 20  | Retro persistence to state file                                   | SKILL.md     | Retro section                        |
+
+---
+
+## 11. Version History
 
 | Version | Date       | Description                                             |
 | ------- | ---------- | ------------------------------------------------------- |
+| 1.1     | 2026-04-06 | Convergence plan: Phase 2.5 verification pass (T20      |
+|         |            | tally, quality threshold, theme evidence minimum,       |
+|         |            | tier distribution check), Decision Coverage Map         |
+|         |            | appendix (20 decisions), process_feedback in state.     |
+|         |            | Source: PLAN.md Steps 5, 13, 17, 18.                    |
 | 1.0     | 2026-04-06 | Initial creation. Companion to website-analysis v1.0.   |
 |         |            | 4 paradigm templates, signal rubric, source weighting,  |
 |         |            | output schemas, cross-type hooks (planned).             |

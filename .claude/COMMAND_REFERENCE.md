@@ -164,19 +164,20 @@ Source: `.husky/`
 
 ## Version History
 
-| Version | Date         | Change                                                             |
-| ------- | ------------ | ------------------------------------------------------------------ |
-| 8.0     | 2026-04-06   | Added /website-analysis, /website-synthesis (68 skills)            |
-| 7.0     | 2026-04-05   | Added /repo-synthesis, updated /repo-analysis v4.1 (66 skills)     |
-| 6.0     | 2026-04-02   | Added /repo-analysis skill (65 skills)                             |
-| 5.9     | 2026-03-24   | Added convergence-loop, data-effectiveness-audit, debt-runner (64) |
-| 5.5     | 2026-02-24   | Added skill/doc/script/comprehensive ecosystem audits (65)         |
-| 5.4     | 2026-02-23   | Added /tdms-ecosystem-audit + /session-ecosystem-audit (61)        |
-| 5.3     | 2026-02-23   | Added /hook-ecosystem-audit skill (59)                             |
-| 5.2     | 2026-02-23   | Added 17 missing skills (58 total)                                 |
-| 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill                                    |
-| 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)                            |
-| 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills                         |
-| 3.0     | Session #135 | Added multi-AI audit, comprehensive audit                          |
-| 2.0     | Session #110 | Fix expansion-evaluation template                                  |
-| 1.0     | Session #100 | Initial comprehensive reference                                    |
+| Version | Date         | Change                                                                   |
+| ------- | ------------ | ------------------------------------------------------------------------ |
+| 8.1     | 2026-04-06   | Skill convergence: shared CONVENTIONS.md, Zod schemas, 4-skill alignment |
+| 8.0     | 2026-04-06   | Added /website-analysis, /website-synthesis (68 skills)                  |
+| 7.0     | 2026-04-05   | Added /repo-synthesis, updated /repo-analysis v4.1 (66 skills)           |
+| 6.0     | 2026-04-02   | Added /repo-analysis skill (65 skills)                                   |
+| 5.9     | 2026-03-24   | Added convergence-loop, data-effectiveness-audit, debt-runner (64)       |
+| 5.5     | 2026-02-24   | Added skill/doc/script/comprehensive ecosystem audits (65)               |
+| 5.4     | 2026-02-23   | Added /tdms-ecosystem-audit + /session-ecosystem-audit (61)              |
+| 5.3     | 2026-02-23   | Added /hook-ecosystem-audit skill (59)                                   |
+| 5.2     | 2026-02-23   | Added 17 missing skills (58 total)                                       |
+| 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill                                          |
+| 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)                                  |
+| 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills                               |
+| 3.0     | Session #135 | Added multi-AI audit, comprehensive audit                                |
+| 2.0     | Session #110 | Fix expansion-evaluation template                                        |
+| 1.0     | Session #100 | Initial comprehensive reference                                          |

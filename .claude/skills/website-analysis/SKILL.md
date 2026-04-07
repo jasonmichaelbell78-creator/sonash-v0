@@ -8,10 +8,12 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
+**Document Version:** 1.1
 **Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+**Shared conventions:** See `.claude/skills/shared/CONVENTIONS.md`
 
 # Website Analysis
 
@@ -59,12 +61,13 @@ Expedition: open-ended (HITL pacing).
 ## Input
 
 ```
-/website-analysis <URL>                    # Page mode, Quick Scan default
-/website-analysis <URL> --standard         # Standard depth
-/website-analysis <URL> --deep             # Deep depth
-/website-analysis --urls=URL1,URL2,...      # Site mode, explicit pages
-/website-analysis <URL> --site             # Site mode, auto-discovery
-/website-analysis <URL> --expedition       # Expedition mode (HITL multi-hop)
+/website-analysis <URL>                        # Page mode, Quick Scan default
+/website-analysis <URL> --depth=standard       # Standard depth
+/website-analysis <URL> --depth=deep           # Deep depth
+/website-analysis <URL> --depth=quick          # Explicit Quick Scan
+/website-analysis --urls=URL1,URL2,...          # Site mode, explicit pages
+/website-analysis <URL> --site                 # Site mode, auto-discovery
+/website-analysis <URL> --expedition           # Expedition mode (HITL multi-hop)
 ```
 
 Re-invoking with the same URL auto-resumes from last completed phase.
@@ -95,6 +98,9 @@ ROUTING    → Menu (7 options)
 prior analysis exists in output directory, offer: (a) re-analyze with
 trends.jsonl comparison, (b) resume, (c) view previous. Authenticated sites: set
 superpowers-chrome profile first via `use_browser set_profile`.
+
+**Prior feedback replay (SHOULD):** If a prior state file exists with
+`process_feedback`, present: "Last run feedback: {response}" before proceeding.
 
 Use phase transition markers: `========== PHASE N: [NAME] ==========`
 
@@ -177,8 +183,8 @@ Runs on every invocation. Produces:
 **Writes:** meta.json, analysis.json (partial, Quick tier). Write to disk before
 gate.
 
-**Gate:** "Run Standard analysis? [y/N]" — all flags (`--standard`, `--deep`,
-`--site`, `--expedition`) bypass this gate.
+**Gate:** "Run Standard analysis? [y/N]" — all flags (`--depth=standard`,
+`--depth=deep`, `--site`, `--expedition`) bypass this gate.
 
 ## Standard (Phases 1-4)
 
@@ -265,7 +271,8 @@ After Standard/Deep, present:
 **Location:** `.claude/state/website-analysis.<site-slug>.state.json`
 
 Update after every phase. On resume, read state file, skip completed phases.
-Re-invoke `/website-analysis <same-URL>` to trigger recovery.
+Re-invoke `/website-analysis <same-URL>` to trigger recovery. The state file
+also stores `process_feedback` (string, nullable) from the retro prompt.
 
 **Artifacts as checkpoints:** analysis.json, SITE-ANALYSIS.md, meta.json persist
 independently even if state file is lost. State file and disk artifacts survive
@@ -306,13 +313,15 @@ Before presenting results, verify all 9 dimensions:
 
 ## Retro (SHOULD)
 
-After Done routing option: "Anything about this analysis that should inform
-future website-analysis runs?"
+Before presenting the routing menu, ask: "What worked well? What would you
+change next time?" Save the response to `process_feedback` in the state file.
+Per CONVENTIONS.md Section 10.
 
 ---
 
 ## Version History
 
-| Version | Date       | Description            |
-| ------- | ---------- | ---------------------- |
-| 1.0     | 2026-04-06 | Initial implementation |
+| Version | Date       | Description                                                        |
+| ------- | ---------- | ------------------------------------------------------------------ |
+| 1.1     | 2026-04-06 | Convergence: CONVENTIONS.md ref, --depth= flags, retro persistence |
+| 1.0     | 2026-04-06 | Initial implementation                                             |

@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 4.0
-**Last Updated:** 2026-04-05
+**Document Version:** 4.2
+**Last Updated:** 2026-04-06
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -344,7 +344,7 @@ One record per finding. Uses a lightweight analysis-native format. TDMS intake
   "severity": "high|medium|low|info",
   "dimension": "QS-15|ST-01|WR-03",
   "title": "No SAST for subprocess-heavy codebase",
-  "detail": "Full finding description with evidence",
+  "description": "Full finding description with evidence",
   "recommendation": "Recommended action"
 }
 ```
@@ -359,7 +359,7 @@ One record per finding. Uses a lightweight analysis-native format. TDMS intake
 | `category`       | string | No       | Optional: `cautionary` for anti-ideas    |
 | `dimension`      | string | Yes      | Dimension ID (e.g., QS-15, ST-01, WR-03) |
 | `title`          | string | Yes      | Short finding title                      |
-| `detail`         | string | Yes      | Full description with evidence           |
+| `description`    | string | Yes      | Full description with evidence           |
 | `recommendation` | string | Yes      | Recommended action                       |
 
 **TDMS intake transform (routing option 2):**
@@ -389,12 +389,16 @@ user acts on candidates.
   "schema_version": "2.0",
   "repo": "OWNER/REPO",
   "scan_date": "YYYY-MM-DD",
-  "extraction_candidates": [
+  "patternCandidates": [
     {
-      "rank": 1,
       "name": "Rate limiting middleware",
-      "location": "src/middleware/rate-limiter.ts + src/config/rate-limits.ts",
       "description": "What the component/pattern does and why it matters",
+      "source": "src/middleware/rate-limiter.ts + src/config/rate-limits.ts",
+      "relevance": "high|medium|low",
+      "effort": "E0|E1|E2|E3",
+      "novelty": "High|Med|Low",
+      "rank": 1,
+      "location": "src/middleware/rate-limiter.ts + src/config/rate-limits.ts",
       "pattern_novelty": "High|Med|Low",
       "code_portability": 12,
       "adoption_readiness": "High|Med|Low",
@@ -407,6 +411,44 @@ user acts on candidates.
       "status": "identified|selected|extracted|integrated|skipped",
       "decision_date": "ISO8601 or null",
       "decision_notes": "Why this decision was made"
+    }
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "Agent instruction design patterns",
+      "description": "What understanding/methodology to learn",
+      "source": "docs/agent-design.md + src/agents/",
+      "relevance": "high|medium|low",
+      "effort": "E0|E1",
+      "novelty": "High|Med|Low"
+    }
+  ],
+  "contentCandidates": [
+    {
+      "name": "MCP backend tutorial",
+      "description": "Specific content item with direct home applicability",
+      "source": "guides/mcp-backend.md",
+      "relevance": "high|medium|low",
+      "effort": "E0|E1",
+      "novelty": "High|Med|Low",
+      "url": "https://example.com/resource"
+    }
+  ],
+  "antiPatternCandidates": [
+    {
+      "name": "CELEBRITY_STAGNATION",
+      "description": "Cautionary lesson — what NOT to replicate",
+      "source": "Observed pattern in governance model",
+      "relevance": "high|medium|low",
+      "effort": "E0",
+      "novelty": "High|Med|Low"
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "owner/name",
+      "connection_type": "shared-pattern|complementary|overlapping-finding|referenced",
+      "detail": "..."
     }
   ],
   "related_repos": [
@@ -586,9 +628,13 @@ Written when user acts on a candidate in the Extract routing flow.
 
 #### 3.6.2 Cross-Repo Extraction Journal
 
-**Location:** `.research/repo-analysis/extraction-journal.jsonl`
+**Location:** `.research/extraction-journal.jsonl` (canonical root path)
 
 Append-only log across ALL repos analyzed. One line per extraction decision.
+Entries include a `source_type: "repo"` discriminator field to distinguish from
+other extraction sources (e.g., website-analysis). Legacy files at
+`.research/repo-analysis/extraction-journal.jsonl` remain valid and are read as
+fallback if the root-level file does not exist.
 
 ```jsonl
 {
@@ -616,7 +662,8 @@ Append-only log across ALL repos analyzed. One line per extraction decision.
 
 #### 3.6.3 `EXTRACTIONS.md` (Human-Readable Summary)
 
-**Location:** `.research/repo-analysis/EXTRACTIONS.md`
+**Location:** `.research/EXTRACTIONS.md` (canonical root path). Legacy files at
+`.research/repo-analysis/EXTRACTIONS.md` remain valid.
 
 Auto-regenerated from `extraction-journal.jsonl` after each Extract routing
 flow. Grouped by status for quick scanning.
@@ -716,8 +763,9 @@ upgraded to `"high"` after Depth 1 fetching.
 
 ### 3.8 `reading-chain.jsonl`
 
-**Location:** `.research/repo-analysis/reading-chain.jsonl` (cross-repo, NOT
-per-slug)
+**Location:** `.research/reading-chain.jsonl` (canonical root path, cross-repo,
+NOT per-slug). Legacy files at `.research/repo-analysis/reading-chain.jsonl`
+remain valid
 
 Append-only log of relationships between analyzed repos. Populated during Phase
 4 (Creator View) and Phase 6 (Value Map) when cross-repo relationships are
@@ -1142,8 +1190,7 @@ special chars). Examples:
   "clone_dir": "/tmp/repo-analysis-<slug>/",
   "clone_strategy": "none|blobless-shallow|blobless-history|full",
   "output_dir": ".research/repo-analysis/<repo-slug>/",
-  "agent_budget": {
-    "allocated": 6,
+  "agents": {
     "spawned": 0,
     "completed": 0
   },
@@ -1169,7 +1216,7 @@ special chars). Examples:
 | `clone_dir`            | string | Clone location (null for Quick Scan)             |
 | `clone_strategy`       | string | Clone method used                                |
 | `output_dir`           | string | Output artifact directory                        |
-| `agent_budget`         | object | Agent allocation tracking                        |
+| `agents`               | object | Agent tracking: `{spawned, completed}` (flat)    |
 | `startedAt`            | string | ISO 8601 analysis start time                     |
 | `completedAt`          | string | ISO 8601 completion time (null if in-progress)   |
 
@@ -1300,14 +1347,18 @@ than 4.
 ### Staged Wave Execution
 
 ```
-Phase 0: Inline orchestrator (no spawn) -- Quick Scan
-Phase 1: Inline orchestrator -- clone execution
-Phase 2: Dimension Wave -- up to 4 concurrent agents
-         Each writes dimensions/<dim>-findings.json before returning
-         Orchestrator verifies file existence (does not trust return values)
-Phase 3: History Wave (conditional) -- up to 3 concurrent agents
-Phase 4: Aggregation -- inline, sequential
-Phase 5: Value Map generation -- inline
+Phase 0:  Inline orchestrator (no spawn) -- Quick Scan
+Phase 1:  Inline orchestrator -- clone execution
+Phase 2:  Dimension Wave -- up to 4 concurrent agents
+          Each writes dimensions/<dim>-findings.json before returning
+          Orchestrator verifies file existence (does not trust return values)
+Phase 2b: Deep Read -- inline, read internal artifacts beyond code
+Phase 3:  History Wave (conditional, Deep only) -- up to 3 concurrent agents
+Phase 4:  Creator View -- inline, requires home context + Deep Read + Content Eval
+Phase 4b: Content Evaluation -- inline, evaluates embedded content for relevance
+Phase 5:  Engineer View -- inline, merge dimensions, compute bands
+Phase 6:  Value Map generation -- inline, 4 typed candidate arrays
+Phase 6b: Coverage Audit -- inline, scan for unexplored content
 ```
 
 ---
