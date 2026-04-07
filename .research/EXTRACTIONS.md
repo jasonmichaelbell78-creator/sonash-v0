@@ -2,8 +2,8 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 81 candidates **By decision:** defer: 74,
-investigate: 2, extract: 5
+**Schema version:** 2.0 | **Total:** 98 candidates **By decision:** defer: 81,
+investigate: 2, extract: 14, skip: 1
 
 ---
 
@@ -122,3 +122,40 @@ investigate: 2, extract: 5
 | Answers-compound-into-wiki principle                     | design-principle       | extract  | 2026-04-07 | high    | E0     | high      | -            | Key gap: /deep-research and /brainstorm outputs archive to .research/ but don't feed back into active knowledge layer. T |
 | Index + Log dual navigation system                       | implementation-pattern | extract  | 2026-04-07 | low     | E0     | high      | -            | Already have: DOCUMENTATION_INDEX.md=index, SESSION_HISTORY.md+commit-log.jsonl=log, research-index.jsonl=research index |
 | qmd local markdown search (MCP + CLI)                    | tool                   | extract  | 2026-04-07 | high    | E1     | medium    | -            | Evaluate for JASON-OS search layer. Currently Grep+index-based. At 1000+ docs may need hybrid BM25/vector search.        |
+
+## https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203 (website)
+
+| Candidate                                             | Type             | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------- | ---------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Exploration-over-conclusion as skill design principle | design-principle | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Validates brainstorm Phase 1 philosophy. Potential: add minimum-exploration threshold to convergence loops before allowi |
+| Contemplator tag pattern (historical reference)       | pattern          | skip     | 2026-04-07 | low     | E0     | low       | -            | Claude native <thinking> blocks supersede this. Historical reference only — no action needed.                            |
+
+## https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d (website)
+
+| Candidate                                                  | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ---------------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Anti-cramming / anti-thinning balance for knowledge skills | design-principle     | extract  | 2026-04-07 | high    | E0     | high      | -            | When to split vs enrich. Third paragraph about sub-topic = split. Stub with 4 entries mentioning it = enrich. Apply to E |
+| 15-entry checkpoint cycle pattern                          | workflow-pattern     | extract  | 2026-04-07 | high    | E0     | high      | -            | Every N items: rebuild indexes, audit quality, check for anti-patterns. Apply to batch synthesis and /deep-research mid- |
+| Parallel subagent cleanup workflow (5-batch audit)         | workflow-pattern     | defer    | 2026-04-07 | medium  | E1     | high      | -            | 5-agent batches auditing 6 dimensions each. Compare against our parallelization patterns when building T24.              |
+| Writer-not-filing-clerk identity framing                   | design-principle     | extract  | 2026-04-07 | medium  | E0     | high      | -            | Identity shapes operations: 'what does this mean' vs 'where do I file this'. T24 synthesis adoption should synthesize, n |
+| Concurrency safety rules for LLM file ops                  | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Re-read before edit, never delete without reading, rebuild indices at end. Partially covered by CLAUDE.md #12.           |
+| 7-command skill architecture as T24 reference design       | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize. Direct reference for T24 command set. Absorb + breakdown |
+
+## https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea (website)
+
+| Candidate                                                   | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| 6-pattern orchestration taxonomy for AGENT_ORCHESTRATION.md | architecture-pattern | extract  | 2026-04-07 | medium  | E0     | high      | -            | Parallel Specialists, Pipeline, Swarm, Research+Impl, Plan Approval, Coordinated Refactoring. Map to existing skill usag |
+| Spawn backend comparison for T5 worktree management         | pattern              | extract  | 2026-04-07 | high    | E0     | high      | -            | in-process (hidden/fastest), tmux (visible/persistent), iterm2 (macOS split). Auto-detection logic. Directly relevant to |
+| TeammateTool 13-operation reference                         | pattern              | defer    | 2026-04-07 | medium  | E0     | high      | -            | Full lifecycle: spawn/discover/join/approve/write/broadcast/shutdown/cleanup. Audit .claude/teams/ against this when exp |
+| Task dependency auto-unblock for skill pipeline design      | workflow-pattern     | defer    | 2026-04-07 | high    | E1     | high      | -            | blockedBy arrays with auto-unblock on completion. Evaluate for deep-research phase sequencing — could replace manual dis |
+| Subagent vs teammate decision framework                     | design-principle     | extract  | 2026-04-07 | medium  | E0     | high      | -            | Short-lived focused = subagent. Persistent coordination with messaging = teammate. Add to AGENT_ORCHESTRATION.md as deci |
+
+## https://docs.composio.dev/docs (website)
+
+| Candidate                                             | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Meta-tool pattern for dynamic tool discovery          | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | 6 meta tools (search, get-schema, auth, execute, workbench, bash) instead of loading 1000+ definitions. Agent discovers  |
+| Native vs MCP tradeoff framework with token cost data | design-principle     | extract  | 2026-04-07 | high    | E0     | high      | -            | Native: context control + interception. MCP: simplicity. 55K tokens for 5 MCP servers. Measure current 3-server overhead |
+| llms.txt standard for AI-readable documentation       | pattern              | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Standardized llms.txt at site root for LLM consumption. Park for JASON-OS documentation strategy.                        |
+| Event trigger dual model (webhook + polling)          | pattern              | defer    | 2026-04-07 | medium  | E2     | medium    | -            | Webhook for real-time capable services, polling for those without. Park for event-driven agent features.                 |

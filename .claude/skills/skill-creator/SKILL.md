@@ -115,8 +115,14 @@ want this skill to follow?"
    proceed.
 2. Scan `.claude/skills/` for existing neighbors (MUST)
 3. Check CLAUDE.md for relevant conventions (MUST)
-4. Read existing skill files if updating (MUST for updates)
-5. **Domain research check** (SHOULD) — if the skill being created covers a
+4. **Extraction context (MUST):** Read `.research/extraction-journal.jsonl`.
+   Filter for candidates relevant to the skill being created (match by type,
+   tags in notes, or source domain). If matches found, present as "Prior art
+   from analyzed sources" — these are patterns, architectures, and design
+   principles already identified from external repos/websites that may inform
+   the skill's design.
+5. Read existing skill files if updating (MUST for updates)
+6. **Domain research check** (SHOULD) — if the skill being created covers a
    domain the AI lacks expertise in (unfamiliar technology, specialized
    workflow, external ecosystem), suggest: "This skill targets a domain that
    would benefit from research. Run `/deep-research` first to understand the

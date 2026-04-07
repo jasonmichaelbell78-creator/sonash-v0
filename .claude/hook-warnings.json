@@ -69,6 +69,16 @@
       "timestamp": "2026-04-07T09:19:44.247Z",
       "occurrences": 1,
       "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-push",
+      "type": "trigger",
+      "severity": "warning",
+      "message": "Skill/agent files modified",
+      "action": "Validate",
+      "timestamp": "2026-04-07T10:30:03.688Z",
+      "occurrences": 4,
+      "occurrences_since_ack": 1
     }
   ]
 }

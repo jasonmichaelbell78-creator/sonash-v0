@@ -115,18 +115,24 @@ Vague ideas are welcome — we'll shape them together. No code will be written."
 
 1. Check CLAUDE.md for relevant conventions (MUST)
 2. Check ROADMAP.md — verify alignment with project direction (MUST)
-3. Scan codebase for relevant existing systems (MUST)
-4. **Agent dispatch for unknowns (MUST when applicable):**
+3. **Extraction context (MUST):** Read `.research/extraction-journal.jsonl`.
+   Filter for candidates relevant to the brainstorm topic (match by type, tags
+   in notes, or source domain). If matches found, present as "Prior art from
+   analyzed sources" before exploration begins. These are patterns, principles,
+   and tools already identified from external repos/websites — grounding
+   exploration in what's been learned, not starting from zero.
+4. Scan codebase for relevant existing systems (MUST)
+5. **Agent dispatch for unknowns (MUST when applicable):**
    - Codebase questions: spawn `Explore` agents
    - Domain/technology questions: spawn `deep-research-searcher` agents with
      sub-question, search profile (web/docs/academic), output path, depth
    - No limit on agent count — dispatch as many as the landscape requires
-5. **Duplicate check (MUST):** Check `.research/<topic-slug>/`. If BRAINSTORM.md
+6. **Duplicate check (MUST):** Check `.research/<topic-slug>/`. If BRAINSTORM.md
    exists, offer: resume, start fresh, or rename.
-6. Check `.research/` for prior research on related topics (SHOULD)
-7. **Convergence-loop verify landscape (SHOULD):** If Phase 0 makes 3+ claims
+7. Check `.research/` for prior research on related topics (SHOULD)
+8. **Convergence-loop verify landscape (SHOULD):** If Phase 0 makes 3+ claims
    about codebase state, verify via CL quick preset before presenting.
-8. Present landscape summary to user (MUST)
+9. Present landscape summary to user (MUST)
 
 **If misaligned with ROADMAP:** Present conflict, offer proceed/reframe/abort.
 

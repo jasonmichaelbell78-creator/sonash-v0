@@ -140,6 +140,21 @@ All skills SHOULD include a retro prompt at completion and persist the response:
 
 ---
 
+## 11. Extraction Context
+
+All creation-oriented skills (brainstorm, deep-plan, skill-creator) MUST read
+`.research/extraction-journal.jsonl` during their context-gathering phase and
+surface relevant candidates before proceeding. This ensures patterns,
+principles, and architectures identified from external repos/websites inform new
+work rather than being rediscovered from scratch.
+
+**How to filter:** Match by candidate `type` (pattern, architecture-pattern,
+design-principle, workflow-pattern), keywords in `notes`, or `source` domain.
+Present matches as "Prior art from analyzed sources" with source, candidate
+name, and notes.
+
+---
+
 ## Adoption
 
 Each skill's SKILL.md includes a one-line reference:

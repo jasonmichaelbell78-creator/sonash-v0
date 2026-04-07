@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "url": "https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d",
+  "site_slug": "farzaa-gist-c35ac0cf",
+  "title": "Personal Knowledge Wiki Skill for Claude Code",
+  "author": "farzaa",
+  "description": "A Claude Code skill implementing Karpathy's LLM Wiki pattern with 7 commands: ingest, absorb, query, cleanup, breakdown, rebuild-index, reorganize. Includes directory taxonomy, writing standards, anti-cramming/anti-thinning rules, and parallel subagent workflows.",
+  "og_title": "personal_wiki_skill.md",
+  "canonical": "https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d",
+  "word_count": 2850,
+  "links_count": 97,
+  "code_blocks": 7,
+  "tables": 2,
+  "headings_count": 53,
+  "stars": 452,
+  "forks": 132,
+  "revisions": 9,
+  "published_date": "2025-01-01",
+  "scan_date": "2026-04-07",
+  "files": ["wiki-gen-skill.md", "wikiepdia-generate.md"],
+  "compliance": {
+    "status": "WARN",
+    "reason": "Wildcard robots.txt restricts gist paths; no explicit Anthropic/Claude blocks. User-initiated.",
+    "robots_txt_checked": true,
+    "cf_mitigated": false
+  },
+  "extraction_method": "superpowers-chrome + WebFetch"
+}

@@ -107,7 +107,14 @@ reference actual patterns, not generic placeholders.
 
 1. Check CLAUDE.md for documented project conventions (MUST)
 2. Read ROADMAP.md — verify task aligns with project direction (MUST)
-3. **Research check** (MUST) — two checks:
+3. **Extraction context (MUST):** Read `.research/extraction-journal.jsonl`.
+   Filter for candidates relevant to the planning topic (match by type, tags in
+   notes, or source domain). If matches found, include as
+   `## Prior Extraction Context` in DIAGNOSIS.md — patterns, principles, and
+   architecture references already identified from external repos/websites.
+   These inform discovery questions and prevent re-solving problems that
+   analyzed sources have already addressed.
+4. **Research check** (MUST) — two checks:
    - **Prior research:** look for `.research/<topic-slug>/`. If found, offer to
      inject `## Research Context` into DIAGNOSIS.md (deep-plan adapter,
      REFERENCE.md Section 15).
@@ -116,30 +123,30 @@ reference actual patterns, not generic placeholders.
      research before I can ask informed questions. Run `/deep-research` first?"
      Do not proceed with uninformed discovery questions when domain expertise is
      absent.
-4. **Brainstorm check** (SHOULD) — check for
+5. **Brainstorm check** (SHOULD) — check for
    `.research/<topic-slug>/BRAINSTORM.md`. If found, load chosen direction,
    anti-goals, and open questions as pre-seeded context for discovery.
-5. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
-6. Identify existing patterns, conventions, and neighboring systems (MUST)
-7. Produce `DIAGNOSIS.md` at the plan output location (MUST):
+6. Explore relevant codebase areas (SHOULD — use Explore agent for broad)
+7. Identify existing patterns, conventions, and neighboring systems (MUST)
+8. Produce `DIAGNOSIS.md` at the plan output location (MUST):
    - ROADMAP alignment check (aligned / misaligned / new direction)
    - Relevant existing systems and their patterns
    - Reframe check: is the task what it appears to be?
-8. **Verify code-state claims (MUST):** All claims in DIAGNOSIS.md about
+9. **Verify code-state claims (MUST):** All claims in DIAGNOSIS.md about
    specific code state (line numbers, bug descriptions, specific values,
    corruption claims) MUST include a verify command. Claims without verification
    are flagged as `[UNVERIFIED]`. Run `npm view <pkg> version` for any version
    references — plans MUST NOT assume future/unreleased software exists. Use
    "preparation" language ("prepare for eventual vN") not imperative ("migrate
    to vN").
-9. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M) —
-   if DIAGNOSIS.md makes 5+ claims about codebase state (claims = testable
-   assertions about codebase state, per `/convergence-loop` SKILL.md), verify
-   via convergence-loop quick preset. Wrong diagnosis cascades through the
-   entire plan. **If claims are wrong:** correct DIAGNOSIS.md and re-verify
-   before presenting. See `/convergence-loop` SKILL.md "Programmatic Mode" for
-   the integration contract.
-10. Present DIAGNOSIS.md to user for review (MUST)
+10. **Convergence-loop verify DIAGNOSIS** (MUST for L/XL tasks, SHOULD for S/M)
+    — if DIAGNOSIS.md makes 5+ claims about codebase state (claims = testable
+    assertions about codebase state, per `/convergence-loop` SKILL.md), verify
+    via convergence-loop quick preset. Wrong diagnosis cascades through the
+    entire plan. **If claims are wrong:** correct DIAGNOSIS.md and re-verify
+    before presenting. See `/convergence-loop` SKILL.md "Programmatic Mode" for
+    the integration contract.
+11. Present DIAGNOSIS.md to user for review (MUST)
 
 **If misaligned with ROADMAP:** Present the conflict to the user. Options: (1)
 proceed with acknowledgment, (2) reframe to align, (3) abort. Do NOT silently

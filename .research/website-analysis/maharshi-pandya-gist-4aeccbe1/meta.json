@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "url": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+  "site_slug": "maharshi-pandya-gist-4aeccbe1",
+  "title": "Contemplative Reasoning Response Style for LLMs",
+  "author": "Maharshi-Pandya",
+  "description": "A system prompt that instructs LLMs to engage in extended stream-of-consciousness reasoning with self-questioning, backtracking, and iterative analysis before reaching conclusions.",
+  "og_title": "\"Contemplative reasoning\" response style for LLMs like Claude and GPT-4o",
+  "canonical": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+  "word_count": 10196,
+  "links_count": 172,
+  "code_blocks": 20,
+  "tables": 1,
+  "headings": ["Core Principles", "Output Format", "Style Guidelines", "Key Requirements"],
+  "stars": 1365,
+  "forks": 340,
+  "revisions": 2,
+  "published_date": "2025-01-07",
+  "scan_date": "2026-04-07",
+  "compliance": {
+    "status": "WARN",
+    "reason": "Wildcard robots.txt restricts gist paths; no explicit Anthropic/Claude blocks. User-initiated.",
+    "robots_txt_checked": true,
+    "cf_mitigated": false
+  },
+  "extraction_method": "superpowers-chrome + WebFetch"
+}
