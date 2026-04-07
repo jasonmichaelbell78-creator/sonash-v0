@@ -48,6 +48,7 @@ try {
 
 const ROOT_DIR = path.join(__dirname, "..");
 const WARNINGS_FILE = path.join(ROOT_DIR, ".claude", "hook-warnings.json");
+const WARNINGS_LOG_FILE = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
 
 /**
  * Parse command line arguments
@@ -69,7 +70,7 @@ function parseArgs() {
  */
 function countRecentOccurrences(type, sinceDaysAgo) {
   try {
-    const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+    const logPath = WARNINGS_LOG_FILE;
     try {
       const st = fs.lstatSync(logPath);
       if (st.isSymbolicLink()) {
@@ -108,7 +109,7 @@ function countRecentOccurrences(type, sinceDaysAgo) {
  */
 function countOccurrencesSince(type, sinceTimestamp) {
   try {
-    const logPath = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
+    const logPath = WARNINGS_LOG_FILE;
     try {
       const st = fs.lstatSync(logPath);
       if (st.isSymbolicLink()) {
@@ -202,15 +203,59 @@ function writeWarnings(data) {
  * C2-G2: Auto-escalates severity based on occurrence count (5+ → warning, 15+ → error)
  * C2-G3: Tracks occurrences_since_ack for acknowledgment awareness
  */
-function isDuplicateWarning(data, hook, type, message) {
+function isDuplicateWarning(data, hook, type, message, ackState) {
+  // Fast path: check cache view within 1 hour (same-session dedup)
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
-  return data.warnings.some(
-    (w) =>
-      w.hook === hook &&
-      w.type === type &&
-      w.message === message &&
-      new Date(w.timestamp).getTime() > oneHourAgo
-  );
+  if (
+    data.warnings.some(
+      (w) =>
+        w.hook === hook &&
+        w.type === type &&
+        w.message === message &&
+        new Date(w.timestamp).getTime() > oneHourAgo
+    )
+  ) {
+    return true;
+  }
+
+  // Cross-session dedup: suppress if same type+message already logged since lastCleared
+  // Allows ONE occurrence per ack cycle; resolved entries don't count (condition may re-emerge)
+  const sinceMs = ackState.lastCleared ? new Date(ackState.lastCleared).getTime() : 0;
+  if (sinceMs > 0) {
+    const logPath = WARNINGS_LOG_FILE;
+    try {
+      const st = fs.lstatSync(logPath);
+      if (st.isSymbolicLink()) {
+        console.error("⚠️ hook-warnings-log.jsonl is a symlink — suppressing cross-session dedup");
+        return true;
+      }
+      if (st.size > 2 * 1024 * 1024) {
+        console.error("⚠️ hook-warnings-log.jsonl exceeds 2MB — suppressing cross-session dedup");
+        return true;
+      }
+      const content = fs.readFileSync(logPath, "utf8");
+      for (const line of content.split("\n")) {
+        if (!line.trim()) continue;
+        try {
+          const entry = JSON.parse(line);
+          if (
+            entry.type === type &&
+            entry.message === message &&
+            entry.resolved !== true &&
+            new Date(entry.timestamp).getTime() > sinceMs
+          ) {
+            return true;
+          }
+        } catch {
+          /* skip malformed */
+        }
+      }
+    } catch {
+      /* file not readable — fall through to allow append */
+    }
+  }
+
+  return false;
 }
 
 function escalateSeverity(severity, occurrences) {
@@ -256,20 +301,19 @@ function buildWarningEntry({
 
 function writeAuditTrail(entry) {
   try {
-    const logDir = path.join(ROOT_DIR, ".claude", "state");
+    const logDir = path.dirname(WARNINGS_LOG_FILE);
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true });
     }
-    const logPath = path.join(logDir, "hook-warnings-log.jsonl");
     if (!isSafeToWrite(logDir)) return;
-    if (!isSafeToWrite(logPath)) return;
+    if (!isSafeToWrite(WARNINGS_LOG_FILE)) return;
     const auditRecord = {
       ...entry,
       actor: "hook-system",
       user: "redacted",
       outcome: entry.severity === "error" ? "blocked" : "warned",
     };
-    safeAppendFileSync(logPath, JSON.stringify(auditRecord) + "\n");
+    safeAppendFileSync(WARNINGS_LOG_FILE, JSON.stringify(auditRecord) + "\n");
   } catch {
     // Best-effort — never block hooks on log failure
   }
@@ -293,13 +337,13 @@ function readAckState() {
 
 function appendWarning(hook, type, severity, message, action = null, files = null, pattern = null) {
   const data = readWarnings();
-  if (isDuplicateWarning(data, hook, type, message)) return;
+  // D30: Read ack state once, pass to both dedup and occurrence tracking
+  const ackState = readAckState();
+  if (isDuplicateWarning(data, hook, type, message, ackState)) return;
 
   const priorOccurrences = countRecentOccurrences(type);
   const occurrences = priorOccurrences + 1; // include this warning
   const effectiveSeverity = escalateSeverity(severity, occurrences);
-  // D30: Read ack state from dedicated file, not from hook-warnings.json
-  const ackState = readAckState();
   const lastAck = ackState.acknowledged[type] || null;
   const priorSinceAck = lastAck ? countOccurrencesSince(type, lastAck) : priorOccurrences;
   const sinceAck = priorSinceAck + 1; // include this warning

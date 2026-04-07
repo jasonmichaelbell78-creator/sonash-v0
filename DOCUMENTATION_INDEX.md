@@ -444,7 +444,7 @@ _Claude Code skills_
 | [Pressure Test 3: Authority + Social Pressure](.claude/skills/systematic-debugging/test-pressure-3.md)                              | -                                                                 | ↓0 ↑0      | 2026-01-12    |
 | [Python MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/python_mcp_server.md)                                 | This document provides Python-specific best practices and ex...   | ↓1 ↑0      | 2026-01-12    |
 | [quick-fix](.claude/skills/quick-fix/SKILL.md)                                                                                      | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-24    |
-| [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓2 ↑0      | 2026-04-05    |
+| [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓2 ↑0      | 2026-04-06    |
 | [Repo Synthesis Reference](.claude/skills/repo-synthesis/REFERENCE.md)                                                              | Identify recurring patterns, dominant themes, and contrarian      | ↓1 ↑0      | 2026-04-06    |
 | [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓0 ↑1      | 2026-04-06    |
 | [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | Cross-repo intelligence from your analyzed repositories. Whe...   | ↓0 ↑2      | 2026-04-06    |
@@ -452,12 +452,12 @@ _Claude Code skills_
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-03-10    |
 | [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑2      | 2026-03-16    |
-| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-04-04    |
+| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-04-06    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-26    |
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-04-05    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Shared Ecosystem Audit Library](.claude/skills/_shared/ecosystem-audit/README.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-26    |
-| [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-07    |
+| [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-06    |
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-04-04    |
 | [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-06    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-03-24    |
@@ -2447,7 +2447,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-06    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-07    |
 
 ### scripts (Tier 4)
 
