@@ -31,7 +31,18 @@ const { route, generateId } = require(MODULE_PATH) as {
   route: (
     learning: Record<string, unknown>,
     options?: { routesPath?: string }
-  ) => { action: string; reason: string; existingEntry?: unknown; id: string };
+  ) => {
+    action: string;
+    reason?: string;
+    existingEntry?: unknown;
+    id: string;
+    scaffold?: {
+      generatedCode?: unknown;
+      targetFile?: string;
+      status?: string;
+      [key: string]: unknown;
+    };
+  };
   generateId: (learning: Record<string, unknown>) => string;
 };
 
@@ -140,5 +151,176 @@ describe("learning-router dedup guard", () => {
     const result = route(learning, { routesPath: testRoutesPath });
     // "failed" should allow re-routing, so action should NOT be "skipped"
     assert.notStrictEqual(result.action, "skipped");
+  });
+});
+
+describe("learning-router scaffold generatedCode field", () => {
+  let tmpDir: string;
+  let testRoutesPath: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "learning-router-test-"));
+    testRoutesPath = path.join(tmpDir, "learning-routes.jsonl");
+  });
+
+  afterEach(() => {
+    try {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    } catch {
+      // ignore cleanup errors
+    }
+  });
+
+  // Tests verify the JSONL-persisted scaffold entry includes generatedCode,
+  // which is what refine-scaffolds.js:154 reads (entry.scaffold?.generatedCode).
+
+  it("persisted JSONL entry includes non-null scaffold.generatedCode for code-type learning", () => {
+    const learning = {
+      type: "code",
+      pattern: "use sanitizeError not raw error.message",
+      source: "test",
+      severity: "high",
+    };
+
+    route(learning, { routesPath: testRoutesPath });
+
+    let content: string;
+    try {
+      content = fs.readFileSync(testRoutesPath, "utf-8");
+    } catch (err) {
+      assert.fail(`Could not read routes file: ${String(err)}`);
+    }
+
+    const lines = content.split("\n").filter((l) => l.trim().length > 0);
+    assert.strictEqual(lines.length, 1, "should have written exactly one JSONL line");
+
+    const persisted = JSON.parse(lines[0]) as {
+      scaffold?: { generatedCode?: unknown };
+    };
+    assert.ok(persisted.scaffold, "persisted entry must have scaffold");
+    assert.ok(
+      persisted.scaffold.generatedCode !== undefined,
+      "persisted scaffold.generatedCode must be present (not undefined)"
+    );
+    assert.notStrictEqual(
+      persisted.scaffold.generatedCode,
+      null,
+      "persisted scaffold.generatedCode must not be null for code-type learning"
+    );
+    // For code-type, generatedCode is the verified-pattern entry object
+    assert.strictEqual(
+      typeof persisted.scaffold.generatedCode,
+      "object",
+      "code-type generatedCode should be the pattern entry object"
+    );
+  });
+
+  it("persisted JSONL entry includes non-null scaffold.generatedCode for process-type learning", () => {
+    const learning = {
+      type: "process",
+      pattern: "run patterns check before commit",
+      source: "test",
+      severity: "high",
+    };
+
+    route(learning, { routesPath: testRoutesPath });
+
+    let content: string;
+    try {
+      content = fs.readFileSync(testRoutesPath, "utf-8");
+    } catch (err) {
+      assert.fail(`Could not read routes file: ${String(err)}`);
+    }
+
+    const lines = content.split("\n").filter((l) => l.trim().length > 0);
+    assert.strictEqual(lines.length, 1, "should have written exactly one JSONL line");
+
+    const persisted = JSON.parse(lines[0]) as {
+      scaffold?: { generatedCode?: unknown };
+    };
+    assert.ok(persisted.scaffold, "persisted entry must have scaffold");
+    assert.notStrictEqual(
+      persisted.scaffold.generatedCode,
+      null,
+      "persisted scaffold.generatedCode must not be null for process-type learning"
+    );
+    // For process-type, generatedCode is the hook script string
+    assert.strictEqual(
+      typeof persisted.scaffold.generatedCode,
+      "string",
+      "process-type generatedCode must be the hook script string"
+    );
+  });
+
+  it("persisted JSONL entry includes non-null scaffold.generatedCode for behavioral-type learning", () => {
+    const learning = {
+      type: "behavioral",
+      pattern: "ask on first confusion not fourth",
+      source: "test",
+      severity: "medium",
+    };
+
+    route(learning, { routesPath: testRoutesPath });
+
+    let content: string;
+    try {
+      content = fs.readFileSync(testRoutesPath, "utf-8");
+    } catch (err) {
+      assert.fail(`Could not read routes file: ${String(err)}`);
+    }
+
+    const lines = content.split("\n").filter((l) => l.trim().length > 0);
+    assert.strictEqual(lines.length, 1, "should have written exactly one JSONL line");
+
+    const persisted = JSON.parse(lines[0]) as {
+      scaffold?: { generatedCode?: unknown };
+    };
+    assert.ok(persisted.scaffold, "persisted entry must have scaffold");
+    assert.notStrictEqual(
+      persisted.scaffold.generatedCode,
+      null,
+      "persisted scaffold.generatedCode must not be null for behavioral-type learning"
+    );
+    // For behavioral-type, generatedCode is the annotation string
+    assert.strictEqual(
+      typeof persisted.scaffold.generatedCode,
+      "string",
+      "behavioral-type generatedCode must be the annotation string"
+    );
+  });
+
+  it("persisted JSONL entry includes scaffold.generatedCode (general case)", () => {
+    const learning = {
+      type: "code",
+      pattern: "wrap file reads in try catch",
+      source: "test",
+      severity: "critical",
+    };
+
+    route(learning, { routesPath: testRoutesPath });
+
+    let content: string;
+    try {
+      content = fs.readFileSync(testRoutesPath, "utf-8");
+    } catch (err) {
+      assert.fail(`Could not read routes file: ${String(err)}`);
+    }
+
+    const lines = content.split("\n").filter((l) => l.trim().length > 0);
+    assert.strictEqual(lines.length, 1, "should have written exactly one JSONL line");
+
+    const persisted = JSON.parse(lines[0]) as {
+      scaffold?: { generatedCode?: unknown };
+    };
+    assert.ok(persisted.scaffold, "persisted entry must have scaffold");
+    assert.ok(
+      persisted.scaffold.generatedCode !== undefined,
+      "persisted scaffold.generatedCode must be present"
+    );
+    assert.notStrictEqual(
+      persisted.scaffold.generatedCode,
+      null,
+      "persisted scaffold.generatedCode must not be null"
+    );
   });
 });
