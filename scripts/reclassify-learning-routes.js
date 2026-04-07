@@ -46,10 +46,16 @@ const RECLASSIFICATION_REASON = {
 function readRoutes() {
   try {
     const raw = fs.readFileSync(ROUTES_FILE, "utf8");
-    return raw
-      .split("\n")
-      .filter((line) => line.trim().length > 0)
-      .map((line) => JSON.parse(line));
+    const lines = raw.split("\n").filter((line) => line.trim().length > 0);
+    const entries = [];
+    for (let i = 0; i < lines.length; i++) {
+      try {
+        entries.push(JSON.parse(lines[i]));
+      } catch {
+        process.stderr.write(`[reclassify] WARNING: malformed JSONL at line ${i + 1} — skipping\n`);
+      }
+    }
+    return entries;
   } catch (err) {
     throw new Error(`Failed to read routes file: ${sanitizeError(err)}`);
   }

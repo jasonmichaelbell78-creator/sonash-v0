@@ -25,7 +25,7 @@
  * Exit codes: 0 = success, 1 = errors found, 2 = fatal error
  */
 
-const { readFileSync, existsSync, readdirSync, lstatSync, statSync } = require("node:fs");
+const { readFileSync, existsSync, readdirSync, lstatSync } = require("node:fs");
 const path = require("node:path");
 const { join } = path;
 const { createInterface } = require("node:readline");
@@ -848,28 +848,7 @@ class LearningEffectivenessAnalyzer {
     );
 
     // Read warnings for MVM display
-    const warningsLogPath = join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
-    const archivePath = warningsLogPath + ".archive";
-    let mvmRawLines = [];
-    for (const filePath of [warningsLogPath, archivePath]) {
-      try {
-        const st = statSync(filePath);
-        if (st.isSymbolicLink() || st.size > 10 * 1024 * 1024) continue;
-        const text = readFileSync(filePath, "utf8");
-        mvmRawLines = mvmRawLines.concat(text.split("\n").filter((l) => l.trim()));
-      } catch {
-        // file may not exist — skip silently
-      }
-    }
-    const mvmWarnings = [];
-    for (const line of mvmRawLines) {
-      try {
-        const entry = JSON.parse(line);
-        mvmWarnings.push({ ...entry, category: entry.type || entry.category || "unknown" });
-      } catch {
-        // skip malformed lines
-      }
-    }
+    const mvmWarnings = readWarningsLog();
     const vprResult = calculateViolationsPerPr(mvmWarnings);
     const recResult = calculateRecurrenceRate(mvmWarnings);
     const nowMs = Date.now();
@@ -1191,31 +1170,7 @@ class LearningEffectivenessAnalyzer {
     const now = new Date().toISOString().split("T")[0];
 
     // Read hook-warnings-log.jsonl (current + archive)
-    const warningsLogPath = join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
-    const archivePath = warningsLogPath + ".archive";
-    let rawLines = [];
-
-    for (const filePath of [warningsLogPath, archivePath]) {
-      try {
-        const st = statSync(filePath);
-        if (st.isSymbolicLink() || st.size > 10 * 1024 * 1024) continue;
-        const text = readFileSync(filePath, "utf8");
-        rawLines = rawLines.concat(text.split("\n").filter((l) => l.trim()));
-      } catch {
-        // file may not exist — skip silently
-      }
-    }
-
-    const warnings = [];
-    for (const line of rawLines) {
-      try {
-        const entry = JSON.parse(line);
-        // Normalise: map 'type' field to 'category' for MVM functions
-        warnings.push({ ...entry, category: entry.type || entry.category || "unknown" });
-      } catch {
-        // skip malformed lines
-      }
-    }
+    const warnings = readWarningsLog();
 
     // Calculate MVMs
     const vprResult = calculateViolationsPerPr(warnings);
@@ -1394,6 +1349,36 @@ function calculateTrend(thisWeek, lastWeek) {
   if (changePercent < -10) direction = "declining";
   else if (changePercent > 10) direction = "rising";
   return { direction, changePercent };
+}
+
+/**
+ * Read and parse hook-warnings-log.jsonl (current + archive).
+ * Guards against symlinks and files >10MB.
+ */
+function readWarningsLog() {
+  const warningsLogPath = join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
+  const archivePath = warningsLogPath + ".archive";
+  let rawLines = [];
+  for (const filePath of [warningsLogPath, archivePath]) {
+    try {
+      const st = lstatSync(filePath);
+      if (st.isSymbolicLink() || st.size > 10 * 1024 * 1024) continue;
+      const text = readFileSync(filePath, "utf8");
+      rawLines = rawLines.concat(text.split("\n").filter((l) => l.trim()));
+    } catch {
+      // file may not exist — skip silently
+    }
+  }
+  const warnings = [];
+  for (const line of rawLines) {
+    try {
+      const entry = JSON.parse(line);
+      warnings.push({ ...entry, category: entry.type || entry.category || "unknown" });
+    } catch {
+      // skip malformed lines
+    }
+  }
+  return warnings;
 }
 
 // Export MVM functions for testing

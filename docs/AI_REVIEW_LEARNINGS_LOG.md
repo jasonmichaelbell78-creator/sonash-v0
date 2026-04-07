@@ -1740,6 +1740,28 @@ Major: 6, Minor: 8, Trivial: 3, Rejected: 2, Stale: 1)
 
 ---
 
+### Review #509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
+
+**Source:** Mixed (SonarCloud×1, Qodo Compliance×5, Qodo Suggestions×4, CI×1)
+**PR/Branch:** PR #488 R2 / planning-4626 **Items:** 11 raw → 5 unique after
+dedup, 6 rejected **Fix rate:** 100% (5/5 fixed, 0 deferred)
+
+- **statSync doesn't detect symlinks** — R1 fix used `statSync()` which follows
+  symlinks, making `st.isSymbolicLink()` always false. Must use `lstatSync()`.
+  Critical security regression introduced in the fix itself.
+- **Extract shared code to reduce CC** — `outputDashboard` and `updateMetrics`
+  had identical 20-line warning-reading blocks. Extracted to `readWarningsLog()`
+  which also brought `outputDashboard` CC from 16 to under 15.
+- **One-off migration scripts belong in test baseline** — Scripts like
+  `reclassify-learning-routes.js` are run-once utilities. Adding to
+  `.test-baseline.json` with a note is the correct path.
+
+**Key Learning:** When adding safety guards (symlink, size), verify the guard
+actually works — `statSync` follows symlinks, `lstatSync` does not. The guard
+was syntactically correct but semantically broken.
+
+---
+
 ### Review #508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
 
 **Source:** Mixed (SonarCloud×8, Qodo×4 bugs + 6 compliance + 10 suggestions,

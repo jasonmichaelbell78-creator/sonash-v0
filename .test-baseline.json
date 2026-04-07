@@ -29,8 +29,43 @@
       "note": "deprecated backup hook, not actively used"
     },
     {
+      "path": ".claude/hooks/deploy-safeguard.js",
+      "lines": 381,
+      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/firestore-rules-guard.js",
+      "lines": 259,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/governance-logger.js",
+      "lines": 284,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/large-file-gate.js",
+      "lines": 169,
+      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/loop-detector.js",
+      "lines": 308,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
       "path": ".claude/hooks/pre-commit-agent-compliance.js",
       "lines": 146
+    },
+    {
+      "path": ".claude/hooks/settings-guardian.js",
+      "lines": 187,
+      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
+    },
+    {
+      "path": ".claude/hooks/test-tracker.js",
+      "lines": 238,
+      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
     },
     {
       "path": ".claude/skills/alerts/scripts/run-alerts.js",
@@ -332,26 +367,6 @@
       "note": "archived migration script"
     },
     {
-      "path": "scripts/detect-orphans.js",
-      "lines": 771,
-      "note": "orphan detection scanner — new in PR #494"
-    },
-    {
-      "path": "scripts/lib/reference-graph.js",
-      "lines": 334,
-      "note": "cross-format reference graph builder — new in PR #494"
-    },
-    {
-      "path": "scripts/render-orphan-report.js",
-      "lines": 149,
-      "note": "orphan report renderer — new in PR #494"
-    },
-    {
-      "path": "scripts/planning/render-todos.js",
-      "lines": 144,
-      "note": "new script — todo rendering, added in PR #487"
-    },
-    {
       "path": "scripts/archive/run-consolidation.v1.js",
       "lines": 825
     },
@@ -376,6 +391,11 @@
       "lines": 1021
     },
     {
+      "path": "scripts/detect-orphans.js",
+      "lines": 771,
+      "note": "orphan detection scanner — new in PR #494"
+    },
+    {
       "path": "scripts/generate-lifecycle-scores-md.js",
       "lines": 334
     },
@@ -392,8 +412,43 @@
       "lines": 250
     },
     {
+      "path": "scripts/lib/reference-graph.js",
+      "lines": 334,
+      "note": "cross-format reference graph builder — new in PR #494"
+    },
+    {
       "path": "scripts/metrics/dedup-review-metrics.js",
       "lines": 227
+    },
+    {
+      "path": "scripts/planning/render-todos.js",
+      "lines": 144,
+      "note": "new script — todo rendering, added in PR #487"
+    },
+    {
+      "path": "scripts/reclassify-learning-routes.js",
+      "lines": 164,
+      "note": "one-off migration script for learning route reclassification"
+    },
+    {
+      "path": "scripts/render-orphan-report.js",
+      "lines": 149,
+      "note": "orphan report renderer — new in PR #494"
+    },
+    {
+      "path": "scripts/repo-analysis/check-tools.js",
+      "lines": 236,
+      "note": "Repo analysis tool detection — optional external tooling check"
+    },
+    {
+      "path": "scripts/research/validate-research.js",
+      "lines": 500,
+      "note": "Research integrity validator — dev tooling, not production code"
+    },
+    {
+      "path": "scripts/resolve-hook-warnings.js",
+      "lines": 297,
+      "note": "Hook warning auto-resolver — session lifecycle utility"
     },
     {
       "path": "scripts/review-lifecycle.js",
@@ -424,6 +479,11 @@
       "lines": 179
     },
     {
+      "path": "scripts/test-hook-gates.js",
+      "lines": 390,
+      "note": "Hook gate test harness — meta-test tool, not unit-tested itself"
+    },
+    {
       "path": "scripts/test-semgrep-rules.js",
       "lines": 161
     },
@@ -434,61 +494,6 @@
     {
       "path": "scripts/verify-enforcement.js",
       "lines": 552
-    },
-    {
-      "path": ".claude/hooks/deploy-safeguard.js",
-      "lines": 381,
-      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
-    },
-    {
-      "path": ".claude/hooks/firestore-rules-guard.js",
-      "lines": 259,
-      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
-    },
-    {
-      "path": ".claude/hooks/governance-logger.js",
-      "lines": 284,
-      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
-    },
-    {
-      "path": ".claude/hooks/large-file-gate.js",
-      "lines": 169,
-      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
-    },
-    {
-      "path": ".claude/hooks/loop-detector.js",
-      "lines": 308,
-      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
-    },
-    {
-      "path": ".claude/hooks/settings-guardian.js",
-      "lines": 187,
-      "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
-    },
-    {
-      "path": ".claude/hooks/test-tracker.js",
-      "lines": 238,
-      "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"
-    },
-    {
-      "path": "scripts/test-hook-gates.js",
-      "lines": 390,
-      "note": "Hook gate test harness — meta-test tool, not unit-tested itself"
-    },
-    {
-      "path": "scripts/repo-analysis/check-tools.js",
-      "lines": 236,
-      "note": "Repo analysis tool detection — optional external tooling check"
-    },
-    {
-      "path": "scripts/research/validate-research.js",
-      "lines": 500,
-      "note": "Research integrity validator — dev tooling, not production code"
-    },
-    {
-      "path": "scripts/resolve-hook-warnings.js",
-      "lines": 297,
-      "note": "Hook warning auto-resolver — session lifecycle utility"
     }
   ]
 }

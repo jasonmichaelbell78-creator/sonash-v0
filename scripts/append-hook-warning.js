@@ -261,7 +261,7 @@ function isDuplicateWarning(data, hook, type, message, ackState) {
   // Cross-session dedup: check if same type+message already logged since lastCleared
   // Allows ONE occurrence per ack cycle; resolved entries don't count (condition may re-emerge)
   const sinceMs = ackState.lastCleared ? new Date(ackState.lastCleared).getTime() : 0;
-  if (sinceMs > 0) {
+  if (Number.isFinite(sinceMs) && sinceMs > 0) {
     return hasMatchInWarningsLog(type, message, sinceMs);
   }
 
