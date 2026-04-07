@@ -1,0 +1,10 @@
+{"category":"internal_not_read","item":"amazon_bedrock_chat_handler.py","detail":"Chat handler for interactive Bedrock conversations. Likely follows same AbstractHandler pattern. May show Messages API usage.","priority":"low"}
+{"category":"internal_not_read","item":"amazon_comprehend_pii_classifier_handler.py","detail":"PII classifier (separate from tokenizer). May show different PII detection approach.","priority":"low"}
+{"category":"internal_not_read","item":"amazon_comprehend_pii_handler.py","detail":"Base PII handler (separate from tokenize/untokenize). May contain shared PII logic.","priority":"low"}
+{"category":"internal_not_read","item":"aws_secrets_manager_secret_reader.py","detail":"AWS Secrets Manager reader. May show alternative credential handling pattern.","priority":"low"}
+{"category":"internal_not_read","item":"microsoft_excel/word/powerpoint handlers","detail":"3 Microsoft Office reader handlers. Standard format-specific extraction. Low novelty.","priority":"low"}
+{"category":"internal_not_read","item":"quip_reader_handler.py","detail":"Quip document reader. Niche integration, low relevance.","priority":"low"}
+{"category":"internal_not_read","item":"context_injection_handler.py","detail":"Empty file — no content.","priority":"none"}
+{"category":"internal_not_read","item":".gitignore","detail":"Standard gitignore. Low relevance.","priority":"none"}
+{"category":"external_not_followed","item":"Amazon Bedrock Workshop","detail":"Referenced in README acknowledgments. General getting-started repo. Low relevance for home work.","priority":"low"}
+{"category":"external_not_followed","item":"pytubefix source repo","detail":"Core YouTube download dependency. Active fork. Could be analyzed separately for T27.","priority":"medium"}

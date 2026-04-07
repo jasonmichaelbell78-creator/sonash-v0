@@ -2,7 +2,7 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 106 candidates **By decision:** defer: 83,
+**Schema version:** 2.0 | **Total:** 142 candidates **By decision:** defer: 119,
 investigate: 2, extract: 20, skip: 1
 
 ---
@@ -172,3 +172,59 @@ investigate: 2, extract: 20, skip: 1
 | Evaluation Service prompt template system           | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Templates for moderation, summarization, IAB classification against extracted metadata.                                  |
 | OpenSearch dependency for similarity (anti-pattern) | anti-pattern         | extract  | 2026-04-07 | medium  | E0     | medium    | -            | FAISS alternative exists in same repo. Don't add search cluster for video dedup when local works.                        |
 | No tests (anti-pattern)                             | anti-pattern         | extract  | 2026-04-07 | low     | E0     | medium    | -            | 52 Python files, 1 test. AWS reference architectures skip tests. Don't follow this pattern.                              |
+
+## ksharlandjiev/bedrock-summarize-audio-video-text (repo)
+
+| Candidate                                       | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                           |
+| ----------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------------------------------- |
+| YouTube audio extraction pipeline               | pattern      | defer    | 2026-04-07 | medium  | E1     | high      | -            | pytubefix download + moviepy audio extraction to MP3. Full lifecycle in ~30 lines. T27 reference.               |
+| Amazon Transcribe async job lifecycle           | knowledge    | defer    | 2026-04-07 | medium  | E0     | high      | -            | Start job -> poll -> fetch transcript -> cleanup. Speaker labels, S3 routing. T27 speech-to-text ref.           |
+| PII tokenize/untokenize round-trip pattern      | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | Comprehend PII -> token replacement -> persist map -> LLM with tokens -> untokenize. SoNash privacy-first.      |
+| Chain of Responsibility + Factory composition   | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Reader/processor/writer taxonomy with set_next() chaining and factory auto-discovery.                           |
+| AST-based handler auto-discovery                | pattern      | defer    | 2026-04-07 | medium  | E2     | medium    | -            | Walk handler tree, parse ASTs for subclasses, lazy import. Zero-config extension model.                         |
+| JSONPath model-agnostic invocation config       | pattern      | defer    | 2026-04-07 | low     | E1     | medium    | -            | Env-driven model request/response mapping via JSONPath. Same code for Claude v2, Claude 3, Titan.               |
+| pytubefix caption + search + async capabilities | content      | defer    | 2026-04-07 | high    | E0     | high      | -            | 1.5K stars, MIT. SRT captions, playlist/channel, search API, AsyncYouTube. May skip Whisper for captioned vids. |
+| Amazon Transcribe API reference                 | content      | defer    | 2026-04-07 | medium  | E0     | high      | -            | Handler demonstrates full async Transcribe lifecycle with speaker diarization.                                  |
+| AWS-coupled extraction anti-pattern             | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 5+ AWS service deps = vendor lock-in. Prefer local-first (Whisper, Tesseract, spaCy).                           |
+| Blocking poll anti-pattern                      | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | time.sleep(30) polling loop. Fine for CLI, never copy into agent pipelines.                                     |
+
+## Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist (repo)
+
+| Candidate                                       | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                |
+| ----------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ---------------------------------------------------------------------------------------------------- |
+| faster-whisper local transcription pipeline     | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | Complete local Whisper lifecycle: CUDA, large-v3, beam_size=10, vad_filter, tqdm, metadata. T27 ref. |
+| Whisper tuned params (beam_size=10, vad_filter) | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | beam_size=10 for accuracy, vad_filter prevents hallucination-on-silence. Production tuning.          |
+| Caption-first + Whisper-fallback architecture   | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Cross-repo insight: both repos skip captions. pytubefix has yt.captions. Caption-first ~80%.         |
+| Async download + sync GPU transcription         | pattern      | defer    | 2026-04-07 | medium  | E0     | high      | -            | asyncio.Semaphore(4) for downloads, sequential GPU. Network parallelizes, GPU doesn't.               |
+| faster-whisper library                          | content      | defer    | 2026-04-07 | high    | E0     | high      | -            | CTranslate2 Whisper. 4x faster. GPU+CPU. THE local transcription engine for T27.                     |
+| CUDA/GPU detection + CPU fallback               | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | numba.cuda, Anaconda paths, float16 vs auto. Real-world GPU setup.                                   |
+| SpaCy + compromise.js two-stage NLP             | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Server SpaCy + client compromise.js. Two NLP stages for transcript readability.                      |
+| API vs local cost tradeoff                      | knowledge    | defer    | 2026-04-07 | medium  | E0     | medium    | -            | $0.006/min API (less accurate) vs free local (GPU). 1h = $0.36 vs $0.                                |
+| compromise.js client-side NLP                   | content      | defer    | 2026-04-07 | medium  | E0     | medium    | -            | 75KB browser NLP. Sentence/paragraph detection. 11K+ stars.                                          |
+| Monolithic single-file tool (anti-pattern)      | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 280 lines, no CLI, no config. T27 must be modular handlers.                                          |
+| Skip-captions-always (anti-pattern)             | anti-pattern | defer    | 2026-04-07 | high    | E0     | high      | -            | Both repos transcribe from scratch. Check captions first (~80% have them).                           |
+| Hard-coded source config (anti-pattern)         | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | Module-level vars including API keys. No CLI/env/config.                                             |
+
+## jdepoix/youtube-transcript-api (repo)
+
+| Candidate                                    | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                  |
+| -------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | -------------------------------------------------------------------------------------- |
+| youtube-transcript-api as T27 primary layer  | tool         | defer    | 2026-04-07 | high    | E0     | high      | -            | pip install. One-line caption fetch. 7K stars, MIT, 100% coverage. First adoption rec. |
+| Innertube API reverse-engineering approach   | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Undocumented /youtubei/v1/player with ANDROID client. No API key. 8 years maintained.  |
+| Context-aware error hierarchy pattern        | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | 15+ exceptions with CAUSE_MESSAGE. RequestBlocked adapts based on proxy config.        |
+| IP ban workaround operational guide          | content      | defer    | 2026-04-07 | high    | E0     | high      | -            | Production guide: proxies, Webshare residential rotation, retries.                     |
+| Three-layer T27 extraction architecture      | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | L1=this (instant/free/~80%), L2=pytubefix (backup), L3=faster-whisper (GPU fallback).  |
+| Proxy rotation infrastructure                | pattern      | defer    | 2026-04-07 | medium  | E1     | medium    | -            | ProxyConfig ABC + Generic + Webshare. Rotating residential IPs, retry-on-429.          |
+| Manual vs auto-generated transcript priority | knowledge    | defer    | 2026-04-07 | medium  | E0     | medium    | -            | find_transcript() checks manual first. Quality hierarchy.                              |
+| SRT/WebVTT timestamp formatting              | pattern      | defer    | 2026-04-07 | low     | E0     | medium    | -            | Clean subtitle format generation.                                                      |
+| Don't build own fetcher (anti-pattern)       | anti-pattern | defer    | 2026-04-07 | high    | E0     | high      | -            | 399 commits over 8 years. Use the library, don't replicate maintenance.                |
+| Ignore IP blocking for bulk (anti-pattern)   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | YouTube blocks bulk requests. Plan proxy infrastructure from start.                    |
+
+## iawia002/lux (repo) — Quick Scan
+
+| Candidate                              | Type      | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                              |
+| -------------------------------------- | --------- | -------- | ---------- | ------- | ------ | --------- | ------------ | -------------------------------------------------------------------------------------------------- |
+| Per-site extractor plugin architecture | pattern   | defer    | 2026-04-07 | high    | E1     | medium    | -            | extractors/site/site.go. 44 sites, each with own CI workflow. Multi-platform plugin gold standard. |
+| 44-site supported platform catalog     | knowledge | defer    | 2026-04-07 | medium  | E0     | medium    | -            | YouTube, TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, +30 more. T27 scope ref.           |
+| Per-site CI workflow pattern           | pattern   | defer    | 2026-04-07 | high    | E1     | medium    | -            | 46 GitHub Actions workflows — one per site. Remarkable CI for multi-platform tools.                |
+| lux CLI as video acquisition tool      | tool      | defer    | 2026-04-07 | medium  | E0     | medium    | -            | go install lux. Downloads video from 44 sites. T27 Layer 0 for non-YouTube platforms.              |

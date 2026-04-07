@@ -1,0 +1,75 @@
+{
+  "skillVersion": "4.3",
+  "repo": {
+    "full_name": "jdepoix/youtube-transcript-api",
+    "html_url": "https://github.com/jdepoix/youtube-transcript-api",
+    "description": "Python API to get YouTube transcript/subtitles. Works for auto-generated subtitles. No API key, no headless browser.",
+    "language": "Python",
+    "stars": 7257,
+    "forks": 743,
+    "watchers": 7257,
+    "created_at": "2018-04-20T13:55:04Z",
+    "pushed_at": "2026-04-07T10:37:03Z",
+    "archived": false,
+    "fork": false,
+    "license": "MIT",
+    "topics": ["youtube", "transcript", "subtitles", "captions", "python", "cli", "asr"],
+    "default_branch": "master",
+    "size_kb": 1891,
+    "total_commits": 399,
+    "contributor_count": 24,
+    "file_count": 46,
+    "ci_workflow_runs": 120
+  },
+  "depth": "quick",
+  "analysisDate": "2026-04-07",
+  "repoType": "library",
+  "dimensions": {
+    "QS-01_activity_recency": {
+      "score": 5,
+      "max": 5,
+      "detail": "Pushed TODAY (2026-04-07). 399 commits. Very active."
+    },
+    "QS-02_engagement": {
+      "score": 5,
+      "max": 5,
+      "detail": "7,257 stars, 743 forks. Dominant in its niche."
+    },
+    "QS-03_archived_abandoned": {
+      "score": 5,
+      "max": 5,
+      "detail": "Active development. Not archived."
+    },
+    "QS-04_license": { "score": 5, "max": 5, "detail": "MIT license." },
+    "QS-05_cicd": {
+      "score": 4,
+      "max": 5,
+      "detail": "CI present (ci.yml), 120 workflow runs. Coveralls integration."
+    },
+    "QS-10_community_health": {
+      "score": 3,
+      "max": 5,
+      "detail": "57/100. Has license, issue templates. Missing CONTRIBUTING, SECURITY."
+    },
+    "QS-11_contributing_security": {
+      "score": 1,
+      "max": 5,
+      "detail": "No CONTRIBUTING.md, no SECURITY.md. Has issue templates."
+    },
+    "QS-12_contributor_count": {
+      "score": 5,
+      "max": 5,
+      "detail": "24 contributors. Healthy bus factor."
+    }
+  },
+  "summaryBands": {
+    "security": { "band": "Moderate", "score": 35, "max": 100 },
+    "reliability": { "band": "High", "score": 72, "max": 100 },
+    "maintainability": { "band": "High", "score": 68, "max": 100 },
+    "documentation": { "band": "High", "score": 72, "max": 100 },
+    "process": { "band": "Moderate", "score": 48, "max": 100 },
+    "velocity": { "band": "High", "score": 85, "max": 100 }
+  },
+  "absencePattern": "mature-library",
+  "creatorLens": "This repo IS the caption-first approach. It solves the exact problem the previous two T27 repos missed — extracting YouTube transcripts directly without downloading video or running Whisper. No API key, no browser, no GPU. Just HTTP requests to YouTube's internal transcript endpoint. 7K+ stars, 24 contributors, CI with coverage, pushed today. This is the production-grade, well-maintained library that should be the FIRST step in any YouTube content extraction pipeline, with Whisper as fallback only when transcripts are unavailable."
+}

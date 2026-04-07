@@ -1,0 +1,6 @@
+{"category":"internal_not_read","item":"test_api.py, test_cli.py, test_formatters.py, test_proxies.py","detail":"4 test modules not fully read. Test quality validated via 100% coverage requirement + fixture count. Low priority for content extraction.","priority":"low"}
+{"category":"internal_not_read","item":"14 static test assets","detail":"HTML/JSON/XML fixtures for mocking YouTube responses. Contain real YouTube response structures — could be useful for understanding YouTube API formats.","priority":"low"}
+{"category":"internal_not_read","item":".github/workflows/ci.yml","detail":"CI workflow configuration. Would show exact test/lint/coverage pipeline.","priority":"low"}
+{"category":"external_not_followed","item":"Webshare proxy service","detail":"Commercial rotating residential proxy service. Referenced extensively. $paid.","priority":"medium"}
+{"category":"external_not_followed","item":"SearchAPI / Supadata / Dumpling AI","detail":"Commercial sponsors offering hosted transcript API alternatives. Different approach (API-as-a-service vs self-hosted).","priority":"low"}
+{"category":"external_not_followed","item":"README rest (after line 200)","detail":"Remaining README with more API examples, formatter docs, translation guide. Partially covered in Quick Scan.","priority":"low"}

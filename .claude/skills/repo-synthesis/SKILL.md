@@ -219,8 +219,9 @@ Aggregate ALL candidates across all repos — all 4 types. For each candidate:
    - `relevance: low` or no match → `not-relevant`
 4. Flag candidates whose synthesis_fit differs from scan-time relevance.
 
-**Candidate cap (MUST):** If total >100, present top 50 by relevance: "Showing
-top 50 of N. Full list in synthesis.json."
+**No artificial caps.** Present ALL candidates. Group by tier (T1/T2/T3), then
+by type (pattern/knowledge/content/anti-pattern) for readability. Never truncate
+— the user decides what to filter, not the skill.
 
 ### 2.6 Cross-Repo Knowledge Map
 

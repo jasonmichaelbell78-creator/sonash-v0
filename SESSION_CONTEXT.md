@@ -30,10 +30,12 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
 **Last Checkpoint**: 2026-04-07 **Branch**: `planning-4626` **Working On**:
-Session #266 — 5 website analyses + 1 repo analysis + extraction schema
-unification + extraction context surfacing.
+Session #266 — T28 Unified Content Intelligence System pre-brainstorm research.
+4 new repo analyses (bedrock-summarize, bulk-transcribe, youtube-transcript-api,
+lux) + skill updates + T28 analysis plan.
 
-**Uncommitted Work**: None (committed at 67eb5dad)
+**Uncommitted Work**: Major — see commit below. 4 repo analyses, skill edits,
+extraction journal (142 entries), T28 plan, todos.
 
 ---
 
@@ -48,6 +50,45 @@ unification + extraction context surfacing.
 ---
 
 ## Recent Session Summaries
+
+**Session #266** (T28 RESEARCH + 4 REPO ANALYSES + SKILL UPDATES):
+
+- **Branch**: `planning-4626`
+- **4 new repo analyses** (all T27 media extraction background):
+  - `ksharlandjiev/bedrock-summarize-audio-video-text` — Standard. AWS-managed
+    extraction pipeline (Transcribe, Textract, Comprehend). Chain of
+    Responsibility + Factory pattern. PII tokenize/untokenize round-trip.
+  - `Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist` — Standard.
+    Local Whisper (faster-whisper large-v3, CUDA). beam_size=10, vad_filter. 664
+    stars. Async download + sync GPU. Cost: $0.006/min API vs free local.
+  - `jdepoix/youtube-transcript-api` — Standard. 7K stars, 100% coverage, MIT.
+    Caption-first extraction via YouTube innertube API. No API key, no GPU.
+    FIRST ADOPTION RECOMMENDATION. 15+ typed exceptions. Proxy rotation infra.
+  - `iawia002/lux` — Quick Scan only. 31K stars, Go, 44-site video downloader.
+    Per-site extractor plugin architecture.
+- **Cross-repo T27 architecture emerged** (3 independently analyzed repos):
+  - Layer 1: youtube-transcript-api (instant captions, ~80% of videos)
+  - Layer 2: pytubefix captions (backup caption source)
+  - Layer 3: faster-whisper (local GPU, uncaptioned only)
+  - Layer 0: lux (non-YouTube platforms, 44 sites)
+- **T28 conceived**: Unified Content Intelligence System. Replaces 4 separate
+  skills (repo-analysis, website-analysis, repo-synthesis, website-synthesis)
+  with layered architecture: extraction → analysis → synthesis. 28 source types
+  identified. Added as T28 (P1) in todos.
+- **T28 pre-brainstorm analysis plan created**: 20 repos across 6 clusters
+  (multi-format, PDF/OCR, web crawling, audio/podcast, wiki/MCP/API,
+  social/chat/CLI). Gap agents after each cluster. Plan at
+  `.research/repo-analysis/_T28-analysis-plan.md`.
+- **Skill updates**: extraction context lookup now points to EXTRACTIONS.md
+  first (readable) then extraction-journal.jsonl (filterable). Updated in 6
+  locations: CLAUDE.md, brainstorm, deep-plan, skill-creator, CONVENTIONS.md,
+  MEMORY.md. Removed artificial candidate caps from repo-synthesis.
+- **Extraction journal**: 142 entries across 12 sources (unified v2.0 schema).
+- **Todos**: T28 added (P1). T24 (synthesis adoption) subsumed by T28.
+- **WHERE TO RESUME**: Start Cluster A of T28 analysis plan. First repo:
+  `unstructured-io/unstructured` (QS→Standard). Plan at
+  `.research/repo-analysis/_T28-analysis-plan.md`. 20 repos, 6 clusters, gap
+  agents between clusters.
 
 **Session #265** (REPO-SYNTHESIS SKILL AUDIT + CHERRY-PICKS):
 
@@ -80,17 +121,18 @@ unification + extraction context surfacing.
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                       |
-| ---------------------------------- | ------------- | -------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.          |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.         |
-| **Repo Analysis Skill**            | v4.2 SHIPPED  | 6 repos analyzed. /repo-synthesis v1.2 audited (47 decisions). |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).        |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner              |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.           |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                         |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.         |
+| Item                               | Status        | Progress                                                           |
+| ---------------------------------- | ------------- | ------------------------------------------------------------------ |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.              |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.             |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.  |
+| **T28 Content Intelligence**       | PRE-RESEARCH  | 20 repos queued across 6 clusters. Plan at \_T28-analysis-plan.md. |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).            |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                  |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                    |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.               |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                             |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.             |
 
 **Current Branch**: `planning-4626`
 

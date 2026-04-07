@@ -115,10 +115,11 @@ want this skill to follow?"
    proceed.
 2. Scan `.claude/skills/` for existing neighbors (MUST)
 3. Check CLAUDE.md for relevant conventions (MUST)
-4. **Extraction context (MUST):** Read `.research/extraction-journal.jsonl`.
-   Filter for candidates relevant to the skill being created (match by type,
-   tags in notes, or source domain). If matches found, present as "Prior art
-   from analyzed sources" — these are patterns, architectures, and design
+4. **Extraction context (MUST):** Scan `.research/EXTRACTIONS.md` for candidates
+   relevant to the skill being created (human-readable, grouped by source). For
+   targeted filtering, query `.research/extraction-journal.jsonl` (match by
+   type, tags in notes, or source domain). If matches found, present as "Prior
+   art from analyzed sources" — these are patterns, architectures, and design
    principles already identified from external repos/websites that may inform
    the skill's design.
 5. Read existing skill files if updating (MUST for updates)

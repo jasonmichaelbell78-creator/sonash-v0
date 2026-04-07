@@ -115,12 +115,13 @@ Vague ideas are welcome — we'll shape them together. No code will be written."
 
 1. Check CLAUDE.md for relevant conventions (MUST)
 2. Check ROADMAP.md — verify alignment with project direction (MUST)
-3. **Extraction context (MUST):** Read `.research/extraction-journal.jsonl`.
-   Filter for candidates relevant to the brainstorm topic (match by type, tags
-   in notes, or source domain). If matches found, present as "Prior art from
-   analyzed sources" before exploration begins. These are patterns, principles,
-   and tools already identified from external repos/websites — grounding
-   exploration in what's been learned, not starting from zero.
+3. **Extraction context (MUST):** Scan `.research/EXTRACTIONS.md` for candidates
+   relevant to the brainstorm topic (human-readable, grouped by source). For
+   targeted filtering, query `.research/extraction-journal.jsonl` (match by
+   type, tags in notes, or source domain). If matches found, present as "Prior
+   art from analyzed sources" before exploration begins. These are patterns,
+   principles, and tools already identified from external repos/websites —
+   grounding exploration in what's been learned, not starting from zero.
 4. Scan codebase for relevant existing systems (MUST)
 5. **Agent dispatch for unknowns (MUST when applicable):**
    - Codebase questions: spawn `Explore` agents

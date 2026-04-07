@@ -463,7 +463,7 @@ reduced synthesis capability but proceed.
 - **Stale fit scores:** Always refresh — never present scan-time fit as current.
 - **Missing artifacts:** Exclude repo with warning, don't silently degrade.
 - **Empty artifacts:** Warn when MUST artifacts have no meaningful content.
-- **Candidate pool >100:** Present top 50 inline, full list in synthesis.json.
+- **Candidate pool:** Present ALL candidates grouped by tier and type. No caps.
 - **Web search unavailable:** Note gap without suggestion.
 - **Contradictions between repos:** Route to Contrarian Signal, don't resolve.
 - **Scope:** This skill synthesizes. It does NOT re-analyze, re-clone, or modify

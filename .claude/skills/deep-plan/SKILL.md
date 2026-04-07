@@ -107,9 +107,10 @@ reference actual patterns, not generic placeholders.
 
 1. Check CLAUDE.md for documented project conventions (MUST)
 2. Read ROADMAP.md — verify task aligns with project direction (MUST)
-3. **Extraction context (MUST):** Read `.research/extraction-journal.jsonl`.
-   Filter for candidates relevant to the planning topic (match by type, tags in
-   notes, or source domain). If matches found, include as
+3. **Extraction context (MUST):** Scan `.research/EXTRACTIONS.md` for candidates
+   relevant to the planning topic (human-readable, grouped by source). For
+   targeted filtering, query `.research/extraction-journal.jsonl` (match by
+   type, tags in notes, or source domain). If matches found, include as
    `## Prior Extraction Context` in DIAGNOSIS.md — patterns, principles, and
    architecture references already identified from external repos/websites.
    These inform discovery questions and prevent re-solving problems that
