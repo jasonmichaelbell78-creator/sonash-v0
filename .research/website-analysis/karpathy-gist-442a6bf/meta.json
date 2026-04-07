@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0",
+  "url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+  "site_slug": "karpathy-gist-442a6bf",
+  "title": "LLM Wiki",
+  "author": "Andrej Karpathy",
+  "description": "A pattern for building personal knowledge bases using LLMs. Instead of RAG (re-deriving answers each query), the LLM incrementally builds and maintains a persistent wiki of interlinked markdown files.",
+  "og_title": "llm-wiki",
+  "og_description": "llm-wiki. GitHub Gist: instantly share code, notes, and snippets.",
+  "canonical": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+  "word_count": 5198,
+  "links_count": 196,
+  "code_blocks": 5,
+  "tables": 0,
+  "headings": [
+    "LLM Wiki",
+    "The core idea",
+    "Architecture",
+    "Operations",
+    "Indexing and logging",
+    "Optional: CLI tools",
+    "Tips and tricks",
+    "Why this works",
+    "Note"
+  ],
+  "stars": "5000+",
+  "forks": 1958,
+  "revisions": 1,
+  "published_date": "2026-04-07",
+  "scan_date": "2026-04-07",
+  "compliance": {
+    "status": "WARN",
+    "reason": "Wildcard robots.txt restricts gist paths; no explicit Anthropic/Claude blocks. User-initiated single page analysis.",
+    "robots_txt_checked": true,
+    "cf_mitigated": false
+  },
+  "extraction_method": "superpowers-chrome + WebFetch"
+}

@@ -433,19 +433,22 @@ After writing value-map.json, update both cross-repo extraction files:
      candidates overlap with other repos.
 
 2. **extraction-journal.jsonl** (`.research/extraction-journal.jsonl`) —
-   Machine-readable per-candidate records. One line per candidate with schema:
+   Machine-readable per-candidate records. Unified v2.0 schema shared with
+   website-analysis. One line per candidate:
    ```json
    {
-     "repo": "owner/name",
+     "schema_version": "2.0",
+     "source_type": "repo",
+     "source": "owner/name",
      "candidate": "Name",
-     "type": "pattern|knowledge|content|anti-pattern",
-     "status": "deferred|extracted|skipped",
-     "decision": "defer|extract|skip",
+     "type": "pattern|knowledge|content|anti-pattern|tool",
+     "decision": "defer|extract|skip|investigate",
      "decision_date": "YYYY-MM-DD",
      "extracted_to": null,
+     "extracted_at": null,
      "notes": "...",
-     "novelty": "High|Medium|Low",
-     "effort": "E0|E1|E2",
+     "novelty": "high|medium|low",
+     "effort": "E0|E1|E2|E3",
      "relevance": "high|medium|low"
    }
    ```
@@ -453,8 +456,8 @@ After writing value-map.json, update both cross-repo extraction files:
    all candidates in value-map.json.
 
 Both files are canonical — EXTRACTIONS.md is the reading interface,
-extraction-journal.jsonl is the data interface. Neither is derived from the
-other. Both MUST be updated on every Standard/Deep analysis.
+extraction-journal.jsonl is the data interface. EXTRACTIONS.md is auto-generated
+from the journal. Both MUST be updated on every Standard/Deep analysis.
 
 ## Self-Audit (MUST, before routing)
 

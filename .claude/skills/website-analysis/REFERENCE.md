@@ -563,21 +563,41 @@ specification.
 and website-analysis)
 
 Append-only log across ALL analyzed entities. One line per extraction decision.
+Uses unified v2.0 schema shared with repo-analysis.
 
 ```jsonl
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "source_type": "website",
-  "source": "https://example.com",
+  "source": "https://example.com/article",
   "candidate": "CSS Reset Methodology",
-  "candidate_type": "methodology",
-  "status": "selected",
+  "type": "methodology",
   "decision": "extract",
   "decision_date": "2026-04-06",
   "extracted_to": "docs/reference/CSS_RESET.md",
-  "notes": "Directly applicable to SoNash component reset."
+  "extracted_at": "2026-04-06",
+  "notes": "Directly applicable to SoNash component reset.",
+  "novelty": "high",
+  "effort": "E0",
+  "relevance": "high"
 }
 ```
+
+| Field            | Type   | Required | Description                                      |
+| ---------------- | ------ | -------- | ------------------------------------------------ |
+| `schema_version` | string | Yes      | Schema version (`"2.0"`)                         |
+| `source_type`    | string | Yes      | `"repo"` or `"website"`                          |
+| `source`         | string | Yes      | Repo name or URL                                 |
+| `candidate`      | string | Yes      | Candidate name from value-map                    |
+| `type`           | string | Yes      | content/pattern/tool/knowledge/anti-pattern/etc. |
+| `decision`       | string | Yes      | extract/defer/skip/investigate                   |
+| `decision_date`  | string | Yes      | ISO date when decision was made                  |
+| `extracted_to`   | string | No       | Destination path (null if not yet extracted)     |
+| `extracted_at`   | string | No       | ISO date when extraction completed               |
+| `notes`          | string | No       | Optional context about the candidate             |
+| `novelty`        | string | Yes      | high/medium/low                                  |
+| `effort`         | string | Yes      | E0/E1/E2/E3                                      |
+| `relevance`      | string | Yes      | high/medium/low                                  |
 
 ### 1.13 Cross-Entity: `EXTRACTIONS.md`
 
@@ -1933,20 +1953,22 @@ After Standard/Deep analysis completes, present 7 options:
    (append) b. Update `value-map.json` candidate status to `selected`
 4. Auto-regenerate `EXTRACTIONS.md` from `extraction-journal.jsonl`
 
-**Journal entry format:**
+**Journal entry format (unified v2.0 — see Section 1.12):**
 
 ```jsonl
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "source_type": "website",
   "source": "https://example.com",
   "candidate": "CSS Reset Methodology",
-  "candidate_type": "methodology",
-  "status": "selected",
+  "type": "methodology",
   "decision": "extract",
   "decision_date": "2026-04-06",
   "extracted_to": null,
-  "notes": "User selected for extraction."
+  "notes": "User selected for extraction.",
+  "novelty": "high",
+  "effort": "E0",
+  "relevance": "high"
 }
 ```
 

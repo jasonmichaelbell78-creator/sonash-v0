@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0",
+  "meta": {
+    "url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+    "domain": "gist.github.com",
+    "slug": "karpathy-gist-442a6bf",
+    "scan_date": "2026-04-07",
+    "scan_depth": "standard",
+    "scan_mode": "page",
+    "scan_version": "1.0",
+    "extraction_mode": "superpowers-chrome",
+    "pages_analyzed": 1
+  },
+  "site_type": "Blog",
+  "site_type_secondary": "Documentation",
+  "site_type_confidence": 0.75,
+  "ecosystem_tags": [
+    "llm",
+    "knowledge-management",
+    "obsidian",
+    "claude-code",
+    "rag-alternative",
+    "personal-wiki",
+    "markdown"
+  ],
+  "tech_stack": ["GitHub Gist", "Markdown"],
+  "site": {
+    "title": "LLM Wiki",
+    "description": "A pattern for building personal knowledge bases using LLMs",
+    "author": "Andrej Karpathy",
+    "language": "en",
+    "last_modified": "2026-04-07",
+    "has_rss": false,
+    "rss_url": null
+  },
+  "value_axes": {
+    "actionability": 88,
+    "novelty": 62,
+    "evidence_quality": 55,
+    "technical_depth": 45,
+    "recency": 100,
+    "relevance_to_stack": 92,
+    "cross_reference_density": 25,
+    "synthesis_quality": 82,
+    "ecosystem_coverage": 60,
+    "contrarian_signal": 70,
+    "teaching_quality": 90,
+    "reproducibility": 85,
+    "strategic_fit": 95
+  },
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 73,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 88,
+    "fit_classification": "active-sprint"
+  },
+  "absence_patterns": [
+    "No benchmarks or quantitative comparisons (RAG vs wiki approach)",
+    "No discussion of context window limits or scaling beyond ~hundreds of pages",
+    "No mention of multi-user collaboration patterns",
+    "No discussion of version control conflicts when LLM + human both edit",
+    "No treatment of structured data (databases, APIs) as sources",
+    "No security/privacy considerations for sensitive knowledge bases"
+  ],
+  "key_claims": [
+    "LLM-maintained wiki compounds knowledge; RAG re-derives it every query",
+    "Three-layer architecture: raw sources, wiki, schema",
+    "Index.md + log.md sufficient at ~100 sources / hundreds of pages",
+    "Humans abandon wikis because maintenance burden grows faster than value",
+    "LLMs solve the Memex maintenance problem Vannevar Bush couldn't",
+    "Schema (CLAUDE.md) is the key configuration that makes the LLM disciplined",
+    "Good answers should be filed back into wiki as new pages"
+  ]
+}

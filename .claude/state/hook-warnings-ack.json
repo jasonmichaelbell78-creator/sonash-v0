@@ -1,14 +1,15 @@
 {
   "acknowledged": {
     "pr-creep": "2026-04-07T08:45:00.000Z",
-    "propagation-staged": "2026-04-07T08:45:00.000Z",
+    "propagation-staged": "2026-04-07T09:25:00.000Z",
     "trigger": "2026-04-07T08:45:00.000Z",
     "session-end-missing": "2026-04-07T08:45:00.000Z",
     "review-lifecycle": "2026-04-07T08:45:00.000Z",
-    "tdms-s0": "2026-04-07T08:45:00.000Z",
+    "tdms-s0": "2026-04-07T09:25:00.000Z",
     "mcp-secrets": "2026-04-07T08:45:00.000Z",
     "pipeline-ratchet-baselines": "2026-04-07T08:45:00.000Z",
-    "reviewer": "2026-04-07T08:45:00.000Z"
+    "reviewer": "2026-04-07T08:45:00.000Z",
+    "agent": "2026-04-07T09:25:00.000Z"
   },
-  "lastCleared": "2026-04-07T08:45:00.000Z"
+  "lastCleared": "2026-04-07T09:25:00.000Z"
 }

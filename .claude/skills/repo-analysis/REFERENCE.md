@@ -626,39 +626,48 @@ Written when user acts on a candidate in the Extract routing flow.
 | `dependencies_added` | array  | No       | New dependencies required                        |
 | `follow_up`          | string | No       | Remaining work or related investigations         |
 
-#### 3.6.2 Cross-Repo Extraction Journal
+#### 3.6.2 Cross-Entity Extraction Journal
 
 **Location:** `.research/extraction-journal.jsonl` (canonical root path)
 
-Append-only log across ALL repos analyzed. One line per extraction decision.
-Entries include a `source_type: "repo"` discriminator field to distinguish from
-other extraction sources (e.g., website-analysis). Legacy files at
-`.research/repo-analysis/extraction-journal.jsonl` remain valid and are read as
-fallback if the root-level file does not exist.
+Append-only log across ALL analyzed entities (repos and websites). One line per
+extraction decision. Uses unified v2.0 schema shared with website-analysis.
+Legacy files at `.research/repo-analysis/extraction-journal.jsonl` have been
+migrated to the canonical location.
 
 ```jsonl
 {
   "schema_version": "2.0",
-  "repo": "HKUDS/CLI-Anything",
+  "source_type": "repo",
+  "source": "HKUDS/CLI-Anything",
   "candidate": "HARNESS.md Methodology",
-  "status": "selected",
+  "type": "pattern",
   "decision": "extract",
   "decision_date": "2026-04-03",
   "extracted_to": "docs/reference/HARNESS_METHODOLOGY.md",
-  "notes": "7-phase SOP for agent-native CLI wrapping. E0 effort."
+  "extracted_at": "2026-04-03",
+  "notes": "7-phase SOP for agent-native CLI wrapping.",
+  "novelty": "high",
+  "effort": "E0",
+  "relevance": "high"
 }
 ```
 
-| Field            | Type   | Description                              |
-| ---------------- | ------ | ---------------------------------------- |
-| `schema_version` | string | Schema version (`"2.0"`)                 |
-| `repo`           | string | Source repo                              |
-| `candidate`      | string | Candidate name from value-map            |
-| `status`         | string | Current status                           |
-| `decision`       | string | extract / skip / defer                   |
-| `decision_date`  | string | When the decision was made               |
-| `extracted_to`   | string | Destination path (null if not extracted) |
-| `notes`          | string | Optional context about the candidate     |
+| Field            | Type   | Required | Description                                      |
+| ---------------- | ------ | -------- | ------------------------------------------------ |
+| `schema_version` | string | Yes      | Schema version (`"2.0"`)                         |
+| `source_type`    | string | Yes      | `"repo"` or `"website"`                          |
+| `source`         | string | Yes      | Repo name or URL                                 |
+| `candidate`      | string | Yes      | Candidate name from value-map                    |
+| `type`           | string | Yes      | content/pattern/tool/knowledge/anti-pattern/etc. |
+| `decision`       | string | Yes      | extract/defer/skip/investigate                   |
+| `decision_date`  | string | Yes      | ISO date when decision was made                  |
+| `extracted_to`   | string | No       | Destination path (null if not yet extracted)     |
+| `extracted_at`   | string | No       | ISO date when extraction completed               |
+| `notes`          | string | No       | Optional context about the candidate             |
+| `novelty`        | string | Yes      | high/medium/low                                  |
+| `effort`         | string | Yes      | E0/E1/E2/E3                                      |
+| `relevance`      | string | Yes      | high/medium/low                                  |
 
 #### 3.6.3 `EXTRACTIONS.md` (Human-Readable Summary)
 
