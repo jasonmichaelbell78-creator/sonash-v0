@@ -29,11 +29,11 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-06 **Branch**: `planning-4626` **Working On**:
-Session #265 — repo-synthesis v1.2 skill audit complete (47 decisions). Cherry-
-picked website-analysis/synthesis skills + cross-locale state files.
+**Last Checkpoint**: 2026-04-07 **Branch**: `planning-4626` **Working On**:
+Session #266 — 5 website analyses + 1 repo analysis + extraction schema
+unification + extraction context surfacing.
 
-**Uncommitted Work**: None (session-end commit)
+**Uncommitted Work**: None (committed at 67eb5dad)
 
 ---
 
