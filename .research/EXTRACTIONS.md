@@ -2,8 +2,8 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 98 candidates **By decision:** defer: 81,
-investigate: 2, extract: 14, skip: 1
+**Schema version:** 2.0 | **Total:** 106 candidates **By decision:** defer: 83,
+investigate: 2, extract: 20, skip: 1
 
 ---
 
@@ -113,7 +113,7 @@ investigate: 2, extract: 14, skip: 1
 | Validation Without Maintenance Trap      | anti-pattern | defer    | 2026-04-06 | medium  | E0     | high      | -            | Format validation ensures structural integrity but not content freshness. Applies to patterns:check.                   |
 | Sponsor-First README Anti-Pattern        | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 10 promoted APIs before community content. Erodes trust. Keep sponsors separate from content if JASON-OS has partners. |
 
-## https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f (website)
+## https://gist.github.com/karpathy/442a6bf555914893e9891c11... (website)
 
 | Candidate                                                | Type                   | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
 | -------------------------------------------------------- | ---------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
@@ -123,14 +123,14 @@ investigate: 2, extract: 14, skip: 1
 | Index + Log dual navigation system                       | implementation-pattern | extract  | 2026-04-07 | low     | E0     | high      | -            | Already have: DOCUMENTATION_INDEX.md=index, SESSION_HISTORY.md+commit-log.jsonl=log, research-index.jsonl=research index |
 | qmd local markdown search (MCP + CLI)                    | tool                   | extract  | 2026-04-07 | high    | E1     | medium    | -            | Evaluate for JASON-OS search layer. Currently Grep+index-based. At 1000+ docs may need hybrid BM25/vector search.        |
 
-## https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203 (website)
+## https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c... (website)
 
 | Candidate                                             | Type             | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
 | ----------------------------------------------------- | ---------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Exploration-over-conclusion as skill design principle | design-principle | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Validates brainstorm Phase 1 philosophy. Potential: add minimum-exploration threshold to convergence loops before allowi |
 | Contemplator tag pattern (historical reference)       | pattern          | skip     | 2026-04-07 | low     | E0     | low       | -            | Claude native <thinking> blocks supersede this. Historical reference only — no action needed.                            |
 
-## https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d (website)
+## https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aab... (website)
 
 | Candidate                                                  | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
 | ---------------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
@@ -141,7 +141,7 @@ investigate: 2, extract: 14, skip: 1
 | Concurrency safety rules for LLM file ops                  | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Re-read before edit, never delete without reading, rebuild indices at end. Partially covered by CLAUDE.md #12.           |
 | 7-command skill architecture as T24 reference design       | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize. Direct reference for T24 command set. Absorb + breakdown |
 
-## https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea (website)
+## https://gist.github.com/kieranklaassen/4f2aba89594a4aea4a... (website)
 
 | Candidate                                                   | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
 | ----------------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
@@ -159,3 +159,16 @@ investigate: 2, extract: 14, skip: 1
 | Native vs MCP tradeoff framework with token cost data | design-principle     | extract  | 2026-04-07 | high    | E0     | high      | -            | Native: context control + interception. MCP: simplicity. 55K tokens for 5 MCP servers. Measure current 3-server overhead |
 | llms.txt standard for AI-readable documentation       | pattern              | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Standardized llms.txt at site root for LLM consumption. Park for JASON-OS documentation strategy.                        |
 | Event trigger dual model (webhook + polling)          | pattern              | defer    | 2026-04-07 | medium  | E2     | medium    | -            | Webhook for real-time capable services, polling for those without. Park for event-driven agent features.                 |
+
+## aws-solutions-library-samples/guidance-for-media-extracti... (repo)
+
+| Candidate                                           | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| --------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Frame sampling + smart dedup pipeline               | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | moviepy frame extraction + FAISS/OpenSearch similarity dedup. Configurable FPS, 10min chunks. Claims 50% frame reduction |
+| Multi-granularity hierarchy (frame->shot->scene)    | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | Three-level temporal decomposition. Each level has summaries, timestamps, metadata. Structures video content analysis.   |
+| Toggleable per-frame ML feature extraction          | pattern              | extract  | 2026-04-07 | medium  | E0     | high      | -            | Each ML feature independently enabled via config. Adding new capabilities = adding new function to pipeline. Extensibili |
+| FAISS local dedup (no cloud dependency)             | pattern              | extract  | 2026-04-07 | medium  | E1     | high      | -            | Local vector similarity using FAISS. Same dedup quality as OpenSearch, no cloud dependency. Direct port candidate for T2 |
+| Subtitle-to-frame timestamp alignment               | pattern              | defer    | 2026-04-07 | medium  | E1     | medium    | -            | Map subtitle segments to frame timestamps. Non-obvious multimodal alignment engineering.                                 |
+| Evaluation Service prompt template system           | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Templates for moderation, summarization, IAB classification against extracted metadata.                                  |
+| OpenSearch dependency for similarity (anti-pattern) | anti-pattern         | extract  | 2026-04-07 | medium  | E0     | medium    | -            | FAISS alternative exists in same repo. Don't add search cluster for video dedup when local works.                        |
+| No tests (anti-pattern)                             | anti-pattern         | extract  | 2026-04-07 | low     | E0     | medium    | -            | 52 Python files, 1 test. AWS reference architectures skip tests. Don't follow this pattern.                              |
