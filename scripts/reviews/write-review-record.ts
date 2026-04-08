@@ -96,6 +96,14 @@ export function validateDispositionIntegrity(data: Record<string, unknown>): voi
         `Records with total > 0 must have at least one disposition count > 0.`
     );
   }
+
+  if (dispositionSum !== total) {
+    throw new Error(
+      `Disposition sum mismatch: fixed(${fixed}) + deferred(${deferred}) + ` +
+        `rejected(${rejected}) = ${dispositionSum}, but total = ${total}. ` +
+        `These must be equal.`
+    );
+  }
 }
 
 /**
@@ -127,6 +135,11 @@ export function writeReviewRecord(
   };
 
   const validated = ReviewRecord.parse(recordData);
+
+  // Warn on missing title (soft check — old records may lack it)
+  if (!recordData.title) {
+    console.error(`Warning: review record missing 'title' field (id: ${recordData.id})`);
+  }
 
   // Disposition integrity check on validated (canonical) values
   validateDispositionIntegrity(validated as unknown as Record<string, unknown>);

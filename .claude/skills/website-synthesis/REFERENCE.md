@@ -681,7 +681,7 @@ capability noted.
 Illustrative directory structure after a thematic synthesis of 7 sites:
 
 ```
-.research/website-analysis/
+.research/analysis/
 ├── synthesis/
 │   ├── synthesis.json          # Structured output (full schema per 4.1)
 │   └── synthesis.md            # Human-readable synthesis (template per 4.2)

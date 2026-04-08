@@ -72,7 +72,7 @@ Expedition: open-ended (HITL pacing).
 
 Re-invoking with the same URL auto-resumes from last completed phase.
 
-**Output location:** `.research/website-analysis/<site-slug>/` **Produces:**
+**Output location:** `.research/analysis/<site-slug>/` **Produces:**
 analysis.json, findings.jsonl, value-map.json, links.json, meta.json,
 SITE-ANALYSIS.md. Full schemas in REFERENCE.md Section 1.
 
@@ -294,6 +294,22 @@ mode context. See REFERENCE.md Section 15.
   reading-chain.jsonl in `.research/` (reading-chain.jsonl written during
   Extract Knowledge routing option, same flow as extraction-journal.jsonl)
 - **Consumers:** JASON-OS Domain 02a, `/deep-plan` (as research context)
+
+---
+
+## Tag Suggestion (MUST for Standard/Deep)
+
+After writing value-map.json, suggest 5-8 tags for the analysis record based on:
+
+1. Source type: `website`
+2. Site type: e.g., `documentation`, `blog`, `api-docs`
+3. Topic keywords from content: e.g., `react`, `mcp`, `ai-agents`
+4. Candidate types found: e.g., `pattern`, `anti-pattern`
+5. Ecosystem tags already detected
+
+Present to user: "Suggested tags: [list]. Accept, modify, or add your own?"
+Store accepted tags in `analysis.json` `tags` array. Per CONVENTIONS.md
+Section 14.
 
 ---
 

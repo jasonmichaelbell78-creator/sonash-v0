@@ -539,8 +539,8 @@ describe("toV2ReviewRecord", () => {
 // =========================================================
 
 describe("KNOWN_SKIPPED_IDS", () => {
-  test("contains 64 entries", () => {
-    assert.equal(KNOWN_SKIPPED_IDS.size, 64);
+  test("contains 65 entries", () => {
+    assert.equal(KNOWN_SKIPPED_IDS.size, 65);
   });
 
   test("contains known skipped ID #41", () => {

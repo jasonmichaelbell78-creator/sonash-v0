@@ -1,0 +1,83 @@
+{
+  "id": "e2823ab4-7b57-4d66-ac58-c6f6f1dc4c6a",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "teng-lin_notebooklm-py",
+  "slug": "teng-lin_notebooklm-py",
+  "title": "teng-lin_notebooklm-py",
+  "analyzed_at": null,
+  "depth": "quick",
+  "tags": ["repo", "library"],
+  "scoring": {
+    "adoptionLens": {
+      "verdict": "Trial",
+      "score": 60
+    },
+    "creatorLens": {
+      "verdict": "Trial",
+      "score": 70
+    }
+  },
+  "summary": "Analysis of teng-lin_notebooklm-py. Run Standard/Deep for detailed summary.",
+  "creator_view": "",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "repo": "teng-lin/notebooklm-py",
+  "url": "https://github.com/teng-lin/notebooklm-py",
+  "skillVersion": "4.2",
+  "scanDepth": "standard",
+  "date": "2026-04-06",
+  "repoType": "library",
+  "classification": {
+    "type": "library",
+    "confidence": "high",
+    "signals": [
+      "PyPI package",
+      "Python API + CLI",
+      "SKILL.md for agent discovery",
+      "8 CI workflows"
+    ]
+  },
+  "metadata": {
+    "stars": 9313,
+    "forks": 1206,
+    "openIssues": 34,
+    "contributors": 12,
+    "language": "Python",
+    "license": "MIT",
+    "created": "2026-01-07T15:27:19Z",
+    "lastPush": "2026-04-05T22:16:43Z",
+    "size": 26540,
+    "defaultBranch": "main",
+    "releases": 3
+  },
+  "summaryBands": {
+    "security": {
+      "band": "Good",
+      "score": 70
+    },
+    "reliability": {
+      "band": "Strong",
+      "score": 80
+    },
+    "maintainability": {
+      "band": "Good",
+      "score": 72
+    },
+    "documentation": {
+      "band": "Excellent",
+      "score": 90
+    },
+    "process": {
+      "band": "Strong",
+      "score": 80
+    },
+    "velocity": {
+      "band": "Good",
+      "score": 70
+    }
+  },
+  "absencePattern": {
+    "type": "none"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "id": "ac13b4d3-4951-410f-ba47-1a4546ed5e51",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "surya",
+  "slug": "surya",
+  "title": "surya",
+  "analyzed_at": null,
+  "depth": "quick",
+  "tags": ["repo", "library"],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 70,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 50,
+    "classification": "park-for-later"
+  },
+  "summary": "OCR + layout + reading order + table recognition in 90+ languages.  Paired with marker.",
+  "creator_view": "OCR + layout + reading order + table recognition in 90+ languages. Paired with marker. Layout model integration patterns already covered by docling's analysis. GPL-3.0 limits adoption.",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "VikParuchuri/surya",
+  "url": "https://github.com/VikParuchuri/surya",
+  "analyzedAt": "2026-04-07T16:30:00Z",
+  "repoType": "library",
+  "repoSubtype": "ocr-layout-analysis",
+  "metadata": {
+    "stars": 19552,
+    "forks": 1345,
+    "contributors": 18,
+    "language": "Python",
+    "license": "GPL-3.0",
+    "lastPush": "2026-04-03T19:36:36Z",
+    "size": 44302,
+    "openIssues": 157,
+    "archived": false,
+    "fork": false
+  },
+  "summaryBands": {
+    "security": {
+      "band": "C",
+      "score": 55
+    },
+    "reliability": {
+      "band": "A",
+      "score": 85
+    },
+    "maintainability": {
+      "band": "B",
+      "score": 72
+    },
+    "documentation": {
+      "band": "B",
+      "score": 70
+    },
+    "process": {
+      "band": "C",
+      "score": 60
+    },
+    "velocity": {
+      "band": "B",
+      "score": 75
+    }
+  },
+  "absencePattern": "none",
+  "creatorLens": "OCR + layout + reading order + table recognition in 90+ languages. Paired with marker. Layout model integration patterns already covered by docling's analysis. GPL-3.0 limits adoption.",
+  "context": {
+    "t28Relevance": "Skip — layout model patterns already captured from docling",
+    "cluster": "B"
+  }
+}

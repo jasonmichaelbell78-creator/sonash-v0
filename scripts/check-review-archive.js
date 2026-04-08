@@ -95,6 +95,8 @@ const KNOWN_SKIPPED_IDS = new Set([
   // #441-#451, #458-#459, #462, #465, #468-#469, #477-#479: Collision renumbering artifacts from old sync script (discovered during JSONL-canonical migration)
   441,
   442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 458, 459, 462, 465, 468, 469, 477, 478, 479,
+  // #505: Gap in backfill sequence — ID never assigned (Session #268)
+  505,
 ]);
 
 // Known-duplicate review IDs: IDs that legitimately appear multiple times in JSONL

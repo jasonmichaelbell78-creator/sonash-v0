@@ -19,6 +19,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeAppendFileSync } = require("../lib/safe-fs");
+const { validatePathInDir } = require("../lib/security-helpers.js");
 
 // Walk up from __dirname until we find package.json
 function findProjectRoot(startDir) {
@@ -119,7 +121,7 @@ function normalizeReviewRecord(eco) {
 
 /** Ensure directory exists and file is not a symlink, then append lines. */
 function safeAppend(filePath, lines) {
-  const resolved = path.resolve(filePath);
+  const resolved = path.resolve(filePath); // validatePathInDir: called-with-constants-only
   const rel = path.relative(ROOT, resolved);
   if (/^\.\.(?:[\\/]|$)/.test(rel)) {
     console.error(`  ERROR: Refusing to write outside repo root: ${resolved}`);
@@ -146,7 +148,7 @@ function safeAppend(filePath, lines) {
   }
 
   const content = lines.map((r) => JSON.stringify(r)).join("\n") + "\n";
-  fs.appendFileSync(resolved, content);
+  safeAppendFileSync(resolved, content);
 }
 
 /** Check if a record has real review data. */

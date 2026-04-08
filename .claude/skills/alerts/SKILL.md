@@ -159,10 +159,12 @@ alerts-history.jsonl. DONE-WHEN: All findings presented and decided.
 ### Phase 7: Cleanup & Verification (MUST)
 
 Write artifacts, save suppressions (reason MUST be present), clear resolved
-warnings, append to alerts-history.jsonl with learnings. Offer re-run (loops to
-Phase 1, same mode, delta display). Closure: "Alert review complete. Health:
-{before} -> {after}. Session log: [path]." DONE-WHEN: Files written and closure
-summary presented.
+warnings, append to alerts-history.jsonl with learnings. **Sync statusline:**
+Run `node scripts/sync-warnings-ack.js` to bump `lastCleared` if all warning
+types are now acknowledged (keeps statusline unacked count accurate). Offer
+re-run (loops to Phase 1, same mode, delta display). Closure: "Alert review
+complete. Health: {before} -> {after}. Session log: [path]." DONE-WHEN: Files
+written and closure summary presented.
 
 ---
 

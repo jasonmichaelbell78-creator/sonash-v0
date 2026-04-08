@@ -1,0 +1,92 @@
+{
+  "id": "9304df32-ce15-4473-bf72-797cf8d588e3",
+  "schema_version": "3.0",
+  "source_type": "website",
+  "source": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+  "slug": "maharshi-pandya-gist-4aeccbe1",
+  "title": "Contemplative Reasoning Response Style for LLMs",
+  "analyzed_at": "2026-04-07",
+  "depth": "standard",
+  "tags": [
+    "website",
+    "prompt-engineering",
+    "reasoning",
+    "system-prompt",
+    "claude",
+    "gpt-4o",
+    "contemplation",
+    "blog"
+  ],
+  "scoring": {
+    "quality_band": "Needs Work",
+    "quality_score": 43,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 45,
+    "fit_classification": "park-for-later"
+  },
+  "summary": "Stream-of-consciousness reasoning produces better outcomes than default Minimum 10,000 characters of contemplation leads to natural convergence",
+  "creator_view": "",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "meta": {
+    "url": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+    "domain": "gist.github.com",
+    "slug": "maharshi-pandya-gist-4aeccbe1",
+    "scan_date": "2026-04-07",
+    "scan_depth": "standard",
+    "scan_mode": "page",
+    "scan_version": "1.0",
+    "extraction_mode": "superpowers-chrome",
+    "pages_analyzed": 1
+  },
+  "site_type": "Blog",
+  "site_type_secondary": null,
+  "site_type_confidence": 0.7,
+  "ecosystem_tags": [
+    "prompt-engineering",
+    "reasoning",
+    "system-prompt",
+    "claude",
+    "gpt-4o",
+    "contemplation"
+  ],
+  "tech_stack": ["GitHub Gist", "Plain Text"],
+  "site": {
+    "title": "Contemplative Reasoning Response Style for LLMs",
+    "description": "System prompt for stream-of-consciousness reasoning with self-questioning",
+    "author": "Maharshi-Pandya",
+    "language": "en",
+    "last_modified": "2025-01-07",
+    "has_rss": false,
+    "rss_url": null
+  },
+  "value_axes": {
+    "actionability": 75,
+    "novelty": 35,
+    "evidence_quality": 15,
+    "technical_depth": 30,
+    "recency": 40,
+    "relevance_to_stack": 55,
+    "cross_reference_density": 5,
+    "synthesis_quality": 45,
+    "ecosystem_coverage": 20,
+    "contrarian_signal": 40,
+    "teaching_quality": 65,
+    "reproducibility": 90,
+    "strategic_fit": 45
+  },
+  "absence_patterns": [
+    "No benchmarks or evidence of effectiveness",
+    "No multi-turn or agent context",
+    "No structured phases or convergence mechanism",
+    "No treatment of tool use during reasoning",
+    "No discussion of when NOT to use extended reasoning",
+    "No comparison to native extended thinking features"
+  ],
+  "key_claims": [
+    "Stream-of-consciousness reasoning produces better outcomes than default",
+    "Minimum 10,000 characters of contemplation leads to natural convergence",
+    "Self-doubt and backtracking improve reasoning quality",
+    "Conclusions should emerge rather than be forced"
+  ]
+}

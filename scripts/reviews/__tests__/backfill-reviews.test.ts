@@ -235,8 +235,8 @@ describe("Known-skipped exclusion", () => {
     assert.equal(result.records[0].id, "rev-1");
   });
 
-  test("all 64 known-skipped IDs are in the set", () => {
-    assert.equal(KNOWN_SKIPPED_IDS.size, 64);
+  test("all 65 known-skipped IDs are in the set", () => {
+    assert.equal(KNOWN_SKIPPED_IDS.size, 65);
     assert.ok(KNOWN_SKIPPED_IDS.has(41));
     assert.ok(KNOWN_SKIPPED_IDS.has(349));
     assert.ok(!KNOWN_SKIPPED_IDS.has(1));

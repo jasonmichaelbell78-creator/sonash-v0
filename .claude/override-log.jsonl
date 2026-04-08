@@ -59,3 +59,4 @@
 {"timestamp":"2026-04-07T21:12:22.807Z","check":"cc","reason":"DEBT-45635 cc check exit 2","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
 {"timestamp":"2026-04-07T22:14:42.394Z","check":"cc","reason":"not necessary for archive files","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
 {"timestamp":"2026-04-07T22:29:13.065Z","check":"cc","reason":"not necessary for archive files","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
+{"timestamp":"2026-04-08T13:58:34.212Z","check":"cc","reason":"DEBT-45635: CC checker exit 2 is a known bug in check-cc.js parallel-exec handling, not a code quality issue","user":"redacted","cwd":"redacted","git_branch":"planning-4826"}

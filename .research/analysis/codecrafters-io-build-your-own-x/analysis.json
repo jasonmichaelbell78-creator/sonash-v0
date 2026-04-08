@@ -1,0 +1,170 @@
+{
+  "id": "c3fde3a5-fbe3-4bbf-b6f2-a9c7a1c24b16",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "codecrafters-io-build-your-own-x",
+  "slug": "codecrafters-io-build-your-own-x",
+  "title": "codecrafters-io-build-your-own-x",
+  "analyzed_at": null,
+  "depth": "quick",
+  "tags": ["repo", "curated-list"],
+  "scoring": {
+    "adoptionLens": {
+      "verdict": "Extract",
+      "score": 44
+    },
+    "creatorLens": {
+      "verdict": "Extract",
+      "score": 45
+    }
+  },
+  "summary": "This repo understands that the deepest path to mastering a technology is building it from scratch.  It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle.",
+  "creator_view": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge.",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "repo": "codecrafters-io/build-your-own-x",
+  "url": "https://github.com/codecrafters-io/build-your-own-x",
+  "skillVersion": "4.1",
+  "scanDepth": "standard",
+  "date": "2026-04-06",
+  "repoType": "curated-list",
+  "classification": {
+    "type": "curated-list",
+    "confidence": "high",
+    "signals": ["Markdown-only", "awesome-list topic", "link-collection README", "35+ categories"]
+  },
+  "metadata": {
+    "stars": 486577,
+    "forks": 45783,
+    "openIssues": 462,
+    "contributors": 30,
+    "language": "Markdown",
+    "license": "none",
+    "created": "2018-05-09T12:03:18Z",
+    "lastPush": "2026-02-21T09:34:54Z",
+    "size": 1201,
+    "topics": [
+      "awesome-list",
+      "free",
+      "programming",
+      "tutorial-code",
+      "tutorial-exercises",
+      "tutorials"
+    ],
+    "defaultBranch": "master",
+    "recentCommits90d": 1,
+    "openPRs": 1,
+    "releases": 0
+  },
+  "dimensions": {
+    "QS-01-stars": {
+      "value": 486577,
+      "band": "Exceptional"
+    },
+    "QS-02-forks": {
+      "value": 45783,
+      "band": "Exceptional"
+    },
+    "QS-03-openIssues": {
+      "value": 462,
+      "band": "High"
+    },
+    "QS-04-recentCommits": {
+      "value": 1,
+      "band": "Very Low"
+    },
+    "QS-05-contributors": {
+      "value": 30,
+      "band": "Moderate"
+    },
+    "QS-06-language": {
+      "value": "Markdown",
+      "band": "Single"
+    },
+    "QS-07-license": {
+      "value": "none",
+      "band": "Missing"
+    },
+    "QS-08-lastPush": {
+      "value": "2026-02-21",
+      "band": "Moderately Stale",
+      "daysSince": 44
+    },
+    "QS-09-age": {
+      "value": "2018-05-09",
+      "band": "Mature",
+      "years": 7.9
+    },
+    "QS-10-size": {
+      "value": 1201,
+      "band": "Small"
+    },
+    "QS-11-topics": {
+      "value": 6,
+      "band": "Well-Tagged"
+    },
+    "QS-12-wiki": {
+      "value": false
+    },
+    "QS-13-pages": {
+      "value": false
+    },
+    "QS-14-releases": {
+      "value": 0,
+      "band": "None"
+    },
+    "QS-15-openPRs": {
+      "value": 1,
+      "band": "Low"
+    },
+    "QS-16-forkRatio": {
+      "value": 0.094,
+      "band": "Normal"
+    },
+    "QS-17-issueToStar": {
+      "value": 0.00095,
+      "band": "Very Low"
+    },
+    "QS-18-description": {
+      "value": "present",
+      "band": "Good"
+    }
+  },
+  "summaryBands": {
+    "security": {
+      "band": "N/A",
+      "score": null,
+      "note": "Curated list — no executable code"
+    },
+    "reliability": {
+      "band": "Low",
+      "score": 25,
+      "note": "1 commit/90d, no releases"
+    },
+    "maintainability": {
+      "band": "Low",
+      "score": 30,
+      "note": "Markdown only, sparse commits, bottleneck maintainer"
+    },
+    "documentation": {
+      "band": "Strong",
+      "score": 80,
+      "note": "Extensive categorized README, clear taxonomy"
+    },
+    "process": {
+      "band": "Weak",
+      "score": 20,
+      "note": "No license, no releases, commercial ownership"
+    },
+    "velocity": {
+      "band": "Very Low",
+      "score": 10,
+      "note": "1 commit in 90 days, stagnating"
+    }
+  },
+  "absencePattern": {
+    "type": "celebrity-stagnation",
+    "description": "Massive stars + minimal recent activity + commercial capture by codecrafters-io. 462 open issues with 1 commit in 90 days indicates bottlenecked maintenance."
+  },
+  "creatorLens": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge."
+}

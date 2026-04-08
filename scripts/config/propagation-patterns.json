@@ -88,13 +88,13 @@
     },
     {
       "id": "refuse-symlink",
-      "description": "Symlink rejection — use refuseSymlink() helpers",
-      "pattern": "\\brefuseSymlink\\w*\\s*\\(",
+      "description": "Symlink rejection — use refuseSymlink(), isSafeToWrite(), or safeWriteFileSync()",
+      "pattern": "\\b(?:refuseSymlink\\w*|isSafeToWrite|safeWriteFileSync|safeAppendFileSync)\\s*\\(",
       "antiPattern": null,
       "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "BLOCK",
       "missDetection": "patternAbsence",
-      "source": "PR #397 — symlink guard propagation"
+      "source": "PR #397, #503 — symlink guard propagation (updated to recognize safe-fs variants)"
     },
     {
       "id": "number-nan",

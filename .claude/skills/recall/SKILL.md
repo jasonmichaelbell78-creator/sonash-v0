@@ -1,0 +1,116 @@
+---
+name: recall
+description: >-
+  Query the Content Analysis System knowledge base. Search extraction
+  candidates, filter by tags/type/source, find specific ideas across all
+  analyzed sources. Part of T28 CAS.
+---
+
+<!-- prettier-ignore-start -->
+**Document Version:** 1.0
+**Last Updated:** 2026-04-08
+**Status:** ACTIVE
+<!-- prettier-ignore-end -->
+
+# Recall
+
+Search and query your extracted knowledge. Everything analyzed via `/analyze` is
+searchable here.
+
+## Input
+
+```
+/recall <search terms>                  # Free-text FTS5 search
+/recall --tag=architecture              # Filter by tag
+/recall --type=repo                     # Filter by source type
+/recall --sort=recent                   # Sort by date
+/recall --sort=novelty                  # Sort by novelty (high first)
+/recall --source=unstructured           # By specific source
+/recall --target=sources                # List analyzed sources instead
+/recall --stats                         # Show index statistics
+/recall --limit=30                      # Adjust result limit (default 20)
+```
+
+**Combine filters:**
+
+```
+/recall architecture --type=repo --sort=novelty
+/recall --tag=anti-pattern --type=website
+/recall --target=sources --type=media
+```
+
+## How It Works
+
+1. Parse the query (free text, flags, or both)
+2. Run `node scripts/cas/recall.js` with parsed arguments
+3. Present results in a readable format
+4. Offer follow-up options
+
+## Presenting Results
+
+### For extraction queries (default)
+
+Present as a table or list:
+
+```
+Found 8 results for "architecture":
+
+1. Auto-routing via type detection [pattern]
+   Source: unstructured-io/unstructured (repo) | Novelty: high | Effort: E2
+   "partition() auto-detects file type via libmagic, routes to format-specific
+   partitioner."
+
+2. Per-site extractor plugin architecture [pattern]
+   Source: iawia002/lux (repo) | Novelty: high | Effort: E2
+   "44-site video downloader with per-site extractor plugins."
+```
+
+### For source queries (--target=sources)
+
+```
+29 analyzed sources:
+
+  repo (24): unstructured, docling, reader, ...
+  website (5): docs-composio-dev, karpathy-gist, ...
+  document (0)
+  media (0)
+```
+
+### For stats (--stats)
+
+Present the summary, breakdowns by type/novelty, and top tags.
+
+## Follow-Up Options
+
+After presenting results, offer:
+
+1. **Read full analysis** — "Want to read the full analysis for [source]?"
+2. **Narrow search** — "Add a tag or type filter?"
+3. **Show related** — "Show other candidates from the same source?"
+4. **Done** — Return to conversation
+
+## When Index Is Missing
+
+If the SQLite database doesn't exist:
+
+```
+Index not found. Building from .research/ files...
+[runs rebuild-index.js automatically]
+Done. [N] sources, [M] extractions indexed.
+[then runs the query]
+```
+
+## Critical Rules
+
+1. **Auto-rebuild if missing.** Don't error on missing index — rebuild it.
+2. **JSON output to readable format.** The script outputs JSON. Transform to
+   human-readable presentation.
+3. **Always show result count.** "Found N results" or "No results found."
+4. **Suggest refinements on empty results.** "No results for X. Try broader
+   terms, or check /recall --stats for available tags."
+
+## Version History
+
+| Version | Date       | Description                              |
+| ------- | ---------- | ---------------------------------------- |
+| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269) |

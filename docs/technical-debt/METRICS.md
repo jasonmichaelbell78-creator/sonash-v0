@@ -30,8 +30,8 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 8494  |
-| Open Items      | 7293  |
+| Total Items     | 8495  |
+| Open Items      | 7294  |
 | Resolved        | 1127  |
 | False Positives | 74    |
 | Resolution Rate | 13%   |
@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 2143  |
+| NEW            | 2144  |
 | VERIFIED       | 5150  |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 1127  |
@@ -56,7 +56,7 @@ distribution.
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 26    | 0%         |
 | S1 (High)     | 1373  | 16%        |
-| S2 (Medium)   | 3453  | 41%        |
+| S2 (Medium)   | 3454  | 41%        |
 | S3 (Low)      | 3642  | 43%        |
 
 ---
@@ -67,7 +67,7 @@ distribution.
 | ------------------------ | ----- |
 | code-quality             | 4722  |
 | documentation            | 982   |
-| process                  | 732   |
+| process                  | 733   |
 | security                 | 730   |
 | refactoring              | 670   |
 | ai-optimization          | 254   |
@@ -120,7 +120,7 @@ _...and 1258 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 2143 items |
+| Verification Queue   | 2144 items |
 | Avg Age (Open Items) | 54 days    |
 | Oldest Item Age      | 68 days    |
 | Oldest Item          | DEBT-0002  |
@@ -141,7 +141,7 @@ _...and 1258 more S1 items_
 | roadmap                      | 172   |
 | manual                       | 96    |
 | intake                       | 64    |
-| pr-deferred                  | 41    |
+| pr-deferred                  | 42    |
 | pr-review                    | 16    |
 | session                      | 8     |
 | pr-review-366-r2             | 6     |

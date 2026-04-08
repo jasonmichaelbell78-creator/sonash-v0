@@ -1,12 +1,12 @@
 {
-  "timestamp": "2026-04-05T14:31:06.096Z",
+  "timestamp": "2026-04-08T12:11:38.986Z",
   "healthScore": {
-    "grade": "B",
-    "score": 87,
-    "measuredPct": 98,
+    "grade": "A",
+    "score": 95,
+    "measuredPct": 95,
     "breakdown": {
       "code": {
-        "score": 60,
+        "score": 100,
         "weight": 0.15,
         "measured": true
       },
@@ -16,7 +16,7 @@
         "measured": true
       },
       "debt-metrics": {
-        "score": 70,
+        "score": 100,
         "weight": 0.11,
         "measured": true
       },
@@ -31,7 +31,7 @@
         "measured": true
       },
       "skip-abuse": {
-        "score": 90,
+        "score": 40,
         "weight": 0.02,
         "measured": true
       },
@@ -46,19 +46,19 @@
         "measured": true
       },
       "hook-health": {
-        "score": 70,
+        "score": 60,
         "weight": 0.03,
         "measured": true
       },
       "hook-completeness": {
-        "score": 80,
+        "score": 90,
         "weight": 0.02,
         "measured": true
       },
       "session-state": {
-        "score": 100,
+        "score": null,
         "weight": 0.03,
-        "measured": true
+        "measured": false
       },
       "pattern-hotspots": {
         "score": 100,
@@ -141,7 +141,7 @@
         "measured": true
       },
       "review-archive": {
-        "score": 70,
+        "score": 90,
         "weight": 0.01,
         "measured": true
       },
@@ -151,7 +151,7 @@
         "measured": true
       },
       "hook-warnings": {
-        "score": 50,
+        "score": 10,
         "weight": 0.01,
         "measured": true
       },
@@ -189,13 +189,13 @@
   },
   "summary": {
     "errors": 4,
-    "warnings": 13,
-    "info": 7
+    "warnings": 125,
+    "info": 6
   },
   "categoryScores": {
     "code": {
-      "errors": 1,
-      "warnings": 1,
+      "errors": 0,
+      "warnings": 0,
       "info": 0
     },
     "security": {
@@ -209,14 +209,14 @@
       "info": 0
     },
     "debt-metrics": {
-      "errors": 1,
+      "errors": 0,
       "warnings": 0,
       "info": 1
     },
     "learning": {
       "errors": 0,
       "warnings": 0,
-      "info": 1
+      "info": 0
     },
     "agent-compliance": {
       "errors": 0,
@@ -224,13 +224,13 @@
       "info": 0
     },
     "hook-warnings": {
-      "errors": 0,
-      "warnings": 5,
+      "errors": 1,
+      "warnings": 6,
       "info": 0
     },
     "skip-abuse": {
-      "errors": 0,
-      "warnings": 1,
+      "errors": 2,
+      "warnings": 0,
       "info": 0
     },
     "test-results": {
@@ -240,12 +240,12 @@
     },
     "hook-health": {
       "errors": 1,
-      "warnings": 0,
+      "warnings": 1,
       "info": 0
     },
     "hook-completeness": {
       "errors": 0,
-      "warnings": 2,
+      "warnings": 1,
       "info": 0
     },
     "session-state": {
@@ -269,8 +269,8 @@
       "info": 0
     },
     "review-archive": {
-      "errors": 1,
-      "warnings": 0,
+      "errors": 0,
+      "warnings": 1,
       "info": 0
     },
     "crossdoc": {
@@ -395,7 +395,7 @@
     },
     "pending-refinements": {
       "errors": 0,
-      "warnings": 0,
+      "warnings": 112,
       "info": 0
     }
   }

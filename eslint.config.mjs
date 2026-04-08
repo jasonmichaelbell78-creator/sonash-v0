@@ -117,6 +117,8 @@ export default [
       "scripts/reviews/__tests__/**/*.js",
       "scripts/metrics/__tests__/**/*.js",
       "scripts/reviews/migrate-ecosystem-v2.js",
+      "scripts/cas/**/*.js",
+      "scripts/lib/analysis-schema.js",
     ],
     languageOptions: {
       sourceType: "commonjs",

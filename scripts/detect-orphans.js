@@ -156,9 +156,10 @@ function findDeadWorkflowRefs(content, workflowRel) {
     const scriptPath = m[1].trim();
     if (!isContainedPath(scriptPath)) continue;
     try {
-      fs.statSync(path.join(ROOT, scriptPath));
+      const st = fs.lstatSync(path.join(ROOT, scriptPath));
+      if (st.isSymbolicLink()) throw new Error("symlink");
     } catch {
-      // statSync throws ENOENT when file is missing — that's what we're detecting
+      // lstatSync throws ENOENT when file is missing; symlinks also treated as missing
       findings.push({
         file: scriptPath,
         category: "workflows",
@@ -667,7 +668,8 @@ function findDeadNpmScripts() {
           continue;
         }
         try {
-          fs.statSync(path.join(ROOT, target));
+          const st = fs.lstatSync(path.join(ROOT, target));
+          if (st.isSymbolicLink()) throw new Error("symlink");
         } catch {
           dead.push({ name, target });
         }

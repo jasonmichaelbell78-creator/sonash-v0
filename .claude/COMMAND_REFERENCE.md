@@ -36,12 +36,14 @@ Source: `.claude/skills/*/SKILL.md`
 | `/brainstorm`                     | Creative discovery phase — explore directions before deep-plan or deep-research            |
 | `/deep-plan`                      | Discovery-first planning with exhaustive Q&A and decision record                           |
 | `/deep-research`                  | Multi-agent research engine with parallel search, verification, and downstream adapters    |
+| `/document-analysis`              | Document analysis (PDF, gist, article, arxiv) — dual-lens, 3 tiers, part of CAS            |
 | `/doc-optimizer`                  | Scan docs, auto-fix formatting/headers/links                                               |
 | `/docs-maintain`                  | Check doc sync and auto-update artifacts                                                   |
 | `/pr-review`                      | PR code review processor                                                                   |
 | `/pr-retro`                       | PR review retrospective with interactive findings walkthrough                              |
 | `/session-begin`                  | Session startup verification checklist                                                     |
 | `/session-end`                    | Session end verification checklist                                                         |
+| `/analyze`                        | Content Analysis System router — feed it anything, auto-detects type, dispatches handler   |
 | `/alerts`                         | Intelligent health dashboard with scoring                                                  |
 | `/ecosystem-health`               | 8-category composite health scoring with 13-dimension drill-down                           |
 | `/pr-ecosystem-audit`             | PR ecosystem diagnostic (18 categories, 5 domains)                                         |
@@ -57,6 +59,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/data-effectiveness-audit`       | Lifecycle scoring audit for data system effectiveness (C/S/R/A, 0-12)                      |
 | `/debt-runner`                    | Interactive TDMS orchestrator with 7 modes (verify, sync, plan, health, dedup, etc.)       |
 | `/checkpoint`                     | Save session state for recovery                                                            |
+| `/recall`                         | Query the Content Analysis System — search extractions, tags, sources, part of CAS         |
 | `/quick-fix`                      | Auto-suggest fixes for pre-commit failures                                                 |
 | `/pre-commit-fixer`               | Fix pre-commit hook failures and retry                                                     |
 | `/code-reviewer`                  | Code review for SoNash                                                                     |
@@ -80,6 +83,7 @@ Source: `.claude/skills/*/SKILL.md`
 | `/gh-fix-ci`                      | Fix failing GitHub CI actions                                                              |
 | `/github-health`                  | 7-phase GitHub health assessment with per-finding triage and inline fixes                  |
 | `/market-research-reports`        | Generate market research reports                                                           |
+| `/media-analysis`                 | Media analysis (YouTube, podcast, audio) — transcription + dual-lens, part of CAS          |
 | `/ui-design-system`               | Design system components toolkit                                                           |
 | `/repo-analysis`                  | Dual-lens repo analysis: Creator View + Engineer View, 3 tiers, link mining, dual scoring  |
 | `/repo-synthesis`                 | Cross-repo synthesis: emergent themes, ecosystem gaps, reading chains, fit portfolio       |

@@ -109,6 +109,16 @@ cycles:
 - **content_hash values** — Computed by the ingestion pipeline, intentionally
   stable. Do not suggest recomputation.
 
+### Research Output Files (`.research/`)
+
+- **Schema design suggestions on research documents** — Files under `.research/`
+  are research findings and analysis outputs, NOT production code. Do NOT
+  suggest schema redesigns (normalization, redundancy removal, indexing
+  strategy) on research markdown or synthesis files. Flag genuine
+  inconsistencies (e.g., "says 4 but lists 7") but do NOT propose alternative
+  designs. The document's purpose is to capture what was researched, not serve
+  as an implementation spec. (Rejected 6 items in PR #500 R1)
+
 ### Other
 
 - **Override audit trail logging skip reasons** — `override-log.jsonl` is an

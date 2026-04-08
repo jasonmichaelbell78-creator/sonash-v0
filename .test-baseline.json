@@ -495,5 +495,29 @@
       "path": "scripts/verify-enforcement.js",
       "lines": 552
     }
-  ]
+  ],
+  "scripts/cas/migrate-schemas.js": {
+    "reason": "CAS infrastructure — SQLite index scripts (T28)",
+    "added": "2026-04-08"
+  },
+  "scripts/cas/rebuild-index.js": {
+    "reason": "CAS infrastructure — SQLite index scripts (T28)",
+    "added": "2026-04-08"
+  },
+  "scripts/cas/recall.js": {
+    "reason": "CAS infrastructure — SQLite index scripts (T28)",
+    "added": "2026-04-08"
+  },
+  "scripts/cas/update-index.js": {
+    "reason": "CAS infrastructure — SQLite index scripts (T28)",
+    "added": "2026-04-08"
+  },
+  "scripts/lib/analysis-schema.js": {
+    "reason": "CAS infrastructure — SQLite index scripts (T28)",
+    "added": "2026-04-08"
+  },
+  "scripts/sync-warnings-ack.js": {
+    "reason": "CAS infrastructure — SQLite index scripts (T28)",
+    "added": "2026-04-08"
+  }
 }

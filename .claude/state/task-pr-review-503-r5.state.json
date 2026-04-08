@@ -1,0 +1,20 @@
+{
+  "pr": 503,
+  "round": 5,
+  "review_number": 76,
+  "source": "qodo",
+  "total": 9,
+  "fixed": 6,
+  "deferred": 0,
+  "rejected": 3,
+  "severity": {
+    "critical": 0,
+    "major": 1,
+    "minor": 4,
+    "trivial": 1
+  },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": "1cca6e26",
+  "completed_at": "2026-04-08T21:52:27.251Z"
+}

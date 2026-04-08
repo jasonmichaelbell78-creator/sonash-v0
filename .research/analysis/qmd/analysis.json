@@ -1,0 +1,76 @@
+{
+  "id": "05e266ad-5584-44b7-9709-b056e13af16d",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "qmd",
+  "slug": "qmd",
+  "title": "qmd",
+  "analyzed_at": null,
+  "depth": "quick",
+  "tags": ["repo", "tool"],
+  "scoring": {
+    "quality_band": "Excellent",
+    "quality_score": 81,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 50,
+    "classification": "park-for-later"
+  },
+  "summary": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking — all on-device via node-llama-cpp with GGUF models.  The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context.",
+  "creator_view": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking — all on-device via node-llama-cpp with GGUF models. The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context. This is a retrieval pattern, not extraction, but directly relevant to T28's analysis layer — how do you search across heterogeneous extracted content? Also has MCP server with query/get/multi_get/status tools. TypeScript.",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "tobi/qmd",
+  "url": "https://github.com/tobi/qmd",
+  "analyzedAt": "2026-04-07T17:15:00Z",
+  "repoType": "tool",
+  "repoSubtype": "local-doc-search-engine",
+  "metadata": {
+    "stars": 19385,
+    "language": "TypeScript",
+    "license": "MIT",
+    "lastPush": "2026-04-05T23:17:16Z",
+    "archived": false,
+    "fork": false
+  },
+  "summaryBands": {
+    "security": {
+      "band": "B",
+      "score": 70
+    },
+    "reliability": {
+      "band": "A",
+      "score": 85
+    },
+    "maintainability": {
+      "band": "A",
+      "score": 82
+    },
+    "documentation": {
+      "band": "A",
+      "score": 88
+    },
+    "process": {
+      "band": "B",
+      "score": 75
+    },
+    "velocity": {
+      "band": "A",
+      "score": 85
+    }
+  },
+  "creatorLens": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking — all on-device via node-llama-cpp with GGUF models. The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context. This is a retrieval pattern, not extraction, but directly relevant to T28's analysis layer — how do you search across heterogeneous extracted content? Also has MCP server with query/get/multi_get/status tools. TypeScript.",
+  "context": {
+    "t28Relevance": "Context tree pattern for hierarchical retrieval across heterogeneous sources. MCP server with search tools. Local-first GGUF models. TypeScript.",
+    "cluster": "E",
+    "notablePatterns": [
+      "Context tree: hierarchical metadata attached to collections, returned with search results",
+      "Triple search: BM25 (lex) + vector (vec) + HYDE, combined via RRF + reranking",
+      "MCP server: query, get, multi_get, status tools",
+      "Collections: group different source directories with named collections",
+      "Local-only: node-llama-cpp with GGUF models, no cloud dependency",
+      "CLI-first: crwl command with --json and --files output for agent consumption"
+    ]
+  }
+}

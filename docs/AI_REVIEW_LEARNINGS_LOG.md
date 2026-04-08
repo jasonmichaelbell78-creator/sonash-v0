@@ -366,6 +366,24 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#55)</summary>
+
+- **Date:** 2026-04-08
+- **Reviews consolidated:** #70-#rev-68
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#54)</summary>
+
+- **Date:** 2026-04-08
+- **Reviews consolidated:** #backfill-477-r3-#rev-68
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#53)</summary>
 
 - **Date:** 2026-04-08
@@ -1307,7 +1325,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 31    | 31    | 1        | 0        |
+| 32    | 31    | 1        | 0        |
 
 **Patterns:**
 
@@ -1329,7 +1347,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 7     | 5     | 0        | 1        |
+| 6     | 5     | 0        | 1        |
 
 **Patterns:**
 
@@ -1342,7 +1360,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-pr491-r1: (untitled) (2026-04-03)
+### Review review-pr491-r1: PR #491 R1 (2026-04-03)
 
 **Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
 
@@ -1361,7 +1379,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-pr491-r2: (untitled) (2026-04-03)
+### Review review-pr491-r2: PR #491 R2 (2026-04-03)
 
 **Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
 
@@ -1386,7 +1404,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 28    | 27    | 0        | 0        |
+| 27    | 27    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -1560,16 +1578,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
-
----
-
 ### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
 
 **Date:** unknown | **PR:** #498 | **Source:** manual
@@ -1588,13 +1596,13 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-66: (untitled) (2026-04-07)
+### Review rev-66: PR #499 R1 (2026-04-07)
 
 **Date:** 2026-04-07 | **PR:** #499 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 14    | 14    | 0        | 10       |
+| 24    | 14    | 0        | 10       |
 
 ---
 
@@ -1608,13 +1616,13 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-67: (untitled) (2026-04-07)
+### Review rev-67: PR #488 R2 (2026-04-07)
 
 **Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 5     | 5     | 0        | 6        |
+| 11    | 5     | 0        | 6        |
 
 ---
 
@@ -1625,6 +1633,38 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
+
+---
+
+### Review rev-68: PR #500 R1 (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #500 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 5     | 1        | 6        |
+
+**Patterns:**
+
+- pii-in-agent-logs
+- research-doc-schema-consistency
+- research-design-feedback-vs-bugs
+
+---
+
+### Review 71: PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint) (unknown)
+
+**Date:** unknown | **PR:** #500 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pii-in-agent-logs
+- research-doc-schema-consistency
+- research-design-feedback-vs-bugs
 
 ## Key Patterns
 
@@ -3987,3 +4027,118 @@ stale-rejected, 1 already-fixed)
   design recommendations for future implementation, not bugs in the research
   output. Reject with justification when the document's purpose is to capture
   findings, not serve as an implementation spec.
+
+### Review #72 — PR #503 R1 (Mixed: SonarCloud + Qodo + Gemini + CI)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed | **Round:** R1
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 28    | 24    | 0        | 4        |
+
+**Severity:** 4C / 12M / 7m / 5T
+
+**Patterns:**
+
+- **slug-traversal-validation-scope** — Path traversal guard in update-index.js
+  validated against PROJECT_ROOT instead of ANALYSIS_DIR, allowing slugs like
+  `../../scripts` to escape the analysis directory while staying within the
+  repo. Always validate user-provided path segments against the narrowest
+  containing directory, not the repo root.
+- **falsy-score-clobbering** — Using `||` instead of `??` for numeric fields
+  where 0 is a valid value (quality_score, fit_score). rebuild-index.js already
+  used `??` correctly; update-index.js used `||`. When two code paths handle the
+  same data, ensure they use identical operators.
+- **overbroad-sql-deletion** — `DELETE WHERE source LIKE %slug%` matches
+  unrelated rows. Use stable foreign keys (source_analysis_id) for targeted
+  deletion. Also delete junction table rows first to avoid FK violations.
+- **prepare-inside-loop** — `db.prepare()` inside a loop prepares the same
+  statement on every iteration. Hoist prepared statements above loops for SQLite
+  performance.
+- **bandFromScore-duplication** — Three files had identical nested ternary
+  chains for score-to-band conversion. Extract shared helper and reuse across
+  CAS scripts to reduce CC and eliminate code smell.
+
+### Review #73 — PR #503 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed | **Round:** R2
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Severity:** 0C / 3M / 4m / 0T
+
+**Patterns:**
+
+- **migration-uuid-stability** — Schema migration generated new UUIDs for every
+  record, breaking source_analysis_id linkage with extraction-journal.jsonl.
+  Preserve existing valid UUIDs during migration; only generate new ones for
+  records that lack them.
+- **readonly-symlink-guard** — Even read-only DB opens should check for
+  symlinks. A symlinked database could expose unintended data or redirect
+  queries to an attacker-controlled file. Apply lstatSync check before any
+  Database() open.
+- **cc-from-fix-accumulation** — R1 fixes (try/catch, tag parsing) pushed
+  rebuild-index transaction from CC 16 to CC 18. Extract helper functions in the
+  same round to prevent CC regressions from accumulating fixes.
+
+### Review #74 — PR #503 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed | **Round:** R3
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 5     | 0        | 6        |
+
+**Severity:** 0C / 1M / 4m / 0T (+ 6 rejected cross-round re-raises)
+
+**Patterns:**
+
+- **lstatSync-regression** — Propagation fixes that replace statSync with
+  lstatSync break symlink file resolution in graph builders. When a tool needs
+  to follow symlinks to find real files, use lstatSync for the initial check but
+  fall through to statSync for symlink targets.
+- **proto-delete-deprecated** — Direct `delete obj.__proto__` is deprecated in
+  modern JS. Use `Object.hasOwn(obj, key)` guard before delete for prototype
+  pollution keys.
+
+### Review #75 — PR #503 R4 (Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo | **Round:** R4
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 7     | 0        | 2        |
+
+**Severity:** 0C / 3M / 4m / 0T
+
+**Patterns:**
+
+- **symlink-follow-vs-refuse** — R3 added symlink following in reference-graph
+  to fix lstatSync regression. R4 correctly identified this contradicts
+  refuse-symlink policy. Resolution: skip symlinks in graph builder (reference
+  counting doesn't need symlink targets). Lesson: don't add symlink following to
+  fix a regression — find the approach that satisfies both constraints.
+- **path-resolution-bugs** — audit-s0-promotions.js had `__dirname, ".."` when
+  it needed `"../.."` to reach docs/ from scripts/archive/. Always verify
+  `__dirname`-relative paths against actual directory depth.
+
+### Review #76 — PR #503 R5 (Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo | **Round:** R5
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 6     | 0        | 3        |
+
+**Severity:** 0C / 1M / 4m / 1T
+
+**Patterns:**
+
+- **unreachable-fallback-code** — extractScoring had `if (data.scoring) return`
+  before lens-format fallback code, making the fallback unreachable for any data
+  with a scoring field. Fix: narrow the early return to only trigger for fully
+  canonical scoring objects (both numeric fields present).
+- **fts-input-limits** — FTS5 MATCH queries need both length truncation (500
+  chars) and token count limits (20) to prevent pathological query execution.
