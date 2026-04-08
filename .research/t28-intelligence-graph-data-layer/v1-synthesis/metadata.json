@@ -1,0 +1,113 @@
+{
+  "topic": "T28 Intelligence Graph Data Layer",
+  "slug": "t28-intelligence-graph-data-layer",
+  "date": "2026-04-07",
+  "session": 267,
+  "depth": "L1",
+  "questionType": "architecture decision — storage backend selection",
+  "domain": "AI tooling / knowledge graph / Claude Code OS",
+  "agentCount": 12,
+  "subQuestions": ["D1a", "D1b", "D2a", "D2b", "D3", "D4", "D5a", "D5b", "D6", "D7", "D9", "D10"],
+  "subQuestionsSkipped": ["D8"],
+  "skipReason": "D8 (architecture tradeoffs) was well-covered by D1+D2 findings",
+  "claimCount": 36,
+  "sourceCount": 30,
+  "confidenceDistribution": {
+    "HIGH": 22,
+    "MEDIUM": 10,
+    "LOW": 3,
+    "UNVERIFIED": 0
+  },
+  "topThemes": [
+    "Files canonical, graph derived — universal industry consensus",
+    "Official MCP memory server inadequate for T28",
+    "SQLite + simple-graph for T28 scale",
+    "LadybugDB as graph-native alternative",
+    "Agent-native memory frameworks vs PKM tools",
+    "Three-tier schema design (SourceNode + KnowledgeNode + ThemeNode)",
+    "Synthesis operations that only graphs enable",
+    "Command interface design and anti-cramming thresholds",
+    "Near-zero-friction migration from existing .research/ artifacts"
+  ],
+  "contradictions": [
+    {
+      "id": "CONT-001",
+      "description": "D1a referenced KuzuDB as active; D1b found it archived October 2025",
+      "resolution": "D1b is correct — KuzuDB original is dead. D1a's recommendation applies to LadybugDB fork",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CONT-002",
+      "description": "Multiple MCP servers claim #1 on LongMemEval/LoCoMo with incompatible results",
+      "resolution": "All are self-reported, different benchmarks. Treat all performance numbers as LOW confidence",
+      "confidence": "HIGH"
+    },
+    {
+      "id": "CONT-003",
+      "description": "Obsidian filesystem MCP works without Obsidian running, but obsidian eval CLI headless reliability unconfirmed",
+      "resolution": "Filesystem-direct MCP path is sufficient for T28's Claude Code integration use case",
+      "confidence": "MEDIUM"
+    },
+    {
+      "id": "CONT-004",
+      "description": "kuzu-memory MCP uses ryugraph fork; MemoryGraph uses LadybugDB — kuzu ecosystem is fragmented",
+      "resolution": "MemoryGraph is the cleaner LadybugDB-native MCP path",
+      "confidence": "MEDIUM"
+    }
+  ],
+  "corrections": [
+    {
+      "id": "CORR-001",
+      "target": "Brainstorm decision #9",
+      "issue": "Term 'Dual-Embedding Memory Bank' does not appear in MemSkill (arXiv:2602.02474)",
+      "correction": "The mechanism is a single shared embedding space (one model, two input types). Not a dual-embedding architecture",
+      "source": "S-005"
+    }
+  ],
+  "recommendation": {
+    "primary": "SQLite + simple-graph schema + FTS5 + sqlite-vec + recursive CTEs",
+    "alternative": "LadybugDB (reassess stability at October 2026, 12-month mark)",
+    "mcpIntegration": "AgentMemory (lowest friction, MEMORY.md compatible) or obra/knowledge-graph (strongest graph analytics, serverless)",
+    "architecturePattern": "BasicMemory architecture (files-canonical + SQLite index + FTS + vector) without adopting its AGPL codebase",
+    "schemaBlueprint": "Graphiti patterns (bi-temporal edges, three-tier hierarchy, hybrid RRF retrieval, non-destructive contradiction)",
+    "avoid": [
+      "KuzuDB original (archived)",
+      "DuckDB as primary write store",
+      "MCP memory server (JSONL)",
+      "Logseq DB version",
+      "Grafeo"
+    ],
+    "confidence": "HIGH"
+  },
+  "hasDebtCandidates": true,
+  "debtCandidates": [
+    "Current MCP memory server is insufficient — must be replaced or augmented before T28 build begins",
+    "LadybugDB stability risk (6-month fork) if chosen as backend",
+    "BasicMemory AGPL v3 license constraint",
+    "Graphiti LLM API dependency if chosen for ingestion"
+  ],
+  "hasMemoryCandidates": true,
+  "memoryCandidates": [
+    "Files canonical, graph derived — architectural constant for T28",
+    "Three-tier schema (SourceNode + KnowledgeNode + ThemeNode) with 6 edge types",
+    "Ingest != absorb (metadata registration vs semantic extraction are separate operations)",
+    "MemSkill 'dual-embedding' term does not exist — brainstorm correction needed",
+    "EXTRACTIONS.md already uses file-canonical/derived-view pattern"
+  ],
+  "consumerHints": {
+    "hasStackClaims": true,
+    "hasPitfallClaims": true,
+    "hasDebtCandidates": true,
+    "hasMemoryCandidates": true,
+    "lowConfidenceCount": 3,
+    "correctionsRequired": 1,
+    "readyForDeepPlan": true,
+    "preBuiltActions": [
+      "Verify which MCP server is currently configured as 'memory' in the project",
+      "Update brainstorm decision #9 to remove 'Dual-Embedding Memory Bank' framing",
+      "Run bootstrap test: read 10 analysis.json files, write to SQLite simple-graph schema, measure time"
+    ]
+  },
+  "startedAt": "2026-04-07T00:00:00Z",
+  "completedAt": "2026-04-07T00:00:00Z"
+}

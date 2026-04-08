@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-06T18:30:13.877Z",
-  "generated_date": "2026-04-06",
+  "generated": "2026-04-08T02:13:48.479Z",
+  "generated_date": "2026-04-08",
   "summary": {
-    "total": 8490,
-    "open": 7289,
+    "total": 8494,
+    "open": 7293,
     "resolved": 1127,
     "false_positives": 74,
     "resolution_rate_pct": 13
   },
   "by_status": {
-    "NEW": 2139,
+    "NEW": 2143,
     "VERIFIED": 5150,
     "IN_PROGRESS": 0,
     "RESOLVED": 1127,
@@ -17,26 +17,26 @@
   },
   "by_severity": {
     "S0": 26,
-    "S1": 1370,
+    "S1": 1373,
     "S2": 3453,
-    "S3": 3641
+    "S3": 3642
   },
   "by_category": {
-    "code-quality": 4721,
-    "security": 729,
+    "code-quality": 4722,
+    "security": 730,
     "performance": 180,
     "documentation": 982,
     "refactoring": 670,
-    "process": 730,
+    "process": 732,
     "engineering-productivity": 70,
     "enhancements": 154,
     "ai-optimization": 254
   },
   "by_source": {
-    "unknown": 766,
+    "unknown": 767,
     "sonarcloud": 2561,
     "review": 623,
-    "audit": 2942,
+    "audit": 2943,
     "manual": 96,
     "intake": 64,
     "pr-review": 16,
@@ -44,7 +44,7 @@
     "alerts-self-audit-2026-02-16": 4,
     "roadmap": 172,
     "code-comment": 5,
-    "pr-deferred": 39,
+    "pr-deferred": 41,
     "dec-2025-report": 641,
     "sonarcloud-paste": 286,
     "context": 252,
@@ -56,7 +56,7 @@
   },
   "alerts": {
     "s0_count": 4,
-    "s1_count": 1265,
+    "s1_count": 1268,
     "s0_items": [
       {
         "id": "DEBT-9290",
@@ -147,9 +147,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 52,
-    "oldest_age_days": 66,
+    "avg_age_days": 54,
+    "oldest_age_days": 68,
     "oldest_item_id": "DEBT-0002",
-    "verification_queue_size": 2139
+    "verification_queue_size": 2143
   }
 }

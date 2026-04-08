@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.119 **Created:** 2026-01-02 **Last Updated:**
-2026-04-06
+**Document Version:** 17.120 **Created:** 2026-01-02 **Last Updated:**
+2026-04-08
 
 ## Purpose
 
@@ -365,6 +365,33 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#53)</summary>
+
+- **Date:** 2026-04-08
+- **Reviews consolidated:** #70-#rev-67
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#52)</summary>
+
+- **Date:** 2026-04-08
+- **Reviews consolidated:** #70-#rev-67
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#51)</summary>
+
+- **Date:** 2026-04-07
+- **Reviews consolidated:** #70-#rev-67
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
 <details>
 <summary>Previous Consolidation (#50)</summary>
 
@@ -1558,6 +1585,46 @@ deduplicated, non-overlapping ranges):
 - extraction-journal-normalize
 - skill-schema-consistency
 - slug-algorithm-separator-preservation
+
+---
+
+### Review rev-66: (untitled) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #499 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 14    | 14    | 0        | 10       |
+
+---
+
+### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 0     | 0        | 0        |
+
+---
+
+### Review rev-67: (untitled) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 6        |
+
+---
+
+### Review 509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #488 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 ## Key Patterns
 
@@ -3896,3 +3963,27 @@ stale-rejected, 1 already-fixed)
   sections must appear in the main definition (rss fields, x_robots_tag combos).
 - **slug-algorithm-separator-preservation** — When collapsing consecutive
   hyphens, preserve `--` path separators (collapse 3+ only).
+
+### Review #71 — PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint)
+
+**Date:** 2026-04-08 | **PR:** #500 | **Source:** mixed | **Round:** R1
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 5     | 1        | 6        |
+
+**Severity:** 0C / 2M / 9m / 1T
+
+**Patterns:**
+
+- **pii-in-agent-logs** — Agent invocation tracker persisted OS username and
+  session ID to git-tracked JSONL. Strip fields not consumed by downstream
+  gates. Only persist what enforcement scripts actually read.
+- **research-doc-schema-consistency** — When research outputs reference a count
+  (e.g., "4 edge types"), ensure it matches the actual enumeration table.
+  Cross-file tables (synthesis vs output) must list the same set.
+- **research-design-feedback-vs-bugs** — Reviewer suggestions on research
+  document schema design (redundancy, normalization, indexing strategy) are
+  design recommendations for future implementation, not bugs in the research
+  output. Reject with justification when the document's purpose is to capture
+  findings, not serve as an implementation spec.

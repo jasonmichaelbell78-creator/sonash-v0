@@ -96,3 +96,6 @@
 {"timestamp":"2026-04-05T17:23:35.064Z","action":"intake-manual","item_id":"DEBT-45638","file":"scripts/verify-enforcement.js","severity":"S2","category":"process"}
 {"timestamp":"2026-04-05T22:19:11.398Z","action":"intake-manual","item_id":"DEBT-45639","file":"dist-tests/tests/scripts/ecosystem-v2/","severity":"S1","category":"code-quality"}
 {"timestamp":"2026-04-05T22:19:29.264Z","action":"intake-manual","item_id":"DEBT-45640","file":"scripts/health/lib/warning-lifecycle.test.js","severity":"S2","category":"code-quality"}
+{"timestamp":"2026-04-07T22:07:14.769Z","action":"intake-pr-deferred","pr_number":499,"item_id":"DEBT-45642","file":"scripts/archive/reverify-resolved.js","severity":"S1"}
+{"timestamp":"2026-04-07T22:07:24.409Z","action":"intake-pr-deferred","pr_number":499,"item_id":"DEBT-45643","file":"scripts/run-github-health.js","severity":"S3"}
+{"timestamp":"2026-04-08T10:10:57.937Z","action":"intake-pr-deferred","pr_number":500,"item_id":"DEBT-45645","file":"config/rotation-policy.json","severity":"S2"}
