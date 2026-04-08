@@ -215,8 +215,14 @@ function migrateAnalysis(filePath, slug) {
   const analyzedAt = data.analyzed_at || data.meta?.scan_date || data.analysisDate || null;
   const depth = data.depth || data.meta?.scan_depth || "quick";
 
+  const existingId =
+    typeof data.id === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(data.id)
+      ? data.id
+      : null;
+
   const migrated = {
-    id: generateUUID(),
+    id: existingId ?? generateUUID(),
     schema_version: "3.0",
     source_type: sourceType,
     source,
@@ -233,7 +239,11 @@ function migrateAnalysis(filePath, slug) {
   };
 
   // Preserve all original fields as type-specific extensions
+  // Strip prototype pollution keys before spreading
   const preserved = { ...data };
+  delete preserved.__proto__;
+  delete preserved.constructor;
+  delete preserved.prototype;
   delete preserved.id;
   delete preserved.schema_version;
   delete preserved.source_type;

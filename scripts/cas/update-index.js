@@ -132,6 +132,13 @@ function syncExtractions(db, record, tagCache) {
   let lines = [];
   try {
     if (fs.existsSync(JOURNAL_PATH)) {
+      const { size } = fs.statSync(JOURNAL_PATH);
+      if (size > 25 * 1024 * 1024) {
+        console.error(
+          "Journal too large for incremental sync (>25MB). Run: node scripts/cas/rebuild-index.js"
+        );
+        return;
+      }
       lines = fs.readFileSync(JOURNAL_PATH, "utf8").trim().split("\n");
     }
   } catch (err) {

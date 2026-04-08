@@ -251,14 +251,15 @@ function main() {
   }
 
   const db = new Database(DB_PATH);
-  db.pragma("journal_mode = WAL");
-  db.pragma("synchronous = NORMAL");
-  db.pragma("foreign_keys = ON");
-  db.pragma("temp_store = MEMORY");
+  try {
+    db.pragma("journal_mode = WAL");
+    db.pragma("synchronous = NORMAL");
+    db.pragma("foreign_keys = ON");
+    db.pragma("temp_store = MEMORY");
 
-  createSchema(db);
+    createSchema(db);
 
-  const insertSource = db.prepare(`
+    const insertSource = db.prepare(`
     INSERT OR REPLACE INTO sources
     (id, source_type, source, slug, title, analyzed_at, depth,
      quality_band, quality_score, personal_fit_band, personal_fit_score,
@@ -266,7 +267,7 @@ function main() {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  const insertExtraction = db.prepare(`
+    const insertExtraction = db.prepare(`
     INSERT INTO extractions
     (schema_version, source_type, source, source_analysis_id, candidate,
      type, decision, decision_date, extracted_to, extracted_at,
@@ -274,113 +275,120 @@ function main() {
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
-  const insertSourceTag = db.prepare(
-    "INSERT OR IGNORE INTO source_tags (source_id, tag_id) VALUES (?, ?)"
-  );
-  const insertExtractionTag = db.prepare(
-    "INSERT OR IGNORE INTO extraction_tags (extraction_id, tag_id) VALUES (?, ?)"
-  );
+    const insertSourceTag = db.prepare(
+      "INSERT OR IGNORE INTO source_tags (source_id, tag_id) VALUES (?, ?)"
+    );
+    const insertExtractionTag = db.prepare(
+      "INSERT OR IGNORE INTO extraction_tags (extraction_id, tag_id) VALUES (?, ?)"
+    );
 
-  const tagCache = new Map();
-  let sourceCount = 0;
-  let extractionCount = 0;
+    const tagCache = new Map();
+    let sourceCount = 0;
+    let extractionCount = 0;
 
-  const rebuild = db.transaction(() => {
-    const files = findAnalysisFiles();
-    for (const { slug, path: filePath } of files) {
-      const data = loadAnalysis(filePath);
-      if (!data) continue;
+    function indexSources(files) {
+      for (const { slug, path: filePath } of files) {
+        const data = loadAnalysis(filePath);
+        if (!data) continue;
 
-      const record = extractSourceRecord(data, slug);
-      insertSource.run(
-        record.id,
-        record.source_type,
-        record.source,
-        record.slug,
-        record.title,
-        record.analyzed_at,
-        record.depth,
-        record.quality_band,
-        record.quality_score,
-        record.personal_fit_band,
-        record.personal_fit_score,
-        record.classification,
-        record.summary,
-        record.tags,
-        record.last_synthesized_at
-      );
-      sourceCount++;
+        const record = extractSourceRecord(data, slug);
+        insertSource.run(
+          record.id,
+          record.source_type,
+          record.source,
+          record.slug,
+          record.title,
+          record.analyzed_at,
+          record.depth,
+          record.quality_band,
+          record.quality_score,
+          record.personal_fit_band,
+          record.personal_fit_score,
+          record.classification,
+          record.summary,
+          record.tags,
+          record.last_synthesized_at
+        );
+        sourceCount++;
 
-      let parsedTags = [];
-      try {
-        const maybe = JSON.parse(record.tags);
-        if (Array.isArray(maybe)) parsedTags = maybe.filter((t) => typeof t === "string");
-      } catch {
-        parsedTags = [];
-      }
-      for (const tag of parsedTags) {
-        const tagId = ensureTag(db, tag, tagCache);
-        if (tagId) insertSourceTag.run(record.id, tagId);
-      }
+        let parsedTags = [];
+        try {
+          const maybe = JSON.parse(record.tags);
+          if (Array.isArray(maybe)) parsedTags = maybe.filter((t) => typeof t === "string");
+        } catch {
+          parsedTags = [];
+        }
+        for (const tag of parsedTags) {
+          const tagId = ensureTag(db, tag, tagCache);
+          if (tagId) insertSourceTag.run(record.id, tagId);
+        }
 
-      log(`Source: ${slug} (${record.source_type})`);
-    }
-
-    const journal = loadExtractionJournal();
-    for (const entry of journal) {
-      const tags = JSON.stringify(entry.tags || []);
-      const info = insertExtraction.run(
-        entry.schema_version || "2.0",
-        entry.source_type || "repo",
-        entry.source || "",
-        entry.source_analysis_id || null,
-        entry.candidate || "",
-        entry.type || "knowledge",
-        entry.decision || "defer",
-        entry.decision_date || null,
-        entry.extracted_to || null,
-        entry.extracted_at || null,
-        entry.notes || "",
-        entry.novelty || "medium",
-        entry.effort || "E1",
-        entry.relevance || "medium",
-        tags
-      );
-      extractionCount++;
-
-      const parsedTags = entry.tags || [];
-      for (const tag of parsedTags) {
-        const tagId = ensureTag(db, tag, tagCache);
-        if (tagId) insertExtractionTag.run(info.lastInsertRowid, tagId);
+        log(`Source: ${slug} (${record.source_type})`);
       }
     }
 
-    db.exec("INSERT INTO search_sources(search_sources) VALUES('rebuild')");
-    db.exec("INSERT INTO search_extractions(search_extractions) VALUES('rebuild')");
-  });
+    function indexExtractions(journal) {
+      for (const entry of journal) {
+        const tags = JSON.stringify(entry.tags || []);
+        const info = insertExtraction.run(
+          entry.schema_version || "2.0",
+          entry.source_type || "repo",
+          entry.source || "",
+          entry.source_analysis_id || null,
+          entry.candidate || "",
+          entry.type || "knowledge",
+          entry.decision || "defer",
+          entry.decision_date || null,
+          entry.extracted_to || null,
+          entry.extracted_at || null,
+          entry.notes || "",
+          entry.novelty || "medium",
+          entry.effort || "E1",
+          entry.relevance || "medium",
+          tags
+        );
+        extractionCount++;
 
-  rebuild();
+        const parsedTags = entry.tags || [];
+        for (const tag of parsedTags) {
+          const tagId = ensureTag(db, tag, tagCache);
+          if (tagId) insertExtractionTag.run(info.lastInsertRowid, tagId);
+        }
+      }
+    }
 
-  // Validation
-  const sourceCheck = db.prepare("SELECT COUNT(*) as count FROM sources").get();
-  const extractionCheck = db.prepare("SELECT COUNT(*) as count FROM extractions").get();
-  const integrityCheck = db.pragma("integrity_check");
-  const fkCheck = db.pragma("foreign_key_check");
+    const rebuild = db.transaction(() => {
+      indexSources(findAnalysisFiles());
+      indexExtractions(loadExtractionJournal());
+      // SQLite FTS rebuild — NOT child_process
+      db.exec("INSERT INTO search_sources(search_sources) VALUES('rebuild')");
+      db.exec("INSERT INTO search_extractions(search_extractions) VALUES('rebuild')");
+    });
 
-  console.log(`\nResults:`);
-  console.log(`  Sources: ${sourceCheck.count}`);
-  console.log(`  Extractions: ${extractionCheck.count}`);
-  console.log(`  Unique tags: ${tagCache.size}`);
-  console.log(`  Integrity: ${integrityCheck[0].integrity_check}`);
-  console.log(`  FK violations: ${fkCheck.length}`);
+    rebuild();
 
-  if (integrityCheck[0].integrity_check !== "ok" || fkCheck.length > 0) {
-    console.error("VALIDATION FAILED — database may be corrupt");
-    process.exit(1);
+    // Validation
+    const sourceCheck = db.prepare("SELECT COUNT(*) as count FROM sources").get();
+    const extractionCheck = db.prepare("SELECT COUNT(*) as count FROM extractions").get();
+    const integrityCheck = db.pragma("integrity_check");
+    const fkCheck = db.pragma("foreign_key_check");
+
+    console.log(`\nResults:`);
+    console.log(`  Sources: ${sourceCheck.count}`);
+    console.log(`  Extractions: ${extractionCheck.count}`);
+    console.log(`  Unique tags: ${tagCache.size}`);
+    console.log(`  Integrity: ${integrityCheck[0].integrity_check}`);
+    console.log(`  FK violations: ${fkCheck.length}`);
+
+    if (integrityCheck[0].integrity_check !== "ok" || fkCheck.length > 0) {
+      console.error("VALIDATION FAILED — database may be corrupt");
+      process.exit(1);
+    }
+
+    console.log("\nIndex rebuilt successfully.");
+  } finally {
+    db.close();
   }
-
-  console.log("\nIndex rebuilt successfully.");
-  db.close();
 }
 
 try {

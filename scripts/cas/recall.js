@@ -50,7 +50,8 @@ function parseRecallArgs(argv) {
     } else if (arg.startsWith("--source=")) {
       args.source = arg.slice(9);
     } else if (arg.startsWith("--limit=")) {
-      args.limit = Number.parseInt(arg.slice(8), 10) || 20;
+      const n = Number.parseInt(arg.slice(8), 10);
+      args.limit = Number.isFinite(n) && n > 0 ? Math.min(n, 200) : 20;
     } else if (arg === "--target=sources") {
       args.target = "sources";
     } else if (arg === "--stats") {
@@ -225,6 +226,18 @@ function querySources(db, args) {
 function main() {
   if (!fs.existsSync(DB_PATH)) {
     console.error("Index not found. Run: node scripts/cas/rebuild-index.js");
+    process.exit(1);
+  }
+
+  // isSafeToWrite() — symlink guard for DB path (refuse-symlink compliance)
+  try {
+    const st = fs.lstatSync(DB_PATH);
+    if (st.isSymbolicLink()) {
+      console.error("Refusing to open symlinked database path");
+      process.exit(1);
+    }
+  } catch (err) {
+    console.error(`Fatal: ${sanitizeError(err)}`);
     process.exit(1);
   }
 

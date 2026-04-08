@@ -4058,3 +4058,27 @@ stale-rejected, 1 already-fixed)
 - **bandFromScore-duplication** — Three files had identical nested ternary
   chains for score-to-band conversion. Extract shared helper and reuse across
   CAS scripts to reduce CC and eliminate code smell.
+
+### Review #73 — PR #503 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed | **Round:** R2
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Severity:** 0C / 3M / 4m / 0T
+
+**Patterns:**
+
+- **migration-uuid-stability** — Schema migration generated new UUIDs for every
+  record, breaking source_analysis_id linkage with extraction-journal.jsonl.
+  Preserve existing valid UUIDs during migration; only generate new ones for
+  records that lack them.
+- **readonly-symlink-guard** — Even read-only DB opens should check for
+  symlinks. A symlinked database could expose unintended data or redirect
+  queries to an attacker-controlled file. Apply lstatSync check before any
+  Database() open.
+- **cc-from-fix-accumulation** — R1 fixes (try/catch, tag parsing) pushed
+  rebuild-index transaction from CC 16 to CC 18. Extract helper functions in the
+  same round to prevent CC regressions from accumulating fixes.
