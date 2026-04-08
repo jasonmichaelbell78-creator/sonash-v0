@@ -116,3 +116,9 @@
 {"agent":"otb-challenger","description":"Out-of-the-box alternatives 2","outcome":"invoked","timestamp":"2026-04-08T01:40:15.008Z"}
 {"agent":"deep-research-gap-pursuer","description":"Audit Neuromcp capabilities","outcome":"invoked","timestamp":"2026-04-08T01:47:52.873Z"}
 {"agent":"deep-research-final-synthesizer","description":"Apply corrections to RESEARCH_OUTPUT","outcome":"invoked","timestamp":"2026-04-08T01:48:23.883Z"}
+{"agent":"code-reviewer","description":"Code review track-agent-invocation.js","outcome":"invoked","timestamp":"2026-04-08T10:22:23.337Z"}
+{"agent":"Explore","description":"Investigate missing extraction sync","outcome":"invoked","timestamp":"2026-04-08T11:44:40.726Z"}
+{"agent":"episodic-memory:search-conversations","description":"Mine episodic memory for .research/ queries","outcome":"invoked","timestamp":"2026-04-08T11:54:35.243Z"}
+{"agent":"Explore","description":"Mine git log for .research/ access patterns","outcome":"invoked","timestamp":"2026-04-08T11:54:45.336Z"}
+{"agent":"Explore","description":"Analyze .research/ file structure for query surface","outcome":"invoked","timestamp":"2026-04-08T11:54:54.508Z"}
+{"agent":"security-auditor","description":"Security pattern propagation across archive scripts","outcome":"invoked","timestamp":"2026-04-08T13:46:13.834Z"}

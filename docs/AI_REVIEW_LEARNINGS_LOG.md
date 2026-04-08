@@ -1342,7 +1342,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-pr491-r1: (untitled) (2026-04-03)
+### Review review-pr491-r1: PR #491 R1 (2026-04-03)
 
 **Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
 
@@ -1361,7 +1361,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review review-pr491-r2: (untitled) (2026-04-03)
+### Review review-pr491-r2: PR #491 R2 (2026-04-03)
 
 **Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
 
@@ -1560,16 +1560,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
-
----
-
 ### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
 
 **Date:** unknown | **PR:** #498 | **Source:** manual
@@ -1588,7 +1578,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-66: (untitled) (2026-04-07)
+### Review rev-66: PR #499 R1 (2026-04-07)
 
 **Date:** 2026-04-07 | **PR:** #499 | **Source:** mixed
 
@@ -1608,7 +1598,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-67: (untitled) (2026-04-07)
+### Review rev-67: PR #488 R2 (2026-04-07)
 
 **Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
 
@@ -1625,6 +1615,38 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
+
+---
+
+### Review rev-68: PR #500 R1 (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #500 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 5     | 1        | 6        |
+
+**Patterns:**
+
+- pii-in-agent-logs
+- research-doc-schema-consistency
+- research-design-feedback-vs-bugs
+
+---
+
+### Review 71: PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint) (unknown)
+
+**Date:** unknown | **PR:** #500 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pii-in-agent-logs
+- research-doc-schema-consistency
+- research-design-feedback-vs-bugs
 
 ## Key Patterns
 

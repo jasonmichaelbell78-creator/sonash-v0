@@ -7,6 +7,7 @@
 
 const { writeRetroRecord } = require("./dist/write-retro-record.js");
 const path = require("node:path");
+const { sanitizeError } = require("../lib/security-helpers");
 
 const ROOT = path.join(__dirname, "..", "..");
 
@@ -216,7 +217,7 @@ for (const retro of retros) {
     console.log(`OK: ${record.id}`);
     success++;
   } catch (err) {
-    console.error(`FAIL PR #${retro.pr}: ${err instanceof Error ? err.message : String(err)}`);
+    console.error(`FAIL PR #${retro.pr}: ${sanitizeError(err)}`);
     failed++;
   }
 }

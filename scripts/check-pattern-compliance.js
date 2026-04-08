@@ -1618,6 +1618,21 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)(?:app|components|pages)\//,
   },
 
+  // PII in git-tracked files — don't persist OS username or session IDs
+  // (Retro: PR #500 R1 — Qodo caught user/sessionId in agent-invocations.jsonl)
+  {
+    id: "no-pii-in-tracked-files",
+    severity: "high",
+    pattern: /process\.env\.(?:USER|USERNAME)\b/g,
+    message:
+      "OS username (process.env.USER/USERNAME) written to git-tracked file — PII exposure risk",
+    fix: "Remove the field, or hash it: require('crypto').createHash('sha256').update(user).digest('hex').slice(0,8)",
+    review:
+      "PR #500 R1 — PII in agent-invocations.jsonl. Only persist what downstream consumers actually read.",
+    fileTypes: [".js", ".ts"],
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|decrypt-secrets)\.js$/,
+  },
+
   // --- Correctness (2 rules) ---
 
   {

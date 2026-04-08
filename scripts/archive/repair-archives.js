@@ -36,13 +36,14 @@ try {
   process.exit(2);
 }
 
-// Symlink guard
-let isSafeToWrite;
+// Symlink guard + error sanitization
+let isSafeToWrite, sanitizeError;
 try {
-  ({ isSafeToWrite } = require("./lib/security-helpers"));
+  ({ isSafeToWrite, sanitizeError } = require("./lib/security-helpers"));
 } catch {
   console.error("security-helpers unavailable; refusing to write");
   isSafeToWrite = () => false;
+  sanitizeError = (err) => (err instanceof Error ? err.name : String(typeof err));
 }
 
 function parseReviewsFromFile(filePath) {
@@ -166,8 +167,7 @@ function collectArchiveReviews(archiveFiles) {
         if (deduplicateEntry(reviewMap, entry)) totalDupes++;
       }
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`  [warn] Skipping unreadable archive file ${f}: ${msg.split("\n")[0]}`);
+      console.warn(`  [warn] Skipping unreadable archive file ${f}: ${sanitizeError(err)}`);
     }
   }
 
@@ -317,8 +317,7 @@ function backupFiles(archiveFiles, backupDir) {
       if (st.isSymbolicLink() || !st.isFile()) continue;
       fs.copyFileSync(srcPath, path.join(backupDir, f));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`  [warn] Failed to back up ${f}: ${msg.split("\n")[0]}`);
+      console.warn(`  [warn] Failed to back up ${f}: ${sanitizeError(err)}`);
     }
   }
   console.log(`  Backed up ${archiveFiles.length} files to ${path.basename(backupDir)}/`);

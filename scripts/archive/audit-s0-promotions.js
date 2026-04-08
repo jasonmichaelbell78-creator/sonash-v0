@@ -19,6 +19,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const { sanitizeError } = require("../lib/security-helpers");
 
 const MASTER_PATH = path.join(__dirname, "..", "docs", "technical-debt", "MASTER_DEBT.jsonl");
 const DEDUPED_PATH = path.join(__dirname, "..", "docs", "technical-debt", "raw", "deduped.jsonl");
@@ -50,9 +51,7 @@ function readJsonlFromGit(commit, relPath) {
         }
       });
   } catch (err) {
-    console.error(
-      `Failed to read ${relPath} from git commit ${commit}: ${err instanceof Error ? err.message : String(err)}`
-    );
+    console.error(`Failed to read ${relPath} from git commit ${commit}: ${sanitizeError(err)}`);
     process.exit(1);
   }
 }

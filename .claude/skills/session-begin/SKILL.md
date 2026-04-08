@@ -214,6 +214,9 @@ Unacknowledged hook warnings (N):
 **Y:** Record timestamp in `hook-warnings.json`, proceed. **R:** Present each
 for individual decision. **No warnings:** Skip silently.
 
+**After all acknowledgments:** Run `node scripts/sync-warnings-ack.js` to sync
+`lastCleared` with per-type acks. This updates the statusline unacked count.
+
 ### 4.3 Infrastructure Failure Gate (MUST)
 
 Check for state files written by session-start.js passive-surfacing fixes:

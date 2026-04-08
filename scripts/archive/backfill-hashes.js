@@ -17,6 +17,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
 const { writeMasterDebtSync } = require("../lib/safe-fs");
+const { sanitizeError } = require("../lib/security-helpers");
 
 const MASTER_FILE = path.join(__dirname, "../../docs/technical-debt/MASTER_DEBT.jsonl");
 
@@ -44,10 +45,7 @@ function main() {
   try {
     content = fs.readFileSync(MASTER_FILE, "utf8");
   } catch (err) {
-    console.error(
-      "Error: Failed to read MASTER_DEBT.jsonl: " +
-        (err instanceof Error ? err.message : String(err))
-    );
+    console.error("Error: Failed to read MASTER_DEBT.jsonl: " + sanitizeError(err));
     process.exit(1);
   }
 
@@ -66,7 +64,7 @@ function main() {
       const parsed = JSON.parse(line);
       items.push({ raw: lines[i], parsed, lineNum: i + 1 });
     } catch (err) {
-      parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
+      parseErrors.push({ line: i + 1, message: sanitizeError(err) });
       items.push({ raw: lines[i], parsed: null, lineNum: i + 1 });
     }
   }
@@ -155,10 +153,7 @@ function main() {
   try {
     writeMasterDebtSync(parsedItems);
   } catch (err) {
-    console.error(
-      "Error: Failed to write MASTER_DEBT.jsonl: " +
-        (err instanceof Error ? err.message : String(err))
-    );
+    console.error("Error: Failed to write MASTER_DEBT.jsonl: " + sanitizeError(err));
     process.exit(1);
   }
 

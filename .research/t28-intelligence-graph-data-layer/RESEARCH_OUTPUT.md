@@ -1,8 +1,8 @@
 # T28 Intelligence Graph Data Layer — Research Report
 
-**Date:** 2026-04-07 **Session:** #267 **Topic:** T28 Intelligence Graph Data
-Layer **Depth:** L1 **Version:** 1.1 (post-challenge corrections) **Agents:** 32
-searcher agents + 4 synthesizers + 3 challengers (contrarian, OTB-1, OTB-2)
+**Date:** 2026-04-07 **Session:** #267-#268 **Topic:** T28 Intelligence Graph
+Data Layer **Depth:** L1 **Version:** 1.2 (query audit + lbug test) **Agents:**
+32 searcher agents + 4 synthesizers + 3 challengers (contrarian, OTB-1, OTB-2)
 
 ---
 
@@ -728,19 +728,19 @@ on Windows 11 + Node.js v22 before any v2 planning.
 
 **Important (affect design but not blockers):**
 
-| #         | Question                                                                                                                                                    | Impact                                            |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| OQ-6      | Per-file vs per-section SourceNode granularity — BasicMemory uses per-file, Obsidian retriever uses per-chunk                                               | Ingestion pipeline design                         |
-| OQ-7      | `@huggingface/transformers` ONNX Windows CPU latency — 14.7ms/1K tokens is macOS/Linux benchmark                                                            | Sync vs async embedding decision                  |
-| OQ-8      | A-MEM k neighbors for evolution — paper says k=5-10, right value depends on average connectivity                                                            | Ingestion pipeline tuning                         |
-| OQ-9      | Tag vocabulary management — user-controlled autocomplete vs LLM-suggested                                                                                   | UX design                                         |
-| OQ-10     | Confidence floor for knowledge node creation — what threshold prevents low-value node proliferation                                                         | Data quality                                      |
-| OQ-11     | CONTRADICTS edge creation — where in absorb pipeline does contradiction detection happen?                                                                   | Operation 4 Tier 1 usability                      |
-| OQ-12     | Checkpoint "entry" unit — one absorb call = one entry (proposed, not validated)                                                                             | Checkpoint frequency                              |
-| OQ-13     | SQLite-graph extension (agentflare-ai) — Cypher-style queries over SQLite via virtual tables, could eliminate verbose CTEs                                  | Developer ergonomics (worth investigating)        |
-| OQ-14     | mind-mem flat tag adaptation — can ConstraintSignature be retargeted for free-form hashtags?                                                                | Contradiction detection alternative               |
-| OQ-15     | Ingestion pipeline for non-text source types (audio, video, image)                                                                                          | v2 content expansion                              |
-| **OQ-17** | **30-session query pattern audit — are 80%+ of queries simple FTS5 keyword lookups? If so, bi-temporal model and junction tables may be over-engineering.** | **Schema finalization — do this before building** |
+| #         | Question                                                                                                                                                                                                                                                                             | Impact                                     |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
+| OQ-6      | Per-file vs per-section SourceNode granularity — BasicMemory uses per-file, Obsidian retriever uses per-chunk                                                                                                                                                                        | Ingestion pipeline design                  |
+| OQ-7      | `@huggingface/transformers` ONNX Windows CPU latency — 14.7ms/1K tokens is macOS/Linux benchmark                                                                                                                                                                                     | Sync vs async embedding decision           |
+| OQ-8      | A-MEM k neighbors for evolution — paper says k=5-10, right value depends on average connectivity                                                                                                                                                                                     | Ingestion pipeline tuning                  |
+| OQ-9      | Tag vocabulary management — user-controlled autocomplete vs LLM-suggested                                                                                                                                                                                                            | UX design                                  |
+| OQ-10     | Confidence floor for knowledge node creation — what threshold prevents low-value node proliferation                                                                                                                                                                                  | Data quality                               |
+| OQ-11     | CONTRADICTS edge creation — where in absorb pipeline does contradiction detection happen?                                                                                                                                                                                            | Operation 4 Tier 1 usability               |
+| OQ-12     | Checkpoint "entry" unit — one absorb call = one entry (proposed, not validated)                                                                                                                                                                                                      | Checkpoint frequency                       |
+| OQ-13     | SQLite-graph extension (agentflare-ai) — Cypher-style queries over SQLite via virtual tables, could eliminate verbose CTEs                                                                                                                                                           | Developer ergonomics (worth investigating) |
+| OQ-14     | mind-mem flat tag adaptation — can ConstraintSignature be retargeted for free-form hashtags?                                                                                                                                                                                         | Contradiction detection alternative        |
+| OQ-15     | Ingestion pipeline for non-text source types (audio, video, image)                                                                                                                                                                                                                   | v2 content expansion                       |
+| **OQ-17** | **30-session query pattern audit — RESOLVED (Session #268).** 85% of real queries are filtered lookups or FTS5 keyword searches that don't traverse graph edges. V1 simplified: 1 edge type (LINKS_TO only), inline confidence, no temporal query API. See `query-pattern-audit.md`. | **RESOLVED — V1 schema simplified**        |
 
 ---
 
@@ -791,13 +791,15 @@ DuckDB+sqlite_scanner is the stronger v2 analytical path. Other alternatives
 folgezettel, no-graph flat) noted as minor or future considerations with no
 changes to primary recommendation.
 
-### OTB-2 Challenge — 1 CRITICAL Process Gap
+### OTB-2 Challenge — 1 CRITICAL Process Gap (RESOLVED)
 
-**Query pattern audit before schema finalization (OPEN — OQ-17).** Schema was
-designed without examining actual Claude query patterns. If 80%+ of real queries
-are simple FTS5 keyword lookups, the bi-temporal model and junction tables are
-over-engineering. **This is a 2-hour exercise that should happen before any v1
-build starts.**
+**Query pattern audit before schema finalization (RESOLVED — Session #268,
+OQ-17).** Audit confirmed: 85% of real queries are filtered lookups (by source,
+type, decision, novelty) or FTS5 keyword searches on candidate/notes fields.
+Only 15% involve cross-entity traversal (synthesis, provenance). V1 schema
+simplified: 1 edge type (LINKS_TO), inline confidence column, no temporal query
+infrastructure. Typed edges and node_metadata table deferred to V2. Full audit:
+`query-pattern-audit.md`.
 
 Additional HIGH items from OTB-2 (not yet actioned):
 
@@ -810,13 +812,13 @@ Additional HIGH items from OTB-2 (not yet actioned):
 
 ### Open Actions from Challenges
 
-| Priority | Action                                                                                                 | Blocks                      |
-| -------- | ------------------------------------------------------------------------------------------------------ | --------------------------- |
-| CRITICAL | 30-session query pattern audit (OQ-17) — review actual Claude session queries                          | Schema finalization         |
-| HIGH     | 30-minute Neuromcp capability audit (OQ-16)                                                            | Build-vs-adopt MCP decision |
-| HIGH     | `npm install lbug` on Windows 11 + Node.js v22                                                         | Any v2 LadybugDB planning   |
-| HIGH     | Dedup threshold calibration after 167-node migration (manual review of top-20 pairs in 0.65-0.78 band) | Operational quality         |
-| HIGH     | Run 10 real BM25-only queries against extraction journal                                               | FTS5-only v1 confidence     |
+| Priority     | Action                                                                                                                                            | Blocks                        |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| ~~CRITICAL~~ | ~~30-session query pattern audit (OQ-17)~~ — **DONE (Session #268).** 85% filtered lookups, V1 simplified. See `query-pattern-audit.md`           | ~~Schema finalization~~       |
+| HIGH         | 30-minute Neuromcp capability audit (OQ-16)                                                                                                       | Build-vs-adopt MCP decision   |
+| ~~HIGH~~     | ~~`npm install lbug` on Windows 11 + Node.js v22~~ — **DONE (Session #268).** lbug v0.14.3 works. 4 deprecated transitive deps confirm HIGH RISK. | ~~Any v2 LadybugDB planning~~ |
+| HIGH         | Dedup threshold calibration after 167-node migration (manual review of top-20 pairs in 0.65-0.78 band)                                            | Operational quality           |
+| HIGH         | Run 10 real BM25-only queries against extraction journal                                                                                          | FTS5-only v1 confidence       |
 
 ---
 
@@ -923,81 +925,81 @@ source or first-principles estimate.
 
 ## Claim Registry
 
-| ID    | Category     | Confidence  | Status     | Summary                                                                                       |
-| ----- | ------------ | ----------- | ---------- | --------------------------------------------------------------------------------------------- |
-| C-001 | backend      | HIGH        | CONFIRMED  | SQLite + better-sqlite3 v12.8.0 is primary store for v1                                       |
-| C-002 | backend      | HIGH        | CONFIRMED  | better-sqlite3 v12.8.0 bundles SQLite 3.51.3 (WAL corruption fix)                             |
-| C-003 | backend      | HIGH        | CORRECTED  | SQLite validated at 49K nodes sub-1ms (not 2.1M node claim -- unverifiable)                   |
-| C-004 | backend      | HIGH        | CONFIRMED  | Write latency ~18us (53K ops/s) better-sqlite3                                                |
-| C-005 | backend      | HIGH        | CONFIRMED  | DuckDB 400-900us/row write penalty -- analytical overlay only                                 |
-| C-006 | backend      | HIGH        | CONFIRMED  | LibSQL/Turso Windows errors issue 1797, not recommended                                       |
-| C-007 | backend      | LOW         | CORRECTED  | LadybugDB HIGH RISK -- Kuzu archived Oct 2025, 3-way fork split                               |
-| C-008 | backend      | HIGH        | CORRECTED  | LadybugDB npm package is lbug (not @ladybug/core or @ladybugdb/core)                          |
-| C-009 | backend      | MEDIUM      | CONFIRMED  | LadybugDB Windows NAPI binding unverified on Node.js v22                                      |
-| C-010 | backend      | HIGH        | CONFIRMED  | CozoDB stalled Dec 2023 -- HIGH risk                                                          |
-| C-011 | backend      | HIGH        | CONFIRMED  | official server-memory: data corruption, no tags, 80K ceiling                                 |
-| C-012 | backend      | HIGH        | CORRECTED  | n-r-w/knowledgegraph-mcp last commit Nov 2025 (not Dec 2024)                                  |
-| C-013 | backend      | MEDIUM-HIGH | CORRECTED  | No confirmed server has all 3 T28 requirements -- Neuromcp unaudited (OQ-16)                  |
-| C-014 | architecture | MEDIUM-HIGH | CONFIRMED  | Build thin custom MCP layer -- lowest risk v1 path (pending OQ-16)                            |
-| C-015 | architecture | HIGH        | CORRECTED  | Files canonical for SourceNodes; agent-inferred edges go to supplemental file                 |
-| C-016 | architecture | HIGH        | CONFIRMED  | SQLite DB deletable, rebuild from files + graph-edges.jsonl under 1s                          |
-| C-017 | architecture | HIGH        | CONFIRMED  | Every node traces to file artifact via EXTRACTED_FROM                                         |
-| C-018 | schema       | HIGH        | CONFIRMED  | Two node types: SourceNode + KnowledgeNode                                                    |
-| C-019 | schema       | HIGH        | CORRECTED  | A-MEM 7 fields: content/timestamp/keywords/tags/contextual_description/embedding/links        |
-| C-020 | schema       | HIGH        | CONFIRMED  | Four edge types + agent-inferred edges to supplemental edges file                             |
-| C-021 | schema       | HIGH        | CONFIRMED  | M2M junction table for tags -- Willison benchmark winner                                      |
-| C-022 | schema       | HIGH        | CONFIRMED  | Keywords (inline) vs tags (junction) are distinct                                             |
-| C-023 | schema       | MEDIUM      | CONFIRMED  | Per-node confidence in node_metadata table, Pattern C formula                                 |
-| C-024 | schema       | HIGH        | CONFIRMED  | Soft invalidation via invalid_at -- never delete                                              |
-| C-025 | schema       | HIGH        | CONFIRMED  | Graphiti bi-temporal event-time only                                                          |
-| C-026 | schema       | HIGH        | CONFIRMED  | Stable UUID per node, t28:// URL scheme                                                       |
-| C-027 | search       | HIGH        | CONFIRMED  | FTS5 porter unicode61, prefix 2 3, BM25 weighted (title 10x, kw 5x)                           |
-| C-028 | search       | HIGH        | CONFIRMED  | Three-layer hybrid sub-3ms at scale                                                           |
-| C-029 | search       | HIGH        | CONFIRMED  | v1 ships FTS5-only -- complexity budget                                                       |
-| C-030 | search       | HIGH        | CORRECTED  | Use @huggingface/transformers v4 (not deprecated @xenova/transformers)                        |
-| C-031 | search       | HIGH        | CONFIRMED  | RRF k=60 academic standard                                                                    |
-| C-032 | search       | HIGH        | CONFIRMED  | Tag pre-filter via junction table CTE                                                         |
-| C-033 | search       | MEDIUM      | CONFIRMED  | Graph expansion 18.5% accuracy gain, 90% token reduction                                      |
-| C-034 | search       | MEDIUM      | CONFIRMED  | 500-token injection cap enables prompt caching                                                |
-| C-035 | search       | HIGH        | CONFIRMED  | SQLite recursive CTEs adequate to ~5K nodes for 2-3 hops                                      |
-| C-036 | architecture | MEDIUM      | CONFIRMED  | Louvain via graphology at 500-1,000 nodes                                                     |
-| C-037 | architecture | HIGH        | CORRECTED  | graphology ~246 dependents (not 4,900+) -- risk LOW-MEDIUM on ecosystem size                  |
-| C-038 | architecture | MEDIUM      | CONFIRMED  | Louvain ~53ms at 1K nodes, ~938ms at 50K                                                      |
-| C-039 | architecture | MEDIUM      | CORRECTED  | Betweenness centrality structurally analogous (not clinically identical) to bridge centrality |
-| C-040 | architecture | MEDIUM      | CONFIRMED  | MAGMA 4-graph decomposition -- defer to v3+                                                   |
-| C-041 | migration    | HIGH        | CONFIRMED  | 18 SourceNodes + 167 KnowledgeNodes + 167+ edges in single transaction                        |
-| C-042 | migration    | HIGH        | CONFIRMED  | 9 of 13 slugs non-derivable -- source-slug-map.json required                                  |
-| C-043 | migration    | HIGH        | CONFIRMED  | Migration follows intake-manual.js pattern, helpers exist                                     |
-| C-044 | migration    | HIGH        | CONFIRMED  | 3 analysis.json schema variants + AWS variant, ~50 lines normalization                        |
-| C-045 | migration    | HIGH        | CONFIRMED  | 7 post-migration validation queries, rollback = delete .db + re-run                           |
-| C-046 | migration    | HIGH        | CONFIRMED  | ALSO_SEEN_IN deferred -- requires semantic comparison                                         |
-| C-047 | operations   | HIGH        | CONFIRMED  | Content-hash (SHA-256/XXH3) for incremental sync, not mtime                                   |
-| C-048 | operations   | HIGH        | CONFIRMED  | .research/\*.db files not in .gitignore -- add before implementation                          |
-| C-049 | operations   | HIGH        | CONFIRMED  | PRAGMA WAL + NORMAL sync + foreign_keys + temp_store MEMORY                                   |
-| C-050 | operations   | HIGH        | CORRECTED  | Dedup threshold start 0.7 (iText2KG default, not 0.78) + mandatory calibration                |
-| C-051 | operations   | MEDIUM      | CONFIRMED  | iText2KG 0.6 name + 0.4 label prevents homonym false merges                                   |
-| C-052 | operations   | MEDIUM      | CONFIRMED  | Merge: >=0.90 physical, 0.65-0.90 SAME_AS edge, <0.65 no action                               |
-| C-053 | operations   | MEDIUM      | CONFIRMED  | Checkpoint every 15 absorbs, ~every 1-2 days at T28 pace                                      |
-| C-054 | operations   | MEDIUM      | CONFIRMED  | Node split: >=3 edge clusters AND >=8 observations -- human decision                          |
-| C-055 | operations   | MEDIUM      | CONFIRMED  | Staleness: confidence<0.3 AND last_seen>180d AND no sources                                   |
-| C-056 | operations   | MEDIUM      | CONFIRMED  | Orphan >5% triggers cleanup, freelist>20% triggers VACUUM                                     |
-| C-057 | operations   | MEDIUM      | CONFIRMED  | Subgraph triples 90% token reduction (Zep 115K to 1.6K)                                       |
-| C-058 | operations   | HIGH        | CONFIRMED  | Pure SQL cannot detect semantic contradiction                                                 |
-| C-059 | architecture | HIGH        | CONFIRMED  | MCP layer stateless -- tools call t28-core library                                            |
-| C-060 | architecture | HIGH        | CONFIRMED  | LLM proposes, deterministic executor applies -- never direct SQLite write                     |
-| C-061 | architecture | MEDIUM      | CONFIRMED  | A-MEM retrieve-then-judge bidirectional update pattern                                        |
-| C-062 | architecture | MEDIUM      | CONFIRMED  | Chunk at semantic boundaries, not byte count                                                  |
-| C-063 | risk         | HIGH        | CONFIRMED  | Graphiti/Zep over-engineered for T28 v1 -- skip                                               |
-| C-064 | risk         | HIGH        | CONFIRMED  | LadybugDB 3-way fork split + frozen upstream = HIGH risk                                      |
-| C-065 | risk         | MEDIUM      | CONFIRMED  | sqlite-vec v0.1.9 pre-v1, solo maintainer -- defer to v2                                      |
-| C-066 | risk         | HIGH        | CONFIRMED  | BasicMemory AGPL v3 -- patterns safe, code not copyable for network use                       |
-| C-067 | risk         | HIGH        | CONFIRMED  | SQLite no bus factor; LadybugDB HIGH bus factor                                               |
-| C-068 | schema       | HIGH        | CONFIRMED  | Graphiti confidence/fact_rating NOT in open-source graphiti-core                              |
-| C-069 | backend      | MEDIUM      | CONFIRMED  | DuckDB + sqlite_scanner 30-50x faster aggregations read-only                                  |
-| C-070 | architecture | HIGH        | CONFIRMED  | Dendron anti-pattern -- build graph as subsystem serving specific workflows                   |
-| C-071 | schema       | HIGH        | ADDED v1.1 | Include 384d embedding column with NULLs in v1 DDL; populate in v2                            |
-| C-072 | architecture | HIGH        | ADDED v1.1 | Agent-inferred edges canonical home = .research/graph-edges.jsonl (git-tracked)               |
-| C-073 | architecture | HIGH        | ADDED v1.1 | 30-session query pattern audit required before schema finalization (OQ-17)                    |
+| ID    | Category     | Confidence  | Status        | Summary                                                                                                                                                       |
+| ----- | ------------ | ----------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| C-001 | backend      | HIGH        | CONFIRMED     | SQLite + better-sqlite3 v12.8.0 is primary store for v1                                                                                                       |
+| C-002 | backend      | HIGH        | CONFIRMED     | better-sqlite3 v12.8.0 bundles SQLite 3.51.3 (WAL corruption fix)                                                                                             |
+| C-003 | backend      | HIGH        | CORRECTED     | SQLite validated at 49K nodes sub-1ms (not 2.1M node claim -- unverifiable)                                                                                   |
+| C-004 | backend      | HIGH        | CONFIRMED     | Write latency ~18us (53K ops/s) better-sqlite3                                                                                                                |
+| C-005 | backend      | HIGH        | CONFIRMED     | DuckDB 400-900us/row write penalty -- analytical overlay only                                                                                                 |
+| C-006 | backend      | HIGH        | CONFIRMED     | LibSQL/Turso Windows errors issue 1797, not recommended                                                                                                       |
+| C-007 | backend      | LOW         | CORRECTED     | LadybugDB HIGH RISK -- Kuzu archived Oct 2025, 3-way fork split                                                                                               |
+| C-008 | backend      | HIGH        | CORRECTED     | LadybugDB npm package is lbug (not @ladybug/core or @ladybugdb/core)                                                                                          |
+| C-009 | backend      | MEDIUM      | CONFIRMED     | LadybugDB Windows NAPI binding unverified on Node.js v22                                                                                                      |
+| C-010 | backend      | HIGH        | CONFIRMED     | CozoDB stalled Dec 2023 -- HIGH risk                                                                                                                          |
+| C-011 | backend      | HIGH        | CONFIRMED     | official server-memory: data corruption, no tags, 80K ceiling                                                                                                 |
+| C-012 | backend      | HIGH        | CORRECTED     | n-r-w/knowledgegraph-mcp last commit Nov 2025 (not Dec 2024)                                                                                                  |
+| C-013 | backend      | MEDIUM-HIGH | CORRECTED     | No confirmed server has all 3 T28 requirements -- Neuromcp unaudited (OQ-16)                                                                                  |
+| C-014 | architecture | MEDIUM-HIGH | CONFIRMED     | Build thin custom MCP layer -- lowest risk v1 path (pending OQ-16)                                                                                            |
+| C-015 | architecture | HIGH        | CORRECTED     | Files canonical for SourceNodes; agent-inferred edges go to supplemental file                                                                                 |
+| C-016 | architecture | HIGH        | CONFIRMED     | SQLite DB deletable, rebuild from files + graph-edges.jsonl under 1s                                                                                          |
+| C-017 | architecture | HIGH        | CONFIRMED     | Every node traces to file artifact via EXTRACTED_FROM                                                                                                         |
+| C-018 | schema       | HIGH        | CONFIRMED     | Two node types: SourceNode + KnowledgeNode                                                                                                                    |
+| C-019 | schema       | HIGH        | CORRECTED     | A-MEM 7 fields: content/timestamp/keywords/tags/contextual_description/embedding/links                                                                        |
+| C-020 | schema       | HIGH        | CONFIRMED     | Four edge types + agent-inferred edges to supplemental edges file                                                                                             |
+| C-021 | schema       | HIGH        | CONFIRMED     | M2M junction table for tags -- Willison benchmark winner                                                                                                      |
+| C-022 | schema       | HIGH        | CONFIRMED     | Keywords (inline) vs tags (junction) are distinct                                                                                                             |
+| C-023 | schema       | MEDIUM      | CONFIRMED     | Per-node confidence in node_metadata table, Pattern C formula                                                                                                 |
+| C-024 | schema       | HIGH        | CONFIRMED     | Soft invalidation via invalid_at -- never delete                                                                                                              |
+| C-025 | schema       | HIGH        | CONFIRMED     | Graphiti bi-temporal event-time only                                                                                                                          |
+| C-026 | schema       | HIGH        | CONFIRMED     | Stable UUID per node, t28:// URL scheme                                                                                                                       |
+| C-027 | search       | HIGH        | CONFIRMED     | FTS5 porter unicode61, prefix 2 3, BM25 weighted (title 10x, kw 5x)                                                                                           |
+| C-028 | search       | HIGH        | CONFIRMED     | Three-layer hybrid sub-3ms at scale                                                                                                                           |
+| C-029 | search       | HIGH        | CONFIRMED     | v1 ships FTS5-only -- complexity budget                                                                                                                       |
+| C-030 | search       | HIGH        | CORRECTED     | Use @huggingface/transformers v4 (not deprecated @xenova/transformers)                                                                                        |
+| C-031 | search       | HIGH        | CONFIRMED     | RRF k=60 academic standard                                                                                                                                    |
+| C-032 | search       | HIGH        | CONFIRMED     | Tag pre-filter via junction table CTE                                                                                                                         |
+| C-033 | search       | MEDIUM      | CONFIRMED     | Graph expansion 18.5% accuracy gain, 90% token reduction                                                                                                      |
+| C-034 | search       | MEDIUM      | CONFIRMED     | 500-token injection cap enables prompt caching                                                                                                                |
+| C-035 | search       | HIGH        | CONFIRMED     | SQLite recursive CTEs adequate to ~5K nodes for 2-3 hops                                                                                                      |
+| C-036 | architecture | MEDIUM      | CONFIRMED     | Louvain via graphology at 500-1,000 nodes                                                                                                                     |
+| C-037 | architecture | HIGH        | CORRECTED     | graphology ~246 dependents (not 4,900+) -- risk LOW-MEDIUM on ecosystem size                                                                                  |
+| C-038 | architecture | MEDIUM      | CONFIRMED     | Louvain ~53ms at 1K nodes, ~938ms at 50K                                                                                                                      |
+| C-039 | architecture | MEDIUM      | CORRECTED     | Betweenness centrality structurally analogous (not clinically identical) to bridge centrality                                                                 |
+| C-040 | architecture | MEDIUM      | CONFIRMED     | MAGMA 4-graph decomposition -- defer to v3+                                                                                                                   |
+| C-041 | migration    | HIGH        | CONFIRMED     | 18 SourceNodes + 167 KnowledgeNodes + 167+ edges in single transaction                                                                                        |
+| C-042 | migration    | HIGH        | CONFIRMED     | 9 of 13 slugs non-derivable -- source-slug-map.json required                                                                                                  |
+| C-043 | migration    | HIGH        | CONFIRMED     | Migration follows intake-manual.js pattern, helpers exist                                                                                                     |
+| C-044 | migration    | HIGH        | CONFIRMED     | 3 analysis.json schema variants + AWS variant, ~50 lines normalization                                                                                        |
+| C-045 | migration    | HIGH        | CONFIRMED     | 7 post-migration validation queries, rollback = delete .db + re-run                                                                                           |
+| C-046 | migration    | HIGH        | CONFIRMED     | ALSO_SEEN_IN deferred -- requires semantic comparison                                                                                                         |
+| C-047 | operations   | HIGH        | CONFIRMED     | Content-hash (SHA-256/XXH3) for incremental sync, not mtime                                                                                                   |
+| C-048 | operations   | HIGH        | CONFIRMED     | .research/\*.db files not in .gitignore -- add before implementation                                                                                          |
+| C-049 | operations   | HIGH        | CONFIRMED     | PRAGMA WAL + NORMAL sync + foreign_keys + temp_store MEMORY                                                                                                   |
+| C-050 | operations   | HIGH        | CORRECTED     | Dedup threshold start 0.7 (iText2KG default, not 0.78) + mandatory calibration                                                                                |
+| C-051 | operations   | MEDIUM      | CONFIRMED     | iText2KG 0.6 name + 0.4 label prevents homonym false merges                                                                                                   |
+| C-052 | operations   | MEDIUM      | CONFIRMED     | Merge: >=0.90 physical, 0.65-0.90 SAME_AS edge, <0.65 no action                                                                                               |
+| C-053 | operations   | MEDIUM      | CONFIRMED     | Checkpoint every 15 absorbs, ~every 1-2 days at T28 pace                                                                                                      |
+| C-054 | operations   | MEDIUM      | CONFIRMED     | Node split: >=3 edge clusters AND >=8 observations -- human decision                                                                                          |
+| C-055 | operations   | MEDIUM      | CONFIRMED     | Staleness: confidence<0.3 AND last_seen>180d AND no sources                                                                                                   |
+| C-056 | operations   | MEDIUM      | CONFIRMED     | Orphan >5% triggers cleanup, freelist>20% triggers VACUUM                                                                                                     |
+| C-057 | operations   | MEDIUM      | CONFIRMED     | Subgraph triples 90% token reduction (Zep 115K to 1.6K)                                                                                                       |
+| C-058 | operations   | HIGH        | CONFIRMED     | Pure SQL cannot detect semantic contradiction                                                                                                                 |
+| C-059 | architecture | HIGH        | CONFIRMED     | MCP layer stateless -- tools call t28-core library                                                                                                            |
+| C-060 | architecture | HIGH        | CONFIRMED     | LLM proposes, deterministic executor applies -- never direct SQLite write                                                                                     |
+| C-061 | architecture | MEDIUM      | CONFIRMED     | A-MEM retrieve-then-judge bidirectional update pattern                                                                                                        |
+| C-062 | architecture | MEDIUM      | CONFIRMED     | Chunk at semantic boundaries, not byte count                                                                                                                  |
+| C-063 | risk         | HIGH        | CONFIRMED     | Graphiti/Zep over-engineered for T28 v1 -- skip                                                                                                               |
+| C-064 | risk         | HIGH        | CONFIRMED     | LadybugDB 3-way fork split + frozen upstream = HIGH risk                                                                                                      |
+| C-065 | risk         | MEDIUM      | CONFIRMED     | sqlite-vec v0.1.9 pre-v1, solo maintainer -- defer to v2                                                                                                      |
+| C-066 | risk         | HIGH        | CONFIRMED     | BasicMemory AGPL v3 -- patterns safe, code not copyable for network use                                                                                       |
+| C-067 | risk         | HIGH        | CONFIRMED     | SQLite no bus factor; LadybugDB HIGH bus factor                                                                                                               |
+| C-068 | schema       | HIGH        | CONFIRMED     | Graphiti confidence/fact_rating NOT in open-source graphiti-core                                                                                              |
+| C-069 | backend      | MEDIUM      | CONFIRMED     | DuckDB + sqlite_scanner 30-50x faster aggregations read-only                                                                                                  |
+| C-070 | architecture | HIGH        | CONFIRMED     | Dendron anti-pattern -- build graph as subsystem serving specific workflows                                                                                   |
+| C-071 | schema       | HIGH        | ADDED v1.1    | Include 384d embedding column with NULLs in v1 DDL; populate in v2                                                                                            |
+| C-072 | architecture | HIGH        | ADDED v1.1    | Agent-inferred edges canonical home = .research/graph-edges.jsonl (git-tracked)                                                                               |
+| C-073 | architecture | HIGH        | RESOLVED v1.2 | 30-session query pattern audit COMPLETE (Session #268). 85% filtered lookups. V1 simplified to 1 edge type + inline confidence. See `query-pattern-audit.md`. |
 
 ---
 
@@ -1007,3 +1009,4 @@ source or first-principles estimate.
 | ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1.0     | 2026-04-07 | Initial synthesis — 32 searchers + 4 synthesizers, 70 claims, 55 sources                                                                                                                                                                                                                                                                                                                                                                                                    |
 | 1.1     | 2026-04-07 | Post-challenge: 8 corrections from contrarian, 1 from OTB-1 (LadybugDB HIGH risk), 1 from OTB-2 (query audit CRITICAL). C-003 scale figure corrected; C-008 `lbug` package; C-012 last commit Nov 2025; C-019 A-MEM fields corrected; C-030 @huggingface/transformers; C-037 ~246 dependents; C-039 "structurally analogous"; C-050 threshold 0.7 + calibration. Hybrid boundary explicit. Schema embedding column resolved. Challenges section added. OQ-16 + OQ-17 added. |
+| 1.2     | 2026-04-08 | OQ-17 RESOLVED: query pattern audit complete (Session #268, 3 agents). 85% of queries are filtered lookups/FTS5 — V1 schema simplified to 1 edge type, inline confidence, no temporal query API. OQ-17 open action closed. `lbug` test done (v0.14.3 works, HIGH RISK confirmed). Edge count corrected 4→7 (PR #500 R1).                                                                                                                                                    |

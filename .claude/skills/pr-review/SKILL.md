@@ -112,12 +112,15 @@ categories include: CJS module format, repeat-rejection items, local config
 exposure on `.claude/` files, and R-style function signature complaints. Apply
 these suppressions before individual item triage to reduce noise.
 
-**First-scan detection (MUST for R1):** If SonarCloud items >100 on R1, most are
-likely first-scan noise on new files (not bugs introduced by the PR). Offer
-batch acknowledgment: "SonarCloud flagged N items on R1. This appears to be
-first-scan volume on new files. Batch-acknowledge known-safe patterns (S5852,
-S4036, S106 in scripts/tests)? [Y/review individually]" Apply existing
-suppression patterns, triage only remaining items individually.
+**First-scan detection (MUST for R1):** If SonarCloud items >100 on R1 OR the PR
+is primarily research/state files (>.80 files under `.research/`,
+`.claude/state/`, `docs/`), most items are likely first-scan noise on new files
+(not bugs introduced by the PR). Offer batch acknowledgment: "SonarCloud flagged
+N items on R1. This appears to be first-scan volume on new files.
+Batch-acknowledge known-safe patterns (S5852, S4036, S106 in scripts/tests)?
+[Y/review individually]" Apply existing suppression patterns, triage only
+remaining items individually. (Retro: PRs #499/#500 had 42-50% rejection rates
+from un-batched first-scan items on research PRs.)
 
 **Security Threat Model (MUST — conditional):** When the PR touches files under
 `scripts/`, `.claude/hooks/`, or other security-related paths (auth, crypto,
