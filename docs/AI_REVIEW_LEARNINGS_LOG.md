@@ -4102,3 +4102,24 @@ stale-rejected, 1 already-fixed)
 - **proto-delete-deprecated** — Direct `delete obj.__proto__` is deprecated in
   modern JS. Use `Object.hasOwn(obj, key)` guard before delete for prototype
   pollution keys.
+
+### Review #75 — PR #503 R4 (Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo | **Round:** R4
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 7     | 0        | 2        |
+
+**Severity:** 0C / 3M / 4m / 0T
+
+**Patterns:**
+
+- **symlink-follow-vs-refuse** — R3 added symlink following in reference-graph
+  to fix lstatSync regression. R4 correctly identified this contradicts
+  refuse-symlink policy. Resolution: skip symlinks in graph builder (reference
+  counting doesn't need symlink targets). Lesson: don't add symlink following to
+  fix a regression — find the approach that satisfies both constraints.
+- **path-resolution-bugs** — audit-s0-promotions.js had `__dirname, ".."` when
+  it needed `"../.."` to reach docs/ from scripts/archive/. Always verify
+  `__dirname`-relative paths against actual directory depth.

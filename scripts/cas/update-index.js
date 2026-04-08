@@ -109,6 +109,7 @@ function extractSourceRecord(data, slug) {
 }
 
 function ensureTag(db, tagName, tagCache) {
+  if (typeof tagName !== "string") return null;
   const normalized = tagName.toLowerCase().replace(/^#/, "").trim();
   if (!normalized) return null;
   if (tagCache.has(normalized)) return tagCache.get(normalized);
@@ -125,8 +126,12 @@ function ensureTag(db, tagName, tagCache) {
 function loadJournalLines() {
   try {
     if (!fs.existsSync(JOURNAL_PATH)) return [];
-    const { size } = fs.lstatSync(JOURNAL_PATH); // lstatSync: size check (not following symlinks)
-    if (size > 25 * 1024 * 1024) {
+    const st = fs.lstatSync(JOURNAL_PATH);
+    if (st.isSymbolicLink()) {
+      console.error("Refusing to read symlinked journal path");
+      return [];
+    }
+    if (st.size > 25 * 1024 * 1024) {
       console.error(
         "Journal too large for incremental sync (>25MB). Run: node scripts/cas/rebuild-index.js"
       );
@@ -160,7 +165,8 @@ function syncExtractions(db, record, tagCache) {
   );
 
   let skippedLines = 0;
-  for (const line of lines) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     if (!line.trim()) continue;
     try {
       const entry = JSON.parse(line);
@@ -192,8 +198,9 @@ function syncExtractions(db, record, tagCache) {
           insertExtractionTag.run(info.lastInsertRowid, tagId);
         }
       }
-    } catch {
+    } catch (err) {
       skippedLines++;
+      console.error(`Warning: skipped malformed journal line ${i + 1}: ${sanitizeError(err)}`);
     }
   }
   if (skippedLines > 0) {

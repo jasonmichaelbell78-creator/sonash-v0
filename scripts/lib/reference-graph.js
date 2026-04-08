@@ -292,8 +292,8 @@ function resolveRelative(fromFile, spec) {
   for (const c of candidates) {
     try {
       const st = fs.lstatSync(c);
+      if (st.isSymbolicLink()) continue; // refuse-symlink: skip symlinks
       if (st.isFile()) return c;
-      if (st.isSymbolicLink() && fs.statSync(c).isFile()) return c;
     } catch {
       continue;
     }
@@ -327,7 +327,8 @@ function resolveAsFilePath(ref) {
   const abs = path.join(ROOT, noAnchor);
   try {
     const st = fs.lstatSync(abs);
-    if (st.isFile() || (st.isSymbolicLink() && fs.statSync(abs).isFile())) return abs;
+    if (st.isSymbolicLink()) return null; // refuse-symlink: skip symlinks
+    if (st.isFile()) return abs;
   } catch {
     // file does not exist
   }

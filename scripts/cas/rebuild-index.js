@@ -213,6 +213,7 @@ function loadExtractionJournal() {
 }
 
 function ensureTag(db, tagName, tagCache) {
+  if (typeof tagName !== "string") return null;
   const normalized = tagName.toLowerCase().replace(/^#/, "").trim();
   if (!normalized) return null;
   if (tagCache.has(normalized)) return tagCache.get(normalized);

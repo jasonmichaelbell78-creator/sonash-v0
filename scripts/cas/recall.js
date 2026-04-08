@@ -169,7 +169,12 @@ function queryExtractions(db, args) {
   `;
   params.push(args.limit);
 
-  return db.prepare(sql).all(...params);
+  try {
+    return db.prepare(sql).all(...params);
+  } catch (err) {
+    console.error(`Query failed: ${sanitizeError(err)}`);
+    process.exit(1);
+  }
 }
 
 function querySources(db, args) {
