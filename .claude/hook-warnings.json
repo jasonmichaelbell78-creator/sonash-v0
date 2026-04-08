@@ -57,6 +57,26 @@
       "timestamp": "2026-04-08T13:58:42.278Z",
       "occurrences": 2,
       "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-push",
+      "type": "audit",
+      "severity": "warning",
+      "message": "npm audit found security vulnerabilities",
+      "action": "npm audit",
+      "timestamp": "2026-04-08T20:51:41.396Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "10 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-08T21:05:24.850Z",
+      "occurrences": 9,
+      "occurrences_since_ack": 6
     }
   ]
 }
