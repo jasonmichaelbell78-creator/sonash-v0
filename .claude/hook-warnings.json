@@ -9,6 +9,22 @@
       "timestamp": "2026-04-08T13:58:42.278Z",
       "occurrences": 2,
       "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-push",
+      "type": "patterns",
+      "severity": "warning",
+      "message": "Pattern compliance: 0 critical, 2 high",
+      "action": "npm run patterns:check",
+      "timestamp": "2026-04-08T18:47:17.641Z",
+      "files": [
+        "scripts\\cas\\migrate-schemas.js",
+        "scripts\\cas\\rebuild-index.js",
+        "scripts\\cas\\update-index.js"
+      ],
+      "pattern": "check-pattern-compliance",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
     }
   ]
 }
