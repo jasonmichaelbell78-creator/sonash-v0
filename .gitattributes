@@ -1,0 +1,6 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Force LF for shell scripts and hooks (cross-platform safety)
+*.sh text eol=lf
+.husky/* text eol=lf
