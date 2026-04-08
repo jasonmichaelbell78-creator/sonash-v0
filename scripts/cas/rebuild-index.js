@@ -18,7 +18,7 @@ const { sanitizeError } = require("../lib/security-helpers.js");
 const { isSafeToWrite } = require("../lib/safe-fs");
 const readJsonl = require("../lib/read-jsonl.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant
 const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const REPO_ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "repo-analysis");
@@ -239,8 +239,8 @@ function main() {
   }
 
   // Symlink guard — refuse to delete/create through symlinks (check unconditionally)
-  if (!isSafeToWrite(path.resolve(DB_PATH))) {
-    // validatePathInDir: constant
+  const resolvedDb = path.resolve(DB_PATH); // validatePathInDir: constant
+  if (!isSafeToWrite(resolvedDb)) {
     console.error("Refusing to operate on symlinked database path");
     process.exit(1);
   }
