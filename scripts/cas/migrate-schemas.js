@@ -84,8 +84,23 @@ function extractScoring(data) {
   let qualityScore = 50;
   let fitScore = 50;
 
-  // Try unified scoring first
-  if (data.scoring) return data.scoring;
+  // Try unified scoring first (canonical shape with both numeric scores)
+  if (
+    data.scoring &&
+    typeof data.scoring === "object" &&
+    typeof data.scoring.quality_score === "number" &&
+    typeof data.scoring.personal_fit_score === "number"
+  ) {
+    return data.scoring;
+  }
+
+  // Try Quick Scan lens format (adoptionLens/creatorLens with score)
+  if (data.scoring?.adoptionLens?.score && typeof data.scoring.adoptionLens.score === "number") {
+    qualityScore = data.scoring.adoptionLens.score;
+  }
+  if (data.scoring?.creatorLens?.score && typeof data.scoring.creatorLens.score === "number") {
+    fitScore = data.scoring.creatorLens.score;
+  }
 
   // Try summary_bands / summaryBands
   const bands = data.summary_bands || data.summaryBands;
@@ -103,14 +118,6 @@ function extractScoring(data) {
     fitScore = data.adoptionAssessment.verdict_score;
   } else if (data.creator_verdict?.verdict_score) {
     fitScore = data.creator_verdict.verdict_score;
-  }
-
-  // Try Quick Scan lens format (adoptionLens/creatorLens with score)
-  if (data.scoring?.adoptionLens?.score) {
-    qualityScore = data.scoring.adoptionLens.score;
-  }
-  if (data.scoring?.creatorLens?.score) {
-    fitScore = data.scoring.creatorLens.score;
   }
 
   let classification;

@@ -23,9 +23,14 @@ const ROOT = path.resolve(__dirname, ".."); // validatePathInDir: constant-path 
 const JSONL_PATH = path.join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
 const ACK_PATH = path.join(ROOT, ".claude", "state", "hook-warnings-ack.json");
 
-// Read ack state
+// Read ack state (refuse symlinks)
 let ack;
 try {
+  const ackSt = fs.lstatSync(ACK_PATH);
+  if (ackSt.isSymbolicLink()) {
+    console.log("Ack file is symlinked — refusing to read");
+    process.exit(0);
+  }
   ack = JSON.parse(fs.readFileSync(ACK_PATH, "utf8"));
 } catch {
   console.log("No ack file — nothing to sync");
@@ -37,9 +42,14 @@ if (!ack.acknowledged || typeof ack.acknowledged !== "object") {
   process.exit(0);
 }
 
-// Read JSONL entries
+// Read JSONL entries (refuse symlinks)
 let lines;
 try {
+  const jsonlSt = fs.lstatSync(JSONL_PATH);
+  if (jsonlSt.isSymbolicLink()) {
+    console.log("Warnings log is symlinked — refusing to read");
+    process.exit(0);
+  }
   lines = fs.readFileSync(JSONL_PATH, "utf8").trim().split("\n").filter(Boolean);
 } catch {
   console.log("No warnings log — nothing to sync");

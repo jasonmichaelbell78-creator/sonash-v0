@@ -115,11 +115,13 @@ function queryExtractions(db, args) {
   const params = [];
 
   if (args.freeText) {
-    // Sanitize FTS5 input: tokenize, quote terms, join with AND
+    // Sanitize FTS5 input: tokenize, quote terms, limit tokens, join with AND
     const tokens = args.freeText
+      .substring(0, 500)
       .split(/\s+/)
       .map((t) => t.trim())
       .filter(Boolean)
+      .slice(0, 20)
       .map((t) => `"${t.replaceAll('"', "")}"`);
     const ftsQuery = tokens.join(" AND ");
     if (ftsQuery) {
@@ -183,9 +185,11 @@ function querySources(db, args) {
 
   if (args.freeText) {
     const tokens = args.freeText
+      .substring(0, 500)
       .split(/\s+/)
       .map((t) => t.trim())
       .filter(Boolean)
+      .slice(0, 20)
       .map((t) => `"${t.replaceAll('"', "")}"`);
     const ftsQuery = tokens.join(" AND ");
     if (ftsQuery) {

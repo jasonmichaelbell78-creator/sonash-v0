@@ -4123,3 +4123,22 @@ stale-rejected, 1 already-fixed)
 - **path-resolution-bugs** — audit-s0-promotions.js had `__dirname, ".."` when
   it needed `"../.."` to reach docs/ from scripts/archive/. Always verify
   `__dirname`-relative paths against actual directory depth.
+
+### Review #76 — PR #503 R5 (Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo | **Round:** R5
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 6     | 0        | 3        |
+
+**Severity:** 0C / 1M / 4m / 1T
+
+**Patterns:**
+
+- **unreachable-fallback-code** — extractScoring had `if (data.scoring) return`
+  before lens-format fallback code, making the fallback unreachable for any data
+  with a scoring field. Fix: narrow the early return to only trigger for fully
+  canonical scoring objects (both numeric fields present).
+- **fts-input-limits** — FTS5 MATCH queries need both length truncation (500
+  chars) and token count limits (20) to prevent pathological query execution.

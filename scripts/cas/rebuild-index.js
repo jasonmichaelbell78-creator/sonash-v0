@@ -218,11 +218,9 @@ function ensureTag(db, tagName, tagCache) {
   if (!normalized) return null;
   if (tagCache.has(normalized)) return tagCache.get(normalized);
 
-  let row = db.prepare("SELECT id FROM tags WHERE name = ?").get(normalized);
-  if (!row) {
-    const info = db.prepare("INSERT INTO tags (name) VALUES (?)").run(normalized);
-    row = { id: info.lastInsertRowid };
-  }
+  db.prepare("INSERT OR IGNORE INTO tags (name) VALUES (?)").run(normalized);
+  const row = db.prepare("SELECT id FROM tags WHERE name = ?").get(normalized);
+  if (!row) return null;
   tagCache.set(normalized, row.id);
   return row.id;
 }
