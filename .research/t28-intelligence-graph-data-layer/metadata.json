@@ -1,0 +1,104 @@
+{
+  "topic": "T28 Intelligence Graph Data Layer",
+  "slug": "t28-intelligence-graph-data-layer",
+  "date": "2026-04-07",
+  "session": 267,
+  "depth": "L1",
+  "agentCount": 39,
+  "searcherCount": 32,
+  "synthesizerCount": 4,
+  "challengerCount": 3,
+  "claimCount": 73,
+  "sourceCount": 55,
+  "synthesisVersion": "1.1",
+  "lastSynthesized": "2026-04-07T00:00:00Z",
+  "mode": "post-challenge",
+  "claimsTotal": 73,
+  "claimsVerified": 62,
+  "claimsRefuted": 0,
+  "claimsCorrected": 9,
+  "claimsUnverifiable": 2,
+  "claimsConflicted": 0,
+  "claimsAddedInV1_1": 3,
+  "confidenceDistribution": {
+    "HIGH": 40,
+    "MEDIUM-HIGH": 2,
+    "MEDIUM": 27,
+    "LOW": 4,
+    "UNVERIFIED": 0
+  },
+  "topThemes": [
+    "Files-canonical architecture with hybrid boundary for agent-inferred edges",
+    "SQLite + better-sqlite3 as sole viable v1 primary store",
+    "Custom MCP layer over direct SQLite (Neuromcp audit pending — OQ-16)",
+    "Two-node schema with M2M tags and soft-invalidation edges",
+    "Three-layer hybrid search (FTS5 + vector + RRF k=60) — v2 target",
+    "Louvain community detection via graphology at 500-1,000 nodes",
+    "Near-zero-friction migration from existing .research/ corpus",
+    "15-entry checkpoint maintenance cycle for solo-dev operations"
+  ],
+  "recommendation": {
+    "primary": "Build a thin custom TypeScript MCP server (5-8 tools) over SQLite + better-sqlite3 v12.8.0. Two node types (SourceNode + KnowledgeNode), four edge types, M2M junction tags, separate node_metadata confidence table. FTS5-only search in v1. Include 384d embedding column with NULLs in v1 DDL.",
+    "confidence": "MEDIUM-HIGH (pending Neuromcp audit OQ-16 and query pattern audit OQ-17)",
+    "mvp": "scripts/t28/migrate.js bootstraps existing corpus → t28 sync for daily absorb → t28 query for FTS5 search + subgraph serialization → /graph-checkpoint for 15-entry maintenance.",
+    "avoid": [
+      "@modelcontextprotocol/server-memory (data corruption, no tags, 80K token ceiling)",
+      "n-r-w/knowledgegraph-mcp (maintainer abandoned November 2025)",
+      "Graphiti/Zep (requires Python + LLM per write + Docker)",
+      "mem0 (graph is add-on requiring extra LLM calls per operation)",
+      "FalkorDB/FalkorDBLite (no Windows embedded path)",
+      "Neo4j/Memgraph/ArangoDB (server-hosted, no Docker for solo dev)",
+      "CozoDB (stalled December 2023, pre-1.0)",
+      "LadybugDB as v1 or v2 primary (HIGH risk — Kuzu archived, 3-way fork split, package is lbug not @ladybug/core)",
+      "@xenova/transformers (deprecated — use @huggingface/transformers v4)"
+    ]
+  },
+  "challengeResults": {
+    "contrarianChallenges": 8,
+    "otb1Changes": 1,
+    "otb2CriticalGaps": 1,
+    "correctionsApplied": 9,
+    "openActionsAdded": 4,
+    "newOpenQuestions": ["OQ-16 (Neuromcp audit)", "OQ-17 (query pattern audit)"]
+  },
+  "hasDebtCandidates": true,
+  "debtCandidates": [
+    "Add .research/*.db entries to .gitignore (currently absent from project)",
+    "sqlite-vec Windows .dll verification required before v2 vector work",
+    "LadybugDB NAPI Windows verification required — test npm install lbug on Windows 11 + Node v22",
+    "source-slug-map.json must be manually authored before migration script can run"
+  ],
+  "hasMemoryCandidates": true,
+  "memoryCandidates": [
+    "Files-canonical architecture invariant with hybrid boundary for agent-inferred edges (HIGH confidence)",
+    "SQLite + better-sqlite3 v1 decision (HIGH confidence)",
+    "M2M junction table tag benchmark numbers (Willison, exact ms values)",
+    "@huggingface/transformers v4 + MiniLM-L6-v2 embedding model (22MB, local, Windows-confirmed)",
+    "n-r-w/knowledgegraph-mcp disqualification with reason",
+    "LadybugDB npm package is lbug (not @ladybug/core or @ladybugdb/core)",
+    "LadybugDB HIGH risk (Kuzu archived Oct 2025, 3-way fork split)"
+  ],
+  "readyForDeepPlan": false,
+  "readyForDeepPlanBlockers": [
+    "OQ-16 Neuromcp audit (30 min)",
+    "OQ-17 query pattern audit (2 hours)"
+  ],
+  "openQuestionCount": 17,
+  "criticalOpenQuestions": [
+    "OQ-16: Neuromcp capability audit (30 min) — could flip build-vs-adopt MCP decision",
+    "OQ-17: 30-session query pattern audit (2 hours) — schema finalization depends on this",
+    "OQ-1: npm install lbug on Windows 11 + Node.js v22 (5-min test)",
+    "OQ-2: sqlite-vec Windows .dll binding stability (verify before v2)",
+    "OQ-5: source-slug-map.json population (9 irregular slugs — blocks migration)"
+  ],
+  "synthesisFiles": [
+    "synthesis/S1-backend-landscape.md",
+    "synthesis/S2-design-patterns.md",
+    "synthesis/S3-operations-migration.md"
+  ],
+  "challengeFiles": [
+    "challenges/contrarian-challenge.md",
+    "challenges/otb-challenge-1.md",
+    "challenges/otb-challenge-2.md"
+  ]
+}

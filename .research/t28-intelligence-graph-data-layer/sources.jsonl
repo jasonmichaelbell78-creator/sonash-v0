@@ -1,0 +1,55 @@
+{"id":"S-001","title":"A-MEM: Agentic Memory for LLM Agents (arXiv:2502.12110)","type":"academic","url":"https://arxiv.org/abs/2502.12110","reliability":"HIGH"}
+{"id":"S-002","title":"Graphiti: A Temporally-Aware Knowledge Graph for LLM Agents (arXiv:2501.13956)","type":"academic","url":"https://arxiv.org/abs/2501.13956","reliability":"HIGH"}
+{"id":"S-003","title":"MAGMA: Multi-graph Agentic Memory Architecture (arXiv:2601.03236)","type":"academic","url":"https://arxiv.org/abs/2601.03236","reliability":"HIGH"}
+{"id":"S-004","title":"MemSkill: Reinforcement-Learning Memory for LLM Agents (arXiv:2602.02474)","type":"academic","url":"https://arxiv.org/abs/2602.02474","reliability":"HIGH"}
+{"id":"S-005","title":"Knowledge Graph Uncertainty Survey (arXiv:2405.16929)","type":"academic","url":"https://arxiv.org/abs/2405.16929","reliability":"HIGH"}
+{"id":"S-006","title":"Agentic Uncertainty Quantification (arXiv:2601.15703)","type":"academic","url":"https://arxiv.org/abs/2601.15703","reliability":"HIGH"}
+{"id":"S-007","title":"LightRAG: Simple and Fast Retrieval-Augmented Generation (arXiv:2410.05779)","type":"academic","url":"https://arxiv.org/abs/2410.05779","reliability":"HIGH"}
+{"id":"S-008","title":"Graphiti source code: nodes.py, edges.py, search_utils.py, search_config.py, Custom Entity/Edge Types docs","type":"codebase","url":"https://github.com/getzep/graphiti","reliability":"HIGH"}
+{"id":"S-009","title":"SQLite official documentation: Recursive CTEs, WAL, JSON Functions, FTS5, 3.51.3 release notes","type":"docs","url":"https://www.sqlite.org/docs.html","reliability":"HIGH"}
+{"id":"S-010","title":"better-sqlite3 GitHub repository and Performance Guide","type":"docs","url":"https://github.com/WiseLibs/better-sqlite3","reliability":"HIGH"}
+{"id":"S-011","title":"SQLite FTS5 official documentation","type":"docs","url":"https://www.sqlite.org/fts5.html","reliability":"HIGH"}
+{"id":"S-012","title":"sqlite-vec GitHub repository v0.1.9 (Alex Garcia)","type":"repo","url":"https://github.com/asg017/sqlite-vec","reliability":"HIGH"}
+{"id":"S-013","title":"Transformers.js documentation + MiniLM-L6-v2 model card","type":"docs","url":"https://huggingface.co/docs/transformers.js","reliability":"HIGH"}
+{"id":"S-014","title":"Zep documentation: LongMemEval results, graph retrieval claims","type":"docs","url":"https://help.getzep.com","reliability":"HIGH"}
+{"id":"S-015","title":"LadybugDB GitHub repository (v0.15.3 release assets, @ladybug/core npm)","type":"repo","url":"https://github.com/ladybugdb/ladybug","reliability":"HIGH"}
+{"id":"S-016","title":"KuzuDB archival announcement (October 2025, Apple acquisition)","type":"docs","url":"https://kuzudb.com","reliability":"HIGH"}
+{"id":"S-017","title":"DuckDB official documentation: Concurrency, SQLite Extension, 1.5.0 announcement","type":"docs","url":"https://duckdb.org/docs","reliability":"HIGH"}
+{"id":"S-018","title":"BasicMemory official documentation (7 documents) and DeepWiki analysis","type":"docs","url":"https://github.com/basicmachines-co/basic-memory","reliability":"HIGH"}
+{"id":"S-019","title":"Graphiti Custom Entity and Edge Types documentation","type":"docs","url":"https://help.getzep.com/graphiti/custom-types","reliability":"HIGH"}
+{"id":"S-020","title":"Palinode official repository and architecture documentation","type":"repo","url":"https://github.com/palinode/palinode","reliability":"HIGH"}
+{"id":"S-021","title":"IWE (Interoperable Wiki Environment) official repository","type":"repo","url":"https://github.com/iwe-org/iwe","reliability":"HIGH"}
+{"id":"S-022","title":"sqlite-memory repository including CRDT documentation","type":"repo","url":"https://github.com/vitaly-t/sqlite-memory","reliability":"HIGH"}
+{"id":"S-023","title":"obra/knowledge-graph GitHub repository (Jesse Vincent, March 2026, 3,300 nodes production)","type":"repo","url":"https://github.com/obra/knowledge-graph","reliability":"MEDIUM-HIGH"}
+{"id":"S-024","title":"TriliumNext wiki and attribute system documentation","type":"docs","url":"https://github.com/TriliumNext/Notes/wiki","reliability":"HIGH"}
+{"id":"S-025","title":"SiYuan block management documentation","type":"docs","url":"https://b3log.org/siyuan/en","reliability":"HIGH"}
+{"id":"S-026","title":"Dendron GitHub maintenance announcement #3890 and Kevin Lin YC retrospective","type":"docs","url":"https://github.com/dendronhq/dendron","reliability":"HIGH"}
+{"id":"S-027","title":"Logseq official documentation: changelog Jan-Mar 2026, DB version docs, @logseq/cli npm","type":"docs","url":"https://docs.logseq.com","reliability":"HIGH"}
+{"id":"S-028","title":"n-r-w/knowledgegraph-mcp GitHub repository (including maintainer abandonment statement, last commit December 2024)","type":"repo","url":"https://github.com/n-r-w/knowledgegraph-mcp","reliability":"HIGH"}
+{"id":"S-029","title":"mind-mem GitHub repository and Glama listing (2,189 unit tests, ConstraintSignature contradiction detection)","type":"repo","url":"https://github.com/mind-mem/mind-mem","reliability":"HIGH"}
+{"id":"S-030","title":"Louvain to Leiden: Guaranteeing Well-Connected Communities (Nature Scientific Reports)","type":"academic","url":"https://www.nature.com/articles/s41598-019-41695-z","reliability":"HIGH"}
+{"id":"S-031","title":"Simon Willison's SQLite Tags Benchmark (March 2026, blog and GitHub)","type":"blog","url":"https://simonwillison.net","reliability":"HIGH"}
+{"id":"S-032","title":"SQLite Driver Benchmark: better-sqlite3, node:sqlite, libSQL (sqg.dev, January 2026)","type":"blog","url":"https://sqg.dev","reliability":"MEDIUM-HIGH"}
+{"id":"S-033","title":"blakecrosley.com: Obsidian as AI Infrastructure (production-validated at 16,894 files, 2026)","type":"blog","url":"https://blakecrosley.com","reliability":"MEDIUM-HIGH"}
+{"id":"S-034","title":"Obsidian hybrid retriever GitHub (16,894 files, 23ms p50 query latency)","type":"repo","url":"https://github.com/obsidian-hybrid-retriever","reliability":"HIGH"}
+{"id":"S-035","title":"Graphiti/Zep LongMemEval benchmark results (arXiv and GitHub)","type":"academic","url":"https://arxiv.org/abs/2501.13956","reliability":"HIGH"}
+{"id":"S-036","title":"Bridge Centrality in Comorbidity Networks (PubMed)","type":"academic","url":"https://pubmed.ncbi.nlm.nih.gov","reliability":"HIGH"}
+{"id":"S-037","title":"DuckDB vs SQLite academic benchmarks (analyticsvidhya and timestored)","type":"academic","url":"https://analyticsvidhya.com","reliability":"MEDIUM-HIGH"}
+{"id":"S-038","title":"code-review-graph GitHub (tirth8205): production performance data (6,285 nodes, 27,117 edges)","type":"repo","url":"https://github.com/tirth8205/code-review-graph","reliability":"MEDIUM-HIGH"}
+{"id":"S-039","title":"codebase-memory-mcp: production benchmarks (49K nodes Django, 2.1M nodes Linux kernel)","type":"repo","url":"https://github.com/codebase-memory-mcp","reliability":"HIGH"}
+{"id":"S-040","title":"Graphiti GitHub issues #1299, #1111, #1086 (LLM-per-ingest, confidence, community detection)","type":"repo","url":"https://github.com/getzep/graphiti/issues","reliability":"MEDIUM"}
+{"id":"S-041","title":"Harper Reed blog: meeting transcript to structured Obsidian pipeline (March 2026)","type":"blog","url":"https://harper.blog","reliability":"MEDIUM-HIGH"}
+{"id":"S-042","title":"DoltHub: Polymorphic Associations in SQL (SQLite pattern reference)","type":"blog","url":"https://www.dolthub.com/blog","reliability":"HIGH"}
+{"id":"S-043","title":"Neo4j: Labels vs Properties (David Allen)","type":"blog","url":"https://neo4j.com/blog","reliability":"MEDIUM-HIGH"}
+{"id":"S-044","title":"Context Portal (ConPort) GitHub repository (760 stars, SQLite, Windows-confirmed)","type":"repo","url":"https://github.com/context-portal/conport","reliability":"MEDIUM"}
+{"id":"S-045","title":"LiteGraph MCP GitHub repository (.NET SQLite, Windows .bat confirmed)","type":"repo","url":"https://github.com/litegraph-mcp","reliability":"MEDIUM"}
+{"id":"S-046","title":"MemoryMesh GitHub repository and package.json (340 stars, Node.js v22, schema-driven)","type":"repo","url":"https://github.com/memorymesh/memorymesh","reliability":"MEDIUM"}
+{"id":"S-047","title":"deanacus/knowledge-graph-mcp GitHub (5 dedicated tag tools, 0 stars, 1 commit)","type":"repo","url":"https://github.com/deanacus/knowledge-graph-mcp","reliability":"LOW"}
+{"id":"S-048","title":"graphthulhu GitHub (131 stars, Go binary, Logseq+Obsidian vault format)","type":"repo","url":"https://github.com/graphthulhu/graphthulhu","reliability":"MEDIUM"}
+{"id":"S-049","title":"MCP server directories: TensorBlock awesome-mcp-servers, mcpservers.org, Glama, LobeHub","type":"community","url":"https://github.com/TensorBlock/awesome-mcp-servers","reliability":"MEDIUM"}
+{"id":"S-050","title":"FalkorDB MCPServer GitHub (FalkorDB requires Docker on Windows; FalkorDBLite excludes Windows)","type":"repo","url":"https://github.com/FalkorDB/falkordb-mcp","reliability":"MEDIUM"}
+{"id":"S-051","title":"notebooklm-py repository (teng-lin)","type":"repo","url":"https://github.com/teng-lin/notebooklm-py","reliability":"MEDIUM"}
+{"id":"S-052","title":"TurboVault (Epistates) GitHub (betweenness, closeness, eigenvector; Unix socket Windows incompatibility)","type":"repo","url":"https://github.com/epistates/turbovault","reliability":"MEDIUM"}
+{"id":"S-053","title":"Tana funding announcement: $25M Series A (TechCrunch, February 2025)","type":"blog","url":"https://techcrunch.com","reliability":"MEDIUM-HIGH"}
+{"id":"S-054","title":"farzaa personal wiki gist: 15-entry checkpoint maintenance pattern","type":"community","url":"https://gist.github.com/farzaa","reliability":"MEDIUM"}
+{"id":"S-055","title":"agentflare-ai SQLite-graph extension: Cypher-style queries over SQLite via virtual tables","type":"repo","url":"https://github.com/agentflare-ai/sqlite-graph","reliability":"MEDIUM"}

@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.21 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.22 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-07 (Session #266)
+2026-04-08 (Session #267)
 
 ## Purpose
 
@@ -29,19 +29,19 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-07 **Branch**: `planning-4626` **Working On**:
-Session #266 — T28 Unified Content Intelligence System pre-brainstorm research.
-4 new repo analyses (bedrock-summarize, bulk-transcribe, youtube-transcript-api,
-lux) + skill updates + T28 analysis plan.
+**Last Checkpoint**: 2026-04-08 **Branch**: `planning-4626` **Working On**:
+Session #267 — T28 Intelligence Graph data layer deep-research. Full L1
+exhaustive research complete (57 agents, 73 claims, 55 sources).
 
-**Uncommitted Work**: Major — see commit below. 4 repo analyses, skill edits,
-extraction journal (142 entries), T28 plan, todos.
+**Uncommitted Work**: Major — deep-research output (32 findings, 3 synthesis
+reports, 11 verification files, 3 challenge files, RESEARCH_OUTPUT.md v1.1,
+claims/sources/metadata). Also state files and memory updates.
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 266 (since Jan 1, 2026)
+**Current Session Count**: 267 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -50,6 +50,37 @@ extraction journal (142 entries), T28 plan, todos.
 ---
 
 ## Recent Session Summaries
+
+**Session #267** (T28 INTELLIGENCE GRAPH DEEP-RESEARCH — COMPLETE):
+
+- **Branch**: `planning-4626`
+- **T28 Intelligence Graph data layer deep-research** — Full L1 exhaustive
+  research session. 57 agents total across all phases:
+  - Phase 0: Interactive decomposition (2 Q&A rounds, 18 sub-questions)
+  - Phase 1: 32 searcher agents across 8 waves (backends, knowledge tools, MCP
+    servers, schema patterns, academic memory research, search architecture,
+    migration, codebase prior art, architecture tradeoffs, risk assessment)
+  - Phase 2: 3 domain synthesizers + 1 meta-synthesizer → RESEARCH_OUTPUT.md
+  - Phase 2.5: 11+ verifier agents (3 rounds of re-spawning due to Windows Bash
+    heredoc failures). 73 claims verified: 52 VERIFIED, 8 CONFLICTED, 8
+    UNVERIFIABLE, 2 REFUTED (C-008 LadybugDB npm, C-019 A-MEM fields)
+  - Phase 3: 1 contrarian (7 MAJOR challenges) + 2 OTB challengers
+  - Phase 3.95: 1 gap agent (Neuromcp audit — confirmed doesn't flip decision)
+  - Phase 3.9: Re-synthesis applying 11 corrections
+  - Phase 4: Self-audit (PASS)
+  - Phase 5: Presentation
+- **Primary recommendation**: SQLite + better-sqlite3 v12.8.0 + FTS5 +
+  graphology + custom TypeScript MCP server (5-8 tools). HIGH confidence.
+- **Key findings**: Files canonical (7+ systems converge). Official MCP
+  server-memory has race conditions + data corruption. No existing MCP server
+  provides all 3 T28 requirements (tags + confidence + contradiction). Build
+  custom. LadybugDB npm = `lbug` (not @ladybugdb/core). A-MEM schema corrected.
+- **Deliverables**: RESEARCH_OUTPUT.md (54KB), claims.jsonl (73 claims),
+  sources.jsonl (55 sources), metadata.json, 32 findings, 3 synthesis reports,
+  11 verification files, 3 challenge files, 1 gap audit
+- **WHERE TO RESUME**: `/deep-plan` for T28 v1 implementation. Blocker: author
+  `source-slug-map.json` (9 of 13 repo slugs non-derivable). Also: 30-session
+  query pattern audit before schema finalization (OTB-2 CRITICAL).
 
 **Session #266** (T28 RESEARCH + 4 REPO ANALYSES + SKILL UPDATES):
 
@@ -103,36 +134,24 @@ extraction journal (142 entries), T28 plan, todos.
   un-ignore cross-locale state files + CLI reference doc (`8c9ca3a8`).
 - **CLAUDE.md updated**: Added repo-synthesis + website-analysis trigger rows.
 
-**Session #264** (ORPHAN DETECTION T21 + CHERRY-PICKS):
-
-- **Branch**: `planning-4526` (16 commits)
-- Orphan detection scanner (T21): 428 findings, 110 resolved. Cherry-picks from
-  worktree: repo-analysis v4.0, skill-audit v4.1, repo-synthesis, website
-  analysis brainstorm + deep-research.
-
-**Session #263** (SESSION-BEGIN FIXES + /ALERTS TRIAGE + PR #493):
-
-- **Branch**: `planning-4526` (5 commits, PR #493 merged)
-- Session-begin fixes, /alerts triage, batch retro PRs #472-#493.
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                           |
-| ---------------------------------- | ------------- | ------------------------------------------------------------------ |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.              |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.             |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.  |
-| **T28 Content Intelligence**       | PRE-RESEARCH  | 20 repos queued across 6 clusters. Plan at \_T28-analysis-plan.md. |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).            |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                  |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                    |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.               |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                             |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.             |
+| Item                               | Status        | Progress                                                             |
+| ---------------------------------- | ------------- | -------------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.               |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.    |
+| **T28 Content Intelligence**       | RESEARCH DONE | Deep-research L1 complete (57 agents, 73 claims). `/deep-plan` next. |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).              |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                    |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                      |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                 |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                               |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.               |
 
 **Current Branch**: `planning-4626`
 
@@ -144,16 +163,17 @@ extraction journal (142 entries), T28 plan, todos.
 
 ### Immediate Priority
 
-1. **Run /repo-synthesis on 6 repos** — Skill v1.2 audited and ready. First
-   cross-repo synthesis with v4.2 baselines.
-2. **Website analysis (T23)** — Skills built. Test with first URL analysis.
-3. **Orphan detection v2 improvements** — Scanner misses system prompt
-   skill/agent lists (false positives). Add check for runtime-available types.
-4. **research-discovery-standard v2 → plan (T13)** — 954-line synthesis ready.
+1. **T28 `/deep-plan` for v1 implementation** — Research complete. Plan schema,
+   migration script, MCP tools. Blocker: author `source-slug-map.json` first.
+2. **T28 query pattern audit (OTB-2 CRITICAL)** — Log 30 sessions of actual
+   Claude queries against .research/ before finalizing schema. 2-hour exercise.
+3. **Test `npm install lbug` on Windows 11 + Node.js v22** — 5-minute test
+   before any v2/v3 planning.
+4. **Run /repo-synthesis on analyzed repos** — Skill v1.2 ready.
 5. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
 6. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
 7. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-8. **JASON-OS Domain 01 (T16)** — Internal Archaeology via /deep-research.
+8. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
 
 ### After Debt-Runner
 

@@ -366,6 +366,24 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#52)</summary>
+
+- **Date:** 2026-04-08
+- **Reviews consolidated:** #70-#rev-67
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#51)</summary>
+
+- **Date:** 2026-04-07
+- **Reviews consolidated:** #70-#rev-67
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#50)</summary>
 
 - **Date:** 2026-04-07
@@ -1558,6 +1576,46 @@ deduplicated, non-overlapping ranges):
 - extraction-journal-normalize
 - skill-schema-consistency
 - slug-algorithm-separator-preservation
+
+---
+
+### Review rev-66: (untitled) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #499 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 14    | 14    | 0        | 10       |
+
+---
+
+### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 0     | 0        | 0        |
+
+---
+
+### Review rev-67: (untitled) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 6        |
+
+---
+
+### Review 509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
+
+**Date:** 2026-04-07 | **PR:** #488 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 ## Key Patterns
 

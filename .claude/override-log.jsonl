@@ -56,3 +56,6 @@
 {"timestamp":"2026-04-07T18:42:59.328Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
 {"timestamp":"2026-04-07T18:43:20.784Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
 {"timestamp":"2026-04-07T18:46:09.965Z","check":"tests","reason":"12 unrelated test failures in ecosystem-v2 and enforcement-manifest  user authorized skip","user":"redacted","cwd":"redacted","git_branch":"worktree-learning"}
+{"timestamp":"2026-04-07T21:12:22.807Z","check":"cc","reason":"DEBT-45635 cc check exit 2","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
+{"timestamp":"2026-04-07T22:14:42.394Z","check":"cc","reason":"not necessary for archive files","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
+{"timestamp":"2026-04-07T22:29:13.065Z","check":"cc","reason":"not necessary for archive files","user":"redacted","cwd":"redacted","git_branch":"planning-4626"}
