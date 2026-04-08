@@ -147,6 +147,26 @@
       "timestamp": "2026-04-08T21:24:26.771Z",
       "occurrences": 16,
       "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "error",
+      "message": "18 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-08T21:43:56.837Z",
+      "occurrences": 17,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "error",
+      "message": "19 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-08T21:51:40.398Z",
+      "occurrences": 18,
+      "occurrences_since_ack": 2
     }
   ]
 }
