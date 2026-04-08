@@ -158,12 +158,15 @@ CREATE INDEX idx_edges_type       ON edges(edge_type);
 
 **Edge type map (enforces domain constraints, Graphiti pattern):**
 
-| edge_type  | Allowed (from_type → to_type) | Direction | Description                          |
-| ---------- | ----------------------------- | --------- | ------------------------------------ |
-| LINKS_TO   | any → any                     | Directed  | Semantic connection (A-MEM L_i)      |
-| CITES      | knowledge_node → source_node  | Directed  | Provenance/attribution               |
-| MENTIONS   | source_node → knowledge_node  | Directed  | Source contains claim                |
-| SUPERSEDES | any → any                     | Directed  | Version/update replaces earlier node |
+| edge_type      | Allowed (from_type → to_type) | Direction | Description                          | Category       |
+| -------------- | ----------------------------- | --------- | ------------------------------------ | -------------- |
+| LINKS_TO       | any → any                     | Directed  | Semantic connection (A-MEM L_i)      | Core           |
+| CITES          | knowledge_node → source_node  | Directed  | Provenance/attribution               | Core           |
+| MENTIONS       | source_node → knowledge_node  | Directed  | Source contains claim                | Core           |
+| SUPERSEDES     | any → any                     | Directed  | Version/update replaces earlier node | Core           |
+| EXTRACTED_FROM | KnowledgeNode → SourceNode    | Directed  | Migration provenance                 | Agent-inferred |
+| RELATED_TO     | SourceNode → SourceNode       | Directed  | Cross-repo connections               | Agent-inferred |
+| MEMBER_OF      | SourceNode → ThemeNode        | Directed  | Cluster assignment                   | Agent-inferred |
 
 **Soft invalidation for contradictions (Graphiti pattern):** New KnowledgeNode
 contradicts existing → set `invalid_at` on old edge to new node's `valid_at`.
@@ -374,8 +377,7 @@ SELECT
   n.summary,
   nm.confidence,
   nm.source_count,
-  fts.rank AS bm25_score,
-  bm25(search_index) AS bm25_detail
+  bm25(search_index, 10.0, 1.0, 5.0, 1.0) AS bm25_score
 FROM   source_nodes n
 JOIN   search_index fts ON fts.rowid = n.rowid
 JOIN   node_metadata nm ON nm.node_id = n.id

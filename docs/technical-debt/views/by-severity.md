@@ -1418,7 +1418,7 @@
 | DEBT-45642 | Security pattern propagation: 6 patterns across archive s...  | scripts/archive/reverify-resolved.js                                                                                                               | 1    | security                 | E1        |
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...  | doc-header                                                                                                                                         | 0    | process                  | E2        |
 
-## S2 - Medium (3453)
+## S2 - Medium (3454)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4875,6 +4875,7 @@
 | DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)       | scripts/generate-documentation-index.js                                                                                                                                     | 0         | performance              | E2        |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...      | scripts/verify-enforcement.js                                                                                                                                               | 0         | process                  | E1        |
 | DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js              | scripts/health/lib/warning-lifecycle.test.js                                                                                                                                | 0         | code-quality             | E1        |
+| DEBT-45645 | Archive log not in rotation policy                                | config/rotation-policy.json                                                                                                                                                 | 8         | process                  | E1        |
 
 ## S3 - Low (3642)
 

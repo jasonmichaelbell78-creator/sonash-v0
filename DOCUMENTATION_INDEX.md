@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-04-08 **Active Documents:** 1263 **Archived Documents:** 132
+**Generated:** 2026-04-08 **Active Documents:** 1258 **Archived Documents:** 132
 
 ---
 
@@ -36,7 +36,7 @@ orphaned documents.
 | Tier 1 | 10    | Canonical Living  |
 | Tier 2 | 16    | Foundation        |
 | Tier 3 | 197   | Planning & Active |
-| Tier 4 | 1040  | Reference         |
+| Tier 4 | 1035  | Reference         |
 | Tier 5 | 0     | Guides            |
 
 ### By Category
@@ -116,7 +116,6 @@ orphaned documents.
 | .research > research-discovery-standard > challenges                          | 4     |
 | .research > website-analysis > challenges                                     | 4     |
 | Technical Debt System                                                         | 4     |
-| scripts > reviews > .research > t28-intelligence-graph-data-layer > findings  | 4     |
 | .claude > plans                                                               | 3     |
 | .claude > tmp                                                                 | 3     |
 | .github                                                                       | 3     |
@@ -221,7 +220,6 @@ orphaned documents.
 | Patterns                                                                      | 1     |
 | scripts                                                                       | 1     |
 | scripts > archive                                                             | 1     |
-| scripts > reviews > .research                                                 | 1     |
 | src > dataconnect-generated                                                   | 1     |
 | src > dataconnect-generated > react                                           | 1     |
 
@@ -524,9 +522,9 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-05    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-07    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-04-05    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-04-07    |
 
 ### Templates (Tier 3)
 
@@ -2495,20 +2493,20 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                                                                                                                            | Description | References | Last Modified |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [D10: Cross-Source Synthesis Operations via Knowledge Graphs](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D10-synthesis-operations.md)        | -           | ↓0 ↑0      | 2026-04-08    |
-| [D1a: Embedded/Serverless Relational Databases for Graph Storage](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D1a-relational-embedded.md)     | -           | ↓0 ↑0      | 2026-04-08    |
-| [D1b: Graph-Native Embedded Databases](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D1b-graph-native-embedded.md)                              | -           | ↓0 ↑0      | 2026-04-08    |
-| [D2a: Obsidian/Logseq as Graph Backend](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D2a-obsidian-logseq.md)                                   | -           | ↓0 ↑0      | 2026-04-08    |
-| [D2b: Knowledge Management Tools Beyond Obsidian/Logseq](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D2b-other-knowledge-tools.md)            | -           | ↓0 ↑0      | 2026-04-08    |
-| [D3: MCP Memory Server Internals](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D3-mcp-memory-internals.md)                                     | -           | ↓0 ↑0      | 2026-04-08    |
-| [D4: MemSkill arXiv 2602.02474 + Related Agent Memory Architectures](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D4-memskill-arxiv.md)        | -           | ↓0 ↑0      | 2026-04-08    |
-| [D5a: Popular Graph MCP Servers for Knowledge Graphs](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D5a-popular-graph-mcp.md)                   | -           | ↓0 ↑0      | 2026-04-08    |
-| [D5b: Emerging/Niche Graph MCP Servers](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D5b-emerging-graph-mcp.md)                                | -           | ↓0 ↑0      | 2026-04-08    |
-| [D6: Entity/Relation Schema Patterns for T28](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D6-schema-patterns.md)                              | -           | ↓0 ↑0      | 2026-04-08    |
-| [D7: Codebase Prior Art Synthesis for T28 Retrieval Design](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D7-codebase-prior-art.md)             | -           | ↓0 ↑0      | 2026-04-08    |
-| [Findings: T28 Intelligence Graph + .research/ File Artifact Coexistence](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D9-file-coexistence.md) | -           | ↓0 ↑0      | 2026-04-08    |
+| Document                                                                                                                                                            | Description                                                     | References | Last Modified |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
+| [D10: Cross-Source Synthesis Operations via Knowledge Graphs](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D10-synthesis-operations.md)        | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D1a: Embedded/Serverless Relational Databases for Graph Storage](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D1a-relational-embedded.md)     | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D1b: Graph-Native Embedded Databases](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D1b-graph-native-embedded.md)                              | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D2a: Obsidian/Logseq as Graph Backend](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D2a-obsidian-logseq.md)                                   | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D2b: Knowledge Management Tools Beyond Obsidian/Logseq](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D2b-other-knowledge-tools.md)            | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D3: MCP Memory Server Internals](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D3-mcp-memory-internals.md)                                     | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D4: MemSkill arXiv 2602.02474 + Related Agent Memory Architectures](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D4-memskill-arxiv.md)        | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D5a: Popular Graph MCP Servers for Knowledge Graphs](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D5a-popular-graph-mcp.md)                   | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D5b: Emerging/Niche Graph MCP Servers](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D5b-emerging-graph-mcp.md)                                | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D6: Entity/Relation Schema Patterns for T28](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D6-schema-patterns.md)                              | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [D7: Codebase Prior Art Synthesis for T28 Retrieval Design](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D7-codebase-prior-art.md)             | -                                                               | ↓0 ↑0      | 2026-04-08    |
+| [Findings: T28 Intelligence Graph + .research/ File Artifact Coexistence](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D9-file-coexistence.md) | Investigates how the T28 intelligence graph coexists with ex... | ↓0 ↑0      | 2026-04-08    |
 
 ### .research > t28-intelligence-graph-data-layer > synthesis (Tier 4)
 
@@ -2731,25 +2729,6 @@ _Uncategorized_
 | --------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [scripts/archive/](scripts/archive/README.md) | Deprecated scripts preserved for reference. These were super... | ↓0 ↑0      | 2026-03-15    |
 
-### scripts > reviews > .research (Tier 4)
-
-_Uncategorized_
-
-| Document                                                                                 | Description                                                     | References | Last Modified |
-| ---------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Extraction Candidates — Cross-Entity Summary](scripts/reviews/.research/EXTRACTIONS.md) | Auto-generated from `extraction-journal.jsonl`. Do not edit ... | ↓0 ↑0      | 2026-04-07    |
-
-### scripts > reviews > .research > t28-intelligence-graph-data-layer > findings (Tier 4)
-
-_Uncategorized_
-
-| Document                                                                                                                                                                              | Description | References | Last Modified |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Findings: @anthropic/mcp-memory (mcp-server-memory) Internals and Scale Assessment](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D3-mcp-memory-internals.md) | -           | ↓0 ↑0      | 2026-04-08    |
-| [Findings: Is LadybugDB a Viable Embedded Graph-Native Backend for T28?](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-1-ladybugdb.md)                     | -           | ↓0 ↑0      | 2026-04-08    |
-| [Findings: Obsidian and Logseq as T28 Data Layers](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D2a-obsidian-logseq.md)                                       | -           | ↓0 ↑0      | 2026-04-08    |
-| [Findings: Other Embedded Graph-Native Databases (Beyond LadybugDB)](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-2-other-graph-native.md)                | -           | ↓0 ↑0      | 2026-04-08    |
-
 ### src > dataconnect-generated (Tier 4)
 
 _Uncategorized_
@@ -2781,11 +2760,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-07    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-07    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-07    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-05    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-07    |
 
 ---
 
@@ -2851,7 +2830,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**1086 orphaned documents:**
+**1081 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -3932,11 +3911,6 @@ Documents with no inbound links (not referenced by any other document):
 - [release notes](release-notes.md)
 - [Scripts Reference](scripts/README.md)
 - [scripts/archive/](scripts/archive/README.md)
-- [Extraction Candidates — Cross-Entity Summary](scripts/reviews/.research/EXTRACTIONS.md)
-- [Findings: Is LadybugDB a Viable Embedded Graph-Native Backend for T28?](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-1-ladybugdb.md)
-- [Findings: Other Embedded Graph-Native Databases (Beyond LadybugDB)](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-2-other-graph-native.md)
-- [Findings: Obsidian and Logseq as T28 Data Layers](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D2a-obsidian-logseq.md)
-- [Findings: @anthropic/mcp-memory (mcp-server-memory) Internals and Scale Assessment](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D3-mcp-memory-internals.md)
 - [Setup](src/dataconnect-generated/.guides/setup.md)
 - [Basic Usage](src/dataconnect-generated/.guides/usage.md)
 
@@ -5201,17 +5175,12 @@ Documents with no inbound links (not referenced by any other document):
 | 1250 | [ROADMAP.md](ROADMAP.md)                                                                                                                                                                                                   | SoNash Product Roadmap                                                                                                                   | 1    | ACTIVE                                                                   |
 | 1251 | [scripts/archive/README.md](scripts/archive/README.md)                                                                                                                                                                     | scripts/archive/                                                                                                                         | 4    | -                                                                        |
 | 1252 | [scripts/README.md](scripts/README.md)                                                                                                                                                                                     | Scripts Reference                                                                                                                        | 4    | -                                                                        |
-| 1253 | [scripts/reviews/.research/EXTRACTIONS.md](scripts/reviews/.research/EXTRACTIONS.md)                                                                                                                                       | Extraction Candidates — Cross-Entity Summary                                                                                             | 4    | -                                                                        |
-| 1254 | [scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-1-ladybugdb.md](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-1-ladybugdb.md)                                         | Findings: Is LadybugDB a Viable Embedded Graph-Native Backend for T28?                                                                   | 4    | -                                                                        |
-| 1255 | [scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-2-other-graph-native.md](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D1b-2-other-graph-native.md)                       | Findings: Other Embedded Graph-Native Databases \(Beyond LadybugDB\)                                                                     | 4    | -                                                                        |
-| 1256 | [scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D2a-obsidian-logseq.md](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D2a-obsidian-logseq.md)                                 | Findings: Obsidian and Logseq as T28 Data Layers                                                                                         | 4    | -                                                                        |
-| 1257 | [scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D3-mcp-memory-internals.md](scripts/reviews/.research/t28-intelligence-graph-data-layer/findings/D3-mcp-memory-internals.md)                         | Findings: @anthropic/mcp-memory \(mcp-server-memory\) Internals and Scale Assessment                                                     | 4    | -                                                                        |
-| 1258 | [SECURITY.md](SECURITY.md)                                                                                                                                                                                                 | Security Policy                                                                                                                          | 1    | ACTIVE                                                                   |
-| 1259 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                                                                                   | Session Context                                                                                                                          | 4    | -                                                                        |
-| 1260 | [src/dataconnect-generated/.guides/setup.md](src/dataconnect-generated/.guides/setup.md)                                                                                                                                   | Setup                                                                                                                                    | 4    | -                                                                        |
-| 1261 | [src/dataconnect-generated/.guides/usage.md](src/dataconnect-generated/.guides/usage.md)                                                                                                                                   | Basic Usage                                                                                                                              | 4    | -                                                                        |
-| 1262 | [src/dataconnect-generated/react/README.md](src/dataconnect-generated/react/README.md)                                                                                                                                     | Generated React README                                                                                                                   | 4    | -                                                                        |
-| 1263 | [src/dataconnect-generated/README.md](src/dataconnect-generated/README.md)                                                                                                                                                 | Generated TypeScript README                                                                                                              | 4    | -                                                                        |
+| 1253 | [SECURITY.md](SECURITY.md)                                                                                                                                                                                                 | Security Policy                                                                                                                          | 1    | ACTIVE                                                                   |
+| 1254 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                                                                                   | Session Context                                                                                                                          | 4    | -                                                                        |
+| 1255 | [src/dataconnect-generated/.guides/setup.md](src/dataconnect-generated/.guides/setup.md)                                                                                                                                   | Setup                                                                                                                                    | 4    | -                                                                        |
+| 1256 | [src/dataconnect-generated/.guides/usage.md](src/dataconnect-generated/.guides/usage.md)                                                                                                                                   | Basic Usage                                                                                                                              | 4    | -                                                                        |
+| 1257 | [src/dataconnect-generated/react/README.md](src/dataconnect-generated/react/README.md)                                                                                                                                     | Generated React README                                                                                                                   | 4    | -                                                                        |
+| 1258 | [src/dataconnect-generated/README.md](src/dataconnect-generated/README.md)                                                                                                                                                 | Generated TypeScript README                                                                                                              | 4    | -                                                                        |
 
 </details>
 

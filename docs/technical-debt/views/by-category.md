@@ -6401,7 +6401,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (732)
+## process (733)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6777,6 +6777,7 @@
 | DEBT-45635 | cognitive-cc exit 2 + trigger detector window bug             | S2       | scripts/check-cc.js                                                     | 0    |
 | DEBT-45636 | Review lifecycle: 9 data integrity findings                   | S2       | scripts/review-lifecycle.js                                             | 0    |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...  | S2       | scripts/verify-enforcement.js                                           | 0    |
+| DEBT-45645 | Archive log not in rotation policy                            | S2       | config/rotation-policy.json                                             | 8    |
 | DEBT-0811  | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812  | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813  | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |

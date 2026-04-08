@@ -3,7 +3,16 @@
 **Searcher:** deep-research-searcher  
 **Profile:** web+codebase  
 **Date:** 2026-04-07  
+**Last Updated:** 2026-04-08  
 **Sub-Question IDs:** D9
+
+## Purpose
+
+Investigates how the T28 intelligence graph coexists with existing `.research/`
+file artifacts. Evaluates four architectural options (graph indexes files, graph
+replaces files, graph augments files, graph mirrors files) against migration
+path, data loss risk, human readability, Claude Code access, git-trackability,
+and compaction resilience criteria.
 
 ---
 
@@ -253,3 +262,12 @@ LightRAG, Obsidian) all making the same architectural choice (files canonical,
 graph derived) provides strong evidence for the recommendation. The codebase
 analysis confirms T28's existing artifacts are compatible with this pattern with
 zero migration friction.
+
+---
+
+## Version History
+
+| Version | Date       | Changes                                                    |
+| ------- | ---------- | ---------------------------------------------------------- |
+| 1.0     | 2026-04-07 | Initial findings from D9 search                            |
+| 1.1     | 2026-04-08 | Add Purpose section, version history (PR #500 R1 doc lint) |

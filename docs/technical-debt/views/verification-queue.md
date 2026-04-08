@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2143
+**Items Needing Verification:** 2144
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -743,6 +743,7 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)     | S2       | scripts/generate-documentation-index.js                                          | 0         |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...    | S2       | scripts/verify-enforcement.js                                                    | 0         |
 | DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js            | S2       | scripts/health/lib/warning-lifecycle.test.js                                     | 0         |
+| DEBT-45645 | Archive log not in rotation policy                              | S2       | config/rotation-policy.json                                                      | 8         |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |

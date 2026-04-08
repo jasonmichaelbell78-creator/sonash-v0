@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2143)
+## NEW (2144)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -740,6 +740,7 @@
 | DEBT-45637 | doc-index performance regression: 4570ms -> 10991ms (+141%)     | S2       | performance              |
 | DEBT-45638 | Enforcement verification fail: audit-findings pattern 368...    | S2       | process                  |
 | DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js            | S2       | code-quality             |
+| DEBT-45645 | Archive log not in rotation policy                              | S2       | process                  |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

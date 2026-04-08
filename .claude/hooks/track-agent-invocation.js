@@ -239,8 +239,6 @@ try {
   const persistEntry = {
     agent: subagentType,
     description: sanitizeDescription(description),
-    sessionId: state.sessionId,
-    user: process.env.USER || process.env.USERNAME || "unknown",
     outcome: "invoked",
     timestamp: invocation.timestamp,
   };

@@ -12,12 +12,13 @@ The T28 intelligence graph data layer question resolves cleanly after 32
 searcher agents across three domain dimensions. The correct primary store is
 **SQLite with better-sqlite3 v12.8.0**, the correct custom layer is a **thin
 TypeScript MCP server built directly on better-sqlite3**, and the correct schema
-is a **two-node (SourceNode + KnowledgeNode), four-edge-type model with M2M
-junction tags and a separate node_metadata confidence table**. No existing MCP
-server should be adopted as a live dependency for v1 — the three best candidates
-are all disqualified on blocking grounds (n-r-w abandoned, official
-server-memory structurally broken, obra Obsidian-vault-only). Five independent
-findings files converge on this conclusion without contradiction.
+is a **two-node (SourceNode + KnowledgeNode), seven-edge-type (4 core + 3
+agent-inferred) model with M2M junction tags and a separate node_metadata
+confidence table**. No existing MCP server should be adopted as a live
+dependency for v1 — the three best candidates are all disqualified on blocking
+grounds (n-r-w abandoned, official server-memory structurally broken, obra
+Obsidian-vault-only). Five independent findings files converge on this
+conclusion without contradiction.
 
 The core architectural invariant, confirmed by seven independent production
 systems (BasicMemory, Palinode, LightRAG, IWE, obra/knowledge-graph,
@@ -55,16 +56,16 @@ split/enrich review, and VACUUM.
 **Build a thin custom MCP server over SQLite + better-sqlite3. Do not adopt any
 existing MCP server as a v1 dependency.**
 
-| Dimension               | Decision                                            | Confidence                                       |
-| ----------------------- | --------------------------------------------------- | ------------------------------------------------ |
-| Primary store           | SQLite + better-sqlite3 v12.8.0                     | HIGH                                             |
-| MCP layer               | Custom TypeScript, 5-8 tools, direct better-sqlite3 | MEDIUM-HIGH (pending Neuromcp audit — see OQ-16) |
-| Schema                  | SourceNode + KnowledgeNode, 4 edge types, M2M tags  | HIGH                                             |
-| In-process graph        | graphology (pure JS, Louvain/PageRank/betweenness)  | HIGH                                             |
-| v1 search               | FTS5 BM25 only                                      | HIGH                                             |
-| v2 search               | + sqlite-vec + MiniLM + RRF k=60                    | MEDIUM                                           |
-| v2 backend upgrade path | LadybugDB HIGH RISK — see note below                | LOW                                              |
-| Analytical overlay      | DuckDB + sqlite_scanner (read-only, Phase 2+)       | MEDIUM                                           |
+| Dimension               | Decision                                                                       | Confidence                                       |
+| ----------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ |
+| Primary store           | SQLite + better-sqlite3 v12.8.0                                                | HIGH                                             |
+| MCP layer               | Custom TypeScript, 5-8 tools, direct better-sqlite3                            | MEDIUM-HIGH (pending Neuromcp audit — see OQ-16) |
+| Schema                  | SourceNode + KnowledgeNode, 7 edge types (4 core + 3 agent-inferred), M2M tags | HIGH                                             |
+| In-process graph        | graphology (pure JS, Louvain/PageRank/betweenness)                             | HIGH                                             |
+| v1 search               | FTS5 BM25 only                                                                 | HIGH                                             |
+| v2 search               | + sqlite-vec + MiniLM + RRF k=60                                               | MEDIUM                                           |
+| v2 backend upgrade path | LadybugDB HIGH RISK — see note below                                           | LOW                                              |
+| Analytical overlay      | DuckDB + sqlite_scanner (read-only, Phase 2+)                                  | MEDIUM                                           |
 
 **LadybugDB v2 risk upgraded to HIGH (OTB-1 challenge):** Kuzu was acquired by
 Apple in October 2025 and its repo archived. LadybugDB is built on a frozen
