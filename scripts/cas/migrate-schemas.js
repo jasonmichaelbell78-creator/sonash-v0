@@ -304,7 +304,8 @@ function main() {
 
       if (!DRY_RUN) {
         try {
-          fs.writeFileSync(filePath, JSON.stringify(result, null, 2) + "\n");
+          const { safeWriteFileSync } = require("../lib/safe-fs");
+          safeWriteFileSync(filePath, JSON.stringify(result, null, 2) + "\n");
           migrated++;
         } catch (err) {
           console.error(`  ERROR writing ${slug}: ${sanitizeError(err)}`);

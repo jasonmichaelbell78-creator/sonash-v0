@@ -15,6 +15,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const Database = require("better-sqlite3");
 const { sanitizeError } = require("../lib/security-helpers.js");
+const readJsonl = require("../lib/read-jsonl.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
@@ -158,15 +159,15 @@ function extractSourceRecord(data, slug) {
   let classification = "park-for-later";
 
   if (data.scoring) {
-    qualityBand = data.scoring.quality_band || qualityBand;
-    qualityScore = data.scoring.quality_score || qualityScore;
-    fitBand = data.scoring.personal_fit_band || fitBand;
-    fitScore = data.scoring.personal_fit_score || fitScore;
-    classification = data.scoring.classification || classification;
+    qualityBand = data.scoring.quality_band ?? qualityBand;
+    qualityScore = data.scoring.quality_score ?? qualityScore;
+    fitBand = data.scoring.personal_fit_band ?? fitBand;
+    fitScore = data.scoring.personal_fit_score ?? fitScore;
+    classification = data.scoring.classification ?? classification;
   } else if (data.summary_bands) {
     const bands = Object.values(data.summary_bands);
     if (bands.length > 0) {
-      qualityScore = bands.reduce((sum, b) => sum + (b.score || 0), 0) / bands.length;
+      qualityScore = bands.reduce((sum, b) => sum + (b.score ?? 0), 0) / bands.length;
       qualityBand =
         qualityScore >= 80
           ? "Excellent"
@@ -203,17 +204,7 @@ function extractSourceRecord(data, slug) {
 function loadExtractionJournal() {
   if (!fs.existsSync(JOURNAL_PATH)) return [];
   try {
-    const lines = fs.readFileSync(JOURNAL_PATH, "utf8").trim().split("\n");
-    const entries = [];
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      try {
-        entries.push(JSON.parse(line));
-      } catch {
-        // skip malformed lines
-      }
-    }
-    return entries;
+    return readJsonl(JOURNAL_PATH, { safe: true });
   } catch (err) {
     console.error(`Warning: could not read journal: ${sanitizeError(err)}`);
     return [];

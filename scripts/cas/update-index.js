@@ -73,7 +73,7 @@ function extractSourceRecord(data, slug) {
   } else if (data.summary_bands) {
     const bands = Object.values(data.summary_bands);
     if (bands.length > 0) {
-      qualityScore = bands.reduce((sum, b) => sum + (b.score || 0), 0) / bands.length;
+      qualityScore = bands.reduce((sum, b) => sum + (b.score ?? 0), 0) / bands.length;
       qualityBand =
         qualityScore >= 80
           ? "Excellent"
