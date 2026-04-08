@@ -4082,3 +4082,23 @@ stale-rejected, 1 already-fixed)
 - **cc-from-fix-accumulation** — R1 fixes (try/catch, tag parsing) pushed
   rebuild-index transaction from CC 16 to CC 18. Extract helper functions in the
   same round to prevent CC regressions from accumulating fixes.
+
+### Review #74 — PR #503 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed | **Round:** R3
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 5     | 0        | 6        |
+
+**Severity:** 0C / 1M / 4m / 0T (+ 6 rejected cross-round re-raises)
+
+**Patterns:**
+
+- **lstatSync-regression** — Propagation fixes that replace statSync with
+  lstatSync break symlink file resolution in graph builders. When a tool needs
+  to follow symlinks to find real files, use lstatSync for the initial check but
+  fall through to statSync for symlink targets.
+- **proto-delete-deprecated** — Direct `delete obj.__proto__` is deprecated in
+  modern JS. Use `Object.hasOwn(obj, key)` guard before delete for prototype
+  pollution keys.

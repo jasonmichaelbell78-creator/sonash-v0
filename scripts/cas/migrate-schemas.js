@@ -241,9 +241,9 @@ function migrateAnalysis(filePath, slug) {
   // Preserve all original fields as type-specific extensions
   // Strip prototype pollution keys before spreading
   const preserved = { ...data };
-  delete preserved.__proto__;
-  delete preserved.constructor;
-  delete preserved.prototype;
+  for (const key of ["__proto__", "constructor", "prototype"]) {
+    if (Object.hasOwn(preserved, key)) delete preserved[key];
+  }
   delete preserved.id;
   delete preserved.schema_version;
   delete preserved.source_type;

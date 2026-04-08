@@ -243,27 +243,28 @@ function main() {
 
   const args = parseRecallArgs(process.argv);
   const db = new Database(DB_PATH, { readonly: true });
-  db.pragma("journal_mode = WAL");
+  try {
+    db.pragma("journal_mode = WAL");
 
-  if (args.stats) {
-    showStats(db);
+    if (args.stats) {
+      showStats(db);
+      return;
+    }
+
+    if (!args.freeText && !args.tag && !args.type && !args.source && !args.sort) {
+      console.error(
+        "Usage: node scripts/cas/recall.js <query> [--tag=X] [--type=X] [--sort=X] [--source=X] [--stats]"
+      );
+      process.exit(1);
+    }
+
+    const results = args.target === "sources" ? querySources(db, args) : queryExtractions(db, args);
+
+    console.log(JSON.stringify(results, null, 2));
+    console.error(`\n${results.length} results returned.`);
+  } finally {
     db.close();
-    return;
   }
-
-  if (!args.freeText && !args.tag && !args.type && !args.source && !args.sort) {
-    console.error(
-      "Usage: node scripts/cas/recall.js <query> [--tag=X] [--type=X] [--sort=X] [--source=X] [--stats]"
-    );
-    process.exit(1);
-  }
-
-  const results = args.target === "sources" ? querySources(db, args) : queryExtractions(db, args);
-
-  console.log(JSON.stringify(results, null, 2));
-  console.error(`\n${results.length} results returned.`);
-
-  db.close();
 }
 
 try {

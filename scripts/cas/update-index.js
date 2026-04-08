@@ -122,6 +122,23 @@ function ensureTag(db, tagName, tagCache) {
   return row.id;
 }
 
+function loadJournalLines() {
+  try {
+    if (!fs.existsSync(JOURNAL_PATH)) return [];
+    const { size } = fs.lstatSync(JOURNAL_PATH); // lstatSync: size check (not following symlinks)
+    if (size > 25 * 1024 * 1024) {
+      console.error(
+        "Journal too large for incremental sync (>25MB). Run: node scripts/cas/rebuild-index.js"
+      );
+      return [];
+    }
+    return fs.readFileSync(JOURNAL_PATH, "utf8").trim().split("\n");
+  } catch (err) {
+    console.error(`Warning: could not read journal: ${sanitizeError(err)}`);
+    return [];
+  }
+}
+
 function syncExtractions(db, record, tagCache) {
   // Delete junction table rows first to avoid FK constraint violations
   db.prepare(
@@ -129,21 +146,7 @@ function syncExtractions(db, record, tagCache) {
   ).run(record.id);
   db.prepare("DELETE FROM extractions WHERE source_analysis_id = ?").run(record.id);
 
-  let lines = [];
-  try {
-    if (fs.existsSync(JOURNAL_PATH)) {
-      const { size } = fs.lstatSync(JOURNAL_PATH); // lstatSync: size check (not following symlinks)
-      if (size > 25 * 1024 * 1024) {
-        console.error(
-          "Journal too large for incremental sync (>25MB). Run: node scripts/cas/rebuild-index.js"
-        );
-        return;
-      }
-      lines = fs.readFileSync(JOURNAL_PATH, "utf8").trim().split("\n");
-    }
-  } catch (err) {
-    console.error(`Warning: could not read journal: ${sanitizeError(err)}`);
-  }
+  const lines = loadJournalLines();
 
   const insertExtraction = db.prepare(`
     INSERT INTO extractions
@@ -247,72 +250,75 @@ function main() {
 
   const record = extractSourceRecord(data, slug);
   const db = new Database(DB_PATH);
-  db.pragma("journal_mode = WAL");
-  db.pragma("foreign_keys = ON");
+  try {
+    db.pragma("journal_mode = WAL");
+    db.pragma("foreign_keys = ON");
 
-  const tagCache = new Map();
+    const tagCache = new Map();
 
-  const update = db.transaction(() => {
-    // Upsert source
-    db.prepare(
-      `
+    const update = db.transaction(() => {
+      // Upsert source
+      db.prepare(
+        `
       INSERT OR REPLACE INTO sources
       (id, source_type, source, slug, title, analyzed_at, depth,
        quality_band, quality_score, personal_fit_band, personal_fit_score,
        classification, summary, tags, last_synthesized_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `
-    ).run(
-      record.id,
-      record.source_type,
-      record.source,
-      record.slug,
-      record.title,
-      record.analyzed_at,
-      record.depth,
-      record.quality_band,
-      record.quality_score,
-      record.personal_fit_band,
-      record.personal_fit_score,
-      record.classification,
-      record.summary,
-      record.tags,
-      record.last_synthesized_at
-    );
+      ).run(
+        record.id,
+        record.source_type,
+        record.source,
+        record.slug,
+        record.title,
+        record.analyzed_at,
+        record.depth,
+        record.quality_band,
+        record.quality_score,
+        record.personal_fit_band,
+        record.personal_fit_score,
+        record.classification,
+        record.summary,
+        record.tags,
+        record.last_synthesized_at
+      );
 
-    // Update source tags
-    db.prepare("DELETE FROM source_tags WHERE source_id = ?").run(record.id);
-    let parsedTags = [];
-    try {
-      const maybe = JSON.parse(record.tags);
-      if (Array.isArray(maybe)) parsedTags = maybe.filter((t) => typeof t === "string");
-    } catch {
-      parsedTags = [];
-    }
-    const insertSourceTag = db.prepare(
-      "INSERT OR IGNORE INTO source_tags (source_id, tag_id) VALUES (?, ?)"
-    );
-    for (const tag of parsedTags) {
-      const tagId = ensureTag(db, tag, tagCache);
-      if (tagId) {
-        insertSourceTag.run(record.id, tagId);
+      // Update source tags
+      db.prepare("DELETE FROM source_tags WHERE source_id = ?").run(record.id);
+      let parsedTags = [];
+      try {
+        const maybe = JSON.parse(record.tags);
+        if (Array.isArray(maybe)) parsedTags = maybe.filter((t) => typeof t === "string");
+      } catch {
+        parsedTags = [];
       }
-    }
+      const insertSourceTag = db.prepare(
+        "INSERT OR IGNORE INTO source_tags (source_id, tag_id) VALUES (?, ?)"
+      );
+      for (const tag of parsedTags) {
+        const tagId = ensureTag(db, tag, tagCache);
+        if (tagId) {
+          insertSourceTag.run(record.id, tagId);
+        }
+      }
 
-    // Sync extractions from journal using stable source_analysis_id
-    syncExtractions(db, record, tagCache);
+      // Sync extractions from journal using stable source_analysis_id
+      syncExtractions(db, record, tagCache);
 
-    rebuildFTS(db);
-  });
+      rebuildFTS(db);
+    });
 
-  update();
+    update();
 
-  const count = db
-    .prepare("SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ?")
-    .get(record.id);
+    const count = db
+      .prepare("SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ?")
+      .get(record.id);
 
-  console.log(`Updated index for ${slug}: source upserted, ${count.count} extractions synced.`);
-  db.close();
+    console.log(`Updated index for ${slug}: source upserted, ${count.count} extractions synced.`);
+  } finally {
+    db.close();
+  }
 }
 
 try {

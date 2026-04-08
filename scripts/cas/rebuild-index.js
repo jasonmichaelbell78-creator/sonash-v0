@@ -238,8 +238,9 @@ function main() {
     return;
   }
 
-  // Symlink guard — refuse to delete/create through symlinks
-  if (fs.existsSync(DB_PATH) && !isSafeToWrite(path.resolve(DB_PATH))) {
+  // Symlink guard — refuse to delete/create through symlinks (check unconditionally)
+  if (!isSafeToWrite(path.resolve(DB_PATH))) {
+    // validatePathInDir: constant
     console.error("Refusing to operate on symlinked database path");
     process.exit(1);
   }
