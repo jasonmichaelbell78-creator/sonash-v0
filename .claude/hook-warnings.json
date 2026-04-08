@@ -1,14 +1,16 @@
 {
   "warnings": [
     {
-      "hook": "pre-push",
-      "type": "trigger",
-      "severity": "warning",
-      "message": "Skill/agent files modified",
-      "action": "Validate",
-      "timestamp": "2026-04-08T13:58:42.278Z",
+      "hook": "pre-commit",
+      "type": "propagation-staged",
+      "severity": "error",
+      "message": "BLOCK-severity propagation misses in staged files",
+      "action": "Stage sibling files or fix the old pattern",
+      "timestamp": "2026-04-08T18:50:43.162Z",
       "occurrences": 2,
-      "occurrences_since_ack": 1
+      "occurrences_since_ack": 1,
+      "resolved": true,
+      "resolution": "Fixed in commit 8085381f — all propagation fixes applied"
     },
     {
       "hook": "pre-push",
@@ -24,6 +26,36 @@
       ],
       "pattern": "check-pattern-compliance",
       "occurrences": 1,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "review-lifecycle",
+      "severity": "warning",
+      "message": "Review lifecycle validation issues found",
+      "action": "npm run reviews:lifecycle",
+      "timestamp": "2026-04-08T14:00:15.232Z",
+      "occurrences": 9,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "tdms-s0",
+      "severity": "warning",
+      "message": "S0: 26 critical debt items",
+      "action": "npm run debt:report --severity=S0",
+      "timestamp": "2026-04-08T14:00:15.232Z",
+      "occurrences": 9,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-push",
+      "type": "trigger",
+      "severity": "warning",
+      "message": "Skill/agent files modified",
+      "action": "Validate",
+      "timestamp": "2026-04-08T13:58:42.278Z",
+      "occurrences": 2,
       "occurrences_since_ack": 1
     }
   ]
