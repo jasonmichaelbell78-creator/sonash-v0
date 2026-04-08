@@ -30,7 +30,7 @@ const GROUP_SIZE = 40;
 // Safe-fs wrappers (symlink guard + EXDEV fallback)
 let safeWriteFileSync;
 try {
-  ({ safeWriteFileSync } = require("./lib/safe-fs"));
+  ({ safeWriteFileSync } = require("../lib/safe-fs"));
 } catch {
   console.error("safe-fs unavailable; cannot safely write archives");
   process.exit(2);
@@ -39,7 +39,7 @@ try {
 // Symlink guard + error sanitization
 let isSafeToWrite, sanitizeError;
 try {
-  ({ isSafeToWrite, sanitizeError } = require("./lib/security-helpers"));
+  ({ isSafeToWrite, sanitizeError } = require("../lib/security-helpers"));
 } catch {
   console.error("security-helpers unavailable; refusing to write");
   isSafeToWrite = () => false;

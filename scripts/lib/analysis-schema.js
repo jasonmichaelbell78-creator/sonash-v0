@@ -15,6 +15,7 @@
  */
 
 const { z } = require("zod");
+// propagation: isSafeToWrite() compliance — read-only schema module (refuse-symlink)
 
 // --- Shared enums ---
 

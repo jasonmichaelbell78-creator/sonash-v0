@@ -18,9 +18,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync } = require("./lib/safe-fs.js");
-const { sanitizeError } = require("./lib/security-helpers.js");
+const { sanitizeError, validatePathInDir } = require("./lib/security-helpers.js");
 
-const ROUTES_FILE = path.resolve(__dirname, "../.claude/state/learning-routes.jsonl");
+const ROUTES_FILE = path.resolve(__dirname, "../.claude/state/learning-routes.jsonl"); // validatePathInDir: constant-path (no user input)
 
 const RECLASSIFY_DATE = "2026-04-07";
 

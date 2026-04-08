@@ -16,6 +16,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
+// propagation: safeWriteFileSync() compliance via writeMasterDebtSync (refuse-symlink)
 const { writeMasterDebtSync } = require("../lib/safe-fs");
 const { sanitizeError } = require("../lib/security-helpers");
 

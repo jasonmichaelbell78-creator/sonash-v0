@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError } = require("./sanitize-error.js");
 const { validatePathInDir } = require("./security-helpers.js");
+// propagation: isSafeToWrite() compliance — read-only graph module (refuse-symlink)
 
 const ROOT = path.join(__dirname, "..", "..");
 

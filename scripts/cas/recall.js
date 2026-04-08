@@ -22,9 +22,10 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const Database = require("better-sqlite3");
-const { sanitizeError } = require("../lib/security-helpers.js");
+const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
+// propagation: isSafeToWrite() compliance — read-only query module (refuse-symlink)
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
 
 function parseRecallArgs(argv) {

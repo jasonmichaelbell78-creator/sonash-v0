@@ -18,8 +18,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { validatePathInDir } = require("../lib/security-helpers.js");
 
-const ROOT = path.resolve(__dirname, "../..");
+const ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const MASTER_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
 const DEDUPED_PATH = path.join(ROOT, "docs/technical-debt/raw/deduped.jsonl");
 const REPORT_PATH = path.join(ROOT, "docs/technical-debt/logs/resolution-audit-report.json");

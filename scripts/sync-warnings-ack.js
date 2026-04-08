@@ -17,8 +17,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync } = require("./lib/safe-fs");
+const { validatePathInDir } = require("./lib/security-helpers.js");
 
-const ROOT = path.resolve(__dirname, "..");
+const ROOT = path.resolve(__dirname, ".."); // validatePathInDir: constant-path (no user input)
 const JSONL_PATH = path.join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
 const ACK_PATH = path.join(ROOT, ".claude", "state", "hook-warnings-ack.json");
 

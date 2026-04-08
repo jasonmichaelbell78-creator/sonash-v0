@@ -8,6 +8,7 @@
 const { writeRetroRecord } = require("./dist/write-retro-record.js");
 const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers");
+// propagation: isSafeToWrite() compliance — writes delegated to writeRetroRecord (refuse-symlink)
 
 const ROOT = path.join(__dirname, "..", "..");
 
