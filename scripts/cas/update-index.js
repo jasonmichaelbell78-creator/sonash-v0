@@ -230,8 +230,8 @@ function main() {
     process.exit(1);
   }
 
-  if (!isSafeToWrite(path.resolve(DB_PATH))) {
-    // validatePathInDir: DB_PATH is constant
+  const resolvedDb = path.resolve(DB_PATH); // validatePathInDir: constant
+  if (!isSafeToWrite(resolvedDb)) {
     console.error("Refusing to open symlinked database path");
     process.exit(1);
   }
