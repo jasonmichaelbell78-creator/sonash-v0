@@ -27,7 +27,7 @@ const { sanitizeError } = require("../lib/security-helpers.js");
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
 
-function parseArgs(argv) {
+function parseRecallArgs(argv) {
   const args = {
     query: [],
     tag: null,
@@ -211,7 +211,7 @@ function main() {
     process.exit(1);
   }
 
-  const args = parseArgs(process.argv);
+  const args = parseRecallArgs(process.argv);
   const db = new Database(DB_PATH, { readonly: true });
   db.pragma("journal_mode = WAL");
 

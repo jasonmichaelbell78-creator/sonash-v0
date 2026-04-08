@@ -39,7 +39,7 @@ function bandFromScore(score) {
   return "Critical";
 }
 
-function generateSummary(data, slug) {
+function generateAnalysisSummary(data, slug) {
   // Try creatorLens (repo-analysis)
   if (data.creatorLens && typeof data.creatorLens === "string") {
     const sentences = data.creatorLens.split(/[.!?]+/).filter((s) => s.trim());
@@ -222,7 +222,7 @@ function migrateAnalysis(filePath, slug) {
     depth,
     tags: generateTags(data, sourceType),
     scoring: extractScoring(data),
-    summary: generateSummary(data, slug),
+    summary: generateAnalysisSummary(data, slug),
     creator_view: data.creator_view || data.creatorLens || "",
     candidates: extractCandidates(data),
     last_synthesized_at: null,

@@ -25,7 +25,7 @@ const REPO_ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "repo-analysis");
 const WEBSITE_ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "website-analysis");
 const JOURNAL_PATH = path.join(PROJECT_ROOT, ".research", "extraction-journal.jsonl");
 
-function parseArgs(argv) {
+function parseUpdateArgs(argv) {
   for (const arg of argv.slice(2)) {
     if (arg.startsWith("--slug=")) return arg.slice(7);
   }
@@ -128,7 +128,7 @@ function rebuildFTS(db) {
 }
 
 function main() {
-  const slug = parseArgs(process.argv);
+  const slug = parseUpdateArgs(process.argv);
   if (!slug) {
     console.error("Usage: node scripts/cas/update-index.js --slug=<slug>");
     process.exit(1);
