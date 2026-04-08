@@ -21,7 +21,8 @@
     "isomorphic-dompurify",
     "vaul",
     "@modelcontextprotocol/server-memory",
-    "@typescript/native-preview"
+    "@typescript/native-preview",
+    "better-sqlite3"
   ],
   "ignoreBinaries": ["report", "vitest", "gitleaks"],
   "next": {

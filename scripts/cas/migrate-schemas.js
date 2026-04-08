@@ -113,19 +113,23 @@ function extractScoring(data) {
     fitScore = data.scoring.creatorLens.score;
   }
 
+  let classification;
+  if (fitScore >= 60) {
+    classification = "active-sprint";
+  } else if (fitScore >= 40) {
+    classification = "park-for-later";
+  } else if (qualityScore >= 60) {
+    classification = "evergreen";
+  } else {
+    classification = "not-relevant";
+  }
+
   return {
     quality_band: bandFromScore(qualityScore),
     quality_score: Math.round(qualityScore),
     personal_fit_band: bandFromScore(fitScore),
     personal_fit_score: Math.round(fitScore),
-    classification:
-      fitScore >= 60
-        ? "active-sprint"
-        : fitScore >= 40
-          ? "park-for-later"
-          : qualityScore >= 60
-            ? "evergreen"
-            : "not-relevant",
+    classification,
   };
 }
 
@@ -150,8 +154,8 @@ function extractCandidates(data) {
           type:
             c.type ||
             key
-              .replace("Candidates", "")
-              .replace(/([A-Z])/g, "-$1")
+              .replaceAll("Candidates", "")
+              .replaceAll(/([A-Z])/g, "-$1")
               .toLowerCase()
               .replace(/^-/, ""),
           description: c.detail || c.description || "",
@@ -183,7 +187,7 @@ function generateTags(data, sourceType) {
 
   // Add site type
   if (data.site_type) {
-    tags.push(data.site_type.toLowerCase().replace(/\s+/g, "-"));
+    tags.push(data.site_type.toLowerCase().replaceAll(/\s+/g, "-"));
   }
 
   // Deduplicate
@@ -250,14 +254,43 @@ function migrateAnalysis(filePath, slug) {
 
   // Validate core fields
   const result = validate(final, "analysis");
-  if (!result.success) {
+  if (result.success) {
+    log(`OK ${slug}: migrated to v3.0`);
+  } else {
     console.error(`  WARN ${slug}: validation issues — ${result.error}`);
     // Still write — validation may fail on type-specific union but core is good
-  } else {
-    log(`OK ${slug}: migrated to v3.0`);
   }
 
   return final;
+}
+
+function processEntry(slug, filePath, counts) {
+  const result = migrateAnalysis(filePath, slug);
+
+  if (result === null) {
+    counts.errors++;
+    return;
+  }
+
+  if (result === "already_migrated") {
+    counts.alreadyDone++;
+    return;
+  }
+
+  if (DRY_RUN) {
+    console.log(`  Would migrate: ${slug} (${result.source_type})`);
+    counts.migrated++;
+    return;
+  }
+
+  try {
+    const { safeWriteFileSync } = require("../lib/safe-fs");
+    safeWriteFileSync(filePath, JSON.stringify(result, null, 2) + "\n");
+    counts.migrated++;
+  } catch (err) {
+    console.error(`  ERROR writing ${slug}: ${sanitizeError(err)}`);
+    counts.errors++;
+  }
 }
 
 function main() {
@@ -270,10 +303,7 @@ function main() {
     process.exit(1);
   }
 
-  let migrated = 0;
-  let skipped = 0;
-  let errors = 0;
-  let alreadyDone = 0;
+  const counts = { migrated: 0, skipped: 0, errors: 0, alreadyDone: 0 };
 
   try {
     const entries = fs.readdirSync(ANALYSIS_DIR, { withFileTypes: true });
@@ -286,35 +316,11 @@ function main() {
 
       if (!fs.existsSync(filePath)) {
         log(`SKIP ${slug}: no analysis.json`);
-        skipped++;
+        counts.skipped++;
         continue;
       }
 
-      const result = migrateAnalysis(filePath, slug);
-
-      if (result === null) {
-        errors++;
-        continue;
-      }
-
-      if (result === "already_migrated") {
-        alreadyDone++;
-        continue;
-      }
-
-      if (!DRY_RUN) {
-        try {
-          const { safeWriteFileSync } = require("../lib/safe-fs");
-          safeWriteFileSync(filePath, JSON.stringify(result, null, 2) + "\n");
-          migrated++;
-        } catch (err) {
-          console.error(`  ERROR writing ${slug}: ${sanitizeError(err)}`);
-          errors++;
-        }
-      } else {
-        console.log(`  Would migrate: ${slug} (${result.source_type})`);
-        migrated++;
-      }
+      processEntry(slug, filePath, counts);
     }
   } catch (err) {
     console.error(`Fatal: ${sanitizeError(err)}`);
@@ -322,12 +328,12 @@ function main() {
   }
 
   console.log(`\nResults:`);
-  console.log(`  Migrated: ${migrated}`);
-  console.log(`  Already v3.0: ${alreadyDone}`);
-  console.log(`  Skipped: ${skipped}`);
-  console.log(`  Errors: ${errors}`);
+  console.log(`  Migrated: ${counts.migrated}`);
+  console.log(`  Already v3.0: ${counts.alreadyDone}`);
+  console.log(`  Skipped: ${counts.skipped}`);
+  console.log(`  Errors: ${counts.errors}`);
 
-  if (!DRY_RUN && migrated > 0) {
+  if (!DRY_RUN && counts.migrated > 0) {
     console.log(`\nRebuilding index...`);
     try {
       require("node:child_process").execFileSync(

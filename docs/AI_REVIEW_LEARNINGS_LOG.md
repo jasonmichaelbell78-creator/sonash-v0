@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#55)</summary>
+
+- **Date:** 2026-04-08
+- **Reviews consolidated:** #70-#rev-68
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#54)</summary>
 
 - **Date:** 2026-04-08
@@ -4018,3 +4027,34 @@ stale-rejected, 1 already-fixed)
   design recommendations for future implementation, not bugs in the research
   output. Reject with justification when the document's purpose is to capture
   findings, not serve as an implementation spec.
+
+### Review #72 — PR #503 R1 (Mixed: SonarCloud + Qodo + Gemini + CI)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed | **Round:** R1
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 28    | 24    | 0        | 4        |
+
+**Severity:** 4C / 12M / 7m / 5T
+
+**Patterns:**
+
+- **slug-traversal-validation-scope** — Path traversal guard in update-index.js
+  validated against PROJECT_ROOT instead of ANALYSIS_DIR, allowing slugs like
+  `../../scripts` to escape the analysis directory while staying within the
+  repo. Always validate user-provided path segments against the narrowest
+  containing directory, not the repo root.
+- **falsy-score-clobbering** — Using `||` instead of `??` for numeric fields
+  where 0 is a valid value (quality_score, fit_score). rebuild-index.js already
+  used `??` correctly; update-index.js used `||`. When two code paths handle the
+  same data, ensure they use identical operators.
+- **overbroad-sql-deletion** — `DELETE WHERE source LIKE %slug%` matches
+  unrelated rows. Use stable foreign keys (source_analysis_id) for targeted
+  deletion. Also delete junction table rows first to avoid FK violations.
+- **prepare-inside-loop** — `db.prepare()` inside a loop prepares the same
+  statement on every iteration. Hoist prepared statements above loops for SQLite
+  performance.
+- **bandFromScore-duplication** — Three files had identical nested ternary
+  chains for score-to-band conversion. Extract shared helper and reuse across
+  CAS scripts to reduce CC and eliminate code smell.

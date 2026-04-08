@@ -15,6 +15,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const Database = require("better-sqlite3");
 const { sanitizeError } = require("../lib/security-helpers.js");
+const { isSafeToWrite } = require("../lib/safe-fs");
 const readJsonl = require("../lib/read-jsonl.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
@@ -108,6 +109,13 @@ function createSchema(db) {
   `);
 }
 
+function bandFromScore(score) {
+  if (score >= 80) return "Excellent";
+  if (score >= 60) return "Healthy";
+  if (score >= 40) return "Needs Work";
+  return "Critical";
+}
+
 function findAnalysisFiles() {
   const files = [];
   const dirs = [ANALYSIS_DIR, REPO_ANALYSIS_DIR, WEBSITE_ANALYSIS_DIR];
@@ -168,14 +176,7 @@ function extractSourceRecord(data, slug) {
     const bands = Object.values(data.summary_bands);
     if (bands.length > 0) {
       qualityScore = bands.reduce((sum, b) => sum + (b.score ?? 0), 0) / bands.length;
-      qualityBand =
-        qualityScore >= 80
-          ? "Excellent"
-          : qualityScore >= 60
-            ? "Healthy"
-            : qualityScore >= 40
-              ? "Needs Work"
-              : "Critical";
+      qualityBand = bandFromScore(qualityScore);
     }
   }
 
@@ -235,6 +236,12 @@ function main() {
     const journal = loadExtractionJournal();
     console.log(`Would index: ${files.length} sources, ${journal.length} extractions`);
     return;
+  }
+
+  // Symlink guard — refuse to delete/create through symlinks
+  if (fs.existsSync(DB_PATH) && !isSafeToWrite(path.resolve(DB_PATH))) {
+    console.error("Refusing to operate on symlinked database path");
+    process.exit(1);
   }
 
   // Delete existing DB
@@ -304,7 +311,13 @@ function main() {
       );
       sourceCount++;
 
-      const parsedTags = JSON.parse(record.tags);
+      let parsedTags = [];
+      try {
+        const maybe = JSON.parse(record.tags);
+        if (Array.isArray(maybe)) parsedTags = maybe.filter((t) => typeof t === "string");
+      } catch {
+        parsedTags = [];
+      }
       for (const tag of parsedTags) {
         const tagId = ensureTag(db, tag, tagCache);
         if (tagId) insertSourceTag.run(record.id, tagId);

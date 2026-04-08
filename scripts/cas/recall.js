@@ -49,7 +49,7 @@ function parseRecallArgs(argv) {
     } else if (arg.startsWith("--source=")) {
       args.source = arg.slice(9);
     } else if (arg.startsWith("--limit=")) {
-      args.limit = parseInt(arg.slice(8), 10) || 20;
+      args.limit = Number.parseInt(arg.slice(8), 10) || 20;
     } else if (arg === "--target=sources") {
       args.target = "sources";
     } else if (arg === "--stats") {
@@ -113,10 +113,19 @@ function queryExtractions(db, args) {
   const params = [];
 
   if (args.freeText) {
-    conditions.push(
-      "e.rowid IN (SELECT rowid FROM search_extractions WHERE search_extractions MATCH ?)"
-    );
-    params.push(args.freeText);
+    // Sanitize FTS5 input: tokenize, quote terms, join with AND
+    const tokens = args.freeText
+      .split(/\s+/)
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .map((t) => `"${t.replaceAll('"', "")}"`);
+    const ftsQuery = tokens.join(" AND ");
+    if (ftsQuery) {
+      conditions.push(
+        "e.rowid IN (SELECT rowid FROM search_extractions WHERE search_extractions MATCH ?)"
+      );
+      params.push(ftsQuery);
+    }
   }
 
   if (args.tag) {
@@ -166,8 +175,16 @@ function querySources(db, args) {
   const params = [];
 
   if (args.freeText) {
-    conditions.push("s.rowid IN (SELECT rowid FROM search_sources WHERE search_sources MATCH ?)");
-    params.push(args.freeText);
+    const tokens = args.freeText
+      .split(/\s+/)
+      .map((t) => t.trim())
+      .filter(Boolean)
+      .map((t) => `"${t.replaceAll('"', "")}"`);
+    const ftsQuery = tokens.join(" AND ");
+    if (ftsQuery) {
+      conditions.push("s.rowid IN (SELECT rowid FROM search_sources WHERE search_sources MATCH ?)");
+      params.push(ftsQuery);
+    }
   }
 
   if (args.tag) {
@@ -188,8 +205,7 @@ function querySources(db, args) {
 
   const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-  let orderBy = "ORDER BY s.analyzed_at DESC";
-  if (args.sort === "recent") orderBy = "ORDER BY s.analyzed_at DESC";
+  const orderBy = "ORDER BY s.analyzed_at DESC";
 
   const sql = `
     SELECT s.title, s.source_type, s.source, s.slug, s.depth,

@@ -16,6 +16,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 const ROOT = path.resolve(__dirname, "..");
 const JSONL_PATH = path.join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
@@ -113,7 +114,13 @@ if (!allTypesAcked) {
 // All types are per-type acked — bump lastCleared
 const now = new Date().toISOString();
 ack.lastCleared = now;
-fs.writeFileSync(ACK_PATH, JSON.stringify(ack, null, 2) + "\n");
+try {
+  safeWriteFileSync(ACK_PATH, JSON.stringify(ack, null, 2) + "\n");
+} catch (err) {
+  const { sanitizeError } = require("./lib/security-helpers");
+  console.error("Failed to write ack file: " + sanitizeError(err));
+  process.exit(1);
+}
 console.log(
   "Synced lastCleared to " + now + " (" + unresolvedTypes.size + " type(s) all acknowledged)"
 );
