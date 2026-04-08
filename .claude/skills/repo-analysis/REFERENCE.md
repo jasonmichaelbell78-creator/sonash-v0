@@ -199,40 +199,63 @@ diversity). Other dimensions require clone.
 ## 3. Output Schemas
 
 Eight primary artifacts plus one injectable Markdown summary. All written to
-`.research/repo-analysis/<repo-slug>/`. All v2.0 artifacts include a
-`schema_version` field. Files without `schema_version` are implicitly v1.0 and
-will be migrated on re-scan (re-scan IS the migration; old files archived to
-`archive/`).
+`.research/analysis/<repo-slug>/`. All v2.0 artifacts include a `schema_version`
+field. Files without `schema_version` are implicitly v1.0 and will be migrated
+on re-scan (re-scan IS the migration; old files archived to `archive/`).
 
 ### 3.1 `analysis.json`
 
-Top-level analysis result. Consumed by `/deep-plan` as research context and by
-the Compare resume option.
+Top-level analysis result. Consumed by `/deep-plan` as research context, by
+`/recall` for search indexing, and by the Compare resume option.
+
+**Validates against:** `scripts/lib/analysis-schema.js` (`analysisRecordCore`).
+See `.claude/skills/shared/CONVENTIONS.md` Section 12 for schema contract.
 
 ```json
 {
-  "schema_version": "2.0",
-  "meta": {
-    "repo": "OWNER/REPO",
-    "url": "https://github.com/OWNER/REPO",
-    "scan_date": "YYYY-MM-DD",
-    "scan_depth": "quick|standard|deep",
-    "scan_version": "2.0",
-    "clone_dir": "/tmp/repo-analysis-<slug>/",
-    "files_cloned": 796
+  "id": "UUID",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "OWNER/REPO",
+  "slug": "repo-slug",
+  "title": "Repository Name",
+  "analyzed_at": "ISO8601",
+  "depth": "quick|standard|deep",
+  "tags": ["repo", "extraction", "architecture"],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 72,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 85,
+    "classification": "active-sprint"
   },
-  "repo_type": "library|application|curated-list|registry|documentation-hub|monorepo",
-  "repo_type_secondary": "string|null",
-  "ecosystem_tags": ["agent-architecture", "skill-framework"],
-  "repo": {
-    "description": "string",
+  "summary": "2-3 sentence summary of what this source is and what was learned.",
+  "creator_view": "Full Creator View prose (from creator-view.md content)",
+  "candidates": [
+    {
+      "name": "Candidate Name",
+      "type": "pattern|knowledge|content|anti-pattern",
+      "description": "What it is and why it matters",
+      "novelty": "high|medium|low",
+      "effort": "E0|E1|E2|E3",
+      "relevance": "high|medium|low",
+      "tags": ["architecture"]
+    }
+  ],
+  "last_synthesized_at": null,
+
+  "metadata": {
+    "url": "https://github.com/OWNER/REPO",
+    "scan_version": "4.3",
+    "clone_dir": "/tmp/repo-analysis-<slug>/",
+    "files_cloned": 796,
+    "stars": 27518,
     "language": "Python",
     "license": "Apache-2.0",
     "created_at": "ISO8601",
     "pushed_at": "ISO8601",
     "age_days": 26,
     "size_kb": 22982,
-    "stars": 27518,
     "forks": 2569,
     "open_issues": 73,
     "contributors": 44,
@@ -240,6 +263,8 @@ the Compare resume option.
     "is_archived": false,
     "languages": { "Python": 4772855, "JavaScript": 31014 }
   },
+  "repo_type": "library|application|curated-list|registry|documentation-hub|monorepo",
+  "repo_type_secondary": "string|null",
   "dimensions": {
     "QS-01_activity_pulse": {
       "score": 95,
@@ -305,27 +330,48 @@ the Compare resume option.
 
 **Field definitions:**
 
-| Field                                | Type   | Description                                                                                         |
-| ------------------------------------ | ------ | --------------------------------------------------------------------------------------------------- |
-| `schema_version`                     | string | Schema version (`"2.0"`). Absent = v1.0 (legacy)                                                    |
-| `repo_type`                          | string | Primary type: library/application/curated-list/registry/documentation-hub/monorepo (see Section 5b) |
-| `repo_type_secondary`                | string | Secondary type (null if single-type). Informational only                                            |
-| `ecosystem_tags`                     | array  | Lightweight tags for synthesis skill (e.g., `["agent-architecture", "skill-framework"]`)            |
-| `meta.repo`                          | string | GitHub `OWNER/REPO` identifier                                                                      |
-| `meta.url`                           | string | Full GitHub URL                                                                                     |
-| `meta.scan_date`                     | string | Date of analysis (YYYY-MM-DD)                                                                       |
-| `meta.scan_depth`                    | string | Depth tier: `quick`, `standard`, or `deep`                                                          |
-| `meta.scan_version`                  | string | Skill version used for this analysis                                                                |
-| `meta.clone_dir`                     | string | Clone location (null for Quick Scan)                                                                |
-| `meta.files_cloned`                  | number | Number of files in clone (null for Quick Scan)                                                      |
-| `repo.*`                             | object | GitHub metadata (description, language, license, stars, etc.)                                       |
-| `dimensions.*`                       | object | Per-dimension: score (0-100), band, and detail string                                               |
-| `summary_bands.*`                    | object | 6-dimension summary: Security, Reliability, etc.                                                    |
-| `absence_patterns`                   | array  | Objects with pattern name, confidence, and evidence                                                 |
-| `adoption_assessment`                | object | Whole-repo adoption verdict + WR dimensions (see Sec 1.3)                                           |
-| `adoption_assessment.verdict`        | string | Adopt / Trial / Extract / Avoid                                                                     |
-| `adoption_assessment.verdict_score`  | number | Weighted average of WR dimensions, 0-100                                                            |
-| `adoption_assessment.recommendation` | string | One-sentence adoption recommendation                                                                |
+**Unified core fields (required — validated by Zod):**
+
+| Field                 | Type   | Description                                                      |
+| --------------------- | ------ | ---------------------------------------------------------------- |
+| `id`                  | string | UUID, stable across rebuilds                                     |
+| `schema_version`      | string | Schema version (`"3.0"`)                                         |
+| `source_type`         | string | Always `"repo"` for this handler                                 |
+| `source`              | string | GitHub `OWNER/REPO` identifier                                   |
+| `slug`                | string | Directory slug for `.research/analysis/<slug>/`                  |
+| `title`               | string | Repository name (from GitHub API)                                |
+| `analyzed_at`         | string | ISO8601 timestamp of analysis                                    |
+| `depth`               | string | `quick`, `standard`, or `deep`                                   |
+| `tags`                | array  | Auto-generated + user tags (see Tag Suggestion step)             |
+| `scoring`             | object | Unified scoring: quality + personal fit bands and scores         |
+| `summary`             | string | 2-3 sentence summary of what this source is and what was learned |
+| `creator_view`        | string | Full Creator View prose (from creator-view.md)                   |
+| `candidates`          | array  | All candidates from value-map.json in unified format             |
+| `last_synthesized_at` | string | ISO8601 or null — set by synthesis, not by handler               |
+
+**Repo-specific fields (optional — type-specific extensions):**
+
+| Field                                | Type   | Description                                               |
+| ------------------------------------ | ------ | --------------------------------------------------------- |
+| `metadata`                           | object | GitHub stats, scan metadata, clone info                   |
+| `repo_type`                          | string | Primary type (see Section 5b)                             |
+| `repo_type_secondary`                | string | Secondary type (null if single-type)                      |
+| `dimensions.*`                       | object | Per-dimension: score (0-100), band, and detail string     |
+| `summary_bands.*`                    | object | 6-dimension summary: Security, Reliability, etc.          |
+| `absence_patterns`                   | array  | Objects with pattern name, confidence, and evidence       |
+| `adoption_assessment`                | object | Whole-repo adoption verdict + WR dimensions (see Sec 1.3) |
+| `adoption_assessment.verdict`        | string | Adopt / Trial / Extract / Avoid                           |
+| `adoption_assessment.verdict_score`  | number | Weighted average of WR dimensions, 0-100                  |
+| `adoption_assessment.recommendation` | string | One-sentence adoption recommendation                      |
+
+**Scoring mapping:** The `scoring` object is derived from `summary_bands`:
+
+- `quality_score` = average of 6 summary band scores
+- `quality_band` = band for that average (per CONVENTIONS.md Section 4)
+- `personal_fit_score` = from adoption_assessment.verdict_score (or average if
+  no adoption assessment)
+- `personal_fit_band` = band for that score
+- `classification` = from fit scoring thresholds (CONVENTIONS.md Section 5)
 
 **Critical Health Metric:** The minimum score across all 6 summary dimensions. A
 repo with a 90 average but a 15 security score is `Critical` regardless of
@@ -587,7 +633,7 @@ Three artifacts track extraction decisions and outcomes across repos.
 
 #### 3.6.1 Per-Candidate Extraction Result
 
-**Location:** `.research/repo-analysis/<slug>/extractions/<candidate-slug>.json`
+**Location:** `.research/analysis/<slug>/extractions/<candidate-slug>.json`
 
 Written when user acts on a candidate in the Extract routing flow.
 
@@ -632,8 +678,8 @@ Written when user acts on a candidate in the Extract routing flow.
 
 Append-only log across ALL analyzed entities (repos and websites). One line per
 extraction decision. Uses unified v2.0 schema shared with website-analysis.
-Legacy files at `.research/repo-analysis/extraction-journal.jsonl` have been
-removed. All data lives at the canonical location only.
+Legacy files at `.research/analysis/extraction-journal.jsonl` have been removed.
+All data lives at the canonical location only.
 
 ```jsonl
 {
@@ -672,7 +718,7 @@ removed. All data lives at the canonical location only.
 #### 3.6.3 `EXTRACTIONS.md` (Human-Readable Summary)
 
 **Location:** `.research/EXTRACTIONS.md` (canonical root path only). Legacy
-files at `.research/repo-analysis/EXTRACTIONS.md` have been removed.
+files at `.research/analysis/EXTRACTIONS.md` have been removed.
 
 Auto-regenerated from `extraction-journal.jsonl` after each Extract routing
 flow. Grouped by status for quick scanning.
@@ -720,7 +766,7 @@ _(truncated for brevity)_
 
 ### 3.7 `mined-links.jsonl`
 
-**Location:** `.research/repo-analysis/<slug>/mined-links.jsonl`
+**Location:** `.research/analysis/<slug>/mined-links.jsonl`
 
 One record per link extracted during the Link Mining Pipeline (Section 16).
 Produced conditionally when `repo_type` is `curated-list` or `registry`.
@@ -773,8 +819,8 @@ upgraded to `"high"` after Depth 1 fetching.
 ### 3.8 `reading-chain.jsonl`
 
 **Location:** `.research/reading-chain.jsonl` (canonical root path, cross-repo,
-NOT per-slug). Legacy files at `.research/repo-analysis/reading-chain.jsonl`
-remain valid
+NOT per-slug). Legacy files at `.research/analysis/reading-chain.jsonl` remain
+valid
 
 Append-only log of relationships between analyzed repos. Populated during Phase
 4 (Creator View) and Phase 6 (Value Map) when cross-repo relationships are
@@ -1198,7 +1244,7 @@ special chars). Examples:
   "dimensions_failed": [],
   "clone_dir": "/tmp/repo-analysis-<slug>/",
   "clone_strategy": "none|blobless-shallow|blobless-history|full",
-  "output_dir": ".research/repo-analysis/<repo-slug>/",
+  "output_dir": ".research/analysis/<repo-slug>/",
   "agents": {
     "spawned": 0,
     "completed": 0
@@ -1422,7 +1468,7 @@ Every analysis run appends one record for cross-skill discoverability.
 | `depth`            | string | `quick` / `standard` / `deep`                   |
 | `date`             | string | ISO 8601 timestamp                              |
 | `score_summary`    | object | `{ security: 52, reliability: 78, ... }`        |
-| `output_dir`       | string | Path to `.research/repo-analysis/<slug>/`       |
+| `output_dir`       | string | Path to `.research/analysis/<slug>/`            |
 | `absence_patterns` | array  | Detected patterns (e.g., `["SECURITY_FACADE"]`) |
 
 **Readers:** `/deep-plan` Phase 0 (discovers prior research), session-begin
@@ -1642,8 +1688,8 @@ Absorbed from SKILL.md v2.0 to keep SKILL.md under 300 lines.
 temp directories — do NOT spawn agents for small repos.
 
 **Large repos (20+ files):** Copy clone to project workspace at
-`.research/repo-analysis/<slug>/source/`, then spawn agents against that path.
-Max 4 concurrent. See Section 10 for agent allocation.
+`.research/analysis/<slug>/source/`, then spawn agents against that path. Max 4
+concurrent. See Section 10 for agent allocation.
 
 **Agent failure handling (MUST):**
 
@@ -1769,7 +1815,7 @@ how repos relate.
 
 ### 17.1 During Phase 4 (Creator View)
 
-1. Check `.research/repo-analysis/*/value-map.json` for existing analyses
+1. Check `.research/analysis/*/value-map.json` for existing analyses
 2. If matches found (similar `ecosystem_tags`, overlapping candidates):
    - Add cross-reference notes in Creator View Section 2 (What's Relevant)
    - Example: "This repo's rate limiter pattern is similar to what you found in
@@ -1779,8 +1825,8 @@ how repos relate.
 
 ### 17.2 During Phase 6 (Value Map Generation)
 
-1. Append to `.research/repo-analysis/reading-chain.jsonl` (Section 3.8) for any
-   repo relationships discovered during analysis
+1. Append to `.research/analysis/reading-chain.jsonl` (Section 3.8) for any repo
+   relationships discovered during analysis
 2. Check `reading-chain.jsonl` for existing chains that this repo extends
 3. If this repo was referenced by a previously-analyzed repo, note the
    back-reference
@@ -1794,7 +1840,7 @@ After analysis completion, if 3+ repos have been analyzed:
 Run now? [y/N]"
 ```
 
-Check: `ls .research/repo-analysis/*/analysis.json | wc -l >= 3`
+Check: `ls .research/analysis/*/analysis.json | wc -l >= 3`
 
 ---
 
@@ -1812,6 +1858,6 @@ Check: `ls .research/repo-analysis/*/analysis.json | wc -l >= 3`
 |         |            | SKILL.md compressed to <300 lines.                  |
 | 2.0     | 2026-04-03 | Schema alignment, adoption assessment, extraction   |
 |         |            | persistence, agent capture fixes, repomix           |
-| 1.2     | 2026-04-03 | Output path: .research/repo-analysis/<slug>/        |
+| 1.2     | 2026-04-03 | Output path: .research/analysis/<slug>/             |
 | 1.1     | 2026-04-02 | Skill-audit: 16 decisions — UX, guard rails, labels |
 | 1.0     | 2026-04-02 | Initial: 3 tiers, 45 dimensions, routing, resume    |

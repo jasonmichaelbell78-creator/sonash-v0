@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "description": "Maps extraction-journal.jsonl 'source' values to .research/ directory slugs. Required for T28 migration (C-042).",
+    "created": "2026-04-08",
+    "session": 269,
+    "derivable_rule": "lowercase + replace '/' with '-'. 4 of 13 repo slugs follow this rule; the rest are manually mapped."
+  },
+  "repos": {
+    "DS4SD/docling": "docling",
+    "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist": "bulk-transcribe-youtube-playlist",
+    "HKUDS/CLI-Anything": "hkuds-cli-anything",
+    "ViktorAxelsen/MemSkill": "viktoraxelsen-memskill",
+    "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws": "aws-media-extraction",
+    "codecrafters-io/build-your-own-x": "codecrafters-io-build-your-own-x",
+    "iawia002/lux": "lux-video-downloader",
+    "jdepoix/youtube-transcript-api": "youtube-transcript-api",
+    "karpathy/autoresearch": "karpathy-autoresearch",
+    "ksharlandjiev/bedrock-summarize-audio-video-text": "bedrock-summarize-audio-video-text",
+    "public-apis/public-apis": "public-apis_public-apis",
+    "teng-lin/notebooklm-py": "teng-lin_notebooklm-py",
+    "unstructured-io/unstructured": "unstructured"
+  },
+  "websites": {
+    "https://docs.composio.dev/docs": "docs-composio-dev",
+    "https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d": "farzaa-gist-c35ac0cf",
+    "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f": "karpathy-gist-442a6bf",
+    "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea": "kieranklaassen-gist-4f2aba89",
+    "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203": "maharshi-pandya-gist-4aeccbe1"
+  }
+}

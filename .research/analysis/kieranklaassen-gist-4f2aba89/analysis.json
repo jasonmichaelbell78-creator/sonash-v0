@@ -1,0 +1,95 @@
+{
+  "id": "b9334c8e-c54b-4b03-80b0-4524535e6afa",
+  "schema_version": "3.0",
+  "source_type": "website",
+  "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+  "slug": "kieranklaassen-gist-4f2aba89",
+  "title": "Claude Code Swarm Orchestration Skill",
+  "analyzed_at": "2026-04-07",
+  "depth": "standard",
+  "tags": [
+    "website",
+    "claude-code",
+    "multi-agent",
+    "swarm",
+    "teammatetool",
+    "orchestration",
+    "subagents",
+    "tmux",
+    "documentation"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 70,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 80,
+    "fit_classification": "active-sprint"
+  },
+  "summary": "TeammateTool enables persistent multi-agent teams with inbox messaging Three spawn backends (in-process, tmux, iterm2) serve different visibility needs",
+  "creator_view": "",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "meta": {
+    "url": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+    "domain": "gist.github.com",
+    "slug": "kieranklaassen-gist-4f2aba89",
+    "scan_date": "2026-04-07",
+    "scan_depth": "standard",
+    "scan_mode": "page",
+    "scan_version": "1.0",
+    "extraction_mode": "superpowers-chrome",
+    "pages_analyzed": 1
+  },
+  "site_type": "Documentation",
+  "site_type_secondary": null,
+  "site_type_confidence": 0.9,
+  "ecosystem_tags": [
+    "claude-code",
+    "multi-agent",
+    "swarm",
+    "teammatetool",
+    "orchestration",
+    "subagents",
+    "tmux"
+  ],
+  "tech_stack": ["GitHub Gist", "Markdown", "Claude Code"],
+  "site": {
+    "title": "Claude Code Swarm Orchestration Skill",
+    "description": "Complete guide to multi-agent coordination with TeammateTool, Task system, and orchestration patterns",
+    "author": "kieranklaassen",
+    "language": "en",
+    "last_modified": null,
+    "has_rss": false,
+    "rss_url": null
+  },
+  "value_axes": {
+    "actionability": 90,
+    "novelty": 55,
+    "evidence_quality": 70,
+    "technical_depth": 92,
+    "recency": 75,
+    "relevance_to_stack": 95,
+    "cross_reference_density": 15,
+    "synthesis_quality": 60,
+    "ecosystem_coverage": 80,
+    "contrarian_signal": 20,
+    "teaching_quality": 85,
+    "reproducibility": 95,
+    "strategic_fit": 75
+  },
+  "absence_patterns": [
+    "No convergence or quality verification of agent outputs",
+    "No compaction handling or state persistence for long-running teams",
+    "No discussion of agent stalling or context exhaustion",
+    "No cost or token budget considerations",
+    "No treatment of cross-session team persistence"
+  ],
+  "key_claims": [
+    "TeammateTool enables persistent multi-agent teams with inbox messaging",
+    "Three spawn backends (in-process, tmux, iterm2) serve different visibility needs",
+    "Task dependency auto-unblocking creates declarative pipelines",
+    "Subagents and teammates serve different coordination patterns",
+    "Write is preferable to broadcast for team communication",
+    "Six patterns cover most multi-agent coordination needs"
+  ]
+}

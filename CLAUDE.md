@@ -209,9 +209,13 @@ Interactive tools (suggest to user when appropriate): `lazygit`, `yazi`, `fzf`.
 | React/frontend component work   | `frontend-developer` agent                                                                | Task  |
 | UI/frontend design              | `frontend-design` skill                                                                   | Skill |
 | New UI feature                  | Generate `.protocol.json`                                                                 | Write |
-| External repo analysis          | `repo-analysis` skill                                                                     | Skill |
-| Cross-repo synthesis (3+ repos) | `repo-synthesis` skill                                                                    | Skill |
-| Website/URL analysis            | `website-analysis` skill                                                                  | Skill |
+| Analyze any source              | `analyze` skill (router — detects type, dispatches to handler)                            | Skill |
+| Query extracted knowledge       | `recall` skill (search extractions, tags, sources)                                        | Skill |
+| External repo analysis          | `repo-analysis` skill (also via `/analyze`)                                               | Skill |
+| Cross-repo synthesis (3+ repos) | `repo-synthesis` skill (also via `/analyze --synthesize`)                                 | Skill |
+| Website/URL analysis            | `website-analysis` skill (also via `/analyze`)                                            | Skill |
+| Document analysis (PDF, gist)   | `document-analysis` skill (also via `/analyze`)                                           | Skill |
+| Media analysis (video, audio)   | `media-analysis` skill (also via `/analyze`)                                              | Skill |
 
 ### POST-TASK (before committing) `[GATE: pre-commit hook + code-reviewer]`
 

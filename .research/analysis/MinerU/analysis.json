@@ -1,0 +1,80 @@
+{
+  "id": "079034a2-203d-4ab1-aa1a-f2b7faecf3d1",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "MinerU",
+  "slug": "MinerU",
+  "title": "MinerU",
+  "analyzed_at": null,
+  "depth": "quick",
+  "tags": ["repo", "framework"],
+  "scoring": {
+    "quality_band": "Excellent",
+    "quality_score": 85,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 50,
+    "classification": "park-for-later"
+  },
+  "summary": "Document parsing engine with three notable architectural patterns: (1) Async task API (POST /tasks with status querying and result retrieval) — partial answer to resumable extraction, (2) mineru-router for multi-service multi-GPU load balancing with unified API, (3) MCP server integration for Cursor/Claude Desktop/Windsurf.  VLM+OCR dual engine with sliding window for long docs.",
+  "creator_view": "Document parsing engine with three notable architectural patterns: (1) Async task API (POST /tasks with status querying and result retrieval) — partial answer to resumable extraction, (2) mineru-router for multi-service multi-GPU load balancing with unified API, (3) MCP server integration for Cursor/Claude Desktop/Windsurf. VLM+OCR dual engine with sliding window for long docs. v3.0.0 released today — thread-safe concurrent inference, streaming writes. AGPL-3.0.",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "schemaVersion": "4.3",
+  "skillVersion": "4.3",
+  "repo": "opendatalab/MinerU",
+  "url": "https://github.com/opendatalab/MinerU",
+  "analyzedAt": "2026-04-07T16:30:00Z",
+  "repoType": "framework",
+  "repoSubtype": "document-parsing-engine",
+  "metadata": {
+    "stars": 58549,
+    "forks": 4848,
+    "contributors": 73,
+    "language": "Python",
+    "license": "AGPL-3.0",
+    "lastPush": "2026-04-07T15:03:55Z",
+    "size": 151458,
+    "openIssues": 160,
+    "archived": false,
+    "fork": false
+  },
+  "summaryBands": {
+    "security": {
+      "band": "B",
+      "score": 72
+    },
+    "reliability": {
+      "band": "A",
+      "score": 94
+    },
+    "maintainability": {
+      "band": "B",
+      "score": 78
+    },
+    "documentation": {
+      "band": "A",
+      "score": 88
+    },
+    "process": {
+      "band": "A",
+      "score": 85
+    },
+    "velocity": {
+      "band": "A",
+      "score": 95
+    }
+  },
+  "absencePattern": "none",
+  "creatorLens": "Document parsing engine with three notable architectural patterns: (1) Async task API (POST /tasks with status querying and result retrieval) — partial answer to resumable extraction, (2) mineru-router for multi-service multi-GPU load balancing with unified API, (3) MCP server integration for Cursor/Claude Desktop/Windsurf. VLM+OCR dual engine with sliding window for long docs. v3.0.0 released today — thread-safe concurrent inference, streaming writes. AGPL-3.0.",
+  "context": {
+    "t28Relevance": "QS-only but architecturally informative. Async task API addresses Gap Agent A Q5 (progressive extraction). Router pattern is deployment, not architecture. AGPL-3.0 limits adoption.",
+    "cluster": "B",
+    "notablePatterns": [
+      "Async task API (POST /tasks) with status polling — resumable extraction pattern",
+      "mineru-router for multi-service load balancing",
+      "VLM+OCR dual engine (pipeline/vlm-engine/hybrid-engine) — three extraction strategies",
+      "Sliding window + streaming writes for long documents",
+      "MCP server for agentic AI integration"
+    ]
+  }
+}

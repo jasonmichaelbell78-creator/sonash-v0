@@ -4,7 +4,7 @@ description: >-
   Dual-lens repo analysis: Creator View (knowledge, insights, home-repo
   comparison) + Engineer View (health, security, process). Three tiers
   (Quick/Standard/Deep). Link mining for curated lists. Fit separation via dual
-  scoring lenses. Outputs to .research/repo-analysis/<repo-slug>/.
+  scoring lenses. Outputs to .research/analysis/<repo-slug>/.
 ---
 
 <!-- prettier-ignore-start -->
@@ -66,10 +66,13 @@ Quick dependency check -> `gh api` directly.
 **Flags:** `--depth=quick` (default) | `--depth=standard` | `--depth=deep` |
 `--lens=adoption|creator` (override auto-detected primary lens)
 
-**Output:** `.research/repo-analysis/<repo-slug>/` — analysis.json,
-findings.jsonl, value-map.json, trends.jsonl, summary.md, creator-view.md,
-research-index.jsonl, mined-links.jsonl (curated-list only), repomix-output.txt
-(gitignored).
+**Output:** `.research/analysis/<repo-slug>/` — analysis.json (unified schema
+v3.0, validated by `scripts/lib/analysis-schema.js`), findings.jsonl,
+value-map.json, trends.jsonl, summary.md, creator-view.md, research-index.jsonl,
+mined-links.jsonl (curated-list only), repomix-output.txt (gitignored).
+
+**Schema contract:** analysis.json MUST validate against the unified Zod schema
+in `scripts/lib/analysis-schema.js`. See CONVENTIONS.md Section 12.
 
 ---
 
@@ -139,10 +142,10 @@ at invocation, skip this gate.
 Subagents cannot access temp directories — do not spawn agents for small repos.
 
 **Large repos (20+ files):** Copy clone to project workspace
-(`.research/repo-analysis/<slug>/source/`), then spawn up to 4 concurrent
-agents. Verify each agent's output file exists after completion. If empty or
-missing: capture task-notification result text and write it to the dimension
-file. If agent failed entirely: report failure, continue with available data.
+(`.research/analysis/<slug>/source/`), then spawn up to 4 concurrent agents.
+Verify each agent's output file exists after completion. If empty or missing:
+capture task-notification result text and write it to the dimension file. If
+agent failed entirely: report failure, continue with available data.
 
 **Dimensions:** Security audit, architecture analysis, documentation quality,
 test infrastructure. See REFERENCE.md Section 1.2 for full catalog.
@@ -236,7 +239,7 @@ Write output to `creator-view.md`. **Self-verify (SHOULD):** Re-read generated
 Creator View; verify each home repo claim (file paths, skill names, projects)
 references something that exists.
 
-(SHOULD) Check existing analyses in `.research/repo-analysis/` for cross-refs.
+(SHOULD) Check existing analyses in `.research/analysis/` for cross-refs.
 
 ---
 
@@ -370,6 +373,22 @@ value-map.json. For each connection to another analyzed repo, record:
 
 These connections feed `/repo-synthesis`. Flag connection points even if the
 target repo hasn't been analyzed yet — they become leads for future analysis.
+
+## Tag Suggestion (Phase 6c — MUST for Standard/Deep)
+
+After writing value-map.json, suggest 5-8 tags for the analysis record based on:
+
+1. Source type: `repo`
+2. Repo type: e.g., `library`, `curated-list`
+3. Top dimensions: e.g., `architecture`, `security`
+4. Candidate types found: e.g., `pattern`, `anti-pattern`
+5. Topic keywords from creator view: e.g., `extraction`, `react`, `mcp`
+
+Present to user: "Suggested tags: [list]. Accept, modify, or add your own?"
+Store accepted tags in `analysis.json` `tags` array. Per CONVENTIONS.md
+Section 14.
+
+---
 
 ## Coverage Audit (Phase 6b — MUST for Standard/Deep)
 

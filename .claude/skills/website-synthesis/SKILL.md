@@ -51,7 +51,7 @@ and trends visible only at scale.
 
 - User invokes `/website-synthesis` explicitly
 - Auto-offered by `/website-analysis` routing menu when 3+ sites exist in
-  `.research/website-analysis/`
+  `.research/analysis/`
 - User wants cross-site insights, not per-site analysis
 - After completing a batch of website analyses
 - High-link-density trigger (>40 external links on a page suggests cross-site)
@@ -70,7 +70,7 @@ analyzed sites -> analyze more first | Cross-repo synthesis -> `/repo-synthesis`
 - `--min-sites=N` (override minimum, default 3)
 - `--focus=themes|signals|map|portfolio` (produce only selected outputs)
 
-**Input artifacts** (consumed from `.research/website-analysis/*/`):
+**Input artifacts** (consumed from `.research/analysis/*/`):
 
 | Artifact           | Required | Purpose                                    |
 | ------------------ | -------- | ------------------------------------------ |
@@ -81,8 +81,8 @@ analyzed sites -> analyze more first | Cross-repo synthesis -> `/repo-synthesis`
 | `meta.json`        | SHOULD   | Site metadata (OG, JSON-LD)                |
 | `findings.jsonl`   | SHOULD   | Individual findings with source URLs       |
 
-**Output:** `.research/website-analysis/synthesis/synthesis.md` (primary) +
-`.research/website-analysis/synthesis/synthesis.json` (structured)
+**Output:** `.research/analysis/synthesis/synthesis.md` (primary) +
+`.research/analysis/synthesis/synthesis.json` (structured)
 
 ---
 
@@ -147,8 +147,7 @@ Phase markers: `========== PHASE N: [NAME] ==========`
 
 Present synthesis scope before beginning work:
 
-- **Site count:** Number of analyzed sites found in
-  `.research/website-analysis/`
+- **Site count:** Number of analyzed sites found in `.research/analysis/`
 - **Candidate count estimate:** Total candidates across all value-map.json files
 - **Selected paradigm:** The paradigm being used (from `--paradigm` flag or
   default thematic)
@@ -165,7 +164,7 @@ Wait for user acknowledgment before proceeding.
 
 ## Validate
 
-Check `.research/website-analysis/*/analysis.json` — count sites with complete
+Check `.research/analysis/*/analysis.json` — count sites with complete
 artifacts. If fewer than 3: report count and exit. List sites being synthesized
 with their source tiers.
 

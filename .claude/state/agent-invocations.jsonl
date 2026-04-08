@@ -122,3 +122,9 @@
 {"agent":"Explore","description":"Mine git log for .research/ access patterns","outcome":"invoked","timestamp":"2026-04-08T11:54:45.336Z"}
 {"agent":"Explore","description":"Analyze .research/ file structure for query surface","outcome":"invoked","timestamp":"2026-04-08T11:54:54.508Z"}
 {"agent":"security-auditor","description":"Security pattern propagation across archive scripts","outcome":"invoked","timestamp":"2026-04-08T13:46:13.834Z"}
+{"agent":"Explore","description":"Map repo-analysis output schema","outcome":"invoked","timestamp":"2026-04-08T16:51:14.247Z"}
+{"agent":"Explore","description":"Map website-analysis output schema","outcome":"invoked","timestamp":"2026-04-08T16:51:30.620Z"}
+{"agent":"code-reviewer","description":"Code review T28 CAS deliverables","outcome":"invoked","timestamp":"2026-04-08T18:01:52.813Z"}
+{"agent":"fullstack-developer","description":"Create analyze + recall REFERENCE.md","outcome":"invoked","timestamp":"2026-04-08T18:14:49.707Z"}
+{"agent":"fullstack-developer","description":"Create document + media REFERENCE.md","outcome":"invoked","timestamp":"2026-04-08T18:15:03.660Z"}
+{"agent":"fullstack-developer","description":"Create agent definitions","outcome":"invoked","timestamp":"2026-04-08T18:15:14.449Z"}

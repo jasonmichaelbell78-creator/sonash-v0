@@ -436,7 +436,7 @@ repo-analysis REFERENCE.md.
 | `findings.jsonl`       | SHOULD   | Engineer View findings                          |
 | `mined-links.jsonl`    | MAY      | Curated-list repos only                         |
 
-**Cross-repo artifacts (root of `.research/repo-analysis/`):**
+**Cross-repo artifacts (root of `.research/analysis/`):**
 
 | Artifact                   | Required | Notes                                   |
 | -------------------------- | -------- | --------------------------------------- |

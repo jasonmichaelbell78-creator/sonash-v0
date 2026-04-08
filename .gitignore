@@ -162,6 +162,11 @@ consolidation-output/
 functions/.next/
 
 
+# Content Analysis System (derived SQLite index, regenerable)
+.research/*.db
+.research/*.db-wal
+.research/*.db-shm
+
 # Statusline Go binary (machine-specific compiled output)
 tools/statusline/sonash-statusline
 tools/statusline/sonash-statusline.exe

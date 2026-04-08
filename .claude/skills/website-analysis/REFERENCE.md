@@ -17,8 +17,7 @@ file schema, and tool fallback matrix for the website-analysis skill.
 
 ### 1.0 Directory Structure
 
-Per-site artifacts in `.research/website-analysis/<site-slug>/` (Decisions #5,
-#12):
+Per-site artifacts in `.research/analysis/<site-slug>/` (Decisions #5, #12):
 
 ```
 <site-slug>/
@@ -46,20 +45,50 @@ research-index.jsonl       # Extended with website type fields
 
 ### 1.1 `analysis.json`
 
-Top-level analysis result. Consumed by `/deep-plan` as research context and by
-resume detection on re-invocation.
+Top-level analysis result. Consumed by `/deep-plan` as research context, by
+`/recall` for search indexing, and by resume detection on re-invocation.
+
+**Validates against:** `scripts/lib/analysis-schema.js` (`analysisRecordCore`).
+See `.claude/skills/shared/CONVENTIONS.md` Section 12 for schema contract.
 
 ```json
 {
-  "schema_version": "1.0",
-  "meta": {
+  "id": "UUID",
+  "schema_version": "3.0",
+  "source_type": "website",
+  "source": "https://example.com/article",
+  "slug": "example-com--article",
+  "title": "Example Site",
+  "analyzed_at": "ISO8601",
+  "depth": "quick|standard|deep",
+  "tags": ["website", "documentation", "react"],
+  "scoring": {
+    "quality_band": "Excellent",
+    "quality_score": 78,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 85,
+    "classification": "active-sprint"
+  },
+  "summary": "2-3 sentence summary of what this site is and what was learned.",
+  "creator_view": "Full Creator View prose (from SITE-ANALYSIS.md content)",
+  "candidates": [
+    {
+      "name": "Candidate Name",
+      "type": "pattern|knowledge|content|anti-pattern",
+      "description": "What it is and why it matters",
+      "novelty": "high|medium|low",
+      "effort": "E0|E1|E2|E3",
+      "relevance": "high|medium|low",
+      "tags": ["architecture"]
+    }
+  ],
+  "last_synthesized_at": null,
+
+  "metadata": {
     "url": "https://example.com/article",
     "domain": "example.com",
-    "slug": "example-com--article",
-    "scan_date": "YYYY-MM-DD",
-    "scan_depth": "quick|standard|deep",
     "scan_mode": "page|site|expedition",
-    "scan_version": "1.0",
+    "scan_version": "1.1",
     "extraction_mode": "superpowers-chrome|webfetch-playwright|webfetch-only",
     "pages_analyzed": 1
   },
@@ -152,35 +181,54 @@ resume detection on re-invocation.
 
 **Field definitions:**
 
-| Field                   | Type   | Description                                                       |
-| ----------------------- | ------ | ----------------------------------------------------------------- |
-| `schema_version`        | string | Schema version (`"1.0"`)                                          |
-| `meta.url`              | string | Analyzed URL                                                      |
-| `meta.domain`           | string | Domain extracted from URL                                         |
-| `meta.slug`             | string | URL-to-slug result (Section 9)                                    |
-| `meta.scan_date`        | string | Date of analysis (YYYY-MM-DD)                                     |
-| `meta.scan_depth`       | string | Depth tier: `quick`, `standard`, or `deep`                        |
-| `meta.scan_mode`        | string | Mode: `page`, `site`, or `expedition`                             |
-| `meta.scan_version`     | string | Skill version used for this analysis                              |
-| `meta.extraction_mode`  | string | Which extraction pipeline was used                                |
-| `meta.pages_analyzed`   | number | Total pages analyzed (1 for page mode)                            |
-| `site_type`             | string | Primary classification (15-type taxonomy, Section 1.8)            |
-| `site_type_secondary`   | string | Secondary type (null if single-type)                              |
-| `site_type_confidence`  | number | Classification confidence (0.0-1.0)                               |
-| `ecosystem_tags`        | array  | Lightweight tags for synthesis (e.g., `["react", "performance"]`) |
-| `tech_stack`            | array  | Detected technologies (CMS, frameworks, hosting)                  |
-| `site.*`                | object | Site metadata (title, description, author, etc.)                  |
-| `value_axes.*`          | object | Per-axis: score (1-5), band, and detail string                    |
-| `engineer_dimensions.*` | object | Per-dimension: score (0-100), band, and detail string             |
-| `summary_bands.*`       | object | 3-band summary: Content Quality, Technical Health, Creator Value  |
-| `absence_patterns`      | array  | Objects with pattern name, confidence, and evidence               |
-| `creator_verdict`       | object | Creator lens verdict (Study/Explore/Extract/Note)                 |
-| `compliance`            | object | Compliance pre-flight result                                      |
+**Unified core fields (required — validated by Zod):**
 
-**Shared field parity with repo-analysis:** `schema_version`, `meta.scan_date`,
-`meta.scan_depth`, `meta.scan_version`, `ecosystem_tags`, `absence_patterns`,
-`summary_bands` structure. Website-specific extensions are additive fields, not
-renames.
+| Field                 | Type   | Description                                                    |
+| --------------------- | ------ | -------------------------------------------------------------- |
+| `id`                  | string | UUID, stable across rebuilds                                   |
+| `schema_version`      | string | Schema version (`"3.0"`)                                       |
+| `source_type`         | string | Always `"website"` for this handler                            |
+| `source`              | string | Analyzed URL                                                   |
+| `slug`                | string | URL-to-slug result (Section 9)                                 |
+| `title`               | string | Site title from metadata                                       |
+| `analyzed_at`         | string | ISO8601 timestamp of analysis                                  |
+| `depth`               | string | `quick`, `standard`, or `deep`                                 |
+| `tags`                | array  | Auto-generated + user tags (see Tag Suggestion step)           |
+| `scoring`             | object | Unified scoring: quality + personal fit bands and scores       |
+| `summary`             | string | 2-3 sentence summary of what this site is and what was learned |
+| `creator_view`        | string | Full Creator View prose (from SITE-ANALYSIS.md)                |
+| `candidates`          | array  | All candidates from value-map.json in unified format           |
+| `last_synthesized_at` | string | ISO8601 or null — set by synthesis, not by handler             |
+
+**Website-specific fields (optional — type-specific extensions):**
+
+| Field                   | Type   | Description                                                      |
+| ----------------------- | ------ | ---------------------------------------------------------------- |
+| `metadata`              | object | URL, domain, scan mode, extraction mode, pages analyzed          |
+| `site_type`             | string | Primary classification (15-type taxonomy, Section 1.8)           |
+| `site_type_secondary`   | string | Secondary type (null if single-type)                             |
+| `site_type_confidence`  | number | Classification confidence (0.0-1.0)                              |
+| `tech_stack`            | array  | Detected technologies (CMS, frameworks, hosting)                 |
+| `site`                  | object | Site metadata (title, description, author, etc.)                 |
+| `value_axes.*`          | object | Per-axis: score (1-5), band, and detail string                   |
+| `engineer_dimensions.*` | object | Per-dimension: score (0-100), band, and detail string            |
+| `summary_bands.*`       | object | 3-band summary: Content Quality, Technical Health, Creator Value |
+| `absence_patterns`      | array  | Objects with pattern name, confidence, and evidence              |
+| `creator_verdict`       | object | Creator lens verdict (Study/Explore/Extract/Note)                |
+| `compliance`            | object | Compliance pre-flight result                                     |
+
+**Scoring mapping:** The `scoring` object is derived from `summary_bands`:
+
+- `quality_score` = average of 3 summary band scores
+- `quality_band` = band for that average (per CONVENTIONS.md Section 4)
+- `personal_fit_score` = from creator_verdict.verdict_score
+- `personal_fit_band` = band for that score
+- `classification` = from fit scoring thresholds (CONVENTIONS.md Section 5)
+
+**Schema parity with repo-analysis:** Both handlers produce the same unified
+core fields. Website-specific extensions (`value_axes`, `compliance`,
+`site_type`) are additive. The `scoring` object is the cross-type comparison
+surface.
 
 ### 1.2 `findings.jsonl`
 
@@ -648,7 +696,7 @@ Website analysis appends one record per analysis run.
   ],
   "depth": "standard",
   "date": "2026-04-06",
-  "output_dir": ".research/website-analysis/example-com/",
+  "output_dir": ".research/analysis/example-com/",
   "creator_verdict": "Study",
   "creator_verdict_score": 85,
   "absence_patterns": [
@@ -1699,7 +1747,7 @@ Windows MAX_PATH compliant. Used for output directory naming.
 ```
 Windows MAX_PATH = 260 characters
 Workspace prefix:  ~80 chars (C:\Users\<user>\Workspace\dev-projects\<project>\)
-.research/ prefix: ~30 chars (.research/website-analysis/)
+.research/ prefix: ~30 chars (.research/analysis/)
 Site slug:         max 80 chars
 Nested files:      ~50 chars (expedition-20260406.meta.json)
 Buffer:            ~20 chars
@@ -1768,7 +1816,7 @@ better stopping rule than a fixed depth limit.
 ### 10.3 Three-File State Pattern
 
 ```
-.research/website-analysis/<site-slug>/
+.research/analysis/<site-slug>/
 ├── expedition-{timestamp}.meta.json    # L1: Session metadata (full rewrite)
 ├── expedition-{timestamp}.snap.json    # L2: Current tree snapshot (full rewrite)
 └── expedition-{timestamp}.jsonl        # L3: Event log (append-only, never rewritten)
@@ -1838,8 +1886,8 @@ rewriting the tree structure. Parent pointer traversal is O(n) but n is small
 
 Six-step resume on re-invocation:
 
-1. On skill invocation for a URL, scan `.research/website-analysis/<site-slug>/`
-   for `expedition-*.meta.json`
+1. On skill invocation for a URL, scan `.research/analysis/<site-slug>/` for
+   `expedition-*.meta.json`
 2. If found: read `meta.json` (status check) + `snap.json` (tree reconstruction)
 3. Parse JSONL event log for events after last snapshot
 4. Reconstruct current tree state in memory
@@ -2005,10 +2053,9 @@ loaded as context.
 
 ### Option 7: Cross-site Synthesis (Decisions #19, #20)
 
-**Condition:** Only offered when 3+ sites exist in
-`.research/website-analysis/`.
+**Condition:** Only offered when 3+ sites exist in `.research/analysis/`.
 
-**Check:** `ls .research/website-analysis/*/analysis.json | wc -l >= 3`
+**Check:** `ls .research/analysis/*/analysis.json | wc -l >= 3`
 
 **Behavior:** Suggest `/website-synthesis` with list of analyzed sites. User
 confirms which sites to include in synthesis.
@@ -2096,7 +2143,7 @@ Each analysis gets its own state file keyed by site slug. Examples:
   "compliance_status": "PROCEED|WARN|HARD_BLOCK",
   "compliance_acknowledged": false,
   "pages_analyzed": 0,
-  "output_dir": ".research/website-analysis/<site-slug>/",
+  "output_dir": ".research/analysis/<site-slug>/",
   "expedition_session_id": null,
   "agents_spawned": 0,
   "agents_completed": 0,
@@ -2199,44 +2246,44 @@ At skill invocation (VALIDATE phase):
 
 All 36 decisions from DECISIONS.md mapped to their implementation location.
 
-| Decision | Topic                                         | Location                                            |
-| -------- | --------------------------------------------- | --------------------------------------------------- |
-| #1       | Extraction pipeline                           | REFERENCE.md Section 15                             |
-| #2       | Skill modes                                   | SKILL.md Modes section, REFERENCE.md Sections 10-11 |
-| #3       | Tiered depth (Quick/Standard/Deep)            | SKILL.md Process Overview                           |
-| #4       | File structure (SKILL.md + REFERENCE.md)      | Meta-decision (this file exists)                    |
-| #5       | Output location (.research/website-analysis/) | REFERENCE.md Section 1.0                            |
-| #6       | State file pattern                            | REFERENCE.md Section 14                             |
-| #7       | superpowers-chrome mode                       | REFERENCE.md Section 15                             |
-| #8       | Cross-entity tracking                         | REFERENCE.md Sections 1.12-1.13                     |
-| #9       | Creator View sections                         | REFERENCE.md Section 4                              |
-| #10      | Value axes (13)                               | REFERENCE.md Section 2                              |
-| #11      | Absence patterns (11)                         | REFERENCE.md Section 3                              |
-| #12      | Output artifacts                              | REFERENCE.md Section 1                              |
-| #13      | Scoring bands                                 | REFERENCE.md Section 6                              |
-| #14      | Compliance gates                              | REFERENCE.md Section 7                              |
-| #15      | Quick Scan composition                        | SKILL.md Quick Scan section                         |
-| #16      | Site mode multi-page                          | REFERENCE.md Section 11                             |
-| #17      | Expedition HITL                               | REFERENCE.md Section 10                             |
-| #18      | Expedition state                              | REFERENCE.md Sections 1.11, 10.3                    |
-| #19      | Cross-site synthesis trigger                  | REFERENCE.md Section 12 Option 7                    |
-| #20      | Cross-site synthesis as separate skill        | REFERENCE.md Section 12 Option 7                    |
-| #21      | Link scoring weights                          | REFERENCE.md Section 8                              |
-| #22      | High-link-density trigger                     | REFERENCE.md Section 8.5                            |
-| #23      | URL-to-slug algorithm                         | REFERENCE.md Section 9                              |
-| #24      | Routing menu                                  | REFERENCE.md Section 12                             |
-| #25      | Engineer View dimensions                      | REFERENCE.md Section 5                              |
-| #26      | Tables storage (JSON)                         | REFERENCE.md Section 1.6                            |
-| #27      | Tool unavailability fallback                  | REFERENCE.md Section 15                             |
-| #28      | Home context loading                          | REFERENCE.md Section 4.1                            |
-| #29      | Agent allocation                              | REFERENCE.md Section 13                             |
-| #30      | Cloudflare handling                           | REFERENCE.md Section 7.5                            |
-| #31      | Site mode page budget                         | REFERENCE.md Section 11.3                           |
-| #32      | Per-use retro (not formal)                    | SKILL.md Routing Menu serves this purpose           |
-| #33      | Invocation tracking                           | SKILL.md Invocation Tracking section                |
-| #34      | RSS/feed detection                            | REFERENCE.md Section 7.6                            |
-| #35      | Creator context injection                     | REFERENCE.md Section 4.1                            |
-| #36      | Screenshot usage                              | REFERENCE.md Section 2 Axis 6 note                  |
+| Decision | Topic                                    | Location                                            |
+| -------- | ---------------------------------------- | --------------------------------------------------- |
+| #1       | Extraction pipeline                      | REFERENCE.md Section 15                             |
+| #2       | Skill modes                              | SKILL.md Modes section, REFERENCE.md Sections 10-11 |
+| #3       | Tiered depth (Quick/Standard/Deep)       | SKILL.md Process Overview                           |
+| #4       | File structure (SKILL.md + REFERENCE.md) | Meta-decision (this file exists)                    |
+| #5       | Output location (.research/analysis/)    | REFERENCE.md Section 1.0                            |
+| #6       | State file pattern                       | REFERENCE.md Section 14                             |
+| #7       | superpowers-chrome mode                  | REFERENCE.md Section 15                             |
+| #8       | Cross-entity tracking                    | REFERENCE.md Sections 1.12-1.13                     |
+| #9       | Creator View sections                    | REFERENCE.md Section 4                              |
+| #10      | Value axes (13)                          | REFERENCE.md Section 2                              |
+| #11      | Absence patterns (11)                    | REFERENCE.md Section 3                              |
+| #12      | Output artifacts                         | REFERENCE.md Section 1                              |
+| #13      | Scoring bands                            | REFERENCE.md Section 6                              |
+| #14      | Compliance gates                         | REFERENCE.md Section 7                              |
+| #15      | Quick Scan composition                   | SKILL.md Quick Scan section                         |
+| #16      | Site mode multi-page                     | REFERENCE.md Section 11                             |
+| #17      | Expedition HITL                          | REFERENCE.md Section 10                             |
+| #18      | Expedition state                         | REFERENCE.md Sections 1.11, 10.3                    |
+| #19      | Cross-site synthesis trigger             | REFERENCE.md Section 12 Option 7                    |
+| #20      | Cross-site synthesis as separate skill   | REFERENCE.md Section 12 Option 7                    |
+| #21      | Link scoring weights                     | REFERENCE.md Section 8                              |
+| #22      | High-link-density trigger                | REFERENCE.md Section 8.5                            |
+| #23      | URL-to-slug algorithm                    | REFERENCE.md Section 9                              |
+| #24      | Routing menu                             | REFERENCE.md Section 12                             |
+| #25      | Engineer View dimensions                 | REFERENCE.md Section 5                              |
+| #26      | Tables storage (JSON)                    | REFERENCE.md Section 1.6                            |
+| #27      | Tool unavailability fallback             | REFERENCE.md Section 15                             |
+| #28      | Home context loading                     | REFERENCE.md Section 4.1                            |
+| #29      | Agent allocation                         | REFERENCE.md Section 13                             |
+| #30      | Cloudflare handling                      | REFERENCE.md Section 7.5                            |
+| #31      | Site mode page budget                    | REFERENCE.md Section 11.3                           |
+| #32      | Per-use retro (not formal)               | SKILL.md Routing Menu serves this purpose           |
+| #33      | Invocation tracking                      | SKILL.md Invocation Tracking section                |
+| #34      | RSS/feed detection                       | REFERENCE.md Section 7.6                            |
+| #35      | Creator context injection                | REFERENCE.md Section 4.1                            |
+| #36      | Screenshot usage                         | REFERENCE.md Section 2 Axis 6 note                  |
 
 ---
 

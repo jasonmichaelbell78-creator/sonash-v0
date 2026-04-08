@@ -1,0 +1,94 @@
+{
+  "id": "f7449d88-e42f-4e20-bf30-b76be6a85186",
+  "schema_version": "3.0",
+  "source_type": "website",
+  "source": "https://docs.composio.dev/docs",
+  "slug": "docs-composio-dev",
+  "title": "Composio Documentation",
+  "analyzed_at": "2026-04-07",
+  "depth": "standard",
+  "tags": [
+    "website",
+    "ai-agents",
+    "tool-integration",
+    "mcp",
+    "authentication",
+    "oauth",
+    "saas",
+    "composio",
+    "documentation"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 70,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 68,
+    "fit_classification": "active-sprint"
+  },
+  "summary": "Meta-tool architecture avoids loading 1000+ definitions into context 5-server MCP setup consumes ~55K tokens before conversation starts",
+  "creator_view": "",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "meta": {
+    "url": "https://docs.composio.dev/docs",
+    "domain": "docs.composio.dev",
+    "slug": "docs-composio-dev",
+    "scan_date": "2026-04-07",
+    "scan_depth": "standard",
+    "scan_mode": "site",
+    "scan_version": "1.0",
+    "extraction_mode": "superpowers-chrome",
+    "pages_analyzed": 5
+  },
+  "site_type": "Documentation",
+  "site_type_secondary": "API Docs",
+  "site_type_confidence": 0.95,
+  "ecosystem_tags": [
+    "ai-agents",
+    "tool-integration",
+    "mcp",
+    "authentication",
+    "oauth",
+    "saas",
+    "composio"
+  ],
+  "tech_stack": ["Next.js", "MDX", "Composio SDK (Python/TypeScript)"],
+  "site": {
+    "title": "Composio Documentation",
+    "description": "Platform powering 1000+ toolkits for AI agent tool integration",
+    "author": "Composio",
+    "language": "en",
+    "last_modified": null,
+    "has_rss": false,
+    "rss_url": null
+  },
+  "value_axes": {
+    "actionability": 80,
+    "novelty": 72,
+    "evidence_quality": 60,
+    "technical_depth": 75,
+    "recency": 85,
+    "relevance_to_stack": 70,
+    "cross_reference_density": 45,
+    "synthesis_quality": 65,
+    "ecosystem_coverage": 90,
+    "contrarian_signal": 35,
+    "teaching_quality": 75,
+    "reproducibility": 85,
+    "strategic_fit": 68
+  },
+  "absence_patterns": [
+    "No Claude Code skill integration documented despite skills.sh presence",
+    "No pricing or rate limit information",
+    "No performance benchmarks (latency, throughput)",
+    "No comparison to building custom MCP servers",
+    "No offline/self-hosted deployment option discussed"
+  ],
+  "key_claims": [
+    "Meta-tool architecture avoids loading 1000+ definitions into context",
+    "5-server MCP setup consumes ~55K tokens before conversation starts",
+    "Native tools give precise context control; MCP gives simplicity",
+    "Session-scoped state preserves context across meta-tool calls",
+    "Remote workbench provides persistent sandboxed execution for agents"
+  ]
+}

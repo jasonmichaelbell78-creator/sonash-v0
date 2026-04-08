@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.22 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.23 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-08 (Session #268)
+2026-04-08 (Session #269)
 
 ## Purpose
 
@@ -29,19 +29,20 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-08 **Branch**: `planning-4626` **Working On**:
-Session #267 — T28 Intelligence Graph data layer deep-research. Full L1
-exhaustive research complete (57 agents, 73 claims, 55 sources).
+**Last Checkpoint**: 2026-04-08 **Branch**: `planning-4826` **Working On**:
+Session #269 — T28 Content Analysis System built. Brainstorm + deep-plan + full
+implementation across 5 waves.
 
-**Uncommitted Work**: Major — deep-research output (32 findings, 3 synthesis
-reports, 11 verification files, 3 challenge files, RESEARCH_OUTPUT.md v1.1,
-claims/sources/metadata). Also state files and memory updates.
+**Uncommitted Work**: MASSIVE — entire T28 CAS: 4 new skills, 4 REFERENCE.md
+files, 2 agent definitions, 4 CAS scripts, Zod schema, 29 analysis.json
+migrations, 29-dir git mv, CONVENTIONS.md expansion, CLAUDE.md updates,
+.gitignore, better-sqlite3 dependency, SQLite index.
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 268 (since Jan 1, 2026)
+**Current Session Count**: 269 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -50,6 +51,42 @@ claims/sources/metadata). Also state files and memory updates.
 ---
 
 ## Recent Session Summaries
+
+**Session #269** (T28 CONTENT ANALYSIS SYSTEM — BUILT):
+
+- **Branch**: `planning-4826`
+- **T28 re-scoped**: User flagged scope drift — T28 was never about the data
+  layer, it was about unifying 4 analysis/synthesis skills. Deep-plan aborted.
+- **Brainstorm complete**: T28 renamed to "Content Analysis System." Two
+  user-facing commands (`/analyze` + `/recall`), 4 source-type handlers, unified
+  Zod schema, SQLite+FTS5 queryable index, incremental synthesis. BRAINSTORM.md
+  at `.research/content-analysis-system/`.
+- **Deep-plan complete**: 29 decisions, 15-step plan across 5 waves.
+  DECISIONS.md
+  - PLAN.md at `.planning/content-analysis-system/`.
+- **Full implementation (Waves 1-5)**:
+  - Wave 1: Backups, Zod schema (`scripts/lib/analysis-schema.js`),
+    CONVENTIONS.md expanded (+4 sections), .gitignore, better-sqlite3 installed
+  - Wave 2: repo-analysis + website-analysis updated to unified schema v3.0,
+    output paths → `.research/analysis/`
+  - Wave 3: document-analysis + media-analysis skills created (SKILL.md +
+    REFERENCE.md each), 3 SQLite scripts (rebuild-index, recall, update-index)
+  - Wave 4: `/analyze` router skill, `/recall` query skill, 29-dir migration
+    (git mv), reference path updates across 6 skills, synthesis delegation
+  - Wave 5: Code review (3 CRITICAL fixed), E2E script verification, data
+    migration (29 analysis.json → v3.0 + summaries), 2 agent definitions
+- **SQLite index**: 29 sources, 168 extractions, 42 tags. FTS5 search working.
+- **Key learnings saved**: scope drift prevention, no silent deferrals during
+  execution (7 items caught and fixed mid-session).
+- **WHERE TO RESUME**: E2E live test (Task 7) — invoke `/analyze` with real
+  repo, website, document, and media sources. Verify full pipeline end-to-end.
+
+**Session #268** (T28 QUERY AUDIT + ALERTS TRIAGE):
+
+- **Branch**: `planning-4826`
+- T28 query pattern audit (OTB-2 CRITICAL resolved): 85% of .research/ queries
+  are filtered lookups/FTS5 — V1 schema simplified. lbug v0.14.3 confirmed on
+  Windows. Alerts full triage. Batch retro PRs #498-500.
 
 **Session #267** (T28 INTELLIGENCE GRAPH DEEP-RESEARCH — COMPLETE):
 
@@ -121,37 +158,24 @@ claims/sources/metadata). Also state files and memory updates.
   `.research/repo-analysis/_T28-analysis-plan.md`. 20 repos, 6 clusters, gap
   agents between clusters.
 
-**Session #265** (REPO-SYNTHESIS SKILL AUDIT + CHERRY-PICKS):
-
-- **Branch**: `planning-4626` (5 commits)
-- **Repo-synthesis v1.2 skill audit**: 12 categories, 47 decisions (all
-  accepted), score 76→95/120. Added self-audit phase (was 3/10), verification
-  pass with T20 tally, warm-up/progress/closure UX, pause/resume, candidate cap,
-  contradiction handling, inference disclosure. Merged redundant Phase 3 into
-  2.5. Extracted guard rails to REFERENCE.md. Added synthesis.json schema. Fixed
-  3 skill-creator gaps. Commit `0f4ce507`.
-- **Cherry-picks**: website-analysis + website-synthesis skills (`7cfb8f60`),
-  un-ignore cross-locale state files + CLI reference doc (`8c9ca3a8`).
-- **CLAUDE.md updated**: Added repo-synthesis + website-analysis trigger rows.
-
 > For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                             |
-| ---------------------------------- | ------------- | -------------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.               |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.    |
-| **T28 Content Intelligence**       | RESEARCH DONE | Deep-research L1 complete (57 agents, 73 claims). `/deep-plan` next. |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).              |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                    |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                      |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                 |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                               |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.               |
+| Item                               | Status        | Progress                                                           |
+| ---------------------------------- | ------------- | ------------------------------------------------------------------ |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.              |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.             |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.  |
+| **T28 Content Analysis System**    | BUILT         | `/analyze` + `/recall` + 4 handlers + SQLite index. E2E test next. |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).            |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                  |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                    |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.               |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                             |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.             |
 
 **Current Branch**: `planning-4826`
 
@@ -163,17 +187,16 @@ claims/sources/metadata). Also state files and memory updates.
 
 ### Immediate Priority
 
-1. **T28 `/deep-plan` for v1 implementation** — Research complete. Plan schema,
-   migration script, MCP tools. Blocker: author `source-slug-map.json` first.
-2. **T28 query pattern audit (OTB-2 CRITICAL)** — Log 30 sessions of actual
-   Claude queries against .research/ before finalizing schema. 2-hour exercise.
-3. **Test `npm install lbug` on Windows 11 + Node.js v22** — 5-minute test
-   before any v2/v3 planning.
-4. **Run /repo-synthesis on analyzed repos** — Skill v1.2 ready.
-5. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
-6. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-7. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-8. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+1. **T28 E2E live test** — Invoke `/analyze` with a real repo, website, PDF, and
+   YouTube URL. Verify full pipeline: routing → handler → index → recall.
+2. **T28 first real use** — Analyze a new source through `/analyze` and query it
+   with `/recall`. Validate the system works end-to-end with real data.
+3. **Run /repo-synthesis on analyzed repos** — Skill v1.2 ready. Now reads from
+   `.research/analysis/`.
+4. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
+5. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+6. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
+7. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
 
 ### After Debt-Runner
 

@@ -1,0 +1,183 @@
+{
+  "id": "0665ed34-cd2c-4714-92b6-00369f91b0a6",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+  "slug": "bedrock-summarize-audio-video-text",
+  "title": "Automates text extraction, transcription and summarization of audio, video, and ",
+  "analyzed_at": "2026-04-07",
+  "depth": "quick",
+  "tags": ["repo", "tool-demo"],
+  "scoring": {
+    "quality_band": "Critical",
+    "quality_score": 18,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 50,
+    "classification": "park-for-later"
+  },
+  "summary": "This repo understands how to compose a multimedia processing pipeline from AWS managed services.  Its key insight is the Chain of Responsibility + Factory pattern for dynamic handler discovery — readers, processors, and writers snap together like pipeline stages.",
+  "creator_view": "This repo understands how to compose a multimedia processing pipeline from AWS managed services. Its key insight is the Chain of Responsibility + Factory pattern for dynamic handler discovery — readers, processors, and writers snap together like pipeline stages. It demonstrates PII anonymization round-tripping (tokenize before Bedrock, untokenize after), multi-format extraction (YouTube, PDF, Excel, Word, Quip, HTTP, S3), and prompt templating for Bedrock summarization. The architecture is more interesting than the code — it's a pattern reference, not production software.",
+  "candidates": [],
+  "last_synthesized_at": null,
+  "skillVersion": "4.3",
+  "repo": {
+    "full_name": "ksharlandjiev/bedrock-summarize-audio-video-text",
+    "html_url": "https://github.com/ksharlandjiev/bedrock-summarize-audio-video-text",
+    "description": "Automates text extraction, transcription and summarization of audio, video, and documents using Amazon Bedrock, Transcribe, Textract and other AWS services. Supports summarization and interactive chat.",
+    "language": "Python",
+    "stars": 18,
+    "forks": 5,
+    "watchers": 18,
+    "created_at": "2024-02-21T12:43:06Z",
+    "pushed_at": "2024-09-27T08:55:26Z",
+    "archived": false,
+    "fork": false,
+    "license": null,
+    "topics": [],
+    "default_branch": "main",
+    "size_kb": 178,
+    "total_commits": 48,
+    "contributor_count": 1,
+    "sbom_packages": 17
+  },
+  "analysisDate": "2026-04-07",
+  "repoType": "tool-demo",
+  "dimensions": {
+    "QS-01_activity_recency": {
+      "score": 2,
+      "max": 5,
+      "detail": "Last push 2024-09-27 (~18 months ago). 48 total commits. Stale."
+    },
+    "QS-02_engagement": {
+      "score": 1,
+      "max": 5,
+      "detail": "18 stars, 5 forks. Niche demo project."
+    },
+    "QS-03_archived_abandoned": {
+      "score": 3,
+      "max": 5,
+      "detail": "Not archived but no commits in 18 months. Functionally dormant."
+    },
+    "QS-04_license": {
+      "score": 0,
+      "max": 5,
+      "detail": "No license file. Cannot legally reuse."
+    },
+    "QS-05_cicd": {
+      "score": 0,
+      "max": 5,
+      "detail": "Zero workflow runs. No CI/CD configured."
+    },
+    "QS-06_branch_protection": {
+      "score": 0,
+      "max": 5,
+      "detail": "No branch protection rules."
+    },
+    "QS-07_dependabot": {
+      "score": 0,
+      "max": 5,
+      "detail": "Dependabot alerts disabled."
+    },
+    "QS-08_code_scanning": {
+      "score": 0,
+      "max": 5,
+      "detail": "No CodeQL or code scanning configured."
+    },
+    "QS-09_secret_scanning": {
+      "score": 0,
+      "max": 5,
+      "detail": "Secret scanning not available."
+    },
+    "QS-10_community_health": {
+      "score": 1,
+      "max": 5,
+      "detail": "28/100 community health score."
+    },
+    "QS-11_contributing_security": {
+      "score": 0,
+      "max": 5,
+      "detail": "No CONTRIBUTING.md, no SECURITY.md."
+    },
+    "QS-12_contributor_count": {
+      "score": 1,
+      "max": 5,
+      "detail": "1 contributor. Bus factor = 1."
+    },
+    "QS-13_merge_hygiene": {
+      "score": 0,
+      "max": 5,
+      "detail": "No merge settings data available."
+    },
+    "QS-14_openssf": {
+      "score": 0,
+      "max": 5,
+      "detail": "Not indexed by OpenSSF Scorecards."
+    },
+    "QS-15_sbom": {
+      "score": 2,
+      "max": 5,
+      "detail": "17 SBOM packages detected. Python dependencies."
+    },
+    "QS-16_known_cves": {
+      "score": 2,
+      "max": 5,
+      "detail": "Not checked via deps.dev (Python ecosystem, no npm)."
+    },
+    "QS-17_fork_to_star": {
+      "score": 3,
+      "max": 5,
+      "detail": "5/18 = 0.28. Moderate fork ratio for demo repo."
+    },
+    "QS-18_watcher_to_star": {
+      "score": 1,
+      "max": 5,
+      "detail": "18/18 = 1.0. Default watchers only."
+    }
+  },
+  "summaryBands": {
+    "security": {
+      "band": "Critical",
+      "score": 5,
+      "max": 100,
+      "detail": "No scanning, no dependabot, no branch protection, no OpenSSF."
+    },
+    "reliability": {
+      "band": "Low",
+      "score": 15,
+      "max": 100,
+      "detail": "No CI/CD, no tests visible, single contributor."
+    },
+    "maintainability": {
+      "band": "Moderate",
+      "score": 40,
+      "max": 100,
+      "detail": "Clean Chain of Responsibility + Factory pattern. Well-organized handlers."
+    },
+    "documentation": {
+      "band": "Low",
+      "score": 25,
+      "max": 100,
+      "detail": "Thorough README with architecture overview, but no other docs. No license."
+    },
+    "process": {
+      "band": "Critical",
+      "score": 5,
+      "max": 100,
+      "detail": "No CI, no protection, no contribution guidelines, no code review evidence."
+    },
+    "velocity": {
+      "band": "Low",
+      "score": 15,
+      "max": 100,
+      "detail": "Dormant 18 months. 48 commits total over 8 months of active dev."
+    }
+  },
+  "absencePattern": "personal-demo",
+  "absenceDetail": "Solo developer demo project. Missing: license, CI/CD, tests, security scanning, branch protection, contribution guidelines, multiple contributors. Consistent with proof-of-concept intended to demonstrate AWS service integration.",
+  "creatorLens": "This repo understands how to compose a multimedia processing pipeline from AWS managed services. Its key insight is the Chain of Responsibility + Factory pattern for dynamic handler discovery — readers, processors, and writers snap together like pipeline stages. It demonstrates PII anonymization round-tripping (tokenize before Bedrock, untokenize after), multi-format extraction (YouTube, PDF, Excel, Word, Quip, HTTP, S3), and prompt templating for Bedrock summarization. The architecture is more interesting than the code — it's a pattern reference, not production software.",
+  "adoptionPartial": {
+    "WR-01_stack_compatibility": "Low — Python/AWS, not TypeScript/Firebase. No overlap with home stack.",
+    "WR-04_lock_in": "High — deeply coupled to 5+ AWS services (Bedrock, Transcribe, Textract, Comprehend, S3).",
+    "WR-06_ecosystem_maturity": "Low — solo dev, 18 stars, dormant."
+  }
+}

@@ -39,8 +39,7 @@ and what's brilliant regardless of your current sprint.
 ## When to Use
 
 - User invokes `/repo-synthesis` explicitly
-- Auto-offered by `/repo-analysis` when 3+ repos exist in
-  `.research/repo-analysis/`
+- Auto-offered by `/repo-analysis` when 3+ repos exist in `.research/analysis/`
 - User wants cross-repo insights, not per-repo analysis
 - After completing a batch of repo analyses
 
@@ -57,7 +56,7 @@ to `/deep-research`
 `--focus=themes|gaps|chain|evolution|portfolio|map` (produce only selected
 outputs)
 
-**Input artifacts** (consumed from `.research/repo-analysis/*/`):
+**Input artifacts** (consumed from `.research/analysis/*/`):
 
 | Artifact               | Required | Purpose                                |
 | ---------------------- | -------- | -------------------------------------- |
@@ -69,7 +68,7 @@ outputs)
 | `coverage-audit.jsonl` | SHOULD   | What was and wasn't analyzed           |
 | `mined-links.jsonl`    | MAY      | Link mining results (curated-list)     |
 
-**Cross-repo artifacts** (consumed from `.research/repo-analysis/`):
+**Cross-repo artifacts** (consumed from `.research/analysis/`):
 
 | Artifact                   | Required | Purpose                        |
 | -------------------------- | -------- | ------------------------------ |
@@ -77,8 +76,8 @@ outputs)
 | `EXTRACTIONS.md`           | SHOULD   | Cross-repo candidate summary   |
 | `extraction-journal.jsonl` | SHOULD   | Per-candidate decision history |
 
-**Output:** `.research/repo-analysis/SYNTHESIS.md` (primary) +
-`.research/repo-analysis/synthesis.json` (structured)
+**Output:** `.research/analysis/SYNTHESIS.md` (primary) +
+`.research/analysis/synthesis.json` (structured)
 
 ---
 
@@ -101,9 +100,9 @@ Phase markers: `========== PHASE N: [NAME] ==========`
 
 ## Validate (MUST)
 
-Check `.research/repo-analysis/*/analysis.json` — count repos with v4.2
-artifacts (`skillVersion` field). If fewer than `--min-repos` (default 3):
-report count and exit.
+Check `.research/analysis/*/analysis.json` — count repos with v4.2 artifacts
+(`skillVersion` field). If fewer than `--min-repos` (default 3): report count
+and exit.
 
 **--focus validation (MUST):** If `--focus` provided, verify value is one of:
 `themes`, `gaps`, `chain`, `evolution`, `portfolio`, `map`. Invalid value →
@@ -131,7 +130,7 @@ Repo Synthesis: Analyzing N repos ([list]).
 Producing [6 or --focus subset] outputs: [list].
 Candidates: ~N pattern, ~N knowledge, ~N content, ~N anti-pattern.
 Estimated time: ~3-5 min (3 repos), ~8-15 min (6+ repos).
-Outputs → .research/repo-analysis/SYNTHESIS.md
+Outputs → .research/analysis/SYNTHESIS.md
 [If previous run: "Previous feedback: [X]. Adjusting accordingly."]
 ```
 
@@ -254,7 +253,7 @@ Present T20 tally: N confirmed, M corrected, K extended, J new.
 
 1. **Completeness:** SYNTHESIS.md has all 6 sections (or --focus subset).
    synthesis.json exists.
-2. **Orphan detection:** No unreferenced files in `.research/repo-analysis/`.
+2. **Orphan detection:** No unreferenced files in `.research/analysis/`.
 3. **Build integrity:** Grep outputs for TODO/FIXME/placeholder/TBD.
 4. **Gap analysis:** Compare `outputs_completed` in state against expected.
 5. **Contract verification:** Validate synthesis.json against REFERENCE.md
@@ -277,14 +276,14 @@ Present T20 tally: N confirmed, M corrected, K extended, J new.
    dump the entire file into conversation.
 5. **Follow-up actions:**
 
-| Action                     | Description                                                 |
-| -------------------------- | ----------------------------------------------------------- |
-| **Explore a theme**        | Deep-dive a theme; escalate to `/deep-research` if needed   |
-| **Fill a gap**             | Queue `/repo-analysis` scan for a gap domain                |
-| **Extract top candidates** | Future — manually copy candidates to project location       |
-| **Save to memory**         | 3-5 most actionable insights as project memory              |
-| **Inject into deep-plan**  | `/deep-plan --context=.research/repo-analysis/SYNTHESIS.md` |
-| **Done**                   | Exit                                                        |
+| Action                     | Description                                               |
+| -------------------------- | --------------------------------------------------------- |
+| **Explore a theme**        | Deep-dive a theme; escalate to `/deep-research` if needed |
+| **Fill a gap**             | Queue `/repo-analysis` scan for a gap domain              |
+| **Extract top candidates** | Future — manually copy candidates to project location     |
+| **Save to memory**         | 3-5 most actionable insights as project memory            |
+| **Inject into deep-plan**  | `/deep-plan --context=.research/analysis/SYNTHESIS.md`    |
+| **Done**                   | Exit                                                      |
 
 **Delegation:** User says "you decide" → select highest-impact action, record as
 `delegated-action`. When user selects an action, ask: "Why this one?" Save
