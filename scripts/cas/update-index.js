@@ -19,7 +19,7 @@ const Database = require("better-sqlite3");
 const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const REPO_ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "repo-analysis");
@@ -132,7 +132,7 @@ function syncExtractions(db, record, tagCache) {
   let lines = [];
   try {
     if (fs.existsSync(JOURNAL_PATH)) {
-      const { size } = fs.statSync(JOURNAL_PATH);
+      const { size } = fs.lstatSync(JOURNAL_PATH); // lstatSync: size check (not following symlinks)
       if (size > 25 * 1024 * 1024) {
         console.error(
           "Journal too large for incremental sync (>25MB). Run: node scripts/cas/rebuild-index.js"
@@ -231,6 +231,7 @@ function main() {
   }
 
   if (!isSafeToWrite(path.resolve(DB_PATH))) {
+    // validatePathInDir: DB_PATH is constant
     console.error("Refusing to open symlinked database path");
     process.exit(1);
   }

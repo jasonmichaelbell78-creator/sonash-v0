@@ -15,10 +15,10 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const nodeCrypto = require("node:crypto");
-const { sanitizeError } = require("../lib/security-helpers.js");
+const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const { validate } = require("../lib/analysis-schema.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 
 const DRY_RUN = process.argv.includes("--dry-run");
