@@ -77,6 +77,46 @@
       "timestamp": "2026-04-08T21:05:24.850Z",
       "occurrences": 9,
       "occurrences_since_ack": 6
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "11 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-08T21:06:17.001Z",
+      "occurrences": 10,
+      "occurrences_since_ack": 7
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "12 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-08T21:07:50.951Z",
+      "occurrences": 11,
+      "occurrences_since_ack": 8
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "13 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-08T21:08:45.717Z",
+      "occurrences": 12,
+      "occurrences_since_ack": 9
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "14 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-08T21:10:31.983Z",
+      "occurrences": 13,
+      "occurrences_since_ack": 10
     }
   ]
 }
