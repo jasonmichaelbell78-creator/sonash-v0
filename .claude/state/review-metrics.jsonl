@@ -69,8 +69,8 @@
 {"pr":494,"title":"feat: orphan detection scanner + repo-analysis v4.0 + website-analysis research (#494)","total_commits":26,"fix_commits":9,"fix_ratio":0.35,"review_rounds":1,"timestamp":"2026-04-08T02:17:06.050Z"}
 {"pr":496,"title":"chore(deps): bump the minor-and-patch group in /functions with 3 updates","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-04-08T02:17:04.978Z"}
 {"pr":498,"title":"feat: repo-analysis v4.2, repo-synthesis v1.2, website-analysis/synthesis skills","total_commits":8,"fix_commits":2,"fix_ratio":0.25,"review_rounds":1,"timestamp":"2026-04-08T18:54:08.745Z","jsonl_review_records":1,"reconciled_at":"2026-04-09T10:50:30.933Z"}
-{"pr":499,"title":"feat: T28 Intelligence Graph research + 13 repo analyses + learning metrics","total_commits":20,"fix_commits":8,"fix_ratio":0.4,"review_rounds":1,"timestamp":"2026-04-09T20:35:13.895Z"}
-{"pr":500,"title":"feat: T28 Intelligence Graph deep-research — 57 agents, 73 claims","total_commits":4,"fix_commits":1,"fix_ratio":0.25,"review_rounds":1,"timestamp":"2026-04-09T20:35:12.703Z"}
-{"pr":501,"title":"chore(deps): bump @hono/node-server from 1.19.11 to 1.19.13 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-04-09T20:35:11.526Z"}
-{"pr":502,"title":"chore(deps): bump hono from 4.12.8 to 4.12.12 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-04-09T20:35:10.365Z"}
-{"pr":503,"title":"feat: T28 Content Analysis System — /analyze + /recall (Sessions #268-269)","total_commits":21,"fix_commits":18,"fix_ratio":0.86,"review_rounds":1,"timestamp":"2026-04-09T20:35:09.334Z"}
+{"pr":499,"title":"feat: T28 Intelligence Graph research + 13 repo analyses + learning metrics","total_commits":20,"fix_commits":8,"fix_ratio":0.4,"review_rounds":1,"timestamp":"2026-04-09T20:50:23.634Z"}
+{"pr":500,"title":"feat: T28 Intelligence Graph deep-research — 57 agents, 73 claims","total_commits":4,"fix_commits":1,"fix_ratio":0.25,"review_rounds":1,"timestamp":"2026-04-09T20:50:22.417Z"}
+{"pr":501,"title":"chore(deps): bump @hono/node-server from 1.19.11 to 1.19.13 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-04-09T20:50:21.292Z"}
+{"pr":502,"title":"chore(deps): bump hono from 4.12.8 to 4.12.12 in /scripts/mcp","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-04-09T20:50:20.062Z"}
+{"pr":503,"title":"feat: T28 Content Analysis System — /analyze + /recall (Sessions #268-269)","total_commits":21,"fix_commits":18,"fix_ratio":0.86,"review_rounds":1,"timestamp":"2026-04-09T20:50:19.003Z"}

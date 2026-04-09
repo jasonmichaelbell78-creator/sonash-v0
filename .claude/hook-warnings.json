@@ -29,7 +29,16 @@
       "timestamp": "2026-04-08T13:58:42.278Z",
       "occurrences": 2,
       "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-push",
+      "type": "audit",
+      "severity": "warning",
+      "message": "npm audit found security vulnerabilities",
+      "action": "npm audit",
+      "timestamp": "2026-04-09T20:51:25.186Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
     }
-  ],
-  "lastCleared": "2026-04-09T20:45:27.274Z"
+  ]
 }
