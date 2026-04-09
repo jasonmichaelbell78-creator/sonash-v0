@@ -1,5 +1,3 @@
 {
-  "scripts/cas/migrate-schemas.js": 1,
-  "scripts/cas/rebuild-index.js": 4,
-  "scripts/cas/update-index.js": 4
+  "scripts/archive-doc.js": 1
 }

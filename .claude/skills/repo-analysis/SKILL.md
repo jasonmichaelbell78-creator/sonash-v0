@@ -68,8 +68,10 @@ Quick dependency check -> `gh api` directly.
 
 **Output:** `.research/analysis/<repo-slug>/` — analysis.json (unified schema
 v3.0, validated by `scripts/lib/analysis-schema.js`), findings.jsonl,
-value-map.json, trends.jsonl, summary.md, creator-view.md, research-index.jsonl,
-mined-links.jsonl (curated-list only), repomix-output.txt (gitignored).
+value-map.json, creator-view.md, summary.md, deep-read.md, content-eval.jsonl,
+coverage-audit.jsonl, extraction-journal.jsonl entries. Handler-specific:
+repomix-output.txt (gitignored), mined-links.jsonl (curated-list only),
+trends.jsonl (re-analysis comparison).
 
 **Schema contract:** analysis.json MUST validate against the unified Zod schema
 in `scripts/lib/analysis-schema.js`. See CONVENTIONS.md Section 12.

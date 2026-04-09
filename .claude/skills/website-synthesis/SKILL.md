@@ -72,14 +72,14 @@ analyzed sites -> analyze more first | Cross-repo synthesis -> `/repo-synthesis`
 
 **Input artifacts** (consumed from `.research/analysis/*/`):
 
-| Artifact           | Required | Purpose                                    |
-| ------------------ | -------- | ------------------------------------------ |
-| `analysis.json`    | MUST     | Site type, metadata, dimensions, scores    |
-| `value-map.json`   | MUST     | Candidates with scores, source tier        |
-| `SITE-ANALYSIS.md` | MUST     | Creator View prose for thematic extraction |
-| `links.json`       | SHOULD   | Link graph for cross-site relationship     |
-| `meta.json`        | SHOULD   | Site metadata (OG, JSON-LD)                |
-| `findings.jsonl`   | SHOULD   | Individual findings with source URLs       |
+| Artifact          | Required | Purpose                                    |
+| ----------------- | -------- | ------------------------------------------ |
+| `analysis.json`   | MUST     | Site type, metadata, dimensions, scores    |
+| `value-map.json`  | MUST     | Candidates with scores, source tier        |
+| `creator-view.md` | MUST     | Creator View prose for thematic extraction |
+| `links.json`      | SHOULD   | Link graph for cross-site relationship     |
+| `meta.json`       | SHOULD   | Site metadata (OG, JSON-LD)                |
+| `findings.jsonl`  | SHOULD   | Individual findings with source URLs       |
 
 **Output:** `.research/analysis/synthesis/synthesis.md` (primary) +
 `.research/analysis/synthesis/synthesis.json` (structured)
@@ -169,7 +169,7 @@ artifacts. If fewer than 3: report count and exit. List sites being synthesized
 with their source tiers.
 
 **Missing artifact handling (MUST):** For each site, verify MUST artifacts
-exist. If `SITE-ANALYSIS.md` or `value-map.json` missing: exclude site from
+exist. If `creator-view.md` or `value-map.json` missing: exclude site from
 synthesis with warning, don't silently degrade. If <3 remain after exclusions:
 abort.
 
@@ -181,7 +181,7 @@ Read all artifacts from each site directory. Build internal structures:
 
 - **Candidate pool:** All candidates from all value-map.json files, tagged by
   source site and source tier weight.
-- **Prose corpus:** All SITE-ANALYSIS.md files for thematic analysis.
+- **Prose corpus:** All creator-view.md files for thematic analysis.
 - **Link pool:** All links.json entries for cross-site relationship mapping.
 - **Metadata index:** All meta.json files for site classification.
 

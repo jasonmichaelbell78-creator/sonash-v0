@@ -1,0 +1,83 @@
+{
+  "id": "c7b9f73c-2b25-44b3-88d4-d285b01406ea",
+  "schema_version": "3.0",
+  "source_type": "media",
+  "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+  "slug": "youtube-oszdfnqmgrw",
+  "title": "Karpathy's Obsidian RAG + Claude Code = CHEAT CODE",
+  "analyzed_at": "2026-04-09T14:30:00Z",
+  "depth": "standard",
+  "tags": [
+    "media",
+    "youtube",
+    "obsidian",
+    "rag",
+    "claude-code",
+    "knowledge-base",
+    "karpathy",
+    "file-structure"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 65,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 85,
+    "classification": "active-sprint"
+  },
+  "summary": "Tutorial walkthrough of Karpathy's Obsidian-based knowledge base as a lightweight RAG alternative. Uses raw folder ingestion, Claude Code wiki generation, master index traversal, CLAUDE.md as controller. Key insight: markdown file structure + LLM context window = sufficient retrieval for solo devs without vector DBs or embeddings. Directly relevant to JASON-OS knowledge layer and our existing .research/ analysis pipeline.",
+  "creator_view": "The core insight — structured markdown as a knowledge retrieval system — is exactly what our .research/ directory + /recall pipeline already does. The video validates our approach while showing a simpler Obsidian-native variant that trades our SQLite index for filesystem traversal via CLAUDE.md instructions.",
+  "candidates": [
+    {
+      "name": "Obsidian raw→wiki pipeline pattern",
+      "type": "pattern",
+      "description": "Raw folder staging → LLM-generated wiki → master index. Lightweight alternative to vector RAG.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["knowledge-base", "obsidian", "pipeline"]
+    },
+    {
+      "name": "CLAUDE.md as knowledge traversal controller",
+      "type": "knowledge",
+      "description": "CLAUDE.md instructs LLM how to navigate the file structure, replacing vector retrieval with path-based lookup.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["claude-md", "navigation", "context"]
+    },
+    {
+      "name": "Obsidian Web Clipper as ingestion tool",
+      "type": "content",
+      "description": "Chrome extension that converts web pages to markdown files in the raw folder. Paired with Local Images Plus plugin for image preservation.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["obsidian", "ingestion", "chrome-extension"],
+      "url": "https://obsidian.md/clipper"
+    },
+    {
+      "name": "Scale threshold: when to move to real RAG",
+      "type": "knowledge",
+      "description": "Solo dev / small team with <thousands of docs = Obsidian sufficient. Millions of docs = proper RAG. Start simple, migrate when scale demands.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["rag", "scale", "decision-framework"]
+    },
+    {
+      "name": "Overcomplicating knowledge retrieval",
+      "type": "anti-pattern",
+      "description": "Jumping to vector DBs, embeddings, graph RAG before validating that structured markdown + LLM context is sufficient for your scale.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "rag", "premature-optimization"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "platform": "youtube",
+    "channel": "Chase AI"
+  },
+  "transcript_source": "captions"
+}

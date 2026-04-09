@@ -1,0 +1,63 @@
+{
+  "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+  "scan_date": "2026-04-09",
+  "depth": "standard",
+  "candidates": [
+    {
+      "name": "18-category AI error taxonomy",
+      "type": "knowledge",
+      "description": "Structured reference table of AI code generation failure modes with examples, impact, and mitigations. Cross-reference against CODE_PATTERNS.md.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["taxonomy", "ai-code-quality", "reference"]
+    },
+    {
+      "name": "Hallucinated dependencies (slopsquatting)",
+      "type": "knowledge",
+      "description": "AI suggests non-existent packages. Verify against registries, use SBOM, use Dep-Hallucinator tool.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "supply-chain", "npm"]
+    },
+    {
+      "name": "Intentional vs unintentional debt classification",
+      "type": "knowledge",
+      "description": "AI creates unintentional debt from training gaps. Distinct from human intentional shortcuts. TDMS could classify by origin.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["technical-debt", "classification"]
+    },
+    {
+      "name": "Context momentum / hallucinated logic",
+      "type": "knowledge",
+      "description": "Early AI misinterpretations steer wrong. Clear context periodically, use separate threads per phase.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["context", "hallucination", "workflow"]
+    },
+    {
+      "name": "Structural entropy (code bloat)",
+      "type": "anti-pattern",
+      "description": "AI generates verbose, redundant code. Act as ruthless editor. Use git diffs, static analysis.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "code-bloat"]
+    },
+    {
+      "name": "Deployment fragility (happy path only)",
+      "type": "anti-pattern",
+      "description": "AI code works locally but lacks production robustness. Enforce reproducible builds, observability.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "deployment"]
+    }
+  ],
+  "cross_repo_connections": [],
+  "related_repos": []
+}

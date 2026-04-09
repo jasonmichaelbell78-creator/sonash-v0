@@ -67,11 +67,19 @@ The front door to the Content Analysis System. One command for everything:
 2. Announce: "Detected: [type]. Routing to [handler]."
 3. Pass through all flags (--depth, etc.) to handler
 4. Handler runs its full pipeline (per its SKILL.md)
-5. After handler completes:
-   a. Run: node scripts/cas/update-index.js --slug=<slug>
-   b. Confirm: "Indexed. Available via /recall."
+5. MANDATORY post-handler step (router does this, not the handler):
+   a. Determine slug from handler output directory name
+   b. Run: node scripts/cas/update-index.js --slug=<slug>
+   c. If index update fails, warn user but don't fail the analysis
+   d. Run: node scripts/cas/generate-extractions-md.js
+   e. Confirm: "Indexed. Available via /recall."
 6. Handler presents its routing menu
 ```
+
+**Post-handler step is the router's responsibility.** Handler skills do not run
+index updates — they write artifacts. The router runs the index update after
+control returns from the handler. If the router delegates via `/skill` and
+doesn't get control back, the index update must be run manually.
 
 ### Synthesis Mode (no input or --synthesize)
 
@@ -111,6 +119,7 @@ repos, websites, documents, and media.
 
 ## Version History
 
-| Version | Date       | Description                              |
-| ------- | ---------- | ---------------------------------------- |
-| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269) |
+| Version | Date       | Description                                                                                                |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-04-09 | Fix: post-handler index update is router's responsibility, add generate-extractions-md step (Session #270) |
+| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269)                                                                   |

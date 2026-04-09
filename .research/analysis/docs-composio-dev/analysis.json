@@ -23,10 +23,11 @@
     "quality_score": 70,
     "personal_fit_band": "Healthy",
     "personal_fit_score": 68,
-    "fit_classification": "active-sprint"
+    "fit_classification": "active-sprint",
+    "classification": "active-sprint"
   },
   "summary": "Meta-tool architecture avoids loading 1000+ definitions into context 5-server MCP setup consumes ~55K tokens before conversation starts",
-  "creator_view": "",
+  "creator_view": "Meta-tool architecture avoids loading 1000+ definitions into context 5-server MCP setup consumes ~55K tokens before conversation starts",
   "candidates": [],
   "last_synthesized_at": null,
   "meta": {

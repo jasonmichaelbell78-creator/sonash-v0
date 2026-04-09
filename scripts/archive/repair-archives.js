@@ -335,8 +335,8 @@ function deleteObsoleteFiles(toDelete) {
       if (st.isSymbolicLink() || !st.isFile()) continue;
       fs.unlinkSync(delPath);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      console.warn(`  [warn] Failed to delete ${f}: ${msg.split("\n")[0]}`);
+      const safeMsg = sanitizeError(err);
+      console.warn("  [warn] Failed to remove %s: %s", f, safeMsg);
     }
   }
   console.log(`  Deleted ${toDelete.length} old files`);

@@ -23,10 +23,11 @@
     "quality_score": 70,
     "personal_fit_band": "Excellent",
     "personal_fit_score": 80,
-    "fit_classification": "active-sprint"
+    "fit_classification": "active-sprint",
+    "classification": "active-sprint"
   },
   "summary": "TeammateTool enables persistent multi-agent teams with inbox messaging Three spawn backends (in-process, tmux, iterm2) serve different visibility needs",
-  "creator_view": "",
+  "creator_view": "TeammateTool enables persistent multi-agent teams with inbox messaging Three spawn backends (in-process, tmux, iterm2) serve different visibility needs",
   "candidates": [],
   "last_synthesized_at": null,
   "meta": {

@@ -7,7 +7,7 @@
   "title": "Python API to get YouTube transcript/subtitles. Works for auto-generated subtitl",
   "analyzed_at": "2026-04-07",
   "depth": "quick",
-  "tags": ["repo", "library"],
+  "tags": ["repo", "library", "youtube", "transcript", "repository"],
   "scoring": {
     "quality_band": "Healthy",
     "quality_score": 63,

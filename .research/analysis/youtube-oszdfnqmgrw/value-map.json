@@ -1,0 +1,61 @@
+{
+  "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+  "scan_date": "2026-04-09",
+  "depth": "standard",
+  "candidates": [
+    {
+      "name": "Obsidian raw→wiki pipeline pattern",
+      "type": "pattern",
+      "description": "Raw folder staging → LLM-generated wiki → master index. Lightweight alternative to vector RAG.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["knowledge-base", "obsidian", "pipeline"]
+    },
+    {
+      "name": "CLAUDE.md as knowledge traversal controller",
+      "type": "knowledge",
+      "description": "CLAUDE.md instructs LLM how to navigate file structure, replacing vector retrieval with path-based lookup.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["claude-md", "navigation", "context"]
+    },
+    {
+      "name": "Obsidian Web Clipper as ingestion tool",
+      "type": "content",
+      "description": "Chrome extension for web→markdown ingestion directly to raw folder.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["obsidian", "ingestion", "chrome-extension"],
+      "url": "https://obsidian.md/clipper"
+    },
+    {
+      "name": "Scale threshold decision framework",
+      "type": "knowledge",
+      "description": "Solo/small team <thousands docs = structured markdown sufficient. Millions = proper RAG. Start simple.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["rag", "scale", "decision-framework"]
+    },
+    {
+      "name": "Overcomplicating knowledge retrieval",
+      "type": "anti-pattern",
+      "description": "Jumping to vector DBs and embeddings before validating that structured markdown + LLM context works at your scale.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "rag", "premature-optimization"]
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "safishamsi/graphify",
+      "connection_type": "complementary",
+      "detail": "Both address code/knowledge comprehension. graphify uses graph topology, this uses markdown file structure. Different scale targets."
+    }
+  ],
+  "related_repos": []
+}

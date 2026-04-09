@@ -1,0 +1,90 @@
+{
+  "id": "22a5317f-5c76-420e-a71a-2acf4598d0d3",
+  "schema_version": "3.0",
+  "source_type": "document",
+  "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+  "slug": "errors-and-vulnerabilities-in-ai-generated-code",
+  "title": "Errors and Vulnerabilities in AI-Generated Code — Reference Table",
+  "analyzed_at": "2026-04-09T13:30:00Z",
+  "depth": "standard",
+  "tags": [
+    "document",
+    "pdf",
+    "security",
+    "ai-code-quality",
+    "vulnerabilities",
+    "reference-table",
+    "technical-debt"
+  ],
+  "scoring": {
+    "quality_band": "Excellent",
+    "quality_score": 88,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 92,
+    "classification": "active-sprint"
+  },
+  "summary": "6-page structured reference table cataloging 18 error categories in AI-generated code. Each entry: description, examples, impact/risks, mitigation strategy, and source citations. Covers architectural inconsistency, security flaws (secrets, injection, access control, memory safety), requirements ambiguity, supply chain risks, structural entropy, deployment fragility, compilation errors, error handling, intentional vs unintentional debt, hallucinated logic, license compliance, bias, prompt injection, and naming inconsistency.",
+  "creator_view": "Comprehensive taxonomy of AI code generation failure modes with mitigations. Directly maps to SoNash's CODE_PATTERNS.md, SECURITY_CHECKLIST.md, and the 450-pattern compliance system. Several categories match our existing patterns exactly (injection/XSS, error handling, path traversal). Others identify gaps (hallucinated dependencies, license compliance, bias).",
+  "candidates": [
+    {
+      "name": "18-category AI error taxonomy",
+      "type": "knowledge",
+      "description": "Structured reference table of AI code generation failure modes with examples, impact, and mitigations",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["taxonomy", "ai-code-quality"]
+    },
+    {
+      "name": "Hallucinated dependencies (slopsquatting)",
+      "type": "knowledge",
+      "description": "AI suggests non-existent packages. Verify against registries, use SBOM, use Dep-Hallucinator.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "supply-chain"]
+    },
+    {
+      "name": "Intentional vs unintentional debt distinction",
+      "type": "knowledge",
+      "description": "AI creates unintentional debt from training data gaps. Document intentional debt, detect unintentional.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["technical-debt", "classification"]
+    },
+    {
+      "name": "Context momentum / hallucinated logic",
+      "type": "knowledge",
+      "description": "Early AI misinterpretations steer project wrong. Clear context periodically. Use separate threads per phase.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["context", "hallucination"]
+    },
+    {
+      "name": "Structural entropy (code bloat)",
+      "type": "anti-pattern",
+      "description": "AI generates verbose, redundant, unused code. Act as ruthless editor using git diffs, static analysis.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "code-bloat"]
+    },
+    {
+      "name": "Deployment fragility (happy path only)",
+      "type": "anti-pattern",
+      "description": "Code works locally but lacks production robustness. Enforce reproducible builds, observability, load testing.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "deployment"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "page_count": 6,
+    "file_type": "pdf",
+    "word_count": 3500
+  }
+}

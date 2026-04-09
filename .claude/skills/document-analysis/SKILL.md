@@ -39,7 +39,11 @@ papers, code snippets, meeting notes.
    `scripts/lib/analysis-schema.js`. See CONVENTIONS.md Section 12.
 8. **Use Claude's built-in tools for reading.** Read tool for PDFs (up to 20
    pages per request, paginate for longer). WebFetch for URLs. Read for local
-   files. Do NOT add external parsing libraries.
+   files. **PDF fallback (Windows):** If Read tool fails with
+   `pdftoppm not found`, use `pdfjs-dist` via node:
+   `require('pdfjs-dist/legacy/build/pdf.mjs')` to extract text per page.
+   Install: `npm install pdfjs-dist --no-save`. To permanently fix: install
+   poppler (`winget install poppler` in a Windows terminal).
 
 ## When to Use
 
@@ -72,7 +76,8 @@ papers, code snippets, meeting notes.
 
 **Output location:** `.research/analysis/<doc-slug>/` **Produces:**
 analysis.json (unified schema v3.0), value-map.json, creator-view.md,
-findings.jsonl, extraction-journal.jsonl entries.
+findings.jsonl, summary.md, deep-read.md, content-eval.jsonl,
+coverage-audit.jsonl, extraction-journal.jsonl entries.
 
 ---
 
@@ -253,6 +258,7 @@ Update after every phase. On re-invocation with same input: offer Resume/Re-run.
 
 ## Version History
 
-| Version | Date       | Description                              |
-| ------- | ---------- | ---------------------------------------- |
-| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269) |
+| Version | Date       | Description                                                                                                                                |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1.1     | 2026-04-09 | PDF fallback for Windows, add summary.md + deep-read.md + content-eval.jsonl + coverage-audit.jsonl to output list (Session #270 E2E test) |
+| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269)                                                                                                   |

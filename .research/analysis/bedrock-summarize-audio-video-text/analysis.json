@@ -7,7 +7,7 @@
   "title": "Automates text extraction, transcription and summarization of audio, video, and ",
   "analyzed_at": "2026-04-07",
   "depth": "quick",
-  "tags": ["repo", "tool-demo"],
+  "tags": ["repo", "tool-demo", "bedrock", "summarize", "audio", "video", "text"],
   "scoring": {
     "quality_band": "Critical",
     "quality_score": 18,

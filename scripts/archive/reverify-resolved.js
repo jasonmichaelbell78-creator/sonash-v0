@@ -17,8 +17,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
-const { validatePathInDir } = require("../lib/security-helpers.js");
+const { safeWriteFileSync, safeRenameSync, isSafeToWrite } = require("../lib/safe-fs");
+const { validatePathInDir, sanitizeError } = require("../lib/security-helpers.js");
 
 const ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const MASTER_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
@@ -32,8 +32,7 @@ let report;
 try {
   report = JSON.parse(fs.readFileSync(REPORT_PATH, "utf8"));
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error(`Error: Failed to read or parse ${REPORT_PATH}: ${msg}`);
+  console.error(`Error: Failed to read or parse ${REPORT_PATH}: ${sanitizeError(err)}`);
   process.exit(1);
 }
 const flaggedDetails = report?.step4_audit_resolved?.possibly_unresolved_details;
@@ -50,8 +49,7 @@ let lines;
 try {
   lines = fs.readFileSync(MASTER_PATH, "utf8").split("\n").filter(Boolean);
 } catch (err) {
-  const msg = err instanceof Error ? err.message : String(err);
-  console.error(`Error: Failed to read ${MASTER_PATH}: ${msg}`);
+  console.error(`Error: Failed to read ${MASTER_PATH}: ${sanitizeError(err)}`);
   process.exit(1);
 }
 const allItems = lines.flatMap((l, idx) => {
@@ -340,6 +338,10 @@ if (writeMode) {
   }
 
   // Stage both tmp files
+  if (!isSafeToWrite(MASTER_PATH)) {
+    console.error("Refusing to write — symlink detected on MASTER_DEBT.jsonl");
+    process.exit(1);
+  }
   const masterTmpPath = MASTER_PATH + ".tmp";
   safeWriteFileSync(masterTmpPath, updatedLines.join("\n") + "\n", "utf8");
 

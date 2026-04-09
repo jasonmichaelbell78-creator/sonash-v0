@@ -1,0 +1,3 @@
+{"id":"F-001","severity":"info","category":"relevance","title":"Low direct relevance to SoNash","detail":"Obsidian-specific UI tutorial. Our CAS already implements structured metadata + FTS for file findability.","source":"Phase 4"}
+{"id":"F-002","severity":"info","category":"content-quality","title":"Valid core insight buried in tutorial","detail":"Context-over-filename retrieval is a real principle but presented as an Obsidian feature, not a transferable pattern.","source":"Phase 2"}
+{"id":"F-003","severity":"info","category":"content-quality","title":"Promotional content at end","detail":"Plugs for plus-one-creator.com email list and courses. Affects signal-to-noise ratio.","source":"Phase 2"}

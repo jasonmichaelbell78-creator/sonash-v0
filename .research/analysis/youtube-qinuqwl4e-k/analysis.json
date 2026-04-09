@@ -1,0 +1,54 @@
+{
+  "id": "ec86c214-1165-4339-8d14-f9a343529599",
+  "schema_version": "3.0",
+  "source_type": "media",
+  "source": "https://www.youtube.com/watch?v=qINuQwL4E-k",
+  "slug": "youtube-qinuqwl4e-k",
+  "title": "How To Use Obsidian: The MOST USEFUL Feature You're Not Using Right",
+  "analyzed_at": "2026-04-09T15:00:00Z",
+  "depth": "standard",
+  "tags": [
+    "media",
+    "youtube",
+    "obsidian",
+    "attachments",
+    "knowledge-management",
+    "file-organization",
+    "metadata"
+  ],
+  "scoring": {
+    "quality_band": "Needs Work",
+    "quality_score": 48,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 35,
+    "classification": "park-for-later"
+  },
+  "summary": "Tutorial on Obsidian attachment management: default location settings, subfolder-per-project organization, and the key insight of using metadata-rich notes to make attachments findable by context rather than filename. Low direct relevance to SoNash — Obsidian-specific UI features, not transferable patterns.",
+  "creator_view": "The core insight — making files findable by the thoughts around them rather than their filenames — is valid but Obsidian-specific. Our .research/ analysis pipeline already solves this with structured metadata (analysis.json), tags, and FTS via SQLite. The video is a basic Obsidian tutorial, not a knowledge system design reference.",
+  "candidates": [
+    {
+      "name": "Context-over-filename retrieval principle",
+      "type": "knowledge",
+      "description": "Make files findable by surrounding metadata and linked context rather than filename or folder path.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["knowledge-management", "retrieval", "metadata"]
+    },
+    {
+      "name": "Subfolder-per-project attachment pattern",
+      "type": "pattern",
+      "description": "Obsidian setting: auto-create attachments/ subfolder per project folder. Keeps assets co-located with notes.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["obsidian", "file-organization"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "platform": "youtube",
+    "channel": "Obsidian Explained (No Code Required)"
+  },
+  "transcript_source": "captions"
+}

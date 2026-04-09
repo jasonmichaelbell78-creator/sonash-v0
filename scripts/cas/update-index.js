@@ -143,11 +143,14 @@ function loadJournalLines() {
 }
 
 function syncExtractions(db, record, tagCache) {
-  // Delete junction table rows first to avoid FK constraint violations
+  // Delete existing extractions for this source (by analysis ID + source_type/source)
+  // Junction table rows first to avoid FK constraint violations
   db.prepare(
-    "DELETE FROM extraction_tags WHERE extraction_id IN (SELECT id FROM extractions WHERE source_analysis_id = ?)"
-  ).run(record.id);
-  db.prepare("DELETE FROM extractions WHERE source_analysis_id = ?").run(record.id);
+    "DELETE FROM extraction_tags WHERE extraction_id IN (SELECT id FROM extractions WHERE source_analysis_id = ? OR (source_type = ? AND source = ?))"
+  ).run(record.id, record.source_type, record.source);
+  db.prepare(
+    "DELETE FROM extractions WHERE source_analysis_id = ? OR (source_type = ? AND source = ?)"
+  ).run(record.id, record.source_type, record.source);
 
   const lines = loadJournalLines();
 
@@ -163,19 +166,37 @@ function syncExtractions(db, record, tagCache) {
   );
 
   let skippedLines = 0;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  let insertErrors = 0;
+  for (const line of lines) {
     if (!line.trim()) continue;
+    let entry;
     try {
-      const entry = JSON.parse(line);
-      if (entry.source_analysis_id !== record.id) continue;
+      entry = JSON.parse(line);
+    } catch {
+      skippedLines++;
+      continue;
+    }
+    // Match by source_analysis_id (UUID) OR by source_type+source (human-readable)
+    const matchById = entry.source_analysis_id && entry.source_analysis_id === record.id;
+    const matchBySource =
+      entry.source_type &&
+      entry.source &&
+      entry.source_type === record.source_type &&
+      String(entry.source).trim().toLowerCase() === String(record.source).trim().toLowerCase();
+    if (!matchById && !matchBySource) continue;
 
+    // When matched by source name (not ID), canonicalize to record values for FK + consistency
+    const safeAnalysisId = matchById ? entry.source_analysis_id : record.id;
+    const canonicalSourceType = matchBySource ? record.source_type : entry.source_type || "repo";
+    const canonicalSource = matchBySource ? record.source : entry.source || "";
+
+    try {
       const tags = JSON.stringify(entry.tags || []);
       const info = insertExtraction.run(
         entry.schema_version || "2.0",
-        entry.source_type || "repo",
-        entry.source || "",
-        entry.source_analysis_id || null,
+        canonicalSourceType,
+        canonicalSource,
+        safeAnalysisId,
         entry.candidate || "",
         entry.type || "knowledge",
         entry.decision || "defer",
@@ -197,12 +218,15 @@ function syncExtractions(db, record, tagCache) {
         }
       }
     } catch (err) {
-      skippedLines++;
-      console.error(`Warning: skipped malformed journal line ${i + 1}: ${sanitizeError(err)}`);
+      insertErrors++;
+      console.error(`Warning: extraction insert failed: ${sanitizeError(err)}`);
     }
   }
   if (skippedLines > 0) {
     console.error(`Warning: skipped ${skippedLines} malformed journal line(s)`);
+  }
+  if (insertErrors > 0) {
+    console.error(`Warning: ${insertErrors} extraction insert(s) failed`);
   }
 }
 
@@ -233,9 +257,109 @@ function main() {
     process.exit(1);
   }
 
+  // Symlink guard BEFORE any DB creation — detect dangling symlinks too
+  try {
+    if (fs.lstatSync(DB_PATH).isSymbolicLink()) {
+      console.error("Refusing to open symlinked database path");
+      process.exit(1);
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+    // ENOENT = file doesn't exist, safe to create
+  }
+
   if (!fs.existsSync(DB_PATH)) {
-    console.error("Index not found. Run: node scripts/cas/rebuild-index.js first");
-    process.exit(1);
+    // Ensure parent directory exists (with symlink guard)
+    const dbDir = path.dirname(DB_PATH);
+    try {
+      if (fs.lstatSync(dbDir).isSymbolicLink()) {
+        console.error("Refusing to create DB — parent directory is a symlink");
+        process.exit(1);
+      }
+    } catch (dirErr) {
+      if (dirErr.code === "ENOENT") {
+        fs.mkdirSync(dbDir, { recursive: true });
+      } else {
+        throw dirErr;
+      }
+    }
+    console.log("Index not found — auto-creating database...");
+    const newDb = new Database(DB_PATH);
+    try {
+      newDb.pragma("journal_mode = WAL");
+      newDb.pragma("foreign_keys = ON");
+      newDb.exec(`
+        CREATE TABLE IF NOT EXISTS sources (
+          id TEXT PRIMARY KEY,
+          source_type TEXT NOT NULL,
+          source TEXT NOT NULL,
+          slug TEXT NOT NULL UNIQUE,
+          title TEXT NOT NULL,
+          analyzed_at TEXT,
+          depth TEXT,
+          quality_band TEXT,
+          quality_score REAL,
+          personal_fit_band TEXT,
+          personal_fit_score REAL,
+          classification TEXT,
+          summary TEXT,
+          tags TEXT DEFAULT '[]',
+          last_synthesized_at TEXT
+        );
+        CREATE TABLE IF NOT EXISTS extractions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          schema_version TEXT NOT NULL,
+          source_type TEXT NOT NULL,
+          source TEXT NOT NULL,
+          source_analysis_id TEXT,
+          candidate TEXT NOT NULL,
+          type TEXT NOT NULL,
+          decision TEXT NOT NULL,
+          decision_date TEXT,
+          extracted_to TEXT,
+          extracted_at TEXT,
+          notes TEXT,
+          novelty TEXT,
+          effort TEXT,
+          relevance TEXT,
+          tags TEXT DEFAULT '[]',
+          FOREIGN KEY (source_analysis_id) REFERENCES sources(id)
+        );
+        CREATE TABLE IF NOT EXISTS tags (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE
+        );
+        CREATE TABLE IF NOT EXISTS source_tags (
+          source_id TEXT NOT NULL,
+          tag_id INTEGER NOT NULL,
+          PRIMARY KEY (source_id, tag_id),
+          FOREIGN KEY (source_id) REFERENCES sources(id),
+          FOREIGN KEY (tag_id) REFERENCES tags(id)
+        );
+        CREATE TABLE IF NOT EXISTS extraction_tags (
+          extraction_id INTEGER NOT NULL,
+          tag_id INTEGER NOT NULL,
+          PRIMARY KEY (extraction_id, tag_id),
+          FOREIGN KEY (extraction_id) REFERENCES extractions(id),
+          FOREIGN KEY (tag_id) REFERENCES tags(id)
+        );
+        CREATE VIRTUAL TABLE IF NOT EXISTS search_sources USING fts5(
+          title, summary, tags,
+          tokenize = 'porter unicode61',
+          content = 'sources',
+          content_rowid = 'rowid'
+        );
+        CREATE VIRTUAL TABLE IF NOT EXISTS search_extractions USING fts5(
+          candidate, notes, tags,
+          tokenize = 'porter unicode61',
+          content = 'extractions',
+          content_rowid = 'rowid'
+        );
+      `);
+      console.log("Database created successfully.");
+    } finally {
+      newDb.close();
+    }
   }
 
   const resolvedDb = path.resolve(DB_PATH); // validatePathInDir: constant
@@ -317,8 +441,10 @@ function main() {
     update();
 
     const count = db
-      .prepare("SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ?")
-      .get(record.id);
+      .prepare(
+        "SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ? OR (source_type = ? AND source = ?)"
+      )
+      .get(record.id, record.source_type, record.source);
 
     console.log(`Updated index for ${slug}: source upserted, ${count.count} extractions synced.`);
   } finally {

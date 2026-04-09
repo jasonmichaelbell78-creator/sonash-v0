@@ -1,34 +1,6 @@
 {
   "warnings": [
     {
-      "hook": "pre-commit",
-      "type": "propagation-staged",
-      "severity": "error",
-      "message": "BLOCK-severity propagation misses in staged files",
-      "action": "Stage sibling files or fix the old pattern",
-      "timestamp": "2026-04-08T18:50:43.162Z",
-      "occurrences": 2,
-      "occurrences_since_ack": 1,
-      "resolved": true,
-      "resolution": "Fixed in commit 8085381f — all propagation fixes applied"
-    },
-    {
-      "hook": "pre-push",
-      "type": "patterns",
-      "severity": "warning",
-      "message": "Pattern compliance: 0 critical, 2 high",
-      "action": "npm run patterns:check",
-      "timestamp": "2026-04-08T18:47:17.641Z",
-      "files": [
-        "scripts\\cas\\migrate-schemas.js",
-        "scripts\\cas\\rebuild-index.js",
-        "scripts\\cas\\update-index.js"
-      ],
-      "pattern": "check-pattern-compliance",
-      "occurrences": 1,
-      "occurrences_since_ack": 1
-    },
-    {
       "hook": "session-start",
       "type": "review-lifecycle",
       "severity": "warning",
@@ -64,109 +36,9 @@
       "severity": "warning",
       "message": "npm audit found security vulnerabilities",
       "action": "npm audit",
-      "timestamp": "2026-04-08T20:51:41.396Z",
+      "timestamp": "2026-04-09T20:51:25.186Z",
       "occurrences": 1,
       "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "10 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:05:24.850Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 6
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "11 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:06:17.001Z",
-      "occurrences": 10,
-      "occurrences_since_ack": 7
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "12 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:07:50.951Z",
-      "occurrences": 11,
-      "occurrences_since_ack": 8
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "13 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:08:45.717Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 9
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "14 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:10:31.983Z",
-      "occurrences": 13,
-      "occurrences_since_ack": 10
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "15 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:23:07.388Z",
-      "occurrences": 14,
-      "occurrences_since_ack": 11
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "error",
-      "message": "16 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:23:39.156Z",
-      "occurrences": 15,
-      "occurrences_since_ack": 12
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "error",
-      "message": "17 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:24:26.771Z",
-      "occurrences": 16,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "error",
-      "message": "18 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:43:56.837Z",
-      "occurrences": 17,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "error",
-      "message": "19 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-08T21:51:40.398Z",
-      "occurrences": 18,
-      "occurrences_since_ack": 2
     }
   ]
 }

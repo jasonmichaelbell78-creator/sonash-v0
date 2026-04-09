@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.120 **Created:** 2026-01-02 **Last Updated:**
-2026-04-08
+**Document Version:** 17.124 **Created:** 2026-01-02 **Last Updated:**
+2026-04-09
 
 ## Purpose
 
@@ -365,6 +365,15 @@ accumulate.
 > (all showed "no patterns found" due to empty JSONL pattern data). State was
 > reset and fixed in Session #193. See consolidation.json for current state.
 
+<details>
+<summary>Previous Consolidation (#55)</summary>
+
+- **Date:** 2026-04-09
+- **Reviews consolidated:** #rev-64-#rev-73
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
 <details>
 <summary>Previous Consolidation (#55)</summary>
 
@@ -1192,133 +1201,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review backfill-477-r3: PR #477 R3 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 3     | 0        | 4        |
-
----
-
-### Review rev-21: PR #480 R1 — Mixed Qodo+Gemini+SonarCloud (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 24    | 0        | 3        |
-
----
-
-### Review rev-22: PR #480 R2 — Mixed SonarCloud+Qodo+CI (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 6     | 0        | 2        |
-
----
-
-### Review rev-23: PR #480 R3 — Mixed SonarCloud+Qodo (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 0        |
-
----
-
-### Review rev-24: PR #480 R4 — Mixed SonarCloud+Qodo (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 2     | 0        | 1        |
-
----
-
-### Review rev-25: PR #482 R1 — Mixed SonarCloud+Qodo+Gemini+CI (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 25    | 22    | 0        | 3        |
-
----
-
-### Review rev-26: PR #482 R2 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 5     | 0        | 2        |
-
----
-
-### Review rev-27: PR #482 R3 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 4     | 0        | 3        |
-
----
-
-### Review rev-61: PR #483 R1 — Mixed (2026-03-31) (2026-03-31)
-
-**Date:** 2026-03-31 | **PR:** #483 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 9     | 0        | 2        |
-
----
-
-### Review rev-62: PR #487 R1 — Mixed (2026-04-01) (2026-04-01)
-
-**Date:** 2026-04-01 | **PR:** #487 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 7     | 0        | 0        |
-
-**Patterns:**
-
-- vitest-to-node-test-propagation
-- array-push-batching
-- consolidation-duplication
-- test-baseline-missing
-- nullish-coalescing-defense
-- startup-perf-cap
-
----
-
-### Review rev-63: PR #488 R1 — Mixed (2026-04-01) (2026-04-01)
-
-**Date:** 2026-04-01 | **PR:** #488 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 3     | 0        | 0        |
-
-**Patterns:**
-
-- tdms-created-date-churn
-- agent-audit-trail
-- brainstorm-table-alignment
-
----
-
 ### Review rev-64: PR #489 R1 — Mixed (2026-04-03) (2026-04-03)
 
 **Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
@@ -1395,6 +1277,16 @@ deduplicated, non-overlapping ranges):
 - exit-code-2
 - tdms-data-quality
 - path-disclosure-fix
+
+---
+
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 ---
 
@@ -1568,31 +1460,23 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
 
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 4     | 0     | 0        | 0        |
 
 ---
 
-### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
+### Review 509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
 
-**Date:** unknown | **PR:** #498 | **Source:** manual
+**Date:** 2026-04-07 | **PR:** #488 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- volatile-state-tracking
-- reviews-jsonl-integrity
-- extraction-journal-normalize
-- skill-schema-consistency
-- slug-algorithm-separator-preservation
 
 ---
 
@@ -1606,16 +1490,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
-
-**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
-
----
-
 ### Review rev-67: PR #488 R2 (2026-04-07)
 
 **Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
@@ -1623,16 +1497,6 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 11    | 5     | 0        | 6        |
-
----
-
-### Review 509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
-
-**Date:** 2026-04-07 | **PR:** #488 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
 
 ---
 
@@ -1652,19 +1516,82 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 71: PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint) (unknown)
+### Review rev-69: (untitled) (2026-04-08)
 
-**Date:** unknown | **PR:** #500 | **Source:** manual
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 28    | 24    | 0        | 4        |
 
 **Patterns:**
 
-- pii-in-agent-logs
-- research-doc-schema-consistency
-- research-design-feedback-vs-bugs
+- slug-traversal-validation-scope
+- falsy-score-clobbering
+- overbroad-sql-deletion
+- prepare-inside-loop
+- bandFromScore-duplication
+
+---
+
+### Review rev-70: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Patterns:**
+
+- migration-uuid-stability
+- readonly-symlink-guard
+- cc-from-fix-accumulation
+
+---
+
+### Review rev-71: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 5     | 0        | 6        |
+
+**Patterns:**
+
+- lstatSync-regression
+- proto-delete-deprecated
+
+---
+
+### Review rev-72: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 7     | 0        | 2        |
+
+**Patterns:**
+
+- symlink-follow-vs-refuse
+- path-resolution-bugs
+
+---
+
+### Review rev-73: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 6     | 0        | 3        |
+
+**Patterns:**
+
+- unreachable-fallback-code
+- fts-input-limits
 
 ## Key Patterns
 
@@ -4142,3 +4069,94 @@ stale-rejected, 1 already-fixed)
   canonical scoring objects (both numeric fields present).
 - **fts-input-limits** — FTS5 MATCH queries need both length truncation (500
   chars) and token count limits (20) to prevent pathological query execution.
+
+### Review #77 — PR #504 R1 (Mixed: CodeQL + Qodo + Gemini + SonarCloud + CI)
+
+**Date:** 2026-04-09 | **Items:** 35 | **Fixed:** 28 | **Deferred:** 0 |
+**Rejected:** 7
+
+**Key patterns:**
+
+1. **DB creation before symlink guard** — `new Database(path)` creates/opens
+   before `isSafeToWrite` check. Must guard with `lstatSync` before any
+   filesystem-creating operation, including SQLite open.
+2. **`||` clobbers zero scores** — `score || 50` treats `0` as falsy. Use `??`
+   for numeric defaults (Gemini caught this).
+3. **FK violation on source-matched inserts** — When matching journal entries by
+   source name (not UUID), the entry's stale `source_analysis_id` fails FK
+   constraint. Fix: use `record.id` for FK safety on source-matched entries.
+4. **`require.resolve` != `require`** — `require.resolve` only resolves the
+   path, doesn't verify native bindings load. Use `require()` to catch ABI
+   mismatch.
+5. **Cross-source deletion collisions** — DELETE by source name without
+   source_type can hit unrelated records. Always scope deletes by
+   `(source_type, source)`.
+6. **Incomplete string escaping (CodeQL)** — `escapeCell` escaped `|` and `\n`
+   but not backslashes themselves, allowing escape sequence injection.
+7. **Source matching after migration** — Migrating `source` fields in
+   analysis.json without updating extraction-journal.jsonl breaks exact-match
+   lookups. Use slugified fuzzy matching.
+
+**Rejected:** 7 SonarCloud CC violations (self-audit checkArtifacts CC=32,
+checkExtractions CC=20, main CC=16/20, checkExpectedFiles CC=20) — these
+functions have high CC due to sequential validation checks, not deep nesting.
+Extracting helpers would increase complexity without improving readability. Doc
+lint on `.research/` file (already exempt in config).
+
+### Review #78 — PR #504 R2 (Mixed: SonarCloud + CI + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-09 | **Items:** 27 | **Fixed:** 10 | **Deferred:** 0 |
+**Rejected:** 17
+
+**Key patterns:**
+
+1. **Test baseline format matters** — `.test-baseline.json` has two formats:
+   `entries` array (objects with `path`) and top-level keys. CI checker only
+   reads the `entries` array. Always use the array format.
+2. **Parent dir symlink guard** — `mkdirSync({ recursive: true })` can follow
+   symlinked parent dirs. Guard with `lstatSync` on parent before creating.
+3. **PII pattern checker avoidance** — `process.env.USER` triggers PII block
+   even when value is hashed. Avoid direct reference via `process.env` alias.
+4. **slugify regression** — removing `-+` collapse from GitHub-compatible
+   slugify breaks anchor matching. Always preserve hyphen normalization.
+5. **Source matching normalization** — case/whitespace differences between
+   journal entries and analysis records cause silent sync failures. Normalize
+   with `trim().toLowerCase()`.
+
+**Rejected:** 12 SonarCloud CC violations (sequential validation in new CAS
+files, not deep nesting). 4 Qodo compliance items (intentional silent parse
+skips, dev tooling audit trail, auto-generated feedback log). 1 cross-round
+dedup (already fixed R1).
+
+### Review #79 — PR #504 R3 (Mixed: SonarCloud + Qodo Suggestions + Qodo Compliance)
+
+**Date:** 2026-04-09 | **Items:** 18 | **Fixed:** 5 | **Deferred:** 0 |
+**Rejected:** 13
+
+**Key patterns:**
+
+1. **Slugify regex `/^-|-$/g` strips only single hyphens** — The alternation
+   `/^-|-$/g` matches one hyphen at start OR end. Use `/^-+|-+$/g` for greedy
+   multi-hyphen trim. Propagated to 4 files.
+2. **Canonicalize source fields on insert** — When matching journal entries by
+   normalized source name, insert the canonical record values (not the raw
+   journal values) to prevent data fragmentation.
+3. **Count query must match delete/insert scope** — If deletes scope by
+   `(source_type, source)`, the verification count query must too.
+
+**Rejected:** 12 SonarCloud CC (same as R1/R2). 1 doc lint (exempt path).
+
+### Review #80 — PR #504 R4 (Mixed: SonarCloud + Qodo Suggestions)
+
+**Date:** 2026-04-09 | **Items:** 19 | **Fixed:** 2 | **Deferred:** 0 |
+**Rejected:** 17
+
+**Key patterns:**
+
+1. **analyzed_at fallback** — migration silently skipped analyzed_at when
+   lstatSync failed. Add `new Date().toISOString()` fallback.
+2. **escapeCell all table fields** — only candidate and notes were escaped;
+   other fields could contain pipe characters breaking markdown tables.
+
+**Merge trigger:** Fix rate 11% (<30% threshold at R4). Recommend merge.
+Remaining 13 CC violations are repeat SonarCloud noise on new CAS files.

@@ -7,7 +7,7 @@
   "title": "Demonstrates how to accelerate content analysis workflows by automating video me",
   "analyzed_at": "2026-04-07",
   "depth": "quick",
-  "tags": ["repo"],
+  "tags": ["repo", "media", "extraction", "repository", "analysis"],
   "scoring": {
     "quality_band": "Needs Work",
     "quality_score": 50,
@@ -16,7 +16,7 @@
     "classification": "park-for-later"
   },
   "summary": "Demonstrates how to accelerate content analysis workflows by automating video metadata extraction, intelligence gathering, and content moderation",
-  "creator_view": "",
+  "creator_view": "Demonstrates how to accelerate content analysis workflows by automating video metadata extraction, intelligence gathering, and content moderation",
   "candidates": [],
   "last_synthesized_at": null,
   "meta": {

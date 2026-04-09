@@ -1,0 +1,11 @@
+{
+  "failures": [
+    {
+      "description": "Installing root dependencies",
+      "command": "npm ci --prefer-offline --no-audit --no-fund",
+      "reason": "failed",
+      "timestamp": "2026-04-09T15:54:23.520Z"
+    }
+  ],
+  "timestamp": "2026-04-09T15:55:16.859Z"
+}

@@ -532,14 +532,16 @@ function extractHeadingSlugs(content) {
 
 /**
  * Slugify a heading string (GitHub-compatible).
+ * NOTE: Intentionally different from shared slugify() — keeps underscores
+ * and converts spaces to hyphens to match GitHub anchor generation.
  */
 function slugify(text) {
   return text
     .toLowerCase()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replaceAll(/[^\w\s-]/g, "")
+    .replaceAll(/\s+/g, "-")
+    .replaceAll(/-+/g, "-")
+    .replaceAll(/^-+|-+$/g, "");
 }
 
 module.exports = { run, DOMAIN };

@@ -1,0 +1,113 @@
+{
+  "repo": "safishamsi/graphify",
+  "scan_date": "2026-04-09",
+  "depth": "standard",
+  "candidates": [
+    {
+      "name": "Skill orchestration pipeline (10-step, parallel agents)",
+      "type": "knowledge",
+      "description": "10-step pipeline with parallel agent dispatch, cache checking, chunk sizing. Most structured multi-step skill example found. Directly comparable to SoNash skill architecture.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["skill-architecture", "agent-dispatch", "orchestration"]
+    },
+    {
+      "name": "Confidence tagging taxonomy (EXTRACTED/INFERRED/AMBIGUOUS)",
+      "type": "knowledge",
+      "description": "Three-tier confidence taxonomy for graph edges. EXTRACTED = directly observed, INFERRED = model-reasoned, AMBIGUOUS = uncertain. Applicable to analysis findings and recall results.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["confidence", "taxonomy", "honesty"]
+    },
+    {
+      "name": "MCP server pattern (stateless, token-budgeted)",
+      "type": "pattern",
+      "description": "320-line MCP stdio server. Load graph once, expose 7 tools. Token budget on subgraph rendering. No network listener.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["mcp", "server", "graph-query"],
+      "url": "graphify/serve.py"
+    },
+    {
+      "name": "LanguageConfig dataclass (generic walker + per-type config)",
+      "type": "pattern",
+      "description": "One config object per language with type-specific node resolution, call detection, import handling. Generic walker uses config to extract 20 languages with zero duplication.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["extraction", "dataclass", "generic-walker"],
+      "url": "graphify/extract.py"
+    },
+    {
+      "name": "Threat-vector security model format",
+      "type": "knowledge",
+      "description": "Security model organized by attack vector with mitigations table and 'does NOT do' section. More readable than checklist-based formats.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "documentation", "threat-model"]
+    },
+    {
+      "name": "Platform-specific skill variants",
+      "type": "pattern",
+      "description": "7 platform-specific skill files with shared core and platform-specific adaptations (Agent vs Task tool, hook availability, sequential fallback).",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["multi-platform", "skill-distribution", "portability"]
+    },
+    {
+      "name": "ARCHITECTURE.md single-page format",
+      "type": "knowledge",
+      "description": "Pipeline, module table, extraction schema, confidence labels, how-to-extend, security, testing — all on one page. No bloat.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["documentation", "architecture", "conciseness"],
+      "url": "ARCHITECTURE.md"
+    },
+    {
+      "name": "Graph-only persistence without versioning",
+      "type": "anti-pattern",
+      "description": "graph.json has no schema_version, no migration path. Format changes break old graphs silently. Our analysis.json schema_version is the right approach.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "persistence", "schema-evolution"]
+    },
+    {
+      "name": "Oversized skill files (15K+ tokens per variant)",
+      "type": "anti-pattern",
+      "description": "7 skill files with significant content duplication. 15K+ tokens each. LLM context waste and maintenance burden.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "skill-bloat", "duplication"]
+    },
+    {
+      "name": "Ship fast skip review pattern",
+      "type": "anti-pattern",
+      "description": "20 releases in 6 days with zero merged external PRs. Security mitigations are self-assessed only. Impressive velocity but fragile.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["anti-pattern", "process", "review"]
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "HKUDS/CLI-Anything",
+      "connection_type": "shared-pattern",
+      "detail": "Both use SKILL.md-based skill architecture for Claude Code. CLI-Anything has 37 skill files. graphify has 7 platform variants."
+    },
+    {
+      "target_repo": "ViktorAxelsen/MemSkill",
+      "connection_type": "complementary",
+      "detail": "MemSkill is a memory skill for Claude Code. graphify's graph persistence is an alternative to MemSkill's memory approach."
+    }
+  ],
+  "related_repos": ["graspologic-org/graspologic", "tree-sitter/tree-sitter", "networkx/networkx"]
+}
