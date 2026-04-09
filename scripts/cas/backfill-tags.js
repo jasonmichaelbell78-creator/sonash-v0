@@ -29,8 +29,8 @@ const DRY_RUN = process.argv.includes("--dry-run");
 function slugify(s) {
   return String(s)
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-|-$/g, "");
 }
 
 function findTagsForSource(source) {
@@ -87,8 +87,7 @@ function main() {
   const tagCache = new Map();
   const updatedLines = [];
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  for (const line of lines) {
     if (!line.trim()) {
       updatedLines.push(line);
       continue;
@@ -103,6 +102,11 @@ function main() {
 
       // Look up tags for this source
       const source = entry.source;
+      if (!source || typeof source !== "string" || source.trim().length === 0) {
+        skipped++;
+        updatedLines.push(line);
+        continue;
+      }
       if (!tagCache.has(source)) {
         tagCache.set(source, findTagsForSource(source));
       }

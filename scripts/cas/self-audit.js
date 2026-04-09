@@ -56,8 +56,9 @@ function parseArgs(argv) {
 
 function getDepth(dir) {
   const analysisPath = path.join(dir, "analysis.json");
-  if (!fs.existsSync(analysisPath)) return "quick";
   try {
+    const st = fs.lstatSync(analysisPath);
+    if (st.isSymbolicLink()) return "quick";
     const data = JSON.parse(fs.readFileSync(analysisPath, "utf8"));
     return data.depth || "quick";
   } catch {
@@ -74,9 +75,13 @@ function safePath(slugPart, filePart) {
 
 // TOCTOU-safe stat: reject symlinks before reading
 function safeStatSync(filePath) {
-  const st = fs.lstatSync(filePath);
-  if (st.isSymbolicLink()) return null;
-  return st;
+  try {
+    const st = fs.lstatSync(filePath);
+    if (st.isSymbolicLink()) return null;
+    return st;
+  } catch {
+    return null;
+  }
 }
 
 function checkArtifacts(dir, slug) {
@@ -149,14 +154,19 @@ function checkSchema(dir, slug) {
   const results = { pass: [], fail: [] };
   const analysisPath = path.join(dir, "analysis.json");
 
-  if (!fs.existsSync(analysisPath)) {
-    results.fail.push("Cannot validate schema — analysis.json missing");
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(analysisPath, "utf8"));
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      results.fail.push("Cannot validate schema — analysis.json missing");
+    } else {
+      results.fail.push(`analysis.json parse error: ${sanitizeError(err)}`);
+    }
     return results;
   }
 
   try {
-    const data = JSON.parse(fs.readFileSync(analysisPath, "utf8"));
-
     // Check schema_version
     if (!data.schema_version) {
       results.fail.push("analysis.json missing schema_version field");
@@ -207,43 +217,56 @@ function checkSchema(dir, slug) {
   return results;
 }
 
+function slugify(s) {
+  return String(s)
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-|-$/g, "");
+}
+
+function matchesSource(entrySource, targetSource) {
+  if (entrySource === targetSource) return true;
+  return slugify(entrySource) === slugify(targetSource);
+}
+
 function checkExtractions(slug, source) {
   const results = { pass: [], fail: [], warn: [] };
 
-  if (!fs.existsSync(JOURNAL_PATH)) {
-    results.warn.push("extraction-journal.jsonl not found");
+  let lines;
+  try {
+    const content = fs.readFileSync(JOURNAL_PATH, "utf8").trim();
+    lines = content.split("\n");
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      results.warn.push("extraction-journal.jsonl not found");
+    } else {
+      results.warn.push(`Could not read journal: ${sanitizeError(err)}`);
+    }
     return results;
   }
 
-  try {
-    const lines = fs.readFileSync(JOURNAL_PATH, "utf8").trim().split("\n");
-    let count = 0;
-    let untagged = 0;
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      try {
-        const entry = JSON.parse(line);
-        if (entry.source === source) {
-          count++;
-          if (!entry.tags || entry.tags.length === 0) untagged++;
-        }
-      } catch {
-        // skip malformed
+  let count = 0;
+  let untagged = 0;
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    try {
+      const entry = JSON.parse(line);
+      if (matchesSource(entry.source, source)) {
+        count++;
+        if (!entry.tags || entry.tags.length === 0) untagged++;
       }
+    } catch {
+      // skip malformed
     }
+  }
 
-    if (count === 0) {
-      results.fail.push(`No extraction journal entries for source: ${source}`);
-    } else {
-      results.pass.push(`${count} extraction journal entries for ${source}`);
-      if (untagged > 0) {
-        results.warn.push(
-          `${untagged} of ${count} extraction entries have no tags (CONVENTIONS 14)`
-        );
-      }
+  if (count === 0) {
+    results.fail.push(`No extraction journal entries for source: ${source}`);
+  } else {
+    results.pass.push(`${count} extraction journal entries for ${source}`);
+    if (untagged > 0) {
+      results.warn.push(`${untagged} of ${count} extraction entries have no tags (CONVENTIONS 14)`);
     }
-  } catch (err) {
-    results.warn.push(`Could not read journal: ${sanitizeError(err)}`);
   }
 
   return results;

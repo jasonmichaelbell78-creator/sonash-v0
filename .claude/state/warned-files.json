@@ -1,6 +1,3 @@
 {
-  "scripts\\cas\\backfill-tags.js": 2,
-  "scripts\\cas\\migrate-v3.js": 1,
-  "scripts\\cas\\self-audit.js": 2,
-  "scripts\\cas\\update-index.js": 1
+  "scripts/archive-doc.js": 1
 }

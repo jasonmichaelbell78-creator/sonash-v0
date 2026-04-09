@@ -496,9 +496,21 @@
       "lines": 552
     }
   ],
+  "scripts/cas/backfill-tags.js": {
+    "reason": "CAS infrastructure — tag backfill utility (T28)",
+    "added": "2026-04-09"
+  },
+  "scripts/cas/generate-extractions-md.js": {
+    "reason": "CAS infrastructure — EXTRACTIONS.md generator (T28)",
+    "added": "2026-04-09"
+  },
   "scripts/cas/migrate-schemas.js": {
     "reason": "CAS infrastructure — SQLite index scripts (T28)",
     "added": "2026-04-08"
+  },
+  "scripts/cas/migrate-v3.js": {
+    "reason": "CAS infrastructure — v3 schema migration (T28)",
+    "added": "2026-04-09"
   },
   "scripts/cas/rebuild-index.js": {
     "reason": "CAS infrastructure — SQLite index scripts (T28)",
@@ -507,6 +519,10 @@
   "scripts/cas/recall.js": {
     "reason": "CAS infrastructure — SQLite index scripts (T28)",
     "added": "2026-04-08"
+  },
+  "scripts/cas/self-audit.js": {
+    "reason": "CAS infrastructure — handler output validator (T28)",
+    "added": "2026-04-09"
   },
   "scripts/cas/update-index.js": {
     "reason": "CAS infrastructure — SQLite index scripts (T28)",

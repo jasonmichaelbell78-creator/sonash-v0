@@ -482,9 +482,9 @@ if (needsRootInstall()) {
   }
 } else {
   console.log("📦 Skipping root dependencies (unchanged since last install)");
-  // Verify critical native deps are actually importable (lockfile match != installed)
+  // Verify critical native deps actually load (lockfile match != installed)
   try {
-    require.resolve("better-sqlite3");
+    require("better-sqlite3");
   } catch {
     console.log("   ⚠️ better-sqlite3 missing despite matching lockfile — reinstalling");
     addWarning("missing-native-dep", "better-sqlite3 not installed", "npm install");

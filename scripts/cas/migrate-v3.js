@@ -51,7 +51,7 @@ function generateTags(data, dirName) {
   // Derive from slug/dirName
   const words = dirName
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
+    .replaceAll(/[^a-z0-9]+/g, " ")
     .trim()
     .split(/\s+/);
   for (const w of words) {
@@ -61,9 +61,11 @@ function generateTags(data, dirName) {
   }
 
   // From metadata
-  if (data.metadata?.language) tags.add(data.metadata.language.toLowerCase());
-  if (data.metadata?.topics) {
-    for (const t of data.metadata.topics.slice(0, 5)) tags.add(t.toLowerCase());
+  if (data.metadata?.language) tags.add(String(data.metadata.language).toLowerCase());
+  if (Array.isArray(data.metadata?.topics)) {
+    for (const t of data.metadata.topics.slice(0, 5)) {
+      if (t != null) tags.add(String(t).toLowerCase());
+    }
   }
 
   // Ensure minimum 5
@@ -104,8 +106,8 @@ function fixRecord(data, dirName, filePath) {
     changed = true;
   } else if (data.scoring.adoptionLens || data.scoring.creatorLens) {
     // v2 format: adoptionLens/creatorLens → quality/personal_fit
-    const qs = data.scoring.adoptionLens?.score || data.scoring.creatorLens?.score || 50;
-    const fitScore = data.scoring.creatorLens?.score || data.scoring.adoptionLens?.score || 50;
+    const qs = data.scoring.adoptionLens?.score ?? data.scoring.creatorLens?.score ?? 50;
+    const fitScore = data.scoring.creatorLens?.score ?? data.scoring.adoptionLens?.score ?? 50;
     data.scoring = {
       quality_band: scoreToBand(qs),
       quality_score: qs,
@@ -148,13 +150,13 @@ function fixRecord(data, dirName, filePath) {
       changed = true;
     }
     // Fix band names that don't match enum
-    const validBands = ["Critical", "Needs Work", "Healthy", "Excellent"];
-    if (!validBands.includes(data.scoring.quality_band)) {
+    const validBands = new Set(["Critical", "Needs Work", "Healthy", "Excellent"]);
+    if (!validBands.has(data.scoring.quality_band)) {
       data.scoring.quality_band = scoreToBand(data.scoring.quality_score || 50);
       fixes.push("quality_band corrected");
       changed = true;
     }
-    if (!validBands.includes(data.scoring.personal_fit_band)) {
+    if (!validBands.has(data.scoring.personal_fit_band)) {
       data.scoring.personal_fit_band = scoreToBand(data.scoring.personal_fit_score || 50);
       fixes.push("personal_fit_band corrected");
       changed = true;

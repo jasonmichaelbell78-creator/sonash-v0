@@ -24,7 +24,7 @@ const OUTPUT_PATH = path.join(PROJECT_ROOT, ".research", "EXTRACTIONS.md");
 
 function escapeCell(text) {
   if (typeof text !== "string") return "-";
-  return text.replace(/\|/g, "\\|").replace(/\n/g, " ").slice(0, 120);
+  return text.replaceAll("\\", "\\\\").replaceAll("|", "\\|").replaceAll("\n", " ").slice(0, 120);
 }
 
 function main() {
@@ -48,7 +48,7 @@ function main() {
   }
 
   // Count decisions
-  const decisions = { defer: 0, extract: 0, skip: 0, investigate: 0 };
+  const decisions = {};
   for (const entry of entries) {
     const d = entry.decision || "defer";
     decisions[d] = (decisions[d] || 0) + 1;
@@ -93,6 +93,9 @@ function main() {
       "| --------- | ---- | -------- | ---- | ------- | ------ | --------- | ------------ | ----- |"
     );
 
+    sourceEntries.sort((a, b) =>
+      String(b.decision_date || "").localeCompare(String(a.decision_date || ""))
+    );
     for (const entry of sourceEntries) {
       const row = [
         escapeCell(entry.candidate),

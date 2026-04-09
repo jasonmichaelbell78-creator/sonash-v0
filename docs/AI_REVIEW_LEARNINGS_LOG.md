@@ -2,8 +2,8 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.120 **Created:** 2026-01-02 **Last Updated:**
-2026-04-08
+**Document Version:** 17.121 **Created:** 2026-01-02 **Last Updated:**
+2026-04-09
 
 ## Purpose
 
@@ -4069,3 +4069,36 @@ stale-rejected, 1 already-fixed)
   canonical scoring objects (both numeric fields present).
 - **fts-input-limits** — FTS5 MATCH queries need both length truncation (500
   chars) and token count limits (20) to prevent pathological query execution.
+
+### Review #77 — PR #504 R1 (Mixed: CodeQL + Qodo + Gemini + SonarCloud + CI)
+
+**Date:** 2026-04-09 | **Items:** 35 | **Fixed:** 28 | **Deferred:** 0 |
+**Rejected:** 7
+
+**Key patterns:**
+
+1. **DB creation before symlink guard** — `new Database(path)` creates/opens
+   before `isSafeToWrite` check. Must guard with `lstatSync` before any
+   filesystem-creating operation, including SQLite open.
+2. **`||` clobbers zero scores** — `score || 50` treats `0` as falsy. Use `??`
+   for numeric defaults (Gemini caught this).
+3. **FK violation on source-matched inserts** — When matching journal entries by
+   source name (not UUID), the entry's stale `source_analysis_id` fails FK
+   constraint. Fix: use `record.id` for FK safety on source-matched entries.
+4. **`require.resolve` != `require`** — `require.resolve` only resolves the
+   path, doesn't verify native bindings load. Use `require()` to catch ABI
+   mismatch.
+5. **Cross-source deletion collisions** — DELETE by source name without
+   source_type can hit unrelated records. Always scope deletes by
+   `(source_type, source)`.
+6. **Incomplete string escaping (CodeQL)** — `escapeCell` escaped `|` and `\n`
+   but not backslashes themselves, allowing escape sequence injection.
+7. **Source matching after migration** — Migrating `source` fields in
+   analysis.json without updating extraction-journal.jsonl breaks exact-match
+   lookups. Use slugified fuzzy matching.
+
+**Rejected:** 7 SonarCloud CC violations (self-audit checkArtifacts CC=32,
+checkExtractions CC=20, main CC=16/20, checkExpectedFiles CC=20) — these
+functions have high CC due to sequential validation checks, not deep nesting.
+Extracting helpers would increase complexity without improving readability. Doc
+lint on `.research/` file (already exempt in config).

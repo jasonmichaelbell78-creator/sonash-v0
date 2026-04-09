@@ -143,15 +143,14 @@ function loadJournalLines() {
 }
 
 function syncExtractions(db, record, tagCache) {
-  // Delete existing extractions for this source (by analysis ID or source name)
+  // Delete existing extractions for this source (by analysis ID + source_type/source)
   // Junction table rows first to avoid FK constraint violations
   db.prepare(
-    "DELETE FROM extraction_tags WHERE extraction_id IN (SELECT id FROM extractions WHERE source_analysis_id = ? OR source = ?)"
-  ).run(record.id, record.source);
-  db.prepare("DELETE FROM extractions WHERE source_analysis_id = ? OR source = ?").run(
-    record.id,
-    record.source
-  );
+    "DELETE FROM extraction_tags WHERE extraction_id IN (SELECT id FROM extractions WHERE source_analysis_id = ? OR (source_type = ? AND source = ?))"
+  ).run(record.id, record.source_type, record.source);
+  db.prepare(
+    "DELETE FROM extractions WHERE source_analysis_id = ? OR (source_type = ? AND source = ?)"
+  ).run(record.id, record.source_type, record.source);
 
   const lines = loadJournalLines();
 
@@ -167,22 +166,35 @@ function syncExtractions(db, record, tagCache) {
   );
 
   let skippedLines = 0;
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
+  let insertErrors = 0;
+  for (const line of lines) {
     if (!line.trim()) continue;
+    let entry;
     try {
-      const entry = JSON.parse(line);
-      // Match by source_analysis_id (UUID) OR by source name (human-readable)
-      const matchById = entry.source_analysis_id && entry.source_analysis_id === record.id;
-      const matchBySource = entry.source && entry.source === record.source;
-      if (!matchById && !matchBySource) continue;
+      entry = JSON.parse(line);
+    } catch {
+      skippedLines++;
+      continue;
+    }
+    // Match by source_analysis_id (UUID) OR by source_type+source (human-readable)
+    const matchById = entry.source_analysis_id && entry.source_analysis_id === record.id;
+    const matchBySource =
+      entry.source_type &&
+      entry.source &&
+      entry.source_type === record.source_type &&
+      entry.source === record.source;
+    if (!matchById && !matchBySource) continue;
 
+    // When matched by source name (not ID), use record.id for FK safety
+    const safeAnalysisId = matchById ? entry.source_analysis_id : record.id;
+
+    try {
       const tags = JSON.stringify(entry.tags || []);
       const info = insertExtraction.run(
         entry.schema_version || "2.0",
         entry.source_type || "repo",
         entry.source || "",
-        entry.source_analysis_id || null,
+        safeAnalysisId,
         entry.candidate || "",
         entry.type || "knowledge",
         entry.decision || "defer",
@@ -204,12 +216,15 @@ function syncExtractions(db, record, tagCache) {
         }
       }
     } catch (err) {
-      skippedLines++;
-      console.error(`Warning: skipped malformed journal line ${i + 1}: ${sanitizeError(err)}`);
+      insertErrors++;
+      console.error(`Warning: extraction insert failed: ${sanitizeError(err)}`);
     }
   }
   if (skippedLines > 0) {
     console.error(`Warning: skipped ${skippedLines} malformed journal line(s)`);
+  }
+  if (insertErrors > 0) {
+    console.error(`Warning: ${insertErrors} extraction insert(s) failed`);
   }
 }
 
@@ -240,7 +255,23 @@ function main() {
     process.exit(1);
   }
 
+  // Symlink guard BEFORE any DB creation — detect dangling symlinks too
+  try {
+    if (fs.lstatSync(DB_PATH).isSymbolicLink()) {
+      console.error("Refusing to open symlinked database path");
+      process.exit(1);
+    }
+  } catch (e) {
+    if (e.code !== "ENOENT") throw e;
+    // ENOENT = file doesn't exist, safe to create
+  }
+
   if (!fs.existsSync(DB_PATH)) {
+    // Ensure parent directory exists
+    const dbDir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true });
+    }
     console.log("Index not found — auto-creating database...");
     const newDb = new Database(DB_PATH);
     try {
