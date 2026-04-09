@@ -18,7 +18,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
+const { sanitizeError, validatePathInDir, slugify } = require("../lib/security-helpers.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -215,13 +215,6 @@ function checkSchema(dir, slug) {
   }
 
   return results;
-}
-
-function slugify(s) {
-  return String(s)
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, "-")
-    .replaceAll(/^-|-$/g, "");
 }
 
 function matchesSource(entrySource, targetSource) {

@@ -464,6 +464,17 @@ function maskEmail(email) {
   return `${maskedLocal}@${maskedDomain}`;
 }
 
+/**
+ * Normalize a string to a URL-safe slug (lowercase, hyphens only).
+ * Shared across CAS scripts for consistent source matching.
+ */
+function slugify(s) {
+  return String(s)
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-|-$/g, "");
+}
+
 module.exports = {
   // Error/string handling
   sanitizeError,
@@ -489,4 +500,7 @@ module.exports = {
   validateUrl,
   safeRegexExec,
   maskEmail,
+
+  // String utilities
+  slugify,
 };

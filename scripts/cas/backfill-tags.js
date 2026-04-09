@@ -13,7 +13,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
+const { sanitizeError, validatePathInDir, slugify } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
@@ -25,13 +25,6 @@ const LEGACY_DIRS = [
 ];
 
 const DRY_RUN = process.argv.includes("--dry-run");
-
-function slugify(s) {
-  return String(s)
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, "-")
-    .replaceAll(/^-|-$/g, "");
-}
 
 function findTagsForSource(source) {
   // Search all analysis dirs (current + legacy) for a matching source
