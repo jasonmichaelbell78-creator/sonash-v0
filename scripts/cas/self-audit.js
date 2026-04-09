@@ -74,8 +74,9 @@ function safePath(slugPart, filePart) {
 
 // TOCTOU-safe stat: reject symlinks before reading
 function safeStatSync(filePath) {
-  if (fs.lstatSync(filePath).isSymbolicLink()) return null;
-  return fs.lstatSync(filePath); // TOCTOU-safe: symlink rejected above
+  const st = fs.lstatSync(filePath);
+  if (st.isSymbolicLink()) return null;
+  return st;
 }
 
 function checkArtifacts(dir, slug) {
@@ -120,7 +121,7 @@ function checkArtifacts(dir, slug) {
     const filePath = safePath(slug, file);
     if (fs.existsSync(filePath)) {
       const stat = safeStatSync(filePath);
-      if (stat.size > 0) {
+      if (stat && stat.size > 0) {
         results.pass.push(`${file} (${stat.size} bytes)`);
       } else if (isStandardOrDeep) {
         results.warn.push(

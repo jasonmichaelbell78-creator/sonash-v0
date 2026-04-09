@@ -81,9 +81,9 @@ function fixRecord(data, dirName, filePath) {
   // 1. analyzed_at — from file mtime
   if (!data.analyzed_at) {
     try {
-      if (fs.lstatSync(filePath).isSymbolicLink()) throw new Error("symlink");
-      const stat = fs.lstatSync(filePath); // TOCTOU-safe: symlink checked above
-      data.analyzed_at = stat.mtime.toISOString();
+      const st = fs.lstatSync(filePath);
+      if (st.isSymbolicLink()) throw new Error("symlink");
+      data.analyzed_at = st.mtime.toISOString();
       fixes.push("analyzed_at from mtime");
       changed = true;
     } catch {
@@ -105,13 +105,13 @@ function fixRecord(data, dirName, filePath) {
   } else if (data.scoring.adoptionLens || data.scoring.creatorLens) {
     // v2 format: adoptionLens/creatorLens → quality/personal_fit
     const qs = data.scoring.adoptionLens?.score || data.scoring.creatorLens?.score || 50;
-    const fs2 = data.scoring.creatorLens?.score || data.scoring.adoptionLens?.score || 50;
+    const fitScore = data.scoring.creatorLens?.score || data.scoring.adoptionLens?.score || 50;
     data.scoring = {
       quality_band: scoreToBand(qs),
       quality_score: qs,
-      personal_fit_band: scoreToBand(fs2),
-      personal_fit_score: fs2,
-      classification: scoreToClassification(fs2),
+      personal_fit_band: scoreToBand(fitScore),
+      personal_fit_score: fitScore,
+      classification: scoreToClassification(fitScore),
     };
     fixes.push("scoring migrated from v2 lenses");
     changed = true;
