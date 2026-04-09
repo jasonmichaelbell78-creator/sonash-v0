@@ -97,13 +97,13 @@ function main() {
     for (const entry of sourceEntries) {
       const row = [
         escapeCell(entry.candidate),
-        entry.type || "-",
-        entry.decision || "defer",
-        entry.decision_date || "-",
-        entry.novelty || "-",
-        entry.effort || "-",
-        entry.relevance || "-",
-        entry.extracted_to || "-",
+        escapeCell(entry.type),
+        escapeCell(entry.decision || "defer"),
+        escapeCell(entry.decision_date),
+        escapeCell(entry.novelty),
+        escapeCell(entry.effort),
+        escapeCell(entry.relevance),
+        escapeCell(entry.extracted_to),
         escapeCell(entry.notes),
       ];
       lines.push(`| ${row.join(" | ")} |`);

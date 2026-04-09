@@ -89,7 +89,9 @@ function fixRecord(data, dirName, filePath) {
       fixes.push("analyzed_at from mtime");
       changed = true;
     } catch {
-      /* skip */
+      data.analyzed_at = new Date().toISOString();
+      fixes.push("analyzed_at fallback (now)");
+      changed = true;
     }
   }
 

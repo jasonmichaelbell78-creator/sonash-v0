@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.123 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.124 **Created:** 2026-01-02 **Last Updated:**
 2026-04-09
 
 ## Purpose
@@ -4145,3 +4145,18 @@ dedup (already fixed R1).
    `(source_type, source)`, the verification count query must too.
 
 **Rejected:** 12 SonarCloud CC (same as R1/R2). 1 doc lint (exempt path).
+
+### Review #80 — PR #504 R4 (Mixed: SonarCloud + Qodo Suggestions)
+
+**Date:** 2026-04-09 | **Items:** 19 | **Fixed:** 2 | **Deferred:** 0 |
+**Rejected:** 17
+
+**Key patterns:**
+
+1. **analyzed_at fallback** — migration silently skipped analyzed_at when
+   lstatSync failed. Add `new Date().toISOString()` fallback.
+2. **escapeCell all table fields** — only candidate and notes were escaped;
+   other fields could contain pipe characters breaking markdown tables.
+
+**Merge trigger:** Fix rate 11% (<30% threshold at R4). Recommend merge.
+Remaining 13 CC violations are repeat SonarCloud noise on new CAS files.
