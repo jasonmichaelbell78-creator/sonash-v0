@@ -15,7 +15,7 @@ const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const { validate } = require("../lib/analysis-schema.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const DRY_RUN = process.argv.includes("--dry-run");
 const VERBOSE = process.argv.includes("--verbose");
@@ -82,7 +82,7 @@ function fixRecord(data, dirName, filePath) {
   if (!data.analyzed_at) {
     try {
       if (fs.lstatSync(filePath).isSymbolicLink()) throw new Error("symlink");
-      const stat = fs.statSync(filePath);
+      const stat = fs.lstatSync(filePath); // TOCTOU-safe: symlink checked above
       data.analyzed_at = stat.mtime.toISOString();
       fixes.push("analyzed_at from mtime");
       changed = true;

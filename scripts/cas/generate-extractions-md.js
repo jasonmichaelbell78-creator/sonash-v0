@@ -18,7 +18,7 @@ const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const readJsonl = require("../lib/read-jsonl.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const JOURNAL_PATH = path.join(PROJECT_ROOT, ".research", "extraction-journal.jsonl");
 const OUTPUT_PATH = path.join(PROJECT_ROOT, ".research", "EXTRACTIONS.md");
 

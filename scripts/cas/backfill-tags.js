@@ -16,7 +16,7 @@ const path = require("node:path");
 const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const JOURNAL_PATH = path.join(PROJECT_ROOT, ".research", "extraction-journal.jsonl");
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const LEGACY_DIRS = [

@@ -20,7 +20,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const JOURNAL_PATH = path.join(PROJECT_ROOT, ".research", "extraction-journal.jsonl");
 
@@ -75,7 +75,7 @@ function safePath(slugPart, filePart) {
 // TOCTOU-safe stat: reject symlinks before reading
 function safeStatSync(filePath) {
   if (fs.lstatSync(filePath).isSymbolicLink()) return null;
-  return fs.statSync(filePath);
+  return fs.lstatSync(filePath); // TOCTOU-safe: symlink rejected above
 }
 
 function checkArtifacts(dir, slug) {
