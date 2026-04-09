@@ -13,7 +13,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { sanitizeError } = require("../lib/security-helpers.js");
+const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
@@ -44,6 +44,7 @@ function findTagsForSource(source) {
       const dirs = fs.readdirSync(baseDir, { withFileTypes: true });
       for (const dir of dirs) {
         if (!dir.isDirectory() || dir.name.startsWith("_")) continue;
+        validatePathInDir(baseDir, dir.name);
         const analysisPath = path.join(baseDir, dir.name, "analysis.json");
         if (!fs.existsSync(analysisPath)) continue;
         try {

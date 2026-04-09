@@ -72,6 +72,12 @@ function safePath(slugPart, filePart) {
   return path.resolve(ANALYSIS_DIR, rel);
 }
 
+// TOCTOU-safe stat: reject symlinks before reading
+function safeStatSync(filePath) {
+  if (fs.lstatSync(filePath).isSymbolicLink()) return null;
+  return fs.statSync(filePath);
+}
+
 function checkArtifacts(dir, slug) {
   const results = { pass: [], fail: [], warn: [] };
   const depth = getDepth(dir);
@@ -81,8 +87,8 @@ function checkArtifacts(dir, slug) {
   for (const { file, description } of MUST_ALL_DEPTHS) {
     const filePath = safePath(slug, file);
     if (fs.existsSync(filePath)) {
-      const stat = fs.statSync(filePath);
-      if (stat.size === 0) {
+      const stat = safeStatSync(filePath);
+      if (!stat || stat.size === 0) {
         results.fail.push(`MUST artifact empty: ${file} (${description})`);
       } else {
         results.pass.push(`${file} (${stat.size} bytes)`);
@@ -97,8 +103,8 @@ function checkArtifacts(dir, slug) {
     for (const { file, description } of MUST_STANDARD_DEEP) {
       const filePath = safePath(slug, file);
       if (fs.existsSync(filePath)) {
-        const stat = fs.statSync(filePath);
-        if (stat.size === 0) {
+        const stat = safeStatSync(filePath);
+        if (!stat || stat.size === 0) {
           results.fail.push(`MUST artifact empty: ${file} (${description})`);
         } else {
           results.pass.push(`${file} (${stat.size} bytes)`);
@@ -113,7 +119,7 @@ function checkArtifacts(dir, slug) {
   for (const { file, description, phase } of SHOULD_ARTIFACTS) {
     const filePath = safePath(slug, file);
     if (fs.existsSync(filePath)) {
-      const stat = fs.statSync(filePath);
+      const stat = safeStatSync(filePath);
       if (stat.size > 0) {
         results.pass.push(`${file} (${stat.size} bytes)`);
       } else if (isStandardOrDeep) {
@@ -138,7 +144,7 @@ function checkArtifacts(dir, slug) {
   return results;
 }
 
-function checkSchema(dir) {
+function checkSchema(dir, slug) {
   const results = { pass: [], fail: [] };
   const analysisPath = path.join(dir, "analysis.json");
 
@@ -185,9 +191,10 @@ function checkSchema(dir) {
         results.fail.push("Media analysis missing transcript_source field (CONVENTIONS 13.3)");
       }
       // transcript.md must exist
-      const transcriptPath = path.join(dir, "transcript.md");
-      if (fs.existsSync(transcriptPath) && fs.statSync(transcriptPath).size > 0) {
-        results.pass.push(`transcript.md (${fs.statSync(transcriptPath).size} bytes)`);
+      const transcriptPath = safePath(slug, "transcript.md");
+      const tStat = fs.existsSync(transcriptPath) ? safeStatSync(transcriptPath) : null;
+      if (tStat && tStat.size > 0) {
+        results.pass.push(`transcript.md (${tStat.size} bytes)`);
       } else {
         results.fail.push("Media analysis missing transcript.md (CONVENTIONS 13.3 MUST)");
       }
@@ -318,7 +325,7 @@ function main() {
   console.log("---");
 
   const artifacts = checkArtifacts(dir, slug);
-  const schema = checkSchema(dir);
+  const schema = checkSchema(dir, slug);
   const extractions = checkExtractions(slug, source);
   const behavioral = checkBehavioral(dir, slug, sourceType);
 

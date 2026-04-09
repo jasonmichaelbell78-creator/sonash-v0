@@ -81,6 +81,7 @@ function fixRecord(data, dirName, filePath) {
   // 1. analyzed_at — from file mtime
   if (!data.analyzed_at) {
     try {
+      if (fs.lstatSync(filePath).isSymbolicLink()) throw new Error("symlink");
       const stat = fs.statSync(filePath);
       data.analyzed_at = stat.mtime.toISOString();
       fixes.push("analyzed_at from mtime");
