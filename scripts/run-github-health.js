@@ -311,7 +311,7 @@ function analyzeStalePRs(snapshot, issues, details) {
     // Use updatedAt (activity) rather than createdAt (creation) so long-running
     // but actively maintained PRs are not flagged as stale.
     const basisTs = pr.updatedAt || pr.createdAt;
-    const basisMs = basisTs ? new Date(basisTs).getTime() : NaN;
+    const basisMs = basisTs ? new Date(basisTs).getTime() : Number.NaN;
     if (!Number.isFinite(basisMs)) {
       invalidDates++;
       continue;
