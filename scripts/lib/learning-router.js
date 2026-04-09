@@ -45,7 +45,7 @@ try {
     String(s)
       .toLowerCase()
       .replaceAll(/[^a-z0-9]+/g, "-")
-      .replaceAll(/^-|-$/g, "");
+      .replaceAll(/^-+|-+$/g, "");
 }
 
 /** Strip control characters and newlines from a string for safe log output. */

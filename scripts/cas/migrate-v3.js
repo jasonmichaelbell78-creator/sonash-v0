@@ -226,6 +226,12 @@ function main() {
     }
 
     try {
+      const st = fs.lstatSync(ap);
+      if (st.isSymbolicLink()) {
+        console.warn("SKIP:", dir.name, "— symlinked analysis.json");
+        totalSkipped++;
+        continue;
+      }
       const raw = fs.readFileSync(ap, "utf8");
       const data = JSON.parse(raw);
       const { data: fixed, fixes, changed } = fixRecord(data, dir.name, ap);

@@ -472,7 +472,7 @@ function slugify(s) {
   return String(s)
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, "-")
-    .replaceAll(/^-|-$/g, "");
+    .replaceAll(/^-+|-+$/g, "");
 }
 
 module.exports = {

@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.122 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.123 **Created:** 2026-01-02 **Last Updated:**
 2026-04-09
 
 ## Purpose
@@ -4127,3 +4127,21 @@ lint on `.research/` file (already exempt in config).
 files, not deep nesting). 4 Qodo compliance items (intentional silent parse
 skips, dev tooling audit trail, auto-generated feedback log). 1 cross-round
 dedup (already fixed R1).
+
+### Review #79 — PR #504 R3 (Mixed: SonarCloud + Qodo Suggestions + Qodo Compliance)
+
+**Date:** 2026-04-09 | **Items:** 18 | **Fixed:** 5 | **Deferred:** 0 |
+**Rejected:** 13
+
+**Key patterns:**
+
+1. **Slugify regex `/^-|-$/g` strips only single hyphens** — The alternation
+   `/^-|-$/g` matches one hyphen at start OR end. Use `/^-+|-+$/g` for greedy
+   multi-hyphen trim. Propagated to 4 files.
+2. **Canonicalize source fields on insert** — When matching journal entries by
+   normalized source name, insert the canonical record values (not the raw
+   journal values) to prevent data fragmentation.
+3. **Count query must match delete/insert scope** — If deletes scope by
+   `(source_type, source)`, the verification count query must too.
+
+**Rejected:** 12 SonarCloud CC (same as R1/R2). 1 doc lint (exempt path).

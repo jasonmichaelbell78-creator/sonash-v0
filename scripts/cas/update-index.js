@@ -185,15 +185,17 @@ function syncExtractions(db, record, tagCache) {
       String(entry.source).trim().toLowerCase() === String(record.source).trim().toLowerCase();
     if (!matchById && !matchBySource) continue;
 
-    // When matched by source name (not ID), use record.id for FK safety
+    // When matched by source name (not ID), canonicalize to record values for FK + consistency
     const safeAnalysisId = matchById ? entry.source_analysis_id : record.id;
+    const canonicalSourceType = matchBySource ? record.source_type : entry.source_type || "repo";
+    const canonicalSource = matchBySource ? record.source : entry.source || "";
 
     try {
       const tags = JSON.stringify(entry.tags || []);
       const info = insertExtraction.run(
         entry.schema_version || "2.0",
-        entry.source_type || "repo",
-        entry.source || "",
+        canonicalSourceType,
+        canonicalSource,
         safeAnalysisId,
         entry.candidate || "",
         entry.type || "knowledge",
@@ -440,9 +442,9 @@ function main() {
 
     const count = db
       .prepare(
-        "SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ? OR source = ?"
+        "SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ? OR (source_type = ? AND source = ?)"
       )
-      .get(record.id, record.source);
+      .get(record.id, record.source_type, record.source);
 
     console.log(`Updated index for ${slug}: source upserted, ${count.count} extractions synced.`);
   } finally {

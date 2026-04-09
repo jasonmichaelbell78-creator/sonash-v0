@@ -126,7 +126,7 @@ function buildEnforcementTestPath(id) {
     .toLowerCase()
     .replaceAll(/[^a-z0-9_-]+/g, "-")
     .replaceAll(/-+/g, "-")
-    .replaceAll(/^-|-$/g, "");
+    .replaceAll(/^-+|-+$/g, "");
   return `tests/enforcement/check-${safeId || "unknown"}.test.js`;
 }
 

@@ -541,7 +541,7 @@ function slugify(text) {
     .replaceAll(/[^\w\s-]/g, "")
     .replaceAll(/\s+/g, "-")
     .replaceAll(/-+/g, "-")
-    .replaceAll(/^-|-$/g, "");
+    .replaceAll(/^-+|-+$/g, "");
 }
 
 module.exports = { run, DOMAIN };
