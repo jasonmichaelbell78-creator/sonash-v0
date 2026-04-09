@@ -7,7 +7,7 @@
   "title": "Easily take an entire YouTube playlist and turn it into high quality transcripts",
   "analyzed_at": "2026-04-07",
   "depth": "quick",
-  "tags": ["repo", "utility-tool"],
+  "tags": ["repo", "utility-tool", "bulk", "transcribe", "youtube", "playlist"],
   "scoring": {
     "quality_band": "Critical",
     "quality_score": 21,

@@ -29,7 +29,7 @@ Per-site artifacts in `.research/analysis/<site-slug>/` (Decisions #5, #12):
 ├── tables.json            # Extracted HTML tables (website-only, Decision #26)
 ├── meta.json              # Site metadata: OG, JSON-LD, etc. (website-only)
 ├── sitemap.json           # Site structure map (website-only)
-├── SITE-ANALYSIS.md       # Human-readable Creator View report
+├── creator-view.md       # Human-readable Creator View report
 ├── trends.jsonl           # Append-only per-run tracking
 └── expedition-*.{meta.json,snap.json,jsonl}  # Expedition state (Decision #18)
 ```
@@ -70,7 +70,7 @@ See `.claude/skills/shared/CONVENTIONS.md` Section 12 for schema contract.
     "classification": "active-sprint"
   },
   "summary": "2-3 sentence summary of what this site is and what was learned.",
-  "creator_view": "Full Creator View prose (from SITE-ANALYSIS.md content)",
+  "creator_view": "Full Creator View prose (from creator-view.md content)",
   "candidates": [
     {
       "name": "Candidate Name",
@@ -196,7 +196,7 @@ See `.claude/skills/shared/CONVENTIONS.md` Section 12 for schema contract.
 | `tags`                | array  | Auto-generated + user tags (see Tag Suggestion step)           |
 | `scoring`             | object | Unified scoring: quality + personal fit bands and scores       |
 | `summary`             | string | 2-3 sentence summary of what this site is and what was learned |
-| `creator_view`        | string | Full Creator View prose (from SITE-ANALYSIS.md)                |
+| `creator_view`        | string | Full Creator View prose (from creator-view.md)                 |
 | `candidates`          | array  | All candidates from value-map.json in unified format           |
 | `last_synthesized_at` | string | ISO8601 or null — set by synthesis, not by handler             |
 
@@ -537,7 +537,7 @@ sitemap.xml parsing.
 }
 ```
 
-### 1.9 `SITE-ANALYSIS.md`
+### 1.9 `creator-view.md`
 
 Human-readable Creator View report. Written as conversational prose per
 Section 4. Includes YAML frontmatter for Obsidian/Dataview compatibility.
@@ -1983,7 +1983,7 @@ All per-page data merged into single per-site artifact set:
 - `findings.jsonl` contains per-page findings with `source_url` field
 - `links.json` aggregates all scored links across pages (deduplicated by URL)
 - `sitemap.json` populated with all discovered/analyzed pages
-- `SITE-ANALYSIS.md` Creator View covers the site holistically
+- `creator-view.md` Creator View covers the site holistically
 
 ---
 
@@ -2028,7 +2028,7 @@ seed URL. Expedition state files created in the same site-slug directory.
 ### Option 3: Deep-plan This
 
 **Behavior:** Inject the analysis as research context into `/deep-plan`. The
-`SITE-ANALYSIS.md` and `analysis.json` are formatted as a DIAGNOSIS.md research
+`creator-view.md` and `analysis.json` are formatted as a DIAGNOSIS.md research
 context section.
 
 ### Option 4: Save to Memory
@@ -2066,11 +2066,11 @@ confirms which sites to include in synthesis.
 
 ### Standard Mode
 
-| Agent                 | Role                                                                | Always?                   |
-| --------------------- | ------------------------------------------------------------------- | ------------------------- |
-| Orchestrator (inline) | Phase management, state updates, extraction pipeline                | Yes                       |
-| Agent 1 (spawned)     | Creator View analysis (loads home context, writes SITE-ANALYSIS.md) | If content is substantial |
-| Agent 2 (spawned)     | Engineer View analysis (dimensions, scoring)                        | If content is substantial |
+| Agent                 | Role                                                               | Always?                   |
+| --------------------- | ------------------------------------------------------------------ | ------------------------- |
+| Orchestrator (inline) | Phase management, state updates, extraction pipeline               | Yes                       |
+| Agent 1 (spawned)     | Creator View analysis (loads home context, writes creator-view.md) | If content is substantial |
+| Agent 2 (spawned)     | Engineer View analysis (dimensions, scoring)                       | If content is substantial |
 
 Maximum: orchestrator + 2 spawned agents.
 

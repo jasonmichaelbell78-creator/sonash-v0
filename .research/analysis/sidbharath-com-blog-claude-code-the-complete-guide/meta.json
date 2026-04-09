@@ -1,0 +1,19 @@
+{
+  "url": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+  "slug": "sidbharath-com-blog-claude-code-the-complete-guide",
+  "title": "Cooking with Claude Code: The Complete Tutorial & Guide",
+  "author": "Sid Bharath",
+  "published": "2025-07-08",
+  "updated": "2026-02-16",
+  "word_count": 8054,
+  "code_blocks": 6,
+  "external_links": 20,
+  "images": 5,
+  "videos": 2,
+  "headings_h2": 20,
+  "headings_h3": 29,
+  "structured_data": ["WebSite", "Person", "Article", "BreadcrumbList"],
+  "compliance": "PROCEED",
+  "extraction_method": "WebFetch",
+  "fetched_at": "2026-04-09T12:15:00Z"
+}

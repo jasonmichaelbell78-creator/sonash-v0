@@ -647,7 +647,7 @@ A cross-type synthesizer would consume both `synthesis.json` files and:
   "paradigm": "thematic",
   "sites_loaded": ["site-slug"],
   "sites_excluded": [
-    { "site": "site-slug", "reason": "missing SITE-ANALYSIS.md" }
+    { "site": "site-slug", "reason": "missing creator-view.md" }
   ],
   "outputs_completed": ["paradigm", "signals", "portfolio"],
   "focus": null,
@@ -665,7 +665,7 @@ All input artifacts are produced by `/website-analysis` v1.0+. Key schemas:
 
 - `analysis.json` -> website-analysis REFERENCE.md (core analysis artifact)
 - `value-map.json` -> website-analysis REFERENCE.md (knowledge candidates)
-- `SITE-ANALYSIS.md` -> website-analysis REFERENCE.md (Creator View prose)
+- `creator-view.md` -> website-analysis REFERENCE.md (Creator View prose)
 - `links.json` -> website-analysis REFERENCE.md (scored link graph)
 - `meta.json` -> website-analysis REFERENCE.md (site metadata)
 - `findings.jsonl` -> website-analysis REFERENCE.md (individual findings)
@@ -687,12 +687,12 @@ Illustrative directory structure after a thematic synthesis of 7 sites:
 │   └── synthesis.md            # Human-readable synthesis (template per 4.2)
 ├── example-blog-com/
 │   ├── analysis.json
-│   ├── SITE-ANALYSIS.md
+│   ├── creator-view.md
 │   ├── value-map.json
 │   └── ...
 ├── docs-tool-dev/
 │   ├── analysis.json
-│   ├── SITE-ANALYSIS.md
+│   ├── creator-view.md
 │   ├── value-map.json
 │   └── ...
 └── ... (5 more site directories)

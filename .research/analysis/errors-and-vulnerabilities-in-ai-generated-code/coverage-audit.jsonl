@@ -1,0 +1,4 @@
+{"category":"referenced-links","item":"53 academic citations [1]-[53]","status":"not-evaluated","note":"Bibliography page not included in extracted text. Individual citation URLs not available without full PDF bibliography."}
+{"category":"internal-docs","item":"Source_3, Source_4, Source_5 references","status":"not-evaluated","note":"Several categories reference Source_N format instead of numbered citations. May be primary sources not in the numbered bibliography."}
+{"category":"structured-data","item":"CWE cross-references","status":"partially-evaluated","note":"CWE-22 (path traversal) explicitly mentioned. Other CWE numbers likely in citations but not extracted."}
+{"category":"referenced-links","item":"Dep-Hallucinator tool","status":"cataloged","note":"Mentioned in Supply Chain row. No URL provided. Worth investigating separately."}

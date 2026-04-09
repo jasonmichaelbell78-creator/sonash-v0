@@ -73,8 +73,10 @@ Expedition: open-ended (HITL pacing).
 Re-invoking with the same URL auto-resumes from last completed phase.
 
 **Output location:** `.research/analysis/<site-slug>/` **Produces:**
-analysis.json, findings.jsonl, value-map.json, links.json, meta.json,
-SITE-ANALYSIS.md. Full schemas in REFERENCE.md Section 1.
+analysis.json, findings.jsonl, value-map.json, creator-view.md, summary.md,
+deep-read.md (if multi-page), content-eval.jsonl, coverage-audit.jsonl,
+extraction-journal.jsonl entries. Handler-specific: meta.json. Full schemas in
+REFERENCE.md Section 1.
 
 ---
 
@@ -210,7 +212,7 @@ Adds to Standard:
 
 ## Creator View (MUST for Standard/Deep)
 
-Seven sections, conversational prose. Write SITE-ANALYSIS.md before Engineer
+Seven sections, conversational prose. Write creator-view.md before Engineer
 View. Per REFERENCE.md Section 4.
 
 1. **What's Relevant To Your Work** — map to active projects
@@ -239,7 +241,7 @@ After Standard/Deep, present:
 1. **Extract knowledge** — pick from value-map, write
    `.research/extraction-journal.jsonl`, regenerate `.research/EXTRACTIONS.md`
 2. **Start Expedition** — launch Expedition mode from analyzed page
-3. **Deep-plan this** — inject analysis.json + SITE-ANALYSIS.md as
+3. **Deep-plan this** — inject analysis.json + creator-view.md as
    `## Research Context` in deep-plan DIAGNOSIS.md
 4. **Save to memory** — persist key findings
 5. **Explore insights** — deeper Creator View conversation
@@ -274,7 +276,7 @@ Update after every phase. On resume, read state file, skip completed phases.
 Re-invoke `/website-analysis <same-URL>` to trigger recovery. The state file
 also stores `process_feedback` (string, nullable) from the retro prompt.
 
-**Artifacts as checkpoints:** analysis.json, SITE-ANALYSIS.md, meta.json persist
+**Artifacts as checkpoints:** analysis.json, creator-view.md, meta.json persist
 independently even if state file is lost. State file and disk artifacts survive
 `/session-end` and session restarts.
 
@@ -322,7 +324,7 @@ Before presenting results, verify all 9 dimensions:
 3. **Schema integrity** — all JSON artifacts have `schema_version` field
 4. **Gap analysis** — Creator View sections reference actual extracted content
 5. **Functional verification** — state file updated to current phase
-6. **Multi-agent** — dispatch code-reviewer on SITE-ANALYSIS.md (Standard/Deep)
+6. **Multi-agent** — dispatch code-reviewer on creator-view.md (Standard/Deep)
 7. **Regression** — if prior analysis exists, compare finding/candidate counts
 8. **Contract** — verify analysis.json matches REFERENCE.md Section 1 schema
 9. **Partial recovery** — detect stale artifacts from interrupted runs, warn
@@ -337,7 +339,8 @@ Per CONVENTIONS.md Section 10.
 
 ## Version History
 
-| Version | Date       | Description                                                        |
-| ------- | ---------- | ------------------------------------------------------------------ |
-| 1.1     | 2026-04-06 | Convergence: CONVENTIONS.md ref, --depth= flags, retro persistence |
-| 1.0     | 2026-04-06 | Initial implementation                                             |
+| Version | Date       | Description                                                                                                                         |
+| ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 1.2     | 2026-04-09 | CONVENTIONS alignment: SITE-ANALYSIS.md→creator-view.md, add summary.md, remove links.json from output list (Session #270 E2E test) |
+| 1.1     | 2026-04-06 | Convergence: CONVENTIONS.md ref, --depth= flags, retro persistence                                                                  |
+| 1.0     | 2026-04-06 | Initial implementation                                                                                                              |

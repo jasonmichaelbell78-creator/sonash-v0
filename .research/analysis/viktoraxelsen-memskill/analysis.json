@@ -2,24 +2,21 @@
   "id": "ea367a5f-2db5-42c0-9f1a-d45cf06ec514",
   "schema_version": "3.0",
   "source_type": "repo",
-  "source": "viktoraxelsen-memskill",
+  "source": "ViktorAxelsen/MemSkill",
   "slug": "viktoraxelsen-memskill",
   "title": "viktoraxelsen-memskill",
-  "analyzed_at": null,
+  "analyzed_at": "2026-04-09T10:47:45.093Z",
   "depth": "quick",
-  "tags": ["repo", "research-tool"],
+  "tags": ["repo", "research-tool", "viktoraxelsen", "memskill", "python"],
   "scoring": {
-    "adoptionLens": {
-      "verdict": "Extract",
-      "score": 38
-    },
-    "creatorLens": {
-      "verdict": "Extract",
-      "score": 75
-    }
+    "quality_band": "Critical",
+    "quality_score": 38,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 75,
+    "classification": "active-sprint"
   },
   "summary": "Analysis of viktoraxelsen-memskill. Run Standard/Deep for detailed summary.",
-  "creator_view": "",
+  "creator_view": "Analysis of viktoraxelsen-memskill. Run Standard/Deep for detailed summary.",
   "candidates": [],
   "last_synthesized_at": null,
   "repo": "ViktorAxelsen/MemSkill",

@@ -23,10 +23,11 @@
     "quality_score": 67,
     "personal_fit_band": "Excellent",
     "personal_fit_score": 80,
-    "fit_classification": "active-sprint"
+    "fit_classification": "active-sprint",
+    "classification": "active-sprint"
   },
   "summary": "Writer identity produces better knowledge synthesis than filing clerk identity Anti-cramming and anti-thinning balance produces optimal wiki density",
-  "creator_view": "",
+  "creator_view": "Writer identity produces better knowledge synthesis than filing clerk identity Anti-cramming and anti-thinning balance produces optimal wiki density",
   "candidates": [],
   "last_synthesized_at": null,
   "meta": {

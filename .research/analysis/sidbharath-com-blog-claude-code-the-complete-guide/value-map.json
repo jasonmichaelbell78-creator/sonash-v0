@@ -1,0 +1,73 @@
+{
+  "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+  "scan_date": "2026-04-09",
+  "depth": "standard",
+  "candidates": [
+    {
+      "name": "Cloud teleportation pattern (& prefix)",
+      "type": "knowledge",
+      "description": "Send long-running tasks to Claude Code Web with & prefix, pull results locally with --teleport. Could solve terminal-blocking agent problem.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["cloud", "teleportation", "workflow"],
+      "url": "https://sidbharath.com/blog/claude-code-the-complete-guide/#claude-code-web-mobile-and-desktop"
+    },
+    {
+      "name": "Plugin marketplace ecosystem status",
+      "type": "knowledge",
+      "description": "Anthropic marketplace (36 curated plugins, Dec 2025). Community marketplaces emerging. We haven't adopted — worth tracking maturity.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["plugins", "marketplace", "ecosystem"]
+    },
+    {
+      "name": "Junior engineer framing validation",
+      "type": "knowledge",
+      "description": "External validation that treating Claude Code as a junior engineer (not autopilot) produces best results. Aligns with our guardrails approach.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["mental-model", "best-practices"]
+    },
+    {
+      "name": "Tutorial structure as onboarding template",
+      "type": "pattern",
+      "description": "Setup→Daily Use→Advanced→Production progression. 20 sections with clear hierarchy. Could template a SoNash onboarding guide.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["documentation", "onboarding", "tutorial"]
+    },
+    {
+      "name": "Feature-breadth coverage as completeness benchmark",
+      "type": "knowledge",
+      "description": "Checklist of Claude Code features an external expert considers important. Use to verify our CLAUDE.md and skill coverage.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["benchmark", "completeness"]
+    },
+    {
+      "name": "Features without enforcement anti-pattern",
+      "type": "anti-pattern",
+      "description": "Describing hooks as automation without gates. CLAUDE.md as memory without rules. Misses the reliability layer entirely.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "enforcement", "reliability"]
+    },
+    {
+      "name": "No compaction discussion anti-pattern",
+      "type": "anti-pattern",
+      "description": "Treating context as unlimited. No state loss discussion, no checkpoint strategies. Major operational gap for power users.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "compaction", "state-loss"]
+    }
+  ],
+  "cross_repo_connections": [],
+  "related_repos": []
+}

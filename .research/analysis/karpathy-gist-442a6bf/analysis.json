@@ -23,10 +23,11 @@
     "quality_score": 73,
     "personal_fit_band": "Excellent",
     "personal_fit_score": 88,
-    "fit_classification": "active-sprint"
+    "fit_classification": "active-sprint",
+    "classification": "active-sprint"
   },
   "summary": "LLM-maintained wiki compounds knowledge; RAG re-derives it every query Three-layer architecture: raw sources, wiki, schema",
-  "creator_view": "",
+  "creator_view": "LLM-maintained wiki compounds knowledge; RAG re-derives it every query Three-layer architecture: raw sources, wiki, schema",
   "candidates": [],
   "last_synthesized_at": null,
   "meta": {

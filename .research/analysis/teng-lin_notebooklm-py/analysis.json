@@ -2,24 +2,21 @@
   "id": "e2823ab4-7b57-4d66-ac58-c6f6f1dc4c6a",
   "schema_version": "3.0",
   "source_type": "repo",
-  "source": "teng-lin_notebooklm-py",
+  "source": "teng-lin/notebooklm-py",
   "slug": "teng-lin_notebooklm-py",
   "title": "teng-lin_notebooklm-py",
-  "analyzed_at": null,
+  "analyzed_at": "2026-04-09T10:47:45.080Z",
   "depth": "quick",
-  "tags": ["repo", "library"],
+  "tags": ["repo", "library", "teng", "notebooklm", "python"],
   "scoring": {
-    "adoptionLens": {
-      "verdict": "Trial",
-      "score": 60
-    },
-    "creatorLens": {
-      "verdict": "Trial",
-      "score": 70
-    }
+    "quality_band": "Healthy",
+    "quality_score": 60,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 70,
+    "classification": "active-sprint"
   },
   "summary": "Analysis of teng-lin_notebooklm-py. Run Standard/Deep for detailed summary.",
-  "creator_view": "",
+  "creator_view": "Analysis of teng-lin_notebooklm-py. Run Standard/Deep for detailed summary.",
   "candidates": [],
   "last_synthesized_at": null,
   "repo": "teng-lin/notebooklm-py",

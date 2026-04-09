@@ -1,0 +1,7 @@
+{"category":"referenced-links","item":"Build a Coding Agent tutorial (internal link)","status":"cataloged","note":"Author's own tutorial on building coding agents. Potential future /analyze target."}
+{"category":"referenced-links","item":"Context Engineering Guide (internal link)","status":"cataloged","note":"Author's guide on context management. High relevance to our approach."}
+{"category":"referenced-links","item":"Claude Skills Tutorial (internal link)","status":"cataloged","note":"External skill tutorial. Compare against our skill architecture."}
+{"category":"referenced-links","item":"Anatomy of Claude Code (internal link)","status":"cataloged","note":"Claude Code internals. High relevance to JASON-OS."}
+{"category":"referenced-links","item":"Ralph-Wiggum autonomous loop plugin (internal link)","status":"cataloged","note":"Autonomous overnight loops. Alternative to cloud teleportation for long tasks."}
+{"category":"referenced-links","item":"2 embedded YouTube videos","status":"not-evaluated","note":"Video content not extracted. Would need /media-analysis for transcript extraction."}
+{"category":"referenced-links","item":"GitHub app installation URL","status":"not-evaluated","note":"github.com/apps/claude/installations/new — for cloud teleportation setup. Not analyzed."}

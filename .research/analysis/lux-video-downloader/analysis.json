@@ -7,7 +7,7 @@
   "title": "Fast and simple video download library and CLI tool written in Go",
   "analyzed_at": "2026-04-07",
   "depth": "quick",
-  "tags": ["repo", "cli-tool"],
+  "tags": ["repo", "cli-tool", "video", "downloader", "repository"],
   "scoring": {
     "quality_band": "Healthy",
     "quality_score": 65,

@@ -1,0 +1,6 @@
+{"category":"referenced-links","item":"graspologic (Microsoft Research Leiden)","status":"cataloged","note":"Used as dependency. No deep evaluation needed — well-known library."}
+{"category":"referenced-links","item":"tree-sitter language bindings (20 packages)","status":"cataloged","note":"Dependencies. Well-maintained ecosystem."}
+{"category":"internal-docs","item":"worked/httpx/graph.json + graph.html","status":"skipped","note":"Binary/generated artifacts. GRAPH_REPORT.md was read."}
+{"category":"internal-docs","item":"worked/example/raw/*.py (5 fixture files)","status":"skipped","note":"Simple demo fixtures. README.md was read."}
+{"category":"internal-docs","item":".github/ directory contents","status":"not-read","note":"Likely CI workflows and issue templates. Not fetched via API."}
+{"category":"structured-data","item":"pyproject.toml optional-dependencies groups","status":"analyzed","note":"7 extras: mcp, neo4j, pdf, watch, leiden, office, all. All cataloged."}

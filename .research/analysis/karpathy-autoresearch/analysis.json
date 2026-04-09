@@ -2,21 +2,18 @@
   "id": "c605501d-a2f5-41e9-bc09-ae2d084388a6",
   "schema_version": "3.0",
   "source_type": "repo",
-  "source": "karpathy-autoresearch",
+  "source": "karpathy/autoresearch",
   "slug": "karpathy-autoresearch",
   "title": "karpathy-autoresearch",
-  "analyzed_at": null,
+  "analyzed_at": "2026-04-09T10:47:45.060Z",
   "depth": "quick",
-  "tags": ["repo", "research-tool"],
+  "tags": ["repo", "research-tool", "karpathy", "autoresearch", "python"],
   "scoring": {
-    "adoptionLens": {
-      "verdict": "Extract",
-      "score": 55
-    },
-    "creatorLens": {
-      "verdict": "Extract",
-      "score": 72
-    }
+    "quality_band": "Needs Work",
+    "quality_score": 55,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 72,
+    "classification": "active-sprint"
   },
   "summary": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop.  The program.",
   "creator_view": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop. The program.md is an entire research organization compressed into 114 lines.",

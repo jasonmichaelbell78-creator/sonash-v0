@@ -2,21 +2,29 @@
   "id": "c3fde3a5-fbe3-4bbf-b6f2-a9c7a1c24b16",
   "schema_version": "3.0",
   "source_type": "repo",
-  "source": "codecrafters-io-build-your-own-x",
+  "source": "codecrafters-io/build-your-own-x",
   "slug": "codecrafters-io-build-your-own-x",
   "title": "codecrafters-io-build-your-own-x",
-  "analyzed_at": null,
+  "analyzed_at": "2026-04-09T10:47:45.026Z",
   "depth": "quick",
-  "tags": ["repo", "curated-list"],
+  "tags": [
+    "repo",
+    "curated-list",
+    "codecrafters",
+    "build",
+    "your",
+    "markdown",
+    "awesome-list",
+    "free",
+    "programming",
+    "tutorial-code"
+  ],
   "scoring": {
-    "adoptionLens": {
-      "verdict": "Extract",
-      "score": 44
-    },
-    "creatorLens": {
-      "verdict": "Extract",
-      "score": 45
-    }
+    "quality_band": "Needs Work",
+    "quality_score": 44,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 45,
+    "classification": "park-for-later"
   },
   "summary": "This repo understands that the deepest path to mastering a technology is building it from scratch.  It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle.",
   "creator_view": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge.",

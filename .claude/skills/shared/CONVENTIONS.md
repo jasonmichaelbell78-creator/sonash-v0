@@ -189,28 +189,71 @@ relative path from handler context.
 ## 13. Handler Output Contract
 
 Every handler skill (repo-analysis, website-analysis, document-analysis,
-media-analysis) MUST produce these artifacts in `.research/analysis/<slug>/`:
+media-analysis) MUST produce artifacts in `.research/analysis/<slug>/`.
 
-| Artifact           | Required | Format                                           |
-| ------------------ | -------- | ------------------------------------------------ |
-| `analysis.json`    | MUST     | Validates against `analysisRecordCore` Zod       |
-| `value-map.json`   | MUST     | Candidates array with 4 types                    |
-| `creator-view.md`  | MUST     | Conversational prose, 6 sections                 |
-| Extraction entries | MUST     | Appended to `.research/extraction-journal.jsonl` |
+### 13.1 MUST Artifacts
 
-**Phase structure:** All handlers follow the same phase progression. Use
-repo-analysis v4.3 as the reference template:
+**All depths (including Quick Scan):**
+
+| Artifact        | Phase    | Format                                     |
+| --------------- | -------- | ------------------------------------------ |
+| `analysis.json` | Phase 0+ | Validates against `analysisRecordCore` Zod |
+
+**Standard/Deep only (in addition to above):**
+
+| Artifact           | Phase   | Format                                           |
+| ------------------ | ------- | ------------------------------------------------ |
+| `value-map.json`   | Phase 6 | Candidates array with 4 types                    |
+| `creator-view.md`  | Phase 4 | Conversational prose, 6 sections                 |
+| Extraction entries | Phase 6 | Appended to `.research/extraction-journal.jsonl` |
+
+Quick Scan produces only `analysis.json` (with lightweight creator lens in the
+`creator_view` field). The interactive gate determines whether Standard/Deep
+runs and produces the remaining MUST artifacts.
+
+### 13.2 SHOULD Artifacts (all handlers, Standard/Deep)
+
+Missing any of these at Standard/Deep depth indicates a **phase skip** and MUST
+be flagged by `self-audit.js`.
+
+| Artifact               | Phase     | Format                                  |
+| ---------------------- | --------- | --------------------------------------- |
+| `findings.jsonl`       | Phase 2/5 | One JSON object per line, id + severity |
+| `summary.md`           | Phase 5   | Concise summary with health bands       |
+| `deep-read.md`         | Phase 2b  | Internal artifacts catalog + knowledge  |
+| `content-eval.jsonl`   | Phase 4b  | One entry per evaluated reference/link  |
+| `coverage-audit.jsonl` | Phase 6b  | Unread sections, unfollowed references  |
+
+### 13.3 Handler-Specific Artifacts (not checked by self-audit)
+
+| Artifact             | Handler          | Purpose                        |
+| -------------------- | ---------------- | ------------------------------ |
+| `repomix-output.txt` | repo-analysis    | Compressed repo for extraction |
+| `meta.json`          | website-analysis | Page metadata snapshot         |
+| `mined-links.jsonl`  | repo-analysis    | Curated-list link mining       |
+| `transcript.md`      | media-analysis   | **MUST** — transcribed content |
+| `trends.jsonl`       | repo/website     | Prior analysis comparison      |
+
+**Media handler additional contract:** `analysis.json` MUST include
+`transcript_source` field (value: `captions`, `whisper`, or `manual`).
+`self-audit.js` checks this for media sources.
+
+### 13.4 Phase Structure
+
+All handlers follow the same phase progression. Use repo-analysis v4.3 as the
+reference template:
 
 ```
 VALIDATE → PHASE 0 (Quick Scan) → GATE → PHASE 1 (Content Load) →
 PHASE 2 (Dimensions) → PHASE 2b (Deep Read) → PHASE 4 (Creator View) →
 PHASE 4b (Content Eval) → PHASE 5 (Engineer View) → PHASE 6 (Value Map) →
-PHASE 6b (Coverage Audit) → SELF-AUDIT → ROUTING
+PHASE 6c (Tag Suggestion) → PHASE 6b (Coverage Audit) → SELF-AUDIT → ROUTING
 ```
 
 Handlers MAY skip phases that don't apply (e.g., document-analysis has no clone
 step) but MUST NOT reorder phases or add phases between existing numbers without
-documenting the deviation.
+documenting the deviation. **Skipping a MUST or SHOULD phase without
+documentation is a bug, not a feature.**
 
 ---
 
@@ -234,6 +277,19 @@ present 5-8 suggested tags based on source type + top dimensions + candidate
 types. User accepts, modifies, or adds their own. Tags are stored in both
 `analysis.json` and extraction-journal.jsonl entries.
 
+**Source name consistency (MUST):** The `source` field MUST use the same value
+in `analysis.json` AND `extraction-journal.jsonl` entries. Canonical formats:
+
+| Source Type | Format       | Example                                               |
+| ----------- | ------------ | ----------------------------------------------------- |
+| repo        | `owner/repo` | `safishamsi/graphify`                                 |
+| website     | Full URL     | `https://sidbharath.com/blog/...`                     |
+| document    | Filename     | `Errors and Vulnerabilities in AI-Generated Code.pdf` |
+| media       | Full URL     | `https://www.youtube.com/watch?v=...`                 |
+
+Never use slugs, short names, or alternate formats in the `source` field. The
+`slug` field is for directory names — `source` is for identity matching.
+
 ---
 
 ## 15. Skill Template Contract
@@ -249,6 +305,46 @@ All handler skills MUST mirror the repo-analysis v4.3 structure:
 
 Deviations from the template MUST be documented in the handler's Critical Rules
 section with rationale. Undocumented deviations are bugs.
+
+---
+
+## 16. Pipeline Tail Contract (MUST — not skippable)
+
+Every handler MUST complete these 4 steps after all analysis phases finish and
+before presenting the routing menu. These are **interactive steps that require
+user participation** — they cannot be silently skipped or auto-filled.
+
+### 16.1 Tag Suggestion (Phase 6c)
+
+Present 5-8 suggested tags. User MUST explicitly accept, modify, or add. Do NOT
+pre-populate analysis.json tags without user approval.
+
+### 16.2 Retro Prompt
+
+Ask: "What worked well? What would you change next time?" Save response to
+`process_feedback` field in the state file. If user says "skip", record
+`"skipped"` — not null.
+
+### 16.3 Routing Menu
+
+Present the 8-option routing menu. Wait for user selection. Do NOT skip to
+"Done" or close the analysis without presenting options.
+
+### 16.4 State File
+
+Write `.claude/state/<handler>.<slug>.state.json` with at minimum:
+
+- `slug`, `source`, `depth`, `current_phase: "complete"`
+- `process_feedback` (from retro, or `"skipped"`)
+- `completed_at` timestamp
+
+**Self-audit enforcement:** `self-audit.js` checks for state file existence.
+Missing state file at Standard/Deep depth = WARN (indicates tail was skipped).
+
+**Why this matters:** Without these steps, analysis runs produce artifacts but
+skip user decisions. Tags go unapproved, feedback is lost, and the routing menu
+(which gates extraction, TDMS, memory, and synthesis) never fires. The tail is
+where user judgment enters the pipeline.
 
 ---
 

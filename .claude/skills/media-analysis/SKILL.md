@@ -75,7 +75,9 @@ same pattern as all other handlers.
 
 **Output location:** `.research/analysis/<media-slug>/` **Produces:**
 analysis.json (unified schema v3.0), value-map.json, creator-view.md,
-transcript.md, findings.jsonl, extraction-journal.jsonl entries.
+findings.jsonl, summary.md, deep-read.md, content-eval.jsonl,
+coverage-audit.jsonl, extraction-journal.jsonl entries. Handler-specific:
+transcript.md (MUST — per CONVENTIONS 13.3).
 
 ---
 
@@ -113,8 +115,12 @@ Phase markers: `========== PHASE N: [NAME] ==========`
 
 Fetch metadata without transcription:
 
-- **YouTube:** Use `gh api` or WebFetch to get title, description, duration,
-  channel name, view count, publish date. Check if captions are available.
+- **YouTube:** WebFetch on YouTube pages returns JS config, not rendered HTML.
+  **Use oEmbed API as primary:**
+  `https://www.youtube.com/oembed?url=<url>&format=json` or
+  `https://noembed.com/embed?url=<url>`. Returns title, author_name,
+  thumbnail_url. For captions: use `youtube-transcript-api` (Python) — if
+  transcript fetches successfully, captions exist.
 - **TikTok:** WebFetch the page for title, creator, description.
 - **Audio files:** Read file metadata if available (duration, format).
 - **Podcast URLs:** WebFetch episode page for title, show notes, duration.
@@ -149,10 +155,14 @@ Three paths, in priority order:
 
 ### Path A: Captions API (preferred)
 
-For YouTube: fetch captions via available caption APIs or tools. Save raw
-transcript to `transcript.md`. Note: `youtube-transcript-api` (Python) is the
-reference tool — if installed, use it. Otherwise, attempt WebFetch-based caption
-extraction.
+For YouTube: fetch captions via `youtube-transcript-api` (Python). Save raw
+transcript to `transcript.md`. **Bootstrap (one-time):** If the Python package
+isn't installed:
+`curl -sL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python.exe /tmp/get-pip.py`
+then `python.exe -m pip install youtube-transcript-api`. The embedded Python at
+`~/bin/python312/` may need its `._pth` file edited to enable site-packages
+(uncomment `import site`). If Python is unavailable entirely, fall back to
+WebFetch-based caption extraction or offer manual transcript input.
 
 ### Path B: User-Provided Transcript
 
@@ -273,6 +283,7 @@ Resume skips transcription if `transcript.md` exists.
 
 ## Version History
 
-| Version | Date       | Description                              |
-| ------- | ---------- | ---------------------------------------- |
-| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269) |
+| Version | Date       | Description                                                                            |
+| ------- | ---------- | -------------------------------------------------------------------------------------- |
+| 1.1     | 2026-04-09 | Full output list, oEmbed fallback, Python bootstrap docs, v1.1 (Session #270 E2E test) |
+| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269)                                               |

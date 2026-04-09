@@ -368,6 +368,15 @@ accumulate.
 <details>
 <summary>Previous Consolidation (#55)</summary>
 
+- **Date:** 2026-04-09
+- **Reviews consolidated:** #rev-64-#rev-73
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#55)</summary>
+
 - **Date:** 2026-04-08
 - **Reviews consolidated:** #70-#rev-68
 - **Recurring patterns:**
@@ -1192,133 +1201,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review backfill-477-r3: PR #477 R3 — Mixed SonarCloud+Qodo (2026-03-28) (2026-03-28)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-28 | **PR:** #477 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 3     | 0        | 4        |
-
----
-
-### Review rev-21: PR #480 R1 — Mixed Qodo+Gemini+SonarCloud (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 24    | 0        | 3        |
-
----
-
-### Review rev-22: PR #480 R2 — Mixed SonarCloud+Qodo+CI (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 6     | 0        | 2        |
-
----
-
-### Review rev-23: PR #480 R3 — Mixed SonarCloud+Qodo (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 0        |
-
----
-
-### Review rev-24: PR #480 R4 — Mixed SonarCloud+Qodo (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #480 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 2     | 0        | 1        |
-
----
-
-### Review rev-25: PR #482 R1 — Mixed SonarCloud+Qodo+Gemini+CI (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 25    | 22    | 0        | 3        |
-
----
-
-### Review rev-26: PR #482 R2 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 5     | 0        | 2        |
-
----
-
-### Review rev-27: PR #482 R3 — Mixed Qodo+SonarCloud (2026-03-30) (2026-03-30)
-
-**Date:** 2026-03-30 | **PR:** #482 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 4     | 0        | 3        |
-
----
-
-### Review rev-61: PR #483 R1 — Mixed (2026-03-31) (2026-03-31)
-
-**Date:** 2026-03-31 | **PR:** #483 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 9     | 0        | 2        |
-
----
-
-### Review rev-62: PR #487 R1 — Mixed (2026-04-01) (2026-04-01)
-
-**Date:** 2026-04-01 | **PR:** #487 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 7     | 0        | 0        |
-
-**Patterns:**
-
-- vitest-to-node-test-propagation
-- array-push-batching
-- consolidation-duplication
-- test-baseline-missing
-- nullish-coalescing-defense
-- startup-perf-cap
-
----
-
-### Review rev-63: PR #488 R1 — Mixed (2026-04-01) (2026-04-01)
-
-**Date:** 2026-04-01 | **PR:** #488 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 3     | 0        | 0        |
-
-**Patterns:**
-
-- tdms-created-date-churn
-- agent-audit-trail
-- brainstorm-table-alignment
-
----
-
 ### Review rev-64: PR #489 R1 — Mixed (2026-04-03) (2026-04-03)
 
 **Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
@@ -1395,6 +1277,16 @@ deduplicated, non-overlapping ranges):
 - exit-code-2
 - tdms-data-quality
 - path-disclosure-fix
+
+---
+
+### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+
+**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
 
 ---
 
@@ -1568,31 +1460,23 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
+### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
 
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
+**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 4     | 0     | 0        | 0        |
 
 ---
 
-### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
+### Review 509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
 
-**Date:** unknown | **PR:** #498 | **Source:** manual
+**Date:** 2026-04-07 | **PR:** #488 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- volatile-state-tracking
-- reviews-jsonl-integrity
-- extraction-journal-normalize
-- skill-schema-consistency
-- slug-algorithm-separator-preservation
 
 ---
 
@@ -1606,16 +1490,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
-
-**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
-
----
-
 ### Review rev-67: PR #488 R2 (2026-04-07)
 
 **Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
@@ -1623,16 +1497,6 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 11    | 5     | 0        | 6        |
-
----
-
-### Review 509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
-
-**Date:** 2026-04-07 | **PR:** #488 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
 
 ---
 
@@ -1652,19 +1516,82 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 71: PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint) (unknown)
+### Review rev-69: (untitled) (2026-04-08)
 
-**Date:** unknown | **PR:** #500 | **Source:** manual
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 28    | 24    | 0        | 4        |
 
 **Patterns:**
 
-- pii-in-agent-logs
-- research-doc-schema-consistency
-- research-design-feedback-vs-bugs
+- slug-traversal-validation-scope
+- falsy-score-clobbering
+- overbroad-sql-deletion
+- prepare-inside-loop
+- bandFromScore-duplication
+
+---
+
+### Review rev-70: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Patterns:**
+
+- migration-uuid-stability
+- readonly-symlink-guard
+- cc-from-fix-accumulation
+
+---
+
+### Review rev-71: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 5     | 0        | 6        |
+
+**Patterns:**
+
+- lstatSync-regression
+- proto-delete-deprecated
+
+---
+
+### Review rev-72: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 7     | 0        | 2        |
+
+**Patterns:**
+
+- symlink-follow-vs-refuse
+- path-resolution-bugs
+
+---
+
+### Review rev-73: (untitled) (2026-04-08)
+
+**Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 6     | 0        | 3        |
+
+**Patterns:**
+
+- unreachable-fallback-code
+- fts-input-limits
 
 ## Key Patterns
 

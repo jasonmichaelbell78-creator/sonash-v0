@@ -1,0 +1,27 @@
+{
+  "source": "https://www.youtube.com/watch?v=qINuQwL4E-k",
+  "scan_date": "2026-04-09",
+  "depth": "standard",
+  "candidates": [
+    {
+      "name": "Context-over-filename retrieval principle",
+      "type": "knowledge",
+      "description": "Make files findable by surrounding metadata and linked context rather than filename or folder path.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["knowledge-management", "retrieval", "metadata"]
+    },
+    {
+      "name": "Subfolder-per-project attachment pattern",
+      "type": "pattern",
+      "description": "Auto-create attachments/ subfolder per project folder. Keeps assets co-located.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["obsidian", "file-organization"]
+    }
+  ],
+  "cross_repo_connections": [],
+  "related_repos": []
+}

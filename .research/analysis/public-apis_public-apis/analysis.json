@@ -2,21 +2,28 @@
   "id": "98930c8d-3dab-406e-b19b-a640b34949cf",
   "schema_version": "3.0",
   "source_type": "repo",
-  "source": "public-apis_public-apis",
+  "source": "public-apis/public-apis",
   "slug": "public-apis_public-apis",
   "title": "public-apis_public-apis",
-  "analyzed_at": null,
+  "analyzed_at": "2026-04-09T10:47:45.073Z",
   "depth": "quick",
-  "tags": ["repo", "curated-list"],
+  "tags": [
+    "repo",
+    "curated-list",
+    "public",
+    "apis",
+    "python",
+    "api",
+    "dataset",
+    "development",
+    "free"
+  ],
   "scoring": {
-    "adoptionLens": {
-      "verdict": "Extract",
-      "score": 42
-    },
-    "creatorLens": {
-      "verdict": "Extract",
-      "score": 48
-    }
+    "quality_band": "Needs Work",
+    "quality_score": 42,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 48,
+    "classification": "park-for-later"
   },
   "summary": "This repo understands that developers need a single, searchable catalog of free APIs organized by domain.  The structured format (API|Description|Auth|HTTPS|CORS) is machine-parseable by design.",
   "creator_view": "This repo understands that developers need a single, searchable catalog of free APIs organized by domain. The structured format (API|Description|Auth|HTTPS|CORS) is machine-parseable by design. The Python validation scripts enforce format consistency at PR time — a quality gate that codecrafters lacks.",

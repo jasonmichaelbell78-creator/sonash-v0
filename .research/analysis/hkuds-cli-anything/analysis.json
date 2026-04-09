@@ -2,21 +2,18 @@
   "id": "6052cc8b-2356-421a-96a4-2bbecd3053ab",
   "schema_version": "3.0",
   "source_type": "repo",
-  "source": "hkuds-cli-anything",
+  "source": "HKUDS/CLI-Anything",
   "slug": "hkuds-cli-anything",
   "title": "hkuds-cli-anything",
-  "analyzed_at": null,
+  "analyzed_at": "2026-04-09T10:47:45.051Z",
   "depth": "quick",
-  "tags": ["repo", "framework"],
+  "tags": ["repo", "framework", "hkuds", "anything", "python"],
   "scoring": {
-    "adoptionLens": {
-      "verdict": "Trial",
-      "score": 62
-    },
-    "creatorLens": {
-      "verdict": "Trial",
-      "score": 68
-    }
+    "quality_band": "Healthy",
+    "quality_score": 62,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 68,
+    "classification": "active-sprint"
   },
   "summary": "This repo understands that the next wave of software users will be AI agents, not humans.  It provides a systematic methodology (HARNESS.",
   "creator_view": "This repo understands that the next wave of software users will be AI agents, not humans. It provides a systematic methodology (HARNESS.md) for wrapping any desktop application in a CLI that agents can invoke. The 7-phase SOP, SKILL.md generation, and CLI-Hub registry represent a complete ecosystem for agent-native software — directly relevant to JASON-OS's vision of AI-operated workflows.",

@@ -1,5 +1,6 @@
 {
-  "scripts/cas/migrate-schemas.js": 1,
-  "scripts/cas/rebuild-index.js": 4,
-  "scripts/cas/update-index.js": 4
+  "scripts/cas/backfill-tags.js": 2,
+  "scripts/cas/migrate-v3.js": 1,
+  "scripts/cas/self-audit.js": 2,
+  "scripts/cas/update-index.js": 1
 }

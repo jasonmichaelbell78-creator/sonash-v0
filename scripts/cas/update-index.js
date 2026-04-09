@@ -143,11 +143,15 @@ function loadJournalLines() {
 }
 
 function syncExtractions(db, record, tagCache) {
-  // Delete junction table rows first to avoid FK constraint violations
+  // Delete existing extractions for this source (by analysis ID or source name)
+  // Junction table rows first to avoid FK constraint violations
   db.prepare(
-    "DELETE FROM extraction_tags WHERE extraction_id IN (SELECT id FROM extractions WHERE source_analysis_id = ?)"
-  ).run(record.id);
-  db.prepare("DELETE FROM extractions WHERE source_analysis_id = ?").run(record.id);
+    "DELETE FROM extraction_tags WHERE extraction_id IN (SELECT id FROM extractions WHERE source_analysis_id = ? OR source = ?)"
+  ).run(record.id, record.source);
+  db.prepare("DELETE FROM extractions WHERE source_analysis_id = ? OR source = ?").run(
+    record.id,
+    record.source
+  );
 
   const lines = loadJournalLines();
 
@@ -168,7 +172,10 @@ function syncExtractions(db, record, tagCache) {
     if (!line.trim()) continue;
     try {
       const entry = JSON.parse(line);
-      if (entry.source_analysis_id !== record.id) continue;
+      // Match by source_analysis_id (UUID) OR by source name (human-readable)
+      const matchById = entry.source_analysis_id && entry.source_analysis_id === record.id;
+      const matchBySource = entry.source && entry.source === record.source;
+      if (!matchById && !matchBySource) continue;
 
       const tags = JSON.stringify(entry.tags || []);
       const info = insertExtraction.run(
@@ -234,8 +241,83 @@ function main() {
   }
 
   if (!fs.existsSync(DB_PATH)) {
-    console.error("Index not found. Run: node scripts/cas/rebuild-index.js first");
-    process.exit(1);
+    console.log("Index not found — auto-creating database...");
+    const newDb = new Database(DB_PATH);
+    try {
+      newDb.pragma("journal_mode = WAL");
+      newDb.pragma("foreign_keys = ON");
+      newDb.exec(`
+        CREATE TABLE IF NOT EXISTS sources (
+          id TEXT PRIMARY KEY,
+          source_type TEXT NOT NULL,
+          source TEXT NOT NULL,
+          slug TEXT NOT NULL UNIQUE,
+          title TEXT NOT NULL,
+          analyzed_at TEXT,
+          depth TEXT,
+          quality_band TEXT,
+          quality_score REAL,
+          personal_fit_band TEXT,
+          personal_fit_score REAL,
+          classification TEXT,
+          summary TEXT,
+          tags TEXT DEFAULT '[]',
+          last_synthesized_at TEXT
+        );
+        CREATE TABLE IF NOT EXISTS extractions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          schema_version TEXT NOT NULL,
+          source_type TEXT NOT NULL,
+          source TEXT NOT NULL,
+          source_analysis_id TEXT,
+          candidate TEXT NOT NULL,
+          type TEXT NOT NULL,
+          decision TEXT NOT NULL,
+          decision_date TEXT,
+          extracted_to TEXT,
+          extracted_at TEXT,
+          notes TEXT,
+          novelty TEXT,
+          effort TEXT,
+          relevance TEXT,
+          tags TEXT DEFAULT '[]',
+          FOREIGN KEY (source_analysis_id) REFERENCES sources(id)
+        );
+        CREATE TABLE IF NOT EXISTS tags (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT NOT NULL UNIQUE
+        );
+        CREATE TABLE IF NOT EXISTS source_tags (
+          source_id TEXT NOT NULL,
+          tag_id INTEGER NOT NULL,
+          PRIMARY KEY (source_id, tag_id),
+          FOREIGN KEY (source_id) REFERENCES sources(id),
+          FOREIGN KEY (tag_id) REFERENCES tags(id)
+        );
+        CREATE TABLE IF NOT EXISTS extraction_tags (
+          extraction_id INTEGER NOT NULL,
+          tag_id INTEGER NOT NULL,
+          PRIMARY KEY (extraction_id, tag_id),
+          FOREIGN KEY (extraction_id) REFERENCES extractions(id),
+          FOREIGN KEY (tag_id) REFERENCES tags(id)
+        );
+        CREATE VIRTUAL TABLE IF NOT EXISTS search_sources USING fts5(
+          title, summary, tags,
+          tokenize = 'porter unicode61',
+          content = 'sources',
+          content_rowid = 'rowid'
+        );
+        CREATE VIRTUAL TABLE IF NOT EXISTS search_extractions USING fts5(
+          candidate, notes, tags,
+          tokenize = 'porter unicode61',
+          content = 'extractions',
+          content_rowid = 'rowid'
+        );
+      `);
+      console.log("Database created successfully.");
+    } finally {
+      newDb.close();
+    }
   }
 
   const resolvedDb = path.resolve(DB_PATH); // validatePathInDir: constant
@@ -317,8 +399,10 @@ function main() {
     update();
 
     const count = db
-      .prepare("SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ?")
-      .get(record.id);
+      .prepare(
+        "SELECT COUNT(*) as count FROM extractions WHERE source_analysis_id = ? OR source = ?"
+      )
+      .get(record.id, record.source);
 
     console.log(`Updated index for ${slug}: source upserted, ${count.count} extractions synced.`);
   } finally {

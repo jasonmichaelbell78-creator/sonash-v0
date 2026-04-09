@@ -1,0 +1,176 @@
+{
+  "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "safishamsi/graphify",
+  "slug": "safishamsi-graphify",
+  "title": "graphify — AI coding assistant skill for knowledge graph generation",
+  "analyzed_at": "2026-04-09T11:45:00Z",
+  "depth": "standard",
+  "tags": [
+    "repo",
+    "library",
+    "knowledge-graph",
+    "claude-code",
+    "skill",
+    "python",
+    "ast",
+    "multimodal"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 68,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 82,
+    "classification": "active-sprint"
+  },
+  "summary": "Knowledge graph skill for AI coding assistants (Claude Code, Codex, OpenCode, OpenClaw, Factory Droid, Trae). Deterministic AST extraction + LLM semantic inference + Leiden clustering. 15K stars in 6 days. Multi-modal: code, PDFs, images, screenshots. MCP server mode. Highly relevant to SoNash skill architecture and JASON-OS knowledge layer.",
+  "creator_view": "This repo understands the knowledge graph paradigm for codebase comprehension — deterministic AST extraction paired with LLM-powered semantic inference, Leiden community detection, and multi-modal ingestion. It solves the same 'understand code structure without reading everything' problem that our repo-analysis addresses, but through graph topology rather than dimensional scoring.",
+  "candidates": [
+    {
+      "name": "Skill orchestration pipeline",
+      "type": "knowledge",
+      "description": "10-step pipeline with parallel agent dispatch",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["skill-architecture", "orchestration"]
+    },
+    {
+      "name": "Confidence tagging taxonomy",
+      "type": "knowledge",
+      "description": "EXTRACTED/INFERRED/AMBIGUOUS three-tier confidence",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["confidence", "taxonomy"]
+    },
+    {
+      "name": "MCP server pattern",
+      "type": "pattern",
+      "description": "Stateless stdio server with token-budgeted output",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["mcp", "server"],
+      "url": "graphify/serve.py"
+    },
+    {
+      "name": "LanguageConfig dataclass",
+      "type": "pattern",
+      "description": "Generic walker + per-type config for 20 languages",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["extraction", "dataclass"],
+      "url": "graphify/extract.py"
+    },
+    {
+      "name": "Threat-vector security model",
+      "type": "knowledge",
+      "description": "Attack-vector-organized security model format",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "documentation"]
+    },
+    {
+      "name": "Platform-specific skill variants",
+      "type": "pattern",
+      "description": "7 platform skill files with shared core",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["multi-platform", "portability"]
+    },
+    {
+      "name": "Graph-only persistence without versioning",
+      "type": "anti-pattern",
+      "description": "No schema_version or migration path",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "persistence"]
+    },
+    {
+      "name": "Oversized skill files",
+      "type": "anti-pattern",
+      "description": "15K+ tokens per variant with duplication",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "skill-bloat"]
+    },
+    {
+      "name": "Ship fast skip review",
+      "type": "anti-pattern",
+      "description": "Zero external review despite 15K stars",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["anti-pattern", "process"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "stars": 15252,
+    "language": "Python",
+    "license": "MIT",
+    "last_push": "2026-04-09T08:37:21Z",
+    "archived": false,
+    "fork": false,
+    "topics": ["claude-code", "codex", "graphrag", "knowledge-graph", "openclaw", "skills"]
+  },
+  "dimensions": {
+    "QS-01-metadata": {
+      "stars": 15252,
+      "language": "Python",
+      "license": "MIT",
+      "age_days": 6,
+      "size_kb": 358
+    },
+    "QS-02-activity": {
+      "last_push": "2026-04-09T08:37:21Z",
+      "releases": 20,
+      "release_cadence": "multiple_daily",
+      "default_branch": "v3"
+    },
+    "QS-03-contributors": {
+      "total": 6,
+      "primary": "safishamsi",
+      "primary_pct": 95.8,
+      "bus_factor": 1
+    },
+    "QS-04-languages": { "Python": 100 },
+    "QS-05-issues": {
+      "open": 27,
+      "recent_titles": ["codex-cli hook failed", "add cursor support", "Add Copilot CLI support"]
+    },
+    "QS-06-prs": { "open": 5, "merged": 0, "external_contributors": false },
+    "QS-07-ci": { "workflows": ["CI", "Copilot code review"], "ci_passing": true },
+    "QS-08-community": {
+      "health_pct": 57,
+      "coc": false,
+      "contributing": false,
+      "issue_template": false,
+      "pr_template": false
+    },
+    "QS-09-security": { "security_md": true, "security_module": true },
+    "QS-10-docs": {
+      "readme_translations": 4,
+      "architecture_md": true,
+      "changelog": true,
+      "skill_files": 7
+    },
+    "QS-11-tests": { "test_files": 21, "test_dir": true, "fixtures": true },
+    "QS-12-structure": { "modules": 15, "clean_separation": true, "pyproject": true },
+    "QS-13-releases": { "latest": "v0.3.20", "v1_tag": true, "cadence": "multiple_daily" },
+    "QS-14-license": "MIT",
+    "QS-15-topics": ["claude-code", "codex", "graphrag", "knowledge-graph", "openclaw", "skills"],
+    "QS-16-repo-type": "library",
+    "QS-17-absence": [],
+    "QS-18-velocity": { "stars_per_day": 2542, "commits_per_day": 15.3, "explosive_growth": true }
+  },
+  "absence_patterns": [],
+  "adoption_verdict": "Extract (82)"
+}

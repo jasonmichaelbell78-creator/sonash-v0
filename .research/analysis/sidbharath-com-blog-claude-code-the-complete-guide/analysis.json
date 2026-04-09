@@ -1,0 +1,83 @@
+{
+  "id": "611f4698-cbeb-4cde-ae2f-041a611a80ec",
+  "schema_version": "3.0",
+  "source_type": "website",
+  "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+  "slug": "sidbharath-com-blog-claude-code-the-complete-guide",
+  "title": "Cooking with Claude Code: The Complete Tutorial & Guide",
+  "analyzed_at": "2026-04-09T12:15:00Z",
+  "depth": "standard",
+  "tags": ["website", "blog", "claude-code", "tutorial", "ai-coding", "developer-tools"],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 72,
+    "personal_fit_band": "Excellent",
+    "personal_fit_score": 85,
+    "classification": "active-sprint"
+  },
+  "summary": "Comprehensive 8K-word guide to Claude Code covering setup, modes, CLAUDE.md, sub-agents, git workflows, MCP servers, hooks, testing, CI/CD, and best practices. Written by Sid Bharath, last updated Feb 2026. Directly relevant to SoNash — we are power users of every feature covered.",
+  "creator_view": "This article covers the full Claude Code feature set from beginner to advanced. It understands the 'junior engineer' mental model, context hygiene, and the importance of persistent documentation. Highly relevant as a comparison benchmark for our own Claude Code practices.",
+  "candidates": [
+    {
+      "name": "Cloud teleportation pattern",
+      "type": "knowledge",
+      "description": "& prefix sends tasks to Claude Code Web, --teleport pulls back",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["cloud", "teleportation"]
+    },
+    {
+      "name": "Plugin marketplace ecosystem",
+      "type": "knowledge",
+      "description": "Anthropic marketplace (36 plugins). Community marketplaces emerging.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["plugins", "marketplace"]
+    },
+    {
+      "name": "Junior engineer framing",
+      "type": "knowledge",
+      "description": "External validation of treating Claude Code as junior engineer",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["mental-model", "best-practices"]
+    },
+    {
+      "name": "Tutorial structure as onboarding template",
+      "type": "pattern",
+      "description": "Setup→Daily→Advanced→Production progression",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["documentation", "onboarding"]
+    },
+    {
+      "name": "Features without enforcement",
+      "type": "anti-pattern",
+      "description": "Hooks as automation not gates. CLAUDE.md as memory not rules.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "enforcement"]
+    },
+    {
+      "name": "No compaction discussion",
+      "type": "anti-pattern",
+      "description": "Treating context as unlimited. No state loss or checkpoint strategies.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern", "compaction"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "domain": "sidbharath.com",
+    "pages_analyzed": 1,
+    "extraction_mode": "WebFetch"
+  },
+  "site_type": "blog"
+}
