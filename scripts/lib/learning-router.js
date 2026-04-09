@@ -24,10 +24,13 @@ const crypto = require("node:crypto");
 const safeFs = require(path.join(__dirname, "safe-fs.js"));
 const { isSafeToWrite, withLock, safeAppendFileSync } = safeFs;
 
-// Import sanitizeError from security-helpers (CommonJS), with inline fallback
+// Import sanitizeError + slugify from security-helpers (CommonJS), with inline fallback
 let sanitizeError;
+let _sharedSlugify;
 try {
-  ({ sanitizeError } = require(path.join(__dirname, "security-helpers.js")));
+  const helpers = require(path.join(__dirname, "security-helpers.js"));
+  sanitizeError = helpers.sanitizeError;
+  _sharedSlugify = helpers.slugify;
 } catch {
   // Fallback: minimal sanitization
   sanitizeError = (error) => {
@@ -38,6 +41,11 @@ try {
       .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
       .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
   };
+  _sharedSlugify = (s) =>
+    String(s)
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9]+/g, "-")
+      .replaceAll(/^-|-$/g, "");
 }
 
 /** Strip control characters and newlines from a string for safe log output. */
@@ -60,19 +68,14 @@ const VALID_SEVERITIES = ["critical", "high", "medium", "low"];
 
 /**
  * Convert a pattern string into a filesystem-safe slug.
+ * Wraps shared slugify with null guard and 60-char truncation.
  *
  * @param {string} text - Pattern text to slugify
  * @returns {string} Lowercase slug with hyphens, max 60 chars
  */
 function slugify(text) {
   if (!text || typeof text !== "string") return "unnamed";
-  return (
-    text
-      .toLowerCase()
-      .replaceAll(/[^a-z0-9]+/g, "-") // non-alphanum -> hyphen  // S5852: safe — no backtracking risk in character class
-      .replaceAll(/^-+|-+$/g, "") // strip leading/trailing hyphens  // S5852: safe — no backtracking risk in anchored alternation
-      .slice(0, 60) || "unnamed"
-  );
+  return _sharedSlugify(text).slice(0, 60) || "unnamed";
 }
 
 /**
