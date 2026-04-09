@@ -39,8 +39,9 @@ function findTagsForSource(source) {
         if (!dir.isDirectory() || dir.name.startsWith("_")) continue;
         validatePathInDir(baseDir, dir.name);
         const analysisPath = path.join(baseDir, dir.name, "analysis.json");
-        if (!fs.existsSync(analysisPath)) continue;
         try {
+          const st = fs.lstatSync(analysisPath);
+          if (st.isSymbolicLink()) continue;
           const data = JSON.parse(fs.readFileSync(analysisPath, "utf8"));
           if (!data.tags || data.tags.length === 0) continue;
           // Match by exact source, slug, fuzzy slug, or containment

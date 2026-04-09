@@ -494,46 +494,56 @@
     {
       "path": "scripts/verify-enforcement.js",
       "lines": 552
+    },
+    {
+      "path": "scripts/cas/backfill-tags.js",
+      "lines": 151,
+      "note": "CAS infrastructure — tag backfill utility (T28)"
+    },
+    {
+      "path": "scripts/cas/generate-extractions-md.js",
+      "lines": 150,
+      "note": "CAS infrastructure — EXTRACTIONS.md generator (T28)"
+    },
+    {
+      "path": "scripts/cas/migrate-schemas.js",
+      "lines": 368,
+      "note": "CAS infrastructure — SQLite schema migration (T28)"
+    },
+    {
+      "path": "scripts/cas/migrate-v3.js",
+      "lines": 289,
+      "note": "CAS infrastructure — v3 schema migration (T28)"
+    },
+    {
+      "path": "scripts/cas/rebuild-index.js",
+      "lines": 400,
+      "note": "CAS infrastructure — SQLite index rebuild (T28)"
+    },
+    {
+      "path": "scripts/cas/recall.js",
+      "lines": 285,
+      "note": "CAS infrastructure — SQLite recall/search (T28)"
+    },
+    {
+      "path": "scripts/cas/self-audit.js",
+      "lines": 380,
+      "note": "CAS infrastructure — handler output validator (T28)"
+    },
+    {
+      "path": "scripts/cas/update-index.js",
+      "lines": 450,
+      "note": "CAS infrastructure — SQLite incremental update (T28)"
+    },
+    {
+      "path": "scripts/lib/analysis-schema.js",
+      "lines": 240,
+      "note": "CAS infrastructure — Zod schema definitions (T28)"
+    },
+    {
+      "path": "scripts/sync-warnings-ack.js",
+      "lines": 138,
+      "note": "CAS infrastructure — warning acknowledgment (T28)"
     }
-  ],
-  "scripts/cas/backfill-tags.js": {
-    "reason": "CAS infrastructure — tag backfill utility (T28)",
-    "added": "2026-04-09"
-  },
-  "scripts/cas/generate-extractions-md.js": {
-    "reason": "CAS infrastructure — EXTRACTIONS.md generator (T28)",
-    "added": "2026-04-09"
-  },
-  "scripts/cas/migrate-schemas.js": {
-    "reason": "CAS infrastructure — SQLite index scripts (T28)",
-    "added": "2026-04-08"
-  },
-  "scripts/cas/migrate-v3.js": {
-    "reason": "CAS infrastructure — v3 schema migration (T28)",
-    "added": "2026-04-09"
-  },
-  "scripts/cas/rebuild-index.js": {
-    "reason": "CAS infrastructure — SQLite index scripts (T28)",
-    "added": "2026-04-08"
-  },
-  "scripts/cas/recall.js": {
-    "reason": "CAS infrastructure — SQLite index scripts (T28)",
-    "added": "2026-04-08"
-  },
-  "scripts/cas/self-audit.js": {
-    "reason": "CAS infrastructure — handler output validator (T28)",
-    "added": "2026-04-09"
-  },
-  "scripts/cas/update-index.js": {
-    "reason": "CAS infrastructure — SQLite index scripts (T28)",
-    "added": "2026-04-08"
-  },
-  "scripts/lib/analysis-schema.js": {
-    "reason": "CAS infrastructure — SQLite index scripts (T28)",
-    "added": "2026-04-08"
-  },
-  "scripts/sync-warnings-ack.js": {
-    "reason": "CAS infrastructure — SQLite index scripts (T28)",
-    "added": "2026-04-08"
-  }
+  ]
 }

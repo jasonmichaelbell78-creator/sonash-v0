@@ -182,7 +182,7 @@ function syncExtractions(db, record, tagCache) {
       entry.source_type &&
       entry.source &&
       entry.source_type === record.source_type &&
-      entry.source === record.source;
+      String(entry.source).trim().toLowerCase() === String(record.source).trim().toLowerCase();
     if (!matchById && !matchBySource) continue;
 
     // When matched by source name (not ID), use record.id for FK safety
@@ -267,10 +267,19 @@ function main() {
   }
 
   if (!fs.existsSync(DB_PATH)) {
-    // Ensure parent directory exists
+    // Ensure parent directory exists (with symlink guard)
     const dbDir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dbDir)) {
-      fs.mkdirSync(dbDir, { recursive: true });
+    try {
+      if (fs.lstatSync(dbDir).isSymbolicLink()) {
+        console.error("Refusing to create DB — parent directory is a symlink");
+        process.exit(1);
+      }
+    } catch (dirErr) {
+      if (dirErr.code === "ENOENT") {
+        fs.mkdirSync(dbDir, { recursive: true });
+      } else {
+        throw dirErr;
+      }
     }
     console.log("Index not found — auto-creating database...");
     const newDb = new Database(DB_PATH);

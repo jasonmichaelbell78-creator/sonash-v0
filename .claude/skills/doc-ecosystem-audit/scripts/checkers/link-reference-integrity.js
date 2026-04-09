@@ -540,6 +540,7 @@ function slugify(text) {
     .toLowerCase()
     .replaceAll(/[^\w\s-]/g, "")
     .replaceAll(/\s+/g, "-")
+    .replaceAll(/-+/g, "-")
     .replaceAll(/^-|-$/g, "");
 }
 

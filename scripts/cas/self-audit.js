@@ -168,10 +168,10 @@ function checkSchema(dir, slug) {
 
   try {
     // Check schema_version
-    if (!data.schema_version) {
-      results.fail.push("analysis.json missing schema_version field");
-    } else {
+    if (data.schema_version) {
       results.pass.push(`schema_version: ${data.schema_version}`);
+    } else {
+      results.fail.push("analysis.json missing schema_version field");
     }
 
     // Validate against Zod schema

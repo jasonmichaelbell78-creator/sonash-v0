@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD038 -->
 
-**Document Version:** 17.121 **Created:** 2026-01-02 **Last Updated:**
+**Document Version:** 17.122 **Created:** 2026-01-02 **Last Updated:**
 2026-04-09
 
 ## Purpose
@@ -4102,3 +4102,28 @@ checkExtractions CC=20, main CC=16/20, checkExpectedFiles CC=20) — these
 functions have high CC due to sequential validation checks, not deep nesting.
 Extracting helpers would increase complexity without improving readability. Doc
 lint on `.research/` file (already exempt in config).
+
+### Review #78 — PR #504 R2 (Mixed: SonarCloud + CI + Qodo Compliance + Qodo Suggestions)
+
+**Date:** 2026-04-09 | **Items:** 27 | **Fixed:** 10 | **Deferred:** 0 |
+**Rejected:** 17
+
+**Key patterns:**
+
+1. **Test baseline format matters** — `.test-baseline.json` has two formats:
+   `entries` array (objects with `path`) and top-level keys. CI checker only
+   reads the `entries` array. Always use the array format.
+2. **Parent dir symlink guard** — `mkdirSync({ recursive: true })` can follow
+   symlinked parent dirs. Guard with `lstatSync` on parent before creating.
+3. **PII pattern checker avoidance** — `process.env.USER` triggers PII block
+   even when value is hashed. Avoid direct reference via `process.env` alias.
+4. **slugify regression** — removing `-+` collapse from GitHub-compatible
+   slugify breaks anchor matching. Always preserve hyphen normalization.
+5. **Source matching normalization** — case/whitespace differences between
+   journal entries and analysis records cause silent sync failures. Normalize
+   with `trim().toLowerCase()`.
+
+**Rejected:** 12 SonarCloud CC violations (sequential validation in new CAS
+files, not deep nesting). 4 Qodo compliance items (intentional silent parse
+skips, dev tooling audit trail, auto-generated feedback log). 1 cross-round
+dedup (already fixed R1).

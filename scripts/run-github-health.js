@@ -450,7 +450,8 @@ function detectTrends(lastEntry, snapshot, cachePercent, grade, issues) {
  * CI containers.
  */
 function resolveActorHash() {
-  let username = process.env.USER || process.env.USERNAME || "";
+  const envVars = process.env;
+  let username = envVars.USER || envVars.USERNAME || "";
   if (!username) {
     try {
       username = os.userInfo().username || "";

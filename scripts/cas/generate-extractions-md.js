@@ -57,7 +57,7 @@ function main() {
   const decisionSummary = Object.entries(decisions)
     .filter(([, v]) => v > 0)
     .map(([k, v]) => `${k}: ${v}`)
-    .join(",\n");
+    .join(", ");
 
   const lines = [
     "# Extraction Candidates — Cross-Entity Summary",
@@ -83,13 +83,11 @@ function main() {
     const sourceType = sourceEntries[0]?.source_type || "repo";
     const isQuickScan = sourceEntries.length <= 2 && sourceEntries.every((e) => !e.notes);
 
-    lines.push("");
-    lines.push(`## ${source} (${sourceType})${isQuickScan ? " — Quick Scan" : ""}`);
-    lines.push("");
     lines.push(
-      "| Candidate | Type | Decision | Date | Novelty | Effort | Relevance | Extracted To | Notes |"
-    );
-    lines.push(
+      "",
+      `## ${source} (${sourceType})${isQuickScan ? " — Quick Scan" : ""}`,
+      "",
+      "| Candidate | Type | Decision | Date | Novelty | Effort | Relevance | Extracted To | Notes |",
       "| --------- | ---- | -------- | ---- | ------- | ------ | --------- | ------------ | ----- |"
     );
 
