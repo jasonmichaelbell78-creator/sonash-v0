@@ -107,6 +107,13 @@ Session #270 complete — T28 CAS E2E + synthesis deep-plan + todo recovery.
 
 **Todos**: 16 active (7 P1), 13 completed — run `/todo` to manage
 
+**Active ROADMAP Tracks** (see
+[ROADMAP.md §5](./ROADMAP.md#5--active-sprint-operational-visibility-p0)): Track
+B (Dev Dashboard, in progress), Track T (Testing Infrastructure, Phase 1 done),
+Track C (UI/UX, planned), Track D (CI Reliability, planned), Track E (Solo Dev
+Automations, planned), Track P (Performance Critical, planned), Track O (Owner
+Actions, manual setup).
+
 ---
 
 ## Next Session Goals

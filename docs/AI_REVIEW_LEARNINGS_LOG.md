@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#56)</summary>
+
+- **Date:** 2026-04-09
+- **Reviews consolidated:** #rev-64-#rev-77
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#55)</summary>
 
 - **Date:** 2026-04-09
@@ -1094,7 +1103,7 @@ accumulate.
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
 | Main log lines | ~2048 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 20    | 30        | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -1516,7 +1525,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-69: (untitled) (2026-04-08)
+### Review rev-69: PR #503 R1 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
@@ -1534,7 +1543,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-70: (untitled) (2026-04-08)
+### Review rev-70: PR #503 R2 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
@@ -1550,7 +1559,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-71: (untitled) (2026-04-08)
+### Review rev-71: PR #503 R3 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
@@ -1565,7 +1574,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-72: (untitled) (2026-04-08)
+### Review rev-72: PR #503 R4 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
 
@@ -1580,7 +1589,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-73: (untitled) (2026-04-08)
+### Review rev-73: PR #503 R5 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
 
@@ -1592,6 +1601,85 @@ deduplicated, non-overlapping ranges):
 
 - unreachable-fallback-code
 - fts-input-limits
+
+---
+
+### Review rev-74: PR #504 R1 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 35    | 28    | 0        | 7        |
+
+**Patterns:**
+
+- symlink-guard-before-create
+- nullish-coalescing-for-scores
+- fk-safety-on-source-match
+- require-vs-resolve
+- cross-source-delete-scope
+- incomplete-string-escaping
+- fuzzy-source-matching
+
+---
+
+### Review rev-75: PR #504 R2 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 27    | 10    | 0        | 17       |
+
+**Patterns:**
+
+- test-baseline-array-format
+- parent-dir-symlink-guard
+- pii-pattern-avoidance
+- slugify-hyphen-collapse
+- source-matching-normalization
+
+---
+
+### Review rev-76: PR #504 R3 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 18    | 5     | 0        | 13       |
+
+**Patterns:**
+
+- slugify-greedy-trim
+- canonicalize-source-on-insert
+- count-query-scope-consistency
+
+---
+
+### Review rev-77: PR #504 R4 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 19    | 2     | 0        | 17       |
+
+**Patterns:**
+
+- analyzed-at-fallback
+- escape-all-table-cells
+
+---
+
+### Review 80: PR #504 R4 (Mixed: SonarCloud + Qodo Suggestions) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 2     | 0        | 17       |
 
 ## Key Patterns
 
