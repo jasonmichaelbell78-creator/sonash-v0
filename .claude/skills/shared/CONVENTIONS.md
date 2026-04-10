@@ -7,9 +7,9 @@
 <!-- prettier-ignore-end -->
 
 Canonical source for conventions shared across the analysis/synthesis skill
-family: `/website-analysis`, `/repo-analysis`, `/website-synthesis`,
-`/repo-synthesis`. Individual skills reference this file rather than duplicating
-these rules.
+family: `/analyze`, `/repo-analysis`, `/website-analysis`, `/document-analysis`,
+`/media-analysis`, and `/synthesize`. Individual skills reference this file
+rather than duplicating these rules.
 
 ---
 
@@ -112,7 +112,8 @@ presenting final output to the user. The minimum floor checks:
    output
 
 Skills MAY add domain-specific audit dimensions above this floor (e.g.,
-website-analysis adds 9 dimensions, repo-synthesis adds 6).
+website-analysis adds 9 dimensions, `/synthesize` adds 10 via its self-audit
+rubric).
 
 ---
 
@@ -345,6 +346,82 @@ Missing state file at Standard/Deep depth = WARN (indicates tail was skipped).
 skip user decisions. Tags go unapproved, feedback is lost, and the routing menu
 (which gates extraction, TDMS, memory, and synthesis) never fires. The tail is
 where user judgment enters the pipeline.
+
+---
+
+## 17. Synthesis Output Contract
+
+The `/synthesize` skill is a **consumer skill** — it reads handler output, it
+does not produce handler output. Its contract is distinct from the handler
+contract in Section 13.
+
+### 17.1 MUST Artifacts
+
+| Artifact         | Location                              | Format                                  |
+| ---------------- | ------------------------------------- | --------------------------------------- |
+| `synthesis.md`   | `.research/analysis/synthesis/`       | Conversational prose, 8 sections        |
+| `synthesis.json` | `.research/analysis/synthesis/`       | Validates against `synthesisRecord` Zod |
+| State file       | `.claude/state/synthesize.state.json` | JSON, tracks sections_completed + mode  |
+
+### 17.2 Output Sections (thematic paradigm)
+
+1. **Emergent Themes + Signals** — merged (convergence, divergence, gaps,
+   trends)
+2. **Ecosystem Gap Analysis** — what's missing across the source set
+3. **Reading Chain** — cross-type study sequence with tier weighting
+4. **Mental Model Evolution** — how understanding has shifted since previous
+   synthesis
+5. **Fit Portfolio** — all candidates deduplicated and re-ranked by cross-source
+   convergence
+6. **Knowledge Map** — domain coverage matrix
+7. **Opportunity Matrix** — interactive, routes to next actions (extract, plan,
+   research, defer)
+8. **Changes Since Previous** — re-synthesis mode only
+
+Other paradigms (narrative, matrix, meta-pattern) MAY reorder or substitute
+sections per the paradigm template in `synthesize/REFERENCE.md`.
+
+### 17.3 History Preservation
+
+Before overwriting, archive the previous synthesis:
+
+- `synthesis.md` →
+  `.research/analysis/synthesis/history/synthesis-YYYY-MM-DD.md`
+- `synthesis.json` →
+  `.research/analysis/synthesis/history/synthesis-YYYY-MM-DD.json`
+
+This preserves mental-model evolution across re-synthesis runs.
+
+### 17.4 Side Effects
+
+After synthesis completes:
+
+1. Update `last_synthesized_at` in each processed source's `analysis.json`
+2. Run `node scripts/cas/rebuild-index.js` to sync the SQLite index
+3. Append a record to `.research/synthesis-journal.jsonl` (mode, paradigm,
+   source count, timestamp)
+
+### 17.5 Scope Semantics
+
+- **Full synthesis** — all sources where `last_synthesized_at < analyzed_at`
+- **Scoped synthesis** — filtered by `--type=<type>` or `--scope=<tags>`
+- **Re-synthesis** — full re-run ignoring `last_synthesized_at`; produces
+  "Changes Since Previous" section
+- **Incremental** — append-only update when new sources are added since last
+  full synthesis (fits inside "Changes Since Previous")
+
+### 17.6 Pre-Flight Validation
+
+Before producing any output, `/synthesize` MUST verify:
+
+1. At least 3 sources at Standard or Deep depth exist (Quick Scans are
+   preview-only and do not contribute — see Section 13.1 gate messaging)
+2. All contributing sources have valid `analysis.json` (schema validates)
+3. All contributing sources have a `source_tier` assigned (T1-T4)
+4. Tier distribution is presented to the user before synthesis runs
+
+Failed pre-flight → block with remediation instructions, do not produce partial
+synthesis output.
 
 ---
 

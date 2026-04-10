@@ -402,10 +402,77 @@ Sections 12-16.
 
 ## Wave 4: Quick Scan Migration (depends on Wave 1, can parallel with Wave 2-3)
 
-### Step 9: Prioritize and create upgrade checklist
+> **Session #272 discovery (2026-04-10):** Wave 4 scope was wrong. The original
+> "22 quick-scan repos" count was based on the `depth: "quick"` field in
+> `analysis.json`, but **10 of those 22 were mislabeled** — they have full
+> Standard artifact sets
+> (findings/summary/deep-read/content-eval/coverage-audit/
+> creator-view/value-map) AND extraction journal entries, but their depth field
+> was stamped "quick" by `scripts/cas/migrate-v3.js` during the 2026-04-09 v3.0
+> migration. Real Wave 4 scope is **12 TRUE quick-scan repos + 10 metadata
+> patches**.
+>
+> **True quick scans (need Standard upgrade):** ArchiveBox, crawl4ai, firecrawl,
+> lux-video-downloader, marker, MinerU, nitter, outline, qmd, reader, surya,
+> tesseract.
+>
+> **Mislabeled (need depth field fix only — no re-analysis):**
+> aws-media-extraction, bedrock-summarize-audio-video-text,
+> bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
+> hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
+> teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api.
+>
+> **Evidence:** See Session #272 self-audit output. Example: `firecrawl` FAIL
+> ("No extraction journal entries", only analysis.json present) vs.
+> `codecrafters-io-build-your-own-x` PASS (10 checks, 12 journal entries, full
+> artifact set). Both tagged `depth: "quick"` in analysis.json.
 
-Create `.research/analysis/_quick-scan-upgrade.md` with all 22 repos ranked by
-synthesis relevance:
+### Step 8.5 (NEW): Fix mislabeled depth field + audit migrate-v3.js
+
+**Added Session #272 per pre-Wave-4 audit.**
+
+Before Wave 4 Step 10 begins:
+
+1. **Fix 10 mislabeled repos** — update `analysis.json::depth` from `"quick"` to
+   `"standard"` for the 10 repos listed above. These already have full Standard
+   artifact sets; only the metadata field is wrong.
+
+2. **Also fix `research-index.jsonl`** — check and correct depth values for the
+   same 10 repos (same migrate-v3.js bug likely affected both files).
+
+3. **Root-cause `scripts/cas/migrate-v3.js`** — read the migration script to
+   understand why it stamped `depth: "quick"` across repos with Standard
+   artifacts. The bug is likely in how it normalized the legacy `depth` /
+   `scan_depth` fields during the v3.0 schema change. Fix or document.
+
+4. **Re-run self-audit** for all 10 mislabeled to verify the fix:
+   ```bash
+   for slug in aws-media-extraction bedrock-summarize-audio-video-text bulk-transcribe-youtube-playlist codecrafters-io-build-your-own-x hkuds-cli-anything karpathy-autoresearch public-apis_public-apis teng-lin_notebooklm-py viktoraxelsen-memskill youtube-transcript-api; do
+     node scripts/cas/self-audit.js --slug=$slug
+   done
+   ```
+
+**Done when:** All 10 mislabeled repos report `depth: "standard"` in
+analysis.json and research-index.jsonl, self-audit passes for all 10, and
+migrate-v3.js bug is either fixed or documented as a known limitation.
+
+**Depends on:** None (can run immediately)
+
+**Also during pre-Wave-4 audit (Session #272):**
+
+- Confirmed journal ↔ EXTRACTIONS.md consistency: ✅ 196 entries / 23 sources
+  both sides
+- Confirmed 11 "missing from extractions" repos are the 11 TRUE quick scans
+  (plus lux-video-downloader makes 12 once the true-quick list is corrected)
+- NO bulk-scan pipeline tail bug — the missing extractions are legitimate (Quick
+  Scans don't produce candidates)
+
+---
+
+### Step 9: Prioritize and create upgrade checklist (REVISED)
+
+Create `.research/analysis/_quick-scan-upgrade.md` with all **12** TRUE quick
+scans ranked by synthesis relevance:
 
 **Priority criteria:**
 
@@ -414,39 +481,66 @@ synthesis relevance:
 - Star count / quality score from Quick Scan
 - Source diversity (prioritize repos that cover gap domains)
 
-List all 22 with: repo URL, current tags, priority rank (1-22), estimated
+List all 12 with: repo URL, current tags, priority rank (1-12), estimated
 synthesis value.
 
-**Done when:** Checklist created with all 22 repos prioritized.
+> **Note (Session #272):** Initial checklist was created with 22 repos. It was
+> revised down to 12 after the Step 8.5 mislabel discovery. The 10 mislabeled
+> repos are already at Standard depth (real artifacts exist) — they only needed
+> the metadata patch, not re-analysis.
 
-**Depends on:** None (can start immediately)
+**Done when:** Checklist created with all 12 TRUE quick-scan repos prioritized.
+
+**Depends on:** Step 8.5 (depth corrections must be in place first)
 
 ---
 
-### Step 10: Batch upgrade all 22 quick-scan repos to Standard
+### Step 10: Batch upgrade 12 TRUE quick-scan repos to Standard (REVISED)
 
-Execute `/analyze <url> --depth=standard` for each of the 22 repos, in priority
-order. Batch optimizations:
+Execute `/analyze <url> --depth=standard` for each of the **12** TRUE quick-scan
+repos, in priority order. Batch optimizations:
 
 1. **Skip interactive gate** — depth pre-set to standard
 2. **Tags already exist** — present existing tags for confirmation,
    batch-approve
 3. **Batch retro at end** — skip per-repo retro, do one batch retro covering all
-   22 at session end
+   12 at session end
 4. **Single index rebuild** — run `node scripts/cas/rebuild-index.js` once after
-   all 22 complete (not per-repo)
+   all 12 complete (not per-repo)
 5. **Single EXTRACTIONS.md regeneration** — run
    `node scripts/cas/generate-extractions-md.js` once at end
 
-**Time estimate:** ~5-8 min per repo × 22 repos = ~2-3 hours. Single session.
+**Time estimate (revised):** ~6-10 min per repo × 12 repos = **~1.5-2 hours**
+(single session feasible, but firecrawl alone may consume significant context
+due to monorepo scale — 1162 files, 13 sub-apps).
 
-**Done when:** All 22 repos have full Standard artifact sets (analysis.json,
-creator-view.md, value-map.json, findings.jsonl, summary.md, deep-read.md,
-content-eval.jsonl, coverage-audit.jsonl). Self-audit passes for all 22:
+> **Session #272 pilot attempt:** Firecrawl was chosen as the pilot (Wave 4A
+> #1). After clone (1162 files) it was clear that full-fidelity Standard on
+> firecrawl alone would consume substantial context due to monorepo structure
+>
+> - repomix output size. Pilot paused and deferred to next session. Firecrawl
+>   clone is at `/tmp/repo-analysis-firecrawl/` if resuming. State file:
+>   `.claude/state/repo-analysis.firecrawl.state.json`.
+
+**Pragmatic deviations to consider for large repos (per-repo judgment):**
+
+- **Skip repomix for Wave 4 batch** — repomix is "required for Extract routing"
+  per skill docs. Wave 4 is not extracting, only upgrading depth for
+  /synthesize. Can be regenerated later if Extract is needed.
+- **Inline dimension wave instead of 4-agent spawn** — avoids the Windows 0-byte
+  agent output bug, more deterministic, less context per repo. Trade: less
+  exhaustive dimension coverage.
+
+Document any deviations taken per-repo in the repo's state file.
+
+**Done when:** All 12 TRUE quick-scan repos have full Standard artifact sets
+(analysis.json, creator-view.md, value-map.json, findings.jsonl, summary.md,
+deep-read.md, content-eval.jsonl, coverage-audit.jsonl). Self-audit passes for
+all 12:
 `for d in .research/analysis/*/; do node scripts/cas/self-audit.js --slug=$(basename $d); done`
 
-**Depends on:** Step 9 (priority list), Step 1 (source_tier in schema), Step 3
-(updated gate messaging)
+**Depends on:** Step 8.5 (depth corrections), Step 9 (priority list), Step 1
+(source_tier in schema), Step 3 (updated gate messaging)
 
 ---
 

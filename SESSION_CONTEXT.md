@@ -2,7 +2,7 @@
 
 **Document Version**: 8.24 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-10 (Session #271)
+2026-04-10 (Session #272)
 
 ## Purpose
 
@@ -39,7 +39,7 @@ old synthesis skills deprecated). Pre-flight cleanup addressed 7 triage items.
 
 ## Session Tracking
 
-**Current Session Count**: 271 (since Jan 1, 2026)
+**Current Session Count**: 272 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,6 +48,61 @@ old synthesis skills deprecated). Pre-flight cleanup addressed 7 triage items.
 ---
 
 ## Recent Session Summaries
+
+**Session #272** (T29 WAVE 3 STEPS 7-8 + DEBT CLEANUP + WAVE 4 SCOPE
+CORRECTION):
+
+- **Branch**: `planning-4826`
+- **Cross-locale sync**: Work locale arrival, pulled from remote (14 commits
+  planning-4826 + 15 commits main fast-forwarded). 4 stashes cleared. 12 dirty
+  hook-state files discarded per "remote is canon".
+- **Todo additions**: T31 (hook state file tracking redesign — cross-locale
+  design issue, Category A telemetry vs Category B learning), T32 (/todo skill
+  invocation schema drift discovered during /todo add).
+- **T29 Wave 3 Steps 7-8** — 8 files updated: repo-analysis SKILL+REFERENCE (5+3
+  refs), website-analysis SKILL+REFERENCE (4+1 refs), analyze/SKILL.md Synthesis
+  Mode rewrite, analyze/REFERENCE.md §2.3+§3.1 rewrite, shared/CONVENTIONS.md
+  family list + line 115 + **new §17 Synthesis Output Contract added**,
+  CLAUDE.md line 215 trigger table row. DOCUMENTATION_INDEX.md regenerated.
+  patterns:check passed. No remaining /repo-synthesis or /website-synthesis refs
+  outside intentional deprecation stubs, version history, migration notes,
+  session history.
+- **Debt cleanup (3 items)**: (1) Deleted
+  `.claude/skills/schemas/synthesis-schema.ts` + updated validate-artifact.ts to
+  drop synthesis branch (analysis/findings validators intact). (2) Fixed
+  research-index.jsonl depth field for karpathy-autoresearch and
+  codecrafters-io-build-your-own-x (`deep`→`quick`) + output_dir paths corrected
+  from `.research/repo-analysis/` to `.research/analysis/`. (3) Deleted 4 stale
+  backup files in repo-analysis/ and website-analysis/ dirs.
+- **🔥 Wave 4 scope correction (major)**: Pre-Wave-4 audit ran
+  `node scripts/cas/self-audit.js` on sample repos and discovered that
+  `scripts/cas/migrate-v3.js` (Session #270 v3.0 migration) stamped
+  `depth: "quick"` on repos that actually have full Standard artifact sets.
+  **Real Wave 4 scope is 12 TRUE quick-scan repos, not 22.** The other 10 are
+  mislabeled — they have findings/summary/deep-read/content-eval/coverage-audit/
+  creator-view/value-map/journal-entries but their depth field is wrong. Plan
+  updated with new Step 8.5 (metadata patches + migrate-v3.js root-cause fix)
+  before revised Step 9 (12 repos, not 22) and Step 10 (~1.5-2h, not 2-3h).
+- **Extractions audit**: journal ↔ EXTRACTIONS.md consistent (196 entries / 23
+  sources both sides, matching counts). 11 of the 22 "quick" repos were missing
+  from extractions — turned out 11 of those 12 TRUE quicks have zero journal
+  entries (legitimate — quick scans don't produce candidates).
+- **Firecrawl pilot (paused)**: Attempted Wave 4A #1 pilot on firecrawl for
+  full-fidelity Standard run. Completed VALIDATE, Phase 0 Quick Scan API batch,
+  Phase 1 clone (1162 files, monorepo with 13 sub-apps: api/ui/playwright/redis/
+  postgres/test-suite + 7 SDKs in TS/JS/Python/Rust/Go/Java/Elixir). AGPL-3.0
+  license, 106,772 stars, 68.2% TypeScript. Paused before repomix to re-audit
+  Wave 4 scope. State saved at
+  `.claude/state/repo-analysis.firecrawl.state.json` with resume instructions.
+  Clone still on disk at `/tmp/repo-analysis-firecrawl/`.
+- **Session-begin triage**: Fixed `npm ci` + `npm run test:build` failures from
+  SessionStart hook. Acked 2 hook warnings (propagation-staged + trigger) and
+  synced lastCleared. 10 pre-flight scripts ran.
+- **WHERE TO RESUME**: Execute Wave 4 Step 8.5 (metadata patches for 10
+  mislabeled repos + audit migrate-v3.js), then revised Step 9 checklist (12
+  TRUE quicks), then Step 10 (per-repo Standard runs — consider pragmatic
+  deviations like skip repomix / inline dimension wave for very large repos like
+  firecrawl).
 
 **Session #271** (T29 WAVES 1-2 + WAVE 3 PARTIAL — /synthesize LIVE):
 
@@ -133,19 +188,19 @@ old synthesis skills deprecated). Pre-flight cleanup addressed 7 triage items.
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                          |
-| ---------------------------------- | ------------- | ----------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.             |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.            |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more. |
-| **T28 Content Analysis System**    | E2E DONE      | 34 sources, 4 types, 6 scripts, self-audit. T29 (synthesis) next. |
-| **T29 Synthesis Consolidation**    | W1-W2 DONE    | /synthesize live. Wave 3 Steps 7-8 + Waves 4-5 remaining.         |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).           |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                 |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                   |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.              |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                            |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.            |
+| Item                               | Status        | Progress                                                                                |
+| ---------------------------------- | ------------- | --------------------------------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                   |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                  |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.                       |
+| **T28 Content Analysis System**    | E2E DONE      | 34 sources, 4 types, 6 scripts, self-audit. T29 (synthesis) next.                       |
+| **T29 Synthesis Consolidation**    | W1-W3 DONE    | /synthesize live + refs updated + §17 added. Wave 4 scope: **12 TRUE quicks** (not 22). |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                                 |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                       |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                         |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                    |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                  |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                  |
 
 **Current Branch**: `planning-4826`
 
@@ -166,26 +221,36 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **T29 Wave 3 Steps 7-8** — 14 upstream reference updates (analyze,
-   repo-analysis, website-analysis, document-analysis, media-analysis SKILL +
-   REFERENCE files, CONVENTIONS.md skill family list + new Section 17 "Synthesis
-   Output Contract", CLAUDE.md Section 7 trigger table, DOCUMENTATION_INDEX.md,
-   schemas/synthesis-schema.ts removal). Delete `.claude/skills/repo-synthesis/`
-   and `website-synthesis/` dirs after one-session overlap.
-2. **T29 Wave 4** — 22 quick-scan repos to Standard depth (~2-3h single session,
-   interactive per-repo). Plan §Wave 4 at
-   `.planning/synthesis-consolidation/PLAN.md`.
+1. **T29 Wave 4 Step 8.5 (NEW)** — Fix 10 mislabeled repos (depth field
+   `quick`→`standard` in analysis.json + research-index.jsonl) and audit
+   `scripts/cas/migrate-v3.js` for the root-cause bug. Repos:
+   aws-media-extraction, bedrock-summarize-audio-video-text,
+   bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
+   hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
+   teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api.
+2. **T29 Wave 4 Step 10 (REVISED)** — 12 TRUE quick-scan repos to Standard depth
+   (~1.5-2h single session). Firecrawl pilot is partially done (Phase 0
+   - Phase 1 clone complete), paused state at
+     `.claude/state/repo-analysis.firecrawl.state.json`. Remaining 11:
+     ArchiveBox, crawl4ai, lux-video-downloader, marker, MinerU, nitter,
+     outline, qmd, reader, surya, tesseract. Consider pragmatic deviations for
+     large repos (skip repomix if not extracting, inline dimension wave instead
+     of agent spawn).
 3. **T29 Wave 5** — E2E testing of `/synthesize` + 10-dim self-audit +
    code-reviewer pass. Depends on Wave 4 data.
 4. **Test `/recall`** — SQLite FTS5 query interface never tested with live data.
-5. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
-6. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-7. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-8. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
-9. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
-10. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
+5. **T31 — hook state file tracking redesign** — Category A telemetry vs
+   Category B learning, cross-locale sync destroys Cat B signal daily.
+   Investigate gitignore / per-locale subdirs / merge-friendly formats /
+   session-end reliability.
+6. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
+7. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+8. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
+9. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
+10. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+11. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
     detector scope (blocks clean push without SKIP_CC).
-11. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
+12. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
     file WARNs (fails main CI).
 
 ### After Debt-Runner

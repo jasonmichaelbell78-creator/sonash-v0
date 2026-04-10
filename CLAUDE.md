@@ -193,29 +193,29 @@ Interactive tools (suggest to user when appropriate): `lazygit`, `yazi`, `fzf`.
 
 ### PRE-TASK (before starting work) `[BEHAVIORAL: no automated enforcement]`
 
-| Trigger                         | Action                                                                                    | Tool  |
-| ------------------------------- | ----------------------------------------------------------------------------------------- | ----- |
-| Building/improving anything     | Scan `.research/EXTRACTIONS.md` for prior art, query `extraction-journal.jsonl` to filter | Read  |
-| Creative exploration, ideation  | `brainstorm` skill                                                                        | Skill |
-| Thorough planning requested     | `deep-plan` skill                                                                         | Skill |
-| Domain/technology research      | `deep-research` skill                                                                     | Skill |
-| Bug/error/unexpected behavior   | `systematic-debugging`                                                                    | Skill |
-| Exploring unfamiliar code       | `Explore` agent                                                                           | Task  |
-| Multi-step implementation       | `Plan` agent                                                                              | Task  |
-| Multi-file feature (3+ files)   | Development team                                                                          | Team  |
-| Multi-phase project             | `/gsd:new-project` or `/gsd:plan-phase`                                                   | Skill |
-| Security/auth (no S0/S1)        | `security-auditor` agent                                                                  | Task  |
-| New documentation               | `documentation-expert` agent                                                              | Task  |
-| React/frontend component work   | `frontend-developer` agent                                                                | Task  |
-| UI/frontend design              | `frontend-design` skill                                                                   | Skill |
-| New UI feature                  | Generate `.protocol.json`                                                                 | Write |
-| Analyze any source              | `analyze` skill (router — detects type, dispatches to handler)                            | Skill |
-| Query extracted knowledge       | `recall` skill (search extractions, tags, sources)                                        | Skill |
-| External repo analysis          | `repo-analysis` skill (also via `/analyze`)                                               | Skill |
-| Cross-repo synthesis (3+ repos) | `repo-synthesis` skill (also via `/analyze --synthesize`)                                 | Skill |
-| Website/URL analysis            | `website-analysis` skill (also via `/analyze`)                                            | Skill |
-| Document analysis (PDF, gist)   | `document-analysis` skill (also via `/analyze`)                                           | Skill |
-| Media analysis (video, audio)   | `media-analysis` skill (also via `/analyze`)                                              | Skill |
+| Trigger                             | Action                                                                                    | Tool  |
+| ----------------------------------- | ----------------------------------------------------------------------------------------- | ----- |
+| Building/improving anything         | Scan `.research/EXTRACTIONS.md` for prior art, query `extraction-journal.jsonl` to filter | Read  |
+| Creative exploration, ideation      | `brainstorm` skill                                                                        | Skill |
+| Thorough planning requested         | `deep-plan` skill                                                                         | Skill |
+| Domain/technology research          | `deep-research` skill                                                                     | Skill |
+| Bug/error/unexpected behavior       | `systematic-debugging`                                                                    | Skill |
+| Exploring unfamiliar code           | `Explore` agent                                                                           | Task  |
+| Multi-step implementation           | `Plan` agent                                                                              | Task  |
+| Multi-file feature (3+ files)       | Development team                                                                          | Team  |
+| Multi-phase project                 | `/gsd:new-project` or `/gsd:plan-phase`                                                   | Skill |
+| Security/auth (no S0/S1)            | `security-auditor` agent                                                                  | Task  |
+| New documentation                   | `documentation-expert` agent                                                              | Task  |
+| React/frontend component work       | `frontend-developer` agent                                                                | Task  |
+| UI/frontend design                  | `frontend-design` skill                                                                   | Skill |
+| New UI feature                      | Generate `.protocol.json`                                                                 | Write |
+| Analyze any source                  | `analyze` skill (router — detects type, dispatches to handler)                            | Skill |
+| Query extracted knowledge           | `recall` skill (search extractions, tags, sources)                                        | Skill |
+| External repo analysis              | `repo-analysis` skill (also via `/analyze`)                                               | Skill |
+| Cross-source synthesis (3+ sources) | `synthesize` skill (unified — all 4 source types, also via `/analyze --synthesize`)       | Skill |
+| Website/URL analysis                | `website-analysis` skill (also via `/analyze`)                                            | Skill |
+| Document analysis (PDF, gist)       | `document-analysis` skill (also via `/analyze`)                                           | Skill |
+| Media analysis (video, audio)       | `media-analysis` skill (also via `/analyze`)                                              | Skill |
 
 ### POST-TASK (before committing) `[GATE: pre-commit hook + code-reviewer]`
 

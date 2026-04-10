@@ -5,7 +5,9 @@
  * Usage:
  *   npx tsx validate-artifact.ts --type=analysis --path=<file>
  *   npx tsx validate-artifact.ts --type=findings --path=<file>
- *   npx tsx validate-artifact.ts --type=synthesis --path=<file>
+ *
+ * For synthesis validation, use scripts/lib/analysis-schema.js::validate(record, 'synthesis')
+ * — the canonical synthesisRecord schema lives there (T29, D#28).
  *
  * Exit codes:
  *   0 = valid
@@ -15,19 +17,16 @@
 import { readFileSync } from "fs";
 import { analysisSchema } from "./analysis-schema.js";
 import { findingSchema } from "./findings-schema.js";
-import { synthesisSchema } from "./synthesis-schema.js";
 import { sanitizeError } from "../../../scripts/lib/sanitize-error.js";
 
-const VALID_TYPES = ["analysis", "findings", "synthesis"] as const;
+const VALID_TYPES = ["analysis", "findings"] as const;
 
 const args = process.argv.slice(2);
 const typeArg = args.find((a) => a.startsWith("--type="));
 const pathArg = args.find((a) => a.startsWith("--path="));
 
 if (!typeArg || !pathArg) {
-  console.error(
-    "Usage: npx tsx validate-artifact.ts --type=<analysis|findings|synthesis> --path=<file>"
-  );
+  console.error("Usage: npx tsx validate-artifact.ts --type=<analysis|findings> --path=<file>");
   process.exit(1);
 }
 
@@ -63,28 +62,14 @@ try {
     }
     console.log(`findings: ${lines.length} entries validated.`);
   } else {
-    // JSON: validate single object
+    // JSON: validate single object (type === "analysis")
     const parsed = JSON.parse(raw);
-    const schema = type === "analysis" ? analysisSchema : synthesisSchema;
-
-    // Legacy detection: no schema_version field
-    const isLegacy = type === "synthesis" && !parsed.schema_version && parsed.version;
-
-    if (isLegacy) {
-      console.warn(
-        `WARNING: Legacy artifact (uses "version" instead of "schema_version"). Accepted with warning.`
-      );
-      // Remap for validation
-      parsed.schema_version = parsed.version;
-      delete parsed.version;
-    }
-
-    const result = schema.safeParse(parsed);
+    const result = analysisSchema.safeParse(parsed);
     if (!result.success) {
       console.error(`Validation failed:\n${JSON.stringify(result.error.issues, null, 2)}`);
-      process.exit(isLegacy ? 2 : 1); // Legacy = warning only (exit 2 per docs)
+      process.exit(1);
     }
-    console.log(`${type}: validated successfully.${isLegacy ? " (legacy mode)" : ""}`);
+    console.log(`${type}: validated successfully.`);
   }
 } catch (err) {
   const message = sanitizeError(err);

@@ -52,9 +52,9 @@ fitness. Both views are always produced; Creator View comes first.
 - User needs a structured health report for a dependency decision
 - Triage of multiple candidate repos (Quick Scan each)
 
-**When NOT to Use:** Cross-repo synthesis -> `/repo-synthesis` | Home repo audit
--> `/audit-comprehensive` | Domain/technology research -> `/deep-research` |
-Quick dependency check -> `gh api` directly.
+**When NOT to Use:** Cross-repo synthesis -> `/synthesize` | Home repo audit ->
+`/audit-comprehensive` | Domain/technology research -> `/deep-research` | Quick
+dependency check -> `gh api` directly.
 
 > See [REFERENCE.md](./REFERENCE.md) for dimension catalog, tool stack, output
 > schemas, absence patterns, Creator View specification, and guard rails.
@@ -388,8 +388,8 @@ value-map.json. For each connection to another analyzed repo, record:
 }
 ```
 
-These connections feed `/repo-synthesis`. Flag connection points even if the
-target repo hasn't been analyzed yet — they become leads for future analysis.
+These connections feed `/synthesize`. Flag connection points even if the target
+repo hasn't been analyzed yet — they become leads for future analysis.
 
 ## Tag Suggestion (Phase 6c — MUST for Standard/Deep)
 
@@ -456,7 +456,7 @@ and re-verify.
 
 **If user selects Skip:** Record skipped items in `coverage-audit.jsonl` for
 future reference. Do not silently discard — the record ensures the next run or
-`/repo-synthesis` knows what was deferred.
+`/synthesize` knows what was deferred.
 
 ## Cross-Repo Extraction Tracking (MUST for Standard/Deep)
 
@@ -530,7 +530,7 @@ Presented after Standard or Deep. 8 options:
 | **5. Adoption verdict**     | Full WR-01 through WR-06 assessment.             |
 | **6. Explore insights**     | Deeper conversation about Creator View findings. |
 | **7. Done**                 | Cleanup, confirm artifacts, track invocation.    |
-| **8. Cross-repo synthesis** | If 3+ repos analyzed, offer /repo-synthesis.     |
+| **8. Cross-repo synthesis** | If 3+ repos analyzed, offer /synthesize.         |
 
 ---
 
@@ -550,7 +550,7 @@ phase-level resume.
 ## Integration
 
 - **Upstream:** `/deep-research`, `/brainstorm`
-- **Downstream:** `/deep-plan`, `/repo-synthesis`, TDMS, project memory
+- **Downstream:** `/deep-plan`, `/synthesize`, TDMS, project memory
 - **Neighbors:** `/audit-comprehensive` (home repo), dimension agents
 - **References:** [REFERENCE.md](./REFERENCE.md),
   [BRAINSTORM.md](../../.research/archive/repo-analysis-knowledge/BRAINSTORM.md)
