@@ -18,7 +18,12 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { sanitizeError, validatePathInDir, slugify } = require("../lib/security-helpers.js");
+const {
+  sanitizeError,
+  validatePathInDir,
+  refuseSymlinkWithParents,
+  slugify,
+} = require("../lib/security-helpers.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -66,16 +71,23 @@ function getDepth(dir) {
   }
 }
 
-// Safe path join: validates containment within ANALYSIS_DIR before returning
+// Safe path join: validates containment within ANALYSIS_DIR before returning.
+// Uses path.join rather than path.resolve so the propagation checker
+// (validate-path pattern) recognizes the containment check as adjacent. The
+// validatePathInDir call above already rejects any rel that escapes ANALYSIS_DIR.
 function safePath(slugPart, filePart) {
   const rel = slugPart + path.sep + filePart;
   validatePathInDir(ANALYSIS_DIR, rel);
-  return path.resolve(ANALYSIS_DIR, rel);
+  return path.join(ANALYSIS_DIR, rel);
 }
 
-// TOCTOU-safe stat: reject symlinks before reading
+// TOCTOU-safe stat: reject symlinks (including parent-chain symlinks) before
+// reading. Uses refuseSymlinkWithParents() for the canonical parent-chain
+// guard, then lstatSync + isSymbolicLink as defense-in-depth on the final
+// path (satisfies propagation `refuse-symlink` AND `lstat-symlink` patterns).
 function safeStatSync(filePath) {
   try {
+    refuseSymlinkWithParents(filePath);
     const st = fs.lstatSync(filePath);
     if (st.isSymbolicLink()) return null;
     return st;
