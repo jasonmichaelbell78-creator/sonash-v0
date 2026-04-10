@@ -584,6 +584,126 @@ all 12:
 
 ---
 
+### Step 10.5 (NEW): Full-corpus audit — content, schema, conventions, extractions
+
+**Added Session #273 per user instruction.** Gates Wave 5.
+
+Once Step 10 completes (all 12 TRUE quicks upgraded to Standard), run a
+comprehensive per-source audit across the ENTIRE `.research/analysis/` corpus —
+not just Wave 4's 12 repos. This is the same class of check Session #273
+produced for firecrawl: schema validation, convention compliance, content
+quality, **and — most importantly — extraction completeness** (candidates
+present in `.research/extraction-journal.jsonl` AND `.research/EXTRACTIONS.md`).
+
+**Scope — every source in `.research/analysis/`:**
+
+- 12 Wave 4 upgrades from Step 10 (firecrawl, MinerU, crawl4ai, marker, surya,
+  reader, tesseract, ArchiveBox, outline, qmd, nitter, lux-video-downloader)
+- 9 Step 8.5 backfilled repos (bedrock-summarize-audio-video-text,
+  bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
+  hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
+  teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api)
+- Previously-Standard repos (safishamsi-graphify, docling, unstructured,
+  aws-media-extraction — note excluded-from-Wave-4 anomaly)
+- Gists (farzaa-gist-c35ac0cf, karpathy-gist-442a6bf,
+  kieranklaassen-gist-4f2aba89, maharshi-pandya-gist-4aeccbe1)
+- Document sources (errors-and-vulnerabilities-in-ai-generated-code)
+- Website sources (docs-composio-dev,
+  sidbharath-com-blog-claude-code-the-complete-guide, and 4 others)
+- Media sources (2 YouTube analyses)
+
+**Per-source checks (same format used for firecrawl in Session #273):**
+
+1. **Schema** — analysis.json validates against `analysisRecordCore` Zod (run
+   via `scripts/cas/self-audit.js --slug=<slug>`)
+2. **MUST artifacts per CONVENTIONS.md §13.1:**
+   - analysis.json (all depths)
+   - value-map.json (Standard/Deep)
+   - creator-view.md (Standard/Deep, 6 sections, conversational prose)
+   - **Extraction entries in `.research/extraction-journal.jsonl`**
+     (Standard/Deep, MUST)
+3. **SHOULD artifacts per §13.2:**
+   - findings.jsonl, summary.md, deep-read.md, content-eval.jsonl,
+     coverage-audit.jsonl
+4. **Handler-specific artifacts per §13.3** (repomix-output.txt for repo,
+   meta.json for website, transcript.md for media + `transcript_source` field)
+5. **Content quality:**
+   - Creator View references specific Deep Read / Content Eval items per Rule #9
+     (not just category-level observations)
+   - Creator View written in conversational prose per Rule #10
+   - Home-repo references in Creator View Section 2 verified against filesystem
+     (Rule #4 Self-verify SHOULD)
+6. **Extraction completeness (THE MOST IMPORTANT CHECK):**
+   - `grep -c "source.*<repo-slug-or-name>" .research/extraction-journal.jsonl`
+     MUST be > 0 for any Standard/Deep source that has candidates in its
+     value-map.json
+   - `.research/EXTRACTIONS.md` MUST contain a section for the source
+   - value-map.json candidate count MUST match journal entry count (excluding
+     skipped dispositions)
+   - Per-candidate schema — each journal entry has all required fields
+     (schema_version, source_type, source, candidate, type, decision,
+     decision_date, novelty, effort, relevance, tags)
+7. **Cross-file consistency:**
+   - `research-index.jsonl` entry matches analysis.json depth
+   - Tags are consistent across analysis.json, value-map.json, journal entries
+   - `last_synthesized_at` field correctly null or dated
+8. **Re-analysis signals** — `trends.jsonl` present if prior analysis exists for
+   the source
+
+**Deliverables:**
+
+- `.research/analysis/_audit-report.md` — per-source pass/fail matrix with
+  specific issues flagged
+- `.research/analysis/_audit-fixes.md` — proposed remediation for each failing
+  source, categorized by: (a) metadata patches (like Step 8.5 depth fix), (b)
+  missing extraction journal entries (the most critical class — backfill from
+  value-map.json), (c) missing artifacts (re-run or manually produce), (d)
+  content quality deficiencies (re-write), (e) schema drift (migration script
+  needed)
+- User review of the proposed fixes — interactive triage, not auto-apply
+- Remediation execution after user approval
+
+**Inspiration and precedent — Session #273 firecrawl evaluation:**
+
+Session #273 built firecrawl's Standard artifacts manually (bypassing the skill
+— see `feedback_skills_in_plans_are_tool_calls` memory). The resulting artifacts
+were then audited against content / schema / convention. Self-audit surfaced a
+single FAIL: **"No extraction journal entries for source:
+mendableai/firecrawl"**. That one failure validated the user's strongest framing
+(per `feedback_extractions_are_canon` memory): _"THE EXTRACTIONS ARE THE DATA.
+This whole process is random data without those pointing towards it."_ The
+per-source audit methodology in Step 10.5 is the same check, applied to the
+whole corpus.
+
+**Why this step exists:**
+
+The Session #273 Step 8.5 audit found 9 repos with silently-wrong depth metadata
+AND empty candidate arrays. The v2→v3 migration had a double-drift bug. Without
+a full-corpus audit, similar drift may be hiding across ALL analyses — not just
+Wave 4 scope. Before Wave 5 synthesis runs, every source has to be
+verified-correct or synthesis will pull from broken data.
+
+**Done when:**
+
+1. `.research/analysis/_audit-report.md` exists covering every source in
+   `.research/analysis/`
+2. `.research/analysis/_audit-fixes.md` exists with categorized remediation
+   proposals
+3. User has reviewed the fixes and approved a remediation order
+4. All approved fixes applied (commits may be per-category or consolidated)
+5. Re-audit sweep shows PASS for every source (no silent "depth = quick but has
+   Standard artifacts" drift, no "value-map has candidates but journal has none"
+   drift, no missing MUST artifacts)
+
+**Depends on:** Step 10 (so Wave 4 data is included in the audit scope). Does
+NOT depend on Step 9 separately.
+
+**Gates:** Wave 5 (Step 11 onward). `/synthesize` MUST NOT run against a corpus
+with unresolved audit findings — doing so would feed synthesis bad data and
+re-create the class of bug Session #272-273 just fixed.
+
+---
+
 ## Wave 5: Testing & Verification (depends on all previous waves)
 
 ### Step 11: End-to-end test — full synthesis

@@ -1,38 +1,10 @@
 {
-  "id": "94233fed-9189-49ff-89d5-d5cd1625de2d",
-  "schema_version": "3.0",
-  "source_type": "repo",
   "source": "mendableai/firecrawl",
   "slug": "firecrawl",
-  "title": "firecrawl",
-  "analyzed_at": "2026-04-09T10:47:45.039Z",
+  "analyzed_at": "2026-04-10",
+  "session": 273,
   "depth": "standard",
-  "tags": [
-    "repo",
-    "framework",
-    "firecrawl",
-    "typescript",
-    "ai",
-    "ai-agents",
-    "ai-crawler",
-    "crawler",
-    "data-extraction",
-    "web-scraping",
-    "llm-ready",
-    "architecture-pattern",
-    "test-infrastructure",
-    "commercial-oss"
-  ],
-  "scoring": {
-    "quality_band": "Excellent",
-    "quality_score": 87,
-    "personal_fit_band": "Healthy",
-    "personal_fit_score": 60,
-    "classification": "active-sprint"
-  },
-  "summary": "Firecrawl is a TypeScript monorepo web-data API (106K stars, AGPL-3.0, 13 sub-apps including 7 polyglot SDKs) organized around a pluggable scraping engine with fallback-list architecture (scrapeURL -> buildFallbackList -> scrapeURLWithEngine -> NoEnginesLeftError). Core value: the Search/Scrape/Crawl/Map/Interact/Agent taxonomy plus a 58-app examples cookbook pairing firecrawl with every major LLM. Key transferable patterns for SoNash: engine-fallback chain for website-analysis, capability-gated test pattern from CLAUDE.md, multi-agent openai_swarm reference. Documentation debt is the main cost (zero architecture prose docs, one mermaid diagram). Composite Healthy (75.5): test infra 85, reliability 78, architecture 75, docs 72, security 70, maintainability 68.",
-  "creator_view": "Firecrawl understands that web extraction for AI is fundamentally different from traditional scraping. Three novel paradigms: (1) Map — discover all URLs on a site instantly (URL routing/discovery), (2) Interact — scrape then interact with page via AI prompts before extracting (agent-like extraction), (3) Agent — 'describe what you need' fully autonomous data gathering. Also: batch scrape async, search+scrape combined, MCP integration. TypeScript, 105K stars, AGPL-3.0.",
-  "candidates": [
+  "pattern_candidates": [
     {
       "name": "scrapeURL engine-fallback chain",
       "type": "architecture-pattern",
@@ -77,7 +49,9 @@
       "effort": "E1",
       "relevance": "low",
       "tags": ["distributed-systems", "caching", "redis"]
-    },
+    }
+  ],
+  "knowledge_candidates": [
     {
       "name": "Multi-agent orchestration via openai_swarm",
       "type": "knowledge",
@@ -122,7 +96,9 @@
       "effort": "E0",
       "relevance": "medium",
       "tags": ["commercial-oss", "feature-tiering"]
-    },
+    }
+  ],
+  "content_candidates": [
     {
       "name": "scrapeURL engine-fallback README",
       "type": "content",
@@ -192,7 +168,9 @@
       "relevance": "medium",
       "tags": ["claude-md", "ai-instructions", "exemplar"],
       "url": "https://github.com/firecrawl/firecrawl/blob/main/CLAUDE.md"
-    },
+    }
+  ],
+  "anti_pattern_candidates": [
     {
       "name": "Zero architecture prose docs",
       "type": "anti-pattern",
@@ -230,77 +208,43 @@
       "tags": ["feature-flags", "env-branching", "anti-pattern"]
     }
   ],
-  "last_synthesized_at": null,
-  "schemaVersion": "4.3",
-  "skillVersion": "4.3",
-  "repo": "mendableai/firecrawl",
-  "url": "https://github.com/mendableai/firecrawl",
-  "analyzedAt": "2026-04-07T17:00:00Z",
-  "repoType": "framework",
-  "repoSubtype": "web-data-api-for-ai",
-  "metadata": {
-    "stars": 105407,
-    "forks": 6864,
-    "contributors": 140,
-    "language": "TypeScript",
-    "license": "AGPL-3.0",
-    "lastPush": "2026-04-07T15:29:40Z",
-    "size": 85570,
-    "openIssues": 256,
-    "archived": false,
-    "fork": false,
-    "topics": [
-      "ai",
-      "ai-agents",
-      "ai-crawler",
-      "crawler",
-      "data-extraction",
-      "html-to-markdown",
-      "llm",
-      "scraper",
-      "web-crawler",
-      "web-data-extraction"
-    ]
-  },
-  "summaryBands": {
-    "security": {
-      "band": "B",
-      "score": 72
+  "related_repos": [
+    {
+      "repo": "unclecode/crawl4ai",
+      "connection": "complementary",
+      "detail": "Python-side alternative to firecrawl's TS scraping. Wave 4 quick-scan #3. Worth comparing API design and engine abstraction approaches once crawl4ai is at Standard depth."
     },
-    "reliability": {
-      "band": "A",
-      "score": 94
+    {
+      "repo": "VikParuchuri/marker",
+      "connection": "shared-domain",
+      "detail": "PDF → Markdown pipeline. Firecrawl uses LlamaParse for PDFs; marker is an alternative engine. Wave 4 quick-scan #4."
     },
-    "maintainability": {
-      "band": "A",
-      "score": 85
+    {
+      "repo": "VikParuchuri/surya",
+      "connection": "shared-domain",
+      "detail": "OCR/layout companion to marker. Part of the same PDF-extraction pipeline family. Wave 4 quick-scan #5."
     },
-    "documentation": {
-      "band": "A",
-      "score": 90
-    },
-    "process": {
-      "band": "A",
-      "score": 88
-    },
-    "velocity": {
-      "band": "A",
-      "score": 95
+    {
+      "repo": "jina-ai/reader",
+      "connection": "complementary",
+      "detail": "LLM-first reader proxy. Alternative architecture for 'clean web data for LLMs'. Wave 4 quick-scan #6."
     }
-  },
-  "absencePattern": "none",
-  "creatorLens": "Firecrawl understands that web extraction for AI is fundamentally different from traditional scraping. Three novel paradigms: (1) Map — discover all URLs on a site instantly (URL routing/discovery), (2) Interact — scrape then interact with page via AI prompts before extracting (agent-like extraction), (3) Agent — 'describe what you need' fully autonomous data gathering. Also: batch scrape async, search+scrape combined, MCP integration. TypeScript, 105K stars, AGPL-3.0.",
-  "context": {
-    "t28Relevance": "Fills Gap Agent A Q2 (URL routing/discovery). Novel 'Interact' and 'Agent' paradigms blur extraction/analysis boundary. TypeScript. But AGPL-3.0.",
-    "cluster": "C",
-    "notablePatterns": [
-      "Map endpoint — URL discovery/classification for entire sites",
-      "Interact — scrape then AI-interact before extraction",
-      "Agent — describe-what-you-need autonomous extraction",
-      "Batch scrape with async orchestration",
-      "96% web coverage including JS-heavy pages",
-      "MCP client integration"
-    ]
-  },
-  "source_tier": "T1"
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "unclecode/crawl4ai",
+      "connection_type": "complementary",
+      "detail": "Both are 'make the web LLM-consumable' frameworks. Firecrawl is TypeScript-first with a commercial tier; crawl4ai is Python-first. Engine abstraction approaches may differ — worth comparing once crawl4ai is at Standard depth."
+    },
+    {
+      "target_repo": "VikParuchuri/marker",
+      "connection_type": "shared-pattern",
+      "detail": "Firecrawl uses LlamaParse for PDF→Markdown. Marker is an alternative extraction engine in the same domain. The PDF pipeline comparison is a Wave 5 synthesis theme."
+    },
+    {
+      "target_repo": "mendableai/firecrawl:examples/gemini-github-analyzer",
+      "connection_type": "referenced",
+      "detail": "Gemini-based GitHub repo analyzer inside this repo. Direct overlap with SoNash repo-analysis skill. Future investigation: compare extraction approaches and prompting."
+    }
+  ]
 }

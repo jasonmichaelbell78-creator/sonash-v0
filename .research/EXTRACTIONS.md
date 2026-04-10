@@ -2,8 +2,8 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 196 candidates **By decision:** defer: 173,
-extract: 20, skip: 1, investigate: 2
+**Schema version:** 2.0 | **Total:** 217 candidates **By decision:** defer: 194,
+investigate: 2, extract: 20, skip: 1
 
 ---
 
@@ -160,6 +160,32 @@ extract: 20, skip: 1, investigate: 2
 | Amazon Transcribe API reference                       | content      | defer    | 2026-04-07 | medium  | E0     | high      | -            | Handler demonstrates full async Transcribe lifecycle with speaker diarization.                                           |
 | AWS-coupled extraction anti-pattern                   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 5+ AWS service deps create vendor lock-in. Prefer local-first (Whisper, Tesseract, spaCy). Repo itself has commented-out |
 | Blocking poll anti-pattern                            | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | time.sleep(30) polling loop for Transcribe. Fine for CLI, must not copy into agent pipelines.                            |
+
+## mendableai/firecrawl (repo)
+
+| Candidate                                           | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
+| --------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| scrapeURL engine-fallback chain                     | architecture-pattern | defer    | 2026-04-10 | high    | E1     | high      | -            | Pluggable extraction engines coordinated by a fallback-list builder. buildFallbackList → scrapeURLWithEngine → (success?  |
+| Capability-gated test pattern                       | pattern              | defer    | 2026-04-10 | high    | E0     | high      | -            | Gate tests by runtime capability (env vars) not by CI fence. Same test file runs in all environments; gate decides wheth  |
+| Harness-as-boot-orchestrator                        | pattern              | defer    | 2026-04-10 | medium  | E1     | medium    | -            | Single harness.ts script owns service boot order (API + workers + emulator) before test runner. CLAUDE.md mandates it; n  |
+| Version-parallel controller trees                   | architecture-pattern | defer    | 2026-04-10 | low     | E1     | low       | -            | Parallel v0/v1/v2 controller directories with their own test fixtures. New features land on v2; v0 stays alive for compa  |
+| Redlock distributed cache serialization             | pattern              | defer    | 2026-04-10 | medium  | E1     | low       | -            | Use redlock.using([key], ttlMs, ...) to serialise cache updates across multiple pods. Prevents race conditions on shared  |
+| Multi-agent orchestration via openai_swarm          | knowledge            | defer    | 2026-04-10 | high    | E0     | high      | -            | Reference implementation of multi-agent coordination around a single scraping task. Worth reading to inform SoNash agent  |
+| Deep Research API usage pattern                     | knowledge            | defer    | 2026-04-10 | medium  | E0     | high      | -            | How firecrawl's Deep Research API is invoked in practice (apartment-finder example). Interactive preference gathering →   |
+| GitHub repo analysis via firecrawl Map API          | knowledge            | defer    | 2026-04-10 | medium  | E0     | high      | -            | examples/gemini-github-analyzer uses firecrawl's Map API to walk a GitHub repo. Direct domain overlap with SoNash's /rep  |
+| Docs-to-OpenAPI extraction                          | knowledge            | defer    | 2026-04-10 | medium  | E0     | high      | -            | examples/turning_docs_into_api_specs — convert a documentation site into an OpenAPI spec via scraping. Informs SoNash do  |
+| Commercial-OSS feature tiering via .env             | knowledge            | defer    | 2026-04-10 | low     | E0     | medium    | -            | Fire-engine is hosted-only; self-hosted users get documented limited CAPTCHA handling. Pattern: tier features by backing  |
+| scrapeURL engine-fallback README                    | content              | defer    | 2026-04-10 | high    | E0     | high      | -            | Mermaid signal flow diagram for the engine fallback chain. The whole extraction thesis in four nodes. Worth re-reading w  |
+| 58-example cookbook pattern                         | content              | defer    | 2026-04-10 | medium  | E1     | high      | -            | The examples/ directory as product-marketing-in-code. 58 self-contained apps, each pairing firecrawl with a specific LLM  |
+| openai_swarm_firecrawl example                      | content              | defer    | 2026-04-10 | high    | E0     | high      | -            | Concrete multi-agent coordination code. Direct reference for SoNash's agent team boundary design.                         |
+| gemini-github-analyzer example                      | content              | defer    | 2026-04-10 | medium  | E0     | high      | -            | Repo-walking via firecrawl Map API, same domain as SoNash repo-analysis.                                                  |
+| deep-research-apartment-finder example              | content              | defer    | 2026-04-10 | medium  | E0     | high      | -            | Deep Research API usage pattern from a Python CLI.                                                                        |
+| turning_docs_into_api_specs example                 | content              | defer    | 2026-04-10 | medium  | E0     | high      | -            | Docs-to-OpenAPI extraction pattern. Informs SoNash document-analysis.                                                     |
+| CLAUDE.md minimal-actionable exemplar               | content              | defer    | 2026-04-10 | medium  | E0     | medium    | -            | 19-line CLAUDE.md that beats most 200-line variants. Test-first, E2E preferred, capability-gating, harness usage. Worth   |
+| Zero architecture prose docs                        | anti-pattern         | defer    | 2026-04-10 | medium  | E0     | medium    | -            | 1162 files, one mermaid diagram, no docs/ directory. Queue layout, auth flow, service boundaries all have to be inferred  |
+| Two queue systems coexisting without migration plan | anti-pattern         | defer    | 2026-04-10 | low     | E0     | low       | -            | BullMQ (Redis) and nuq-postgres (custom Postgres queue) both active in services/. Rationale undocumented. Suggests in-pr  |
+| Hand-rolled polyglot SDK parity                     | anti-pattern         | defer    | 2026-04-10 | low     | E0     | low       | -            | Seven SDKs (JS, Python, Rust, Go, Java, Elixir, playwright-service) re-implement the wire contract manually. Parity enfo  |
+| Hidden feature flags via env vars                   | anti-pattern         | defer    | 2026-04-10 | low     | E0     | medium    | -            | Firecrawl branches behaviour through SELF*HOST.md env vars (USE_DB_AUTHENTICATION, PROXY_SERVER, SEARXNG*\*) with no docu |
 
 ## public-apis/public-apis (repo)
 

@@ -1,25 +1,24 @@
 {
   "warnings": [
     {
-      "hook": "pre-commit",
-      "type": "propagation-staged",
-      "severity": "warning",
-      "message": "WARN-severity propagation misses in staged files",
-      "action": "Review sibling files for same patterns",
-      "timestamp": "2026-04-10T01:21:03.123Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 1
-    },
-    {
       "hook": "pre-push",
       "type": "trigger",
       "severity": "warning",
       "message": "Skill/agent files modified",
       "action": "Validate",
-      "timestamp": "2026-04-10T03:00:52.349Z",
-      "occurrences": 2,
+      "timestamp": "2026-04-10T12:01:33.831Z",
+      "occurrences": 3,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
+      "type": "propagation-staged",
+      "severity": "error",
+      "message": "BLOCK-severity propagation misses in staged files",
+      "action": "Stage sibling files or fix the old pattern",
+      "timestamp": "2026-04-10T12:29:51.019Z",
+      "occurrences": 4,
       "occurrences_since_ack": 1
     }
-  ],
-  "lastCleared": "2026-04-10T10:55:42.417Z"
+  ]
 }
