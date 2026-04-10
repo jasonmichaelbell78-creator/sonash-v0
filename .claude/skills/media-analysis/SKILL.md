@@ -128,24 +128,39 @@ Fetch metadata without transcription:
 **Lightweight creator lens (MUST):** From description/title, write 2-3 sentences
 about what the content appears to cover.
 
-**Interactive gate with transcript options:**
+**Interactive gate with transcript options:** Quick Scan is a **preview**.
+Standard produces the full artifact set needed for `/synthesize` cross-source
+intelligence.
 
 If captions available:
 
 ```
 Quick Scan complete. [title] ([duration]). Captions available.
-Run Standard/Deep for full analysis? [y/N]
+
+Quick Scan is a preview — it confirms whether this video is worth your time.
+Standard analysis produces the full artifact set needed for /synthesize
+cross-source intelligence.
+
+Run Standard/Deep? [Y/n]
 ```
 
 If NO captions:
 
 ```
 Quick Scan complete. [title] ([duration]). No captions found.
+
+Quick Scan is a preview. Standard produces the full artifact set needed for
+/synthesize cross-source intelligence.
+
 Options:
   [T] Provide a transcript (paste or file path)
   [W] Use Whisper for transcription (requires faster-whisper)
-  [N] Skip — Quick Scan only
+  [N] Skip — Quick Scan only (preview, will not contribute to /synthesize)
 ```
+
+**source_tier:** Media spans `T1`-`T3`. Default `T2`; conference talks and
+interviews with named experts → `T1`; anonymous YouTube → `T3`. User can
+override during `/synthesize` pre-flight.
 
 ---
 

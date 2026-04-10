@@ -6,7 +6,7 @@
   "slug": "karpathy-autoresearch",
   "title": "karpathy-autoresearch",
   "analyzed_at": "2026-04-09T10:47:45.060Z",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "research-tool", "karpathy", "autoresearch", "python"],
   "scoring": {
     "quality_band": "Needs Work",
@@ -17,7 +17,116 @@
   },
   "summary": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop.  The program.",
   "creator_view": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop. The program.md is an entire research organization compressed into 114 lines.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "program.md Agent Instruction Pattern",
+      "type": "pattern",
+      "description": "114-line autonomous research protocol: setup, experiment loop, keep/discard, crash recovery, NEVER STOP, simplicity criterion. Compare against SKILL.md format.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Fixed-Budget Experimentation",
+      "type": "pattern",
+      "description": "Fixed 5-min time budget makes all experiments comparable. ~12/hour, ~100 overnight. Apply to any time-bounded agent work.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "3-File Architecture (Immutable/Editable/Instructions)",
+      "type": "pattern",
+      "description": "prepare.py (don't touch) + train.py (agent edits) + program.md (human edits). Clean editable-zone contract.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Autonomous Crash Recovery Protocol",
+      "type": "pattern",
+      "description": "Read stack trace, attempt fix, revert if unfixable. Simpler than checkpoint+resume for low-cost tasks.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Results TSV Logging Convention",
+      "type": "pattern",
+      "description": "commit/metric/memory/status/description. Already have JSONL equivalent. Low extraction value.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Simplicity Criterion for JASON-OS",
+      "type": "knowledge",
+      "description": "'Removing something and getting equal or better results is a great outcome.' Growth discipline for 72-skill ecosystem.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Protocol vs Workflow Design Space",
+      "type": "knowledge",
+      "description": "program.md (protocol: one agent, one metric, infinite loop) vs SKILL.md (workflow: multi-agent, multi-phase, convergence). When to use which?",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Autonomy Spectrum Design",
+      "type": "knowledge",
+      "description": "NEVER STOP (autoresearch) vs explicit approval gates (CLAUDE.md #2). JASON-OS needs: autonomous within phases, gated between phases.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "analysis.ipynb Results Methodology",
+      "type": "content",
+      "description": "Framework: load TSV, keep/discard rates, progress plot with running minimum, rank improvements by delta. Apply to review-metrics.jsonl, learning-routes.jsonl.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Hidden Multi-Agent Architecture",
+      "type": "content",
+      "description": ".gitignore: worktrees/ + queue/ + generated CLAUDE.md/AGENTS.md. Multi-agent infrastructure exists but isn't shared. Mirrors your worktree usage.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "No-License-on-Purpose Trap",
+      "type": "anti-pattern",
+      "description": "Karpathy can get away with no license. You can't. Always include LICENSE if publishing JASON-OS.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Single-Metric Optimization Trap",
+      "type": "anti-pattern",
+      "description": "val_bpb works because the problem has one metric. Don't flatten multi-objective problems into one number.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    }
+  ],
   "last_synthesized_at": null,
   "repo": "karpathy/autoresearch",
   "url": "https://github.com/karpathy/autoresearch",
@@ -165,5 +274,6 @@
     "type": "intentional-minimalism",
     "description": "Missing license, tests, CI, releases are intentional design choices. The repo is a research artifact, not a library."
   },
-  "creatorLens": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop. The program.md is an entire research organization compressed into 114 lines."
+  "creatorLens": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop. The program.md is an entire research organization compressed into 114 lines.",
+  "source_tier": "T1"
 }

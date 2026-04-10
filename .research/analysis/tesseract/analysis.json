@@ -69,5 +69,6 @@
   "context": {
     "t28Relevance": "Skip — foundational tool, not architectural reference",
     "cluster": "B"
-  }
+  },
+  "source_tier": "T1"
 }

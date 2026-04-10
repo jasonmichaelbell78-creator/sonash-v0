@@ -175,5 +175,6 @@
     "t28Relevance": "Covers web/URL extraction source type — gap in both unstructured and docling. But hosted service, not local tool. Pattern valuable, adoption risky (dormant, 7 contributors).",
     "cluster": "A",
     "analysisNumber": 3
-  }
+  },
+  "source_tier": "T1"
 }

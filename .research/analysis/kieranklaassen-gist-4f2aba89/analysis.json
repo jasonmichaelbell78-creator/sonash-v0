@@ -92,5 +92,6 @@
     "Subagents and teammates serve different coordination patterns",
     "Write is preferable to broadcast for team communication",
     "Six patterns cover most multi-agent coordination needs"
-  ]
+  ],
+  "source_tier": "T2"
 }

@@ -83,28 +83,29 @@ doesn't get control back, the index update must be run manually.
 
 ### Synthesis Mode (no input or --synthesize)
 
+Cross-source synthesis is handled by the unified `/synthesize` skill. The router
+delegates entirely — it does not perform synthesis logic itself.
+
 ```
-1. Count sources in .research/analysis/ by type
-2. If --type=repo: delegate to /repo-synthesis (mature, v1.3)
-3. If --type=website: delegate to /website-synthesis (mature, v1.1)
-4. If no --type flag (cross-type synthesis):
-   a. Read all analysis.json files from .research/analysis/
-   b. Check last_synthesized_at — identify new/changed sources
-   c. If no new sources: "Nothing new to synthesize."
-   d. Read previous SYNTHESIS.md (if exists)
-   e. Spawn parallel agents:
-      - Theme finder — cross-source patterns and recurring ideas
-      - Gap finder — what's missing, what contradicts
-   f. Produce updated SYNTHESIS.md at .research/analysis/SYNTHESIS.md
-   g. Update last_synthesized_at on all processed sources
-   h. Present synthesis results inline
-5. After synthesis: run node scripts/cas/rebuild-index.js to update
-   last_synthesized_at in the index
+1. Delegate to /synthesize, passing through any flags
+   (e.g., --type=<repo|website|document|media>, --scope=<tags>, --paradigm=<x>)
+2. /synthesize handles:
+   - Source inventory across all 4 types
+   - Tier weighting and pre-flight validation
+   - Paradigm selection (thematic, narrative, matrix, meta-pattern)
+   - Parallel agent dispatch (theme finder, gap finder, reading-chain builder,
+     opportunity router)
+   - 8-section output (themes, gaps, reading chain, mental model evolution,
+     fit portfolio, knowledge map, opportunity matrix, changes since previous)
+   - Index rebuild and last_synthesized_at bookkeeping
+3. Router resumes control after /synthesize exits — no post-processing needed
 ```
 
-**Note:** Type-scoped synthesis delegates to the existing mature synthesis
-skills. Cross-type synthesis is the new capability — it finds patterns that span
-repos, websites, documents, and media.
+**Note:** `/synthesize` is a consumer skill — it reads handler output
+(analysis.json + per-source artifacts) and produces synthesis artifacts in
+`.research/analysis/synthesis/`. It supersedes the deprecated `/repo-synthesis`
+and `/website-synthesis` skills and adds cross-type synthesis as a new
+capability. See CONVENTIONS.md §17 for the synthesis output contract.
 
 ## Critical Rules
 

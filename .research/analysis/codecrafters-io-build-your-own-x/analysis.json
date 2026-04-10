@@ -6,7 +6,7 @@
   "slug": "codecrafters-io-build-your-own-x",
   "title": "codecrafters-io-build-your-own-x",
   "analyzed_at": "2026-04-09T10:47:45.026Z",
-  "depth": "quick",
+  "depth": "standard",
   "tags": [
     "repo",
     "curated-list",
@@ -28,7 +28,116 @@
   },
   "summary": "This repo understands that the deepest path to mastering a technology is building it from scratch.  It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle.",
   "creator_view": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "Build Your Own React (Pomber)",
+      "type": "content",
+      "description": "https://pomb.us/build-your-own-react/. Canonical React-from-scratch tutorial. Fiber, reconciliation, hooks. Directly applicable — React 19 in SoNash stack.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Didact: DIY React",
+      "type": "content",
+      "description": "https://github.com/hexacta/didact. Virtual DOM diffing focus. Complementary to Pomber. Understanding re-render behavior.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Write Yourself a Git",
+      "type": "content",
+      "description": "https://wyag.thb.lt. Python git-from-scratch. Understanding object model helps design better hook/worktree infrastructure.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Regex Matching Can Be Simple and Fast (Russ Cox)",
+      "type": "content",
+      "description": "https://swtch.com/~rsc/regexp/regexp1.html. NFA/DFA theory. Directly applicable to check-pattern-compliance.js regex performance.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "31-Category Tutorial Taxonomy",
+      "type": "pattern",
+      "description": "390 links across 31 domains. 16 individually evaluated in content-eval.jsonl. Cross-reference against 72-skill index.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Curated Link Format Pattern",
+      "type": "pattern",
+      "description": "Standard awesome-list format. Low extraction value.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Skill Retirement Process Design",
+      "type": "knowledge",
+      "description": "Case study: 486K stars, 462 open issues, 1 commit/90d. What happens when a curated collection grows without retirement/archival. Directly applicable to managing 72+ skills in JASON-OS.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Build from Scratch Framing for Domain 01",
+      "type": "knowledge",
+      "description": "Feynman principle applied to system understanding. Structure JASON-OS Internal Archaeology (Domain 01) as 'how each system was built' narratives rather than 'what exists' inventories.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Celebrity Stagnation Lifecycle",
+      "type": "knowledge",
+      "description": "Community enthusiasm → commercial acquisition → maintenance bottleneck → dormancy. Cross-ref: overlaps with public-apis stagnation entry.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Shell/CLI Tutorial Collection",
+      "type": "knowledge",
+      "description": "7 shell tutorials (C, Go, Rust). Canonical references if JASON-OS needs custom command dispatch. Defer until architecture solidifies.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Single-File-Everything Anti-Pattern",
+      "type": "anti-pattern",
+      "description": "390 links in one README.md. Watch for same impulse in EXTRACTIONS.md, MEMORY.md, SKILL_INDEX.md — when a single file becomes the dumping ground.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    },
+    {
+      "name": "Inline License Without LICENSE File",
+      "type": "anti-pattern",
+      "description": "CC0 in README but no LICENSE file. GitHub API can't detect it. Always include machine-readable LICENSE if publishing.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "curated-list"]
+    }
+  ],
   "last_synthesized_at": null,
   "repo": "codecrafters-io/build-your-own-x",
   "url": "https://github.com/codecrafters-io/build-your-own-x",
@@ -174,5 +283,6 @@
     "type": "celebrity-stagnation",
     "description": "Massive stars + minimal recent activity + commercial capture by codecrafters-io. 462 open issues with 1 commit in 90 days indicates bottlenecked maintenance."
   },
-  "creatorLens": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge."
+  "creatorLens": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge.",
+  "source_tier": "T1"
 }

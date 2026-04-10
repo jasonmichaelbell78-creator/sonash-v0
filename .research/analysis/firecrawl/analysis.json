@@ -6,7 +6,7 @@
   "slug": "firecrawl",
   "title": "firecrawl",
   "analyzed_at": "2026-04-09T10:47:45.039Z",
-  "depth": "quick",
+  "depth": "standard",
   "tags": [
     "repo",
     "framework",
@@ -16,18 +16,220 @@
     "ai-agents",
     "ai-crawler",
     "crawler",
-    "data-extraction"
+    "data-extraction",
+    "web-scraping",
+    "llm-ready",
+    "architecture-pattern",
+    "test-infrastructure",
+    "commercial-oss"
   ],
   "scoring": {
     "quality_band": "Excellent",
     "quality_score": 87,
-    "personal_fit_band": "Needs Work",
-    "personal_fit_score": 50,
-    "classification": "park-for-later"
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 60,
+    "classification": "active-sprint"
   },
-  "summary": "Firecrawl understands that web extraction for AI is fundamentally different from traditional scraping.  Three novel paradigms: (1) Map — discover all URLs on a site instantly (URL routing/discovery), (2) Interact — scrape then interact with page via AI prompts before extracting (agent-like extraction), (3) Agent — 'describe what you need' fully autonomous data gathering.",
+  "summary": "Firecrawl is a TypeScript monorepo web-data API (106K stars, AGPL-3.0, 13 sub-apps including 7 polyglot SDKs) organized around a pluggable scraping engine with fallback-list architecture (scrapeURL -> buildFallbackList -> scrapeURLWithEngine -> NoEnginesLeftError). Core value: the Search/Scrape/Crawl/Map/Interact/Agent taxonomy plus a 58-app examples cookbook pairing firecrawl with every major LLM. Key transferable patterns for SoNash: engine-fallback chain for website-analysis, capability-gated test pattern from CLAUDE.md, multi-agent openai_swarm reference. Documentation debt is the main cost (zero architecture prose docs, one mermaid diagram). Composite Healthy (75.5): test infra 85, reliability 78, architecture 75, docs 72, security 70, maintainability 68.",
   "creator_view": "Firecrawl understands that web extraction for AI is fundamentally different from traditional scraping. Three novel paradigms: (1) Map — discover all URLs on a site instantly (URL routing/discovery), (2) Interact — scrape then interact with page via AI prompts before extracting (agent-like extraction), (3) Agent — 'describe what you need' fully autonomous data gathering. Also: batch scrape async, search+scrape combined, MCP integration. TypeScript, 105K stars, AGPL-3.0.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "scrapeURL engine-fallback chain",
+      "type": "architecture-pattern",
+      "description": "Pluggable extraction engines coordinated by a fallback-list builder. buildFallbackList → scrapeURLWithEngine → (success?) → try next or NoEnginesLeftError. Named failure mode, documented order, engine-level telemetry.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["architecture", "extraction", "fallback", "engine-pluggable"]
+    },
+    {
+      "name": "Capability-gated test pattern",
+      "type": "pattern",
+      "description": "Gate tests by runtime capability (env vars) not by CI fence. Same test file runs in all environments; gate decides whether assertions execute. Three lines per gate.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["testing", "ci", "capability-detection"]
+    },
+    {
+      "name": "Harness-as-boot-orchestrator",
+      "type": "pattern",
+      "description": "Single harness.ts script owns service boot order (API + workers + emulator) before test runner. CLAUDE.md mandates it; no ad-hoc `pnpm start` in dev docs.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["testing", "devex", "boot-order"]
+    },
+    {
+      "name": "Version-parallel controller trees",
+      "type": "architecture-pattern",
+      "description": "Parallel v0/v1/v2 controller directories with their own test fixtures. New features land on v2; v0 stays alive for compat. Three OpenAPI specs frozen at repo root.",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "tags": ["api-versioning", "backward-compat"]
+    },
+    {
+      "name": "Redlock distributed cache serialization",
+      "type": "pattern",
+      "description": "Use redlock.using([key], ttlMs, ...) to serialise cache updates across multiple pods. Prevents race conditions on shared cache slots (e.g. ACUC credit updates).",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "low",
+      "tags": ["distributed-systems", "caching", "redis"]
+    },
+    {
+      "name": "Multi-agent orchestration via openai_swarm",
+      "type": "knowledge",
+      "description": "Reference implementation of multi-agent coordination around a single scraping task. Worth reading to inform SoNash agent teams (.claude/teams/) and the agent boundary design work for JASON-OS.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["agents", "multi-agent", "swarm", "teams"]
+    },
+    {
+      "name": "Deep Research API usage pattern",
+      "type": "knowledge",
+      "description": "How firecrawl's Deep Research API is invoked in practice (apartment-finder example). Interactive preference gathering → research call → LLM analysis → structured JSON. Compare to SoNash /deep-research skill's searcher pipeline.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["deep-research", "api-patterns", "llm-integration"]
+    },
+    {
+      "name": "GitHub repo analysis via firecrawl Map API",
+      "type": "knowledge",
+      "description": "examples/gemini-github-analyzer uses firecrawl's Map API to walk a GitHub repo. Direct domain overlap with SoNash's /repo-analysis — worth comparing extraction approaches.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo-analysis", "github", "comparison-point"]
+    },
+    {
+      "name": "Docs-to-OpenAPI extraction",
+      "type": "knowledge",
+      "description": "examples/turning_docs_into_api_specs — convert a documentation site into an OpenAPI spec via scraping. Informs SoNash document-analysis handler — a docs site IS a kind of structured document.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["document-analysis", "openapi", "extraction"]
+    },
+    {
+      "name": "Commercial-OSS feature tiering via .env",
+      "type": "knowledge",
+      "description": "Fire-engine is hosted-only; self-hosted users get documented limited CAPTCHA handling. Pattern: tier features by backing service availability, document the split explicitly.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["commercial-oss", "feature-tiering"]
+    },
+    {
+      "name": "scrapeURL engine-fallback README",
+      "type": "content",
+      "description": "Mermaid signal flow diagram for the engine fallback chain. The whole extraction thesis in four nodes. Worth re-reading when expanding SoNash website-analysis.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["architecture-doc", "extraction", "mermaid"],
+      "url": "https://github.com/firecrawl/firecrawl/blob/main/apps/api/src/scraper/scrapeURL/README.md"
+    },
+    {
+      "name": "58-example cookbook pattern",
+      "type": "content",
+      "description": "The examples/ directory as product-marketing-in-code. 58 self-contained apps, each pairing firecrawl with a specific LLM or framework. Stealable pattern for SoNash skill documentation.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["documentation-pattern", "cookbook", "examples"],
+      "url": "https://github.com/firecrawl/firecrawl/tree/main/examples"
+    },
+    {
+      "name": "openai_swarm_firecrawl example",
+      "type": "content",
+      "description": "Concrete multi-agent coordination code. Direct reference for SoNash's agent team boundary design.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["multi-agent", "swarm", "example"],
+      "url": "https://github.com/firecrawl/firecrawl/tree/main/examples/openai_swarm_firecrawl"
+    },
+    {
+      "name": "gemini-github-analyzer example",
+      "type": "content",
+      "description": "Repo-walking via firecrawl Map API, same domain as SoNash repo-analysis.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo-analysis", "github", "example"],
+      "url": "https://github.com/firecrawl/firecrawl/tree/main/examples/gemini-github-analyzer"
+    },
+    {
+      "name": "deep-research-apartment-finder example",
+      "type": "content",
+      "description": "Deep Research API usage pattern from a Python CLI.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["deep-research", "cli", "example"],
+      "url": "https://github.com/firecrawl/firecrawl/tree/main/examples/deep-research-apartment-finder"
+    },
+    {
+      "name": "turning_docs_into_api_specs example",
+      "type": "content",
+      "description": "Docs-to-OpenAPI extraction pattern. Informs SoNash document-analysis.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["document-analysis", "openapi", "example"],
+      "url": "https://github.com/firecrawl/firecrawl/tree/main/examples/turning_docs_into_api_specs"
+    },
+    {
+      "name": "CLAUDE.md minimal-actionable exemplar",
+      "type": "content",
+      "description": "19-line CLAUDE.md that beats most 200-line variants. Test-first, E2E preferred, capability-gating, harness usage. Worth a direct comparison against SoNash's 235-line CLAUDE.md for signal density.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["claude-md", "ai-instructions", "exemplar"],
+      "url": "https://github.com/firecrawl/firecrawl/blob/main/CLAUDE.md"
+    },
+    {
+      "name": "Zero architecture prose docs",
+      "type": "anti-pattern",
+      "description": "1162 files, one mermaid diagram, no docs/ directory. Queue layout, auth flow, service boundaries all have to be inferred from code. New contributors pay the ramp-up tax. SoNash should file this as evidence in the next 'do we need this ADR?' conversation.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["docs-absence", "knowledge-concentration", "anti-pattern"]
+    },
+    {
+      "name": "Two queue systems coexisting without migration plan",
+      "type": "anti-pattern",
+      "description": "BullMQ (Redis) and nuq-postgres (custom Postgres queue) both active in services/. Rationale undocumented. Suggests in-progress migration with no exit criteria. If SoNash ever needs a queue, pick one and commit — don't run two.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["queue-migration", "technical-debt", "anti-pattern"]
+    },
+    {
+      "name": "Hand-rolled polyglot SDK parity",
+      "type": "anti-pattern",
+      "description": "Seven SDKs (JS, Python, Rust, Go, Java, Elixir, playwright-service) re-implement the wire contract manually. Parity enforced by OpenAPI specs + test-suite app. Visible tax: adding an endpoint is a 7-file change. Correct answer for SoNash if ever pressured: generate from OpenAPI or say no.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["polyglot", "sdk-duplication", "anti-pattern"]
+    },
+    {
+      "name": "Hidden feature flags via env vars",
+      "type": "anti-pattern",
+      "description": "Firecrawl branches behaviour through SELF_HOST.md env vars (USE_DB_AUTHENTICATION, PROXY_SERVER, SEARXNG_*) with no documented feature-flag layer. Fine at small-team scale, breaks down as team grows. Prefer explicit feature flags over env-var branching for user-visible behaviour.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["feature-flags", "env-branching", "anti-pattern"]
+    }
+  ],
   "last_synthesized_at": null,
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
@@ -99,5 +301,6 @@
       "96% web coverage including JS-heavy pages",
       "MCP client integration"
     ]
-  }
+  },
+  "source_tier": "T1"
 }

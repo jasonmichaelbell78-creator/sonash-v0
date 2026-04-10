@@ -99,3 +99,5 @@
 {"timestamp":"2026-04-07T22:07:14.769Z","action":"intake-pr-deferred","pr_number":499,"item_id":"DEBT-45642","file":"scripts/archive/reverify-resolved.js","severity":"S1"}
 {"timestamp":"2026-04-07T22:07:24.409Z","action":"intake-pr-deferred","pr_number":499,"item_id":"DEBT-45643","file":"scripts/run-github-health.js","severity":"S3"}
 {"timestamp":"2026-04-08T10:10:57.937Z","action":"intake-pr-deferred","pr_number":500,"item_id":"DEBT-45645","file":"config/rotation-policy.json","severity":"S2"}
+{"timestamp":"2026-04-10T00:59:51.198Z","action":"intake-manual","item_id":"DEBT-45646","file":".github/workflows","severity":"S2","category":"process"}
+{"timestamp":"2026-04-10T20:26:19.135Z","action":"intake-pr-deferred","pr_number":505,"item_id":"DEBT-45647","file":"scripts/cas/backfill-tags.js","severity":"S1"}

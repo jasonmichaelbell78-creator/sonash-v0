@@ -253,23 +253,24 @@ single source type.
 
 ```
 /analyze --synthesize
-  # Cross-type synthesis of all analyzed sources
+  # Delegates to /synthesize — cross-source synthesis of all analyzed sources
 
 /analyze --synthesize --type=repo
-  # Delegates to /repo-synthesis (type-scoped)
+  # Delegates to /synthesize with --type=repo (scoped synthesis)
 
 /analyze --synthesize --type=website
-  # Delegates to /website-synthesis (type-scoped)
+  # Delegates to /synthesize with --type=website (scoped synthesis)
 
 /analyze --synthesize --type=document
-  # Cross-type synthesis filtered to document sources only
+  # Delegates to /synthesize with --type=document (scoped synthesis)
 
 /analyze --synthesize --type=media
-  # Cross-type synthesis filtered to media sources only
+  # Delegates to /synthesize with --type=media (scoped synthesis)
 ```
 
-**Note:** `--type=repo` and `--type=website` delegate to their mature dedicated
-synthesis skills. Other types use the cross-type synthesis pipeline.
+**Note:** The router delegates all synthesis modes to the unified `/synthesize`
+skill. `--type=<type>` is passed through as a scope filter. The router does not
+perform synthesis logic itself.
 
 ### 2.4 Flag Passthrough
 
@@ -289,18 +290,23 @@ unchanged. This allows handler-specific flags without router changes.
 
 ## 3. Synthesis Mode Specification
 
-### 3.1 Type-Scoped Synthesis
+### 3.1 Unified Synthesis Delegation
 
-When `--synthesize` is combined with `--type=repo` or `--type=website`, the
-router delegates entirely to the mature synthesis skill:
+All `--synthesize` invocations delegate to the unified `/synthesize` skill,
+regardless of `--type`:
 
-| `--type` value | Delegated to         | Version |
-| -------------- | -------------------- | ------- |
-| `repo`         | `/repo-synthesis`    | v1.3    |
-| `website`      | `/website-synthesis` | v1.1    |
+| `--type` value | Delegated to  | Behavior                                 |
+| -------------- | ------------- | ---------------------------------------- |
+| (none)         | `/synthesize` | Cross-source synthesis across all types  |
+| `repo`         | `/synthesize` | Scoped synthesis — repo sources only     |
+| `website`      | `/synthesize` | Scoped synthesis — website sources only  |
+| `document`     | `/synthesize` | Scoped synthesis — document sources only |
+| `media`        | `/synthesize` | Scoped synthesis — media sources only    |
 
-The router passes no additional context. The synthesis skill reads its own state
-files and `.research/` directory.
+The router passes `--type` through as a scope filter but performs no synthesis
+logic itself. The `/synthesize` skill reads its own state files
+(`.claude/state/synthesize.state.json`) and the `.research/analysis/` directory.
+See CONVENTIONS.md §17 for the synthesis output contract.
 
 ### 3.2 Cross-Type Synthesis
 

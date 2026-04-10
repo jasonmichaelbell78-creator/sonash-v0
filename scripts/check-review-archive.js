@@ -719,17 +719,35 @@ function main() {
       const lastConsolidated = cState.lastConsolidatedReview;
       const consolidationNumber = cState.consolidationNumber;
 
-      // Cross-check: lastConsolidatedReview should not exceed the max numeric ID in JSONL
+      // Cross-check: lastConsolidatedReview must reference a valid review.
+      // Accepts either:
+      //   (a) a numeric ID — must not exceed the max numeric ID in JSONL
+      //   (b) a string ID (e.g., "rev-77") — must exist in records
       // Use sorted array instead of Math.max(...) to avoid call stack overflow on large sets
       const sortedNumericIds = [...numericIds].sort((a, b) => a - b);
       const jsonlMaxNumericId = sortedNumericIds.length > 0 ? sortedNumericIds.at(-1) : 0;
 
-      if (typeof lastConsolidated !== "number" || !Number.isFinite(lastConsolidated)) {
+      if (typeof lastConsolidated === "string" && lastConsolidated.length > 0) {
+        // String ID branch — verify it exists in records
+        const idExists = records.some((r) => r.id === lastConsolidated);
+        if (idExists) {
+          ok(
+            `Consolidation counter: lastConsolidated="${lastConsolidated}", consolidationNumber=#${consolidationNumber}`
+          );
+        } else {
+          addFinding(
+            "S1",
+            "consolidation-id-not-found",
+            `consolidation.json lastConsolidatedReview "${lastConsolidated}" not found in JSONL records`,
+            "Fix lastConsolidatedReview to a valid review ID present in reviews.jsonl"
+          );
+        }
+      } else if (typeof lastConsolidated !== "number" || !Number.isFinite(lastConsolidated)) {
         addFinding(
           "S1",
           "consolidation-invalid",
-          "consolidation.json lastConsolidatedReview is not a valid number",
-          "Fix lastConsolidatedReview to be the numeric ID of the last consolidated review"
+          "consolidation.json lastConsolidatedReview is not a valid number or string ID",
+          "Fix lastConsolidatedReview to be a numeric ID or string review ID present in reviews.jsonl"
         );
       } else if (jsonlMaxNumericId === 0) {
         addFinding(

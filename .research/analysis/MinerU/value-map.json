@@ -1,0 +1,349 @@
+{
+  "schema_version": "1.0",
+  "repo": "opendatalab/MinerU",
+  "slug": "MinerU",
+  "analyzed_at": "2026-04-10T17:30:00Z",
+  "depth": "standard",
+  "skill_version": "4.3",
+  "primary_lens": "adoption",
+  "adoption_verdict": "extract",
+  "pattern_candidates": [
+    {
+      "id": "pat-mineru-001",
+      "name": "Async task state machine with TTL cleanup",
+      "source_file": "mineru/cli/fast_api.py",
+      "source_lines": "~200-900",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "high",
+      "tier": "T2",
+      "description": "In-memory task dict with four states (pending/processing/completed/failed), asyncio.Queue as work channel, asyncio.Semaphore concurrency cap, background sweep for TTL cleanup, filesystem-backed output artifacts keyed by task ID. Does not survive restart — state is ephemeral.",
+      "applicability": "SoNash repo-analysis state files already have the task-record shape. Missing pieces: explicit status state machine, background sweep loop. Would answer T28 Gap Agent A Q5 (progressive/resumable extraction).",
+      "blockers": [
+        "AGPL-3.0 license on source",
+        "depends on decision whether SoNash wants progressive extraction at all"
+      ]
+    },
+    {
+      "id": "pat-mineru-002",
+      "name": "Scored multi-worker load balancer",
+      "source_file": "mineru/cli/router.py",
+      "novelty": "medium",
+      "effort": "E3",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "Formula: score = (queued + processing + pending_assignments) / max_concurrent. Shuffle-then-stable-sort for jitter. Optimistic pending_assignments increment prevents thundering herd. Auto-restart on 2+ consecutive health failures.",
+      "applicability": "File as reference pattern. No current SoNash need for multi-worker orchestration beyond existing agent dispatch."
+    },
+    {
+      "id": "pat-mineru-003",
+      "name": "Sliding window for long-input memory bounding",
+      "source_file": "mineru/backend/pipeline/pipeline_analyze.py",
+      "novelty": "low",
+      "effort": "E2",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "get_processing_window_size(default=64) applied identically across all three backends. Pages loaded, inferred, freed in window-sized batches. Peak memory strictly bounded.",
+      "applicability": "File as reference for future 'streaming analysis' patterns."
+    },
+    {
+      "id": "pat-mineru-004",
+      "name": "Keyed singleton with atexit cleanup",
+      "source_file": "mineru/backend/vlm/vlm_analyze.py",
+      "novelty": "low",
+      "effort": "E3",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "(backend, model_path, server_url) tuple as cache key. threading.RLock-protected. atexit shutdown. _mineru_runtime_handles for multi-path teardown probing.",
+      "applicability": "File as reference for any future SoNash use of heavy per-process caches."
+    },
+    {
+      "id": "pat-mineru-005",
+      "name": "Mixed inference backend per model type (ONNX/Torch/vLLM)",
+      "source_file": "mineru/model/{ori_cls,table,layout,mfr,ocr,vlm}",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "Lightweight classifiers (orientation, table-wired-vs-wireless) use ONNX runtime via onnxruntime.InferenceSession. Heavy models (layout via RTDetr+LayoutLMv3, MFR via UniMERNet+PP-FormulaNet) use PyTorch + HuggingFace transformers. VLM serving uses vLLM directly via a thin CLI wrapper. Each model type is matched to the inference engine most appropriate for its scale. Central model download via auto_download_and_get_model_root_path with ModelPath enum.",
+      "applicability": "File as reference. No direct SoNash applicability — we don't ship ML models. Pattern lesson: match inference runtime to model size, don't use one runtime for everything."
+    },
+    {
+      "id": "pat-mineru-006",
+      "name": "Wrap upstream CLI instead of reimplementing",
+      "source_file": "mineru/model/vlm/vllm_server.py",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tier": "T2",
+      "description": "vllm_server.py is ~70 lines that intercept sys.argv for an existing vllm.entrypoints.cli.main invocation. It parses out --model/--port/--gpu-memory-utilization/--logits-processors, applies per-device arg mutation via mod_kwargs_by_device_type, auto-injects a custom MinerULogitsProcessor, sets OMP_NUM_THREADS=1 if unset, then hands off to vllm_main(). The MinerU team doesn't fork vLLM or re-implement serving — they wrap the CLI and inject sensible defaults.",
+      "applicability": "Reference pattern for any SoNash need to wrap a third-party CLI with project-specific defaults. Example use case: wrapping a linter or test runner CLI with SoNash-specific flags. Cheaper and more maintainable than forking the upstream tool."
+    }
+  ],
+  "knowledge_candidates": [
+    {
+      "id": "kno-mineru-001",
+      "name": "Structured output contract as first-class document",
+      "source_file": "docs/en/reference/output_files.md",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tier": "T1",
+      "description": "Human-readable specification of the middle.json intermediate representation: typed fields, 4-level block hierarchy, enumerated block types, bbox coordinate convention, explicit breaking-change callouts between pipeline and VLM backends.",
+      "applicability": "Create docs/agent_docs/ANALYSIS_OUTPUT_CONTRACT.md mirroring this structure for SoNash CAS output. Every field typed, every enum enumerated, per-source-type sections (repo/website/document/media/synthesis), v2→v3 breaking changes called out. Half-day of writing that pays forward through every future schema migration.",
+      "home_connection": "CONVENTIONS.md §13 + §17 are partial — they reference the contract but don't treat output as a product surface. This candidate closes that gap."
+    },
+    {
+      "id": "kno-mineru-002",
+      "name": "Environment variable catalog as single document",
+      "source_file": "docs/en/usage/cli_tools.md",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tier": "T1",
+      "description": "Prose catalog of 15+ MINERU_* env vars with default, effect, scoping rules. Discipline is what matters, not the content.",
+      "applicability": "Create docs/agent_docs/ENV_VARS.md grouping SoNash's scattered SKIP_*/GSD_*/CAS_*/ANALYZE_* env vars by subsystem. Users and agents grep less; debugging becomes a lookup instead of a search.",
+      "home_connection": "SoNash env vars are currently scattered across hooks, scripts, and skills with no central reference. This is a documentation gap masquerading as a design problem."
+    },
+    {
+      "id": "kno-mineru-003",
+      "name": "Backend decision matrix for multi-mode tools",
+      "source_file": "docs/en/quick_start/index.md",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "medium",
+      "tier": "T2",
+      "description": "5-column × 8-row decision matrix mapping backend to operational constraints (accuracy, OS support, CPU/GPU support, min VRAM, RAM, disk, Python version). User picks before installing.",
+      "applicability": "Apply to /analyze and /media-analysis routing docs where the user picks among source types, depth levels, and backend choices (whisper vs oEmbed vs transcript API in media-analysis).",
+      "home_connection": "Existing /analyze routing is documented in prose in analyze/SKILL.md but not as a single decision matrix. A matrix would make the choice explicit."
+    },
+    {
+      "id": "kno-mineru-004",
+      "name": "Changelog-as-capability-index discipline",
+      "source_file": "docs/en/reference/changelog.md",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "Every release entry is prose with capability deltas, issue refs, CVE refs, quantified performance improvements, and explicit breaking-change callouts. Reading top-to-bottom gives a feature capability index.",
+      "applicability": "Reference pattern for user-facing changelog discipline if SoNash ever ships a public release with a changelog."
+    },
+    {
+      "id": "kno-mineru-005",
+      "name": "Layered optional-dependencies install pattern",
+      "source_file": "pyproject.toml",
+      "novelty": "low",
+      "effort": "E3",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "8 optional-dependency groups (test, vlm, vllm, lmdeploy, mlx, pipeline, gradio, core, all) with cross-references. User-profile-driven install recipes.",
+      "applicability": "Python/pyproject-specific. Not directly applicable to SoNash TypeScript/Firebase stack."
+    },
+    {
+      "id": "kno-mineru-006",
+      "name": "Three-backend dispatch pattern (deferred imports)",
+      "source_file": "mineru/cli/common.py",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "String-dispatched factory with importlib deferred imports — users don't pay torch/vllm cost unless they actually picked that backend. Duck-typed doc_analyze/aio_doc_analyze signatures across all engines.",
+      "applicability": "Reference pattern for any SoNash skill family that has to route across heavy alternative implementations."
+    },
+    {
+      "id": "kno-mineru-007",
+      "name": "Multi-vendor Dockerfile template",
+      "source_file": "docker/china/*.Dockerfile (10 variants) + docker/global/Dockerfile",
+      "novelty": "low",
+      "effort": "E3",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "11 Dockerfiles following a strict template: vendor-specific base image (Ascend/DCU/Kunlunxin/METAX/Moore Threads/Cambricon/Enflame/Iluvatar/T-Head PPU) → Noto CJK fonts → pip install mineru[core]>=3.0.0 with numpy==1.26.4 and opencv-python==4.11.0.86 pinned → mineru-models-download -s modelscope. Each variant can carry vendor-specific workarounds inline (sed patches on vllm source, torchvision version rename, ARG BACKEND toggle). Documented maintenance cost: 11 files to keep current.",
+      "applicability": "Reference for projects that ship to heterogeneous hardware. Not directly applicable to SoNash — we don't distribute hardware-specific Docker images. File as a case study for 'how to distribute an ML tool to ten different GPU vendors without forking the codebase per vendor'."
+    },
+    {
+      "id": "kno-mineru-008",
+      "name": "Per-chip deployment guide template",
+      "source_file": "docs/zh/usage/acceleration_cards/{Ascend,Biren,Cambricon,Enflame,Hygon,IluvatarCorex,Kunlunxin,METAX,MooreThreads,Tecorigin,THead,VastAI,AMD}.md",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "tier": "T3",
+      "description": "13 per-chip deployment guides follow a ruthlessly consistent template: §1 test platform (OS/CPU/driver/docker versions) → §2 Dockerfile build recipe → §3 docker run with vendor device mounts → §4 support matrix (🟢🟡🔴 per backend × engine) → Tips (vendor's VISIBLE_DEVICES env var, smi command). Two outliers: AMD.md is a community Triton-kernel patch guide (only doc in repo with actual code); VastAI.md is structurally different and pinned to MinerU 2.7.0 with vlm-only support.",
+      "applicability": "Reference pattern for any project that needs per-environment deployment docs with consistent structure. The template is reusable: platform → recipe → run command → support matrix → tips. File as a case study. Also: the 13-file Chinese-only documentation tree is the anti-pattern side — see anti-mineru-004."
+    },
+    {
+      "id": "kno-mineru-009",
+      "name": "Coarse-to-fine two-stage parsing (MinerU 2.5 paper)",
+      "source_file": "arxiv 2509.22186 (MinerU2.5 technical report)",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tier": "T2",
+      "description": "MinerU 2.5 uses a two-stage strategy that decouples global layout analysis (stage 1, downsampled images, structural elements identified cheaply) from local content recognition (stage 2, native-resolution crops, fine detail preserved). The 1.2B-parameter VLM gets 'state-of-the-art recognition accuracy while maintaining exceptional computational efficiency' because it doesn't process the full page at full resolution.",
+      "applicability": "Analogue for SoNash's depth tiers — /repo-analysis Quick does a cheap structural pass (API-only), Standard does the content-recognition pass with source reads. The coarse-to-fine pattern generalizes: identify what matters first, spend resources only on what matters. Framing parallel, not an extraction candidate."
+    }
+  ],
+  "content_candidates": [
+    {
+      "id": "cnt-mineru-001",
+      "name": "POST /tasks API documentation",
+      "url": "https://opendatalab.github.io/MinerU/en/usage/cli_tools/",
+      "relevance": "high",
+      "type": "api_spec",
+      "applicability": "The async task API's four-state machine + TTL cleanup + semaphore gating, documented in prose. Read this alongside fast_api.py to understand the shape of progressive extraction."
+    },
+    {
+      "id": "cnt-mineru-002",
+      "name": "output_files.md schema reference",
+      "url": "https://opendatalab.github.io/MinerU/en/reference/output_files/",
+      "relevance": "high",
+      "type": "schema_spec",
+      "applicability": "The exemplary structured-output spec page. The template for SoNash's own ANALYSIS_OUTPUT_CONTRACT.md."
+    },
+    {
+      "id": "cnt-mineru-003",
+      "name": "Environment variable catalog",
+      "url": "https://opendatalab.github.io/MinerU/en/usage/cli_tools/",
+      "relevance": "high",
+      "type": "env_var_reference",
+      "applicability": "Template for SoNash's ENV_VARS.md."
+    }
+  ],
+  "anti_pattern_candidates": [
+    {
+      "id": "anti-mineru-001",
+      "name": "Single-test fuzzy-match e2e with low coverage floor",
+      "source": "tests/unittest/test_e2e.py + pyproject.toml coverage config",
+      "relevance": "high",
+      "lesson": "A 58k-star codebase is held together by one fuzzy string match gated by a 0.2% coverage floor. Do not conclude that this level of coverage is acceptable at scale — it shows up in MinerU's 160-issue backlog as parsing regressions. SoNash's existing test discipline (3,564 tests, pre-commit gating, convergence loops) is the correct model.",
+      "applicability": "Guard against: during SoNash test-engineer or code-reviewer work, never accept 'there's already an e2e test' as test coverage."
+    },
+    {
+      "id": "anti-mineru-002",
+      "name": "Unarmored HTTP service with insecure defaults",
+      "source": "mineru/cli/fast_api.py + mineru/cli/router.py",
+      "relevance": "high",
+      "lesson": "MinerU ships mineru-api with no auth, no rate limit, no upload size cap, no CORS middleware, no TrustedHost middleware, and FastAPI docs enabled by default. The docs actively encourage --host 0.0.0.0 for multi-GPU setups. This is the anti-pattern SoNash's security-auditor agent exists to prevent. Any SoNash HTTP service needs these defaults, not as operator-added middleware.",
+      "applicability": "Guard against: if SoNash ever builds an HTTP service, the default security middleware stack must be present at construction time, not optional."
+    },
+    {
+      "id": "anti-mineru-003",
+      "name": "Silent retry workflow converts flake into green",
+      "source": ".github/workflows/rerun.yml",
+      "relevance": "medium",
+      "lesson": "Automatic retry of failed CI runs up to 3 times without surfacing the flake rate is the opposite of silent-failure-hunter discipline. If a test is flaky, investigate and eliminate the flake.",
+      "applicability": "Guard against: during SoNash CI work, never add automatic retry without flake-rate surfacing."
+    },
+    {
+      "id": "anti-mineru-004",
+      "name": "Broken i18n parity (Chinese-only chip guides)",
+      "source": "docs/zh/usage/acceleration_cards/",
+      "relevance": "medium",
+      "lesson": "13 Chinese-only hardware guides with no English equivalents while the README claims '10+ chip support' creates a documentation credibility gap. When i18n is incomplete, either close the gap or document which language is authoritative.",
+      "applicability": "Guard against: if SoNash ever adds i18n, design around partial parity upfront."
+    },
+    {
+      "id": "anti-mineru-005",
+      "name": "FAQ that defers to external AI assistant",
+      "source": "docs/en/faq/index.md",
+      "relevance": "low",
+      "lesson": "A two-entry FAQ that outsources every other question to an AI tool is a thin substitute for documented common failure modes. A 58k-star project should have its most common support questions captured as permanent docs.",
+      "applicability": "Already avoided in SoNash. File as confirmation of correct existing practice."
+    },
+    {
+      "id": "anti-mineru-006",
+      "name": "No PR test gating (push-only workflows)",
+      "source": ".github/workflows/cli.yml",
+      "relevance": "medium",
+      "lesson": "MinerU's cli.yml runs tests only on pushes to master/dev, never on pull requests. The effect is that contributors cannot see test results before their code is merged. SoNash's existing PR gating is the correct model.",
+      "applicability": "Guard against: CI workflows must include pull_request triggers for any test-bearing workflow."
+    },
+    {
+      "id": "anti-mineru-007",
+      "name": "README integration claim unbacked by first-party code",
+      "source": "README.md (MCP Server integration row) vs github search (opendatalab/mineru-mcp does not exist)",
+      "relevance": "high",
+      "lesson": "MinerU's README lists 'MCP Server — Cursor · Claude Desktop · Windsurf' in the integration matrix. A reader naturally interprets this as a first-party capability. Reality: opendatalab/mineru-mcp returns 404. What exists are 5+ community implementations, top result neosun100/mineru-mcp-server has 9 stars and no license declared. The README is technically neutral but misleading about what's upstream-maintained vs community-maintained.",
+      "applicability": "Guard against: SoNash README and skill files must distinguish first-party integrations from community/referenced ones. If an integration is claimed in a table, the claim must link to code SoNash maintains."
+    },
+    {
+      "id": "anti-mineru-008",
+      "name": "Unpinned GitHub Action reference",
+      "source": ".github/workflows/mkdocs.yml uses mhausenblas/mkdocs-deploy-gh-pages@master",
+      "relevance": "medium",
+      "lesson": "The docs-publishing workflow uses @master for its deploy action. Unlike the cla.yml workflow which pins contributor-assistant/github-action@v2.6.1, the mkdocs workflow floats on master. A compromise of the upstream action would let attackers publish arbitrary content to the MinerU docs site with RELEASE_TOKEN permissions. Inconsistent with the rest of the repo's pinning discipline.",
+      "applicability": "Guard against: SoNash GitHub Actions must pin to a specific version or commit SHA, never @master or @main. Already enforced in SoNash's existing workflows."
+    },
+    {
+      "id": "anti-mineru-009",
+      "name": "Floor-only version constraint on security-sensitive library",
+      "source": "pyproject.toml: pillow>=11.0.0 (no upper bound)",
+      "relevance": "medium",
+      "lesson": "MinerU pins pillow at >=11.0.0 with no upper bound. CVE-2026-25990 (Pillow PSD out-of-bounds write, affects 10.3.0 to <12.1.1, fixed in 12.1.1) means the installed Pillow depends entirely on what the resolver picks at install time. If the user's environment happens to resolve Pillow 12.0.x, they're exposed. The fix is a ranged constraint: pillow>=12.1.1,<13.",
+      "applicability": "Guard against: SoNash Python deps (if any) with known CVE histories need ranged constraints, not floor-only."
+    }
+  ],
+  "related_repos": [
+    "mendableai/firecrawl",
+    "VikParuchuri/marker",
+    "VikParuchuri/surya",
+    "unclecode/crawl4ai",
+    "opendatalab/OmniDocBench",
+    "neosun100/mineru-mcp-server"
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "mendableai/firecrawl",
+      "connection_type": "complementary",
+      "detail": "Both ship HTTP APIs with async task patterns. Firecrawl has meaningfully better HTTP hardening (API key auth). Compare when writing any SoNash HTTP service."
+    },
+    {
+      "target_repo": "VikParuchuri/marker",
+      "connection_type": "overlapping-finding",
+      "detail": "Both target document parsing (VikParuchuri is also behind surya OCR). Worth comparing marker's architectural choices against MinerU's three-backend pattern during Wave 4 Step 10 #4."
+    },
+    {
+      "target_repo": "VikParuchuri/surya",
+      "connection_type": "overlapping-finding",
+      "detail": "Same domain as MinerU's OCR stack. Wave 4 Step 10 #5 should surface whether surya's approach has cross-pollinated."
+    },
+    {
+      "target_repo": "unclecode/crawl4ai",
+      "connection_type": "shared-pattern",
+      "detail": "CRITICAL: crawl4ai is the actually-adoptable reference for progressive extraction, not MinerU. crawl4ai has Apache-2.0 license + persistent resume_state + on_state_change callbacks that survive restarts. MinerU's POST /tasks state machine is conceptually correct but in-memory (loses state) and AGPL (blocks direct lift). If SoNash pursues T28 Gap Agent A Q5 (progressive extraction), port from crawl4ai first. See creator-view.md Appendix §A15."
+    },
+    {
+      "target_repo": "neosun100/mineru-mcp-server",
+      "connection_type": "referenced",
+      "detail": "CORRECTION from first-pass Creator View: there is NO first-party opendatalab/mineru-mcp (GitHub 404). The MinerU 3.0.0 README claims 'MCP Server — Cursor · Claude Desktop · Windsurf' but the actual MCP implementations are community-maintained. neosun100/mineru-mcp-server is the top-starred implementation at 9 stars, Python/FastMCP, no license declared. NOT a reference pattern for SoNash MCP work — too thin and unmaintained."
+    },
+    {
+      "target_repo": "opendatalab/OmniDocBench",
+      "connection_type": "referenced",
+      "detail": "The benchmark MinerU reports against (86.2 pipeline, 90+ VLM). Reference for any SoNash extraction-quality measurement work."
+    }
+  ],
+  "extract_summary": {
+    "total_candidates": 22,
+    "pattern": 6,
+    "knowledge": 9,
+    "content": 3,
+    "anti_pattern": 9,
+    "t1_count": 2,
+    "t2_count": 4,
+    "t3_count": 10,
+    "highest_priority": [
+      "kno-mineru-001 — Structured output contract page (T1, E1, directly applicable)",
+      "kno-mineru-002 — Environment variable catalog (T1, E0, directly applicable)",
+      "pat-mineru-001 — Async task state machine (read for shape, port from crawl4ai instead — see Appendix §A15)",
+      "kno-mineru-003 — Backend decision matrix for multi-mode tools (T2)",
+      "pat-mineru-006 — Wrap upstream CLI instead of reimplementing (T2)",
+      "kno-mineru-009 — Coarse-to-fine two-stage parsing framing (T2)"
+    ],
+    "corrections_from_first_pass": [
+      "mineru-mcp is NOT a first-party reference — removed from T2 candidates, added as anti-mineru-007 (README claim exceeds reality)",
+      "Async task state machine recommendation rewritten — crawl4ai is the actually-adoptable reference, MinerU is a shape reference only"
+    ]
+  }
+}

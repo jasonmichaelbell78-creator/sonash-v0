@@ -402,10 +402,117 @@ Sections 12-16.
 
 ## Wave 4: Quick Scan Migration (depends on Wave 1, can parallel with Wave 2-3)
 
-### Step 9: Prioritize and create upgrade checklist
+> **Session #272 discovery (2026-04-10):** Wave 4 scope was wrong. The original
+> "22 quick-scan repos" count was based on the `depth: "quick"` field in
+> `analysis.json`, but **10 of those 22 were mislabeled** — they have full
+> Standard artifact sets
+> (findings/summary/deep-read/content-eval/coverage-audit/
+> creator-view/value-map) AND extraction journal entries, but their depth field
+> was stamped "quick" during the 2026-04-09 v3.0 migration. Real Wave 4 scope is
+> **12 TRUE quick-scan repos + 9 metadata patches** (revised from 10 — see
+> Session #273 scope correction below).
+>
+> **True quick scans (need Standard upgrade):** ArchiveBox, crawl4ai, firecrawl,
+> lux-video-downloader, marker, MinerU, nitter, outline, qmd, reader, surya,
+> tesseract.
+>
+> **Mislabeled (9 repos — depth field fix + candidate backfill only, no
+> re-analysis):** bedrock-summarize-audio-video-text,
+> bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
+> hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
+> teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api.
+>
+> **Excluded from mislabeled set:** `aws-media-extraction`. Session #273
+> verification showed it has `meta.scan_depth: "quick"`, a `quick_scan` key,
+> only 5/7 Standard artifacts, and a self-consistent quick-scan profile. Its 8
+> journal entries are an unrelated anomaly (quick scans should not produce
+> extractions) filed for separate investigation.
+>
+> **Evidence:** See Session #272 self-audit output. Example: `firecrawl` FAIL
+> ("No extraction journal entries", only analysis.json present) vs.
+> `codecrafters-io-build-your-own-x` PASS (10 checks, 12 journal entries, full
+> artifact set). Both tagged `depth: "quick"` in analysis.json.
 
-Create `.research/analysis/_quick-scan-upgrade.md` with all 22 repos ranked by
-synthesis relevance:
+### Step 8.5 (NEW): Fix mislabeled depth field + candidate backfill + migrate-schemas root cause ✅
+
+**Added Session #272 per pre-Wave-4 audit. Executed Session #273.**
+
+> **Session #273 scope correction (2026-04-10):** Session #272's initial
+> diagnosis attributed the depth mislabel to `scripts/cas/migrate-v3.js`. That
+> was incorrect — migrate-v3.js has no depth-field logic at all. The actual root
+> cause is `scripts/cas/migrate-schemas.js:223`, whose fallback chain
+> `data.depth || data.meta?.scan_depth || "quick"` missed the v2 legacy
+> root-level `data.scanDepth` (camelCase). Six of the nine repos have
+> `scanDepth: "standard"` as direct evidence; the other three never had any
+> depth metadata and fell through to the `"quick"` default. A second drift was
+> discovered mid-execution: the same v2→v3 migration left
+> `analysis.json.candidates` empty for all 9 repos even though the extraction
+> journal had entries. Per the "extractions are canon" principle, the candidates
+> mirror was rebuilt from the journal under the hood.
+
+Executed in Session #273:
+
+1. **Fix 9 mislabeled repos** — `scripts/cas/fix-depth-mislabel.js` updates
+   `analysis.json::depth` from `"quick"` to `"standard"` for the 9 repos listed
+   above, guarded by a full 7/7 Standard artifact check. Idempotent. ✅ 9 fixed,
+   0 skipped, 0 errors.
+
+2. **Fix `.research/research-index.jsonl`** — 3 of the 9 repos (codecrafters,
+   hkuds, karpathy) had stale `depth: "quick"` entries in the index. Updated
+   in-place. The other 6 are not present in research-index.jsonl. ✅
+
+3. **Root-cause fix `scripts/cas/migrate-schemas.js:223`** — added
+   `data.scanDepth` and `data.meta?.scanDepth` to the fallback chain before the
+   `"quick"` default. Inline comment explains the Session #272 incident.
+
+4. **Self-heal in `scripts/cas/migrate-v3.js`** — new rule #9 in `fixRecord()`:
+   if a record has `depth: "quick"` AND either `scanDepth === "standard"` OR a
+   full 7/7 Standard artifact set on disk, auto-correct to `depth: "standard"`.
+   Idempotent. Verified not to trigger on currently-valid records
+   (`Fixed: 0 | Already valid: 34`).
+
+5. **Backfill candidates from journal** — `scripts/cas/backfill-candidates.js`
+   reads `.research/extraction-journal.jsonl`, groups by source, and maps
+   entries to the `candidateSchema` shape (candidate→name, notes→description,
+   etc.). Populated candidates for all 9 repos (10–17 per repo, 108 total). ✅ 9
+   backfilled, 0 skipped, 0 errors. `--all` flag available to scan beyond Step
+   8.5 scope.
+
+6. **Re-run self-audit** — all 9 repos: PASS. Only remaining warning is "No
+   state file — pipeline tail (tags, retro, routing) may have been skipped" —
+   pre-existing drift, outside Step 8.5 scope.
+
+**Done when:** ✅ All 9 mislabeled repos report `depth: "standard"` in
+analysis.json and research-index.jsonl, `candidates` arrays are populated from
+the journal, self-audit passes for all 9, `migrate-schemas.js` root cause is
+fixed, and `migrate-v3.js` has idempotent self-heal for future recurrences.
+
+**Depends on:** None (can run immediately)
+
+**Also during pre-Wave-4 audit (Session #272):**
+
+- Confirmed journal ↔ EXTRACTIONS.md consistency: ✅ 196 entries / 23 sources
+  both sides
+- Confirmed 11 "missing from extractions" repos are the 11 TRUE quick scans
+  (plus lux-video-downloader makes 12 once the true-quick list is corrected)
+- NO bulk-scan pipeline tail bug — the missing extractions are legitimate (Quick
+  Scans don't produce candidates)
+
+**Known follow-ups (out of Step 8.5 scope):**
+
+- `aws-media-extraction` anomaly — 8 journal entries from a self-identified
+  quick scan. Either the scan was actually Standard and its metadata is corrupt,
+  or the journal entries are spurious. Needs separate investigation.
+- Pipeline tail state file missing for all 9 backfilled repos — tags, retro, and
+  routing metadata were not recorded during the original runs. Affects the WARN
+  line in self-audit but not the extraction data itself.
+
+---
+
+### Step 9: Prioritize and create upgrade checklist (REVISED)
+
+Create `.research/analysis/_quick-scan-upgrade.md` with all **12** TRUE quick
+scans ranked by synthesis relevance:
 
 **Priority criteria:**
 
@@ -414,39 +521,186 @@ synthesis relevance:
 - Star count / quality score from Quick Scan
 - Source diversity (prioritize repos that cover gap domains)
 
-List all 22 with: repo URL, current tags, priority rank (1-22), estimated
+List all 12 with: repo URL, current tags, priority rank (1-12), estimated
 synthesis value.
 
-**Done when:** Checklist created with all 22 repos prioritized.
+> **Note (Session #272):** Initial checklist was created with 22 repos. It was
+> revised down to 12 after the Step 8.5 mislabel discovery. The 10 mislabeled
+> repos are already at Standard depth (real artifacts exist) — they only needed
+> the metadata patch, not re-analysis.
 
-**Depends on:** None (can start immediately)
+**Done when:** Checklist created with all 12 TRUE quick-scan repos prioritized.
+
+**Depends on:** Step 8.5 (depth corrections must be in place first)
 
 ---
 
-### Step 10: Batch upgrade all 22 quick-scan repos to Standard
+### Step 10: Batch upgrade 12 TRUE quick-scan repos to Standard (REVISED)
 
-Execute `/analyze <url> --depth=standard` for each of the 22 repos, in priority
-order. Batch optimizations:
+Execute `/analyze <url> --depth=standard` for each of the **12** TRUE quick-scan
+repos, in priority order. Batch optimizations:
 
 1. **Skip interactive gate** — depth pre-set to standard
 2. **Tags already exist** — present existing tags for confirmation,
    batch-approve
 3. **Batch retro at end** — skip per-repo retro, do one batch retro covering all
-   22 at session end
+   12 at session end
 4. **Single index rebuild** — run `node scripts/cas/rebuild-index.js` once after
-   all 22 complete (not per-repo)
+   all 12 complete (not per-repo)
 5. **Single EXTRACTIONS.md regeneration** — run
    `node scripts/cas/generate-extractions-md.js` once at end
 
-**Time estimate:** ~5-8 min per repo × 22 repos = ~2-3 hours. Single session.
+**Time estimate (revised):** ~6-10 min per repo × 12 repos = **~1.5-2 hours**
+(single session feasible, but firecrawl alone may consume significant context
+due to monorepo scale — 1162 files, 13 sub-apps).
 
-**Done when:** All 22 repos have full Standard artifact sets (analysis.json,
-creator-view.md, value-map.json, findings.jsonl, summary.md, deep-read.md,
-content-eval.jsonl, coverage-audit.jsonl). Self-audit passes for all 22:
+> **Session #272 pilot attempt:** Firecrawl was chosen as the pilot (Wave 4A
+> #1). After clone (1162 files) it was clear that full-fidelity Standard on
+> firecrawl alone would consume substantial context due to monorepo structure
+>
+> - repomix output size. Pilot paused and deferred to next session. Firecrawl
+>   clone is at `/tmp/repo-analysis-firecrawl/` if resuming. State file:
+>   `.claude/state/repo-analysis.firecrawl.state.json`.
+
+**Pragmatic deviations to consider for large repos (per-repo judgment):**
+
+- **Skip repomix for Wave 4 batch** — repomix is "required for Extract routing"
+  per skill docs. Wave 4 is not extracting, only upgrading depth for
+  /synthesize. Can be regenerated later if Extract is needed.
+- **Inline dimension wave instead of 4-agent spawn** — avoids the Windows 0-byte
+  agent output bug, more deterministic, less context per repo. Trade: less
+  exhaustive dimension coverage.
+
+Document any deviations taken per-repo in the repo's state file.
+
+**Done when:** All 12 TRUE quick-scan repos have full Standard artifact sets
+(analysis.json, creator-view.md, value-map.json, findings.jsonl, summary.md,
+deep-read.md, content-eval.jsonl, coverage-audit.jsonl). Self-audit passes for
+all 12:
 `for d in .research/analysis/*/; do node scripts/cas/self-audit.js --slug=$(basename $d); done`
 
-**Depends on:** Step 9 (priority list), Step 1 (source_tier in schema), Step 3
-(updated gate messaging)
+**Depends on:** Step 8.5 (depth corrections), Step 9 (priority list), Step 1
+(source_tier in schema), Step 3 (updated gate messaging)
+
+---
+
+### Step 10.5 (NEW): Full-corpus audit — content, schema, conventions, extractions
+
+**Added Session #273 per user instruction.** Gates Wave 5.
+
+Once Step 10 completes (all 12 TRUE quicks upgraded to Standard), run a
+comprehensive per-source audit across the ENTIRE `.research/analysis/` corpus —
+not just Wave 4's 12 repos. This is the same class of check Session #273
+produced for firecrawl: schema validation, convention compliance, content
+quality, **and — most importantly — extraction completeness** (candidates
+present in `.research/extraction-journal.jsonl` AND `.research/EXTRACTIONS.md`).
+
+**Scope — every source in `.research/analysis/`:**
+
+- 12 Wave 4 upgrades from Step 10 (firecrawl, MinerU, crawl4ai, marker, surya,
+  reader, tesseract, ArchiveBox, outline, qmd, nitter, lux-video-downloader)
+- 9 Step 8.5 backfilled repos (bedrock-summarize-audio-video-text,
+  bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
+  hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
+  teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api)
+- Previously-Standard repos (safishamsi-graphify, docling, unstructured,
+  aws-media-extraction — note excluded-from-Wave-4 anomaly)
+- Gists (farzaa-gist-c35ac0cf, karpathy-gist-442a6bf,
+  kieranklaassen-gist-4f2aba89, maharshi-pandya-gist-4aeccbe1)
+- Document sources (errors-and-vulnerabilities-in-ai-generated-code)
+- Website sources (docs-composio-dev,
+  sidbharath-com-blog-claude-code-the-complete-guide, and 4 others)
+- Media sources (2 YouTube analyses)
+
+**Per-source checks (same format used for firecrawl in Session #273):**
+
+1. **Schema** — analysis.json validates against `analysisRecordCore` Zod (run
+   via `scripts/cas/self-audit.js --slug=<slug>`)
+2. **MUST artifacts per CONVENTIONS.md §13.1:**
+   - analysis.json (all depths)
+   - value-map.json (Standard/Deep)
+   - creator-view.md (Standard/Deep, 6 sections, conversational prose)
+   - **Extraction entries in `.research/extraction-journal.jsonl`**
+     (Standard/Deep, MUST)
+3. **SHOULD artifacts per §13.2:**
+   - findings.jsonl, summary.md, deep-read.md, content-eval.jsonl,
+     coverage-audit.jsonl
+4. **Handler-specific artifacts per §13.3** (repomix-output.txt for repo,
+   meta.json for website, transcript.md for media + `transcript_source` field)
+5. **Content quality:**
+   - Creator View references specific Deep Read / Content Eval items per Rule #9
+     (not just category-level observations)
+   - Creator View written in conversational prose per Rule #10
+   - Home-repo references in Creator View Section 2 verified against filesystem
+     (Rule #4 Self-verify SHOULD)
+6. **Extraction completeness (THE MOST IMPORTANT CHECK):**
+   - `grep -c "source.*<repo-slug-or-name>" .research/extraction-journal.jsonl`
+     MUST be > 0 for any Standard/Deep source that has candidates in its
+     value-map.json
+   - `.research/EXTRACTIONS.md` MUST contain a section for the source
+   - value-map.json candidate count MUST match journal entry count (excluding
+     skipped dispositions)
+   - Per-candidate schema — each journal entry has all required fields
+     (schema_version, source_type, source, candidate, type, decision,
+     decision_date, novelty, effort, relevance, tags)
+7. **Cross-file consistency:**
+   - `research-index.jsonl` entry matches analysis.json depth
+   - Tags are consistent across analysis.json, value-map.json, journal entries
+   - `last_synthesized_at` field correctly null or dated
+8. **Re-analysis signals** — `trends.jsonl` present if prior analysis exists for
+   the source
+
+**Deliverables:**
+
+- `.research/analysis/_audit-report.md` — per-source pass/fail matrix with
+  specific issues flagged
+- `.research/analysis/_audit-fixes.md` — proposed remediation for each failing
+  source, categorized by: (a) metadata patches (like Step 8.5 depth fix), (b)
+  missing extraction journal entries (the most critical class — backfill from
+  value-map.json), (c) missing artifacts (re-run or manually produce), (d)
+  content quality deficiencies (re-write), (e) schema drift (migration script
+  needed)
+- User review of the proposed fixes — interactive triage, not auto-apply
+- Remediation execution after user approval
+
+**Inspiration and precedent — Session #273 firecrawl evaluation:**
+
+Session #273 built firecrawl's Standard artifacts manually (bypassing the skill
+— see `feedback_skills_in_plans_are_tool_calls` memory). The resulting artifacts
+were then audited against content / schema / convention. Self-audit surfaced a
+single FAIL: **"No extraction journal entries for source:
+mendableai/firecrawl"**. That one failure validated the user's strongest framing
+(per `feedback_extractions_are_canon` memory): _"THE EXTRACTIONS ARE THE DATA.
+This whole process is random data without those pointing towards it."_ The
+per-source audit methodology in Step 10.5 is the same check, applied to the
+whole corpus.
+
+**Why this step exists:**
+
+The Session #273 Step 8.5 audit found 9 repos with silently-wrong depth metadata
+AND empty candidate arrays. The v2→v3 migration had a double-drift bug. Without
+a full-corpus audit, similar drift may be hiding across ALL analyses — not just
+Wave 4 scope. Before Wave 5 synthesis runs, every source has to be
+verified-correct or synthesis will pull from broken data.
+
+**Done when:**
+
+1. `.research/analysis/_audit-report.md` exists covering every source in
+   `.research/analysis/`
+2. `.research/analysis/_audit-fixes.md` exists with categorized remediation
+   proposals
+3. User has reviewed the fixes and approved a remediation order
+4. All approved fixes applied (commits may be per-category or consolidated)
+5. Re-audit sweep shows PASS for every source (no silent "depth = quick but has
+   Standard artifacts" drift, no "value-map has candidates but journal has none"
+   drift, no missing MUST artifacts)
+
+**Depends on:** Step 10 (so Wave 4 data is included in the audit scope). Does
+NOT depend on Step 9 separately.
+
+**Gates:** Wave 5 (Step 11 onward). `/synthesize` MUST NOT run against a corpus
+with unresolved audit findings — doing so would feed synthesis bad data and
+re-create the class of bug Session #272-273 just fixed.
 
 ---
 

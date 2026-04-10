@@ -55,7 +55,7 @@ Expedition: open-ended (HITL pacing).
 - Library/package documentation lookup — use `context7` MCP
 - Simple URL fetch for content — use WebFetch directly
 - Analyzing a GitHub repo — use `/repo-analysis`
-- Cross-site synthesis — use `/website-synthesis` (requires 3+ analyzed sites)
+- Cross-site synthesis — use `/synthesize` (requires 3+ analyzed sites)
 - Researching a topic across sources — use `/deep-research` (query-centric)
 
 ## Input
@@ -167,7 +167,7 @@ high-relevance + 1 wildcard). Controls: stop, back, view tree.
 ### Cross-site (routing only)
 
 When routing menu is shown and 3+ sites exist, offer cross-site synthesis via
-`/website-synthesis`.
+`/synthesize`.
 
 ---
 
@@ -185,8 +185,26 @@ Runs on every invocation. Produces:
 **Writes:** meta.json, analysis.json (partial, Quick tier). Write to disk before
 gate.
 
-**Gate:** "Run Standard analysis? [y/N]" — all flags (`--depth=standard`,
-`--depth=deep`, `--site`, `--expedition`) bypass this gate.
+**Gate:** Quick Scan is a **preview**. Standard produces the full artifact set
+needed for `/synthesize` cross-source intelligence.
+
+```
+Quick Scan complete. [health bands].
+
+Quick Scan is a preview — it confirms whether this site is worth your time.
+Standard analysis produces the full artifact set needed for /synthesize
+cross-source intelligence.
+
+Run Standard? (Standard ~5-10 min) [Y/n]
+```
+
+All flags (`--depth=standard`, `--depth=deep`, `--site`, `--expedition`) bypass
+this gate.
+
+**source_tier:** Websites span `T1`-`T4` based on editorial authority. Default
+`T2`; handler may suggest a different tier from content signals (academic
+sources → T1, anonymous blogs → T3-T4). User can override during `/synthesize`
+pre-flight.
 
 ## Standard (Phases 1-4)
 
@@ -246,7 +264,7 @@ After Standard/Deep, present:
 4. **Save to memory** — persist key findings
 5. **Explore insights** — deeper Creator View conversation
 6. **Done** — list all output files with sizes, remove state file, run retro
-7. **Cross-site synthesis** — if 3+ sites analyzed, suggest `/website-synthesis`
+7. **Cross-site synthesis** — if 3+ sites analyzed, suggest `/synthesize`
 
 > See REFERENCE.md Section 12 for routing behavior details.
 
@@ -291,7 +309,7 @@ mode context. See REFERENCE.md Section 15.
 ## Integration
 
 - **Sibling:** `/repo-analysis` (same dual-lens architecture for code repos)
-- **Companion:** `/website-synthesis` (cross-site synthesis, requires 3+ sites)
+- **Companion:** `/synthesize` (cross-site synthesis, requires 3+ sites)
 - **Shared artifacts:** extraction-journal.jsonl, EXTRACTIONS.md,
   reading-chain.jsonl in `.research/` (reading-chain.jsonl written during
   Extract Knowledge routing option, same flow as extraction-journal.jsonl)

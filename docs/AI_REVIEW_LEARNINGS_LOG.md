@@ -366,6 +366,60 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#61)</summary>
+
+- **Date:** 2026-04-10
+- **Reviews consolidated:** #80-#rev-77
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#60)</summary>
+
+- **Date:** 2026-04-10
+- **Reviews consolidated:** #80-#rev-77
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#59)</summary>
+
+- **Date:** 2026-04-10
+- **Reviews consolidated:** #80-#rev-77
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#58)</summary>
+
+- **Date:** 2026-04-10
+- **Reviews consolidated:** #80-#rev-77
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#57)</summary>
+
+- **Date:** 2026-04-10
+- **Reviews consolidated:** #80-#rev-77
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#56)</summary>
+
+- **Date:** 2026-04-09
+- **Reviews consolidated:** #rev-64-#rev-77
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#55)</summary>
 
 - **Date:** 2026-04-09
@@ -1094,7 +1148,7 @@ accumulate.
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
 | Main log lines | ~2048 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 20    | 30        | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -1516,7 +1570,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-69: (untitled) (2026-04-08)
+### Review rev-69: PR #503 R1 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
@@ -1534,7 +1588,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-70: (untitled) (2026-04-08)
+### Review rev-70: PR #503 R2 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
@@ -1550,7 +1604,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-71: (untitled) (2026-04-08)
+### Review rev-71: PR #503 R3 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** mixed
 
@@ -1565,7 +1619,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-72: (untitled) (2026-04-08)
+### Review rev-72: PR #503 R4 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
 
@@ -1580,7 +1634,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-73: (untitled) (2026-04-08)
+### Review rev-73: PR #503 R5 (2026-04-08)
 
 **Date:** 2026-04-08 | **PR:** #503 | **Source:** qodo
 
@@ -1592,6 +1646,85 @@ deduplicated, non-overlapping ranges):
 
 - unreachable-fallback-code
 - fts-input-limits
+
+---
+
+### Review rev-74: PR #504 R1 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 35    | 28    | 0        | 7        |
+
+**Patterns:**
+
+- symlink-guard-before-create
+- nullish-coalescing-for-scores
+- fk-safety-on-source-match
+- require-vs-resolve
+- cross-source-delete-scope
+- incomplete-string-escaping
+- fuzzy-source-matching
+
+---
+
+### Review rev-75: PR #504 R2 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 27    | 10    | 0        | 17       |
+
+**Patterns:**
+
+- test-baseline-array-format
+- parent-dir-symlink-guard
+- pii-pattern-avoidance
+- slugify-hyphen-collapse
+- source-matching-normalization
+
+---
+
+### Review rev-76: PR #504 R3 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 18    | 5     | 0        | 13       |
+
+**Patterns:**
+
+- slugify-greedy-trim
+- canonicalize-source-on-insert
+- count-query-scope-consistency
+
+---
+
+### Review rev-77: PR #504 R4 (2026-04-09)
+
+**Date:** 2026-04-09 | **PR:** #504 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 19    | 2     | 0        | 17       |
+
+**Patterns:**
+
+- analyzed-at-fallback
+- escape-all-table-cells
+
+---
+
+### Review 80: PR #504 R4 (Mixed: SonarCloud + Qodo Suggestions) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 2     | 0        | 17       |
 
 ## Key Patterns
 
@@ -4160,3 +4293,65 @@ dedup (already fixed R1).
 
 **Merge trigger:** Fix rate 11% (<30% threshold at R4). Recommend merge.
 Remaining 13 CC violations are repeat SonarCloud noise on new CAS files.
+
+### Review #81 — PR #505 R1 (Mixed: Qodo + Gemini + SonarCloud + CI)
+
+**Date:** 2026-04-10 | **Items:** 16 | **Fixed:** 14 | **Deferred:** 0 (R1
+in-scope) + 1 DEBT-45647 (auditor out-of-scope findings) | **Rejected:** 2
+
+**Key patterns:**
+
+1. **Shared `scripts/lib/safe-cas-io.js` helper** — extract `safeReadText` /
+   `safeReadJson` / `safeWriteJson` / `isValidArtifactFile` /
+   `validateCandidate` to close the parent-chain symlink gap across the CAS
+   script family in a single refactor. Propagation via import, not copy-paste.
+2. **TOCTOU-tight fd pinning for canonical reads** — the naive
+   `refuseSymlinkWithParents + lstatSync + readFileSync(path)` pattern races
+   between the parent-chain check and the fresh `open()` inside `readFileSync`.
+   Fix: `refuseSymlinkWithParents` + `openSync(path, O_RDONLY | O_NOFOLLOW)` +
+   `fstatSync(fd)` + `readFileSync(fd)`. The fd pins the inode across stat and
+   read; `O_NOFOLLOW` catches final-path symlinks at open time on Unix and
+   degrades gracefully on Windows.
+3. **Weak Standard-artifact detection counted directories** — counting any
+   non-symlink entry for a Standard artifact name let directories and empty
+   placeholders flip `depth: quick → standard`, breaking downstream consumers
+   that JSON-parse `value-map.json`. Fix: require `isFile()` AND `size > 0` via
+   `isValidArtifactFile`.
+4. **Empty-string `description` is valid per Zod schema** — the manual
+   required-fields check in `backfill-candidates.js` treated `""` as missing.
+   Replacing the manual loop with `validateCandidate()` (Zod-backed) inherits
+   the schema's correct permissions: `z.string()` allows `""`.
+5. **CC reduction via helper extraction** — `backfill-candidates.js` L97 (CC=16)
+   and L174 (CC=25) both fell under 15 after extracting `loadAnalysisJson`,
+   `mapAndValidateCandidates`, `persistAnalysisJson`, `indexJournalBySource`,
+   `resolveSlugList`, `printResultLine`. Repo CC violation total went from 17
+   → 14.
+6. **Process Overview diagram drift** — the
+   `GATE Interactive -> "Run Standard/Deep?"` row of the `repo-analysis`
+   `SKILL.md` ASCII diagram was never updated when v4.3 dropped the gate. Split
+   the diagram into two flows (Standard/Deep default + Quick Scan opt-in) to
+   remove the contradiction.
+7. **Background agent result via `<task-notification>`, not output file** — the
+   security-auditor's output file stayed 0 bytes (Windows pattern) but the full
+   result arrived through the notification `<result>` field. Guardrail #15 held:
+   flagging the empty output kept the pipeline honest until the real result
+   landed a few seconds later.
+
+**Rejected:**
+
+1. Qodo Compliance "Comprehensive Audit Trails" on
+   `promote-firecrawl-to-journal.js` — repo convention is `console.log` +
+   `sanitizeError`, no structured logger exists. First-scan generic-rule flag on
+   a new file, not a real gap.
+2. Qodo Compliance "Secure Logging Practices" on the same file — same reasoning;
+   project-wide console-logging is the convention.
+
+**Auditor escalation (deferred — DEBT-45647):**
+
+Parent-chain gaps in `backfill-tags.js`, `rebuild-index.js`, `update-index.js`,
+`scripts/lib/read-jsonl.js` (library-level, affects every caller),
+journal-append atomicity via `withLock()` + `safeAtomicWriteSync()`,
+log-injection hardening in `sanitizeError` output, and
+`validatePathInDir(ANALYSIS_DIR, slug)` in `backfillOne` / `fixAnalysisJson`.
+All out of PR #505's reviewer-flagged scope but same pattern family; will be
+addressed in a dedicated follow-up PR.

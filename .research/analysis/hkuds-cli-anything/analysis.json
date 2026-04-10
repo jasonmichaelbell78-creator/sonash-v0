@@ -6,7 +6,7 @@
   "slug": "hkuds-cli-anything",
   "title": "hkuds-cli-anything",
   "analyzed_at": "2026-04-09T10:47:45.051Z",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "framework", "hkuds", "anything", "python"],
   "scoring": {
     "quality_band": "Healthy",
@@ -17,7 +17,161 @@
   },
   "summary": "This repo understands that the next wave of software users will be AI agents, not humans.  It provides a systematic methodology (HARNESS.",
   "creator_view": "This repo understands that the next wave of software users will be AI agents, not humans. It provides a systematic methodology (HARNESS.md) for wrapping any desktop application in a CLI that agents can invoke. The 7-phase SOP, SKILL.md generation, and CLI-Hub registry represent a complete ecosystem for agent-native software — directly relevant to JASON-OS's vision of AI-operated workflows.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "HARNESS.md 7-Phase SOP",
+      "type": "pattern",
+      "description": "Systematic methodology for wrapping GUI apps as agent-native CLIs. Directly applicable to JASON-OS Domain 02a.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "SKILL.md Command Catalog Format",
+      "type": "pattern",
+      "description": "37 SKILL.md files. Flat command references vs sonash workflow definitions. Design space comparison for skill format evolution.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": ".claude-plugin/marketplace.json",
+      "type": "pattern",
+      "description": "First public Claude Code plugin format reference. Compare against sonash .claude-plugin/ structure.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Registry + CLI-Hub Distribution",
+      "type": "pattern",
+      "description": "registry.json (35 CLIs) → static hub → pip install. Agent-discoverable via meta-skill. Model for JASON-OS skill distribution.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "ReplSkin Terminal UI",
+      "type": "pattern",
+      "description": "Python prompt_toolkit branded REPL. Pattern portable, code Python-specific. Reference for JASON-OS interactive modes.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Codec Allowlist Pattern",
+      "type": "pattern",
+      "description": "frozenset-based subprocess arg validation. Similar to existing sonash security patterns.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Skill Generator (Jinja2)",
+      "type": "pattern",
+      "description": "Auto-generates SKILL.md from CLI introspection. Pattern portable to Node/TS.",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Agent-Native Software Methodology",
+      "type": "knowledge",
+      "description": "Core insight: wrap GUI software systematically for agents. HARNESS.md is the how-to. Foundational for JASON-OS Domain 02a.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Build-vs-Integrate Decision for JASON-OS",
+      "type": "knowledge",
+      "description": "Should JASON-OS invoke CLI-Anything harnesses (Python) or generate Node/TS wrappers using same methodology? Critical architecture decision.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Quality Treadmill Case Study",
+      "type": "knowledge",
+      "description": "28K stars in 29d, 35 harnesses, 0 CI enforcement. Growth outpacing gates. Opposite of build-your-own-x stagnation.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "MCP Backend Pattern",
+      "type": "content",
+      "description": "guides/mcp-backend.md. Wrap MCP servers as CLI backends via ClientSession + stdio_client. You have 3 MCP servers. Directly applicable.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Skill Auto-Generation Guide",
+      "type": "content",
+      "description": "guides/skill-generation.md. Introspect Click decorators → Jinja2 → SKILL.md. Could inform /skill-creator automation.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Mermaid Harness",
+      "type": "content",
+      "description": "Lightest-weight harness. No local binary (mermaid.ink cloud). Ready to use for agent-driven diagrams.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Exa Harness",
+      "type": "content",
+      "description": "AI search + structured extraction via Exa API. Alternative/complement for /deep-research searchers.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "No-CI-for-Tests Anti-Pattern",
+      "type": "anti-pattern",
+      "description": "74 test files, zero CI enforcement. Tests as documentation, not quality gates. Don't regress on pre-commit enforcement.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Monorepo Without Shared Testing",
+      "type": "anti-pattern",
+      "description": "35 packages, 0 conftest.py, no shared runner. Plan shared testing if JASON-OS distributes skills as packages.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    },
+    {
+      "name": "Growing Faster Than Quality Gates",
+      "type": "anti-pattern",
+      "description": "28K stars/29d with no automated enforcement. Same trajectory as celebrity stagnation, faster.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "framework"]
+    }
+  ],
   "last_synthesized_at": null,
   "repo": "HKUDS/CLI-Anything",
   "url": "https://github.com/HKUDS/CLI-Anything",
@@ -168,5 +322,6 @@
     "type": "none",
     "description": "No absence patterns detected. Rapidly growing project with active maintenance."
   },
-  "creatorLens": "This repo understands that the next wave of software users will be AI agents, not humans. It provides a systematic methodology (HARNESS.md) for wrapping any desktop application in a CLI that agents can invoke. The 7-phase SOP, SKILL.md generation, and CLI-Hub registry represent a complete ecosystem for agent-native software — directly relevant to JASON-OS's vision of AI-operated workflows."
+  "creatorLens": "This repo understands that the next wave of software users will be AI agents, not humans. It provides a systematic methodology (HARNESS.md) for wrapping any desktop application in a CLI that agents can invoke. The 7-phase SOP, SKILL.md generation, and CLI-Hub registry represent a complete ecosystem for agent-native software — directly relevant to JASON-OS's vision of AI-operated workflows.",
+  "source_tier": "T1"
 }

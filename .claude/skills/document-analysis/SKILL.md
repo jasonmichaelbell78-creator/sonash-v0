@@ -117,8 +117,22 @@ lightweight assessment.
 to cover/argue/teach X." Enough to judge whether Standard/Deep is worth the
 time.
 
-**Interactive gate:** "Quick Scan complete. [quality assessment]. Run
-Standard/Deep for full analysis? [y/N]"
+**Interactive gate:** Quick Scan is a **preview**. Standard produces the full
+artifact set needed for `/synthesize` cross-source intelligence.
+
+```
+Quick Scan complete. [quality assessment].
+
+Quick Scan is a preview — it confirms whether this document is worth your
+time. Standard analysis produces the full artifact set needed for
+/synthesize cross-source intelligence.
+
+Run Standard/Deep? (Standard ~5-10 min) [Y/n]
+```
+
+**source_tier:** Documents span `T1`-`T3`. Default `T2`; academic papers and
+peer-reviewed sources should be `T1`, anonymous gists `T3`. User can override
+during `/synthesize` pre-flight.
 
 ---
 

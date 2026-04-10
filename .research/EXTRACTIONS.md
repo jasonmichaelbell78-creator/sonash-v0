@@ -2,8 +2,8 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 196 candidates **By decision:** defer: 173,
-extract: 20, skip: 1, investigate: 2
+**Schema version:** 2.0 | **Total:** 236 candidates **By decision:** defer: 212,
+investigate: 2, extract: 20, skip: 2
 
 ---
 
@@ -160,6 +160,56 @@ extract: 20, skip: 1, investigate: 2
 | Amazon Transcribe API reference                       | content      | defer    | 2026-04-07 | medium  | E0     | high      | -            | Handler demonstrates full async Transcribe lifecycle with speaker diarization.                                           |
 | AWS-coupled extraction anti-pattern                   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 5+ AWS service deps create vendor lock-in. Prefer local-first (Whisper, Tesseract, spaCy). Repo itself has commented-out |
 | Blocking poll anti-pattern                            | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | time.sleep(30) polling loop for Transcribe. Fine for CLI, must not copy into agent pipelines.                            |
+
+## mendableai/firecrawl (repo)
+
+| Candidate                                           | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
+| --------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| scrapeURL engine-fallback chain                     | architecture-pattern | defer    | 2026-04-10 | high    | E1     | high      | -            | Pluggable extraction engines coordinated by a fallback-list builder. buildFallbackList → scrapeURLWithEngine → (success?  |
+| Capability-gated test pattern                       | pattern              | defer    | 2026-04-10 | high    | E0     | high      | -            | Gate tests by runtime capability (env vars) not by CI fence. Same test file runs in all environments; gate decides wheth  |
+| Harness-as-boot-orchestrator                        | pattern              | defer    | 2026-04-10 | medium  | E1     | medium    | -            | Single harness.ts script owns service boot order (API + workers + emulator) before test runner. CLAUDE.md mandates it; n  |
+| Version-parallel controller trees                   | architecture-pattern | defer    | 2026-04-10 | low     | E1     | low       | -            | Parallel v0/v1/v2 controller directories with their own test fixtures. New features land on v2; v0 stays alive for compa  |
+| Redlock distributed cache serialization             | pattern              | defer    | 2026-04-10 | medium  | E1     | low       | -            | Use redlock.using([key], ttlMs, ...) to serialise cache updates across multiple pods. Prevents race conditions on shared  |
+| Multi-agent orchestration via openai_swarm          | knowledge            | defer    | 2026-04-10 | high    | E0     | high      | -            | Reference implementation of multi-agent coordination around a single scraping task. Worth reading to inform SoNash agent  |
+| Deep Research API usage pattern                     | knowledge            | defer    | 2026-04-10 | medium  | E0     | high      | -            | How firecrawl's Deep Research API is invoked in practice (apartment-finder example). Interactive preference gathering →   |
+| GitHub repo analysis via firecrawl Map API          | knowledge            | defer    | 2026-04-10 | medium  | E0     | high      | -            | examples/gemini-github-analyzer uses firecrawl's Map API to walk a GitHub repo. Direct domain overlap with SoNash's /rep  |
+| Docs-to-OpenAPI extraction                          | knowledge            | defer    | 2026-04-10 | medium  | E0     | high      | -            | examples/turning_docs_into_api_specs — convert a documentation site into an OpenAPI spec via scraping. Informs SoNash do  |
+| Commercial-OSS feature tiering via .env             | knowledge            | defer    | 2026-04-10 | low     | E0     | medium    | -            | Fire-engine is hosted-only; self-hosted users get documented limited CAPTCHA handling. Pattern: tier features by backing  |
+| scrapeURL engine-fallback README                    | content              | defer    | 2026-04-10 | high    | E0     | high      | -            | Mermaid signal flow diagram for the engine fallback chain. The whole extraction thesis in four nodes. Worth re-reading w  |
+| 58-example cookbook pattern                         | content              | defer    | 2026-04-10 | medium  | E1     | high      | -            | The examples/ directory as product-marketing-in-code. 58 self-contained apps, each pairing firecrawl with a specific LLM  |
+| openai_swarm_firecrawl example                      | content              | defer    | 2026-04-10 | high    | E0     | high      | -            | Concrete multi-agent coordination code. Direct reference for SoNash's agent team boundary design.                         |
+| gemini-github-analyzer example                      | content              | defer    | 2026-04-10 | medium  | E0     | high      | -            | Repo-walking via firecrawl Map API, same domain as SoNash repo-analysis.                                                  |
+| deep-research-apartment-finder example              | content              | defer    | 2026-04-10 | medium  | E0     | high      | -            | Deep Research API usage pattern from a Python CLI.                                                                        |
+| turning_docs_into_api_specs example                 | content              | defer    | 2026-04-10 | medium  | E0     | high      | -            | Docs-to-OpenAPI extraction pattern. Informs SoNash document-analysis.                                                     |
+| CLAUDE.md minimal-actionable exemplar               | content              | defer    | 2026-04-10 | medium  | E0     | medium    | -            | 19-line CLAUDE.md that beats most 200-line variants. Test-first, E2E preferred, capability-gating, harness usage. Worth   |
+| Zero architecture prose docs                        | anti-pattern         | defer    | 2026-04-10 | medium  | E0     | medium    | -            | 1162 files, one mermaid diagram, no docs/ directory. Queue layout, auth flow, service boundaries all have to be inferred  |
+| Two queue systems coexisting without migration plan | anti-pattern         | defer    | 2026-04-10 | low     | E0     | low       | -            | BullMQ (Redis) and nuq-postgres (custom Postgres queue) both active in services/. Rationale undocumented. Suggests in-pr  |
+| Hand-rolled polyglot SDK parity                     | anti-pattern         | defer    | 2026-04-10 | low     | E0     | low       | -            | Seven SDKs (JS, Python, Rust, Go, Java, Elixir, playwright-service) re-implement the wire contract manually. Parity enfo  |
+| Hidden feature flags via env vars                   | anti-pattern         | defer    | 2026-04-10 | low     | E0     | medium    | -            | Firecrawl branches behaviour through SELF*HOST.md env vars (USE_DB_AUTHENTICATION, PROXY_SERVER, SEARXNG*\*) with no docu |
+
+## opendatalab/MinerU (repo)
+
+| Candidate                                             | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
+| ----------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Structured output contract page                       | knowledge    | defer    | 2026-04-10 | medium  | E1     | high      | -            | docs/en/reference/output_files.md is an exemplary human-readable output spec: typed fields, enumerated block types, brea  |
+| Environment variable catalog                          | knowledge    | defer    | 2026-04-10 | low     | E0     | high      | -            | docs/en/usage/cli*tools.md has prose catalog of 15+ MINERU*\* env vars with default/effect/scoping. Template for docs/age |
+| Async task state machine with TTL cleanup             | pattern      | defer    | 2026-04-10 | medium  | E2     | high      | -            | mineru/cli/fast_api.py implements POST /tasks with four states (pending/processing/completed/failed), asyncio.Queue, sem  |
+| Backend decision matrix for multi-mode tools          | knowledge    | defer    | 2026-04-10 | low     | E1     | medium    | -            | docs/en/quick_start/index.md has pre-install decision matrix: 5 backends × 8 constraints. Apply to /analyze and /media-a  |
+| Three-backend dispatch with deferred imports          | pattern      | defer    | 2026-04-10 | medium  | E2     | low       | -            | mineru/cli/common.py uses string-dispatched factory with importlib deferred imports so users don't pay torch/vllm cost u  |
+| Single fuzzy-match e2e test with low coverage floor   | anti-pattern | defer    | 2026-04-10 | medium  | E0     | high      | -            | 58k-star codebase with 1 test file, 1 test function, 0.2% coverage floor, no PR gating, silent retry workflow masking fl  |
+| Unarmored HTTP service with insecure defaults         | anti-pattern | defer    | 2026-04-10 | medium  | E0     | high      | -            | mineru-api/router ship with no auth, no rate limit, no upload size cap, no CORS/TrustedHost middleware, FastAPI docs ena  |
+| Silent retry workflow converts flake into green       | anti-pattern | defer    | 2026-04-10 | low     | E0     | medium    | -            | .github/workflows/rerun.yml retries failed runs up to 3 times with no flake-rate surfacing. Opposite of silent-failure-h  |
+| No PR test gating (push-only workflows)               | anti-pattern | defer    | 2026-04-10 | low     | E0     | medium    | -            | cli.yml runs only on pushes to master/dev, never on pull requests. Contributors cannot see test results before merge. Gu  |
+| Changelog-as-capability-index discipline              | knowledge    | defer    | 2026-04-10 | low     | E0     | low       | -            | docs/en/reference/changelog.md has prose entries with issue refs, CVE refs, quantified perf improvements, explicit break  |
+| Wrap upstream CLI instead of reimplementing           | pattern      | defer    | 2026-04-10 | medium  | E1     | medium    | -            | mineru/model/vlm/vllm_server.py is 70 lines wrapping vllm.entrypoints.cli.main: intercepts sys.argv, parses out model/po  |
+| Multi-vendor Dockerfile template                      | knowledge    | defer    | 2026-04-10 | low     | E3     | low       | -            | 11 Dockerfiles (1 global + 10 China vendor variants) following strict template: vendor base image -> Noto CJK fonts -> p  |
+| Per-chip deployment guide template                    | knowledge    | defer    | 2026-04-10 | low     | E1     | low       | -            | 13 per-chip deployment guides follow consistent template: test platform -> Dockerfile recipe -> docker run -> support ma  |
+| Coarse-to-fine two-stage parsing framing              | knowledge    | defer    | 2026-04-10 | medium  | E0     | medium    | -            | MinerU 2.5 paper (arxiv 2509.22186) introduces a 1.2B VLM with stage-1 layout analysis on downsampled images + stage-2 c  |
+| README integration claim unbacked by first-party code | anti-pattern | defer    | 2026-04-10 | medium  | E0     | high      | -            | MinerU README lists MCP Server - Cursor/Claude Desktop/Windsurf as an integration. Reality: opendatalab/mineru-mcp does   |
+| Unpinned GitHub Action reference                      | anti-pattern | defer    | 2026-04-10 | low     | E0     | medium    | -            | .github/workflows/mkdocs.yml uses mhausenblas/mkdocs-deploy-gh-pages@master (unpinned) while cla.yml pins contributor-as  |
+| Floor-only version constraint with known CVE exposure | anti-pattern | defer    | 2026-04-10 | medium  | E0     | medium    | -            | pyproject.toml pins pillow>=11.0.0 with no upper bound. CVE-2026-25990 (Pillow PSD OOB write) affects 10.3.0 to <12.1.1.  |
+| MinerU 1.x technical report                           | content      | skip     | 2026-04-10 | low     | E0     | low       | -            | arxiv 2409.18839 - 18 authors, PDF-Extract-Kit + pre/post-processing rules. Background reading only. Low direct relevanc  |
+| MinerU 2.5 technical report                           | content      | defer    | 2026-04-10 | medium  | E0     | medium    | -            | arxiv 2509.22186 - 61 authors, 1.2B VLM, coarse-to-fine two-stage parsing. Low direct relevance but the two-stage framin  |
 
 ## public-apis/public-apis (repo)
 

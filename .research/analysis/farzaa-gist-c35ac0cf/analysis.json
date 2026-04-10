@@ -92,5 +92,6 @@
     "Parallel 5-agent batches are optimal for cleanup audits",
     "Concept articles (patterns/themes) are the most valuable wiki pages",
     "Diary-driven structure is the most common quality problem"
-  ]
+  ],
+  "source_tier": "T2"
 }

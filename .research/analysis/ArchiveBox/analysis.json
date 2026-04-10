@@ -72,5 +72,6 @@
       "Durable formats: everything stored as plain files readable without ArchiveBox",
       "REST API + webhooks for integration"
     ]
-  }
+  },
+  "source_tier": "T1"
 }

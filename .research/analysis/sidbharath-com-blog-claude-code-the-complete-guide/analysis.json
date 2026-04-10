@@ -79,5 +79,6 @@
     "pages_analyzed": 1,
     "extraction_mode": "WebFetch"
   },
-  "site_type": "blog"
+  "site_type": "blog",
+  "source_tier": "T2"
 }

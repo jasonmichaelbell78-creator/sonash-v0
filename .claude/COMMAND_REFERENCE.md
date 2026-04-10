@@ -86,12 +86,13 @@ Source: `.claude/skills/*/SKILL.md`
 | `/media-analysis`                 | Media analysis (YouTube, podcast, audio) — transcription + dual-lens, part of CAS          |
 | `/ui-design-system`               | Design system components toolkit                                                           |
 | `/repo-analysis`                  | Dual-lens repo analysis: Creator View + Engineer View, 3 tiers, link mining, dual scoring  |
-| `/repo-synthesis`                 | Cross-repo synthesis: emergent themes, ecosystem gaps, reading chains, fit portfolio       |
+| `/repo-synthesis`                 | DEPRECATED — use `/synthesize` instead. Redirect expires next session.                     |
+| `/synthesize`                     | Unified cross-source synthesis (T29) — all 4 source types, 8 sections, opportunity matrix  |
 | `/using-superpowers`              | Claude skills usage guide                                                                  |
 | `/ux-researcher-designer`         | UX research and design toolkit                                                             |
 | `/webapp-testing`                 | Web application testing with Playwright                                                    |
 | `/website-analysis`               | Creator-first website analysis: dual-lens, 3 tiers, 4 modes, superpowers-chrome extraction |
-| `/website-synthesis`              | Cross-site synthesis: thematic/narrative/matrix/meta-pattern paradigms, 3+ sites           |
+| `/website-synthesis`              | DEPRECATED — use `/synthesize` instead. Redirect expires next session.                     |
 | `sonash-context`                  | Shared project context injected into agents via `skills:` field (not user-invocable)       |
 
 ## System Commands
@@ -168,20 +169,21 @@ Source: `.husky/`
 
 ## Version History
 
-| Version | Date         | Change                                                                   |
-| ------- | ------------ | ------------------------------------------------------------------------ |
-| 8.1     | 2026-04-06   | Skill convergence: shared CONVENTIONS.md, Zod schemas, 4-skill alignment |
-| 8.0     | 2026-04-06   | Added /website-analysis, /website-synthesis (68 skills)                  |
-| 7.0     | 2026-04-05   | Added /repo-synthesis, updated /repo-analysis v4.1 (66 skills)           |
-| 6.0     | 2026-04-02   | Added /repo-analysis skill (65 skills)                                   |
-| 5.9     | 2026-03-24   | Added convergence-loop, data-effectiveness-audit, debt-runner (64)       |
-| 5.5     | 2026-02-24   | Added skill/doc/script/comprehensive ecosystem audits (65)               |
-| 5.4     | 2026-02-23   | Added /tdms-ecosystem-audit + /session-ecosystem-audit (61)              |
-| 5.3     | 2026-02-23   | Added /hook-ecosystem-audit skill (59)                                   |
-| 5.2     | 2026-02-23   | Added 17 missing skills (58 total)                                       |
-| 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill                                          |
-| 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)                                  |
-| 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills                               |
-| 3.0     | Session #135 | Added multi-AI audit, comprehensive audit                                |
-| 2.0     | Session #110 | Fix expansion-evaluation template                                        |
-| 1.0     | Session #100 | Initial comprehensive reference                                          |
+| Version | Date         | Change                                                                                                                                            |
+| ------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 8.2     | 2026-04-10   | T29 Wave 3 Steps 7-8: 14 upstream refs updated (analyze/repo/website skills + CONVENTIONS §17), synthesis-schema.ts removed, backup files cleaned |
+| 8.1     | 2026-04-06   | Skill convergence: shared CONVENTIONS.md, Zod schemas, 4-skill alignment                                                                          |
+| 8.0     | 2026-04-06   | Added /website-analysis, /website-synthesis (68 skills)                                                                                           |
+| 7.0     | 2026-04-05   | Added /repo-synthesis, updated /repo-analysis v4.1 (66 skills)                                                                                    |
+| 6.0     | 2026-04-02   | Added /repo-analysis skill (65 skills)                                                                                                            |
+| 5.9     | 2026-03-24   | Added convergence-loop, data-effectiveness-audit, debt-runner (64)                                                                                |
+| 5.5     | 2026-02-24   | Added skill/doc/script/comprehensive ecosystem audits (65)                                                                                        |
+| 5.4     | 2026-02-23   | Added /tdms-ecosystem-audit + /session-ecosystem-audit (61)                                                                                       |
+| 5.3     | 2026-02-23   | Added /hook-ecosystem-audit skill (59)                                                                                                            |
+| 5.2     | 2026-02-23   | Added 17 missing skills (58 total)                                                                                                                |
+| 5.1     | 2026-02-20   | Added /pr-ecosystem-audit skill                                                                                                                   |
+| 5.0     | 2026-02-17   | Trimmed to index format (109KB → <10KB)                                                                                                           |
+| 4.0     | Session #140 | Added all plugins, GSD, SuperClaude skills                                                                                                        |
+| 3.0     | Session #135 | Added multi-AI audit, comprehensive audit                                                                                                         |
+| 2.0     | Session #110 | Fix expansion-evaluation template                                                                                                                 |
+| 1.0     | Session #100 | Initial comprehensive reference                                                                                                                   |

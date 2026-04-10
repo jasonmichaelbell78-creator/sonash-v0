@@ -17,6 +17,7 @@ const path = require("node:path");
 const nodeCrypto = require("node:crypto");
 const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const { validate } = require("../lib/analysis-schema.js");
+const { safeReadJson } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -204,9 +205,10 @@ function generateTags(data, sourceType) {
 function migrateAnalysis(filePath, slug) {
   let data;
   try {
-    data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    // safeReadJson: parent-chain symlink guard + fd-pinned stat + fd-pinned read.
+    data = safeReadJson(filePath);
   } catch (err) {
-    console.error(`  SKIP ${slug}: parse error — ${sanitizeError(err)}`);
+    console.error(`  SKIP ${slug}: read/parse error — ${sanitizeError(err)}`);
     return null;
   }
 
@@ -220,7 +222,12 @@ function migrateAnalysis(filePath, slug) {
   const source = data.source || data.meta?.repo || data.meta?.url || data.repo?.full_name || slug;
   const title = data.title || data.site?.title || data.repo?.description?.substring(0, 80) || slug;
   const analyzedAt = data.analyzed_at || data.meta?.scan_date || data.analysisDate || null;
-  const depth = data.depth || data.meta?.scan_depth || "quick";
+  // v2 legacy records stored depth at root-level `scanDepth` (camelCase).
+  // Must be checked before the "quick" default — omission caused the Session
+  // #272 mislabel where 9 Standard repos were stamped depth="quick". See
+  // T29 Wave 4 Step 8.5 notes in .planning/synthesis-consolidation/PLAN.md.
+  const depth =
+    data.depth || data.scanDepth || data.meta?.scan_depth || data.meta?.scanDepth || "quick";
 
   const existingId =
     typeof data.id === "string" &&

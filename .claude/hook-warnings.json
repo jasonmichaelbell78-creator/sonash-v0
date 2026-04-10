@@ -1,13 +1,33 @@
 {
   "warnings": [
     {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "10 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-10T16:10:26.061Z",
+      "occurrences": 6,
+      "occurrences_since_ack": 5
+    },
+    {
+      "hook": "pre-commit",
+      "type": "propagation-staged",
+      "severity": "error",
+      "message": "BLOCK-severity propagation misses in staged files",
+      "action": "Stage sibling files or fix the old pattern",
+      "timestamp": "2026-04-10T12:29:51.019Z",
+      "occurrences": 4,
+      "occurrences_since_ack": 1
+    },
+    {
       "hook": "session-start",
       "type": "review-lifecycle",
       "severity": "warning",
       "message": "Review lifecycle validation issues found",
       "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-08T14:00:15.232Z",
-      "occurrences": 9,
+      "timestamp": "2026-04-10T12:04:11.050Z",
+      "occurrences": 7,
       "occurrences_since_ack": 1
     },
     {
@@ -16,8 +36,18 @@
       "severity": "warning",
       "message": "S0: 26 critical debt items",
       "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-08T14:00:15.232Z",
-      "occurrences": 9,
+      "timestamp": "2026-04-10T12:04:11.050Z",
+      "occurrences": 7,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "cli-tools-missing",
+      "severity": "warning",
+      "message": "CLI tools missing: rg",
+      "action": "bash scripts/install-cli-tools.sh",
+      "timestamp": "2026-04-10T12:04:11.050Z",
+      "occurrences": 2,
       "occurrences_since_ack": 1
     },
     {
@@ -26,19 +56,19 @@
       "severity": "warning",
       "message": "Skill/agent files modified",
       "action": "Validate",
-      "timestamp": "2026-04-08T13:58:42.278Z",
-      "occurrences": 2,
+      "timestamp": "2026-04-10T12:01:33.831Z",
+      "occurrences": 3,
       "occurrences_since_ack": 1
     },
     {
-      "hook": "pre-push",
-      "type": "audit",
+      "hook": "pre-commit",
+      "type": "pr-creep",
       "severity": "warning",
-      "message": "npm audit found security vulnerabilities",
-      "action": "npm audit",
-      "timestamp": "2026-04-09T20:51:25.186Z",
-      "occurrences": 1,
-      "occurrences_since_ack": 1
+      "message": "11 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-10T18:13:47.861Z",
+      "occurrences": 7,
+      "occurrences_since_ack": 6
     }
   ]
 }

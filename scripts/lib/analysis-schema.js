@@ -3,15 +3,17 @@
 /**
  * Unified Zod schemas for the Content Analysis System (T28).
  *
- * Two schemas:
+ * Three schemas:
  * - analysisRecord: per-source analysis output (analysis.json)
  * - extractionRecord: per-candidate extraction entry (extraction-journal.jsonl)
+ * - synthesisRecord: cross-source synthesis output (synthesis.json) — T29
  *
  * All handler skills import and validate against these schemas.
  * Schema-as-code prevents drift between handlers.
  *
  * @see .planning/content-analysis-system/DECISIONS.md (Decisions #6, #7, #8)
- * @see .claude/skills/shared/CONVENTIONS.md (Section 12)
+ * @see .planning/synthesis-consolidation/DECISIONS.md (Decisions #6, #28, #32)
+ * @see .claude/skills/shared/CONVENTIONS.md (Section 12, 17)
  */
 
 const { z } = require("zod");
@@ -45,6 +47,26 @@ const noveltyEnum = z.enum(["high", "medium", "low"]);
 const effortEnum = z.enum(["E0", "E1", "E2", "E3"]);
 
 const relevanceEnum = z.enum(["high", "medium", "low"]);
+
+// Source authority/trust tier (D#13, D#32). Repos default to T1 (first-party
+// artifacts). Other types span T1-T4 based on editorial authority. Stored on
+// each analysis.json so synthesis can weight evidence accordingly.
+const sourceTierEnum = z.enum(["T1", "T2", "T3", "T4"]);
+
+// Synthesis paradigm — analytical lens applied across sources (D#7).
+const paradigmEnum = z.enum(["thematic", "narrative", "matrix", "meta-pattern"]);
+
+// Synthesis run mode (D#8, D#14).
+const synthesisModeEnum = z.enum(["full", "incremental", "re-synthesis"]);
+
+// Convergence confidence — how many independent sources support a theme.
+const convergenceEnum = z.enum(["weak", "medium", "strong"]);
+
+// Opportunity routing target (D#12).
+const opportunityRouteEnum = z.enum(["/brainstorm", "/deep-plan", "/deep-research", "/analyze"]);
+
+// Reading-chain pedagogical tier (D#25).
+const chainTierEnum = z.enum(["overview", "tutorial", "implementation", "theory"]);
 
 // --- Candidate schema (shared in analysis + extraction) ---
 
@@ -87,6 +109,9 @@ const analysisRecordCore = z.object({
   creator_view: z.string(),
   candidates: z.array(candidateSchema),
   last_synthesized_at: z.string().nullable().default(null),
+  // T29: source authority tier (D#13, D#32). Optional for backward
+  // compatibility — migrate-v3.js fills defaults for existing records.
+  source_tier: sourceTierEnum.optional(),
 });
 
 // --- Type-specific optional fields ---
@@ -171,6 +196,152 @@ const analysisRecord = analysisRecordCore.and(
   ])
 );
 
+// --- Synthesis sub-schemas (T29, D#6, D#11) ---
+
+// Theme + signal merged. Every theme carries convergence evidence (D#11).
+const themeEvidenceSchema = z.object({
+  source_slug: z.string(),
+  source_type: sourceTypeEnum,
+  quote_or_ref: z.string(),
+});
+
+const themeSchema = z.object({
+  name: z.string(),
+  description: z.string(),
+  evidence: z.array(themeEvidenceSchema),
+  convergence_count: z.number().int().nonnegative(),
+  convergence_confidence: convergenceEnum,
+  source_types: z.array(sourceTypeEnum),
+  signal_strength: z.enum(["weak", "medium", "strong"]).optional(),
+});
+
+// Ecosystem gap — domain present in home context but missing from analyzed sources.
+const gapSchema = z.object({
+  domain: z.string(),
+  description: z.string(),
+  why_unfilled: z.string(),
+  suggested_action: z.string().optional(),
+  home_context_source: z.string().nullable().optional(),
+});
+
+// Reading-chain node — pedagogical or dependency-ordered study path (D#25).
+const chainNodeSchema = z.object({
+  order: z.number().int().nonnegative(),
+  source_slug: z.string(),
+  source_type: sourceTypeEnum,
+  rationale: z.string(),
+  tier: chainTierEnum.optional(),
+});
+
+// Opportunity — actionable next-step routed to brainstorm/plan/research/analyze (D#12).
+const opportunitySchema = z.object({
+  rank: z.number().int().positive(),
+  title: z.string(),
+  description: z.string(),
+  effort: effortEnum,
+  impact: z.enum(["low", "medium", "high"]),
+  evidence: z.array(z.string()),
+  suggested_route: opportunityRouteEnum,
+});
+
+// Re-synthesis change detection — all 6 dimensions (D#10).
+const changesSectionSchema = z.object({
+  themes: z.object({
+    new: z.array(z.string()),
+    removed: z.array(z.string()),
+    strengthened: z.array(z.string()),
+    weakened: z.array(z.string()),
+  }),
+  candidates: z.object({
+    new: z.array(z.string()),
+    promoted: z.array(z.string()),
+    demoted: z.array(z.string()),
+  }),
+  gaps: z.object({
+    filled: z.array(z.string()),
+    new: z.array(z.string()),
+  }),
+  confidence_shifts: z.array(
+    z.object({
+      theme: z.string(),
+      from: convergenceEnum,
+      to: convergenceEnum,
+    })
+  ),
+  contradictions: z.array(
+    z.object({
+      description: z.string(),
+      sources: z.array(z.string()),
+    })
+  ),
+  source_impact: z.array(
+    z.object({
+      source_slug: z.string(),
+      impact: z.string(),
+    })
+  ),
+});
+
+// --- Synthesis record (synthesis.json) ---
+
+const synthesisRecord = z.object({
+  schema_version: z.string(),
+  generated_at: z.string(),
+  paradigm: paradigmEnum,
+  mode: synthesisModeEnum,
+  sources_included: z.array(
+    z.object({
+      slug: z.string(),
+      source: z.string(),
+      source_type: sourceTypeEnum,
+      source_tier: sourceTierEnum,
+      depth: depthEnum,
+    })
+  ),
+  sources_excluded: z.array(
+    z.object({
+      slug: z.string(),
+      reason: z.string(),
+    })
+  ),
+  // Base sections — always present (D#11)
+  themes: z.array(themeSchema),
+  ecosystem_gaps: z.array(gapSchema),
+  fit_portfolio: z.object({
+    refreshed_at: z.string(),
+    candidates: z.array(candidateSchema),
+  }),
+  knowledge_map: z.object({
+    covered: z.array(
+      z.object({
+        domain: z.string(),
+        sources: z.array(z.string()),
+        quality: z.string(),
+      })
+    ),
+    gaps: z.array(
+      z.object({
+        domain: z.string(),
+        home_context_source: z.string(),
+        suggested_scan: z.string().nullable(),
+      })
+    ),
+  }),
+  opportunity_matrix: z.array(opportunitySchema),
+  // Type-specific — optional (D#11)
+  reading_chain: z.array(chainNodeSchema).optional(),
+  mental_model: z
+    .object({
+      interest_shifts: z.array(z.unknown()),
+      confidence_shifts: z.array(z.unknown()),
+      emerging_focus_tags: z.array(z.string()),
+      date_range: z.string(),
+    })
+    .optional(),
+  // Re-synthesis only — optional (D#10)
+  changes_since_previous: changesSectionSchema.optional(),
+});
+
 // --- Extraction record (extraction-journal.jsonl) ---
 
 const extractionRecord = z.object({
@@ -196,11 +367,16 @@ const extractionRecord = z.object({
 /**
  * Validate a record against a schema.
  * @param {object} record - The data to validate
- * @param {'analysis'|'extraction'} type - Which schema to use
+ * @param {'analysis'|'extraction'|'synthesis'} type - Which schema to use
  * @returns {{ success: boolean, data?: object, error?: string }}
  */
 function validate(record, type) {
-  const schema = type === "analysis" ? analysisRecord : extractionRecord;
+  let schema;
+  if (type === "analysis") schema = analysisRecord;
+  else if (type === "extraction") schema = extractionRecord;
+  else if (type === "synthesis") schema = synthesisRecord;
+  else return { success: false, error: `Unknown schema type: ${type}` };
+
   const result = schema.safeParse(record);
   if (result.success) {
     return { success: true, data: result.data };
@@ -214,6 +390,7 @@ module.exports = {
   analysisRecordCore,
   analysisRecord,
   extractionRecord,
+  synthesisRecord,
   candidateSchema,
   scoringSchema,
 
@@ -222,6 +399,14 @@ module.exports = {
   websiteFields,
   mediaFields,
   documentFields,
+
+  // Synthesis sub-schemas
+  themeSchema,
+  themeEvidenceSchema,
+  gapSchema,
+  chainNodeSchema,
+  opportunitySchema,
+  changesSectionSchema,
 
   // Enums
   sourceTypeEnum,
@@ -233,6 +418,12 @@ module.exports = {
   noveltyEnum,
   effortEnum,
   relevanceEnum,
+  sourceTierEnum,
+  paradigmEnum,
+  synthesisModeEnum,
+  convergenceEnum,
+  opportunityRouteEnum,
+  chainTierEnum,
 
   // Helper
   validate,

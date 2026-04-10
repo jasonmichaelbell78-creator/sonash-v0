@@ -8,8 +8,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.3
-**Last Updated:** 2026-04-06
+**Document Version:** 4.4
+**Last Updated:** 2026-04-10
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -24,8 +24,11 @@ fitness. Both views are always produced; Creator View comes first.
 
 ## Critical Rules (MUST follow)
 
-1. **Quick Scan is the default.** API-only, <30s. Do NOT clone unless user
-   requests Standard/Deep or accepts the interactive gate.
+1. **Standard is the default.** Full artifact set: clone + repomix + dimension
+   wave + Deep Read + Content Evaluation + Creator View + Engineer View + Value
+   Map + Coverage Audit + Tag Suggestion + Retro + Routing Menu. Quick Scan
+   (`--depth=quick`) is opt-in for triage scenarios where a preview is all
+   that's needed. Deep (`--depth=deep`) adds the History Wave.
 2. **Write-to-disk-first.** Every step writes its output file before proceeding.
    Orchestrator verifies file existence, not return values.
 3. **Bands over numbers.** Display categorical bands with score in parentheses.
@@ -52,9 +55,9 @@ fitness. Both views are always produced; Creator View comes first.
 - User needs a structured health report for a dependency decision
 - Triage of multiple candidate repos (Quick Scan each)
 
-**When NOT to Use:** Cross-repo synthesis -> `/repo-synthesis` | Home repo audit
--> `/audit-comprehensive` | Domain/technology research -> `/deep-research` |
-Quick dependency check -> `gh api` directly.
+**When NOT to Use:** Cross-repo synthesis -> `/synthesize` | Home repo audit ->
+`/audit-comprehensive` | Domain/technology research -> `/deep-research` | Quick
+dependency check -> `gh api` directly.
 
 > See [REFERENCE.md](./REFERENCE.md) for dimension catalog, tool stack, output
 > schemas, absence patterns, Creator View specification, and guard rails.
@@ -63,7 +66,7 @@ Quick dependency check -> `gh api` directly.
 
 **Argument:** `/repo-analysis <github-url>`
 
-**Flags:** `--depth=quick` (default) | `--depth=standard` | `--depth=deep` |
+**Flags:** `--depth=standard` (default) | `--depth=quick` | `--depth=deep` |
 `--lens=adoption|creator` (override auto-detected primary lens)
 
 **Output:** `.research/analysis/<repo-slug>/` — analysis.json (unified schema
@@ -80,10 +83,15 @@ in `scripts/lib/analysis-schema.js`. See CONVENTIONS.md Section 12.
 
 ## Process Overview
 
+Standard (`--depth=standard`, default) and Deep (`--depth=deep`) share the main
+pipeline; Quick Scan (`--depth=quick`) is a standalone triage mode that stops
+after its own artifacts. There is no interactive gate between Quick and
+Standard/Deep — each depth is picked up-front via the `--depth` flag.
+
+**Standard / Deep flow (default):**
+
 ```
 VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback?
-PHASE 0    Quick Scan     -> API-only, <30s, 18 dimensions + lightweight creator lens
-GATE       Interactive    -> "Run Standard/Deep? [y/N]"
 PHASE 1    Clone+Repomix  -> Blobless clone, generate repomix IMMEDIATELY, verify
 PHASE 2    Dimension Wave -> Inline (<20 files) or agents (large repos)
 PHASE 2b   Deep Read      -> Read internal artifacts beyond code (guides, notebooks, examples, embedded docs)
@@ -96,11 +104,19 @@ PHASE 6b   Coverage Audit -> Scan for unexplored content, prompt user to analyze
 ROUTING    Menu           -> Extract | TDMS | Deep-plan | Memory | Adopt | Done
 ```
 
+**Quick Scan flow (`--depth=quick`, opt-in triage):**
+
+```
+VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback?
+PHASE 0    Quick Scan     -> API-only, <30s, 18 dimensions + lightweight creator lens
+ROUTING    Menu           -> Queue for Standard | Extract | Done
+```
+
 Phase markers: `========== PHASE N: [NAME] ==========`
 
 ---
 
-## Quick Scan (Phase 0)
+## Quick Scan (Phase 0 — runs only when `--depth=quick` is passed)
 
 API-only, under 30 seconds. 18 dimensions (QS-01 through QS-18). See
 REFERENCE.md Section 1.1 for full dimension catalog and API batch structure.
@@ -112,14 +128,18 @@ write artifacts → present inline.
 **Lightweight creator lens (MUST):** After computing health dimensions, read the
 repo description and README (via Contents API, first 200 lines). Write 2-3
 sentences: "This repo appears to understand/demonstrate/teach X." This is a
-teaser, not the full Creator View — enough to judge whether Standard/Deep is
-worth the time.
+teaser, not the full Creator View — enough to judge whether a deeper analysis
+should be queued later.
 
-**Interactive gate:** "Quick Scan complete. [health bands]. Run Standard/Deep
-for full Creator + Engineer analysis? (Standard ~5-10 min, Deep ~15-20 min)
-[y/N]" For `curated-list` repos: enriched gate showing link count and link
-mining option. See REFERENCE.md Section 16. If `--depth=standard|deep` specified
-at invocation, skip this gate.
+**Note:** Quick Scan is a standalone triage mode, not a preview step for
+Standard. Standard (`--depth=standard`, default) proceeds directly to Phase 1
+(Clone + Repomix). There is no Standard/Deep gate.
+
+For `curated-list` repos at Quick depth: report the link count and recommend a
+Standard run for link mining. See REFERENCE.md Section 16.
+
+**source_tier:** Repos always emit `source_tier: "T1"` (first-party artifacts).
+Stored in `analysis.json` and consumed by `/synthesize` for evidence weighting.
 
 ---
 
@@ -373,8 +393,8 @@ value-map.json. For each connection to another analyzed repo, record:
 }
 ```
 
-These connections feed `/repo-synthesis`. Flag connection points even if the
-target repo hasn't been analyzed yet — they become leads for future analysis.
+These connections feed `/synthesize`. Flag connection points even if the target
+repo hasn't been analyzed yet — they become leads for future analysis.
 
 ## Tag Suggestion (Phase 6c — MUST for Standard/Deep)
 
@@ -441,7 +461,7 @@ and re-verify.
 
 **If user selects Skip:** Record skipped items in `coverage-audit.jsonl` for
 future reference. Do not silently discard — the record ensures the next run or
-`/repo-synthesis` knows what was deferred.
+`/synthesize` knows what was deferred.
 
 ## Cross-Repo Extraction Tracking (MUST for Standard/Deep)
 
@@ -515,7 +535,7 @@ Presented after Standard or Deep. 8 options:
 | **5. Adoption verdict**     | Full WR-01 through WR-06 assessment.             |
 | **6. Explore insights**     | Deeper conversation about Creator View findings. |
 | **7. Done**                 | Cleanup, confirm artifacts, track invocation.    |
-| **8. Cross-repo synthesis** | If 3+ repos analyzed, offer /repo-synthesis.     |
+| **8. Cross-repo synthesis** | If 3+ repos analyzed, offer /synthesize.         |
 
 ---
 
@@ -535,7 +555,7 @@ phase-level resume.
 ## Integration
 
 - **Upstream:** `/deep-research`, `/brainstorm`
-- **Downstream:** `/deep-plan`, `/repo-synthesis`, TDMS, project memory
+- **Downstream:** `/deep-plan`, `/synthesize`, TDMS, project memory
 - **Neighbors:** `/audit-comprehensive` (home repo), dimension agents
 - **References:** [REFERENCE.md](./REFERENCE.md),
   [BRAINSTORM.md](../../.research/archive/repo-analysis-knowledge/BRAINSTORM.md)
@@ -558,6 +578,11 @@ cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"repo-analysi
 ```
 
 ---
+
+_v4.4 | 2026-04-10 | PR #505 Gemini review: split Process Overview into
+Standard/Deep and Quick Scan flows to remove the stale "GATE Interactive → Run
+Standard/Deep?" row that contradicted the v4.3 decision to drop the interactive
+gate (Quick is now an opt-in triage mode, not a preview step)._
 
 _v4.3 | 2026-04-06 | Convergence: CONVENTIONS.md ref, self-audit phase, schema
 drift fix, artifact path alignment, agent_budget removal, retro persistence,

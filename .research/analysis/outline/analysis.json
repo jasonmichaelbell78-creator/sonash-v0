@@ -70,5 +70,6 @@
       "Full-text search + API for programmatic access",
       "Permissions model on documents/collections"
     ]
-  }
+  },
+  "source_tier": "T1"
 }

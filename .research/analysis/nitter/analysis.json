@@ -72,5 +72,6 @@
       "Privacy-first: prevents IP tracking and JavaScript fingerprinting",
       "15x lighter than native Twitter, 2-4x faster page loads"
     ]
-  }
+  },
+  "source_tier": "T1"
 }

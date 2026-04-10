@@ -14,6 +14,7 @@ const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const { validate } = require("../lib/analysis-schema.js");
+const { safeReadJson, isValidArtifactFile } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -202,6 +203,53 @@ function fixRecord(data, dirName, filePath) {
     changed = true;
   }
 
+  // 8. source_tier (T29 / D#13, D#32) — assign default by source_type.
+  // Repos are first-party artifacts (T1). Other types default to T2 — user can
+  // override via tags or during synthesis pre-flight.
+  if (!data.source_tier) {
+    if (data.source_type === "repo") data.source_tier = "T1";
+    else data.source_tier = "T2";
+    fixes.push("source_tier → " + data.source_tier);
+    changed = true;
+  }
+
+  // 9. depth self-heal (T29 Wave 4 Step 8.5) — detect migrate-schemas.js
+  // mislabel where depth="quick" was stamped on repos with full Standard
+  // artifact sets. Two signals:
+  //   (a) legacy v2 `scanDepth` field at root-level disagrees with depth
+  //   (b) full 7/7 Standard artifact files exist on disk
+  // Only self-heal when either signal is confidently "standard".
+  if (data.depth === "quick") {
+    const dir = path.dirname(filePath);
+    const standardArtifacts = [
+      "findings.jsonl",
+      "summary.md",
+      "deep-read.md",
+      "content-eval.jsonl",
+      "coverage-audit.jsonl",
+      "creator-view.md",
+      "value-map.json",
+    ];
+    // Count only valid artifact files: regular file, non-zero size, no
+    // parent-chain symlinks. Directories, symlinks, and empty placeholders
+    // must NOT flip depth quick→standard (PR #505 Qodo "weak Standard
+    // artifact detection" finding).
+    let artifactCount = 0;
+    for (const artifact of standardArtifacts) {
+      if (isValidArtifactFile(path.join(dir, artifact))) artifactCount++;
+    }
+    const scanDepthSaysStandard = data.scanDepth === "standard";
+    const artifactsSayStandard = artifactCount === standardArtifacts.length;
+    if (scanDepthSaysStandard || artifactsSayStandard) {
+      data.depth = "standard";
+      const reason = scanDepthSaysStandard
+        ? "scanDepth=standard"
+        : `${artifactCount}/${standardArtifacts.length} artifacts`;
+      fixes.push("depth quick→standard (" + reason + ")");
+      changed = true;
+    }
+  }
+
   return { data, fixes, changed };
 }
 
@@ -227,15 +275,17 @@ function main() {
       continue;
     }
 
+    let data;
     try {
-      const st = fs.lstatSync(ap);
-      if (st.isSymbolicLink()) {
-        console.warn("SKIP:", dir.name, "— symlinked analysis.json");
-        totalSkipped++;
-        continue;
-      }
-      const raw = fs.readFileSync(ap, "utf8");
-      const data = JSON.parse(raw);
+      // safeReadJson refuses parent-chain symlinks and rejects non-files.
+      data = safeReadJson(ap);
+    } catch (err) {
+      console.warn("SKIP:", dir.name, "—", sanitizeError(err));
+      totalSkipped++;
+      continue;
+    }
+
+    try {
       const { data: fixed, fixes, changed } = fixRecord(data, dir.name, ap);
 
       if (!changed) {

@@ -136,6 +136,19 @@ function validatePathWithinRepo(filePath) {
  * @param {string} description - Human-readable description for errors
  * @returns {{success: boolean, content?: string, error?: string}}
  */
+// Binary file safety (isBinary check via extension allowlist) for safeReadFile.
+// archive-doc.js only operates on text-based docs; refusing other types
+// avoids crashes/garbage when readFileSync hits a binary file.
+const TEXT_FILE_EXTENSIONS = new Set([
+  ".md",
+  ".markdown",
+  ".txt",
+  ".json",
+  ".jsonl",
+  ".yml",
+  ".yaml",
+]);
+
 function safeReadFile(filePath, description) {
   verbose(`Reading ${description} from ${filePath}`);
 
@@ -143,6 +156,16 @@ function safeReadFile(filePath, description) {
     return {
       success: false,
       error: `${description} not found at: ${filePath}`,
+    };
+  }
+
+  // Binary file check via extension allowlist
+  const lastDot = filePath.lastIndexOf(".");
+  const ext = lastDot === -1 ? "" : filePath.slice(lastDot).toLowerCase();
+  if (!TEXT_FILE_EXTENSIONS.has(ext)) {
+    return {
+      success: false,
+      error: `${description} has non-text extension "${ext || "(none)"}" — refusing to read`,
     };
   }
 

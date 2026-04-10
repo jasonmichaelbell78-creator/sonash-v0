@@ -2057,8 +2057,8 @@ loaded as context.
 
 **Check:** `ls .research/analysis/*/analysis.json | wc -l >= 3`
 
-**Behavior:** Suggest `/website-synthesis` with list of analyzed sites. User
-confirms which sites to include in synthesis.
+**Behavior:** Suggest `/synthesize` with list of analyzed sites. User confirms
+which sites to include in synthesis.
 
 ---
 

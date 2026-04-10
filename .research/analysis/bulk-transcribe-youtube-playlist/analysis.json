@@ -6,7 +6,7 @@
   "slug": "bulk-transcribe-youtube-playlist",
   "title": "Easily take an entire YouTube playlist and turn it into high quality transcripts",
   "analyzed_at": "2026-04-07",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "utility-tool", "bulk", "transcribe", "youtube", "playlist"],
   "scoring": {
     "quality_band": "Critical",
@@ -17,7 +17,116 @@
   },
   "summary": "This repo understands that bulk YouTube transcription needs to be local-first (Whisper), GPU-accelerated (CUDA/faster-whisper), and playlist-aware.  It demonstrates the complete pipeline: YouTube URL -> audio download -> Whisper transcription -> NLP sentence splitting (SpaCy or regex) -> structured output (text/CSV/JSON with timestamps and confidence scores).",
   "creator_view": "This repo understands that bulk YouTube transcription needs to be local-first (Whisper), GPU-accelerated (CUDA/faster-whisper), and playlist-aware. It demonstrates the complete pipeline: YouTube URL -> audio download -> Whisper transcription -> NLP sentence splitting (SpaCy or regex) -> structured output (text/CSV/JSON with timestamps and confidence scores). The transcript reader HTML shows UX awareness beyond raw transcription. It's the practical, local-first complement to AWS Transcribe approaches — exactly the T27 reference for Whisper-based extraction.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "faster-whisper local transcription pipeline",
+      "type": "pattern",
+      "description": "Complete local Whisper lifecycle: CUDA detection, large-v3, beam_size=10, vad_filter, segment iteration with tqdm, metadata capture. T27 reference.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "Whisper tuned params (beam_size=10, vad_filter)",
+      "type": "knowledge",
+      "description": "beam_size=10 (vs default 5) for accuracy. vad_filter=True prevents hallucination-on-silence. Production tuning.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "Caption-first + Whisper-fallback architecture",
+      "type": "knowledge",
+      "description": "Cross-repo insight: both bedrock and this repo skip captions. pytubefix has yt.captions. Caption-first for ~80% of videos, Whisper fallback for rest.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "Async download + sync GPU transcription",
+      "type": "pattern",
+      "description": "asyncio.Semaphore(4) for concurrent downloads, sequential GPU transcription. Network parallelizes, GPU doesn't.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "faster-whisper library",
+      "type": "content",
+      "description": "CTranslate2 Whisper. 4x faster than OpenAI whisper. GPU+CPU. THE local transcription engine for T27.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "CUDA/GPU detection + CPU fallback",
+      "type": "pattern",
+      "description": "numba.cuda.is_available(), Anaconda toolkit paths, float16 vs auto compute. Real-world GPU setup.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "SpaCy + compromise.js two-stage NLP",
+      "type": "pattern",
+      "description": "Server-side SpaCy for sentence splitting, client-side compromise.js for paragraph restructuring. Two NLP stages.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "API vs local cost tradeoff",
+      "type": "knowledge",
+      "description": "$0.006/min API (less accurate) vs free local (more accurate, needs GPU). 1h = $0.36 vs $0.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "compromise.js client-side NLP",
+      "type": "content",
+      "description": "75KB browser NLP. Sentence/paragraph detection. 11K+ stars.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "Monolithic single-file tool anti-pattern",
+      "type": "anti-pattern",
+      "description": "280 lines, no CLI, no config file. Works for personal use, impossible to integrate. T27 must be modular.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "Skip-captions-always anti-pattern",
+      "type": "anti-pattern",
+      "description": "Both bedrock and this repo transcribe every video from scratch. Check captions first (~80% have them).",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "utility-tool"]
+    },
+    {
+      "name": "Hard-coded source config anti-pattern",
+      "type": "anti-pattern",
+      "description": "Module-level variables including API keys. No CLI args, no env vars.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "utility-tool"]
+    }
+  ],
   "last_synthesized_at": null,
   "skillVersion": "4.3",
   "repo": {
@@ -147,5 +256,6 @@
     }
   },
   "absencePattern": "popular-utility-script",
-  "creatorLens": "This repo understands that bulk YouTube transcription needs to be local-first (Whisper), GPU-accelerated (CUDA/faster-whisper), and playlist-aware. It demonstrates the complete pipeline: YouTube URL -> audio download -> Whisper transcription -> NLP sentence splitting (SpaCy or regex) -> structured output (text/CSV/JSON with timestamps and confidence scores). The transcript reader HTML shows UX awareness beyond raw transcription. It's the practical, local-first complement to AWS Transcribe approaches — exactly the T27 reference for Whisper-based extraction."
+  "creatorLens": "This repo understands that bulk YouTube transcription needs to be local-first (Whisper), GPU-accelerated (CUDA/faster-whisper), and playlist-aware. It demonstrates the complete pipeline: YouTube URL -> audio download -> Whisper transcription -> NLP sentence splitting (SpaCy or regex) -> structured output (text/CSV/JSON with timestamps and confidence scores). The transcript reader HTML shows UX awareness beyond raw transcription. It's the practical, local-first complement to AWS Transcribe approaches — exactly the T27 reference for Whisper-based extraction.",
+  "source_tier": "T1"
 }

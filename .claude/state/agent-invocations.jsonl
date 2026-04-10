@@ -129,3 +129,8 @@
 {"agent":"fullstack-developer","description":"Create document + media REFERENCE.md","outcome":"invoked","timestamp":"2026-04-08T18:15:03.660Z"}
 {"agent":"fullstack-developer","description":"Create agent definitions","outcome":"invoked","timestamp":"2026-04-08T18:15:14.449Z"}
 {"agent":"code-reviewer","description":"Code review CAS scripts","outcome":"invoked","timestamp":"2026-04-09T20:49:16.166Z"}
+{"agent":"code-reviewer","description":"Code review T29 Wave 1 scripts","outcome":"invoked","timestamp":"2026-04-10T01:41:08.835Z"}
+{"agent":"security-auditor","description":"Security audit of MinerU","outcome":"invoked","timestamp":"2026-04-10T16:31:41.965Z"}
+{"agent":"documentation-expert","description":"Documentation quality audit of MinerU","outcome":"invoked","timestamp":"2026-04-10T16:32:04.444Z"}
+{"agent":"test-engineer","description":"Test infrastructure audit of MinerU","outcome":"invoked","timestamp":"2026-04-10T16:32:20.944Z"}
+{"agent":"backend-architect","description":"Architecture analysis of MinerU","outcome":"invoked","timestamp":"2026-04-10T16:32:43.377Z"}

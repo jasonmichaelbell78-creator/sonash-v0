@@ -824,8 +824,8 @@ valid
 
 Append-only log of relationships between analyzed repos. Populated during Phase
 4 (Creator View) and Phase 6 (Value Map) when cross-repo relationships are
-discovered. Consumed by the `/repo-synthesis` skill for reading chain generation
-and cross-repo knowledge maps.
+discovered. Consumed by the `/synthesize` skill for reading chain generation and
+cross-repo knowledge maps.
 
 ```jsonl
 {
@@ -1810,8 +1810,8 @@ Same loading order as Creator View (Section 14.2):
 ## 17. Cross-Repo Awareness
 
 Lightweight cross-referencing during per-repo analysis. Not full synthesis
-(that's `/repo-synthesis`) -- just awareness of what's already been analyzed and
-how repos relate.
+(that's `/synthesize`) -- just awareness of what's already been analyzed and how
+repos relate.
 
 ### 17.1 During Phase 4 (Creator View)
 
@@ -1836,7 +1836,7 @@ how repos relate.
 After analysis completion, if 3+ repos have been analyzed:
 
 ```
-"You've analyzed [N] repos. Cross-repo synthesis available via /repo-synthesis.
+"You've analyzed [N] repos. Cross-repo synthesis available via /synthesize.
 Run now? [y/N]"
 ```
 

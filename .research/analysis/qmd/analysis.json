@@ -72,5 +72,6 @@
       "Local-only: node-llama-cpp with GGUF models, no cloud dependency",
       "CLI-first: crwl command with --json and --files output for agent consumption"
     ]
-  }
+  },
+  "source_tier": "T1"
 }
