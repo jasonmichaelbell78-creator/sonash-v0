@@ -101,3 +101,5 @@
 {"timestamp":"2026-04-08T10:10:57.937Z","action":"intake-pr-deferred","pr_number":500,"item_id":"DEBT-45645","file":"config/rotation-policy.json","severity":"S2"}
 {"timestamp":"2026-04-10T00:59:51.198Z","action":"intake-manual","item_id":"DEBT-45646","file":".github/workflows","severity":"S2","category":"process"}
 {"timestamp":"2026-04-10T20:26:19.135Z","action":"intake-pr-deferred","pr_number":505,"item_id":"DEBT-45647","file":"scripts/cas/backfill-tags.js","severity":"S1"}
+{"timestamp":"2026-04-10T20:55:12.612Z","action":"intake-manual","item_id":"DEBT-45648","file":"scripts/cas/migrate-schemas.js","severity":"S2","category":"code-quality"}
+{"timestamp":"2026-04-10T20:55:19.990Z","action":"intake-manual","item_id":"DEBT-45649","file":".husky/pre-push","severity":"S2","category":"engineering-productivity"}

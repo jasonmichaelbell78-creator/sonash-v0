@@ -140,6 +140,7 @@ nul
 
 # repo-analysis source/ workspaces (cloned external repos, regenerable, large)
 .research/repo-analysis/**/source/
+.research/analysis/**/source/
 
 # GSD (Get Shit Done) plugin — local-only files
 .claude/agents/gsd-*.md

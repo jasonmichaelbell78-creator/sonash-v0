@@ -1419,7 +1419,7 @@
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...  | doc-header                                                                                                                                         | 0    | process                  | E2        |
 | DEBT-45647 | CAS family: parent-chain symlink guards missing on reads      | scripts/cas/backfill-tags.js                                                                                                                       | 45   | security                 | E1        |
 
-## S2 - Medium (3455)
+## S2 - Medium (3457)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4878,6 +4878,8 @@
 | DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js              | scripts/health/lib/warning-lifecycle.test.js                                                                                                                                | 0         | code-quality             | E1        |
 | DEBT-45645 | Archive log not in rotation policy                                | config/rotation-policy.json                                                                                                                                                 | 8         | process                  | E1        |
 | DEBT-45646 | CI pattern compliance exits 1 on test-file WARN-only output       | .github/workflows                                                                                                                                                           | 0         | process                  | E2        |
+| DEBT-45648 | CAS scripts: 6 cyclomatic CC violations baselined (PR #505)       | scripts/cas/migrate-schemas.js                                                                                                                                              | 84        | code-quality             | E2        |
+| DEBT-45649 | Hook gate gap: cyclomatic CC runs at pre-push only, not p...      | .husky/pre-push                                                                                                                                                             | 1         | engineering-productivity | E1        |
 
 ## S3 - Low (3642)
 

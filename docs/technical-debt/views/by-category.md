@@ -268,7 +268,7 @@
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions         | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-10933 | Filesystem MCP server configured but noted as unused              | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (4722)
+## code-quality (4723)
 
 | ID         | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | ---------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -3449,6 +3449,7 @@
 | DEBT-45617 | Normalize dedup-log schema: consistent removed/flagged ke...    | S2       | docs/technical-debt/logs/dedup-log.jsonl                                                                                                                                    | 0    |
 | DEBT-45620 | Auto-generated DOCUMENTATION_INDEX leaks machine-specific...    | S2       | DOCUMENTATION_INDEX.md                                                                                                                                                      | 103  |
 | DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js            | S2       | scripts/health/lib/warning-lifecycle.test.js                                                                                                                                | 0    |
+| DEBT-45648 | CAS scripts: 6 cyclomatic CC violations baselined (PR #505)     | S2       | scripts/cas/migrate-schemas.js                                                                                                                                              | 84   |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-0554  | Prefer `String#replaceAll()` over `String#replace()`.           | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555  | Visible, non-interactive elements with click handlers mus...    | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
@@ -5982,7 +5983,7 @@
 | DEBT-10727 | Document atomic write pattern as reusable helper               | S3       | docs/agent_docs/CODE_PATTERNS.md                                   | 0    |
 | DEBT-11038 | CANON system uses JSONL output model — templates referenc...   | S3       | docs/templates/CANON_QUICK_REFERENCE.md                            | 1    |
 
-## engineering-productivity (70)
+## engineering-productivity (71)
 
 | ID         | Title                                                        | Severity | File                                        | Line      |
 | ---------- | ------------------------------------------------------------ | -------- | ------------------------------------------- | --------- |
@@ -6034,6 +6035,7 @@
 | DEBT-45522 | Pre-push SonarCloud lint script for new files                | S2       | scripts/                                    | 0         |
 | DEBT-45621 | Automate 4 failing learning patterns as compliance checke... | S2       | scripts/check-pattern-compliance.js         | 1         |
 | DEBT-45629 | Statusline lacks width-aware line reflow                     | S2       | tools/statusline/render.go                  | 12        |
+| DEBT-45649 | Hook gate gap: cyclomatic CC runs at pre-push only, not p... | S2       | .husky/pre-push                             | 1         |
 | DEBT-2430  | Archive reviews #285-334 to reduce learnings log from 340... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md             | 0         |
 | DEBT-2431  | Refresh Quick Pattern Index with recent patterns from rev... | S3       | docs/AI_REVIEW_LEARNINGS_LOG.md             | 0         |
 | DEBT-7534  | 96-101 npm scripts with no grouping, no help, no discover... | S3       | package.json                                | 0         |

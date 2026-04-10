@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2146
+**Items Needing Verification:** 2148
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -746,6 +746,8 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js            | S2       | scripts/health/lib/warning-lifecycle.test.js                                     | 0         |
 | DEBT-45645 | Archive log not in rotation policy                              | S2       | config/rotation-policy.json                                                      | 8         |
 | DEBT-45646 | CI pattern compliance exits 1 on test-file WARN-only output     | S2       | .github/workflows                                                                | 0         |
+| DEBT-45648 | CAS scripts: 6 cyclomatic CC violations baselined (PR #505)     | S2       | scripts/cas/migrate-schemas.js                                                   | 84        |
+| DEBT-45649 | Hook gate gap: cyclomatic CC runs at pre-push only, not p...    | S2       | .husky/pre-push                                                                  | 1         |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |
