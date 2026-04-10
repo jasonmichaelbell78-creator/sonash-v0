@@ -17,6 +17,7 @@ const path = require("node:path");
 const nodeCrypto = require("node:crypto");
 const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const { validate } = require("../lib/analysis-schema.js");
+const { safeReadJson } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -204,9 +205,10 @@ function generateTags(data, sourceType) {
 function migrateAnalysis(filePath, slug) {
   let data;
   try {
-    data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    // safeReadJson: parent-chain symlink guard + fd-pinned stat + fd-pinned read.
+    data = safeReadJson(filePath);
   } catch (err) {
-    console.error(`  SKIP ${slug}: parse error — ${sanitizeError(err)}`);
+    console.error(`  SKIP ${slug}: read/parse error — ${sanitizeError(err)}`);
     return null;
   }
 

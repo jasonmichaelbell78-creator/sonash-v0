@@ -7815,7 +7815,7 @@
 | DEBT-11353 | Upgrade react+react-dom 19.2.3→19.2.4 (patch, pinned exact)  | S3       | package.json                                                                     | 142  |
 | DEBT-11354 | Migrate test runner from node --test + c8 to vitest          | S3       | package.json                                                                     | 11   |
 
-## security (730)
+## security (731)
 
 | ID         | Title                                                          | Severity | File                                                                    | Line |
 | ---------- | -------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -8011,6 +8011,7 @@
 | DEBT-45628 | Propagation miss: refuse-symlink pattern in hooks (32 files)   | S1       | .claude/hooks/block-push-to-main.js                                     | 1    |
 | DEBT-45630 | refuse-symlink propagation — 20+ hooks missing refuseSyml...   | S1       | .claude/hooks                                                           | 1    |
 | DEBT-45642 | Security pattern propagation: 6 patterns across archive s...   | S1       | scripts/archive/reverify-resolved.js                                    | 1    |
+| DEBT-45647 | CAS family: parent-chain symlink guards missing on reads       | S1       | scripts/cas/backfill-tags.js                                            | 45   |
 | DEBT-0376  | Zod schemas missing .strict() (unknown fields accepted)        | S2       | functions/src/schemas.ts                                                | 0    |
 | DEBT-0377  | Hardcoded fallback reCAPTCHA site key in server verificat...   | S2       | functions/src/recaptcha-verify.ts                                       | 0    |
 | DEBT-0378  | Server-side journal entry type enum missing 'step-1-works...   | S2       | functions/src/schemas.ts                                                | 0    |

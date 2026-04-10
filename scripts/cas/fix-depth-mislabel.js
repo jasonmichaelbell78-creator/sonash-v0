@@ -28,11 +28,11 @@
  *   node scripts/cas/fix-depth-mislabel.js [--dry-run] [--verbose]
  */
 
-const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const { validate } = require("../lib/analysis-schema.js");
+const { safeReadJson, isValidArtifactFile } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -71,13 +71,10 @@ function hasFullStandardArtifacts(slug) {
   const dir = path.join(ANALYSIS_DIR, slug);
   const missing = [];
   for (const artifact of REQUIRED_STANDARD_ARTIFACTS) {
-    const p = path.join(dir, artifact);
-    try {
-      const st = fs.lstatSync(p);
-      if (st.isSymbolicLink()) {
-        missing.push(artifact + " (symlink)");
-      }
-    } catch {
+    // isValidArtifactFile enforces: no parent-chain symlinks + regular file
+    // + non-zero size. Tightens the prior check which only rejected the
+    // final-path symlink case (PR #505 Qodo "weak Standard artifact detection").
+    if (!isValidArtifactFile(path.join(dir, artifact))) {
       missing.push(artifact);
     }
   }
@@ -87,28 +84,19 @@ function hasFullStandardArtifacts(slug) {
 function fixAnalysisJson(slug) {
   const ap = path.join(ANALYSIS_DIR, slug, "analysis.json");
 
-  let st;
-  try {
-    st = fs.lstatSync(ap);
-  } catch (err) {
-    return { status: "MISSING", reason: sanitizeError(err) };
-  }
-  if (st.isSymbolicLink()) {
-    return { status: "SKIP", reason: "symlinked analysis.json" };
-  }
-
-  let raw;
-  try {
-    raw = fs.readFileSync(ap, "utf8");
-  } catch (err) {
-    return { status: "ERROR", reason: "read failed: " + sanitizeError(err) };
-  }
-
   let data;
   try {
-    data = JSON.parse(raw);
+    // safeReadJson refuses parent-chain symlinks, rejects non-files, and
+    // throws ENOENT if missing — all cases mapped to non-FIX statuses below.
+    data = safeReadJson(ap);
   } catch (err) {
-    return { status: "ERROR", reason: "parse failed: " + sanitizeError(err) };
+    if (err.code === "ENOENT") {
+      return { status: "MISSING", reason: sanitizeError(err) };
+    }
+    if (err instanceof SyntaxError) {
+      return { status: "ERROR", reason: "parse failed: " + sanitizeError(err) };
+    }
+    return { status: "ERROR", reason: "read failed: " + sanitizeError(err) };
   }
 
   // Sanity check: this script only fixes the specific known mislabeling.
@@ -174,9 +162,18 @@ function main() {
   if (errored > 0) process.exit(1);
 }
 
-try {
-  main();
-} catch (err) {
-  console.error("Fatal:", sanitizeError(err));
-  process.exit(1);
+if (require.main === module) {
+  try {
+    main();
+  } catch (err) {
+    console.error("Fatal:", sanitizeError(err));
+    process.exit(1);
+  }
 }
+
+module.exports = {
+  hasFullStandardArtifacts,
+  fixAnalysisJson,
+  REQUIRED_STANDARD_ARTIFACTS,
+  MISLABELED_SLUGS,
+};

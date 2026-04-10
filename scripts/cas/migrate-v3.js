@@ -14,6 +14,7 @@ const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const { validate } = require("../lib/analysis-schema.js");
+const { safeReadJson, isValidArtifactFile } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -229,15 +230,13 @@ function fixRecord(data, dirName, filePath) {
       "creator-view.md",
       "value-map.json",
     ];
+    // Count only valid artifact files: regular file, non-zero size, no
+    // parent-chain symlinks. Directories, symlinks, and empty placeholders
+    // must NOT flip depth quick→standard (PR #505 Qodo "weak Standard
+    // artifact detection" finding).
     let artifactCount = 0;
     for (const artifact of standardArtifacts) {
-      const p = path.join(dir, artifact);
-      try {
-        const st = fs.lstatSync(p);
-        if (!st.isSymbolicLink()) artifactCount++;
-      } catch {
-        /* missing */
-      }
+      if (isValidArtifactFile(path.join(dir, artifact))) artifactCount++;
     }
     const scanDepthSaysStandard = data.scanDepth === "standard";
     const artifactsSayStandard = artifactCount === standardArtifacts.length;
@@ -276,15 +275,17 @@ function main() {
       continue;
     }
 
+    let data;
     try {
-      const st = fs.lstatSync(ap);
-      if (st.isSymbolicLink()) {
-        console.warn("SKIP:", dir.name, "— symlinked analysis.json");
-        totalSkipped++;
-        continue;
-      }
-      const raw = fs.readFileSync(ap, "utf8");
-      const data = JSON.parse(raw);
+      // safeReadJson refuses parent-chain symlinks and rejects non-files.
+      data = safeReadJson(ap);
+    } catch (err) {
+      console.warn("SKIP:", dir.name, "—", sanitizeError(err));
+      totalSkipped++;
+      continue;
+    }
+
+    try {
       const { data: fixed, fixes, changed } = fixRecord(data, dir.name, ap);
 
       if (!changed) {

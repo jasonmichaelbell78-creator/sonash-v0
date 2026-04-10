@@ -24,6 +24,7 @@ const {
   refuseSymlinkWithParents,
   slugify,
 } = require("../lib/security-helpers.js");
+const { safeReadText, safeReadJson, isValidArtifactFile } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -62,9 +63,8 @@ function parseArgs(argv) {
 function getDepth(dir) {
   const analysisPath = path.join(dir, "analysis.json");
   try {
-    const st = fs.lstatSync(analysisPath);
-    if (st.isSymbolicLink()) return "quick";
-    const data = JSON.parse(fs.readFileSync(analysisPath, "utf8"));
+    // safeReadJson refuses symlinks (final + parent chain) and rejects non-files.
+    const data = safeReadJson(analysisPath);
     return data.depth || "quick";
   } catch {
     return "quick";
@@ -81,16 +81,25 @@ function safePath(slugPart, filePart) {
   return path.join(ANALYSIS_DIR, rel);
 }
 
-// TOCTOU-safe stat: reject symlinks (including parent-chain symlinks) before
-// reading. Uses refuseSymlinkWithParents() for the canonical parent-chain
-// guard, then lstatSync + isSymbolicLink as defense-in-depth on the final
-// path (satisfies propagation `refuse-symlink` AND `lstat-symlink` patterns).
-function safeStatSync(filePath) {
+// Return the lstat of a regular file with parent-chain symlink protection, or
+// null if the path does not exist, is a symlink (final or any parent), or is
+// not a regular file. Never throws — suitable for size reporting in loops.
+function safeFileStat(filePath) {
+  if (!isValidArtifactFile(filePath)) {
+    // isValidArtifactFile already rejected empty files, but for reporting we
+    // still want stat when non-empty. Re-check without the size guard.
+    try {
+      refuseSymlinkWithParents(filePath);
+      const st = fs.lstatSync(filePath);
+      if (st.isSymbolicLink()) return null;
+      if (!st.isFile()) return null;
+      return st;
+    } catch {
+      return null;
+    }
+  }
   try {
-    refuseSymlinkWithParents(filePath);
-    const st = fs.lstatSync(filePath);
-    if (st.isSymbolicLink()) return null;
-    return st;
+    return fs.lstatSync(filePath);
   } catch {
     return null;
   }
@@ -104,15 +113,13 @@ function checkArtifacts(dir, slug) {
   // MUST artifacts (all depths)
   for (const { file, description } of MUST_ALL_DEPTHS) {
     const filePath = safePath(slug, file);
-    if (fs.existsSync(filePath)) {
-      const stat = safeStatSync(filePath);
-      if (!stat || stat.size === 0) {
-        results.fail.push(`MUST artifact empty: ${file} (${description})`);
-      } else {
-        results.pass.push(`${file} (${stat.size} bytes)`);
-      }
-    } else {
+    const stat = safeFileStat(filePath);
+    if (!stat) {
       results.fail.push(`MUST artifact missing: ${file} (${description})`);
+    } else if (stat.size === 0) {
+      results.fail.push(`MUST artifact empty: ${file} (${description})`);
+    } else {
+      results.pass.push(`${file} (${stat.size} bytes)`);
     }
   }
 
@@ -120,41 +127,34 @@ function checkArtifacts(dir, slug) {
   if (isStandardOrDeep) {
     for (const { file, description } of MUST_STANDARD_DEEP) {
       const filePath = safePath(slug, file);
-      if (fs.existsSync(filePath)) {
-        const stat = safeStatSync(filePath);
-        if (!stat || stat.size === 0) {
-          results.fail.push(`MUST artifact empty: ${file} (${description})`);
-        } else {
-          results.pass.push(`${file} (${stat.size} bytes)`);
-        }
-      } else {
+      const stat = safeFileStat(filePath);
+      if (!stat) {
         results.fail.push(`MUST artifact missing: ${file} (${description})`);
+      } else if (stat.size === 0) {
+        results.fail.push(`MUST artifact empty: ${file} (${description})`);
+      } else {
+        results.pass.push(`${file} (${stat.size} bytes)`);
       }
     }
   }
 
-  // SHOULD artifacts — only check for Standard/Deep
+  // SHOULD artifacts — only warn for Standard/Deep
   for (const { file, description, phase } of SHOULD_ARTIFACTS) {
     const filePath = safePath(slug, file);
-    if (fs.existsSync(filePath)) {
-      const stat = safeStatSync(filePath);
-      if (stat && stat.size > 0) {
-        results.pass.push(`${file} (${stat.size} bytes)`);
-      } else if (isStandardOrDeep) {
-        results.warn.push(
-          `SHOULD artifact empty: ${file} (${description}) — Phase ${phase} may have been skipped`
-        );
-      }
+    const stat = safeFileStat(filePath);
+    if (stat && stat.size > 0) {
+      results.pass.push(`${file} (${stat.size} bytes)`);
     } else if (isStandardOrDeep) {
-      results.warn.push(
-        `SHOULD artifact missing: ${file} (${description}) — Phase ${phase} skipped`
-      );
+      const reason = stat
+        ? `SHOULD artifact empty: ${file} (${description}) — Phase ${phase} may have been skipped`
+        : `SHOULD artifact missing: ${file} (${description}) — Phase ${phase} skipped`;
+      results.warn.push(reason);
     }
   }
 
   // WRONG names (naming violations)
   for (const { file, correct, reason } of WRONG_NAMES) {
-    if (fs.existsSync(safePath(slug, file))) {
+    if (safeFileStat(safePath(slug, file))) {
       results.fail.push(`Wrong artifact name: ${file} should be ${correct} (${reason})`);
     }
   }
@@ -168,7 +168,8 @@ function checkSchema(dir, slug) {
 
   let data;
   try {
-    data = JSON.parse(fs.readFileSync(analysisPath, "utf8"));
+    // safeReadJson refuses parent-chain symlinks and enforces regular-file.
+    data = safeReadJson(analysisPath);
   } catch (err) {
     if (err.code === "ENOENT") {
       results.fail.push("Cannot validate schema — analysis.json missing");
@@ -215,7 +216,7 @@ function checkSchema(dir, slug) {
       }
       // transcript.md must exist
       const transcriptPath = safePath(slug, "transcript.md");
-      const tStat = fs.existsSync(transcriptPath) ? safeStatSync(transcriptPath) : null;
+      const tStat = safeFileStat(transcriptPath);
       if (tStat && tStat.size > 0) {
         results.pass.push(`transcript.md (${tStat.size} bytes)`);
       } else {
@@ -239,8 +240,8 @@ function checkExtractions(slug, source) {
 
   let lines;
   try {
-    const content = fs.readFileSync(JOURNAL_PATH, "utf8").trim();
-    lines = content.split("\n");
+    // safeReadText refuses parent-chain symlinks and enforces regular-file.
+    lines = safeReadText(JOURNAL_PATH).trim().split("\n");
   } catch (err) {
     if (err.code === "ENOENT") {
       results.warn.push("extraction-journal.jsonl not found");
@@ -295,25 +296,29 @@ function checkBehavioral(dir, slug, sourceType) {
   const stateDir = path.join(PROJECT_ROOT, ".claude", "state");
   const stateFile = path.join(stateDir, `${handler}.${slug}.state.json`);
 
-  if (fs.existsSync(stateFile)) {
-    try {
-      const state = JSON.parse(fs.readFileSync(stateFile, "utf8"));
-      results.pass.push(`State file exists (${handler}.${slug})`);
-      if (state.process_feedback) {
-        results.pass.push(
-          `Retro feedback captured: "${String(state.process_feedback).substring(0, 50)}..."`
-        );
-      } else {
-        results.warn.push(
-          "State file exists but process_feedback is empty — retro may have been skipped (CONVENTIONS 16.2)"
-        );
-      }
-    } catch {
-      results.warn.push("State file exists but is malformed");
+  let state;
+  try {
+    // safeReadJson throws ENOENT when missing and refuses parent-chain symlinks.
+    state = safeReadJson(stateFile);
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      results.warn.push(
+        `No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)`
+      );
+    } else {
+      results.warn.push(`State file exists but is malformed or unsafe: ${sanitizeError(err)}`);
     }
+    return results;
+  }
+
+  results.pass.push(`State file exists (${handler}.${slug})`);
+  if (state.process_feedback) {
+    results.pass.push(
+      `Retro feedback captured: "${String(state.process_feedback).substring(0, 50)}..."`
+    );
   } else {
     results.warn.push(
-      `No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)`
+      "State file exists but process_feedback is empty — retro may have been skipped (CONVENTIONS 16.2)"
     );
   }
 
@@ -339,14 +344,13 @@ function main() {
   let source = slug;
   let sourceType = "repo";
   const analysisPath = path.join(dir, "analysis.json");
-  if (fs.existsSync(analysisPath)) {
-    try {
-      const data = JSON.parse(fs.readFileSync(analysisPath, "utf8"));
-      if (data.source) source = data.source;
-      if (data.source_type) sourceType = data.source_type;
-    } catch {
-      // use slug as fallback
-    }
+  try {
+    // safeReadJson refuses parent-chain symlinks and throws ENOENT if missing.
+    const data = safeReadJson(analysisPath);
+    if (data.source) source = data.source;
+    if (data.source_type) sourceType = data.source_type;
+  } catch {
+    // fall through — use slug as fallback identifier
   }
 
   console.log(`CAS Self-Audit: ${slug}`);

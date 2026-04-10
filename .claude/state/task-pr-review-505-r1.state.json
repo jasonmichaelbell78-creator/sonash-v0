@@ -1,0 +1,16 @@
+{
+  "pr": 505,
+  "round": 1,
+  "review_number": 81,
+  "source": "mixed",
+  "total": 16,
+  "fixed": 14,
+  "deferred": 0,
+  "rejected": 2,
+  "severity": { "critical": 4, "major": 6, "minor": 3, "trivial": 3 },
+  "completed_steps": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": null,
+  "completed_at": "2026-04-10T00:00:00Z",
+  "notes": "Option B (Scoped hardening). In-scope: 4 Qodo-flagged files + migrate-v3.js + migrate-schemas.js + recall.js. Helper relocated to scripts/lib/safe-cas-io.js with fd-pinning TOCTOU hardening (openSync + O_NOFOLLOW + fstatSync + readFileSync(fd)). Deferred to DEBT-45647: backfill-tags.js, rebuild-index.js, update-index.js, scripts/lib/read-jsonl.js, journal-append atomicity, log-injection hardening, validatePathInDir slug check. Rejected (repo convention): Qodo Compliance audit-trail + structured-logging generic rules. Security-auditor confirmed 10 Qodo findings and surfaced 9 additional parent-chain gaps (all covered or deferred). Test coverage closed for the 3 new CAS scripts (test-registry gate passing). CC violations: 17→14 repo-wide (L97/L174 backfill-candidates eliminated)."
+}

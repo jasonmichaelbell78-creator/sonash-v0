@@ -160,6 +160,9 @@
 {"path":"tests/scripts/archive-doc.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"archive-doc","description":"unit test for archive-doc"}
 {"path":"tests/scripts/assign-review-tier.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"assign-review-tier","description":"unit test for assign-review-tier"}
 {"path":"tests/scripts/audit-s0-promotions.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"audit-s0-promotions","description":"unit test for audit-s0-promotions"}
+{"path":"tests/scripts/cas/backfill-candidates.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"backfill-candidates","description":"unit test for backfill-candidates"}
+{"path":"tests/scripts/cas/fix-depth-mislabel.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"fix-depth-mislabel","description":"unit test for fix-depth-mislabel"}
+{"path":"tests/scripts/cas/promote-firecrawl-to-journal.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"promote-firecrawl-to-journal","description":"unit test for promote-firecrawl-to-journal"}
 {"path":"tests/scripts/check-agent-compliance.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-agent-compliance","description":"unit test for check-agent-compliance"}
 {"path":"tests/scripts/check-backlog-health.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-backlog-health","description":"unit test for check-backlog-health"}
 {"path":"tests/scripts/check-case-sensitivity.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"check-case-sensitivity","description":"unit test for check-case-sensitivity"}
@@ -207,6 +210,8 @@
 {"path":"tests/scripts/reset-audit-triggers.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"reset-audit-triggers","description":"unit test for reset-audit-triggers"}
 {"path":"tests/scripts/retro-action-items.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"retro-action-items","description":"unit test for retro-action-items"}
 {"path":"tests/scripts/run-consolidation.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"run-consolidation","description":"unit test for run-consolidation"}
+{"path":"tests/scripts/run-github-health.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"run-github-health","description":"unit test for run-github-health"}
+{"path":"tests/scripts/safe-cas-io.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"safe-cas-io","description":"unit test for safe-cas-io"}
 {"path":"tests/scripts/safe-fs.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"safe-fs","description":"unit test for safe-fs"}
 {"path":"tests/scripts/search-capabilities.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"search-capabilities","description":"unit test for search-capabilities"}
 {"path":"tests/scripts/security-check.test.ts","source_type":"test_file","type":"unit","owner":"scripts","target":"security-check","description":"unit test for security-check"}
@@ -377,6 +382,7 @@
 {"path":".claude/skills/tdms-ecosystem-audit/scripts/checkers/roadmap-integration.js","source_type":"audit_checker","type":"checker","owner":"tdms-ecosystem-audit","target":"roadmap-integration","description":"tdms-ecosystem-audit domain checker: roadmap-integration"}
 {"path":".claude/skills/add-debt/SKILL.md","source_type":"skill_command","type":"skill","owner":"add-debt","target":"add-debt","description":"Skill: add-debt"}
 {"path":".claude/skills/alerts/SKILL.md","source_type":"skill_command","type":"skill","owner":"alerts","target":"alerts","description":"Skill: alerts"}
+{"path":".claude/skills/analyze/SKILL.md","source_type":"skill_command","type":"skill","owner":"analyze","target":"analyze","description":"Skill: analyze"}
 {"path":".claude/skills/artifacts-builder/SKILL.md","source_type":"skill_command","type":"skill","owner":"artifacts-builder","target":"artifacts-builder","description":"Skill: artifacts-builder"}
 {"path":".claude/skills/audit-agent-quality/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-agent-quality","target":"audit-agent-quality","description":"Skill: audit-agent-quality"}
 {"path":".claude/skills/audit-aggregator/SKILL.md","source_type":"skill_command","type":"skill","owner":"audit-aggregator","target":"audit-aggregator","description":"Skill: audit-aggregator"}
@@ -407,6 +413,7 @@
 {"path":".claude/skills/doc-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"doc-ecosystem-audit","target":"doc-ecosystem-audit","description":"Skill: doc-ecosystem-audit"}
 {"path":".claude/skills/doc-optimizer/SKILL.md","source_type":"skill_command","type":"skill","owner":"doc-optimizer","target":"doc-optimizer","description":"Skill: doc-optimizer"}
 {"path":".claude/skills/docs-maintain/SKILL.md","source_type":"skill_command","type":"skill","owner":"docs-maintain","target":"docs-maintain","description":"Skill: docs-maintain"}
+{"path":".claude/skills/document-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"document-analysis","target":"document-analysis","description":"Skill: document-analysis"}
 {"path":".claude/skills/ecosystem-health/SKILL.md","source_type":"skill_command","type":"skill","owner":"ecosystem-health","target":"ecosystem-health","description":"Skill: ecosystem-health"}
 {"path":".claude/skills/excel-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"excel-analysis","target":"excel-analysis","description":"Skill: excel-analysis"}
 {"path":".claude/skills/find-skills/SKILL.md","source_type":"skill_command","type":"skill","owner":"find-skills","target":"find-skills","description":"Skill: find-skills"}
@@ -417,13 +424,16 @@
 {"path":".claude/skills/hook-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"hook-ecosystem-audit","target":"hook-ecosystem-audit","description":"Skill: hook-ecosystem-audit"}
 {"path":".claude/skills/market-research-reports/SKILL.md","source_type":"skill_command","type":"skill","owner":"market-research-reports","target":"market-research-reports","description":"Skill: market-research-reports"}
 {"path":".claude/skills/mcp-builder/SKILL.md","source_type":"skill_command","type":"skill","owner":"mcp-builder","target":"mcp-builder","description":"Skill: mcp-builder"}
+{"path":".claude/skills/media-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"media-analysis","target":"media-analysis","description":"Skill: media-analysis"}
 {"path":".claude/skills/multi-ai-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"multi-ai-audit","target":"multi-ai-audit","description":"Skill: multi-ai-audit"}
 {"path":".claude/skills/pr-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"pr-ecosystem-audit","target":"pr-ecosystem-audit","description":"Skill: pr-ecosystem-audit"}
 {"path":".claude/skills/pr-retro/SKILL.md","source_type":"skill_command","type":"skill","owner":"pr-retro","target":"pr-retro","description":"Skill: pr-retro"}
 {"path":".claude/skills/pr-review/SKILL.md","source_type":"skill_command","type":"skill","owner":"pr-review","target":"pr-review","description":"Skill: pr-review"}
 {"path":".claude/skills/pre-commit-fixer/SKILL.md","source_type":"skill_command","type":"skill","owner":"pre-commit-fixer","target":"pre-commit-fixer","description":"Skill: pre-commit-fixer"}
 {"path":".claude/skills/quick-fix/SKILL.md","source_type":"skill_command","type":"skill","owner":"quick-fix","target":"quick-fix","description":"Skill: quick-fix"}
+{"path":".claude/skills/recall/SKILL.md","source_type":"skill_command","type":"skill","owner":"recall","target":"recall","description":"Skill: recall"}
 {"path":".claude/skills/repo-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"repo-analysis","target":"repo-analysis","description":"Skill: repo-analysis"}
+{"path":".claude/skills/repo-synthesis/SKILL.md","source_type":"skill_command","type":"skill","owner":"repo-synthesis","target":"repo-synthesis","description":"Skill: repo-synthesis"}
 {"path":".claude/skills/script-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"script-ecosystem-audit","target":"script-ecosystem-audit","description":"Skill: script-ecosystem-audit"}
 {"path":".claude/skills/session-begin/SKILL.md","source_type":"skill_command","type":"skill","owner":"session-begin","target":"session-begin","description":"Skill: session-begin"}
 {"path":".claude/skills/session-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"session-ecosystem-audit","target":"session-ecosystem-audit","description":"Skill: session-ecosystem-audit"}
@@ -433,6 +443,7 @@
 {"path":".claude/skills/skill-ecosystem-audit/SKILL.md","source_type":"skill_command","type":"skill","owner":"skill-ecosystem-audit","target":"skill-ecosystem-audit","description":"Skill: skill-ecosystem-audit"}
 {"path":".claude/skills/sonarcloud/SKILL.md","source_type":"skill_command","type":"skill","owner":"sonarcloud","target":"sonarcloud","description":"Skill: sonarcloud"}
 {"path":".claude/skills/sonash-context/SKILL.md","source_type":"skill_command","type":"skill","owner":"sonash-context","target":"sonash-context","description":"Skill: sonash-context"}
+{"path":".claude/skills/synthesize/SKILL.md","source_type":"skill_command","type":"skill","owner":"synthesize","target":"synthesize","description":"Skill: synthesize"}
 {"path":".claude/skills/system-test/SKILL.md","source_type":"skill_command","type":"skill","owner":"system-test","target":"system-test","description":"Skill: system-test"}
 {"path":".claude/skills/systematic-debugging/SKILL.md","source_type":"skill_command","type":"skill","owner":"systematic-debugging","target":"systematic-debugging","description":"Skill: systematic-debugging"}
 {"path":".claude/skills/task-next/SKILL.md","source_type":"skill_command","type":"skill","owner":"task-next","target":"task-next","description":"Skill: task-next"}
@@ -444,6 +455,8 @@
 {"path":".claude/skills/ux-researcher-designer/SKILL.md","source_type":"skill_command","type":"skill","owner":"ux-researcher-designer","target":"ux-researcher-designer","description":"Skill: ux-researcher-designer"}
 {"path":".claude/skills/validate-claude-folder/SKILL.md","source_type":"skill_command","type":"skill","owner":"validate-claude-folder","target":"validate-claude-folder","description":"Skill: validate-claude-folder"}
 {"path":".claude/skills/webapp-testing/SKILL.md","source_type":"skill_command","type":"skill","owner":"webapp-testing","target":"webapp-testing","description":"Skill: webapp-testing"}
+{"path":".claude/skills/website-analysis/SKILL.md","source_type":"skill_command","type":"skill","owner":"website-analysis","target":"website-analysis","description":"Skill: website-analysis"}
+{"path":".claude/skills/website-synthesis/SKILL.md","source_type":"skill_command","type":"skill","owner":"website-synthesis","target":"website-synthesis","description":"Skill: website-synthesis"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"lint","description":"npm run lint"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"lint:fast","description":"npm run lint:fast"}
 {"path":"package.json","source_type":"npm_validator","type":"npm-script","owner":"npm","target":"test","description":"npm run test"}

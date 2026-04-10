@@ -23,10 +23,10 @@
  * guard before appending.
  */
 
-const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
+const { safeReadJson, safeReadText, validateCandidate } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const VALUE_MAP_PATH = path.join(
@@ -63,19 +63,18 @@ function mapCandidate(vmCandidate) {
   };
 }
 
-function main() {
-  console.log("Promote firecrawl value-map → extraction-journal" + (DRY_RUN ? " (dry run)" : ""));
-
-  // Load value-map.json
+// Load the value-map, collect candidates across all 4 type buckets, and
+// print a type breakdown. Exits the process on read failure.
+function loadValueMapCandidates() {
   let vm;
   try {
-    vm = JSON.parse(fs.readFileSync(VALUE_MAP_PATH, "utf8"));
+    // safeReadJson refuses parent-chain symlinks and rejects non-files.
+    vm = safeReadJson(VALUE_MAP_PATH);
   } catch (err) {
     console.error("value-map read failed:", sanitizeError(err));
     process.exit(1);
   }
 
-  // Collect all candidates across the 4 type buckets
   const all = [
     ...(vm.pattern_candidates || []),
     ...(vm.knowledge_candidates || []),
@@ -91,17 +90,22 @@ function main() {
       `total=${all.length}`
   );
 
-  // Load existing journal to dedup
+  return all;
+}
+
+// Load the existing journal as raw lines and return { lines, existingForSource }.
+function loadJournalAndCount() {
   let existingLines = [];
   try {
-    const raw = fs.readFileSync(JOURNAL_PATH, "utf8");
-    existingLines = raw.split("\n").filter((l) => l.trim());
+    // safeReadText refuses parent-chain symlinks and rejects non-files.
+    existingLines = safeReadText(JOURNAL_PATH)
+      .split("\n")
+      .filter((l) => l.trim());
   } catch (err) {
     console.error("journal read failed:", sanitizeError(err));
     process.exit(1);
   }
 
-  // Check for existing firecrawl entries
   const existingForSource = existingLines.filter((l) => {
     try {
       const e = JSON.parse(l);
@@ -112,6 +116,44 @@ function main() {
   });
   console.log(`existing journal entries for ${SOURCE}: ${existingForSource.length}`);
 
+  return { existingLines, existingForSource };
+}
+
+// Validate mapped journal entries before writing to the canonical file.
+// validateCandidate() uses the Zod-backed candidateSchema against the
+// candidate-shaped subset (name/type/description/novelty/effort/relevance/tags).
+// The journal entry adds wrapper fields (schema_version, source, etc.) that
+// are not part of the candidate schema, so we build a candidate-shaped view
+// for validation only.
+function validateJournalEntries(entries) {
+  for (let i = 0; i < entries.length; i++) {
+    const e = entries[i];
+    const candidateView = {
+      name: e.candidate,
+      type: e.type,
+      description: e.notes || "",
+      novelty: e.novelty,
+      effort: e.effort,
+      relevance: e.relevance,
+      tags: Array.isArray(e.tags) ? e.tags : [],
+    };
+    const problems = validateCandidate(candidateView);
+    if (problems.length > 0) {
+      return {
+        ok: false,
+        reason: `entry ${i} (${e.candidate || "<unnamed>"}) invalid: ${problems.join(", ")}`,
+      };
+    }
+  }
+  return { ok: true };
+}
+
+function main() {
+  console.log("Promote firecrawl value-map → extraction-journal" + (DRY_RUN ? " (dry run)" : ""));
+
+  const all = loadValueMapCandidates();
+  const { existingLines, existingForSource } = loadJournalAndCount();
+
   if (existingForSource.length > 0) {
     console.error(
       `Refusing to append: journal already has ${existingForSource.length} entries for ${SOURCE}. ` +
@@ -120,10 +162,16 @@ function main() {
     process.exit(2);
   }
 
-  // Map and format
+  // Map and validate before any write. PR #505 Qodo suggestion: validate
+  // allowed enums + required string fields before appending to canonical file.
   const entries = all.map(mapCandidate);
-  const newLines = entries.map((e) => JSON.stringify(e));
+  const check = validateJournalEntries(entries);
+  if (!check.ok) {
+    console.error("entry validation failed:", check.reason);
+    process.exit(1);
+  }
 
+  const newLines = entries.map((e) => JSON.stringify(e));
   console.log(`new entries to append: ${newLines.length}`);
 
   // Preview
@@ -136,7 +184,8 @@ function main() {
     return;
   }
 
-  // Append atomically: read, append, write full file via safe-fs
+  // Append via safe-fs: isSafeToWrite and safeWriteFileSync BOTH refuse
+  // parent-chain symlinks on JOURNAL_PATH (PR #505 "symlink write escape" fix).
   if (!isSafeToWrite(JOURNAL_PATH)) {
     console.error("isSafeToWrite refused:", JOURNAL_PATH);
     process.exit(1);
@@ -156,9 +205,19 @@ function main() {
   console.log("Next: node scripts/cas/generate-extractions-md.js");
 }
 
-try {
-  main();
-} catch (err) {
-  console.error("Fatal:", sanitizeError(err));
-  process.exit(1);
+if (require.main === module) {
+  try {
+    main();
+  } catch (err) {
+    console.error("Fatal:", sanitizeError(err));
+    process.exit(1);
+  }
 }
+
+module.exports = {
+  mapCandidate,
+  validateJournalEntries,
+  SOURCE,
+  SOURCE_TYPE,
+  DECISION_DATE,
+};

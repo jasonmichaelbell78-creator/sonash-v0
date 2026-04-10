@@ -8,8 +8,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.3
-**Last Updated:** 2026-04-06
+**Document Version:** 4.4
+**Last Updated:** 2026-04-10
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -83,10 +83,15 @@ in `scripts/lib/analysis-schema.js`. See CONVENTIONS.md Section 12.
 
 ## Process Overview
 
+Standard (`--depth=standard`, default) and Deep (`--depth=deep`) share the main
+pipeline; Quick Scan (`--depth=quick`) is a standalone triage mode that stops
+after its own artifacts. There is no interactive gate between Quick and
+Standard/Deep — each depth is picked up-front via the `--depth` flag.
+
+**Standard / Deep flow (default):**
+
 ```
 VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback?
-PHASE 0    Quick Scan     -> API-only, <30s, 18 dimensions + lightweight creator lens
-GATE       Interactive    -> "Run Standard/Deep? [y/N]"
 PHASE 1    Clone+Repomix  -> Blobless clone, generate repomix IMMEDIATELY, verify
 PHASE 2    Dimension Wave -> Inline (<20 files) or agents (large repos)
 PHASE 2b   Deep Read      -> Read internal artifacts beyond code (guides, notebooks, examples, embedded docs)
@@ -97,6 +102,14 @@ PHASE 5    Engineer View  -> Merge dimensions, compute bands, dual-lens scoring
 PHASE 6    Value Map      -> Pattern + knowledge candidates ranked
 PHASE 6b   Coverage Audit -> Scan for unexplored content, prompt user to analyze or skip
 ROUTING    Menu           -> Extract | TDMS | Deep-plan | Memory | Adopt | Done
+```
+
+**Quick Scan flow (`--depth=quick`, opt-in triage):**
+
+```
+VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback?
+PHASE 0    Quick Scan     -> API-only, <30s, 18 dimensions + lightweight creator lens
+ROUTING    Menu           -> Queue for Standard | Extract | Done
 ```
 
 Phase markers: `========== PHASE N: [NAME] ==========`
@@ -565,6 +578,11 @@ cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"repo-analysi
 ```
 
 ---
+
+_v4.4 | 2026-04-10 | PR #505 Gemini review: split Process Overview into
+Standard/Deep and Quick Scan flows to remove the stale "GATE Interactive → Run
+Standard/Deep?" row that contradicted the v4.3 decision to drop the interactive
+gate (Quick is now an opt-in triage mode, not a preview step)._
 
 _v4.3 | 2026-04-06 | Convergence: CONVENTIONS.md ref, self-audit phase, schema
 drift fix, artifact path alignment, agent_budget removal, retro persistence,

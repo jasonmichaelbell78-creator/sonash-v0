@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2145)
+## NEW (2146)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -167,6 +167,7 @@
 | DEBT-45641 | Hook bypass threshold: doc-header overridden 15+ times in...    | S1       | process                  |
 | DEBT-45642 | Security pattern propagation: 6 patterns across archive s...    | S1       | security                 |
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...    | S1       | process                  |
+| DEBT-45647 | CAS family: parent-chain symlink guards missing on reads        | S1       | security                 |
 | DEBT-2132  | Untitled finding                                                | S2       | code-quality             |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | enhancements             |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | enhancements             |

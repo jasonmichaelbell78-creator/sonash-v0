@@ -22,7 +22,11 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const Database = require("better-sqlite3");
-const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
+const {
+  sanitizeError,
+  validatePathInDir,
+  refuseSymlinkWithParents,
+} = require("../lib/security-helpers.js");
 // propagation: isSafeToWrite() compliance — read-only query module (refuse-symlink)
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
@@ -238,8 +242,13 @@ function main() {
     process.exit(1);
   }
 
-  // isSafeToWrite() — symlink guard for DB path (refuse-symlink compliance)
+  // Symlink guard for DB path — checks full parent chain (refuse-symlink
+  // compliance + PR #505 security-auditor finding #18: the prior lstat-only
+  // check missed parent-chain redirection). better-sqlite3 opens the file via
+  // its C binding, so we cannot fd-pin the open; the parent-chain guard
+  // covers the realistic attack vector (planting a symlink in a parent dir).
   try {
+    refuseSymlinkWithParents(DB_PATH);
     const st = fs.lstatSync(DB_PATH);
     if (st.isSymbolicLink()) {
       console.error("Refusing to open symlinked database path");

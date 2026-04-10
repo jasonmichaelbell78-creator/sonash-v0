@@ -36,6 +36,7 @@ const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const { validate } = require("../lib/analysis-schema.js");
+const { safeReadJson, safeReadText, validateCandidate } = require("../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -64,7 +65,8 @@ function log(msg) {
 function loadJournal() {
   let raw;
   try {
-    raw = fs.readFileSync(JOURNAL_PATH, "utf8");
+    // safeReadText refuses parent-chain symlinks and enforces regular-file.
+    raw = safeReadText(JOURNAL_PATH);
   } catch (err) {
     throw new Error("Journal read failed: " + sanitizeError(err));
   }
@@ -94,25 +96,63 @@ function journalEntryToCandidate(entry) {
   };
 }
 
+// Helper: load analysis.json for a slug with full safety guards.
+// Returns { status, data?, reason? } — status is one of:
+//   OK       — data populated
+//   MISSING  — file not found
+//   ERROR    — unreadable, unparseable, or refused by safety guard
+function loadAnalysisJson(ap) {
+  try {
+    return { status: "OK", data: safeReadJson(ap) };
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      return { status: "MISSING", reason: sanitizeError(err) };
+    }
+    return { status: "ERROR", reason: "read/parse: " + sanitizeError(err) };
+  }
+}
+
+// Helper: convert journal entries to candidates and validate each one.
+// Returns { ok: true, candidates } on success, { ok: false, reason } on failure.
+// Uses validateCandidate() (Zod-backed) which accepts empty-string description
+// as valid — fixes the PR #505 Qodo "empty-string description false failure".
+function mapAndValidateCandidates(journalEntries) {
+  const candidates = journalEntries.map(journalEntryToCandidate);
+  for (let i = 0; i < candidates.length; i++) {
+    const problems = validateCandidate(candidates[i]);
+    if (problems.length > 0) {
+      return {
+        ok: false,
+        reason: `candidate ${i} invalid: ${problems.join(", ")}`,
+      };
+    }
+  }
+  return { ok: true, candidates };
+}
+
+// Helper: persist the backfilled analysis record to disk.
+// Write path goes through isSafeToWrite + safeWriteFileSync, which both
+// refuse parent-chain symlinks.
+function persistAnalysisJson(ap, data) {
+  if (!isSafeToWrite(ap)) {
+    return { ok: false, reason: "isSafeToWrite refused" };
+  }
+  try {
+    safeWriteFileSync(ap, JSON.stringify(data, null, 2) + "\n", "utf8");
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, reason: "write: " + sanitizeError(err) };
+  }
+}
+
 function backfillOne(slug, journalBySource) {
   const ap = path.join(ANALYSIS_DIR, slug, "analysis.json");
 
-  let st;
-  try {
-    st = fs.lstatSync(ap);
-  } catch (err) {
-    return { status: "MISSING", reason: sanitizeError(err) };
+  const load = loadAnalysisJson(ap);
+  if (load.status !== "OK") {
+    return { status: load.status, reason: load.reason };
   }
-  if (st.isSymbolicLink()) {
-    return { status: "SKIP", reason: "symlinked analysis.json" };
-  }
-
-  let data;
-  try {
-    data = JSON.parse(fs.readFileSync(ap, "utf8"));
-  } catch (err) {
-    return { status: "ERROR", reason: "read/parse: " + sanitizeError(err) };
-  }
+  const data = load.data;
 
   const source = data.source;
   if (!source) {
@@ -131,23 +171,12 @@ function backfillOne(slug, journalBySource) {
     };
   }
 
-  const candidates = journalEntries.map(journalEntryToCandidate);
-
-  // Guard against malformed mappings — all required fields must be present.
-  for (let i = 0; i < candidates.length; i++) {
-    const c = candidates[i];
-    const missing = ["name", "type", "description", "novelty", "effort", "relevance"].filter(
-      (k) => c[k] === undefined || c[k] === null || c[k] === ""
-    );
-    if (missing.length > 0) {
-      return {
-        status: "ERROR",
-        reason: `candidate ${i} missing fields: ${missing.join(", ")}`,
-      };
-    }
+  const mapped = mapAndValidateCandidates(journalEntries);
+  if (!mapped.ok) {
+    return { status: "ERROR", reason: mapped.reason };
   }
 
-  data.candidates = candidates;
+  data.candidates = mapped.candidates;
 
   const result = validate(data, "analysis");
   if (!result.success) {
@@ -155,20 +184,51 @@ function backfillOne(slug, journalBySource) {
   }
 
   if (!DRY_RUN) {
-    if (!isSafeToWrite(ap)) {
-      return { status: "ERROR", reason: "isSafeToWrite refused" };
-    }
-    try {
-      safeWriteFileSync(ap, JSON.stringify(data, null, 2) + "\n", "utf8");
-    } catch (err) {
-      return { status: "ERROR", reason: "write: " + sanitizeError(err) };
+    const written = persistAnalysisJson(ap, data);
+    if (!written.ok) {
+      return { status: "ERROR", reason: written.reason };
     }
   }
 
   return {
     status: "BACKFILLED",
-    reason: `${candidates.length} candidates from journal`,
+    reason: `${mapped.candidates.length} candidates from journal`,
   };
+}
+
+// Helper: build a source → entries Map from a flat journal list.
+function indexJournalBySource(journal) {
+  const byS = new Map();
+  for (const entry of journal) {
+    if (!entry.source) continue;
+    if (!byS.has(entry.source)) byS.set(entry.source, []);
+    byS.get(entry.source).push(entry);
+  }
+  return byS;
+}
+
+// Helper: compute the full list of slugs to process, honoring --all.
+function resolveSlugList() {
+  const slugs = [...STEP_85_SLUGS];
+  if (!SCAN_ALL) return slugs;
+  const dirs = fs
+    .readdirSync(ANALYSIS_DIR, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && !d.name.startsWith("_"));
+  for (const d of dirs) {
+    if (!slugs.includes(d.name)) slugs.push(d.name);
+  }
+  return slugs;
+}
+
+// Helper: print a per-slug result line (or skip noisy --all skips).
+function printResultLine(slug, result) {
+  if (result.status === "SKIP" && !STEP_85_SLUGS.includes(slug)) {
+    // Suppress in-scope skips outside Step 8.5 when running --all.
+    return;
+  }
+  const label = result.status.padEnd(11);
+  const suffix = result.reason ? " — " + result.reason : "";
+  console.log(label + slug + suffix);
 }
 
 function main() {
@@ -177,59 +237,48 @@ function main() {
   const journal = loadJournal();
   console.log(`Journal: ${journal.length} entries`);
 
-  // Group by source for fast lookup.
-  const journalBySource = new Map();
-  for (const entry of journal) {
-    if (!entry.source) continue;
-    if (!journalBySource.has(entry.source)) journalBySource.set(entry.source, []);
-    journalBySource.get(entry.source).push(entry);
-  }
+  const journalBySource = indexJournalBySource(journal);
   log(`Distinct sources in journal: ${journalBySource.size}`);
 
-  // Build slug list.
-  const slugs = [...STEP_85_SLUGS];
-
-  if (SCAN_ALL) {
-    const dirs = fs
-      .readdirSync(ANALYSIS_DIR, { withFileTypes: true })
-      .filter((d) => d.isDirectory() && !d.name.startsWith("_"));
-    for (const d of dirs) {
-      if (!slugs.includes(d.name)) slugs.push(d.name);
-    }
-  }
-
+  const slugs = resolveSlugList();
   console.log(`Scope: ${slugs.length} slugs` + (SCAN_ALL ? " (all)" : " (Step 8.5)"));
   console.log("---");
 
-  let backfilled = 0;
-  let skipped = 0;
-  let errored = 0;
+  const counts = { backfilled: 0, skipped: 0, errored: 0 };
 
   for (const slug of slugs) {
     const result = backfillOne(slug, journalBySource);
-    if (result.status === "SKIP" && !STEP_85_SLUGS.includes(slug)) {
-      // Only log skips inside Step 8.5 scope; --all would be noisy.
-      continue;
-    }
-    const label = result.status.padEnd(11);
-    const suffix = result.reason ? " — " + result.reason : "";
-    console.log(label + slug + suffix);
-
-    if (result.status === "BACKFILLED") backfilled++;
-    else if (result.status === "SKIP") skipped++;
-    else errored++;
+    printResultLine(slug, result);
+    if (result.status === "BACKFILLED") counts.backfilled++;
+    else if (result.status === "SKIP") counts.skipped++;
+    else counts.errored++;
   }
 
   console.log("---");
-  console.log(`Backfilled: ${backfilled} | Skipped: ${skipped} | Errored: ${errored}`);
+  console.log(
+    `Backfilled: ${counts.backfilled} | Skipped: ${counts.skipped} | Errored: ${counts.errored}`
+  );
   if (DRY_RUN) console.log("(dry run — no files written)");
 
-  if (errored > 0) process.exit(1);
+  if (counts.errored > 0) process.exit(1);
 }
 
-try {
-  main();
-} catch (err) {
-  console.error("Fatal:", sanitizeError(err));
-  process.exit(1);
+if (require.main === module) {
+  try {
+    main();
+  } catch (err) {
+    console.error("Fatal:", sanitizeError(err));
+    process.exit(1);
+  }
 }
+
+module.exports = {
+  loadJournal,
+  journalEntryToCandidate,
+  loadAnalysisJson,
+  mapAndValidateCandidates,
+  persistAnalysisJson,
+  backfillOne,
+  indexJournalBySource,
+  resolveSlugList,
+};
