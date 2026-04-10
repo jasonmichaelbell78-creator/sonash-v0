@@ -6,7 +6,7 @@
   "slug": "teng-lin_notebooklm-py",
   "title": "teng-lin_notebooklm-py",
   "analyzed_at": "2026-04-09T10:47:45.080Z",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "library", "teng", "notebooklm", "python"],
   "scoring": {
     "quality_band": "Healthy",
@@ -17,7 +17,125 @@
   },
   "summary": "Analysis of teng-lin_notebooklm-py. Run Standard/Deep for detailed summary.",
   "creator_view": "Analysis of teng-lin_notebooklm-py. Run Standard/Deep for detailed summary.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "Skill Install + Version Stamping",
+      "type": "pattern",
+      "description": "skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/. Solves cross_locale_config. Needs Node port.",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Autonomy Rules Section in SKILL.md",
+      "type": "pattern",
+      "description": "22 auto-run + 7 ask-first with per-command reasons. Retrofit candidate for add-debt, pr-review, session-end, audit-* skills.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Nightly RPC Health Check",
+      "type": "pattern",
+      "description": "rpc-health.yml: daily cron, 3 exit codes, auto-creates labeled GitHub issues. External contract monitoring pattern.",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Ambient CLAUDE.md PR Workflow",
+      "type": "pattern",
+      "description": "4-step embedded PR workflow. Alternative to /pr-review. Ambient vs invoked design question.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Embedded Task() Subagent Patterns",
+      "type": "pattern",
+      "description": "Literal Task() invocations in SKILL.md workflows. Reduces agent cognitive load.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Open Skills Ecosystem Investigation",
+      "type": "pattern",
+      "description": "npx skills add teng-lin/notebooklm-py. Unverified. Critical for JASON-OS distribution if real.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "SKILL.md Autonomy Rules Template",
+      "type": "content",
+      "description": "Lines 94-128. Direct template for adding autonomy rules to sonash skills.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "skill.py Install Mechanism",
+      "type": "content",
+      "description": "Reference implementation. SkillTarget dataclass, version stamping, drift detection.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "rpc-health.yml Workflow",
+      "type": "content",
+      "description": "Complete 90-line workflow. Daily cron, 3 exit codes, auto-issue creation, artifact upload.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "CLAUDE.md Agent Guidance Pattern",
+      "type": "content",
+      "description": "Well-structured CLAUDE.md + ambient PR workflow. Compare against sonash CLAUDE.md v5.9.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "AGENTS.md Separation",
+      "type": "knowledge",
+      "description": "Separate file for multi-agent guidance. Consider if CLAUDE.md Section 7 grows.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Undocumented API Dependency",
+      "type": "anti-pattern",
+      "description": "Entire project wraps obfuscated Google RPC endpoints. Prefer documented APIs.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Over-Engineered Install Mechanism",
+      "type": "anti-pattern",
+      "description": "280 lines for copy file + stamp version. Extract pattern, not complexity.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    }
+  ],
   "last_synthesized_at": null,
   "repo": "teng-lin/notebooklm-py",
   "url": "https://github.com/teng-lin/notebooklm-py",

@@ -6,7 +6,7 @@
   "slug": "viktoraxelsen-memskill",
   "title": "viktoraxelsen-memskill",
   "analyzed_at": "2026-04-09T10:47:45.093Z",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "research-tool", "viktoraxelsen", "memskill", "python"],
   "scoring": {
     "quality_band": "Critical",
@@ -17,7 +17,116 @@
   },
   "summary": "Analysis of viktoraxelsen-memskill. Run Standard/Deep for detailed summary.",
   "creator_view": "Analysis of viktoraxelsen-memskill. Run Standard/Deep for detailed summary.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "Meta-Memory Skills Framework",
+      "type": "pattern",
+      "description": "Skills about HOW to remember. Paradigm shift for auto-memory. Read arXiv 2602.02474.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Skill Evolution Loop",
+      "type": "pattern",
+      "description": "Mine failures → refine skills → propose new. General-purpose self-improvement.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Skill Bank 5-Section Format",
+      "type": "pattern",
+      "description": "Description/Purpose/When to Use/How to Apply/Constraints. Compare against SKILL.md.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Designer Prompt Templates",
+      "type": "pattern",
+      "description": "18KB failure classification + mutation prompts. Skill refinement methodology.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Dual-Embedding Memory Bank",
+      "type": "pattern",
+      "description": "Content + context embeddings. Concept portable, code FAISS+PyTorch.",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Operation Templates with Meta-Info",
+      "type": "pattern",
+      "description": "Usage + reward + EMA tracking for skill/tool selection.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "15 Memory Skill Templates",
+      "type": "content",
+      "description": "8 conversational + 7 embodied. Direct templates for JASON-OS memory operations. Read all before T4.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "capture_activity_details.md",
+      "type": "content",
+      "description": "Activity capture with temporal context. Template for auto-memory enhancement.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "insert.md",
+      "type": "content",
+      "description": "Memory insert with duplicate avoidance + quality criteria.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "arXiv 2602.02474",
+      "type": "content",
+      "description": "Core theory paper. NOT FETCHED. MUST read before T4 execution.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Academic Code Quality",
+      "type": "anti-pattern",
+      "description": "42KB monolith, zero tests, no version pins. Extract concepts, not code.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    },
+    {
+      "name": "Research Artifact as Dependency",
+      "type": "anti-pattern",
+      "description": "Paper companion code. Won't be maintained. Extract knowledge, don't depend.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "research-tool"]
+    }
+  ],
   "last_synthesized_at": null,
   "repo": "ViktorAxelsen/MemSkill",
   "url": "https://github.com/ViktorAxelsen/MemSkill",

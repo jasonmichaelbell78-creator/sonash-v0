@@ -6,7 +6,7 @@
   "slug": "bedrock-summarize-audio-video-text",
   "title": "Automates text extraction, transcription and summarization of audio, video, and ",
   "analyzed_at": "2026-04-07",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "tool-demo", "bedrock", "summarize", "audio", "video", "text"],
   "scoring": {
     "quality_band": "Critical",
@@ -17,7 +17,98 @@
   },
   "summary": "This repo understands how to compose a multimedia processing pipeline from AWS managed services.  Its key insight is the Chain of Responsibility + Factory pattern for dynamic handler discovery — readers, processors, and writers snap together like pipeline stages.",
   "creator_view": "This repo understands how to compose a multimedia processing pipeline from AWS managed services. Its key insight is the Chain of Responsibility + Factory pattern for dynamic handler discovery — readers, processors, and writers snap together like pipeline stages. It demonstrates PII anonymization round-tripping (tokenize before Bedrock, untokenize after), multi-format extraction (YouTube, PDF, Excel, Word, Quip, HTTP, S3), and prompt templating for Bedrock summarization. The architecture is more interesting than the code — it's a pattern reference, not production software.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "YouTube audio extraction pipeline",
+      "type": "pattern",
+      "description": "pytubefix download + moviepy audio extraction to MP3. Full lifecycle in ~30 lines. Reference for T27.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "Amazon Transcribe async job lifecycle",
+      "type": "knowledge",
+      "description": "Start job -> poll -> fetch transcript -> cleanup. Speaker labels, S3 output routing. T27 speech-to-text reference.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "PII tokenize/untokenize round-trip pattern",
+      "type": "pattern",
+      "description": "Comprehend PII -> token replacement (T1/T2) -> persist map -> LLM with tokens -> untokenize. Privacy-preserving summarization. Relevant to SoNash privacy-first.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "Chain of Responsibility + Factory handler composition",
+      "type": "pattern",
+      "description": "Reader/processor/writer taxonomy with set_next() chaining and factory auto-discovery. Clean pipeline composition model.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "AST-based handler auto-discovery",
+      "type": "pattern",
+      "description": "HandlerFactory walks handler tree, parses Python ASTs for AbstractHandler subclasses, registers for lazy import. Zero-config extension.",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "JSONPath model-agnostic invocation config",
+      "type": "pattern",
+      "description": "Env-driven model request/response mapping via JSONPath. Same code for Claude v2, Claude 3, Titan.",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "pytubefix caption + search + async capabilities",
+      "type": "content",
+      "description": "1.5K stars, MIT. Built-in SRT caption extraction, playlist/channel enumeration, search API with filters, AsyncYouTube. Caption extraction may eliminate Whisper/Transcribe for captioned videos. T27 workhorse.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "Amazon Transcribe API reference",
+      "type": "content",
+      "description": "Handler demonstrates full async Transcribe lifecycle with speaker diarization.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "AWS-coupled extraction anti-pattern",
+      "type": "anti-pattern",
+      "description": "5+ AWS service deps create vendor lock-in. Prefer local-first (Whisper, Tesseract, spaCy). Repo itself has commented-out Whisper handler.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "tool-demo"]
+    },
+    {
+      "name": "Blocking poll anti-pattern",
+      "type": "anti-pattern",
+      "description": "time.sleep(30) polling loop for Transcribe. Fine for CLI, must not copy into agent pipelines.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "tool-demo"]
+    }
+  ],
   "last_synthesized_at": null,
   "skillVersion": "4.3",
   "repo": {

@@ -220,7 +220,12 @@ function migrateAnalysis(filePath, slug) {
   const source = data.source || data.meta?.repo || data.meta?.url || data.repo?.full_name || slug;
   const title = data.title || data.site?.title || data.repo?.description?.substring(0, 80) || slug;
   const analyzedAt = data.analyzed_at || data.meta?.scan_date || data.analysisDate || null;
-  const depth = data.depth || data.meta?.scan_depth || "quick";
+  // v2 legacy records stored depth at root-level `scanDepth` (camelCase).
+  // Must be checked before the "quick" default — omission caused the Session
+  // #272 mislabel where 9 Standard repos were stamped depth="quick". See
+  // T29 Wave 4 Step 8.5 notes in .planning/synthesis-consolidation/PLAN.md.
+  const depth =
+    data.depth || data.scanDepth || data.meta?.scan_depth || data.meta?.scanDepth || "quick";
 
   const existingId =
     typeof data.id === "string" &&

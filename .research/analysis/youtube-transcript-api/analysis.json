@@ -6,7 +6,7 @@
   "slug": "youtube-transcript-api",
   "title": "Python API to get YouTube transcript/subtitles. Works for auto-generated subtitl",
   "analyzed_at": "2026-04-07",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "library", "youtube", "transcript", "repository"],
   "scoring": {
     "quality_band": "Healthy",
@@ -17,7 +17,98 @@
   },
   "summary": "This repo IS the caption-first approach.  It solves the exact problem the previous two T27 repos missed — extracting YouTube transcripts directly without downloading video or running Whisper.",
   "creator_view": "This repo IS the caption-first approach. It solves the exact problem the previous two T27 repos missed — extracting YouTube transcripts directly without downloading video or running Whisper. No API key, no browser, no GPU. Just HTTP requests to YouTube's internal transcript endpoint. 7K+ stars, 24 contributors, CI with coverage, pushed today. This is the production-grade, well-maintained library that should be the FIRST step in any YouTube content extraction pipeline, with Whisper as fallback only when transcripts are unavailable.",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "youtube-transcript-api as T27 primary extraction layer",
+      "type": "tool",
+      "description": "pip install. One-line caption fetch. 7K stars, MIT, 100% coverage. First adoption recommendation in series.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Innertube API reverse-engineering approach",
+      "type": "knowledge",
+      "description": "Undocumented /youtubei/v1/player API with ANDROID client context. No API key. 8 years maintained.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Context-aware error hierarchy pattern",
+      "type": "pattern",
+      "description": "15+ exception types with CAUSE_MESSAGE. RequestBlocked.cause adapts based on proxy config. Gold standard error handling.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "IP ban workaround operational guide",
+      "type": "content",
+      "description": "Production guide to YouTube IP blocks: proxy config, Webshare residential rotation, retries.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Three-layer T27 extraction architecture",
+      "type": "knowledge",
+      "description": "Cross-repo synthesis: L1=youtube-transcript-api (instant/free/~80%), L2=pytubefix captions (backup), L3=faster-whisper (GPU fallback). Clear architecture from 3 repos.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Proxy rotation infrastructure",
+      "type": "pattern",
+      "description": "ProxyConfig ABC with Generic + Webshare implementations. Rotating residential IPs, retry-on-429.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Manual vs auto-generated transcript priority",
+      "type": "knowledge",
+      "description": "find_transcript() checks manual first. Quality hierarchy baked into architecture.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "SRT/WebVTT timestamp formatting",
+      "type": "pattern",
+      "description": "Clean subtitle format generation. SRT (comma) vs WebVTT (dot) separator.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Don't build own transcript fetcher (anti-pattern)",
+      "type": "anti-pattern",
+      "description": "399 commits over 8 years maintaining YouTube API compatibility. Use the library.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    },
+    {
+      "name": "Ignore IP blocking for bulk (anti-pattern)",
+      "type": "anti-pattern",
+      "description": "YouTube blocks bulk requests. Plan proxy infrastructure from the start.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["repo", "library"]
+    }
+  ],
   "last_synthesized_at": null,
   "skillVersion": "4.3",
   "repo": {

@@ -408,53 +408,84 @@ Sections 12-16.
 > Standard artifact sets
 > (findings/summary/deep-read/content-eval/coverage-audit/
 > creator-view/value-map) AND extraction journal entries, but their depth field
-> was stamped "quick" by `scripts/cas/migrate-v3.js` during the 2026-04-09 v3.0
-> migration. Real Wave 4 scope is **12 TRUE quick-scan repos + 10 metadata
-> patches**.
+> was stamped "quick" during the 2026-04-09 v3.0 migration. Real Wave 4 scope is
+> **12 TRUE quick-scan repos + 9 metadata patches** (revised from 10 — see
+> Session #273 scope correction below).
 >
 > **True quick scans (need Standard upgrade):** ArchiveBox, crawl4ai, firecrawl,
 > lux-video-downloader, marker, MinerU, nitter, outline, qmd, reader, surya,
 > tesseract.
 >
-> **Mislabeled (need depth field fix only — no re-analysis):**
-> aws-media-extraction, bedrock-summarize-audio-video-text,
+> **Mislabeled (9 repos — depth field fix + candidate backfill only, no
+> re-analysis):** bedrock-summarize-audio-video-text,
 > bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
 > hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
 > teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api.
+>
+> **Excluded from mislabeled set:** `aws-media-extraction`. Session #273
+> verification showed it has `meta.scan_depth: "quick"`, a `quick_scan` key,
+> only 5/7 Standard artifacts, and a self-consistent quick-scan profile. Its 8
+> journal entries are an unrelated anomaly (quick scans should not produce
+> extractions) filed for separate investigation.
 >
 > **Evidence:** See Session #272 self-audit output. Example: `firecrawl` FAIL
 > ("No extraction journal entries", only analysis.json present) vs.
 > `codecrafters-io-build-your-own-x` PASS (10 checks, 12 journal entries, full
 > artifact set). Both tagged `depth: "quick"` in analysis.json.
 
-### Step 8.5 (NEW): Fix mislabeled depth field + audit migrate-v3.js
+### Step 8.5 (NEW): Fix mislabeled depth field + candidate backfill + migrate-schemas root cause ✅
 
-**Added Session #272 per pre-Wave-4 audit.**
+**Added Session #272 per pre-Wave-4 audit. Executed Session #273.**
 
-Before Wave 4 Step 10 begins:
+> **Session #273 scope correction (2026-04-10):** Session #272's initial
+> diagnosis attributed the depth mislabel to `scripts/cas/migrate-v3.js`. That
+> was incorrect — migrate-v3.js has no depth-field logic at all. The actual root
+> cause is `scripts/cas/migrate-schemas.js:223`, whose fallback chain
+> `data.depth || data.meta?.scan_depth || "quick"` missed the v2 legacy
+> root-level `data.scanDepth` (camelCase). Six of the nine repos have
+> `scanDepth: "standard"` as direct evidence; the other three never had any
+> depth metadata and fell through to the `"quick"` default. A second drift was
+> discovered mid-execution: the same v2→v3 migration left
+> `analysis.json.candidates` empty for all 9 repos even though the extraction
+> journal had entries. Per the "extractions are canon" principle, the candidates
+> mirror was rebuilt from the journal under the hood.
 
-1. **Fix 10 mislabeled repos** — update `analysis.json::depth` from `"quick"` to
-   `"standard"` for the 10 repos listed above. These already have full Standard
-   artifact sets; only the metadata field is wrong.
+Executed in Session #273:
 
-2. **Also fix `research-index.jsonl`** — check and correct depth values for the
-   same 10 repos (same migrate-v3.js bug likely affected both files).
+1. **Fix 9 mislabeled repos** — `scripts/cas/fix-depth-mislabel.js` updates
+   `analysis.json::depth` from `"quick"` to `"standard"` for the 9 repos listed
+   above, guarded by a full 7/7 Standard artifact check. Idempotent. ✅ 9 fixed,
+   0 skipped, 0 errors.
 
-3. **Root-cause `scripts/cas/migrate-v3.js`** — read the migration script to
-   understand why it stamped `depth: "quick"` across repos with Standard
-   artifacts. The bug is likely in how it normalized the legacy `depth` /
-   `scan_depth` fields during the v3.0 schema change. Fix or document.
+2. **Fix `.research/research-index.jsonl`** — 3 of the 9 repos (codecrafters,
+   hkuds, karpathy) had stale `depth: "quick"` entries in the index. Updated
+   in-place. The other 6 are not present in research-index.jsonl. ✅
 
-4. **Re-run self-audit** for all 10 mislabeled to verify the fix:
-   ```bash
-   for slug in aws-media-extraction bedrock-summarize-audio-video-text bulk-transcribe-youtube-playlist codecrafters-io-build-your-own-x hkuds-cli-anything karpathy-autoresearch public-apis_public-apis teng-lin_notebooklm-py viktoraxelsen-memskill youtube-transcript-api; do
-     node scripts/cas/self-audit.js --slug=$slug
-   done
-   ```
+3. **Root-cause fix `scripts/cas/migrate-schemas.js:223`** — added
+   `data.scanDepth` and `data.meta?.scanDepth` to the fallback chain before the
+   `"quick"` default. Inline comment explains the Session #272 incident.
 
-**Done when:** All 10 mislabeled repos report `depth: "standard"` in
-analysis.json and research-index.jsonl, self-audit passes for all 10, and
-migrate-v3.js bug is either fixed or documented as a known limitation.
+4. **Self-heal in `scripts/cas/migrate-v3.js`** — new rule #9 in `fixRecord()`:
+   if a record has `depth: "quick"` AND either `scanDepth === "standard"` OR a
+   full 7/7 Standard artifact set on disk, auto-correct to `depth: "standard"`.
+   Idempotent. Verified not to trigger on currently-valid records
+   (`Fixed: 0 | Already valid: 34`).
+
+5. **Backfill candidates from journal** — `scripts/cas/backfill-candidates.js`
+   reads `.research/extraction-journal.jsonl`, groups by source, and maps
+   entries to the `candidateSchema` shape (candidate→name, notes→description,
+   etc.). Populated candidates for all 9 repos (10–17 per repo, 108 total). ✅ 9
+   backfilled, 0 skipped, 0 errors. `--all` flag available to scan beyond Step
+   8.5 scope.
+
+6. **Re-run self-audit** — all 9 repos: PASS. Only remaining warning is "No
+   state file — pipeline tail (tags, retro, routing) may have been skipped" —
+   pre-existing drift, outside Step 8.5 scope.
+
+**Done when:** ✅ All 9 mislabeled repos report `depth: "standard"` in
+analysis.json and research-index.jsonl, `candidates` arrays are populated from
+the journal, self-audit passes for all 9, `migrate-schemas.js` root cause is
+fixed, and `migrate-v3.js` has idempotent self-heal for future recurrences.
 
 **Depends on:** None (can run immediately)
 
@@ -466,6 +497,15 @@ migrate-v3.js bug is either fixed or documented as a known limitation.
   (plus lux-video-downloader makes 12 once the true-quick list is corrected)
 - NO bulk-scan pipeline tail bug — the missing extractions are legitimate (Quick
   Scans don't produce candidates)
+
+**Known follow-ups (out of Step 8.5 scope):**
+
+- `aws-media-extraction` anomaly — 8 journal entries from a self-identified
+  quick scan. Either the scan was actually Standard and its metadata is corrupt,
+  or the journal entries are spurious. Needs separate investigation.
+- Pipeline tail state file missing for all 9 backfilled repos — tags, retro, and
+  routing metadata were not recorded during the original runs. Affects the WARN
+  line in self-audit but not the extraction data itself.
 
 ---
 

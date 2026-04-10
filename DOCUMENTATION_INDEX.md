@@ -378,8 +378,8 @@ _Claude Code skills_
 | [add-debt](.claude/skills/add-debt/SKILL.md)                                                                                        | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-20    |
 | [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | -                                                                 | ↓0 ↑1      | 2026-04-08    |
 | [Alerts Reference](.claude/skills/alerts/REFERENCE.md)                                                                              | Detailed workflows, schemas, benchmarks, and reference data ...   | ↓1 ↑0      | 2026-03-24    |
-| [analyze](.claude/skills/analyze/SKILL.md)                                                                                          | The front door to the Content Analysis System. One command f...   | ↓0 ↑0      | 2026-04-09    |
-| [Analyze Reference](.claude/skills/analyze/REFERENCE.md)                                                                            | Type detection patterns, flags reference, synthesis mode spe...   | ↓0 ↑0      | 2026-04-08    |
+| [analyze](.claude/skills/analyze/SKILL.md)                                                                                          | The front door to the Content Analysis System. One command f...   | ↓0 ↑0      | 2026-04-10    |
+| [Analyze Reference](.claude/skills/analyze/REFERENCE.md)                                                                            | Type detection patterns, flags reference, synthesis mode spe...   | ↓0 ↑0      | 2026-04-10    |
 | [artifacts-builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-02-24    |
 | [Audit Agent Quality — Reference](.claude/skills/audit-agent-quality/REFERENCE.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-17    |
 | [Audit Aggregator — Extended Examples](.claude/skills/audit-aggregator/examples.md)                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
@@ -483,8 +483,8 @@ _Claude Code skills_
 | [quick-fix](.claude/skills/quick-fix/SKILL.md)                                                                                      | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-24    |
 | [recall](.claude/skills/recall/SKILL.md)                                                                                            | Search and query your extracted knowledge. Everything analyz...   | ↓0 ↑0      | 2026-04-08    |
 | [Recall Reference](.claude/skills/recall/REFERENCE.md)                                                                              | Query mode specifications, output formatting rules, follow-u...   | ↓0 ↑0      | 2026-04-08    |
-| [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓1 ↑0      | 2026-04-08    |
-| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓0 ↑1      | 2026-04-09    |
+| [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓1 ↑0      | 2026-04-10    |
+| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓0 ↑1      | 2026-04-10    |
 | [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-09    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
@@ -495,7 +495,7 @@ _Claude Code skills_
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-04-05    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Shared Ecosystem Audit Library](.claude/skills/_shared/ecosystem-audit/README.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-26    |
-| [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-09    |
+| [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-10    |
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-04-04    |
 | [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-06    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-03-24    |
@@ -523,8 +523,8 @@ _Claude Code skills_
 | [validate-claude-folder](.claude/skills/validate-claude-folder/SKILL.md)                                                            | Check the `.claude` folder for configuration consistency, do...   | ↓0 ↑2      | 2026-02-24    |
 | [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Foundation visual showing historical and projected market si...   | ↓0 ↑0      | 2026-01-12    |
 | [webapp-testing](.claude/skills/webapp-testing/SKILL.md)                                                                            | To test local web applications, write native Python Playwrig...   | ↓0 ↑0      | 2026-02-24    |
-| [Website Analysis Reference](.claude/skills/website-analysis/REFERENCE.md)                                                          | Lead with creator-specific relevance, not site description. ...   | ↓0 ↑0      | 2026-04-09    |
-| [website-analysis](.claude/skills/website-analysis/SKILL.md)                                                                        | Creator-first analysis of websites as knowledge artifacts. M...   | ↓0 ↑0      | 2026-04-09    |
+| [Website Analysis Reference](.claude/skills/website-analysis/REFERENCE.md)                                                          | Lead with creator-specific relevance, not site description. ...   | ↓0 ↑0      | 2026-04-10    |
+| [website-analysis](.claude/skills/website-analysis/SKILL.md)                                                                        | Creator-first analysis of websites as knowledge artifacts. M...   | ↓0 ↑0      | 2026-04-10    |
 | [website-synthesis](.claude/skills/website-synthesis/SKILL.md)                                                                      | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-09    |
 
 ### Slash Commands (Tier 3)
@@ -640,7 +640,7 @@ _Uncategorized_
 
 | Document                                                              | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-04-09    |
+| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑0      | 2026-04-10    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                        | Documents all Claude Code hooks configured in `.claude/setti... | ↓2 ↑4      | 2026-03-24    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)   | > **DEPRECATION NOTICE (2026-02-23):** The `scripts/sync-cla... | ↓3 ↑0      | 2026-02-25    |
 | [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)          | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-04-05    |

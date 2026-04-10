@@ -212,6 +212,45 @@ function fixRecord(data, dirName, filePath) {
     changed = true;
   }
 
+  // 9. depth self-heal (T29 Wave 4 Step 8.5) — detect migrate-schemas.js
+  // mislabel where depth="quick" was stamped on repos with full Standard
+  // artifact sets. Two signals:
+  //   (a) legacy v2 `scanDepth` field at root-level disagrees with depth
+  //   (b) full 7/7 Standard artifact files exist on disk
+  // Only self-heal when either signal is confidently "standard".
+  if (data.depth === "quick") {
+    const dir = path.dirname(filePath);
+    const standardArtifacts = [
+      "findings.jsonl",
+      "summary.md",
+      "deep-read.md",
+      "content-eval.jsonl",
+      "coverage-audit.jsonl",
+      "creator-view.md",
+      "value-map.json",
+    ];
+    let artifactCount = 0;
+    for (const artifact of standardArtifacts) {
+      const p = path.join(dir, artifact);
+      try {
+        const st = fs.lstatSync(p);
+        if (!st.isSymbolicLink()) artifactCount++;
+      } catch {
+        /* missing */
+      }
+    }
+    const scanDepthSaysStandard = data.scanDepth === "standard";
+    const artifactsSayStandard = artifactCount === standardArtifacts.length;
+    if (scanDepthSaysStandard || artifactsSayStandard) {
+      data.depth = "standard";
+      const reason = scanDepthSaysStandard
+        ? "scanDepth=standard"
+        : `${artifactCount}/${standardArtifacts.length} artifacts`;
+      fixes.push("depth quick→standard (" + reason + ")");
+      changed = true;
+    }
+  }
+
   return { data, fixes, changed };
 }
 
