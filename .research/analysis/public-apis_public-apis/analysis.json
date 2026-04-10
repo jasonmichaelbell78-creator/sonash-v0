@@ -189,5 +189,6 @@
     "type": "celebrity-stagnation",
     "description": "420K stars, 1,197 open issues, 1 commit/90 days. Commercial capture by APILayer. PR approval bottleneck. Same pattern as codecrafters but with more infrastructure (validation scripts, CI)."
   },
-  "creatorLens": "This repo understands that developers need a single, searchable catalog of free APIs organized by domain. The structured format (API|Description|Auth|HTTPS|CORS) is machine-parseable by design. The Python validation scripts enforce format consistency at PR time — a quality gate that codecrafters lacks."
+  "creatorLens": "This repo understands that developers need a single, searchable catalog of free APIs organized by domain. The structured format (API|Description|Auth|HTTPS|CORS) is machine-parseable by design. The Python validation scripts enforce format consistency at PR time — a quality gate that codecrafters lacks.",
+  "source_tier": "T1"
 }

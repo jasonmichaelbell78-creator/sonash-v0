@@ -70,5 +70,6 @@
     "t28Relevance": "QS-only. LLM hybrid extraction pattern is novel and relevant to T28 analysis layer. Pattern captured from README.",
     "cluster": "B",
     "notablePattern": "LLM hybrid mode — augmenting traditional extraction with LLM reasoning for edge cases (cross-page tables, form values, inline math)"
-  }
+  },
+  "source_tier": "T1"
 }

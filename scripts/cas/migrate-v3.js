@@ -202,6 +202,16 @@ function fixRecord(data, dirName, filePath) {
     changed = true;
   }
 
+  // 8. source_tier (T29 / D#13, D#32) — assign default by source_type.
+  // Repos are first-party artifacts (T1). Other types default to T2 — user can
+  // override via tags or during synthesis pre-flight.
+  if (!data.source_tier) {
+    if (data.source_type === "repo") data.source_tier = "T1";
+    else data.source_tier = "T2";
+    fixes.push("source_tier → " + data.source_tier);
+    changed = true;
+  }
+
   return { data, fixes, changed };
 }
 

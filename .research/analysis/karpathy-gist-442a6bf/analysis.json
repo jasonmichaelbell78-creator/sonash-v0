@@ -94,5 +94,6 @@
     "LLMs solve the Memex maintenance problem Vannevar Bush couldn't",
     "Schema (CLAUDE.md) is the key configuration that makes the LLM disciplined",
     "Good answers should be filed back into wiki as new pages"
-  ]
+  ],
+  "source_tier": "T2"
 }

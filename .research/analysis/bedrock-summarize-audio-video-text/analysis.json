@@ -179,5 +179,6 @@
     "WR-01_stack_compatibility": "Low — Python/AWS, not TypeScript/Firebase. No overlap with home stack.",
     "WR-04_lock_in": "High — deeply coupled to 5+ AWS services (Bedrock, Transcribe, Textract, Comprehend, S3).",
     "WR-06_ecosystem_maturity": "Low — solo dev, 18 stars, dormant."
-  }
+  },
+  "source_tier": "T1"
 }

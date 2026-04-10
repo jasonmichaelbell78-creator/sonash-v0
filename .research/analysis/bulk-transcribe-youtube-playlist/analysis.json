@@ -147,5 +147,6 @@
     }
   },
   "absencePattern": "popular-utility-script",
-  "creatorLens": "This repo understands that bulk YouTube transcription needs to be local-first (Whisper), GPU-accelerated (CUDA/faster-whisper), and playlist-aware. It demonstrates the complete pipeline: YouTube URL -> audio download -> Whisper transcription -> NLP sentence splitting (SpaCy or regex) -> structured output (text/CSV/JSON with timestamps and confidence scores). The transcript reader HTML shows UX awareness beyond raw transcription. It's the practical, local-first complement to AWS Transcribe approaches — exactly the T27 reference for Whisper-based extraction."
+  "creatorLens": "This repo understands that bulk YouTube transcription needs to be local-first (Whisper), GPU-accelerated (CUDA/faster-whisper), and playlist-aware. It demonstrates the complete pipeline: YouTube URL -> audio download -> Whisper transcription -> NLP sentence splitting (SpaCy or regex) -> structured output (text/CSV/JSON with timestamps and confidence scores). The transcript reader HTML shows UX awareness beyond raw transcription. It's the practical, local-first complement to AWS Transcribe approaches — exactly the T27 reference for Whisper-based extraction.",
+  "source_tier": "T1"
 }

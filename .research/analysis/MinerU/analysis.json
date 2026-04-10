@@ -76,5 +76,6 @@
       "Sliding window + streaming writes for long documents",
       "MCP server for agentic AI integration"
     ]
-  }
+  },
+  "source_tier": "T1"
 }

@@ -207,5 +207,6 @@
     "t28Relevance": "Primary architectural reference for multi-format extraction layer",
     "cluster": "A",
     "analysisNumber": 1
-  }
+  },
+  "source_tier": "T1"
 }

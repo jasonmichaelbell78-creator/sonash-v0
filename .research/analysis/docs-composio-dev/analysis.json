@@ -91,5 +91,6 @@
     "Native tools give precise context control; MCP gives simplicity",
     "Session-scoped state preserves context across meta-tool calls",
     "Remote workbench provides persistent sandboxed execution for agents"
-  ]
+  ],
+  "source_tier": "T2"
 }

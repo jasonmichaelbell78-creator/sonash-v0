@@ -174,5 +174,6 @@
     "type": "celebrity-stagnation",
     "description": "Massive stars + minimal recent activity + commercial capture by codecrafters-io. 462 open issues with 1 commit in 90 days indicates bottlenecked maintenance."
   },
-  "creatorLens": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge."
+  "creatorLens": "This repo understands that the deepest path to mastering a technology is building it from scratch. It curates the 'learn by building' pedagogy across 35+ technology domains, organized around Feynman's principle. The taxonomy — from 3D renderers to web servers — maps the landscape of implementable systems knowledge.",
+  "source_tier": "T1"
 }

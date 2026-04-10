@@ -114,5 +114,6 @@
     }
   },
   "absencePattern": "mature-cli-tool",
-  "creatorLens": "This repo understands multi-platform video downloading at scale — 40+ supported sites with per-site extractors, per-site CI workflows, and a clean plugin architecture in Go. It's the broadest video download tool in the T27 analysis series, expanding scope beyond YouTube to TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, and 30+ more. For T27, this represents the 'download video for Whisper' path when neither transcripts nor captions are available — especially on non-YouTube platforms. The per-site extractor architecture (extractors/<site>/<site>.go) is the gold standard for multi-platform content extraction plugins."
+  "creatorLens": "This repo understands multi-platform video downloading at scale — 40+ supported sites with per-site extractors, per-site CI workflows, and a clean plugin architecture in Go. It's the broadest video download tool in the T27 analysis series, expanding scope beyond YouTube to TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, and 30+ more. For T27, this represents the 'download video for Whisper' path when neither transcripts nor captions are available — especially on non-YouTube platforms. The per-site extractor architecture (extractors/<site>/<site>.go) is the gold standard for multi-platform content extraction plugins.",
+  "source_tier": "T1"
 }

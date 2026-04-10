@@ -165,5 +165,6 @@
     "type": "intentional-minimalism",
     "description": "Missing license, tests, CI, releases are intentional design choices. The repo is a research artifact, not a library."
   },
-  "creatorLens": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop. The program.md is an entire research organization compressed into 114 lines."
+  "creatorLens": "This repo understands that the most powerful research methodology is the simplest one: give an AI agent one file to edit, one metric to optimize, one time budget, and an infinite loop. The program.md is an entire research organization compressed into 114 lines.",
+  "source_tier": "T1"
 }

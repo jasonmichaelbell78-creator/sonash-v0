@@ -79,5 +79,6 @@
     "platform": "youtube",
     "channel": "Chase AI"
   },
-  "transcript_source": "captions"
+  "transcript_source": "captions",
+  "source_tier": "T2"
 }

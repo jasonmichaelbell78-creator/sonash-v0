@@ -64,5 +64,6 @@
   },
   "absencePattern": {
     "type": "research-artifact"
-  }
+  },
+  "source_tier": "T1"
 }

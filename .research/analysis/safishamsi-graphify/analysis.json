@@ -141,13 +141,22 @@
       "primary_pct": 95.8,
       "bus_factor": 1
     },
-    "QS-04-languages": { "Python": 100 },
+    "QS-04-languages": {
+      "Python": 100
+    },
     "QS-05-issues": {
       "open": 27,
       "recent_titles": ["codex-cli hook failed", "add cursor support", "Add Copilot CLI support"]
     },
-    "QS-06-prs": { "open": 5, "merged": 0, "external_contributors": false },
-    "QS-07-ci": { "workflows": ["CI", "Copilot code review"], "ci_passing": true },
+    "QS-06-prs": {
+      "open": 5,
+      "merged": 0,
+      "external_contributors": false
+    },
+    "QS-07-ci": {
+      "workflows": ["CI", "Copilot code review"],
+      "ci_passing": true
+    },
     "QS-08-community": {
       "health_pct": 57,
       "coc": false,
@@ -155,22 +164,42 @@
       "issue_template": false,
       "pr_template": false
     },
-    "QS-09-security": { "security_md": true, "security_module": true },
+    "QS-09-security": {
+      "security_md": true,
+      "security_module": true
+    },
     "QS-10-docs": {
       "readme_translations": 4,
       "architecture_md": true,
       "changelog": true,
       "skill_files": 7
     },
-    "QS-11-tests": { "test_files": 21, "test_dir": true, "fixtures": true },
-    "QS-12-structure": { "modules": 15, "clean_separation": true, "pyproject": true },
-    "QS-13-releases": { "latest": "v0.3.20", "v1_tag": true, "cadence": "multiple_daily" },
+    "QS-11-tests": {
+      "test_files": 21,
+      "test_dir": true,
+      "fixtures": true
+    },
+    "QS-12-structure": {
+      "modules": 15,
+      "clean_separation": true,
+      "pyproject": true
+    },
+    "QS-13-releases": {
+      "latest": "v0.3.20",
+      "v1_tag": true,
+      "cadence": "multiple_daily"
+    },
     "QS-14-license": "MIT",
     "QS-15-topics": ["claude-code", "codex", "graphrag", "knowledge-graph", "openclaw", "skills"],
     "QS-16-repo-type": "library",
     "QS-17-absence": [],
-    "QS-18-velocity": { "stars_per_day": 2542, "commits_per_day": 15.3, "explosive_growth": true }
+    "QS-18-velocity": {
+      "stars_per_day": 2542,
+      "commits_per_day": 15.3,
+      "explosive_growth": true
+    }
   },
   "absence_patterns": [],
-  "adoption_verdict": "Extract (82)"
+  "adoption_verdict": "Extract (82)",
+  "source_tier": "T1"
 }

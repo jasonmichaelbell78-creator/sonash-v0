@@ -115,11 +115,26 @@ sentences: "This repo appears to understand/demonstrate/teach X." This is a
 teaser, not the full Creator View — enough to judge whether Standard/Deep is
 worth the time.
 
-**Interactive gate:** "Quick Scan complete. [health bands]. Run Standard/Deep
-for full Creator + Engineer analysis? (Standard ~5-10 min, Deep ~15-20 min)
-[y/N]" For `curated-list` repos: enriched gate showing link count and link
-mining option. See REFERENCE.md Section 16. If `--depth=standard|deep` specified
-at invocation, skip this gate.
+**Interactive gate:** Quick Scan is a **preview** — it confirms whether this
+repo is worth your time. Standard analysis produces the full artifact set needed
+for `/synthesize` cross-source intelligence.
+
+```
+Quick Scan complete. [health bands].
+
+Quick Scan is a preview — it confirms whether this repo is worth your time.
+Standard analysis produces the full artifact set needed for /synthesize
+cross-source intelligence.
+
+Run Standard/Deep? (Standard ~5-10 min, Deep ~15-20 min) [Y/n]
+```
+
+For `curated-list` repos: enriched gate showing link count and link mining
+option. See REFERENCE.md Section 16. If `--depth=standard|deep` specified at
+invocation, skip this gate.
+
+**source_tier:** Repos always emit `source_tier: "T1"` (first-party artifacts).
+Stored in `analysis.json` and consumed by `/synthesize` for evidence weighting.
 
 ---
 

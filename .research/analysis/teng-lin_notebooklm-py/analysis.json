@@ -76,5 +76,6 @@
   },
   "absencePattern": {
     "type": "none"
-  }
+  },
+  "source_tier": "T1"
 }

@@ -50,5 +50,6 @@
     "platform": "youtube",
     "channel": "Obsidian Explained (No Code Required)"
   },
-  "transcript_source": "captions"
+  "transcript_source": "captions",
+  "source_tier": "T2"
 }

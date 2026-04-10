@@ -99,5 +99,6 @@
       "96% web coverage including JS-heavy pages",
       "MCP client integration"
     ]
-  }
+  },
+  "source_tier": "T1"
 }

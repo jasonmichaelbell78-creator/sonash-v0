@@ -69,5 +69,6 @@
   "context": {
     "t28Relevance": "Skip — layout model patterns already captured from docling",
     "cluster": "B"
-  }
+  },
+  "source_tier": "T1"
 }

@@ -118,5 +118,6 @@
     }
   },
   "absencePattern": "mature-library",
-  "creatorLens": "This repo IS the caption-first approach. It solves the exact problem the previous two T27 repos missed — extracting YouTube transcripts directly without downloading video or running Whisper. No API key, no browser, no GPU. Just HTTP requests to YouTube's internal transcript endpoint. 7K+ stars, 24 contributors, CI with coverage, pushed today. This is the production-grade, well-maintained library that should be the FIRST step in any YouTube content extraction pipeline, with Whisper as fallback only when transcripts are unavailable."
+  "creatorLens": "This repo IS the caption-first approach. It solves the exact problem the previous two T27 repos missed — extracting YouTube transcripts directly without downloading video or running Whisper. No API key, no browser, no GPU. Just HTTP requests to YouTube's internal transcript endpoint. 7K+ stars, 24 contributors, CI with coverage, pushed today. This is the production-grade, well-maintained library that should be the FIRST step in any YouTube content extraction pipeline, with Whisper as fallback only when transcripts are unavailable.",
+  "source_tier": "T1"
 }

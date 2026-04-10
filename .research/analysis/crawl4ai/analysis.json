@@ -78,5 +78,6 @@
       "Async browser pool with caching",
       "LLM extraction with natural language questions"
     ]
-  }
+  },
+  "source_tier": "T1"
 }

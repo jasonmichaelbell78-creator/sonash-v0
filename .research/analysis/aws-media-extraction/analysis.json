@@ -56,5 +56,6 @@
     "adoption_verdict": "Extract",
     "adoption_score": 42,
     "creator_verdict": "Extract (42)"
-  }
+  },
+  "source_tier": "T1"
 }

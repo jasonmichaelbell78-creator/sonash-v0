@@ -168,5 +168,6 @@
     "type": "none",
     "description": "No absence patterns detected. Rapidly growing project with active maintenance."
   },
-  "creatorLens": "This repo understands that the next wave of software users will be AI agents, not humans. It provides a systematic methodology (HARNESS.md) for wrapping any desktop application in a CLI that agents can invoke. The 7-phase SOP, SKILL.md generation, and CLI-Hub registry represent a complete ecosystem for agent-native software — directly relevant to JASON-OS's vision of AI-operated workflows."
+  "creatorLens": "This repo understands that the next wave of software users will be AI agents, not humans. It provides a systematic methodology (HARNESS.md) for wrapping any desktop application in a CLI that agents can invoke. The 7-phase SOP, SKILL.md generation, and CLI-Hub registry represent a complete ecosystem for agent-native software — directly relevant to JASON-OS's vision of AI-operated workflows.",
+  "source_tier": "T1"
 }
