@@ -1,126 +1,121 @@
 # Quick Scan → Standard Upgrade Checklist
 
 <!-- prettier-ignore-start -->
-**Document Version:** 2.0
-**Last Updated:** 2026-04-10 (Session #272)
+**Document Version:** 3.0
+**Last Updated:** 2026-04-10 (Session #273)
 **Status:** ACTIVE
-**Purpose:** Prioritized checklist for T29 Wave 4 (Step 10) — upgrade 12 TRUE quick-scan repos to Standard depth.
+**Purpose:** Prioritized checklist for T29 Wave 4 (Step 10) — upgrade **12 TRUE quick-scan repos** to Standard depth.
 <!-- prettier-ignore-end -->
 
 ---
 
-## ⚠️ Session #272 Scope Correction
+## Session #273 Scope Correction (v3.0)
 
-**Original scope was 22 repos. Actual scope is 12 TRUE quick scans.** The
-original count was based on the `depth: "quick"` field in analysis.json, but
-`scripts/cas/migrate-v3.js` (2026-04-09 v3.0 migration) stamped `depth: "quick"`
-on 10 repos that actually have full Standard artifact sets. Those 10 need only a
-metadata depth-field patch, not re-analysis. See Wave 4 Step 8.5 in
-`.planning/synthesis-consolidation/PLAN.md` for the fix procedure.
+**v2.0 (Session #272)** listed all 22 repos and flagged 10 as "mislabeled"
+needing a depth-field patch. Those 10 have been fixed under
+[Wave 4 Step 8.5](../../.planning/synthesis-consolidation/PLAN.md) in Session
+#273:
 
-**12 TRUE quick scans (need Standard upgrade):** ArchiveBox, crawl4ai,
-firecrawl, lux-video-downloader, marker, MinerU, nitter, outline, qmd, reader,
-surya, tesseract.
+- **9 repos patched** (depth `quick` → `standard` + candidates backfilled from
+  the extraction journal under the "extractions are canon" principle): commit
+  `aa4b5fe7`
+- **1 repo excluded** (`aws-media-extraction`) as a legitimate quick scan with a
+  separate anomaly — see PLAN.md Step 8.5 follow-ups
 
-**10 mislabeled (just need depth field fix):** aws-media-extraction,
-bedrock-summarize-audio-video-text, bulk-transcribe-youtube-playlist,
-codecrafters-io-build-your-own-x, hkuds-cli-anything, karpathy-autoresearch,
-public-apis_public-apis, teng-lin_notebooklm-py, viktoraxelsen-memskill,
-youtube-transcript-api.
+**v3.0 removes all 10 from the priority list and checklist.** This document now
+tracks only the **12 TRUE quick-scan repos** that need a real re-analysis at
+Standard depth for Wave 5 synthesis.
 
 ---
 
 ## Context
 
-T29 Wave 4 upgrades 12 TRUE quick-scan repos to Standard depth so `/synthesize`
-has full artifact sets (analysis.json + creator-view.md + value-map.json +
-findings.jsonl + summary.md + deep-read.md + content-eval.jsonl +
-coverage-audit.jsonl) for all sources.
+T29 Wave 4 upgrades the 12 TRUE quick-scan repos so `/synthesize` has full
+artifact sets for all sources. The Standard artifact set is: analysis.json +
+creator-view.md + value-map.json + findings.jsonl + summary.md + deep-read.md +
+content-eval.jsonl + coverage-audit.jsonl.
 
-**Current scan depth state** (as of 2026-04-10):
+**Current scan-depth state** (post Step 8.5):
 
 | Source Type |  Total |  Quick | Standard | Deep |
 | ----------- | -----: | -----: | -------: | ---: |
-| repo        |     25 | **22** |        3 |    0 |
+| repo        |     25 | **12** |       13 |    0 |
 | website     |      6 |      0 |        6 |    0 |
 | document    |      1 |      0 |        1 |    0 |
 | media       |      2 |      0 |        2 |    0 |
-| **Total**   | **34** | **22** |   **12** |    0 |
+| **Total**   | **34** | **12** |   **22** |    0 |
 
-**Already at Standard (skip):** safishamsi-graphify, docling, unstructured.
+**Already at Standard (do not re-analyze):** safishamsi-graphify, docling,
+unstructured, bedrock-summarize-audio-video-text,
+bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
+hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
+teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api, plus all
+websites/documents/media sources.
 
-## Ranking Criteria
-
-Per PLAN.md Step 9:
-
-1. Tag overlap with existing Standard-depth analyses
-2. ROADMAP alignment (repos relevant to active work — T28 CAS, T29 synthesis,
-   T16 JASON-OS, T4 memory, T27 media)
-3. Quality score from Quick Scan (N/A — all stars null in quick scans)
-4. Source diversity (prioritize repos that cover gap domains)
-
-**Note:** All 22 repos currently have `source_tier: T1` and
-`candidates_count: 0` (quick scans don't extract candidates). All stars are null
-(quick scans don't fetch metrics). Standard upgrade will populate all of these.
+**Excluded from upgrade:** `aws-media-extraction` (legitimate quick scan,
+pending separate investigation for its journal-entry anomaly).
 
 ---
 
-## Priority List (22 repos)
+## Ranking Criteria
 
-### Wave 4A — Content extraction & web scraping (Priority 1-6)
+Per PLAN.md Step 9, prioritized by:
 
-**Relevance:** Direct infrastructure for T28 CAS (website-analysis,
-document-analysis handlers). Highest synthesis value — informs the extraction
-pipeline itself.
+1. **Qualitative ROADMAP relevance** (primary) — T28 CAS infrastructure, T29
+   synthesis corpus completeness, T4 memory, T16 JASON-OS
+2. **Quality score from Quick Scan** (tie-breaker 1) — range 52–87
+3. **Stars** (tie-breaker 2) — range 10K–105K
+4. **Tag overlap with Standard corpus** (tie-breaker 3) — signal that the repo
+   sits in a domain already being synthesized
 
-| #   | Slug        | Source               | Tags                                               | Why                                                                  |
-| --- | ----------- | -------------------- | -------------------------------------------------- | -------------------------------------------------------------------- |
-| 1   | `firecrawl` | mendableai/firecrawl | framework, typescript, ai-crawler, data-extraction | Active AI crawler, TS stack match, direct website-analysis relevance |
-| 2   | `crawl4ai`  | unclecode/crawl4ai   | library, python                                    | Complements firecrawl — python side of web scraping for AI           |
-| 3   | `reader`    | jina-ai/reader       | web-service, typescript, llm, proxy                | LLM-first reader proxy; architecture pattern for content extraction  |
-| 4   | `marker`    | VikParuchuri/marker  | library, python                                    | PDF → Markdown conversion, direct document-analysis relevance        |
-| 5   | `MinerU`    | opendatalab/MinerU   | framework, python                                  | Document extraction toolkit, complements marker                      |
-| 6   | `surya`     | VikParuchuri/surya   | library, python                                    | OCR/layout (sibling to marker), foundation for PDF pipelines         |
+---
 
-### Wave 4B — Research & agent tooling (Priority 7-11)
+## Priority List (12 TRUE Quick Scans)
 
-**Relevance:** T16 JASON-OS (Claude Code OS research), T4 multi-layer memory,
-agent infrastructure patterns.
+### Bucket A — Direct CAS content-extraction infrastructure (priority 1-6)
 
-| #   | Slug                     | Source                 | Tags                    | Why                                                  |
-| --- | ------------------------ | ---------------------- | ----------------------- | ---------------------------------------------------- |
-| 7   | `karpathy-autoresearch`  | karpathy/autoresearch  | research-tool, python   | High-signal author (Karpathy), autoresearch patterns |
-| 8   | `viktoraxelsen-memskill` | ViktorAxelsen/MemSkill | research-tool, python   | Memory/skill system — direct T4 relevance            |
-| 9   | `hkuds-cli-anything`     | HKUDS/CLI-Anything     | framework, python       | CLI framework, JASON-OS CLI layer reference          |
-| 10  | `qmd`                    | nicholasgasior/qmd     | tool, typescript        | General tool — needs discovery during analysis       |
-| 11  | `outline`                | outline/outline        | application, typescript | Collaborative docs application, UX patterns          |
+**Why top priority:** These repos are the reference implementations for the same
+pipelines SoNash's own `/website-analysis`, `/document-analysis`, and
+`/repo-analysis` handlers execute. Standard-depth artifacts feed directly into
+T29 synthesis themes about extraction patterns.
 
-### Wave 4C — Media extraction (Priority 12-16)
+| #   | Slug        | Source               | Quality | Stars | Lang | Rationale                                               |
+| --- | ----------- | -------------------- | :-----: | ----: | :--: | ------------------------------------------------------- |
+| 1   | `firecrawl` | mendableai/firecrawl |   87    |  105K |  TS  | AI crawler reference, TS stack match, website-analysis  |
+| 2   | `MinerU`    | opendatalab/MinerU   |   85    |   58K |  Py  | Document extraction toolkit, document-analysis parallel |
+| 3   | `crawl4ai`  | unclecode/crawl4ai   |   83    |   63K |  Py  | Python-side web-scraping-for-AI, complements firecrawl  |
+| 4   | `marker`    | VikParuchuri/marker  |   74    |   33K |  Py  | PDF → Markdown, direct document-analysis relevance      |
+| 5   | `surya`     | VikParuchuri/surya   |   70    |   19K |  Py  | OCR/layout companion to marker, PDF pipeline foundation |
+| 6   | `reader`    | jina-ai/reader       |   52    |   10K |  TS  | LLM-first reader proxy, content-extraction pattern      |
 
-**Relevance:** T27 media content extraction, complements /media-analysis handler
-(which already uses youtube-transcript-api as a dependency).
+### Bucket B — Foundational infrastructure (priority 7)
 
-| #   | Slug                                 | Source                                                                                                  | Tags                    | Why                                             |
-| --- | ------------------------------------ | ------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------------------------------- |
-| 12  | `youtube-transcript-api`             | jdepoix/youtube-transcript-api                                                                          | library                 | Active dependency of media-analysis handler     |
-| 13  | `bulk-transcribe-youtube-playlist`   | Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist                                          | utility-tool            | Bulk transcription patterns                     |
-| 14  | `bedrock-summarize-audio-video-text` | ksharlandjiev/bedrock-summarize-audio-video-text                                                        | tool-demo, bedrock      | AWS Bedrock media pipeline reference            |
-| 15  | `aws-media-extraction`               | aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws | repo, media, extraction | AWS reference architecture for media extraction |
-| 16  | `lux-video-downloader`               | iawia002/lux                                                                                            | cli-tool, video         | Video download CLI (Go)                         |
+**Why:** Upstream dependency for marker and surya. Historical context for the
+entire OCR pipeline layer.
 
-### Wave 4D — Foundational & gap fillers (Priority 17-22)
+| #   | Slug        | Source                  | Quality | Stars | Lang | Rationale                                      |
+| --- | ----------- | ----------------------- | :-----: | ----: | :--: | ---------------------------------------------- |
+| 7   | `tesseract` | tesseract-ocr/tesseract |   74    |   73K | C++  | Foundation OCR library (upstream marker/surya) |
 
-**Relevance:** Lower direct relevance but fill domain gaps (OCR, scraping,
-archiving, curated lists).
+### Bucket C — Knowledge / archival / collaborative tools (priority 8-9)
 
-| #   | Slug                               | Source                           | Tags                                 | Why                                                 |
-| --- | ---------------------------------- | -------------------------------- | ------------------------------------ | --------------------------------------------------- |
-| 17  | `tesseract`                        | tesseract-ocr/tesseract          | library, c++                         | Foundation OCR library (upstream for marker/surya)  |
-| 18  | `teng-lin_notebooklm-py`           | teng-lin/notebooklm-py           | library, python                      | NotebookLM API wrapper, small scope                 |
-| 19  | `ArchiveBox`                       | ArchiveBox/ArchiveBox            | application, python                  | Self-host archiving (knowledge persistence pattern) |
-| 20  | `nitter`                           | zedeus/nitter                    | application, nim                     | Twitter scraper/frontend (tangential to extraction) |
-| 21  | `codecrafters-io-build-your-own-x` | codecrafters-io/build-your-own-x | curated-list, markdown, awesome-list | Broad curated list (synthesis meta-source)          |
-| 22  | `public-apis_public-apis`          | public-apis/public-apis          | curated-list, python, api, dataset   | Broad API directory (synthesis meta-source)         |
+**Why:** Tangential to CAS infrastructure but inform UX/architecture patterns
+relevant to JASON-OS (T16) and personal knowledge management themes.
+
+| #   | Slug         | Source                | Quality | Stars | Lang | Rationale                                    |
+| --- | ------------ | --------------------- | :-----: | ----: | :--: | -------------------------------------------- |
+| 8   | `ArchiveBox` | ArchiveBox/ArchiveBox |   84    |   27K |  Py  | Self-host archiving, knowledge persistence   |
+| 9   | `outline`    | outline/outline       |   83    |   38K |  TS  | Collaborative docs UX, real-time editing ref |
+
+### Bucket D — Specialized / niche (priority 10-12)
+
+**Why:** Lower direct relevance, but each fills a distinct domain gap.
+
+| #   | Slug                   | Source             | Quality | Stars | Lang | Rationale                                    |
+| --- | ---------------------- | ------------------ | :-----: | ----: | :--: | -------------------------------------------- |
+| 10  | `qmd`                  | nicholasgasior/qmd |   81    |   19K |  TS  | General TS tool, domain discovered on scan   |
+| 11  | `nitter`               | zedeus/nitter      |   69    |   12K | Nim  | Twitter scraper/frontend, extraction pattern |
+| 12  | `lux-video-downloader` | iawia002/lux       |   65    |   31K |  Go  | Video download CLI (Go), media pipeline      |
 
 ---
 
@@ -131,13 +126,16 @@ Per PLAN.md Step 10 batch optimizations:
 1. **Skip interactive gate** — depth pre-set to `standard` in each invocation
 2. **Tags already exist** — present existing tags for confirmation,
    batch-approve where possible
-3. **Batch retro at end** — one retro covering all 22 at session end
+3. **Batch retro at end** — one retro covering all 12
 4. **Single index rebuild** — `node scripts/cas/rebuild-index.js` once after all
-   22 complete (not per-repo)
+   12 complete (not per-repo)
 5. **Single EXTRACTIONS.md regeneration** —
    `node scripts/cas/generate-extractions-md.js` once at end
 6. **Self-audit sweep** — run `node scripts/cas/self-audit.js --slug=<slug>` for
-   all 22 after completion
+   all 12 after completion
+7. **Pragmatic deviations** for very large repos (firecrawl ~1162 files,
+   monorepo with 13 sub-apps): consider skipping repomix and running the
+   dimension wave inline if repomix assembly dominates wallclock
 
 **Command pattern:**
 
@@ -145,60 +143,63 @@ Per PLAN.md Step 10 batch optimizations:
 /analyze https://github.com/<org>/<repo> --depth=standard
 ```
 
-**Time estimate:** ~5-8 min per repo × 22 repos = **~2-3 hours** single session.
+**Time estimate:** ~5-8 min per repo × 12 repos = **~1-1.5 hours** single
+session (revised down from v2.0's 2-3h / 22-repo estimate).
+
+**Firecrawl pilot state (resumable):** Session #272 attempted firecrawl as the
+first upgrade. It completed VALIDATE + Phase 0 Quick Scan API batch + Phase 1
+clone (1162 files). Paused before repomix to re-audit Wave 4 scope. Resume state
+at `.claude/state/repo-analysis.firecrawl.state.json`. Clone still on disk at
+`/tmp/repo-analysis-firecrawl/`. Consider resuming vs. restarting based on clone
+freshness.
+
+---
 
 ## Completion Checklist
 
-Wave 4A (Content extraction):
+### Bucket A — CAS content-extraction infrastructure
 
-- [ ] 1. firecrawl
-- [ ] 2. crawl4ai
-- [ ] 3. reader
+- [ ] 1. firecrawl (resumable from Session #272 pilot state)
+- [ ] 2. MinerU
+- [ ] 3. crawl4ai
 - [ ] 4. marker
-- [ ] 5. MinerU
-- [ ] 6. surya
+- [ ] 5. surya
+- [ ] 6. reader
 
-Wave 4B (Research & agent tooling):
+### Bucket B — Foundational
 
-- [ ] 7. karpathy-autoresearch
-- [ ] 8. viktoraxelsen-memskill
-- [ ] 9. hkuds-cli-anything
+- [ ] 7. tesseract
+
+### Bucket C — Knowledge / archival / collaborative
+
+- [ ] 8. ArchiveBox
+- [ ] 9. outline
+
+### Bucket D — Specialized / niche
+
 - [ ] 10. qmd
-- [ ] 11. outline
+- [ ] 11. nitter
+- [ ] 12. lux-video-downloader
 
-Wave 4C (Media extraction):
-
-- [ ] 12. youtube-transcript-api
-- [ ] 13. bulk-transcribe-youtube-playlist
-- [ ] 14. bedrock-summarize-audio-video-text
-- [ ] 15. aws-media-extraction
-- [ ] 16. lux-video-downloader
-
-Wave 4D (Foundational & gap fillers):
-
-- [ ] 17. tesseract
-- [ ] 18. teng-lin_notebooklm-py
-- [ ] 19. ArchiveBox
-- [ ] 20. nitter
-- [ ] 21. codecrafters-io-build-your-own-x
-- [ ] 22. public-apis_public-apis
+---
 
 ## Post-Batch Actions
 
 - [ ] Run `node scripts/cas/rebuild-index.js`
 - [ ] Run `node scripts/cas/generate-extractions-md.js`
-- [ ] Run self-audit sweep across all 22 (loop)
-- [ ] Verify `source_tier` populated for all 22 (should remain T1 unless user
+- [ ] Run self-audit sweep across all 12 (loop)
+- [ ] Verify `source_tier` populated for all 12 (should remain T1 unless user
       reassigns)
 - [ ] Stars field populated via Standard metadata fetch
 - [ ] Commit with message:
-      `feat(T29): Wave 4 — batch upgrade 22 quick-scan repos to Standard`
-- [ ] Proceed to Wave 5 (E2E testing + /synthesize run)
+      `feat(T29): Wave 4 Step 10 — batch upgrade 12 quick-scan repos to Standard`
+- [ ] Proceed to Wave 5 (E2E testing + `/synthesize` run)
 
 ---
 
 ## Session Log
 
-| Session | Date       | Action                            |
-| ------- | ---------- | --------------------------------- |
-| #272    | 2026-04-10 | Checklist created (Wave 4 Step 9) |
+| Session | Date       | Action                                                                                                                                       |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| #272    | 2026-04-10 | Checklist v2.0 created (22 repos — later corrected)                                                                                          |
+| #273    | 2026-04-10 | v3.0 — scope corrected to 12 TRUE quicks after Step 8.5 executed, actual quality/stars populated, priority re-ranked qualitative + tie-break |

@@ -1592,7 +1592,7 @@ _Uncategorized_
 | ------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Decision Record: Synthesis Consolidation](.planning/synthesis-consolidation/DECISIONS.md) | -                                                               | ↓0 ↑0      | 2026-04-10    |
 | [Diagnosis: Synthesis Consolidation](.planning/synthesis-consolidation/DIAGNOSIS.md)       | -                                                               | ↓0 ↑0      | 2026-04-10    |
-| [Implementation Plan: Synthesis Consolidation](.planning/synthesis-consolidation/PLAN.md)  | Merge repo-synthesis (v1.3) + website-synthesis (v1.1) + cro... | ↓0 ↑0      | 2026-04-10    |
+| [Implementation Plan: Synthesis Consolidation](.planning/synthesis-consolidation/PLAN.md)  | Merge repo-synthesis (v1.3) + website-synthesis (v1.1) + cro... | ↓1 ↑0      | 2026-04-10    |
 
 ### .planning > system-wide-standardization (Tier 4)
 
@@ -1689,9 +1689,9 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                                             | Description                                                     | References | Last Modified |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
-| [Quick Scan → Standard Upgrade Checklist](.research/analysis/_quick-scan-upgrade.md) | Prioritized checklist for T29 Wave 4 (Step 10) — upgrade 12 ... | ↓0 ↑0      | 2026-04-10    |
+| Document                                                                             | Description                                                       | References | Last Modified |
+| ------------------------------------------------------------------------------------ | ----------------------------------------------------------------- | ---------- | ------------- |
+| [Quick Scan → Standard Upgrade Checklist](.research/analysis/_quick-scan-upgrade.md) | Prioritized checklist for T29 Wave 4 (Step 10) — upgrade \*\*1... | ↓0 ↑1      | 2026-04-10    |
 
 ### .research > analysis > aws-media-extraction (Tier 4)
 
@@ -3153,7 +3153,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**1312 orphaned documents:**
+**1311 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -3771,7 +3771,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Plan: Analysis/Synthesis Skill Convergence](.planning/skill-convergence/PLAN.md)
 - [Decision Record: Synthesis Consolidation](.planning/synthesis-consolidation/DECISIONS.md)
 - [Diagnosis: Synthesis Consolidation](.planning/synthesis-consolidation/DIAGNOSIS.md)
-- [Implementation Plan: Synthesis Consolidation](.planning/synthesis-consolidation/PLAN.md)
 - [Capture Manifest: Folded Planning Documents](.planning/system-wide-standardization/CAPTURE_MANIFEST.md)
 - [SWS Decisions by Phase — Index](.planning/system-wide-standardization/DECISIONS_BY_PHASE.md)
 - [Diagnosis: System-Wide Standardization — Ecosystem Mapping](.planning/system-wide-standardization/DIAGNOSIS.md)
