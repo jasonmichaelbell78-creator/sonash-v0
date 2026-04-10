@@ -1,7 +1,1 @@
-{
-  "scripts\\cas\\backfill-candidates.js": 1,
-  "scripts\\cas\\migrate-v3.js": 1,
-  "scripts\\cas\\promote-firecrawl-to-journal.js": 5,
-  "scripts\\cas\\self-audit.js": 1,
-  "scripts\\lib\\safe-cas-io.js": 1
-}
+{}
