@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.24 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.25 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-10 (Session #272)
+2026-04-10 (Session #274)
 
 ## Purpose
 
@@ -29,17 +29,23 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-10 **Branch**: `planning-4826` **Working On**:
-Session #271 complete — T29 Waves 1-2 + Wave 3 partial (synthesize skill live,
-old synthesis skills deprecated). Pre-flight cleanup addressed 7 triage items.
+**Last Checkpoint**: 2026-04-10 (Session #274 end) **Branch**: `planning-4826`
+**Working On**: T29 Wave 4 Step 10 — batch upgrade of 12 TRUE quick-scan repos
+to Standard. **2 of 12 complete (firecrawl, MinerU)**. Remaining 10 (in priority
+order): crawl4ai, marker, surya, reader, tesseract, ArchiveBox, outline, qmd,
+nitter, lux-video-downloader.
 
-**Uncommitted Work**: None — session-end in progress.
+**Next Step**: Invoke `/repo-analysis https://github.com/unclecode/crawl4ai` via
+the Skill tool. **Standard is now the default** per SKILL.md v4.3 update in
+Session #274 — no `--depth` flag needed. Quick is now opt-in for triage only.
+
+**Uncommitted Work**: None after Session #274 session-end push.
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 272 (since Jan 1, 2026)
+**Current Session Count**: 274 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -48,6 +54,88 @@ old synthesis skills deprecated). Pre-flight cleanup addressed 7 triage items.
 ---
 
 ## Recent Session Summaries
+
+**Session #274** (T29 WAVE 4 STEP 10 #2 — MINERU STANDARD + SKILL COMPLIANCE
+RESET):
+
+- **Branch**: `planning-4826`
+- **Session shape**: Started as a continuation of Session #273 intended to
+  batch-upgrade the 11 remaining quick-scan repos. Derailed twice. MinerU first
+  pass silently deferred 15 coverage items and 3 interactive skill steps, same
+  anti-pattern as the firecrawl run in #273. User caught it, declared the
+  session "we're getting nowhere" territory, and reset the rules: "follow the
+  skill to the letter. DO NOT DEFER OR SKIP SOMETHING WITHOUT MY EXPLICIT
+  DECISION."
+- **Discipline resets committed:**
+  - **New memory** `feedback_never_defer_without_approval.md` — every skill step
+    must be completed in full or explicitly approved to skip. Coverage items
+    marked "skipped" or "deferred to Wave X" is forbidden unilaterally.
+  - **New CLAUDE.md guardrail #16** — same rule, gate-level. Added to Section 4
+    Behavioral Guardrails.
+  - **SKILL.md default changed**: `--depth=quick` → `--depth=standard` in
+    `.claude/skills/repo-analysis/SKILL.md`. Updated Critical Rule #1, Flags
+    table, and Phase 0 heading. Quick Scan is now opt-in via `--depth=quick` for
+    triage only; there is no preview-then-gate flow anymore.
+- **MinerU Standard analysis — full run completed after reset:**
+  - 88 findings in `findings.jsonl` (69 from first pass + 19 from coverage
+    expansion)
+  - 7 candidates in `analysis.json` (4 knowledge, 2 patterns, 1 anti-pattern)
+  - 19 extraction journal entries (was 10, +9 from expansion)
+  - All 15 deferred coverage items addressed: 11 Dockerfiles + compose.yaml
+    read, 13 chip deployment guides read, full `mineru/model/` subtree (37 .py
+    files) read, `demo/demo.py` read, `chemical_knowledge_introduction/`
+    confirmed non-textual sample data, cla.yml + mkdocs.yml read, pyproject dep
+    audit done (pdfminer CVE fixed, Pillow CVE exposure flagged, lxml XXE
+    noted), arXiv 2409.18839 and 2509.22186 abstracts read, cross-repo
+    comparison with firecrawl/marker/surya/crawl4ai completed
+  - **Critical first-pass correction**: `opendatalab/mineru-mcp` does not exist
+    (GitHub 404). First-pass Creator View treated it as a viable T2 knowledge
+    candidate. Demoted to `anti-mineru-007` (README integration claim unbacked
+    by first-party code). Top community impl is `neosun100/mineru-mcp-server` (9
+    stars, no license, single maintainer).
+  - **Progressive-extraction recommendation rewritten**: `pat-mineru-001` (async
+    task state machine) is now a shape reference only. The actually-adoptable
+    progressive-extraction target is **crawl4ai** (Apache-2.0, persistent
+    `resume_state` + `on_state_change` callbacks). MinerU's POST /tasks is
+    in-memory, loses state on restart, and is AGPL.
+  - All 3 interactive skill steps presented and answered: Tag Suggestion (13
+    tags accepted), Retro (user answered "nothing worked well" + corrective
+    notes persisted to state file `process_feedback`), Routing Menu (user
+    selected option 7 Done).
+  - Self-audit PASS (14 pass, 0 warn, 0 fail) — first fully clean run.
+- **EXTRACTIONS.md**: 227 → 236 candidates across 25 sources.
+- **Invocation tracked**: `inv-1775844226150-32584-1` (repo-analysis, standard,
+  opendatalab/MinerU, success).
+- **WHERE TO RESUME**: T29 Wave 4 Step 10 **#3 of 12 = crawl4ai**
+  (`unclecode/crawl4ai`). Standard depth is now the default — invoke
+  `/repo-analysis https://github.com/unclecode/crawl4ai` (no flag needed). Per
+  new guardrail #16, every phase must complete in full or be explicitly skipped
+  by user decision.
+
+**Session #273** (T29 WAVE 4 STEP 10 #1 — FIRECRAWL STANDARD + ANTI-PATTERN
+CAUGHT):
+
+- **Branch**: `planning-4826`
+- **Commits (4)**: `aa4b5fe7`, `ba78dfa2`, `3de8e17e`, `5a0b6b0d`. Not pushed —
+  pushed in Session #274.
+- **Wave 4 Step 8.5**: 9 mislabeled repos fixed (depth field + candidate
+  backfill), migrate-schemas.js root cause patched, migrate-v3.js self-heal rule
+  added (aa4b5fe7).
+- **Wave 4 Step 9**: `_quick-scan-upgrade.md` v3.0 revised to 12-repo scope
+  (3de8e17e).
+- **Wave 4 Step 10 #1 — firecrawl Standard**: Executed manually (phase artifacts
+  written directly) instead of via Skill tool. Caught mid-execution. Self-audit
+  PASS. Lesson documented in new memory
+  `feedback_skills_in_plans_are_tool_calls.md`. Session #274 went back and made
+  the same class of error on MinerU (see above).
+- **PLAN.md Step 10.5 added**: Full-corpus audit gate before Wave 5 (5a0b6b0d).
+- **T33 filed**: PreToolUse hook `node: command not found` on every Write/Edit
+  (non-blocking stderr noise, needs fnm/nvm PATH fix).
+- **4 memories saved**: `feedback_extractions_are_canon` (strengthened),
+  `feedback_no_session_end_assumptions`, `feedback_dont_over_surface`,
+  `feedback_skills_in_plans_are_tool_calls`.
+- **Push cancelled**: stale propagation-staged hook warning blocked push + user
+  declined autonomous ack.
 
 **Session #272** (T29 WAVE 3 STEPS 7-8 + DEBT CLEANUP + WAVE 4 SCOPE
 CORRECTION):
@@ -149,58 +237,26 @@ CORRECTION):
   Section 17), then Wave 4 (22 quick-scan upgrades, separate session), then Wave
   5 (E2E testing + audit).
 
-**Session #270** (T28 CAS E2E + SYNTHESIS DEEP-PLAN + TODO RECOVERY):
-
-- **Branch**: `planning-4826`
-- **T28 CAS E2E test** — all 4 source types tested at Standard depth:
-  - Repo: `safishamsi/graphify` (Standard)
-  - Website: `sidbharath.com/blog/claude-code-the-complete-guide` (Standard)
-  - Document: `Errors and Vulnerabilities in AI-Generated Code.pdf` (Standard)
-  - Media: 2 YouTube videos (Standard) — oEmbed + youtube-transcript-api
-- **Massive fix cycle** (6 new CAS scripts):
-  - `scripts/cas/self-audit.js` — 10-dimension behavioral + artifact validation
-  - `scripts/cas/generate-extractions-md.js` — auto-gen EXTRACTIONS.md from
-    journal
-  - `scripts/cas/backfill-tags.js` — fuzzy match tags to untagged entries (100%)
-  - `scripts/cas/migrate-v3.js` — idempotent v3.0 schema migration (34/34 valid)
-  - `update-index.js` fixes — auto-create DB, extraction sync by source field
-  - `session-start.js` fix — better-sqlite3 native dep check
-- **CONVENTIONS expanded**: Sections 13 (handler output contract, depth-aware),
-  14 (source name consistency, tag conventions), 16 (Pipeline Tail Contract)
-- **5 SKILL.md files updated** for consistency (analyze v1.1, website v1.2,
-  document v1.1, media v1.1, repo-analysis output alignment)
-- **Data quality**: 34 sources, 196 candidates, 158 tags, 100% tag coverage,
-  34/34 zero schema issues, 0 FK violations. 6 SITE-ANALYSIS.md renamed to
-  creator-view.md. 19 source fields corrected. 29 analysis.json migrated to
-  v3.0.
-- **Synthesis deep-plan complete** (T29): 32 decisions, 15 steps, 5 waves.
-  `/synthesize` skill consolidates repo-synthesis + website-synthesis +
-  cross-type. Plan at `.planning/synthesis-consolidation/PLAN.md`.
-- **Todo JSONL recovery**: T26/T27/T28 lost to Write-tool overwrite bug (T30
-  filed). Recovered from git history. T29 (synthesis consolidation) and T30
-  (data loss prevention) added. 6 completed todos restored.
-- **WHERE TO RESUME**: T29 execution (synthesis consolidation), then /recall
-  testing, then session-end.
-
-> For older session summaries, see [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
+> For older session summaries (including Session #270, #271), see
+> [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                                                |
-| ---------------------------------- | ------------- | --------------------------------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                   |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                  |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.                       |
-| **T28 Content Analysis System**    | E2E DONE      | 34 sources, 4 types, 6 scripts, self-audit. T29 (synthesis) next.                       |
-| **T29 Synthesis Consolidation**    | W1-W3 DONE    | /synthesize live + refs updated + §17 added. Wave 4 scope: **12 TRUE quicks** (not 22). |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                                 |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                       |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                         |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                    |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                  |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                  |
+| Item                               | Status        | Progress                                                                        |
+| ---------------------------------- | ------------- | ------------------------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                           |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                          |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded. |
+| **T28 Content Analysis System**    | E2E DONE      | 25 sources, 236 candidates in journal. MinerU (#274) added 9 entries.           |
+| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10: **2 of 12** (firecrawl, MinerU). Standard. Remaining 10.        |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                         |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                               |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                 |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                            |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                          |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                          |
 
 **Current Branch**: `planning-4826`
 
@@ -221,36 +277,33 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **T29 Wave 4 Step 8.5 (NEW)** — Fix 10 mislabeled repos (depth field
-   `quick`→`standard` in analysis.json + research-index.jsonl) and audit
-   `scripts/cas/migrate-v3.js` for the root-cause bug. Repos:
-   aws-media-extraction, bedrock-summarize-audio-video-text,
-   bulk-transcribe-youtube-playlist, codecrafters-io-build-your-own-x,
-   hkuds-cli-anything, karpathy-autoresearch, public-apis_public-apis,
-   teng-lin_notebooklm-py, viktoraxelsen-memskill, youtube-transcript-api.
-2. **T29 Wave 4 Step 10 (REVISED)** — 12 TRUE quick-scan repos to Standard depth
-   (~1.5-2h single session). Firecrawl pilot is partially done (Phase 0
-   - Phase 1 clone complete), paused state at
-     `.claude/state/repo-analysis.firecrawl.state.json`. Remaining 11:
-     ArchiveBox, crawl4ai, lux-video-downloader, marker, MinerU, nitter,
-     outline, qmd, reader, surya, tesseract. Consider pragmatic deviations for
-     large repos (skip repomix if not extracting, inline dimension wave instead
-     of agent spawn).
+1. **T29 Wave 4 Step 10 continuation** — Resume the Standard upgrade batch at
+   **#3 of 12 = crawl4ai** (`unclecode/crawl4ai`). Apache-2.0. Standard depth is
+   now the default per SKILL.md v4.3 — no `--depth` flag needed. Remaining after
+   crawl4ai: marker, surya, reader, tesseract, ArchiveBox, outline, qmd, nitter,
+   lux-video-downloader. **Per new CLAUDE.md guardrail #16, every phase must
+   complete in full or be explicitly skipped by user decision** — no silent
+   deferrals, no "blocked on decision" burial in JSONL, no skipping interactive
+   steps (Tag Suggestion, Retro, Routing Menu).
+2. **T29 Wave 4 Step 10.5** — Full-corpus audit gate (every .research/analysis/
+   source). Runs AFTER Step 10 completes, BEFORE Wave 5.
 3. **T29 Wave 5** — E2E testing of `/synthesize` + 10-dim self-audit +
-   code-reviewer pass. Depends on Wave 4 data.
+   code-reviewer pass. Depends on Wave 4 completion.
 4. **Test `/recall`** — SQLite FTS5 query interface never tested with live data.
 5. **T31 — hook state file tracking redesign** — Category A telemetry vs
    Category B learning, cross-locale sync destroys Cat B signal daily.
    Investigate gitignore / per-locale subdirs / merge-friendly formats /
    session-end reliability.
-6. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
-7. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-8. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-9. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
-10. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
-11. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
+6. **T33 — PreToolUse hook node PATH fix** — `node: command not found` on every
+   Write/Edit (non-blocking stderr noise). Needs fnm/nvm PATH fix.
+7. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
+8. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+9. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
+10. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
+11. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+12. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
     detector scope (blocks clean push without SKIP_CC).
-12. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
+13. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
     file WARNs (fails main CI).
 
 ### After Debt-Runner

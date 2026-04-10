@@ -5,25 +5,103 @@
   "source": "opendatalab/MinerU",
   "slug": "MinerU",
   "title": "MinerU",
-  "analyzed_at": "2026-04-09T10:47:45.015Z",
-  "depth": "quick",
-  "tags": ["repo", "framework", "mineru", "python", "repository"],
+  "analyzed_at": "2026-04-10T17:30:00Z",
+  "depth": "standard",
+  "tags": [
+    "repo",
+    "framework",
+    "document-parsing",
+    "python",
+    "async-task-api",
+    "multi-gpu-router",
+    "structured-output-spec",
+    "env-var-catalog",
+    "agpl",
+    "multi-vendor-docker",
+    "chip-deployment-guides",
+    "cli-wrapping-pattern",
+    "cross-repo-comparison"
+  ],
   "scoring": {
-    "quality_band": "Excellent",
-    "quality_score": 85,
-    "personal_fit_band": "Needs Work",
-    "personal_fit_score": 50,
-    "classification": "park-for-later"
+    "quality_band": "Healthy",
+    "quality_score": 74,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 62,
+    "classification": "active-sprint"
   },
-  "summary": "Document parsing engine with three notable architectural patterns: (1) Async task API (POST /tasks with status querying and result retrieval) — partial answer to resumable extraction, (2) mineru-router for multi-service multi-GPU load balancing with unified API, (3) MCP server integration for Cursor/Claude Desktop/Windsurf.  VLM+OCR dual engine with sliding window for long docs.",
-  "creator_view": "Document parsing engine with three notable architectural patterns: (1) Async task API (POST /tasks with status querying and result retrieval) — partial answer to resumable extraction, (2) mineru-router for multi-service multi-GPU load balancing with unified API, (3) MCP server integration for Cursor/Claude Desktop/Windsurf. VLM+OCR dual engine with sliding window for long docs. v3.0.0 released today — thread-safe concurrent inference, streaming writes. AGPL-3.0.",
-  "candidates": [],
+  "summary": "Document parsing engine with three-backend orchestration (pipeline/vlm/hybrid), scored multi-GPU router, async task state machine, and sliding-window memory bounding. Exemplary structured output specification and env-var catalog in docs. Severe test thinness (1 e2e test, 0.2% coverage floor) and unarmored HTTP defaults (no auth, no rate limit, no upload cap) block adoption. Value is in pattern/knowledge extraction, not dependency use. AGPL-3.0 license is an additional adoption blocker.",
+  "creator_view": "MinerU understands document parsing as an orchestration problem, not a model problem — three backends, one router, three install profiles, one structured output contract. The Creator View value is in three items: (1) the POST /tasks async task state machine which is a direct answer to the T28 progressive-extraction gap, (2) the output_files.md structured-output specification which is a template for SoNash's missing ANALYSIS_OUTPUT_CONTRACT.md, (3) the env var catalog in cli_tools.md which is a template for consolidating SoNash's scattered SKIP_*/GSD_*/CAS_* env vars. Test infrastructure and HTTP security are anti-patterns worth filing to guard against.",
+  "candidates": [
+    {
+      "name": "Structured output contract page",
+      "type": "knowledge",
+      "description": "docs/en/reference/output_files.md is an exemplary human-readable output spec: typed fields, enumerated block types, breaking-change callouts. Template for creating docs/agent_docs/ANALYSIS_OUTPUT_CONTRACT.md to mirror SoNash CAS v3.0 schema.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["documentation", "contract", "schema", "cas"]
+    },
+    {
+      "name": "Environment variable catalog",
+      "type": "knowledge",
+      "description": "docs/en/usage/cli_tools.md has prose catalog of 15+ MINERU_* env vars. Template for docs/agent_docs/ENV_VARS.md to consolidate SoNash scattered SKIP_*/GSD_*/CAS_*/ANALYZE_* across hooks, scripts, and skills.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["documentation", "env-vars", "reference"]
+    },
+    {
+      "name": "Async task state machine with TTL cleanup (shape reference only)",
+      "type": "architecture-pattern",
+      "description": "mineru/cli/fast_api.py implements POST /tasks with four states (pending/processing/completed/failed), asyncio.Queue, semaphore concurrency cap, background TTL sweep. CORRECTION from first pass: for T28 progressive extraction, port from crawl4ai (Apache-2.0, persistent resume_state) not MinerU (AGPL, in-memory). MinerU is a shape reference only.",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "high",
+      "tags": ["architecture", "state-machine", "async", "cas-gap", "shape-reference"]
+    },
+    {
+      "name": "Backend decision matrix for multi-mode tools",
+      "type": "knowledge",
+      "description": "docs/en/quick_start/index.md has pre-install decision matrix: 5 backends × 8 constraints. Apply to /analyze and /media-analysis routing docs where users pick source type + depth + backend.",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["documentation", "decision-matrix", "multi-mode"]
+    },
+    {
+      "name": "Wrap upstream CLI instead of reimplementing",
+      "type": "architecture-pattern",
+      "description": "mineru/model/vlm/vllm_server.py is 70 lines wrapping vllm.entrypoints.cli.main. Intercepts sys.argv, parses out --model/--port/--gpu-memory-utilization/--logits-processors, applies mod_kwargs_by_device_type, auto-injects MinerULogitsProcessor, sets OMP_NUM_THREADS=1, hands off to vllm_main(). Cheap maintainable alternative to forking. Applicable to SoNash for wrapping third-party CLIs.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["architecture", "cli-wrapping", "pattern"]
+    },
+    {
+      "name": "Coarse-to-fine two-stage parsing framing",
+      "type": "knowledge",
+      "description": "MinerU 2.5 paper (arxiv 2509.22186) introduces a 1.2B VLM with stage-1 layout analysis on downsampled images + stage-2 content recognition on native-resolution crops. Framing analogue for SoNash depth tiers (Quick -> Standard -> Deep).",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["architecture", "depth-tiers", "framing", "paper"]
+    },
+    {
+      "name": "README integration claim unbacked by first-party code",
+      "type": "anti-pattern",
+      "description": "README lists MCP Server integration but opendatalab/mineru-mcp does not exist (404). Only community implementations exist (top: neosun100/mineru-mcp-server, 9 stars, no license). CORRECTION from first pass where this was treated as a T2 knowledge candidate. Guard: SoNash must distinguish first-party from community integrations in claims.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "claims-vs-reality", "documentation"]
+    }
+  ],
   "last_synthesized_at": null,
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "opendatalab/MinerU",
   "url": "https://github.com/opendatalab/MinerU",
-  "analyzedAt": "2026-04-07T16:30:00Z",
+  "analyzedAt": "2026-04-10T17:30:00Z",
   "repoType": "framework",
   "repoSubtype": "document-parsing-engine",
   "metadata": {
@@ -39,43 +117,81 @@
     "fork": false
   },
   "summaryBands": {
-    "security": {
-      "band": "B",
-      "score": 72
+    "security": { "band": "C", "score": 68 },
+    "reliability": { "band": "A", "score": 94 },
+    "maintainability": { "band": "B", "score": 78 },
+    "documentation": { "band": "B", "score": 70 },
+    "process": { "band": "A", "score": 85 },
+    "velocity": { "band": "A", "score": 95 }
+  },
+  "dimensionBands": {
+    "architecture": { "band": "A", "score": 88 },
+    "tests": { "band": "F", "score": 18 }
+  },
+  "scoringLenses": {
+    "adoption": {
+      "score": 52,
+      "band": "Trial",
+      "primary": true,
+      "notes": "AGPL + test thinness + unarmored HTTP block adoption"
     },
-    "reliability": {
-      "band": "A",
-      "score": 94
-    },
-    "maintainability": {
-      "band": "B",
-      "score": 78
-    },
-    "documentation": {
-      "band": "A",
-      "score": 88
-    },
-    "process": {
-      "band": "A",
-      "score": 85
-    },
-    "velocity": {
-      "band": "A",
-      "score": 95
+    "creator": {
+      "score": 82,
+      "band": "Excellent",
+      "primary": false,
+      "notes": "High-signal architecture + strong documentation patterns"
     }
   },
   "absencePattern": "none",
-  "creatorLens": "Document parsing engine with three notable architectural patterns: (1) Async task API (POST /tasks with status querying and result retrieval) — partial answer to resumable extraction, (2) mineru-router for multi-service multi-GPU load balancing with unified API, (3) MCP server integration for Cursor/Claude Desktop/Windsurf. VLM+OCR dual engine with sliding window for long docs. v3.0.0 released today — thread-safe concurrent inference, streaming writes. AGPL-3.0.",
+  "creatorLens": "MinerU 3.0.0 is an orchestration-first document parsing engine. Three backends, one router, async task state machine, sliding-window memory bounding, layered install recipes, and an exemplary structured output spec. Test and HTTP security are where it falls down — one fuzzy-match e2e test and no API auth/rate-limit defaults. Extract patterns and documentation discipline, not code (AGPL).",
   "context": {
-    "t28Relevance": "QS-only but architecturally informative. Async task API addresses Gap Agent A Q5 (progressive extraction). Router pattern is deployment, not architecture. AGPL-3.0 limits adoption.",
-    "cluster": "B",
+    "t28Relevance": "POST /tasks async task API is the direct answer to Gap Agent A Q5 (progressive/resumable extraction). output_files.md is template for missing ANALYSIS_OUTPUT_CONTRACT.md. env-var catalog is template for missing ENV_VARS.md. All three are T1 extraction candidates that connect to existing in-flight SoNash work.",
+    "cluster": "A-content-extraction",
     "notablePatterns": [
-      "Async task API (POST /tasks) with status polling — resumable extraction pattern",
-      "mineru-router for multi-service load balancing",
-      "VLM+OCR dual engine (pipeline/vlm-engine/hybrid-engine) — three extraction strategies",
-      "Sliding window + streaming writes for long documents",
-      "MCP server for agentic AI integration"
-    ]
+      "Three-backend dispatch with deferred importlib imports and duck-typed signatures",
+      "Async task state machine (POST /tasks): four states, asyncio.Queue, semaphore, TTL sweep",
+      "Scored multi-GPU router: (queued + processing + pending) / max_concurrent with jitter",
+      "Sliding window for long-doc memory bounding (default size 64, uniform across all backends)",
+      "Thread-safety: threading.RLock on keyed singleton, atexit cleanup",
+      "Structured output spec as first-class product artifact (middle.json schema)",
+      "Prose environment variable catalog (15+ MINERU_* vars)",
+      "Hardware decision matrix (5 backends × 8 constraints) pre-install",
+      "Layered optional-dependencies install (8 groups)",
+      "Changelog-as-capability-index with CVE refs and quantified perf deltas"
+    ],
+    "antiPatterns": [
+      "Single fuzzy-match e2e test with 0.2% coverage floor",
+      "No PR test gating (push-only workflows)",
+      "Silent retry workflow converts flake into green checkmarks",
+      "HTTP API unarmored: no auth, no rate limit, no upload cap, no CORS/TrustedHost, docs enabled by default",
+      "SSRF primitive in user-controlled server_url field",
+      "i18n parity broken: 13 Chinese-only chip docs with no English equivalents",
+      "FAQ defers most questions to external AI assistant"
+    ],
+    "priorAnalysis": {
+      "depth": "quick",
+      "analyzedAt": "2026-04-09T10:47:45.015Z",
+      "qualityScore": 85,
+      "personalFitScore": 50,
+      "notes": "Quality score dropped from 85 (quick) to 74 (standard) after reading source — test infrastructure and HTTP hardening weren't visible in the API-only scan. Personal fit score rose from 50 to 62 after finding three T1-tier extraction candidates."
+    }
   },
-  "source_tier": "T1"
+  "source_tier": "T1",
+  "artifactInventory": {
+    "analysis_json": true,
+    "findings_jsonl": true,
+    "value_map_json": true,
+    "creator_view_md": true,
+    "summary_md": true,
+    "deep_read_md": true,
+    "content_eval_jsonl": true,
+    "coverage_audit_jsonl": true,
+    "repomix_output": true,
+    "dimension_files": [
+      "findings-architecture.jsonl",
+      "findings-security.jsonl",
+      "findings-documentation.jsonl",
+      "findings-tests.jsonl"
+    ]
+  }
 }

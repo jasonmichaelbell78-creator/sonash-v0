@@ -113,6 +113,19 @@ Section 8).
     accepted, gracefully degraded, or skipped. If an agent produces no usable
     output via any channel, report the failure to the user — do not continue as
     if findings were captured. `[BEHAVIORAL: no automated enforcement]`
+16. **Follow skills to the letter — never defer or skip without explicit
+    approval.** When executing any skill (repo-analysis, analyze, deep-plan,
+    synthesize, etc.), every phase, MUST/SHOULD step, interactive gate, coverage
+    item, and candidate must be completed in full. If a step seems tangential,
+    inefficient, or already-done, do NOT unilaterally skip. Present the concern
+    to the user: "Step X says Y. Context suggests Z. Skip / do anyway / modify —
+    which?" Wait for answer. Interactive steps (tag suggestion, retro, routing
+    menu) are NOT optional even in batch mode. Coverage audit items marked
+    "skipped" or "deferred" require explicit user decision, not Claude's
+    judgment. Candidates marked "blocked on decision" must be surfaced in
+    conversation immediately, not buried in JSONL fields. Completion summaries
+    may only claim completion for items actually completed.
+    `[BEHAVIORAL: no automated enforcement]`
 
 ## 5. Critical Anti-Patterns
 

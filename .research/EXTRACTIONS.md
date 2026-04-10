@@ -2,8 +2,8 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 217 candidates **By decision:** defer: 194,
-investigate: 2, extract: 20, skip: 1
+**Schema version:** 2.0 | **Total:** 236 candidates **By decision:** defer: 212,
+investigate: 2, extract: 20, skip: 2
 
 ---
 
@@ -186,6 +186,30 @@ investigate: 2, extract: 20, skip: 1
 | Two queue systems coexisting without migration plan | anti-pattern         | defer    | 2026-04-10 | low     | E0     | low       | -            | BullMQ (Redis) and nuq-postgres (custom Postgres queue) both active in services/. Rationale undocumented. Suggests in-pr  |
 | Hand-rolled polyglot SDK parity                     | anti-pattern         | defer    | 2026-04-10 | low     | E0     | low       | -            | Seven SDKs (JS, Python, Rust, Go, Java, Elixir, playwright-service) re-implement the wire contract manually. Parity enfo  |
 | Hidden feature flags via env vars                   | anti-pattern         | defer    | 2026-04-10 | low     | E0     | medium    | -            | Firecrawl branches behaviour through SELF*HOST.md env vars (USE_DB_AUTHENTICATION, PROXY_SERVER, SEARXNG*\*) with no docu |
+
+## opendatalab/MinerU (repo)
+
+| Candidate                                             | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
+| ----------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Structured output contract page                       | knowledge    | defer    | 2026-04-10 | medium  | E1     | high      | -            | docs/en/reference/output_files.md is an exemplary human-readable output spec: typed fields, enumerated block types, brea  |
+| Environment variable catalog                          | knowledge    | defer    | 2026-04-10 | low     | E0     | high      | -            | docs/en/usage/cli*tools.md has prose catalog of 15+ MINERU*\* env vars with default/effect/scoping. Template for docs/age |
+| Async task state machine with TTL cleanup             | pattern      | defer    | 2026-04-10 | medium  | E2     | high      | -            | mineru/cli/fast_api.py implements POST /tasks with four states (pending/processing/completed/failed), asyncio.Queue, sem  |
+| Backend decision matrix for multi-mode tools          | knowledge    | defer    | 2026-04-10 | low     | E1     | medium    | -            | docs/en/quick_start/index.md has pre-install decision matrix: 5 backends × 8 constraints. Apply to /analyze and /media-a  |
+| Three-backend dispatch with deferred imports          | pattern      | defer    | 2026-04-10 | medium  | E2     | low       | -            | mineru/cli/common.py uses string-dispatched factory with importlib deferred imports so users don't pay torch/vllm cost u  |
+| Single fuzzy-match e2e test with low coverage floor   | anti-pattern | defer    | 2026-04-10 | medium  | E0     | high      | -            | 58k-star codebase with 1 test file, 1 test function, 0.2% coverage floor, no PR gating, silent retry workflow masking fl  |
+| Unarmored HTTP service with insecure defaults         | anti-pattern | defer    | 2026-04-10 | medium  | E0     | high      | -            | mineru-api/router ship with no auth, no rate limit, no upload size cap, no CORS/TrustedHost middleware, FastAPI docs ena  |
+| Silent retry workflow converts flake into green       | anti-pattern | defer    | 2026-04-10 | low     | E0     | medium    | -            | .github/workflows/rerun.yml retries failed runs up to 3 times with no flake-rate surfacing. Opposite of silent-failure-h  |
+| No PR test gating (push-only workflows)               | anti-pattern | defer    | 2026-04-10 | low     | E0     | medium    | -            | cli.yml runs only on pushes to master/dev, never on pull requests. Contributors cannot see test results before merge. Gu  |
+| Changelog-as-capability-index discipline              | knowledge    | defer    | 2026-04-10 | low     | E0     | low       | -            | docs/en/reference/changelog.md has prose entries with issue refs, CVE refs, quantified perf improvements, explicit break  |
+| Wrap upstream CLI instead of reimplementing           | pattern      | defer    | 2026-04-10 | medium  | E1     | medium    | -            | mineru/model/vlm/vllm_server.py is 70 lines wrapping vllm.entrypoints.cli.main: intercepts sys.argv, parses out model/po  |
+| Multi-vendor Dockerfile template                      | knowledge    | defer    | 2026-04-10 | low     | E3     | low       | -            | 11 Dockerfiles (1 global + 10 China vendor variants) following strict template: vendor base image -> Noto CJK fonts -> p  |
+| Per-chip deployment guide template                    | knowledge    | defer    | 2026-04-10 | low     | E1     | low       | -            | 13 per-chip deployment guides follow consistent template: test platform -> Dockerfile recipe -> docker run -> support ma  |
+| Coarse-to-fine two-stage parsing framing              | knowledge    | defer    | 2026-04-10 | medium  | E0     | medium    | -            | MinerU 2.5 paper (arxiv 2509.22186) introduces a 1.2B VLM with stage-1 layout analysis on downsampled images + stage-2 c  |
+| README integration claim unbacked by first-party code | anti-pattern | defer    | 2026-04-10 | medium  | E0     | high      | -            | MinerU README lists MCP Server - Cursor/Claude Desktop/Windsurf as an integration. Reality: opendatalab/mineru-mcp does   |
+| Unpinned GitHub Action reference                      | anti-pattern | defer    | 2026-04-10 | low     | E0     | medium    | -            | .github/workflows/mkdocs.yml uses mhausenblas/mkdocs-deploy-gh-pages@master (unpinned) while cla.yml pins contributor-as  |
+| Floor-only version constraint with known CVE exposure | anti-pattern | defer    | 2026-04-10 | medium  | E0     | medium    | -            | pyproject.toml pins pillow>=11.0.0 with no upper bound. CVE-2026-25990 (Pillow PSD OOB write) affects 10.3.0 to <12.1.1.  |
+| MinerU 1.x technical report                           | content      | skip     | 2026-04-10 | low     | E0     | low       | -            | arxiv 2409.18839 - 18 authors, PDF-Extract-Kit + pre/post-processing rules. Background reading only. Low direct relevanc  |
+| MinerU 2.5 technical report                           | content      | defer    | 2026-04-10 | medium  | E0     | medium    | -            | arxiv 2509.22186 - 61 authors, 1.2B VLM, coarse-to-fine two-stage parsing. Low direct relevance but the two-stage framin  |
 
 ## public-apis/public-apis (repo)
 

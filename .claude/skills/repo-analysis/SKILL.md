@@ -24,8 +24,11 @@ fitness. Both views are always produced; Creator View comes first.
 
 ## Critical Rules (MUST follow)
 
-1. **Quick Scan is the default.** API-only, <30s. Do NOT clone unless user
-   requests Standard/Deep or accepts the interactive gate.
+1. **Standard is the default.** Full artifact set: clone + repomix + dimension
+   wave + Deep Read + Content Evaluation + Creator View + Engineer View + Value
+   Map + Coverage Audit + Tag Suggestion + Retro + Routing Menu. Quick Scan
+   (`--depth=quick`) is opt-in for triage scenarios where a preview is all
+   that's needed. Deep (`--depth=deep`) adds the History Wave.
 2. **Write-to-disk-first.** Every step writes its output file before proceeding.
    Orchestrator verifies file existence, not return values.
 3. **Bands over numbers.** Display categorical bands with score in parentheses.
@@ -63,7 +66,7 @@ dependency check -> `gh api` directly.
 
 **Argument:** `/repo-analysis <github-url>`
 
-**Flags:** `--depth=quick` (default) | `--depth=standard` | `--depth=deep` |
+**Flags:** `--depth=standard` (default) | `--depth=quick` | `--depth=deep` |
 `--lens=adoption|creator` (override auto-detected primary lens)
 
 **Output:** `.research/analysis/<repo-slug>/` — analysis.json (unified schema
@@ -100,7 +103,7 @@ Phase markers: `========== PHASE N: [NAME] ==========`
 
 ---
 
-## Quick Scan (Phase 0)
+## Quick Scan (Phase 0 — runs only when `--depth=quick` is passed)
 
 API-only, under 30 seconds. 18 dimensions (QS-01 through QS-18). See
 REFERENCE.md Section 1.1 for full dimension catalog and API batch structure.
@@ -112,26 +115,15 @@ write artifacts → present inline.
 **Lightweight creator lens (MUST):** After computing health dimensions, read the
 repo description and README (via Contents API, first 200 lines). Write 2-3
 sentences: "This repo appears to understand/demonstrate/teach X." This is a
-teaser, not the full Creator View — enough to judge whether Standard/Deep is
-worth the time.
+teaser, not the full Creator View — enough to judge whether a deeper analysis
+should be queued later.
 
-**Interactive gate:** Quick Scan is a **preview** — it confirms whether this
-repo is worth your time. Standard analysis produces the full artifact set needed
-for `/synthesize` cross-source intelligence.
+**Note:** Quick Scan is a standalone triage mode, not a preview step for
+Standard. Standard (`--depth=standard`, default) proceeds directly to Phase 1
+(Clone + Repomix). There is no Standard/Deep gate.
 
-```
-Quick Scan complete. [health bands].
-
-Quick Scan is a preview — it confirms whether this repo is worth your time.
-Standard analysis produces the full artifact set needed for /synthesize
-cross-source intelligence.
-
-Run Standard/Deep? (Standard ~5-10 min, Deep ~15-20 min) [Y/n]
-```
-
-For `curated-list` repos: enriched gate showing link count and link mining
-option. See REFERENCE.md Section 16. If `--depth=standard|deep` specified at
-invocation, skip this gate.
+For `curated-list` repos at Quick depth: report the link count and recommend a
+Standard run for link mining. See REFERENCE.md Section 16.
 
 **source_tier:** Repos always emit `source_tier: "T1"` (first-party artifacts).
 Stored in `analysis.json` and consumed by `/synthesize` for evidence weighting.

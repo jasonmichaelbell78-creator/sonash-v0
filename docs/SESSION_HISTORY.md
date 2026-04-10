@@ -27,6 +27,26 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-04 Sessions
 
+### Session #270 (2026-04-09)
+
+**Focus**: T28 CAS E2E test + synthesis deep-plan + todo JSONL recovery
+
+- Branch: `planning-4826`
+- T28 CAS E2E test across all 4 source types at Standard depth (repo, website,
+  document, media)
+- 6 new CAS scripts: self-audit.js, generate-extractions-md.js,
+  backfill-tags.js, migrate-v3.js, update-index.js fixes, session-start.js
+  native dep check
+- CONVENTIONS expanded (§13 handler output contract, §14 source name
+  consistency + tag conventions, §16 Pipeline Tail Contract)
+- 5 SKILL.md files updated for consistency (analyze, website, document, media,
+  repo-analysis)
+- Data quality: 34 sources, 196 candidates, 158 tags, 100% tag coverage, 34/34
+  zero schema issues
+- Synthesis deep-plan complete (T29): 32 decisions, 15 steps, 5 waves
+- Todo JSONL recovery: T26/T27/T28 lost to Write-tool overwrite bug (T30 filed),
+  recovered from git history
+
 ### Session #262 (2026-04-06)
 
 **Focus**: PR #492 R1+R2 reviews + research-discovery-standard v2
