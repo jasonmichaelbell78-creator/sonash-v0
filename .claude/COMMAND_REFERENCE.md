@@ -86,12 +86,13 @@ Source: `.claude/skills/*/SKILL.md`
 | `/media-analysis`                 | Media analysis (YouTube, podcast, audio) — transcription + dual-lens, part of CAS          |
 | `/ui-design-system`               | Design system components toolkit                                                           |
 | `/repo-analysis`                  | Dual-lens repo analysis: Creator View + Engineer View, 3 tiers, link mining, dual scoring  |
-| `/repo-synthesis`                 | Cross-repo synthesis: emergent themes, ecosystem gaps, reading chains, fit portfolio       |
+| `/repo-synthesis`                 | DEPRECATED — use `/synthesize` instead. Redirect expires next session.                     |
+| `/synthesize`                     | Unified cross-source synthesis (T29) — all 4 source types, 8 sections, opportunity matrix  |
 | `/using-superpowers`              | Claude skills usage guide                                                                  |
 | `/ux-researcher-designer`         | UX research and design toolkit                                                             |
 | `/webapp-testing`                 | Web application testing with Playwright                                                    |
 | `/website-analysis`               | Creator-first website analysis: dual-lens, 3 tiers, 4 modes, superpowers-chrome extraction |
-| `/website-synthesis`              | Cross-site synthesis: thematic/narrative/matrix/meta-pattern paradigms, 3+ sites           |
+| `/website-synthesis`              | DEPRECATED — use `/synthesize` instead. Redirect expires next session.                     |
 | `sonash-context`                  | Shared project context injected into agents via `skills:` field (not user-invocable)       |
 
 ## System Commands
