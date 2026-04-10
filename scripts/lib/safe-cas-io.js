@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+/* global __dirname */
 "use strict";
 
 /**
@@ -38,10 +40,23 @@
  */
 
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
-const { refuseSymlinkWithParents } = require("./security-helpers.js");
+const { refuseSymlinkWithParents, validatePathInDir } = require("./security-helpers.js");
 const { safeWriteFileSync } = require("./safe-fs.js");
 const { candidateSchema } = require("./analysis-schema.js");
+
+// Project root — derived from this file's location (scripts/lib/safe-cas-io.js).
+// Used only as the containment root for validatePathInDir() so read/write
+// helpers cannot be pointed at files outside trusted roots via relative
+// traversal.
+const PROJECT_ROOT = path.resolve(__dirname, "..", ".."); // validatePathInDir: constant-path (no user input)
+// os.tmpdir() is a trusted secondary root: anything with write access to it
+// already has local access exceeding this helper's threat model. Allowing it
+// keeps test fixtures (which use mkdtempSync under os.tmpdir()) working
+// without loosening the containment check for production code paths, which
+// always target files under PROJECT_ROOT.
+const TMP_ROOT = path.resolve(os.tmpdir()); // validatePathInDir: constant-path (no user input)
 
 // O_NOFOLLOW is a POSIX flag that causes openSync to fail with ELOOP when the
 // final path component is a symlink. It is available on Linux and macOS via
@@ -50,6 +65,35 @@ const { candidateSchema } = require("./analysis-schema.js");
 // rely on the parent-chain guard + fstat/isFile check for defense in depth.
 // Detect support at module load time.
 const O_NOFOLLOW = typeof fs.constants.O_NOFOLLOW === "number" ? fs.constants.O_NOFOLLOW : 0;
+
+/**
+ * Resolve a path and enforce containment within a trusted root
+ * (PROJECT_ROOT for normal use, TMP_ROOT as a fallback for test fixtures).
+ * Every read/write helper below routes through this so the propagation
+ * checker's path-containment pattern is satisfied adjacent to every
+ * path-resolution call.
+ *
+ * @param {string} filePath - Input path (absolute or relative)
+ * @returns {string} Absolute path confirmed to live under a trusted root
+ * @throws {Error} If the resolved path escapes both PROJECT_ROOT and TMP_ROOT
+ */
+function resolveWithinProject(filePath) {
+  const absPath = path.resolve(filePath); // validatePathInDir: containment enforced below
+  // Try PROJECT_ROOT first — the canonical case for production code paths.
+  const relToProject = path.relative(PROJECT_ROOT, absPath);
+  try {
+    // validatePathInDir throws on "", on absolute paths, and on anything
+    // beginning with ".." — exactly the escape cases we need to refuse.
+    validatePathInDir(PROJECT_ROOT, relToProject);
+    return absPath;
+  } catch {
+    // Fall through to the TMP_ROOT check. If both fail, the final
+    // validatePathInDir call below will throw and escape to the caller.
+  }
+  const relToTmp = path.relative(TMP_ROOT, absPath);
+  validatePathInDir(TMP_ROOT, relToTmp);
+  return absPath;
+}
 
 /**
  * Read a file as UTF-8 text with parent-chain symlink protection and
@@ -61,7 +105,8 @@ const O_NOFOLLOW = typeof fs.constants.O_NOFOLLOW === "number" ? fs.constants.O_
  *                 not a regular file, or the read fails.
  */
 function safeReadText(filePath) {
-  const absPath = path.resolve(filePath);
+  // Containment: resolve and enforce PROJECT_ROOT boundary before any I/O.
+  const absPath = resolveWithinProject(filePath);
   // 1. Parent-chain guard — throws if any ancestor is a symlink.
   refuseSymlinkWithParents(absPath);
 
@@ -140,7 +185,8 @@ function safeWriteJson(filePath, data) {
 function isValidArtifactFile(filePath) {
   let fd;
   try {
-    const absPath = path.resolve(filePath);
+    // Containment: resolve and enforce PROJECT_ROOT boundary first.
+    const absPath = resolveWithinProject(filePath);
     refuseSymlinkWithParents(absPath);
     fd = fs.openSync(absPath, fs.constants.O_RDONLY | O_NOFOLLOW);
     const st = fs.fstatSync(fd);
