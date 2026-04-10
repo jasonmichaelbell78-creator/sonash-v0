@@ -2,7 +2,7 @@
 
 **Document Version**: 8.24 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-09 (Session #270)
+2026-04-10 (Session #271)
 
 ## Purpose
 
@@ -29,16 +29,17 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-09 **Branch**: `planning-4826` **Working On**:
-Session #270 complete — T28 CAS E2E + synthesis deep-plan + todo recovery.
+**Last Checkpoint**: 2026-04-10 **Branch**: `planning-4826` **Working On**:
+Session #271 complete — T29 Waves 1-2 + Wave 3 partial (synthesize skill live,
+old synthesis skills deprecated). Pre-flight cleanup addressed 7 triage items.
 
-**Uncommitted Work**: Committing now.
+**Uncommitted Work**: None — session-end in progress.
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 270 (since Jan 1, 2026)
+**Current Session Count**: 271 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -47,6 +48,51 @@ Session #270 complete — T28 CAS E2E + synthesis deep-plan + todo recovery.
 ---
 
 ## Recent Session Summaries
+
+**Session #271** (T29 WAVES 1-2 + WAVE 3 PARTIAL — /synthesize LIVE):
+
+- **Branch**: `planning-4826`
+- **Commits (4):** `3ff5c0b6`, `f77ed4a0`, `52e81a6a`, `20516d40`. Pushed.
+- **Pre-flight triage** (7 items addressed): fixed `consolidation.json`
+  validator to accept string IDs (`scripts/check-review-archive.js`); added
+  titles to rev-69..77 (9 JSONL records); fixed rendered view count (20→25);
+  binary-file extension allowlist in `scripts/archive-doc.js`; `npm audit fix`
+  cleared all 3 vulnerabilities (basic-ftp HIGH + 5 hono moderates);
+  `deleteBranchOnMerge` enabled on GitHub repo; SESSION_CONTEXT ROADMAP track
+  sync. Filed **DEBT-45646** (CI pattern compliance exits 1 on test-file warns —
+  investigation deferred to Track D).
+- **T29 Wave 1 (Steps 1-3):** Added `synthesisRecord` Zod schema to
+  `scripts/lib/analysis-schema.js` — 14 sub-schemas (themeSchema, gapSchema,
+  chainNodeSchema, opportunitySchema, changesSectionSchema, etc.) + 6 new enums
+  (sourceTierEnum, paradigmEnum, synthesisModeEnum, convergenceEnum,
+  opportunityRouteEnum, chainTierEnum). `analysisRecordCore.source_tier`
+  optional (T1-T4). `validate()` extended for `type='synthesis'`.
+  `scripts/cas/migrate-v3.js` fills source_tier defaults — all 34 analysis
+  records migrated (16 repos T1, 18 other T2). All 4 handler SKILL.md files
+  updated with new gate messaging (Quick Scan = preview, Standard =
+  artifact-producing) + source_tier semantics.
+- **T29 Wave 2 (Steps 4-5):** Created `/synthesize` skill —
+  `.claude/skills/synthesize/SKILL.md` (~290 lines: 7 critical rules, 6-option
+  state-aware menu, 7 process phases, 8 output sections, 10-dimension
+  self-audit). `REFERENCE.md` (~530 lines, 12 sections): paradigm templates,
+  cross-type detection (4 methods), candidate dedup with convergence boost, tier
+  weighting, incremental algorithm, re-synthesis change detection, self-audit
+  rubric, state file schema, subagent strategy, reading chain. Traceable to all
+  32 DECISIONS. `COMMAND_REFERENCE.md` updated.
+- **T29 Wave 3 (Step 6 only — partial):** Replaced `repo-synthesis/SKILL.md` and
+  `website-synthesis/SKILL.md` with deprecation redirects. Both `REFERENCE.md`
+  files deleted. Migration paths documented. Wave 3 Steps 7-8 (14 upstream
+  reference updates + CONVENTIONS Section 17) deferred.
+- **Code review (Wave 1 scripts):** APPROVED. 0 blockers. 2 warnings
+  (signal_strength duplicates convergenceEnum; existsSync→readFileSync race
+  pattern pre-existing) + 2 suggestions noted for future cleanup.
+- **Skipped push checks (user-authorized):** `cross-doc` (commit 20516d40 —
+  COMMAND_REFERENCE already updated in 52e81a6a); `cognitive-cc` (DEBT-45635
+  known exit 2).
+- **Hook summary:** 3 overrides, 1 warning, 8 warning types acked.
+- **WHERE TO RESUME:** T29 Wave 3 Steps 7-8 (14 reference updates + CONVENTIONS
+  Section 17), then Wave 4 (22 quick-scan upgrades, separate session), then Wave
+  5 (E2E testing + audit).
 
 **Session #270** (T28 CAS E2E + SYNTHESIS DEEP-PLAN + TODO RECOVERY):
 
@@ -87,19 +133,19 @@ Session #270 complete — T28 CAS E2E + synthesis deep-plan + todo recovery.
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                              |
-| ---------------------------------- | ------------- | --------------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                 |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more.     |
-| **T28 Content Analysis System**    | E2E DONE      | 34 sources, 4 types, 6 scripts, self-audit. T29 (synthesis) next.     |
-| **T29 Synthesis Consolidation**    | PLANNED       | 32 decisions, 15 steps. Unifies 3 synthesis impls into `/synthesize`. |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).               |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                     |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                       |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                  |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                |
+| Item                               | Status        | Progress                                                          |
+| ---------------------------------- | ------------- | ----------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.             |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.            |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | 11 repos analyzed (142 extraction candidates). T28 plan: 20 more. |
+| **T28 Content Analysis System**    | E2E DONE      | 34 sources, 4 types, 6 scripts, self-audit. T29 (synthesis) next. |
+| **T29 Synthesis Consolidation**    | W1-W2 DONE    | /synthesize live. Wave 3 Steps 7-8 + Waves 4-5 remaining.         |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).           |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                 |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                   |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.              |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                            |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.            |
 
 **Current Branch**: `planning-4826`
 
@@ -120,15 +166,27 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **T29 synthesis consolidation — execute plan** — 5 waves, 15 steps. Schema +
-   skill authoring + reference updates + 22 quick-scan migrations + testing.
-   Plan at `.planning/synthesis-consolidation/PLAN.md`.
-2. **Test `/recall`** — SQLite FTS5 query interface never tested with live data.
-3. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
-4. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-5. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-6. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
-7. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+1. **T29 Wave 3 Steps 7-8** — 14 upstream reference updates (analyze,
+   repo-analysis, website-analysis, document-analysis, media-analysis SKILL +
+   REFERENCE files, CONVENTIONS.md skill family list + new Section 17 "Synthesis
+   Output Contract", CLAUDE.md Section 7 trigger table, DOCUMENTATION_INDEX.md,
+   schemas/synthesis-schema.ts removal). Delete `.claude/skills/repo-synthesis/`
+   and `website-synthesis/` dirs after one-session overlap.
+2. **T29 Wave 4** — 22 quick-scan repos to Standard depth (~2-3h single session,
+   interactive per-repo). Plan §Wave 4 at
+   `.planning/synthesis-consolidation/PLAN.md`.
+3. **T29 Wave 5** — E2E testing of `/synthesize` + 10-dim self-audit +
+   code-reviewer pass. Depends on Wave 4 data.
+4. **Test `/recall`** — SQLite FTS5 query interface never tested with live data.
+5. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
+6. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+7. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
+8. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
+9. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+10. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
+    detector scope (blocks clean push without SKIP_CC).
+11. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
+    file WARNs (fails main CI).
 
 ### After Debt-Runner
 
