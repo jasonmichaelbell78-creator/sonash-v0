@@ -29,30 +29,47 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-11 (Session #275 mid-stream, T39 main work PUSHED,
-follow-up sweep pending — second /clear incoming) **Branch**: `planning-4826`
-**Working On**: **T39 FOLLOW-UP SWEEP.** The main T39 continuation (107
-pattern-compliance + Option D CC refactor) shipped in 4 commits
-`67e6ff61..05e0d6dc` — all pushed to origin. Now working the 5 minor follow-up
-items that the T3/T4 code-reviewer agents flagged as non-blocking but that the
-user explicitly asked to fix (everything except item 5, which is the 60-CC
-baseline — out of scope per Option D).
+**Last Checkpoint**: 2026-04-11 (Session #275 FOLLOW-UP SWEEP COMPLETE, PR #507
+CREATED) **Branch**: `planning-4826` **Working On**: **T39 FULLY CLOSED.** All
+T39 work plus T30 + T32 trailing work consolidated into PR #507. 28 commits, 248
+files changed, +27,130 / −16,270 lines. Branch pushed to origin, PR is OPEN and
+awaiting external review (CodeRabbit + SonarCloud + Gemini).
 
-**CRITICAL**: Post-clear Claude MUST read `.research/T39_FOLLOWUP_PLAN.md`
-IMMEDIATELY. That file has the exact file list, patches, require-path
-conventions, and resume protocol for the 5 remaining items. Do NOT start work
-until you've read that file end-to-end.
+**PR**: https://github.com/jasonmichaelbell78-creator/sonash-v0/pull/507
+(replaces closed PR #506) — title: _T39 hook drift + pattern-compliance + JSONL
+helper sweep (T30/T32 trailing work)_. Full ultra-detailed PR body preserved at
+`.research/T39_PR_BODY.md` for reference.
 
-**Next Step**: Read `.research/T39_FOLLOWUP_PLAN.md` end-to-end, verify drift
-per §3 Step 2 (git log top should be `05e0d6dc`, pattern-compliance 0,
-cognitive-cc exit 0), present brief status to user, wait for "go", then execute
-§3 Step 4 in order (item 6 → item 3 → items 1+2 → item 4's 53-file sweep).
-Multi-commit acceptable (4-7 commits expected). NO push until user says "push".
-NO new PR until user says "create PR".
+**Follow-up sweep summary (this session)**: 5 commits landed after the main T39
+work: (1) `6e4a4d84` NaN doc comment reword, (2) `cb129d22` parse-jsonl-line.js
+header sync across 9 copies, (3) `9ec93d4a` streamLinesSync UTF-8 StringDecoder
 
-**Uncommitted Work**: None — all 4 T39 main commits pushed. Working-tree should
-show only normal session drift (hook-warnings, state JSONL, metrics) at resume
-time.
+- safe-fs dual-path require, (4) `fae8efb8` JSONL helper sweep across 53 files,
+  (5) `1fd882db` saved the follow-up plan before context clear. Plus 3 state
+  drift commits (`9e126ce6`, `ef649664`, `53173b88`). All verification passed:
+  patterns 0, propagation clean, cyclomatic-cc clean, lint 16 warn / 0 err
+  (baseline), tests 3720 pass / 0 fail / 1 skip.
+
+**Code-reviewer verdict** on the follow-up sweep: OK — safe to push, 0 blockers,
+2 cosmetic non-blocking concerns (both filed as TDMS follow-ups in PR body):
+check-session-gaps.js could upgrade silent-skip to error-reporting variant;
+ecosystem-health/run-ecosystem-health.js uses absolute-path require instead of
+relative-path convention.
+
+**Known skips used on push** (both user-authorized per guardrail #14):
+`SKIP_CC=1 SKIP_CC_REASON="unbaselined violations"` (44 pre-existing legacy CC
+violations, none T39-touched),
+`SKIP_CHECKS="pr-creep" SKIP_REASON="user authorized"` (27+ commits on branch —
+PR deferred until sweep complete).
+
+**Next Step**: Await PR #507 external review cycle. When CodeRabbit/SonarCloud
+feedback arrives, process via `/pr-review`. After merge, resume **T29 Wave 4
+Step 10 #3 = crawl4ai** (`unclecode/crawl4ai`, Standard depth default). No
+uncommitted T39 work remains — ready to start next initiative.
+
+**Uncommitted Work**: Possible residual `.claude/override-log.jsonl` drift from
+the push operation itself (infinite-loop edge case — committing it generates
+another entry). Safe to ignore; next routine commit will sweep it.
 
 ---
 
