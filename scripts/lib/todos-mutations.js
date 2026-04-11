@@ -97,6 +97,13 @@ function validateIntegrity(records) {
  * Verify the post-mutation record set matches expectations.
  * Throws on regression — caller MUST NOT write if this throws.
  *
+ * SCOPE: This guard targets identity-level drops (the T26/T27/T28 scenario
+ * where records silently disappear). It verifies id set membership and line
+ * count delta, but does NOT verify field-level content integrity. A bug that
+ * swaps two records' content (same ids, swapped fields) would pass this
+ * guard. For field-level shape and monotonic-id checks, see `validateIntegrity`,
+ * which is called as pre-flight and post-flight around the mutation.
+ *
  * @param {object} expectations
  * @param {Set<string>} expectations.priorIds - all ids that must still exist
  * @param {string[]} expectations.removedIds - ids that must no longer exist

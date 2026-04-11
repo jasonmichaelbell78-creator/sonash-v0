@@ -301,8 +301,13 @@ independently even if state file is lost. State file and disk artifacts survive
 **High-link-density trigger (SHOULD):** When >40 unique external links, suggest
 Expedition or cross-site synthesis. See REFERENCE.md Section 8.
 
-**Invocation tracking (MUST):** Log via `write-invocation.ts` with skill, depth,
-mode context. See REFERENCE.md Section 15.
+**Invocation tracking (MUST):** Log via `write-invocation.ts` at completion. See
+`.claude/skills/_shared/SKILL_STANDARDS.md` "Invocation Tracking" section for
+the canonical fields and auto-fill behavior.
+
+```bash
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"website-analysis","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"target":"SITE_SLUG","note":"mode=MODE depth=DEPTH"}}'
+```
 
 ---
 

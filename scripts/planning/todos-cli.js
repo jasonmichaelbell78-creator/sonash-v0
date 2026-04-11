@@ -38,11 +38,12 @@
  *   2 = fatal (corrupt file, lock failure, fs error, regression guard tripped)
  */
 
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { safeWriteFileSync, withLock } from "../lib/safe-fs.js";
+import { sanitizeError } from "../lib/sanitize-error.js";
 import { renderTodos } from "./render-todos.js";
 
 const require = createRequire(import.meta.url);
@@ -96,20 +97,26 @@ function fail(msg, code = 1) {
 }
 
 // ---- Strict JSONL load (CLI wrapper around the pure parser) ----------------
+//
+// Never use existsSync before readFileSync — the two are non-atomic, and the
+// project pattern registry (CODE_PATTERNS.md #36) forbids this form due to
+// race conditions. Handle ENOENT in the catch block instead, and sanitize any
+// other error message before surfacing it.
 
 function loadStrict(filePath) {
-  if (!existsSync(filePath)) return [];
   let raw;
   try {
     raw = readFileSync(filePath, "utf-8");
   } catch (err) {
-    fail(`cannot read ${filePath}: ${err.message}`, 2);
+    if (err && err.code === "ENOENT") return [];
+    fail(`cannot read ${filePath}: ${sanitizeError(err)}`, 2);
+    return []; // unreachable, satisfies linter
   }
   if (raw.codePointAt(0) === 0xfeff) raw = raw.slice(1);
   try {
     return parseStrictJsonl(raw);
   } catch (err) {
-    fail(`${filePath}: ${err.message}`, 2);
+    fail(`${filePath}: ${sanitizeError(err)}`, 2);
     return []; // unreachable, satisfies linter
   }
 }
