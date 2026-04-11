@@ -119,11 +119,13 @@ function safeRenameSync(src, dest) {
   try {
     fs.renameSync(absSrc, absDest);
   } catch (err) {
-    if (err.code === "EXDEV") {
+    // Defensive code extraction: non-standard throws may omit a `.code`.
+    const code = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+    if (code === "EXDEV") {
       // Cross-device: copy then remove source
       fs.copyFileSync(absSrc, absDest);
       fs.unlinkSync(absSrc);
-    } else if (err.code === "EPERM" || err.code === "EACCES" || err.code === "EEXIST") {
+    } else if (code === "EPERM" || code === "EACCES" || code === "EEXIST") {
       // Windows: dest exists — use copy+unlink fallback (avoids rmSync→renameSync race)
       if (fs.existsSync(absDest)) {
         const st = fs.lstatSync(absDest);
@@ -149,7 +151,9 @@ function safeRenameSync(src, dest) {
  */
 function safeAtomicWriteSync(filePath, data, options) {
   const absPath = path.resolve(filePath);
-  const tmpPath = `${absPath}.tmp`;
+  // Unique tmp name per call so two concurrent writers on the same target
+  // can't clobber each other's tmp file and corrupt the rename.
+  const tmpPath = `${absPath}.tmp.${process.pid}.${Math.random().toString(16).slice(2)}`;
   if (!isSafeToWrite(absPath)) {
     throw new Error(`Refusing atomic write to symlinked path: ${path.basename(absPath)}`);
   }
@@ -224,7 +228,11 @@ function readTextWithSizeGuard(filePath, options = {}) {
  * @param {number} [options.chunkBytes=65536] - Read buffer size
  */
 function streamLinesSync(filePath, onLine, options = {}) {
-  const { chunkBytes = 64 * 1024 } = options;
+  const rawChunkBytes = options.chunkBytes ?? 64 * 1024;
+  const chunkBytes = Number(rawChunkBytes);
+  if (!Number.isInteger(chunkBytes) || chunkBytes <= 0 || chunkBytes > 4 * 1024 * 1024) {
+    throw new Error(`Invalid chunkBytes: ${rawChunkBytes} (must be a positive integer <= 4 MiB)`);
+  }
   const buf = Buffer.alloc(chunkBytes);
   const decoder = new StringDecoder("utf8");
   let fd;
@@ -364,12 +372,12 @@ function tryBreakExistingLock(lockPath) {
     breakStaleLock(lockPath);
     return true;
   } catch (readErr) {
-    // Can't read/parse lock file — log and attempt removal
+    // Can't read/parse lock file — log code only (drops raw readErr.message to
+    // avoid leaking filesystem details in stderr). Code is enough to diagnose.
     const readErrCode =
       readErr && typeof readErr === "object" && "code" in readErr ? String(readErr.code) : "";
-    const readErrMsg = readErr instanceof Error ? readErr.message : String(readErr);
     process.stderr.write(
-      `[safe-fs] WARNING: unreadable lock file (${readErrCode || readErrMsg}), removing: ${lockPath}\n`
+      `[safe-fs] WARNING: unreadable lock file (${readErrCode || "UNKNOWN"}), removing: ${lockPath}\n`
     );
     breakStaleLock(lockPath);
     return true;
@@ -388,7 +396,13 @@ function tryBreakExistingLock(lockPath) {
  * @throws {Error} If lock cannot be acquired within timeout
  */
 function acquireLock(filePath, timeoutMs) {
-  const timeout = timeoutMs || LOCK_TIMEOUT_MS;
+  // Use ?? so a deliberate `0` isn't silently replaced with the default, and
+  // validate that the result is a finite, non-negative number.
+  const rawTimeout = timeoutMs ?? LOCK_TIMEOUT_MS;
+  const timeout = Number(rawTimeout);
+  if (!Number.isFinite(timeout) || timeout < 0) {
+    throw new Error(`Invalid lock timeoutMs: ${rawTimeout}`);
+  }
   const lockPath = `${path.resolve(filePath)}.lock`;
   const lockData = JSON.stringify({
     pid: process.pid,
@@ -534,8 +548,13 @@ function snapshotFile(filePath) {
  */
 function rollbackFile(filePath, snapshot) {
   try {
-    if (!snapshot.existed && snapshot.size === 0) fs.rmSync(filePath, { force: true });
-    else fs.truncateSync(filePath, snapshot.size);
+    // Guard rollback mutations behind the symlink check — without this, a
+    // rollback could delete/truncate an attacker-planted symlink target
+    // despite all other writes in this module being symlink-safe.
+    const absPath = path.resolve(filePath);
+    if (!isSafeToWrite(absPath)) return;
+    if (!snapshot.existed && snapshot.size === 0) fs.rmSync(absPath, { force: true });
+    else fs.truncateSync(absPath, snapshot.size);
   } catch {
     /* best-effort */
   }

@@ -68,11 +68,17 @@ if [ -n "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "main" ] && [ "$BRANCH_NAME" != 
     PR_CREEP_WARN=10
     PR_CREEP_STRONG=20
     PR_CREEP_BLOCK=25
-    if [ "$COMMIT_COUNT" -ge "$PR_CREEP_BLOCK" ] && ! is_skipped "pr-creep"; then
-      echo "  🚫 PR CREEP GUARD: $COMMIT_COUNT commits on this branch (limit: $PR_CREEP_BLOCK)"
-      echo "  Consider creating a PR before adding more commits."
-      echo "  Override: SKIP_CHECKS=\"pr-creep\" SKIP_REASON=\"branch needs more work before PR\" git commit ..."
-      exit 1
+    if [ "$COMMIT_COUNT" -ge "$PR_CREEP_BLOCK" ]; then
+      # T39 R1: pr-creep is advisory-only now. Large branches commonly happen
+      # during active review-fix cycles on already-open PRs (where the guard's
+      # "create a PR first" advice doesn't apply). Record as a warning so it
+      # still surfaces via /alerts, but don't block the commit.
+      echo "  ⚠️  PR CREEP WARNING: $COMMIT_COUNT commits on this branch (>=$PR_CREEP_BLOCK) — review PR scope" >&3
+      node scripts/append-hook-warning.js --hook=pre-commit --type=pr-creep --severity=warning \
+        --message="Branch has >=$PR_CREEP_BLOCK commits — review PR scope" \
+        --action="Check whether branch should be split or merged: gh pr view" \
+        --count="$COMMIT_COUNT" \
+        || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_STRONG" ]; then
       echo "  ⚠️  PR CREEP WARNING: $COMMIT_COUNT commits on this branch — PR strongly recommended" >&3
       # T39: Stable message (commit count moves to --count field) so dedup on

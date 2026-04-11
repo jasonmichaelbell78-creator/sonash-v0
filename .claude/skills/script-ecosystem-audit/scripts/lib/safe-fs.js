@@ -119,11 +119,13 @@ function safeRenameSync(src, dest) {
   try {
     fs.renameSync(absSrc, absDest);
   } catch (err) {
-    if (err.code === "EXDEV") {
+    // Defensive code extraction: non-standard throws may omit a `.code`.
+    const code = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+    if (code === "EXDEV") {
       // Cross-device: copy then remove source
       fs.copyFileSync(absSrc, absDest);
       fs.unlinkSync(absSrc);
-    } else if (err.code === "EPERM" || err.code === "EACCES" || err.code === "EEXIST") {
+    } else if (code === "EPERM" || code === "EACCES" || code === "EEXIST") {
       // Windows: dest exists — use copy+unlink fallback (avoids rmSync→renameSync race)
       if (fs.existsSync(absDest)) {
         const st = fs.lstatSync(absDest);
@@ -149,7 +151,9 @@ function safeRenameSync(src, dest) {
  */
 function safeAtomicWriteSync(filePath, data, options) {
   const absPath = path.resolve(filePath);
-  const tmpPath = `${absPath}.tmp`;
+  // Unique tmp name per call so two concurrent writers on the same target
+  // can't clobber each other's tmp file and corrupt the rename.
+  const tmpPath = `${absPath}.tmp.${process.pid}.${Math.random().toString(16).slice(2)}`;
   if (!isSafeToWrite(absPath)) {
     throw new Error(`Refusing atomic write to symlinked path: ${path.basename(absPath)}`);
   }
@@ -224,7 +228,11 @@ function readTextWithSizeGuard(filePath, options = {}) {
  * @param {number} [options.chunkBytes=65536] - Read buffer size
  */
 function streamLinesSync(filePath, onLine, options = {}) {
-  const { chunkBytes = 64 * 1024 } = options;
+  const rawChunkBytes = options.chunkBytes ?? 64 * 1024;
+  const chunkBytes = Number(rawChunkBytes);
+  if (!Number.isInteger(chunkBytes) || chunkBytes <= 0 || chunkBytes > 4 * 1024 * 1024) {
+    throw new Error(`Invalid chunkBytes: ${rawChunkBytes} (must be a positive integer <= 4 MiB)`);
+  }
   const buf = Buffer.alloc(chunkBytes);
   const decoder = new StringDecoder("utf8");
   let fd;
@@ -364,12 +372,12 @@ function tryBreakExistingLock(lockPath) {
     breakStaleLock(lockPath);
     return true;
   } catch (readErr) {
-    // Can't read/parse lock file — log and attempt removal
+    // Can't read/parse lock file — log code only (drops raw readErr.message to
+    // avoid leaking filesystem details in stderr). Code is enough to diagnose.
     const readErrCode =
       readErr && typeof readErr === "object" && "code" in readErr ? String(readErr.code) : "";
-    const readErrMsg = readErr instanceof Error ? readErr.message : String(readErr);
     process.stderr.write(
-      `[safe-fs] WARNING: unreadable lock file (${readErrCode || readErrMsg}), removing: ${lockPath}\n`
+      `[safe-fs] WARNING: unreadable lock file (${readErrCode || "UNKNOWN"}), removing: ${lockPath}\n`
     );
     breakStaleLock(lockPath);
     return true;
@@ -388,7 +396,13 @@ function tryBreakExistingLock(lockPath) {
  * @throws {Error} If lock cannot be acquired within timeout
  */
 function acquireLock(filePath, timeoutMs) {
-  const timeout = timeoutMs || LOCK_TIMEOUT_MS;
+  // Use ?? so a deliberate `0` isn't silently replaced with the default, and
+  // validate that the result is a finite, non-negative number.
+  const rawTimeout = timeoutMs ?? LOCK_TIMEOUT_MS;
+  const timeout = Number(rawTimeout);
+  if (!Number.isFinite(timeout) || timeout < 0) {
+    throw new Error(`Invalid lock timeoutMs: ${rawTimeout}`);
+  }
   const lockPath = `${path.resolve(filePath)}.lock`;
   const lockData = JSON.stringify({
     pid: process.pid,
@@ -471,121 +485,10 @@ function withLock(filePath, fn, timeoutMs) {
   }
 }
 
-// =========================================================
-// Central MASTER_DEBT writers (Findings 2 + 10)
-// =========================================================
-
-// Default paths — derived from this file's location
-const DEBT_DIR = path.join(__dirname, "..", "..", "docs", "technical-debt");
-const DEFAULT_MASTER_PATH = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
-const DEFAULT_DEDUPED_PATH = path.join(DEBT_DIR, "raw", "deduped.jsonl");
-
-/**
- * Central MASTER_DEBT full-rewrite writer.
- * Always writes to BOTH MASTER_DEBT.jsonl and deduped.jsonl.
- * Uses file locking to prevent concurrent writes.
- *
- * @param {object[]} items - Full array of debt items
- * @param {object} [options]
- * @param {string} [options.masterPath] - Override MASTER_DEBT.jsonl path
- * @param {string} [options.dedupedPath] - Override deduped.jsonl path
- */
-/**
- * Atomically write content to a file via a temp file + rename.
- * Cleans up the temp file on failure.
- *
- * @param {string} targetPath - Destination file path
- * @param {string} content - Content to write
- */
-function atomicWriteViaTmp(targetPath, content) {
-  const tmpPath = `${targetPath}.tmp.${process.pid}`;
-  try {
-    safeWriteFileSync(tmpPath, content);
-    safeRenameSync(tmpPath, targetPath);
-  } catch (err) {
-    try {
-      fs.unlinkSync(tmpPath);
-    } catch {
-      /* cleanup */
-    }
-    throw err;
-  }
-}
-
-/**
- * Ensure parent directories exist for both debt file paths.
- */
-function ensureDebtDirs(masterPath, dedupedPath) {
-  fs.mkdirSync(path.dirname(masterPath), { recursive: true });
-  fs.mkdirSync(path.dirname(dedupedPath), { recursive: true });
-}
-
-/**
- * Capture file snapshot (exists + size) for later rollback.
- * @returns {{ existed: boolean, size: number }}
- */
-function snapshotFile(filePath) {
-  const existed = fs.existsSync(filePath);
-  return { existed, size: existed ? fs.statSync(filePath).size : 0 };
-}
-
-/**
- * Best-effort rollback a file to its snapshot state.
- */
-function rollbackFile(filePath, snapshot) {
-  try {
-    if (!snapshot.existed && snapshot.size === 0) fs.rmSync(filePath, { force: true });
-    else fs.truncateSync(filePath, snapshot.size);
-  } catch {
-    /* best-effort */
-  }
-}
-
-function writeMasterDebtSync(items, options) {
-  const masterPath = options?.masterPath || DEFAULT_MASTER_PATH;
-  const dedupedPath = options?.dedupedPath || DEFAULT_DEDUPED_PATH;
-  const content = items.map((item) => JSON.stringify(item)).join("\n") + "\n";
-
-  withLock(masterPath, () => {
-    ensureDebtDirs(masterPath, dedupedPath);
-    atomicWriteViaTmp(masterPath, content);
-    atomicWriteViaTmp(dedupedPath, content);
-  });
-}
-
-/**
- * Append items to MASTER_DEBT.jsonl AND deduped.jsonl atomically.
- * Uses file locking to prevent concurrent writes.
- *
- * @param {object[]} newItems - Items to append
- * @param {object} [options]
- * @param {string} [options.masterPath] - Override MASTER_DEBT.jsonl path
- * @param {string} [options.dedupedPath] - Override deduped.jsonl path
- */
-function appendMasterDebtSync(newItems, options) {
-  if (!newItems || newItems.length === 0) return;
-  const masterPath = options?.masterPath || DEFAULT_MASTER_PATH;
-  const dedupedPath = options?.dedupedPath || DEFAULT_DEDUPED_PATH;
-  const content = newItems.map((item) => JSON.stringify(item)).join("\n") + "\n";
-
-  withLock(masterPath, () => {
-    ensureDebtDirs(masterPath, dedupedPath);
-
-    // Capture sizes for rollback on partial failure
-    const masterSnap = snapshotFile(masterPath);
-    const dedupedSnap = snapshotFile(dedupedPath);
-
-    try {
-      safeAppendFileSync(masterPath, content);
-      safeAppendFileSync(dedupedPath, content);
-    } catch (err) {
-      // Roll back any partial append to maintain MASTER <-> deduped consistency
-      rollbackFile(masterPath, masterSnap);
-      rollbackFile(dedupedPath, dedupedSnap);
-      throw err;
-    }
-  });
-}
+// NOTE: Central MASTER_DEBT writers are intentionally NOT present in skill
+// copies. Skills must not write to docs/technical-debt/ from within their
+// own scripts/lib/ — use the canonical scripts/lib/safe-fs.js via the TDMS
+// intake pipeline (scripts/debt/intake-manual.js) instead.
 
 module.exports = {
   isSafeToWrite,
@@ -600,6 +503,4 @@ module.exports = {
   acquireLock,
   releaseLock,
   withLock,
-  writeMasterDebtSync,
-  appendMasterDebtSync,
 };
