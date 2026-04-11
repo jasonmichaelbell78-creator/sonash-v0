@@ -363,7 +363,7 @@ using evidence-based methods:
 5. **On next startup** (MUST): Surface previous learnings and feedback.
 6. **Invocation tracking** (MUST):
    ```bash
-   cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"create-audit","type":"skill","success":true,"context":{"target":"AUDIT_NAME"}}'
+   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"create-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"target":"AUDIT_NAME"}}'
    ```
 
 **Done when:** Artifact manifest presented, invocation tracked, user confirms

@@ -312,7 +312,7 @@ surface auto-learnings and user feedback from the previous run.
 > the actual skill name and decision count. Empty context breaks audit tracking.
 
 ```bash
-cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"skill-audit","type":"skill","success":true,"context":{"target":"SKILL_NAME","decisions":N,"score":SCORE}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"skill-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"target":"SKILL_NAME","decisions":N,"score":SCORE}}'
 ```
 
 **Closure summary:**

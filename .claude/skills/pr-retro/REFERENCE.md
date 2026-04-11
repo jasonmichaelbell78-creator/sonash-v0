@@ -89,7 +89,7 @@ The `pattern_recurrence` value MUST be populated at creation time, not guessed:
 
 ### Invocation Record (write-invocation.js)
 
-> `node dist/write-invocation.js --data '{"skill":"pr-retro","type":"skill","duration_ms":null,"success":true,"error":null,"context":{"pr":PR_NUM,"trigger":"user-invoked"}}'`
+> `cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"pr-retro","type":"skill","duration_ms":null,"success":true,"error":null,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"pr":PR_NUM,"trigger":"user-invoked"}}'`
 
 ---
 

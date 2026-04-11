@@ -304,7 +304,7 @@ behavioral quality that structural validation cannot catch.
    state file `process_feedback`.
 3. **Invocation tracking** (MUST):
    ```bash
-   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"skill-creator","type":"skill","success":true,"context":{"target":"SKILL_NAME"}}'
+   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"skill-creator","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"target":"SKILL_NAME"}}'
    ```
 4. **Session cleanup** (SHOULD): Commit created skill files. State file retained
    as creation record. Run `/session-end` if ending session.
