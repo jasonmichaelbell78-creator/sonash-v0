@@ -29,15 +29,15 @@ const ID_PATTERN = /^T(\d+)$/;
 
 function parseIdNumber(id) {
   if (typeof id !== "string") return Number.NaN;
-  const m = id.match(ID_PATTERN);
-  return m ? Number.parseInt(m[1], 10) : Number.NaN;
+  const match = id.match(ID_PATTERN);
+  return match ? Number.parseInt(match[1], 10) : Number.NaN;
 }
 
 function nextId(records) {
   let max = 0;
   for (const r of records) {
-    const n = parseIdNumber(r.id);
-    if (Number.isFinite(n) && n > max) max = n;
+    const idNum = parseIdNumber(r.id);
+    if (Number.isFinite(idNum) && idNum > max) max = idNum;
   }
   return `T${max + 1}`;
 }
@@ -75,13 +75,18 @@ function validateIntegrity(records) {
   let lastN = 0;
   for (const r of records) {
     const errs = validateRecordShape(r);
-    if (errs.length > 0) errors.push(`${r.id || "<no-id>"}: ${errs.join("; ")}`);
+    if (errs.length > 0) {
+      // Explicit string check satisfies pattern-compliance (no || vs ?? ambiguity)
+      // and preserves the empty-string fallback we want for the error message.
+      const idLabel = typeof r.id === "string" && r.id !== "" ? r.id : "<no-id>";
+      errors.push(`${idLabel}: ${errs.join("; ")}`);
+    }
     if (seen.has(r.id)) errors.push(`duplicate id: ${r.id}`);
     seen.add(r.id);
-    const n = parseIdNumber(r.id);
-    if (!Number.isFinite(n)) errors.push(`malformed id: ${r.id}`);
-    else if (n <= lastN) errors.push(`non-monotonic id: ${r.id} after T${lastN}`);
-    else lastN = n;
+    const idNum = parseIdNumber(r.id);
+    if (!Number.isFinite(idNum)) errors.push(`malformed id: ${r.id}`);
+    else if (idNum <= lastN) errors.push(`non-monotonic id: ${r.id} after T${lastN}`);
+    else lastN = idNum;
   }
   return errors;
 }
