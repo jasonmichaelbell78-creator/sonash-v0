@@ -4132,6 +4132,27 @@
       "file": "scripts/tasks/resolve-dependencies.js",
       "addedAt": "2026-04-05",
       "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/archive/repair-archives.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R1 rule narrowing — old patternAbsence missed this. fs.copyFileSync + fs.unlinkSync without safe-fs guards. Schedule follow-up to add safeRenameSync/isSafeToWrite."
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/cas/rebuild-index.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R1 rule narrowing — old patternAbsence missed this. fs.unlinkSync(DB_PATH) without isSafeToWrite. Schedule follow-up."
+    },
+    {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/debt/resolve-bulk.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R1 rule narrowing — old patternAbsence missed this. fs.rmSync + fs.unlinkSync without safe-fs guards. Schedule follow-up."
     }
   ]
 }
