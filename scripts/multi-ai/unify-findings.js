@@ -487,13 +487,25 @@ ${
   return md;
 }
 
-/** Ensure the `final/` output directory exists under a symlink-safe parent. */
+/**
+ * Ensure the `final/` output directory exists under a symlink-safe parent.
+ *
+ * The earlier `if (existsSync(finalDir)) return;` early-return had a TOCTOU
+ * race: if the directory was created AFTER existsSync returned false but
+ * BEFORE mkdirSync, the symlink check could be bypassed on the next call.
+ * Always run the safety check, then use mkdirSync with recursive:true which
+ * is idempotent, and tolerate EEXIST as a no-op.
+ */
 function ensureFinalDir(finalDir) {
-  if (existsSync(finalDir)) return;
   if (!isSafeToWrite(finalDir)) {
     throw new Error(`Refusing to mkdir — parent path is unsafe: ${finalDir}`);
   }
-  mkdirSync(finalDir, { recursive: true });
+  try {
+    mkdirSync(finalDir, { recursive: true });
+  } catch (err) {
+    const code = err && typeof err === "object" && "code" in err ? String(err.code) : "";
+    if (code !== "EEXIST") throw err;
+  }
 }
 
 /**

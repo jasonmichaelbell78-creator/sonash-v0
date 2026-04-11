@@ -114,6 +114,8 @@ function loadStrict(filePath) {
     return []; // unreachable, satisfies linter
   }
   if (raw.codePointAt(0) === 0xfeff) raw = raw.slice(1);
+  // No CRLF normalization needed here: parseStrictJsonl already calls .trim()
+  // on each line (scripts/lib/todos-mutations.js), which strips trailing \r.
   try {
     return parseStrictJsonl(raw);
   } catch (err) {
