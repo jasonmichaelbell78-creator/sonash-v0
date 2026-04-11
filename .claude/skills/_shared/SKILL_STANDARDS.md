@@ -326,6 +326,68 @@ These apply to ALL tiers (including Simple via "Done when:" gates):
 
 ---
 
+## Invocation Tracking
+
+Every skill SHOULD log a single invocation record at completion to
+`data/ecosystem-v2/invocations.jsonl` via `scripts/reviews/write-invocation.ts`.
+The records feed the ecosystem dashboards and pr-retro analyses.
+
+### Canonical Caller Snippet
+
+```bash
+cd scripts/reviews && npx tsx write-invocation.ts --data '{
+  "skill": "SKILL_NAME",
+  "type": "skill",
+  "success": true,
+  "schema_version": 1,
+  "completeness": "stub",
+  "origin": { "type": "manual" },
+  "context": { "trigger": "...", "session": "..." }
+}'
+```
+
+### Required vs Auto-Filled Fields
+
+The writer auto-fills these fields when omitted (so legacy snippets keep
+working), but new and modernized snippets SHOULD pass them explicitly:
+
+| Field            | Auto-fill default      | When to override                             |
+| ---------------- | ---------------------- | -------------------------------------------- |
+| `id`             | `inv-{ts}-{pid}-{seq}` | Never — let the writer assign                |
+| `date`           | Today (YYYY-MM-DD)     | Never — let the writer assign                |
+| `schema_version` | `1`                    | Bump only when BaseRecord schema changes     |
+| `completeness`   | `"stub"`               | `"full"` if all context fields populated     |
+| `origin`         | `{ type: "manual" }`   | `{ type: "pr-review", pr: 505 }` for PR work |
+
+The `type` enum on `origin` is
+`pr-review | pr-retro | backfill | migration | manual`. Use `manual` for
+human-invoked skill runs (the default).
+
+### Required Caller Fields
+
+| Field     | Type                         | Notes                                      |
+| --------- | ---------------------------- | ------------------------------------------ |
+| `skill`   | string                       | The skill name (matches the slash command) |
+| `type`    | `skill` \| `agent` \| `team` | What ran                                   |
+| `success` | boolean                      | Whether the invocation completed cleanly   |
+
+### Optional Context Fields
+
+The `context` object accepts a fixed set of keys defined in
+`scripts/reviews/lib/schemas/invocation.ts`. Common ones: `trigger`, `session`,
+`topic`, `decisions`, `score`, `note`. **Unknown context keys are silently
+stripped by Zod** — if a skill needs a new context field, add it to the
+`InvocationRecord` schema first.
+
+### Where Defaults Live
+
+The auto-fill logic lives in `scripts/reviews/write-invocation.ts`
+(`writeInvocation()`). Schema-of-record is
+`scripts/reviews/lib/schemas/invocation.ts` (`InvocationRecord`) which extends
+`BaseRecord` from `scripts/reviews/lib/schemas/shared.ts`.
+
+---
+
 ## Quality Checklist (for skill-creator)
 
 ### Structural Quality
