@@ -21,10 +21,32 @@ import { ReviewRecord, type ReviewRecordType } from "./lib/schemas/review";
 import { RetroRecord, type RetroRecordType } from "./lib/schemas/retro";
 import type { CompletenessTierType } from "./lib/schemas/shared";
 
+// Walk up from startDir until we find package.json (works from source AND dist)
+function findProjectRootForHelper(startDir: string): string {
+  let dir = startDir;
+  for (;;) {
+    try {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    } catch {
+      // existsSync race condition -- continue walking
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) throw new Error("Could not find project root");
+    dir = parent;
+  }
+}
+
+// Resolve helpers via absolute paths so compiled dist/backfill-reviews.js still
+// finds scripts/lib/* (relative "../lib/..." would resolve to scripts/reviews/lib/...
+// after compilation — which doesn't exist).
+const LIB_ROOT = path.join(findProjectRootForHelper(__dirname), "scripts", "lib");
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { isSafeToWrite } = require("../lib/safe-fs") as { isSafeToWrite: (p: string) => boolean };
+const { isSafeToWrite } = require(path.join(LIB_ROOT, "safe-fs.js")) as {
+  isSafeToWrite: (p: string) => boolean;
+};
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { safeParseLine } = require("../lib/parse-jsonl-line") as {
+const { safeParseLine } = require(path.join(LIB_ROOT, "parse-jsonl-line.js")) as {
   safeParseLine: (line: string) => unknown;
 };
 

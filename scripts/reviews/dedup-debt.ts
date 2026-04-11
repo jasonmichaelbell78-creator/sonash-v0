@@ -11,8 +11,28 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+// Walk up from startDir until we find package.json (works from source AND dist)
+function findProjectRootForHelper(startDir: string): string {
+  let dir = startDir;
+  for (;;) {
+    try {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    } catch {
+      // existsSync race condition -- continue walking
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) throw new Error("Could not find project root");
+    dir = parent;
+  }
+}
+
+// Resolve helper via absolute path so compiled dist/dedup-debt.js still finds
+// scripts/lib/parse-jsonl-line.js (relative "../lib/..." would resolve to
+// scripts/reviews/lib/... after compilation — which doesn't exist).
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { safeParseLine } = require("../lib/parse-jsonl-line") as {
+const { safeParseLine } = require(
+  path.join(findProjectRootForHelper(__dirname), "scripts", "lib", "parse-jsonl-line.js")
+) as {
   safeParseLine: (line: string) => unknown;
 };
 

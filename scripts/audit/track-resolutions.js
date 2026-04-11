@@ -25,6 +25,7 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
 const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
+const { sanitizeError } = require("../lib/sanitize-error.cjs");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const MASTER_DEBT_PATH = path.join(REPO_ROOT, "docs", "technical-debt", "MASTER_DEBT.jsonl");
@@ -82,7 +83,7 @@ function readMasterDebt() {
   for (let i = 0; i < lines.length; i++) {
     const { value, error } = safeParseLineWithError(lines[i]);
     if (error) {
-      console.error(`Warning: Failed to parse line ${i + 1}: ${error.message}`);
+      console.error(`Warning: Failed to parse line ${i + 1}: ${sanitizeError(error)}`);
       continue;
     }
     if (value) items.push(value);

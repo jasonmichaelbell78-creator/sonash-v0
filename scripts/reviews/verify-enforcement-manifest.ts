@@ -12,10 +12,6 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { EnforcementRecord, EnforcementRecordSchema } from "./lib/enforcement-manifest";
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { safeParseLineWithError } = require("../lib/parse-jsonl-line") as {
-  safeParseLineWithError: (line: string) => { value: unknown; error: Error | null };
-};
 
 // Walk up from __dirname until we find package.json
 function findProjectRoot(startDir: string): string {
@@ -33,6 +29,16 @@ function findProjectRoot(startDir: string): string {
 }
 
 const PROJECT_ROOT = findProjectRoot(__dirname);
+
+// Resolve helper via absolute path so compiled dist/verify-enforcement-manifest.js
+// still finds scripts/lib/parse-jsonl-line.js (relative "../lib/..." would
+// resolve to scripts/reviews/lib/... after compilation — which doesn't exist).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLineWithError } = require(
+  path.join(PROJECT_ROOT, "scripts", "lib", "parse-jsonl-line.js")
+) as {
+  safeParseLineWithError: (line: string) => { value: unknown; error: Error | null };
+};
 
 /**
  * Read the manifest JSONL file and parse into records.

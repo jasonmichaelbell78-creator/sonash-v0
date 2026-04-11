@@ -10,11 +10,6 @@ import * as fs from "node:fs";
 import { DeferredItemRecord, type DeferredItemRecordType } from "./lib/schemas/deferred-item";
 import { appendRecord } from "./lib/write-jsonl";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { safeParseLine } = require("../lib/parse-jsonl-line") as {
-  safeParseLine: (line: string) => unknown;
-};
-
 // Walk up from startDir until we find package.json (works from both source and dist)
 function findProjectRoot(startDir: string): string {
   let dir = startDir;
@@ -29,6 +24,16 @@ function findProjectRoot(startDir: string): string {
     dir = parent;
   }
 }
+
+// Resolve helper via absolute path so compiled dist/write-deferred-items.js
+// still finds scripts/lib/parse-jsonl-line.js (relative "../lib/..." would
+// resolve to scripts/reviews/lib/... after compilation — which doesn't exist).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require(
+  path.join(findProjectRoot(__dirname), "scripts", "lib", "parse-jsonl-line.js")
+) as {
+  safeParseLine: (line: string) => unknown;
+};
 
 /** Input shape for each deferred item */
 export interface DeferredItemInput {

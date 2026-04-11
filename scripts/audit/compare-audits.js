@@ -19,6 +19,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
+const { sanitizeError } = require("../lib/sanitize-error.cjs");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 const SINGLE_SESSION_DIR = path.join(REPO_ROOT, "docs", "audits", "single-session");
@@ -156,7 +157,7 @@ function loadJsonlFile(filePath) {
     const { value: parsed, error } = safeParseLineWithError(lines[i]);
     if (error) {
       console.error(
-        `Warning: Invalid JSON on line ${i + 1} in ${path.basename(filePath)}: ${error.message}`
+        `Warning: Invalid JSON on line ${i + 1} in ${path.basename(filePath)}: ${sanitizeError(error)}`
       );
       continue;
     }

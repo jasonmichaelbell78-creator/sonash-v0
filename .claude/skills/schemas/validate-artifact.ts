@@ -55,7 +55,7 @@ try {
     for (let i = 0; i < lines.length; i++) {
       const { value, error } = safeParseLineWithError(lines[i]);
       if (error) {
-        console.error(`Line ${i + 1}: JSON parse error — ${error.message}`);
+        console.error(`Line ${i + 1}: JSON parse error — ${sanitizeError(error)}`);
         errors++;
         continue;
       }

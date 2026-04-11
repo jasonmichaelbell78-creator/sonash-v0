@@ -352,14 +352,20 @@ function main() {
       );
       console.log("   (Override logged for audit trail)\n");
     } catch {
-      // Audit log entry for the failed override write — include USER_CONTEXT
-      // and SESSION_ID so downstream SIEM tooling can correlate the failure
-      // with the originating session.
-      const USER_CONTEXT = process.env.USER_CONTEXT || "cli";
-      const SESSION_ID = process.env.SESSION_ID || "unknown";
+      // Audit log entry for the failed override write — log redacted
+      // correlation context so downstream SIEM tooling can associate the
+      // failure with the originating session without leaking raw env values.
+      const maskForLog = (value) => {
+        if (!value) return "unknown";
+        const str = String(value);
+        if (str.length <= 4) return "****";
+        return `${str.slice(0, 2)}***[len:${str.length}]`;
+      };
+      const redactedUserContext = maskForLog(process.env.USER_CONTEXT || "cli");
+      const redactedSessionId = maskForLog(process.env.SESSION_ID || "unknown");
       console.error("⚠️ Override log failed for check: triggers");
       console.log(
-        `   ⚠️  WARNING: Override audit log write failed — entry not persisted (USER_CONTEXT=${USER_CONTEXT}, SESSION_ID=${SESSION_ID})\n`
+        `   ⚠️  WARNING: Override audit log write failed — entry not persisted (USER_CONTEXT=${redactedUserContext}, SESSION_ID=${redactedSessionId})\n`
       );
     }
 

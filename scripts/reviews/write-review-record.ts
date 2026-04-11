@@ -13,12 +13,7 @@ import * as path from "node:path";
 import { ReviewRecord } from "./lib/schemas/review";
 import { appendRecord } from "./lib/write-jsonl";
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const { safeParseLine } = require("../lib/parse-jsonl-line") as {
-  safeParseLine: (line: string) => unknown;
-};
-
-// Walk up from startDir until we find package.json
+// Walk up from startDir until we find package.json (works from source AND dist)
 function findProjectRoot(startDir: string): string {
   let dir = startDir;
   for (;;) {
@@ -32,6 +27,16 @@ function findProjectRoot(startDir: string): string {
     dir = parent;
   }
 }
+
+// Resolve helper via absolute path so compiled dist/write-review-record.js
+// still finds scripts/lib/parse-jsonl-line.js (relative "../lib/..." would
+// resolve to scripts/reviews/lib/... after compilation — which doesn't exist).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require(
+  path.join(findProjectRoot(__dirname), "scripts", "lib", "parse-jsonl-line.js")
+) as {
+  safeParseLine: (line: string) => unknown;
+};
 
 /**
  * Read reviews.jsonl and determine the next auto-assigned review ID.
