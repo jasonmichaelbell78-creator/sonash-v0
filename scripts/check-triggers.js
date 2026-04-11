@@ -352,21 +352,15 @@ function main() {
       );
       console.log("   (Override logged for audit trail)\n");
     } catch {
-      // Audit log entry for the failed override write — log redacted
-      // correlation context so downstream SIEM tooling can associate the
-      // failure with the originating session without leaking raw env values.
-      const maskForLog = (value) => {
-        if (!value) return "unknown";
-        const str = String(value);
-        if (str.length <= 4) return "****";
-        return `${str.slice(0, 2)}***[len:${str.length}]`;
-      };
-      const redactedUserContext = maskForLog(process.env.USER_CONTEXT || "cli");
-      const redactedSessionId = maskForLog(process.env.SESSION_ID || "unknown");
+      // CodeQL js/clear-text-logging: env-derived values must not reach
+      // console sinks, even masked. The override-log.jsonl audit trail
+      // (when writable) carries full session context; this stderr line
+      // is a failure signal only. Do not reintroduce USER_CONTEXT or
+      // SESSION_ID here — CodeQL has no redaction threshold, the sink
+      // is the problem. Correlation happens at the SIEM layer via
+      // timestamp+host+process, not via embedded env identifiers.
       console.error("⚠️ Override log failed for check: triggers");
-      console.log(
-        `   ⚠️  WARNING: Override audit log write failed — entry not persisted (USER_CONTEXT=${redactedUserContext}, SESSION_ID=${redactedSessionId})\n`
-      );
+      console.log("   ⚠️  WARNING: Override audit log write failed — entry not persisted\n");
     }
 
     process.exit(0);

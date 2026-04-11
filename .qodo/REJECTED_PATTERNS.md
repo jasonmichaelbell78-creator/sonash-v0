@@ -62,6 +62,7 @@ caught it because compliance runs on its own engine.
 | 25     | Silent catch in hooks/scripts     | #448-#477       | pattern        | Intentional fail-open on non-critical ops                       |
 | 26     | Checksum verification on binaries | #448-#470       | pattern        | Version-pinned URLs already handle integrity                    |
 | 27     | Logs include titles (intake)      | #507 R1         | 1 (first)      | TDMS triage titles, not user PII                                |
+| 28     | Symlink TOCTOU in safe-fs.js      | #507 R2         | 1 (first)      | Single-user CLI trust model. See TRUST MODEL header in safe-fs.js. 169 consumers validated by security-auditor agent. If consumer set expands to privileged/multi-user contexts, delete rule and re-audit. |
 
 ## Code-suggestion suppression rules (`[pr_code_suggestions]`)
 

@@ -173,6 +173,23 @@ When reviewing files in scripts/ or .claude/hooks/:
     so the recurrence doesn't survive to R2. Qodo's "Custom Compliance"
     section triggers this even when reviewer suppressions already exist,
     because compliance rules use a separate engine from the reviewer.)
+
+28. Do NOT flag "Symlink TOCTOU" on scripts/lib/safe-fs.js writers
+    (safeWriteFileSync / safeAppendFileSync / safeAtomicWriteSync /
+    safeRenameSync). The isSafeToWrite check followed by the fs operation
+    leaves a theoretical TOCTOU window, but the module is explicitly
+    scoped to a single-user CLI trust model (see the "TRUST MODEL"
+    header comment in scripts/lib/safe-fs.js). Closing the TOCTOU gap
+    would require fd-based open+fstat+write with O_NOFOLLOW, which is
+    not portable to Windows and is out of scope for this module.
+    All 169 current consumers (scripts/, .claude/hooks/, .claude/skills/,
+    tests/) run as the developer on their own workstation — no Cloud
+    Functions, no API routes, no multi-user filesystem. Disposition
+    validated by the security-auditor agent in PR #507 R2 against the
+    full consumer graph.
+    (Rejected in PR #507 R2. If a future PR adds a consumer with elevated
+    privileges or multi-user FS access, delete this rule and re-audit
+    instead of extending the exemption.)
 """
 
 [pr_code_suggestions]
