@@ -91,12 +91,17 @@ function countRecentOccurrences(type, sinceDaysAgo) {
     let count = 0;
     for (const line of content.split("\n")) {
       if (!line.trim()) continue;
+      // T39: try/catch wraps JSON.parse(line) directly — pattern-compliance
+      // detector (Reviews 353/357/358) expects this exact shape so pretty-
+      // printed multi-line entries silently fail their parse and get skipped
+      // rather than bubbling up.
+      let entry;
       try {
-        const entry = JSON.parse(line);
-        if (entry.type === type && new Date(entry.timestamp).getTime() > cutoff) count++;
+        entry = JSON.parse(line);
       } catch {
-        /* skip malformed */
+        continue; // skip malformed
       }
+      if (entry.type === type && new Date(entry.timestamp).getTime() > cutoff) count++;
     }
     return count;
   } catch {
@@ -132,12 +137,14 @@ function countOccurrencesSince(type, sinceTimestamp) {
     let count = 0;
     for (const line of content.split("\n")) {
       if (!line.trim()) continue;
+      // T39: see countRecentOccurrences — pattern-compliance detector shape.
+      let entry;
       try {
-        const entry = JSON.parse(line);
-        if (entry.type === type && new Date(entry.timestamp).getTime() > since) count++;
+        entry = JSON.parse(line);
       } catch {
-        /* skip malformed */
+        continue; // skip malformed
       }
+      if (entry.type === type && new Date(entry.timestamp).getTime() > since) count++;
     }
     return count;
   } catch {
@@ -223,18 +230,20 @@ function hasMatchInWarningsLog(type, message, sinceMs) {
     const content = fs.readFileSync(logPath, "utf8");
     for (const line of content.split("\n")) {
       if (!line.trim()) continue;
+      // T39: see countRecentOccurrences — pattern-compliance detector shape.
+      let entry;
       try {
-        const entry = JSON.parse(line);
-        if (
-          entry.type === type &&
-          entry.message === message &&
-          entry.resolved !== true &&
-          new Date(entry.timestamp).getTime() > sinceMs
-        ) {
-          return true;
-        }
+        entry = JSON.parse(line);
       } catch {
-        /* skip malformed */
+        continue; // skip malformed
+      }
+      if (
+        entry.type === type &&
+        entry.message === message &&
+        entry.resolved !== true &&
+        new Date(entry.timestamp).getTime() > sinceMs
+      ) {
+        return true;
       }
     }
   } catch {
@@ -440,7 +449,7 @@ if (args.clear === "true") {
     args.action || null,
     args.files || null,
     args.pattern || null,
-    args.count || null
+    args.count ?? null
   );
   // Silent success for hook usage
 } else {
