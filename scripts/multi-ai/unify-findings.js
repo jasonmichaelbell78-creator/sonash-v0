@@ -487,6 +487,71 @@ ${
   return md;
 }
 
+/** Ensure the `final/` output directory exists under a symlink-safe parent. */
+function ensureFinalDir(finalDir) {
+  if (existsSync(finalDir)) return;
+  if (!isSafeToWrite(finalDir)) {
+    throw new Error(`Refusing to mkdir — parent path is unsafe: ${finalDir}`);
+  }
+  mkdirSync(finalDir, { recursive: true });
+}
+
+/**
+ * Load all CANON-*.jsonl files, tag each finding with its category, and
+ * roll up per-category severity counts.
+ *
+ * @returns {{ allFindings: object[], categoryStats: Record<string, object> }}
+ */
+function loadAllCanonFindings(canonDir, canonFiles) {
+  const allFindings = [];
+  const categoryStats = {};
+
+  for (const file of canonFiles) {
+    const category = file.replaceAll("CANON-", "").replaceAll(".jsonl", "").toLowerCase();
+    const findings = readJsonl(join(canonDir, file), { safe: true });
+    const stats = { total: findings.length, S0: 0, S1: 0, S2: 0, S3: 0 };
+    categoryStats[category] = stats;
+
+    for (const finding of findings) {
+      finding.category = category;
+      allFindings.push(finding);
+      if (finding.severity in stats) stats[finding.severity]++;
+    }
+
+    console.log(`Loaded ${findings.length} findings from ${file}`);
+  }
+
+  return { allFindings, categoryStats };
+}
+
+/** Score → sort → assign unified IDs. Mutates `merged` (sort + score in place). */
+function scoreSortAndAssignIds(merged) {
+  for (const finding of merged) {
+    finding.priority_score = calculatePriorityScore(finding);
+  }
+  merged.sort((a, b) => b.priority_score - a.priority_score);
+  return merged.map((finding, idx) => ({
+    ...finding,
+    unified_id: `UNIFIED-${String(idx + 1).padStart(4, "0")}`,
+  }));
+}
+
+/** Count findings per severity bucket (S0-S3). */
+function computeSeverityStats(unifiedFindings) {
+  const severityStats = { S0: 0, S1: 0, S2: 0, S3: 0 };
+  for (const f of unifiedFindings) {
+    if (f.severity in severityStats) severityStats[f.severity]++;
+  }
+  return severityStats;
+}
+
+/** Sum of finding.sources[].length across all findings. */
+function computeTotalSources(unifiedFindings) {
+  let total = 0;
+  for (const f of unifiedFindings) total += f.sources?.length ?? 0;
+  return total;
+}
+
 /**
  * Unify findings across all categories
  * @param {string} sessionPath - Path to session directory
@@ -506,15 +571,8 @@ export async function unifyFindings(sessionPath) {
     };
   }
 
-  // Ensure final directory exists — guard parent against symlink redirection
-  if (!existsSync(finalDir)) {
-    if (!isSafeToWrite(finalDir)) {
-      throw new Error(`Refusing to mkdir — parent path is unsafe: ${finalDir}`);
-    }
-    mkdirSync(finalDir, { recursive: true });
-  }
+  ensureFinalDir(finalDir);
 
-  // Find all CANON files
   const canonFiles = readdirSync(canonDir).filter(
     (f) => f.startsWith("CANON-") && f.endsWith(".jsonl")
   );
@@ -526,76 +584,22 @@ export async function unifyFindings(sessionPath) {
     };
   }
 
-  // Load all findings
-  const allFindings = [];
-  const categoryStats = {};
-
-  for (const file of canonFiles) {
-    const category = file.replaceAll("CANON-", "").replaceAll(".jsonl", "").toLowerCase();
-    const findings = readJsonl(join(canonDir, file), { safe: true });
-
-    categoryStats[category] = {
-      total: findings.length,
-      S0: 0,
-      S1: 0,
-      S2: 0,
-      S3: 0,
-    };
-
-    for (const finding of findings) {
-      finding.category = category;
-      allFindings.push(finding);
-
-      if (finding.severity in categoryStats[category]) {
-        categoryStats[category][finding.severity]++;
-      }
-    }
-
-    console.log(`Loaded ${findings.length} findings from ${file}`);
-  }
-
+  const { allFindings, categoryStats } = loadAllCanonFindings(canonDir, canonFiles);
   const rawFindingsCount = allFindings.length;
   console.log(`\nTotal findings loaded: ${rawFindingsCount}`);
 
-  // Detect cross-cutting issues
   const { crossCutting, fileMap } = detectCrossCuttingFindings(allFindings);
   console.log(`Cross-cutting files detected: ${crossCutting.length}`);
 
-  // Merge related findings
   const { merged } = mergeRelatedFindings(allFindings, fileMap);
   console.log(`After merging: ${merged.length} unified findings`);
 
-  // Detect dependency chains
   const dependencyChains = detectDependencyChains(merged);
   console.log(`Dependency chains detected: ${dependencyChains.length}`);
 
-  // Calculate priority scores
-  for (const finding of merged) {
-    finding.priority_score = calculatePriorityScore(finding);
-  }
-
-  // Sort by priority score
-  merged.sort((a, b) => b.priority_score - a.priority_score);
-
-  // Assign unified IDs
-  const unifiedFindings = merged.map((finding, idx) => ({
-    ...finding,
-    unified_id: `UNIFIED-${String(idx + 1).padStart(4, "0")}`,
-  }));
-
-  // Calculate severity stats
-  const severityStats = { S0: 0, S1: 0, S2: 0, S3: 0 };
-  for (const f of unifiedFindings) {
-    if (f.severity in severityStats) {
-      severityStats[f.severity]++;
-    }
-  }
-
-  // Count total sources
-  let totalSources = 0;
-  for (const f of unifiedFindings) {
-    totalSources += f.sources?.length ?? 0;
-  }
+  const unifiedFindings = scoreSortAndAssignIds(merged);
+  const severityStats = computeSeverityStats(unifiedFindings);
+  const totalSources = computeTotalSources(unifiedFindings);
 
   // Extract session ID from path
   const sessionId = basename(safeSessionPath);

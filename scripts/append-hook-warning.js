@@ -343,7 +343,7 @@ function readAckState() {
   }
 }
 
-function appendWarning(
+function appendWarning({
   hook,
   type,
   severity,
@@ -351,8 +351,8 @@ function appendWarning(
   action = null,
   files = null,
   pattern = null,
-  count = null
-) {
+  count = null,
+}) {
   const data = readWarnings();
   // D30: Read ack state once, pass to both dedup and occurrence tracking
   const ackState = readAckState();
@@ -424,16 +424,16 @@ if (args.clear === "true") {
   clearWarnings();
   console.log("Hook warnings cleared");
 } else if (args.hook && args.message) {
-  appendWarning(
-    args.hook,
-    args.type || "general",
-    args.severity || "warning",
-    args.message,
-    args.action || null,
-    args.files || null,
-    args.pattern || null,
-    args.count ?? null
-  );
+  appendWarning({
+    hook: args.hook,
+    type: args.type || "general",
+    severity: args.severity || "warning",
+    message: args.message,
+    action: args.action || null,
+    files: args.files || null,
+    pattern: args.pattern || null,
+    count: args.count ?? null,
+  });
   // Silent success for hook usage
 } else {
   console.error(
