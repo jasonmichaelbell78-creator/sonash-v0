@@ -222,7 +222,7 @@ function checkStateFileHealth(stateDir, findings) {
           domain: DOMAIN,
           severity: "error",
           message: `${corruptLines} corrupt JSON line(s) in ${entry}`,
-          details: `${corruptLines} of ${lineCount} lines failed JSON.parse(). Data loss or write interruption likely.`,
+          details: `${corruptLines} of ${lineCount} lines failed to parse as JSON. Data loss or write interruption likely.`,
           impactScore: 75,
           frequency: corruptLines,
           blastRadius: 3,

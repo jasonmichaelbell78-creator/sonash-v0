@@ -150,8 +150,12 @@ function checkConsolidationPointer(rootDir) {
 function isStateFileValid(sf) {
   const content = fs.readFileSync(sf.path, "utf8");
   if (sf.type === "json") {
-    JSON.parse(content);
-    return true;
+    try {
+      JSON.parse(content);
+      return true;
+    } catch {
+      return false;
+    }
   }
   if (sf.type === "jsonl") {
     const lines = content
@@ -159,9 +163,9 @@ function isStateFileValid(sf) {
       .map((l) => l.replace(/\r$/, ""))
       .filter((l) => l.trim().length > 0);
     if (lines.length === 0) return false;
-    for (const line of lines) {
+    for (const rawLine of lines) {
       try {
-        JSON.parse(line);
+        JSON.parse(rawLine);
       } catch {
         return false;
       }

@@ -281,8 +281,8 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
         const ackRaw = fs.readFileSync(ackPath, "utf-8");
         const ack = JSON.parse(ackRaw);
         if (ack.lastCleared) {
-          const d = new Date(ack.lastCleared);
-          if (!Number.isNaN(d.getTime())) lastCleared = d;
+          const lastClearedDate = new Date(ack.lastCleared);
+          if (!Number.isNaN(lastClearedDate.getTime())) lastCleared = lastClearedDate;
         }
       } catch {
         // No ack file — use positional eviction

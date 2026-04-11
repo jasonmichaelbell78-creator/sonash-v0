@@ -21,15 +21,16 @@ function resolveProjectDir() {
     const resolved = fs.realpathSync(path.resolve(envDir));
     const cwd = fs.realpathSync(fallback);
     const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
-    const a = norm(resolved);
-    const b = norm(cwd);
+    const resolvedNorm = norm(resolved);
+    const cwdNorm = norm(cwd);
     // Containment: allow resolved to be cwd/descendant OR an ancestor of cwd
-    const resolvedInsideCwd = a === b || a.startsWith(b + path.sep);
-    const cwdInsideResolved = b.startsWith(a + path.sep);
+    const resolvedInsideCwd =
+      resolvedNorm === cwdNorm || resolvedNorm.startsWith(cwdNorm + path.sep);
+    const cwdInsideResolved = cwdNorm.startsWith(resolvedNorm + path.sep);
     if (resolvedInsideCwd || cwdInsideResolved) {
       // Depth limit: reject ancestors more than 10 levels up (defense-in-depth)
       if (cwdInsideResolved && !resolvedInsideCwd) {
-        const depth = b.slice(a.length).split(path.sep).filter(Boolean).length;
+        const depth = cwdNorm.slice(resolvedNorm.length).split(path.sep).filter(Boolean).length;
         if (depth > 10) return fallback;
       }
       return resolved;

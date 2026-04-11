@@ -32,6 +32,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, writeMasterDebtSync } = require("../lib/safe-fs");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -210,15 +211,13 @@ function main() {
     stats.total++;
 
     // Review #224: Wrap JSON.parse in try/catch for robustness
-    let item;
-    try {
-      item = JSON.parse(line);
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      console.error(`❌ Invalid JSON at line ${stats.total}: ${errMsg}`);
+    const { value: item, error: parseErr } = safeParseLineWithError(line);
+    if (parseErr) {
+      console.error(`❌ Invalid JSON at line ${stats.total}: ${parseErr.message}`);
       console.error(`   Line: ${line.slice(0, 200)}${line.length > 200 ? "..." : ""}`);
-      process.exit(3);
+      process.exit(1);
     }
+    if (!item) continue;
 
     // Check if already has roadmap_ref - normalize if needed
     if (item.roadmap_ref && item.roadmap_ref !== null) {
@@ -276,23 +275,21 @@ function main() {
     } catch (error_) {
       const errMsg = error_ instanceof Error ? error_.message : String(error_);
       console.error(`❌ Failed to create backup file: ${errMsg}`);
-      process.exit(4);
+      process.exit(1);
     }
 
     // Central writer handles both MASTER_DEBT.jsonl and deduped.jsonl atomically
     try {
       const allItems = [];
       for (let i = 0; i < updatedLines.length; i++) {
-        const line = updatedLines[i];
-        if (!line?.trim()) continue;
-        try {
-          allItems.push(JSON.parse(line));
-        } catch {
+        const { value, error } = safeParseLineWithError(updatedLines[i]);
+        if (error) {
           console.error(
             `❌ Malformed JSONL at output line ${i + 1}; aborting write to prevent data loss.`
           );
-          process.exit(4);
+          process.exit(1);
         }
+        if (value) allItems.push(value);
       }
       writeMasterDebtSync(allItems);
 
@@ -300,7 +297,7 @@ function main() {
     } catch (error_) {
       const errMsg = error_ instanceof Error ? error_.message : String(error_);
       console.error(`❌ Failed to write MASTER_DEBT.jsonl: ${errMsg}`);
-      process.exit(4);
+      process.exit(1);
     }
     console.log("\n📌 Next steps:");
     console.log("   1. Run: node scripts/debt/validate-schema.js");

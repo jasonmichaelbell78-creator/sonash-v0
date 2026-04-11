@@ -12,6 +12,7 @@
 /* global __dirname */
 const path = require("node:path");
 const fs = require("node:fs");
+const { safeWriteFileSync } = require("./lib/safe-fs");
 
 // sanitizeError loaded for future error-handling use; prefixed to satisfy linter
 let _sanitizeError;
@@ -263,7 +264,7 @@ function run(options = {}) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  fs.writeFileSync(outputPath, md, "utf-8");
+  safeWriteFileSync(outputPath, md, "utf-8");
   console.log(
     `Generated ${path.relative(PROJECT_ROOT, outputPath)} with ${entries.length} systems`
   );

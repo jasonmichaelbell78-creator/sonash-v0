@@ -28,8 +28,8 @@ const COLLECTION = "sober_living";
 
 export const SoberLivingService = {
   getAllHomes: async (): Promise<SoberLivingHome[]> => {
-    const q = query(collection(db, COLLECTION));
-    const snapshot = await getDocs(q);
+    const soberLivingQuery = query(collection(db, COLLECTION));
+    const snapshot = await getDocs(soberLivingQuery);
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as SoberLivingHome);
   },
 
@@ -54,8 +54,8 @@ export const SoberLivingService = {
     // For safety, let's just add new ones or overwrite by ID if we provided IDs.
     // But since we generate IDs, let's assume we want to Clear First if this is a "Reset"
 
-    const q = query(collection(db, COLLECTION));
-    const snapshot = await getDocs(q);
+    const seedClearQuery = query(collection(db, COLLECTION));
+    const snapshot = await getDocs(seedClearQuery);
     snapshot.docs.forEach((d) => batch.delete(d.ref));
 
     homes.forEach((home) => {

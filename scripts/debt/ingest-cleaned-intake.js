@@ -15,7 +15,6 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const os = require("node:os");
 const { safeAppendFileSync, appendMasterDebtSync } = require("../lib/safe-fs");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -186,13 +185,9 @@ function writeItems(newItems) {
 // --- Log intake activity ---
 
 function logIntakeActivity(input, newItems, dupes, counts) {
-  let operatorContext;
-  try {
-    operatorContext =
-      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
-  } catch {
-    operatorContext = process.env.USER || process.env.USERNAME || "unknown";
-  }
+  // Use neutral label — operator PII is not load-bearing for downstream consumers
+  // (see PR #500 R1 and plan §3.3 "preferred" option).
+  const operatorContext = "tdms-intake";
   logIntake({
     action: "ingest-cleaned-intake",
     operator: operatorContext,

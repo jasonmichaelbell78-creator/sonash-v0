@@ -13,6 +13,11 @@ import * as path from "node:path";
 import { ReviewRecord } from "./lib/schemas/review";
 import { appendRecord } from "./lib/write-jsonl";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require("../lib/parse-jsonl-line") as {
+  safeParseLine: (line: string) => unknown;
+};
+
 // Walk up from startDir until we find package.json
 function findProjectRoot(startDir: string): string {
   let dir = startDir;
@@ -56,18 +61,12 @@ export function getNextReviewId(projectRoot: string): string {
 }
 
 /** Parse a rev-N number from a JSONL line. Returns 0 if not parseable. */
-function parseRevNumber(line: string): number {
-  if (!line.trim()) return 0;
-  try {
-    const record = JSON.parse(line) as { id?: string };
-    if (!record.id) return 0;
-    const match = /^rev-(\d+)(?:-|$)/.exec(record.id);
-    if (!match) return 0;
-    return Number.parseInt(match[1], 10);
-  } catch {
-    // Skip malformed lines
-    return 0;
-  }
+function parseRevNumber(rawLine: string): number {
+  const record = safeParseLine(rawLine) as { id?: string } | null;
+  if (!record || !record.id) return 0;
+  const match = /^rev-(\d+)(?:-|$)/.exec(record.id);
+  if (!match) return 0;
+  return Number.parseInt(match[1], 10);
 }
 
 /**

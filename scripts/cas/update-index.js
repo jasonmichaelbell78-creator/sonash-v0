@@ -18,6 +18,7 @@ const path = require("node:path");
 const Database = require("better-sqlite3");
 const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
@@ -167,12 +168,10 @@ function syncExtractions(db, record, tagCache) {
 
   let skippedLines = 0;
   let insertErrors = 0;
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    let entry;
-    try {
-      entry = JSON.parse(line);
-    } catch {
+  for (const rawLine of lines) {
+    if (!rawLine.trim()) continue;
+    const entry = safeParseLine(rawLine);
+    if (!entry) {
       skippedLines++;
       continue;
     }

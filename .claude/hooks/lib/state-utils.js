@@ -31,9 +31,9 @@ try {
 
       const norm = (x) => (process.platform === "win32" ? x.toLowerCase() : x);
       const isUnder = (dir, root) => {
-        const d = norm(dir);
-        const r = norm(root);
-        return d === r || d.startsWith(r + path.sep);
+        const dirNorm = norm(dir);
+        const rootNorm = norm(root);
+        return dirNorm === rootNorm || dirNorm.startsWith(rootNorm + path.sep);
       };
 
       return isUnder(parentReal, stateRoot) || isUnder(parentReal, hooksRoot);

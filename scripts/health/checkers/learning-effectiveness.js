@@ -27,16 +27,32 @@ function checkLearningEffectiveness() {
     return { metrics: {}, no_data: true };
   }
 
-  // Match new MVM format: "| Violations per PR (30-day) | X.XX | signal |"
-  const vprMatch = content.match(/Violations per PR\s*\([^)]+\)\s*\|\s*([\d.]+)\s*\|\s*(\S+)/);
-  // Match: "| Recurring categories | N/M (XX.X%) | signal |"
-  const recMatch = content.match(
-    /Recurring categories\s*\|\s*\d+\/\d+\s*\(([\d.]+)%\)\s*\|\s*(\S+)/
-  );
+  // Extract metric rows via simple line match + pipe split. Complex full-row
+  // regexes trip SonarCloud S5852; pipe-split is cheaper and equally precise
+  // for this fixed table shape.
+  const vprLineMatch = content.match(/Violations per PR[^\n]*/);
+  let violationsPerPr = null;
+  let vprSignal = null;
+  if (vprLineMatch) {
+    const cells = vprLineMatch[0].split("|").map((c) => c.trim());
+    // cells shape: ["Violations per PR (30-day)", "X.XX", "signal", ...]
+    if (cells.length >= 3) {
+      const parsedVpr = Number.parseFloat(cells[1]);
+      if (!Number.isNaN(parsedVpr)) violationsPerPr = parsedVpr;
+      vprSignal = cells[2] || null;
+    }
+  }
 
-  const violationsPerPr = vprMatch ? Number.parseFloat(vprMatch[1]) : null;
-  const vprSignal = vprMatch ? vprMatch[2] : null;
-  const recurrenceRate = recMatch ? Number.parseFloat(recMatch[1]) : null;
+  // "Recurring categories" row: pull the percent value from within parens.
+  const recLineMatch = content.match(/Recurring categories[^\n]*/);
+  let recurrenceRate = null;
+  if (recLineMatch) {
+    const percentMatch = recLineMatch[0].match(/\(([\d.]+)%\)/);
+    if (percentMatch) {
+      const parsedRate = Number.parseFloat(percentMatch[1]);
+      if (!Number.isNaN(parsedRate)) recurrenceRate = parsedRate;
+    }
+  }
 
   if (violationsPerPr !== null && vprSignal !== "insufficient_data") {
     metrics.violations_per_pr = {

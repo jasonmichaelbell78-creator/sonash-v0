@@ -53,10 +53,13 @@ function getRepoRoot() {
 const OVERRIDE_LOG = path.resolve(path.join(getRepoRoot(), ".claude", "override-log.jsonl"));
 const MAX_LOG_SIZE = 50 * 1024; // 50KB - rotate if larger
 
-// Ensure directory exists
+// Ensure directory exists — guard parent against symlink redirection
 function ensureLogDir() {
   const dir = path.dirname(OVERRIDE_LOG);
   if (!fs.existsSync(dir)) {
+    if (!isSafeToWrite(dir)) {
+      throw new Error(`Refusing to mkdir — parent path is unsafe: ${dir}`);
+    }
     fs.mkdirSync(dir, { recursive: true });
   }
 }

@@ -357,7 +357,7 @@ function checkCommitLogIntegrity(stateDir, findings) {
       domain: DOMAIN,
       severity: "error",
       message: `${corruptLines} corrupt JSON line(s) in commit-log.jsonl`,
-      details: `${corruptLines} of ${totalEntries} lines failed JSON.parse(). Data may have been truncated during write.`,
+      details: `${corruptLines} of ${totalEntries} lines failed to parse as JSON. Data may have been truncated during write.`,
       impactScore: 75,
       frequency: corruptLines,
       blastRadius: 3,

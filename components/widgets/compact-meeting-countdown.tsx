@@ -80,13 +80,13 @@ function parse24HourMinutes(cleaned: string): number | null {
   const match = cleaned.match(/^(\d{1,2}):(\d{2})$/);
   if (!match) return null;
 
-  const h = Number(match[1]);
-  const m = Number(match[2]);
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
 
-  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
-  if (h < 0 || h > 23 || m < 0 || m > 59) return null;
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null;
 
-  return h * MINUTES_PER_HOUR + m;
+  return hours * MINUTES_PER_HOUR + minutes;
 }
 
 /**
@@ -97,17 +97,17 @@ function parse12HourMinutes(cleaned: string): number | null {
   const match = regex.exec(cleaned);
   if (!match) return null;
 
-  let h = Number(match[1]);
-  const m = Number(match[2]);
+  let hours = Number(match[1]);
+  const minutes = Number(match[2]);
   const period = match[3].toUpperCase();
 
-  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
-  if (h < 1 || h > 12 || m < 0 || m > 59) return null;
+  if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+  if (hours < 1 || hours > 12 || minutes < 0 || minutes > 59) return null;
 
-  if (period === "AM") h = h === 12 ? 0 : h;
-  if (period === "PM") h = h === 12 ? 12 : h + 12;
+  if (period === "AM") hours = hours === 12 ? 0 : hours;
+  if (period === "PM") hours = hours === 12 ? 12 : hours + 12;
 
-  return h * MINUTES_PER_HOUR + m;
+  return hours * MINUTES_PER_HOUR + minutes;
 }
 
 /**
@@ -256,7 +256,7 @@ export default function CompactMeetingCountdown() {
     return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
   }
 
-  function handleClick() {
+  function handleMeetingCountdownClick() {
     if (!nextMeeting) return;
     setShowDialog(true);
   }
@@ -283,7 +283,7 @@ export default function CompactMeetingCountdown() {
     <>
       <button
         type="button"
-        onClick={handleClick}
+        onClick={handleMeetingCountdownClick}
         className="flex flex-col items-end gap-0.5 text-amber-900 hover:text-amber-700 transition-colors cursor-pointer group bg-transparent border-none p-0 text-left"
       >
         <div className="flex items-center gap-1.5">

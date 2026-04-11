@@ -18,6 +18,7 @@ const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
 // propagation: safeWriteFileSync() compliance via writeMasterDebtSync (refuse-symlink)
 const { writeMasterDebtSync } = require("../lib/safe-fs");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 const { sanitizeError } = require("../lib/security-helpers");
 
 const MASTER_FILE = path.join(__dirname, "../../docs/technical-debt/MASTER_DEBT.jsonl");
@@ -55,18 +56,18 @@ function main() {
   const parseErrors = [];
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) {
+    const trimmed = lines[i].trim();
+    if (!trimmed) {
       // Preserve empty lines as-is (e.g., trailing newline)
       items.push({ raw: lines[i], parsed: null, lineNum: i + 1 });
       continue;
     }
-    try {
-      const parsed = JSON.parse(line);
-      items.push({ raw: lines[i], parsed, lineNum: i + 1 });
-    } catch (err) {
-      parseErrors.push({ line: i + 1, message: sanitizeError(err) });
+    const { value, error } = safeParseLineWithError(trimmed);
+    if (error) {
+      parseErrors.push({ line: i + 1, message: sanitizeError(error) });
       items.push({ raw: lines[i], parsed: null, lineNum: i + 1 });
+    } else {
+      items.push({ raw: lines[i], parsed: value, lineNum: i + 1 });
     }
   }
 

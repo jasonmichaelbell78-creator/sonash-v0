@@ -22,6 +22,7 @@ const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const { validateSkipReason } = require("./lib/validate-skip-reason");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 // Configuration
 const TRIGGERS = {
@@ -292,13 +293,9 @@ function checkReviewSyncTrigger() {
           .replaceAll("\r\n", "\n")
           .trim()
           .split("\n");
-        for (const line of lines) {
-          try {
-            const id = JSON.parse(line).id;
-            if (typeof id === "number" && id > jsonlMax) jsonlMax = id;
-          } catch {
-            /* skip */
-          }
+        for (const rawLine of lines) {
+          const obj = safeParseLine(rawLine);
+          if (obj && typeof obj.id === "number" && obj.id > jsonlMax) jsonlMax = obj.id;
         }
       } catch {
         /* skip */
@@ -355,8 +352,15 @@ function main() {
       );
       console.log("   (Override logged for audit trail)\n");
     } catch {
+      // Audit log entry for the failed override write — include USER_CONTEXT
+      // and SESSION_ID so downstream SIEM tooling can correlate the failure
+      // with the originating session.
+      const USER_CONTEXT = process.env.USER_CONTEXT || "cli";
+      const SESSION_ID = process.env.SESSION_ID || "unknown";
       console.error("⚠️ Override log failed for check: triggers");
-      console.log("   ⚠️  WARNING: Override audit log write failed — entry not persisted\n");
+      console.log(
+        `   ⚠️  WARNING: Override audit log write failed — entry not persisted (USER_CONTEXT=${USER_CONTEXT}, SESSION_ID=${SESSION_ID})\n`
+      );
     }
 
     process.exit(0);

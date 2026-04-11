@@ -211,11 +211,19 @@ function analyzePr(prNumber, owner, repo) {
  * Version History:
  *   v1.0 2026-03-18 - Added for dedup guard (retro item #8)
  */
+const METRICS_MAX_BYTES = 2 * 1024 * 1024; // 2 MiB size guard for metrics file
+
 function readExistingMetrics() {
   try {
     // Single lstatSync call avoids TOCTOU between existsSync and lstatSync
     const st = lstatSync(METRICS_FILE);
     if (!st.isFile() || st.isSymbolicLink()) return [];
+    if (st.size > METRICS_MAX_BYTES) {
+      console.warn(
+        `review-churn-tracker: metrics file exceeds ${METRICS_MAX_BYTES} bytes, skipping read`
+      );
+      return [];
+    }
 
     const content = readFileSync(METRICS_FILE, "utf8");
     const lines = content.split("\n");

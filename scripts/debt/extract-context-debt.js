@@ -20,7 +20,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
-const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeAppendFileSync, streamLinesSync } = require("../lib/safe-fs");
 const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
@@ -60,13 +60,12 @@ function computeNextSeq() {
   let nextSeq = 1;
   if (!fs.existsSync(OUTPUT_FILE)) return nextSeq;
   try {
-    const content = fs.readFileSync(OUTPUT_FILE, "utf8");
-    for (const line of content.split("\n")) {
+    streamLinesSync(OUTPUT_FILE, (line) => {
       const item = safeParseLine(line);
-      if (!item) continue;
+      if (!item) return;
       const match = (item.id || "").match(/^INTAKE-CTX-(\d+)$/);
       if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
-    }
+    });
   } catch {
     // skip
   }

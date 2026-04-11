@@ -22,7 +22,9 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { writeMasterDebtSync, appendMasterDebtSync, safeWriteFileSync } = require("../lib/safe-fs");
+const { isSafeToWrite } = require("../lib/security-helpers");
 
+const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(BASE_DIR, "MASTER_DEBT.jsonl");
@@ -325,6 +327,9 @@ function generateViewFiles(items, bySeverity, byCategory, byStatus) {
   const today = formatDate(new Date());
 
   if (!fs.existsSync(VIEWS_DIR)) {
+    if (!isSafeToWrite(VIEWS_DIR)) {
+      throw new Error(`Refusing to mkdir — parent path is unsafe: ${VIEWS_DIR}`);
+    }
     fs.mkdirSync(VIEWS_DIR, { recursive: true });
   }
 
@@ -427,8 +432,9 @@ function generateSeverityView(bySeverity, today) {
     }
   }
 
-  safeWriteFileSync(path.join(VIEWS_DIR, "by-severity.md"), severityMd);
-  console.log(`  ✅ ${path.join(VIEWS_DIR, "by-severity.md")}`);
+  const bySeverityPath = path.join(VIEWS_DIR, "by-severity.md");
+  safeWriteFileSync(bySeverityPath, severityMd);
+  console.log(`  ✅ ${path.relative(PROJECT_ROOT, bySeverityPath)}`);
 }
 
 // Generate views/by-category.md
@@ -445,8 +451,9 @@ function generateCategoryView(byCategory, today) {
     categoryMd += "\n";
   }
 
-  safeWriteFileSync(path.join(VIEWS_DIR, "by-category.md"), categoryMd);
-  console.log(`  ✅ ${path.join(VIEWS_DIR, "by-category.md")}`);
+  const byCategoryPath = path.join(VIEWS_DIR, "by-category.md");
+  safeWriteFileSync(byCategoryPath, categoryMd);
+  console.log(`  ✅ ${path.relative(PROJECT_ROOT, byCategoryPath)}`);
 }
 
 // Generate views/by-status.md
@@ -468,8 +475,9 @@ function generateStatusView(byStatus, today) {
     }
   }
 
-  safeWriteFileSync(path.join(VIEWS_DIR, "by-status.md"), statusMd);
-  console.log(`  ✅ ${path.join(VIEWS_DIR, "by-status.md")}`);
+  const byStatusPath = path.join(VIEWS_DIR, "by-status.md");
+  safeWriteFileSync(byStatusPath, statusMd);
+  console.log(`  ✅ ${path.relative(PROJECT_ROOT, byStatusPath)}`);
 }
 
 // Generate views/verification-queue.md
@@ -492,8 +500,9 @@ Review items manually or use \`tdms-ecosystem-audit\` to process this queue.
     }
   }
 
-  safeWriteFileSync(path.join(VIEWS_DIR, "verification-queue.md"), verifyMd);
-  console.log(`  ✅ ${path.join(VIEWS_DIR, "verification-queue.md")}`);
+  const verifyPath = path.join(VIEWS_DIR, "verification-queue.md");
+  safeWriteFileSync(verifyPath, verifyMd);
+  console.log(`  ✅ ${path.relative(PROJECT_ROOT, verifyPath)}`);
 }
 
 // Preserve manually-added items from MASTER_DEBT.jsonl not in deduped input.

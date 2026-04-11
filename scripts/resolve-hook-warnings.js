@@ -60,6 +60,8 @@ try {
   sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
 }
 
+const { safeParseLine } = require("./lib/parse-jsonl-line");
+
 const ROOT_DIR = path.join(__dirname, "..");
 const LOG_PATH = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
 const ACK_PATH = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-ack.json");
@@ -175,13 +177,11 @@ function readLogEntries() {
     }
     const content = fs.readFileSync(LOG_PATH, "utf8");
     const entries = [];
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        entries.push(JSON.parse(line));
-      } catch {
-        entries.push({ _raw: line, _malformed: true });
-      }
+    for (const rawLine of content.split("\n")) {
+      if (!rawLine.trim()) continue;
+      const parsed = safeParseLine(rawLine);
+      if (parsed) entries.push(parsed);
+      else entries.push({ _raw: rawLine, _malformed: true });
     }
     return entries;
   } catch {

@@ -63,11 +63,11 @@ export default function MoodSparkline() {
 
   // Generate path
   const points = dataPoints
-    .map((p, i) => {
-      const x = i * step;
+    .map((point, i) => {
+      const pointX = i * step;
       // Invert y because SVG 0 is top. Scale 4 to height-5, 0 to 5.
-      const y = height - (p.value / 4) * (height - 10) - 5;
-      return `${x},${y}`;
+      const pointY = height - (point.value / 4) * (height - 10) - 5;
+      return `${pointX},${pointY}`;
     })
     .join(" ");
 
@@ -90,16 +90,16 @@ export default function MoodSparkline() {
           />
 
           {/* Dots */}
-          {dataPoints.map((p, i) => {
-            const x = i * step;
-            const y = height - (p.value / 4) * (height - 10) - 5;
+          {dataPoints.map((point, i) => {
+            const pointX = i * step;
+            const pointY = height - (point.value / 4) * (height - 10) - 5;
             return (
               <motion.circle
-                key={p.date}
-                cx={x}
-                cy={y}
+                key={point.date}
+                cx={pointX}
+                cy={pointY}
                 r="3"
-                fill={p.value >= 2 ? "#d97706" : "#ef4444"}
+                fill={point.value >= 2 ? "#d97706" : "#ef4444"}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 1.5 + i * 0.1 }}

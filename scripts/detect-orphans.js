@@ -19,7 +19,7 @@ const { execFileSync } = require("node:child_process");
 const { buildGraph, walkDir, resolveAsFilePath, ROOT } = require("./lib/reference-graph.js");
 const { sanitizeError } = require("./lib/sanitize-error.js");
 const { validatePathInDir } = require("./lib/security-helpers.js");
-const { safeWriteFileSync } = require("./lib/safe-fs.js");
+const { safeWriteFileSync, readTextWithSizeGuard } = require("./lib/safe-fs.js");
 
 const FINDINGS_PATH = path.join(ROOT, ".planning", "orphan-detection", "findings.jsonl");
 const TODOS_PATH = path.join(ROOT, ".planning", "todos.jsonl");
@@ -590,7 +590,7 @@ function adjustConfidenceByRecency(finding) {
 function applyDiff(findings) {
   let previousFindings;
   try {
-    const raw = fs.readFileSync(FINDINGS_PATH, "utf8");
+    const raw = readTextWithSizeGuard(FINDINGS_PATH);
     const lines = raw.trim().split("\n").filter(Boolean);
     previousFindings = [];
     for (const line of lines) {

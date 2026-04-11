@@ -335,12 +335,12 @@ function detectAIPatterns(content, filePath) {
  * @returns {number} Percentage value (0-100) or fallback
  */
 function safePercent(numerator, denominator, fallback = 100) {
-  const n = Number(numerator);
-  const d = Number(denominator);
-  if (!Number.isFinite(n) || !Number.isFinite(d) || d <= 0) {
+  const numericNumerator = Number(numerator);
+  const numericDenom = Number(denominator);
+  if (!Number.isFinite(numericNumerator) || !Number.isFinite(numericDenom) || numericDenom <= 0) {
     return fallback;
   }
-  return (n / d) * 100;
+  return (numericNumerator / numericDenom) * 100;
 }
 
 /**
@@ -351,9 +351,9 @@ function safePercent(numerator, denominator, fallback = 100) {
  * @returns {number} Clamped value
  */
 function clamp0to100(value) {
-  const x = Number(value);
-  if (!Number.isFinite(x)) return 100;
-  return Math.max(0, Math.min(100, x));
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return 100;
+  return Math.max(0, Math.min(100, numericValue));
 }
 
 /**

@@ -30,8 +30,8 @@ const COLLECTION = "daily_quotes";
 
 export const QuotesService = {
   getAllQuotes: async (): Promise<Quote[]> => {
-    const q = query(collection(db, COLLECTION));
-    const snapshot = await getDocs(q);
+    const quotesQuery = query(collection(db, COLLECTION));
+    const snapshot = await getDocs(quotesQuery);
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Quote);
   },
 

@@ -20,6 +20,7 @@ import {
 } from "@/lib/db/sober-living";
 import { toast } from "sonner";
 import { logger } from "@/lib/logger";
+import { IS_DEV } from "@/lib/config/env";
 import { useAuth } from "@/components/providers/auth-provider";
 import {
   Dialog,
@@ -59,17 +60,17 @@ function parseTime(timeStr: string): number {
 function parse12HourTime(timeStr: string): number {
   const match = timeStr.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
   if (!match) return -1;
-  let h = Number.parseInt(match[1], 10);
-  const m = Number.parseInt(match[2], 10);
-  const p = match[3].toUpperCase();
-  if (p === "PM" && h !== 12) h += 12;
-  if (p === "AM" && h === 12) h = 0;
-  return h * 60 + m;
+  let hoursNum = Number.parseInt(match[1], 10);
+  const minutesNum = Number.parseInt(match[2], 10);
+  const period = match[3].toUpperCase();
+  if (period === "PM" && hoursNum !== 12) hoursNum += 12;
+  if (period === "AM" && hoursNum === 12) hoursNum = 0;
+  return hoursNum * 60 + minutesNum;
 }
 
 function parse24HourTime(timeStr: string): number {
-  const [h, m] = timeStr.split(":").map(Number);
-  return h * 60 + m;
+  const [hoursNum, minutesNum] = timeStr.split(":").map(Number);
+  return hoursNum * 60 + minutesNum;
 }
 
 /**
@@ -574,7 +575,7 @@ export default function ResourcesPage() {
   const [sortBy, setSortBy] = useState<SortOption>("time");
   const [loading, setLoading] = useState(true);
   const { user, loading: authLoading } = useAuth();
-  const isDevMode = process.env.NODE_ENV === "development";
+  const isDevMode = IS_DEV;
 
   // Pagination state for "View All" mode
   const [lastDoc, setLastDoc] = useState<QueryDocumentSnapshot | null>(null);

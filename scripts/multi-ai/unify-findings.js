@@ -20,7 +20,7 @@ import { existsSync, readdirSync, mkdirSync } from "node:fs";
 import { join, resolve, relative, isAbsolute, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
-import { safeWriteFileSync } from "../lib/safe-fs.js";
+import { safeWriteFileSync, isSafeToWrite } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -506,8 +506,11 @@ export async function unifyFindings(sessionPath) {
     };
   }
 
-  // Ensure final directory exists
+  // Ensure final directory exists — guard parent against symlink redirection
   if (!existsSync(finalDir)) {
+    if (!isSafeToWrite(finalDir)) {
+      throw new Error(`Refusing to mkdir — parent path is unsafe: ${finalDir}`);
+    }
     mkdirSync(finalDir, { recursive: true });
   }
 

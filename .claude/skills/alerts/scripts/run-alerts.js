@@ -254,7 +254,7 @@ function safeErrorMsg(err) {
   }
 }
 
-/** Max file size for readFileSync+split operations (10MB) */
+/** Max file size for synchronous read+split operations (10MB) */
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 /**

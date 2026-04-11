@@ -965,7 +965,7 @@ const ANTI_PATTERNS = [
     review: "#218 (recurred: #319, #336, #337, #339, #342)",
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|parse-jsonl-line)\.js$/,
     pathExcludeList: verifiedPatterns["jsonl-parse-no-try-catch"] || [],
     excludeTests: true, // T39: test JSONL is controlled input
   },
@@ -1010,7 +1010,7 @@ const ANTI_PATTERNS = [
     review: "Reviews: 353, 357, 358 — multi-line JSON reassembly",
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
-    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|safe-fs)\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|safe-fs|parse-jsonl-line)\.js$/,
     pathExcludeList: verifiedPatterns["multiline-json-reassembly"] || [],
     excludeTests: true, // T39: test JSONL is controlled input
   },
@@ -1158,6 +1158,7 @@ const ANTI_PATTERNS = [
     fix: "Replace with specific security measures taken, or remove the claim",
     review: "ai-behavior",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
+    excludeTests: true, // T39: test files legitimately use "security" language in assertions/comments
   },
   // hallucinated-apis: MIGRATED to ESLint sonash/no-hallucinated-api (AST-based)
   {
@@ -1419,6 +1420,7 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|\/)scripts\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["regex-complexity-s5852"] || [],
+    excludeTests: true, // T39: test fixtures legitimately exercise complex regex patterns
   },
 
   // --- Patterns from Learning Effectiveness analysis (Session #197) ---
@@ -1664,6 +1666,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    excludeTests: true, // T39: test JSON fixtures are controlled input
   },
   // rmSync before renameSync creates data loss race condition (PR #407 retro)
   // Anti-pattern: rmSync(dest); renameSync(tmp, dest) — if crash between rm and rename, data is lost
@@ -1932,7 +1935,7 @@ const ANTI_PATTERNS = [
     review: "Reviews: 353, 356, 357, 359 — 4x recurrence",
     fileTypes: [".js"],
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
-    pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|parse-jsonl-line)\.js$/,
     pathExcludeList: verifiedPatterns["silent-json-parse"] || [],
     excludeTests: true, // T39: test JSON is controlled input
   },
@@ -1997,6 +2000,7 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
     pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|safe-fs)\.js$/,
     pathExcludeList: verifiedPatterns["symlink-parent-traversal"] || [],
+    excludeTests: true, // T39: test setup tmpdirs are controlled inputs — same precedent as D5/D6/Rule G
   },
 ];
 

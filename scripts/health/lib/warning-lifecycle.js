@@ -194,9 +194,12 @@ export function markStale(opts, thresholdDays = 30) {
   let changed = false;
 
   for (let i = 0; i < records.length; i++) {
-    const r = records[i];
-    if ((r.lifecycle === "new" || r.lifecycle === "acknowledged") && r.date <= cutoffStr) {
-      records[i] = { ...r, lifecycle: "stale" };
+    const record = records[i];
+    if (
+      (record.lifecycle === "new" || record.lifecycle === "acknowledged") &&
+      record.date <= cutoffStr
+    ) {
+      records[i] = { ...record, lifecycle: "stale" };
       staleRecords.push(records[i]);
       changed = true;
     }

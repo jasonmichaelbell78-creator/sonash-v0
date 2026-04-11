@@ -163,7 +163,7 @@ const genuinelyUnresolved = new Set([
   // writeFileSync without atomic write in suggest-pattern-automation.js line 404
   "DEBT-2176",
 
-  // writeFileSync in archive-doc.js — uses tmp file now (line 238: writeFileSync(tmpPath...))
+  // writeFileSync in archive-doc.js uses tmp file now (line 238: atomic write via tmpPath)
   // Actually this IS using atomic write pattern now — move to false alarm
   // "DEBT-2177",  -- moved to false alarms below
 
@@ -237,7 +237,7 @@ const genuinelyUnresolved = new Set([
 ]);
 
 // Items where archive-doc.js actually uses atomic write now
-falseAlarms.add("DEBT-2177"); // writeFileSync(tmpPath...) is atomic pattern
+falseAlarms.add("DEBT-2177"); // atomic write via tmpPath is the safe pattern
 falseAlarms.add("DEBT-2513"); // INLINE_PATTERNS not found — likely refactored
 
 // ─── Categorize all 62 items ──────────────────────────────────────────────────

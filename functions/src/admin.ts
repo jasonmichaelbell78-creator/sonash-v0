@@ -150,14 +150,14 @@ function parseDateBoundaryUtc(raw: string, boundary: "start" | "end"): FirebaseF
     iso = hasTimezone ? trimmed : `${trimmed}Z`;
   }
 
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) {
+  const parsedDate = new Date(iso);
+  if (Number.isNaN(parsedDate.getTime())) {
     throw new HttpsError(
       "invalid-argument",
       `Invalid ${boundary === "start" ? "startDate" : "endDate"} format`
     );
   }
-  return admin.firestore.Timestamp.fromDate(d);
+  return admin.firestore.Timestamp.fromDate(parsedDate);
 }
 
 /**
@@ -169,21 +169,21 @@ function parseDateBoundaryUtc(raw: string, boundary: "start" | "end"): FirebaseF
  * @returns ISO week string in format YYYY-Www (e.g., "2024-W01")
  */
 function getIsoWeekString(date: Date): string {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
 
   // ISO week date weeks start on Monday, so correct the day number (Mon=0..Sun=6)
-  const dayNum = (d.getUTCDay() + 6) % 7;
+  const dayNum = (utcDate.getUTCDay() + 6) % 7;
   // Set to nearest Thursday (ISO week-year is the year of that Thursday)
-  d.setUTCDate(d.getUTCDate() - dayNum + 3);
+  utcDate.setUTCDate(utcDate.getUTCDate() - dayNum + 3);
 
-  const isoWeekYear = d.getUTCFullYear();
+  const isoWeekYear = utcDate.getUTCFullYear();
 
   // Find first Thursday of the ISO week-year
   const firstThursday = new Date(Date.UTC(isoWeekYear, 0, 4));
   const firstDayNum = (firstThursday.getUTCDay() + 6) % 7;
   firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayNum + 3);
 
-  const diffMs = d.getTime() - firstThursday.getTime();
+  const diffMs = utcDate.getTime() - firstThursday.getTime();
   const weekNum = 1 + Math.floor(diffMs / 604800000);
 
   return `${isoWeekYear}-W${String(weekNum).padStart(2, "0")}`;

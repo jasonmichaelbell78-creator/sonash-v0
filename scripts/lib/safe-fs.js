@@ -164,6 +164,79 @@ function readUtf8Sync(filePath) {
   return content.codePointAt(0) === 0xfeff ? content.slice(1) : content;
 }
 
+/**
+ * Default size guard for whole-file text reads (2 MiB). Files larger than this
+ * should use readline streaming instead of read-then-split.
+ */
+const DEFAULT_READ_MAX_BYTES = 2 * 1024 * 1024;
+
+/**
+ * Read a UTF-8 text file into memory with an enforced size ceiling. Throws if
+ * the file exceeds `maxBytes`, so callers cannot accidentally OOM on a large
+ * input. Detector `unbounded-file-read` is satisfied by the inline `stat.size >`
+ * comparison immediately before the read.
+ *
+ * @param {string} filePath - Path to read
+ * @param {object} [options]
+ * @param {number} [options.maxBytes=DEFAULT_READ_MAX_BYTES] - Size ceiling
+ * @param {boolean} [options.stripBom=true] - Strip UTF-8 BOM from result
+ * @returns {string} File contents
+ */
+function readTextWithSizeGuard(filePath, options = {}) {
+  const { maxBytes = DEFAULT_READ_MAX_BYTES, stripBom = true } = options;
+  const stat = fs.statSync(filePath);
+  if (stat.size > maxBytes) {
+    throw new Error(`File exceeds size guard (${stat.size} > ${maxBytes} bytes): ${filePath}`);
+  }
+  const content = fs.readFileSync(filePath, "utf8");
+  if (stripBom && content.codePointAt(0) === 0xfeff) return content.slice(1);
+  return content;
+}
+
+/**
+ * Stream a JSONL (or any line-delimited) file synchronously in fixed-size
+ * chunks, invoking `onLine(rawLine)` for each complete line. Unbounded in
+ * file size — use for inputs that legitimately exceed the 2 MiB whole-file
+ * ceiling. Reads 64 KiB at a time, preserving incomplete tail lines across
+ * chunks. Strips a leading UTF-8 BOM from the very first line.
+ *
+ * @param {string} filePath - Path to read
+ * @param {(line: string) => void} onLine - Callback for each complete line
+ * @param {object} [options]
+ * @param {number} [options.chunkBytes=65536] - Read buffer size
+ */
+function streamLinesSync(filePath, onLine, options = {}) {
+  const { chunkBytes = 64 * 1024 } = options;
+  const buf = Buffer.alloc(chunkBytes);
+  let fd;
+  try {
+    fd = fs.openSync(filePath, "r");
+    let leftover = "";
+    let atStart = true;
+    while (true) {
+      const bytesRead = fs.readSync(fd, buf, 0, chunkBytes, null);
+      if (bytesRead === 0) break;
+      let chunkText = leftover + buf.toString("utf8", 0, bytesRead);
+      if (atStart && chunkText.codePointAt(0) === 0xfeff) {
+        chunkText = chunkText.slice(1);
+      }
+      atStart = false;
+      const pieces = chunkText.split("\n");
+      leftover = pieces.pop() ?? "";
+      for (const piece of pieces) onLine(piece);
+    }
+    if (leftover.length > 0) onLine(leftover);
+  } finally {
+    if (fd !== undefined) {
+      try {
+        fs.closeSync(fd);
+      } catch {
+        // Intentionally swallowed: best-effort close of file descriptor
+      }
+    }
+  }
+}
+
 // =========================================================
 // Advisory file locking
 // =========================================================
@@ -496,6 +569,9 @@ module.exports = {
   safeRenameSync,
   safeAtomicWriteSync,
   readUtf8Sync,
+  readTextWithSizeGuard,
+  streamLinesSync,
+  DEFAULT_READ_MAX_BYTES,
   acquireLock,
   releaseLock,
   withLock,

@@ -25,6 +25,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const { safeAppendFileSync, safeRenameSync } = require("./lib/safe-fs");
+const { isSafeToWrite } = require("./lib/security-helpers");
 
 // Get repository root for consistent log location
 function getRepoRoot() {
@@ -103,10 +104,13 @@ function sanitizeEventData(eventData) {
   return sanitizeAny(eventData);
 }
 
-// Ensure .claude directory exists
+// Ensure .claude directory exists — guard parent against symlink redirection
 function ensureLogDir() {
   const dir = path.dirname(LOG_FILE);
   if (!fs.existsSync(dir)) {
+    if (!isSafeToWrite(dir)) {
+      throw new Error(`Refusing to mkdir — parent path is unsafe: ${dir}`);
+    }
     fs.mkdirSync(dir, { recursive: true });
   }
 }

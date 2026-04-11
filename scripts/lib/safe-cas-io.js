@@ -154,7 +154,16 @@ function safeReadText(filePath) {
  * @throws {Error} Same as safeReadText, plus SyntaxError on parse failure
  */
 function safeReadJson(filePath) {
-  return JSON.parse(safeReadText(filePath));
+  const text = safeReadText(filePath);
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    // Preserve SyntaxError type so callers can `instanceof SyntaxError` —
+    // JSON.parse always throws SyntaxError, so reconstructing it here keeps
+    // type-based error handling working while still adding file context.
+    const detail = err instanceof Error ? err.message : String(err);
+    throw new SyntaxError(`Failed to parse JSON in ${path.basename(filePath)}: ${detail}`);
+  }
 }
 
 /**

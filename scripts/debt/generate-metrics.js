@@ -20,6 +20,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
+const { isSafeToWrite } = require("../lib/security-helpers");
 
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(BASE_DIR, "MASTER_DEBT.jsonl");
@@ -335,6 +336,9 @@ ${Object.entries(metrics.by_source)
 function logMetricsGeneration(metrics) {
   try {
     if (!fs.existsSync(LOG_DIR)) {
+      if (!isSafeToWrite(LOG_DIR)) {
+        throw new Error(`Refusing to mkdir — parent path is unsafe: ${LOG_DIR}`);
+      }
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
 

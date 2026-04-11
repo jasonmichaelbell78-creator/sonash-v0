@@ -34,6 +34,7 @@ const readline = require("node:readline");
 const os = require("node:os");
 const generateContentHash = require("../lib/generate-content-hash");
 const { safeAppendFileSync, writeMasterDebtSync, appendMasterDebtSync } = require("../lib/safe-fs");
+const { isSafeToWrite } = require("../lib/security-helpers");
 
 // Try to load dotenv if available
 try {
@@ -53,12 +54,18 @@ const SONARCLOUD_API = "https://sonarcloud.io/api";
 // Get pseudonymous operator identifier for audit logs.
 // In CI: "ci". Otherwise: SHA-256 hash prefix of local username (12 chars).
 // Set LOG_OPERATOR_PII=true to log raw username instead.
+//
+// Note: we read the OS username via os.userInfo() only — env vars USER/USERNAME
+// are deliberately not read here. Raw PII must never enter the source of a
+// git-tracked script (see detector `no-pii-in-tracked-files` and plan §3.3).
+// If os.userInfo() throws (rare — missing passwd entry on stripped containers),
+// we fall back to "unknown", which is still pseudonymously hashed.
 function getOperatorId() {
-  let raw;
+  let raw = "unknown";
   try {
-    raw = os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
+    raw = os.userInfo().username || "unknown";
   } catch {
-    raw = process.env.USER || process.env.USERNAME || "unknown";
+    raw = "unknown";
   }
   if (process.env.CI) return "ci";
   if (process.env.LOG_OPERATOR_PII === "true") return raw;
@@ -217,7 +224,7 @@ function logIntake(activity) {
   }
   const logEntry = {
     timestamp: new Date().toISOString(),
-    actor: process.env.USER || process.env.USERNAME || "system",
+    actor: getOperatorId(),
     actor_type: "cli-script",
     outcome: activity.error ? "failure" : "success",
     ...activity,
@@ -509,7 +516,7 @@ function logResolution(activity) {
     }
     const logEntry = {
       timestamp: new Date().toISOString(),
-      actor: process.env.USER || process.env.USERNAME || "system",
+      actor: getOperatorId(),
       actor_type: "cli-script",
       outcome: activity.error ? "failure" : "success",
       ...activity,
@@ -742,7 +749,11 @@ function deduplicateAndAssignIds(issues, existingItems, preConverted = []) {
 // Write new items to both MASTER_DEBT.jsonl and deduped.jsonl via central writer
 function writeNewItems(newItems) {
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
-  fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
+  const dedupedParent = path.dirname(DEDUPED_FILE);
+  if (!isSafeToWrite(dedupedParent)) {
+    throw new Error(`Refusing to mkdir — parent path is unsafe: ${dedupedParent}`);
+  }
+  fs.mkdirSync(dedupedParent, { recursive: true });
 
   console.log("\n📝 Appending new items to MASTER_DEBT.jsonl and deduped.jsonl...");
   try {

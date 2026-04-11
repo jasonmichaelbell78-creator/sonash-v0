@@ -219,13 +219,13 @@ function parse12HourTime(timeStr: string): number | null {
   if (!match) return null;
 
   const [, hours, minutes, meridiem] = match;
-  let h = parseInt(hours, 10);
-  const m = parseInt(minutes, 10);
+  let hoursNum = parseInt(hours, 10);
+  const minutesNum = parseInt(minutes, 10);
 
-  if (meridiem.toUpperCase() === "PM" && h !== 12) h += 12;
-  if (meridiem.toUpperCase() === "AM" && h === 12) h = 0;
+  if (meridiem.toUpperCase() === "PM" && hoursNum !== 12) hoursNum += 12;
+  if (meridiem.toUpperCase() === "AM" && hoursNum === 12) hoursNum = 0;
 
-  return h * 60 + m;
+  return hoursNum * 60 + minutesNum;
 }
 
 /**

@@ -157,30 +157,33 @@ function parseCodePatterns(filePath: string): PatternEntry[] {
     }
 
     // Detect table rows: | Priority | Pattern | Rule | Why |
-    const tableMatch = /^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|/.exec(
-      line
-    );
-    if (tableMatch) {
-      const priorityCell = tableMatch[1].trim();
-      const patternName = tableMatch[2].trim();
+    // Use pipe-split instead of a 4-capture-group regex (~S5852 complexity 75).
+    // For "| a | b | c | d |", split("|") yields ["", " a ", " b ", " c ", " d ", ""],
+    // so we need at least 6 cells for a 4-column row.
+    if (line.startsWith("|")) {
+      const cells = line.split("|").map((c) => c.trim());
+      if (cells.length >= 6) {
+        const priorityCell = cells[1];
+        const patternName = cells[2];
 
-      // Skip header row and separator
-      if (
-        patternName === "Pattern" ||
-        patternName.startsWith("---") ||
-        priorityCell.startsWith("---")
-      )
-        continue;
+        // Skip header row and separator
+        if (
+          patternName === "Pattern" ||
+          patternName.startsWith("---") ||
+          priorityCell.startsWith("---")
+        )
+          continue;
 
-      // Parse priority from emoji
-      const priority = parsePriority(priorityCell);
+        // Parse priority from emoji
+        const priority = parsePriority(priorityCell);
 
-      patterns.push({
-        id: slugify(patternName),
-        name: patternName,
-        priority,
-        category: currentCategory,
-      });
+        patterns.push({
+          id: slugify(patternName),
+          name: patternName,
+          priority,
+          category: currentCategory,
+        });
+      }
     }
   }
 
@@ -302,7 +305,7 @@ function scanClaudeMd(projectRoot: string): Set<string> {
   try {
     const content = fs.readFileSync(filePath, "utf-8");
     // Find Section 4 content
-    const section4Match = content.match(/## 4\. Critical Anti-Patterns([\s\S]*?)(?=\n## \d|$)/);
+    const section4Match = content.match(/## 4\. Critical Anti-Patterns([\s\S]*?)(?=\r?\n## \d|$)/);
     if (section4Match) {
       const section = section4Match[1];
       // Extract pattern names from the table

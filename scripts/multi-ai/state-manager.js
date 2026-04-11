@@ -16,7 +16,7 @@ import { existsSync, readFileSync, mkdirSync, readdirSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
-import { safeWriteFileSync } from "../lib/safe-fs.js";
+import { safeWriteFileSync, isSafeToWrite } from "../lib/safe-fs.js";
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -123,16 +123,27 @@ export function createSession() {
     last_updated: now,
   };
 
-  // Ensure state directory exists
+  // Ensure state directory exists — guard parent against symlink redirection
   if (!existsSync(CONFIG.stateDir)) {
+    if (!isSafeToWrite(CONFIG.stateDir)) {
+      throw new Error(`Refusing to mkdir — parent path is unsafe: ${CONFIG.stateDir}`);
+    }
     mkdirSync(CONFIG.stateDir, { recursive: true });
   }
 
-  // Create session output directory structure
+  // Create session output directory structure — guard each parent
   const sessionDir = getSessionPath(sessionId);
-  mkdirSync(join(sessionDir, "raw"), { recursive: true });
-  mkdirSync(join(sessionDir, "canon"), { recursive: true });
-  mkdirSync(join(sessionDir, "final"), { recursive: true });
+  const rawDir = join(sessionDir, "raw");
+  const canonDir = join(sessionDir, "canon");
+  const finalDir = join(sessionDir, "final");
+  for (const subDir of [rawDir, canonDir, finalDir]) {
+    if (!isSafeToWrite(subDir)) {
+      throw new Error(`Refusing to mkdir — parent path is unsafe: ${subDir}`);
+    }
+  }
+  mkdirSync(rawDir, { recursive: true });
+  mkdirSync(canonDir, { recursive: true });
+  mkdirSync(finalDir, { recursive: true });
 
   // Save state to primary location
   writeStateFile(session);

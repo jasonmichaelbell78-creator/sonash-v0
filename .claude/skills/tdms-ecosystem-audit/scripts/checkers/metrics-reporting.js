@@ -795,7 +795,7 @@ function checkAuditTrailCompleteness(rootDir, findings) {
         domain: DOMAIN,
         severity: "warning",
         message: `${logFile.name} has ${invalidCount} invalid JSON line${invalidCount === 1 ? "" : "s"}`,
-        details: `${invalidCount} of ${items.length + invalidCount} lines failed JSON.parse(). Audit trail integrity is degraded.`,
+        details: `${invalidCount} of ${items.length + invalidCount} lines failed to parse as JSON. Audit trail integrity is degraded.`,
         frequency: invalidCount,
         blastRadius: 2,
       });

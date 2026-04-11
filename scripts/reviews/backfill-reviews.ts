@@ -23,6 +23,10 @@ import type { CompletenessTierType } from "./lib/schemas/shared";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { isSafeToWrite } = require("../lib/safe-fs") as { isSafeToWrite: (p: string) => boolean };
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require("../lib/parse-jsonl-line") as {
+  safeParseLine: (line: string) => unknown;
+};
 
 // ---- Atomic write helper ----------------------------------------------------
 
@@ -694,14 +698,12 @@ export function migrateV1Records(
 
   const lines = content.split("\n").filter((l) => l.trim().length > 0);
   for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-    const line = lines[lineIdx];
-    let v1: V1Record;
-    try {
-      v1 = JSON.parse(line) as V1Record;
-    } catch {
+    const parsedLine = safeParseLine(lines[lineIdx]);
+    if (!parsedLine) {
       console.warn(`Warning: Could not parse v1 record at line ${lineIdx + 1}`);
       continue;
     }
+    const v1 = parsedLine as V1Record;
 
     const rawId = v1.id;
     let numericId: number;
@@ -817,12 +819,10 @@ function validateOutputFile(
   let errors = 0;
   const content = fs.readFileSync(filePath, "utf8");
   const outputLines = content.split("\n").filter((l) => l.trim().length > 0);
-  for (const line of outputLines) {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(line);
-    } catch {
-      console.error(`  ${label} JSON parse error: ${line.slice(0, 80)}`);
+  for (const rawLine of outputLines) {
+    const parsed = safeParseLine(rawLine);
+    if (!parsed) {
+      console.error(`  ${label} JSON parse error: ${rawLine.slice(0, 80)}`);
       errors++;
       continue;
     }

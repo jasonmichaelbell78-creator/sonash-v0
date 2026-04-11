@@ -3,6 +3,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { readTextWithSizeGuard } = require("../lib/safe-fs");
 
 // Resolve paths relative to repo root
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
@@ -312,7 +313,7 @@ function checkEcosystemAuditDirectories() {
 
 function isValidJsonlFile(filePath) {
   try {
-    const content = fs.readFileSync(filePath, "utf8").trim();
+    const content = readTextWithSizeGuard(filePath).trim();
     if (!content) return true;
     const lines = content.split("\n").filter(Boolean);
     JSON.parse(lines[0]);

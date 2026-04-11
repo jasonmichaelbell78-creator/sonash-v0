@@ -40,7 +40,7 @@ if (filteredRetros.length === 0) {
   process.exit(0);
 }
 
-console.log("=== Changelog Metrics (computed from source data) ===\n");
+console.log("=== Changelog Metrics (computed from source records) ===\n");
 
 for (const r of filteredRetros) {
   const m = r.metrics || {};

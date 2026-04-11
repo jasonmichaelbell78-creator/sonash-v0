@@ -28,6 +28,20 @@ const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
 
+const KNOWN_EXTENSIONS = new Set([
+  "js",
+  "ts",
+  "tsx",
+  "jsx",
+  "json",
+  "yml",
+  "yaml",
+  "md",
+  "css",
+  "html",
+  "sh",
+]);
+
 const DOMAIN = "cicd_pipeline";
 
 /**
@@ -456,10 +470,7 @@ function checkBotConfigHealth(rootDir, botName, content) {
       const clean = pattern.replace(/["']/g, "");
       // Check for very unusual extensions that likely don't exist
       const ext = clean.split(".").pop();
-      if (
-        ext &&
-        !["js", "ts", "tsx", "jsx", "json", "yml", "yaml", "md", "css", "html", "sh"].includes(ext)
-      ) {
+      if (ext && !KNOWN_EXTENSIONS.has(ext)) {
         issues.push(`References uncommon extension: .${ext}`);
       }
     }

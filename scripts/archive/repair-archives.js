@@ -27,10 +27,10 @@ const ACTIVE_LOG = path.join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const applyMode = process.argv.includes("--apply");
 const GROUP_SIZE = 40;
 
-// Safe-fs wrappers (symlink guard + EXDEV fallback)
-let safeWriteFileSync;
+// Safe-fs wrappers (symlink guard + EXDEV fallback + read size guard)
+let safeWriteFileSync, readTextWithSizeGuard;
 try {
-  ({ safeWriteFileSync } = require("../lib/safe-fs"));
+  ({ safeWriteFileSync, readTextWithSizeGuard } = require("../lib/safe-fs"));
 } catch {
   console.error("safe-fs unavailable; cannot safely write archives");
   process.exit(2);
@@ -51,7 +51,7 @@ const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 function parseReviewsFromFile(filePath) {
   // Symlink guard: skip symlinks to prevent local file leakage
   if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink()) return [];
-  const content = fs.readFileSync(filePath, "utf8");
+  const content = readTextWithSizeGuard(filePath);
   const lines = content.split("\n");
   const entries = [];
 
@@ -190,33 +190,44 @@ function removeActiveLogDuplicates(reviewMap, activeIds) {
   return removed;
 }
 
+// Parse a JSONL row and return its integer id, or null if the row is not a
+// backfillable review entry.
+function parseReviewIdFromLine(line) {
+  const entry = safeParseLine(line);
+  if (!entry) return null;
+  const id = Number(entry.id);
+  if (!Number.isFinite(id) || !Number.isInteger(id) || id <= 0) return null;
+  return { entry, id };
+}
+
+// Backfill missing reviews from a single JSONL file into reviewMap/backfilledIds.
+function backfillFromJsonlFile(jsonlPath, reviewMap, activeIds, backfilledIds) {
+  if (!fs.existsSync(jsonlPath)) return;
+  const content = readTextWithSizeGuard(jsonlPath);
+  for (const line of content.split("\n")) {
+    const parsed = parseReviewIdFromLine(line);
+    if (!parsed) continue;
+    const { entry, id } = parsed;
+    const key = `review-${id}`;
+    if (reviewMap.has(key) || activeIds.has(key)) continue;
+    reviewMap.set(key, {
+      type: "review",
+      id,
+      content: generateMarkdownFromJsonl({ ...entry, id }),
+      fromJsonl: true,
+    });
+    backfilledIds.add(id);
+  }
+}
+
 /**
  * Backfill missing reviews from JSONL archive data.
  */
 function backfillFromJsonl(reviewMap, activeIds) {
   const backfilledIds = new Set();
-
   for (const jsonlPath of [JSONL_ARCHIVE_PATH, JSONL_PATH]) {
-    if (!fs.existsSync(jsonlPath)) continue;
-    const content = fs.readFileSync(jsonlPath, "utf8");
-    for (const line of content.split("\n")) {
-      const j = safeParseLine(line);
-      if (!j) continue;
-      const id = Number(j.id);
-      if (!Number.isFinite(id) || !Number.isInteger(id) || id <= 0) continue;
-      const key = `review-${id}`;
-      if (!reviewMap.has(key) && !activeIds.has(key)) {
-        reviewMap.set(key, {
-          type: "review",
-          id,
-          content: generateMarkdownFromJsonl({ ...j, id }),
-          fromJsonl: true,
-        });
-        backfilledIds.add(id);
-      }
-    }
+    backfillFromJsonlFile(jsonlPath, reviewMap, activeIds, backfilledIds);
   }
-
   return backfilledIds;
 }
 

@@ -18,7 +18,9 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { readTextWithSizeGuard } = require("../lib/safe-fs");
 const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(PROJECT_ROOT, "docs/technical-debt");
@@ -28,9 +30,10 @@ const INTAKE_FILE = path.join(DEBT_DIR, "raw/scattered-intake.jsonl");
 
 // --- Load existing data ---
 
-function parseMasterLine(line, hashes, sourceIds, lineNum) {
+function parseMasterLine(rawLine, hashes, sourceIds, lineNum) {
   try {
-    const item = JSON.parse(line);
+    const item = safeParseLine(rawLine);
+    if (!item) return;
     if (item.content_hash) hashes.add(item.content_hash);
     if (item.source_id) sourceIds.add(item.source_id);
     if (item.sonar_key) sourceIds.add(item.sonar_key);
@@ -67,14 +70,10 @@ function loadReviewPairs() {
   const pairs = [];
   if (!fs.existsSync(REVIEW_FILE)) return pairs;
   try {
-    const content = fs.readFileSync(REVIEW_FILE, "utf8").replaceAll("\uFEFF", "");
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        pairs.push(JSON.parse(line));
-      } catch {
-        // skip
-      }
+    const content = readTextWithSizeGuard(REVIEW_FILE).replaceAll("\uFEFF", "");
+    for (const rawLine of content.split("\n")) {
+      const parsed = safeParseLine(rawLine);
+      if (parsed) pairs.push(parsed);
     }
   } catch {
     // file read error
@@ -217,16 +216,12 @@ function findNextIntakeSeq() {
   let nextSeq = 1;
   if (!fs.existsSync(INTAKE_FILE)) return nextSeq;
   try {
-    const content = fs.readFileSync(INTAKE_FILE, "utf8");
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const item = JSON.parse(line);
-        const match = (item.id || "").match(/^INTAKE-REVIEW-(\d+)$/);
-        if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
-      } catch {
-        // skip
-      }
+    const content = readTextWithSizeGuard(INTAKE_FILE);
+    for (const rawLine of content.split("\n")) {
+      const item = safeParseLine(rawLine);
+      if (!item) continue;
+      const match = (item.id || "").match(/^INTAKE-REVIEW-(\d+)$/);
+      if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
     }
   } catch {
     // skip

@@ -30,7 +30,7 @@
  */
 
 // pattern-compliance: fs/path imports guarded by try/catch (CLAUDE.md Section 5)
-let existsSync, readFileSync, mkdirSync;
+let existsSync, readFileSync /* utf8 text only */, mkdirSync;
 try {
   ({ existsSync, readFileSync, mkdirSync } = require("node:fs"));
 } catch (err) {
@@ -57,6 +57,15 @@ try {
   process.exit(2);
 }
 
+let readTextWithSizeGuard;
+try {
+  ({ readTextWithSizeGuard } = require("./lib/safe-fs"));
+} catch (err) {
+  const msg = err instanceof Error ? err.message : String(err);
+  console.error("Failed to load safe-fs:", msg);
+  process.exit(2);
+}
+
 let safeAppendFileSync;
 try {
   ({ safeAppendFileSync } = require("./lib/safe-fs"));
@@ -65,6 +74,8 @@ try {
   console.error("Failed to load safe-fs:", msg);
   process.exit(2);
 }
+
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 const ROOT = join(__dirname, "..");
 const REVIEWS_JSONL = join(ROOT, ".claude", "state", "reviews.jsonl");
@@ -201,8 +212,8 @@ function nextISOWeek(weekStr) {
 function readReviewsJsonl() {
   const result = { records: [], parseErrors: [] };
 
-  // readFileSync throws on I/O failure — caller handles via try/catch
-  const content = readFileSync(REVIEWS_JSONL, "utf8").replaceAll("\r\n", "\n");
+  // Size-guarded text read; throws on I/O failure — caller handles via try/catch
+  const content = readTextWithSizeGuard(REVIEWS_JSONL).replaceAll("\r\n", "\n");
   const lines = content.trim().split("\n");
 
   for (let i = 0; i < lines.length; i++) {
@@ -371,15 +382,11 @@ function writeForwardFindings(allFindings) {
   const existingKeys = new Set();
   try {
     if (existsSync(FORWARD_FINDINGS_JSONL)) {
-      const existing = readFileSync(FORWARD_FINDINGS_JSONL, "utf8").replaceAll("\r\n", "\n");
-      for (const line of existing.trim().split("\n")) {
-        if (!line.trim()) continue;
-        try {
-          const entry = JSON.parse(line);
-          existingKeys.add(`${entry.severity}::${entry.pattern}`);
-        } catch {
-          // Skip malformed lines
-        }
+      const existing = readTextWithSizeGuard(FORWARD_FINDINGS_JSONL).replaceAll("\r\n", "\n");
+      for (const rawLine of existing.trim().split("\n")) {
+        const entry = safeParseLine(rawLine);
+        if (!entry) continue;
+        existingKeys.add(`${entry.severity}::${entry.pattern}`);
       }
     }
   } catch {
@@ -570,24 +577,18 @@ function main() {
   let archivedCount = 0;
   try {
     if (existsSync(REVIEWS_ARCHIVE_JSONL)) {
-      const archiveContent = readFileSync(REVIEWS_ARCHIVE_JSONL, "utf8").replaceAll("\r\n", "\n");
-      for (const line of archiveContent.trim().split("\n")) {
-        if (!line.trim()) continue;
-        try {
-          const parsed = JSON.parse(line);
-          if (
-            parsed &&
-            typeof parsed === "object" &&
-            typeof parsed.id === "number" &&
-            Number.isFinite(parsed.id)
-          ) {
-            if (!numericIds.has(parsed.id)) {
-              numericIds.add(parsed.id);
-              archivedCount++;
-            }
-          }
-        } catch {
-          // Skip malformed archive lines — not this check's concern
+      const archiveContent = readTextWithSizeGuard(REVIEWS_ARCHIVE_JSONL).replaceAll("\r\n", "\n");
+      for (const rawLine of archiveContent.trim().split("\n")) {
+        const parsed = safeParseLine(rawLine);
+        if (!parsed) continue;
+        if (
+          typeof parsed === "object" &&
+          typeof parsed.id === "number" &&
+          Number.isFinite(parsed.id) &&
+          !numericIds.has(parsed.id)
+        ) {
+          numericIds.add(parsed.id);
+          archivedCount++;
         }
       }
     }
