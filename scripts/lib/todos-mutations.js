@@ -342,7 +342,10 @@ function opArchive(before, opts) {
   } else if (typeof opts?.id === "string") {
     targetIds = [opts.id];
   } else {
-    throw new Error("archive requires { id } | { ids: [...] } | { completed: true }");
+    // TypeError is the semantically correct class for an invalid argument
+    // shape (SonarCloud S3696). The caller passed a value whose TYPE doesn't
+    // match any of the accepted shapes, not a domain violation.
+    throw new TypeError("archive requires { id } | { ids: [...] } | { completed: true }");
   }
 
   const byId = indexById(before);

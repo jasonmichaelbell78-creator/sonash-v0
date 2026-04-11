@@ -1,10 +1,11 @@
 /**
  * todos-cli.js End-to-End Test Suite
  *
- * Tests the /todo skill CLI entry point at scripts/planning/todos-cli.js.
- * Because the CLI calls process.exit() on failure, we exercise it via
- * subprocess (node scripts/planning/todos-cli.js ...) against a temp JSONL
- * file, verifying each subcommand writes the expected post-state.
+ * Tests the slash-command CLI entry point at scripts/planning/todos-cli.js
+ * that manages .planning/todos.jsonl. Because the CLI calls process.exit()
+ * on failure, we exercise it via subprocess (node scripts/planning/todos-cli.js
+ * ...) against a temp JSONL file, verifying each subcommand writes the
+ * expected post-state.
  *
  * Pure mutation logic is tested in tests/scripts/lib/todos-mutations.test.ts.
  * This suite covers only the CLI surface: arg parsing, subcommand dispatch,

@@ -93,24 +93,11 @@ function writeAtomicSafe(filePath: string, content: string): void {
 
 // ---- Helpers ----------------------------------------------------------------
 
-/**
- * Walk up from startDir until we find package.json (works from both source and dist).
- */
-function findProjectRoot(startDir: string): string {
-  let dir = startDir;
-  for (;;) {
-    try {
-      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
-    } catch {
-      // existsSync race condition -- continue walking
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) throw new Error("Could not find project root");
-    dir = parent;
-  }
-}
-
-const PROJECT_ROOT = findProjectRoot(__dirname);
+// PROJECT_ROOT reuses findProjectRootForHelper (declared above for the
+// absolute-path require of scripts/lib/*) — there used to be a second
+// findProjectRoot with an identical body; SonarCloud S4144 flagged the
+// duplication in R2, so the two have been merged into the upper helper.
+const PROJECT_ROOT = findProjectRootForHelper(__dirname);
 
 /**
  * Safely read a file, returning null on any error.
