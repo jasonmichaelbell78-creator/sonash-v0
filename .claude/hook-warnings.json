@@ -1,6 +1,16 @@
 {
   "warnings": [
     {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "Branch has >=20 commits  PR strongly recommended",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-11T18:40:57.455Z",
+      "occurrences": 13,
+      "occurrences_since_ack": 13
+    },
+    {
       "hook": "pre-push",
       "type": "patterns",
       "severity": "warning",
@@ -22,8 +32,8 @@
       "message": "Branch has >=10 commits  create PR soon",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-11T02:51:16.888Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "session-start",
@@ -62,8 +72,8 @@
       "message": "16 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T21:04:35.312Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "pre-commit",
@@ -72,8 +82,8 @@
       "message": "15 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T20:54:07.413Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "pre-commit",
@@ -82,8 +92,8 @@
       "message": "14 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T20:40:57.286Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "pre-commit",
@@ -92,8 +102,8 @@
       "message": "13 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T20:29:59.131Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "pre-push",
@@ -122,8 +132,8 @@
       "message": "12 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T18:15:43.438Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "pre-commit",
@@ -132,8 +142,8 @@
       "message": "11 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T18:13:47.861Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "pre-commit",
@@ -142,8 +152,8 @@
       "message": "10 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T16:10:26.061Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 12
+      "occurrences": 13,
+      "occurrences_since_ack": 13
     },
     {
       "hook": "pre-push",
@@ -156,25 +166,15 @@
       "occurrences_since_ack": 1
     },
     {
-      "hook": "session-start",
-      "type": "session-end-missing",
-      "severity": "warning",
-      "message": "Previous session started 2h ago without session-end",
-      "action": "Review with /alerts",
-      "timestamp": "2026-04-11T13:15:41.844Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 8
-    },
-    {
       "hook": "pre-commit",
       "type": "pr-creep",
       "severity": "warning",
       "message": "Branch has >=20 commits — PR strongly recommended",
       "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-11T18:40:57.455Z",
-      "occurrences": 13,
-      "occurrences_since_ack": 13,
-      "count": "20"
+      "timestamp": "2026-04-11T19:41:46.416Z",
+      "occurrences": 9,
+      "occurrences_since_ack": 1,
+      "count": "22"
     }
   ]
 }

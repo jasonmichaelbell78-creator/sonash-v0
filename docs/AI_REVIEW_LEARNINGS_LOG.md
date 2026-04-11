@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#66)</summary>
+
+- **Date:** 2026-04-11
+- **Reviews consolidated:** #80-#rev-81
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#65)</summary>
 
 - **Date:** 2026-04-11
