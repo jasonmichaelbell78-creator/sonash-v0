@@ -96,7 +96,10 @@ export default [
   // scripts/lib/safe-fs.js is linted under the config above, which uses the
   // same filter, so the two are kept in sync to allow `cp` mirroring).
   {
-    files: [".claude/skills/*/scripts/lib/safe-fs.js"],
+    files: [
+      ".claude/skills/*/scripts/lib/safe-fs.js",
+      ".claude/skills/*/scripts/lib/parse-jsonl-line.js",
+    ],
     languageOptions: {
       sourceType: "commonjs",
       globals: Object.fromEntries(
