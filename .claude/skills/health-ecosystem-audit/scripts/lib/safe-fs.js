@@ -18,35 +18,48 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const os = require("node:os");
+const { StringDecoder } = require("node:string_decoder");
 
-// Import isSafeToWrite from the canonical source
+// Import isSafeToWrite from the canonical source. This file is also copied
+// verbatim into .claude/skills/*/scripts/lib/safe-fs.js as a per-skill helper.
+// The first require path is correct when running from scripts/lib/; the
+// second path is correct when running from .claude/skills/<skill>/scripts/lib/.
+// If both fail, fall back to the inline fail-closed implementation.
 let isSafeToWrite;
 try {
+  // scripts/lib/safe-fs.js -> repo-root/.claude/hooks/lib/symlink-guard
   ({ isSafeToWrite } = require(
     path.join(__dirname, "..", "..", ".claude", "hooks", "lib", "symlink-guard")
   ));
 } catch {
-  // Fallback: inline implementation (fail-closed)
-  isSafeToWrite = (filePath) => {
-    try {
-      if (!path.isAbsolute(filePath)) return false;
-      if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink()) {
-        return false;
-      }
-      let dirPath = path.dirname(filePath);
-      while (true) {
-        if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isSymbolicLink()) {
+  try {
+    // .claude/skills/<skill>/scripts/lib/safe-fs.js -> repo-root/.claude/hooks/lib/symlink-guard
+    ({ isSafeToWrite } = require(
+      path.join(__dirname, "..", "..", "..", "..", "..", ".claude", "hooks", "lib", "symlink-guard")
+    ));
+  } catch {
+    // Fallback: inline implementation (fail-closed)
+    isSafeToWrite = (filePath) => {
+      try {
+        if (!path.isAbsolute(filePath)) return false;
+        if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink()) {
           return false;
         }
-        const parent = path.dirname(dirPath);
-        if (parent === dirPath) break;
-        dirPath = parent;
+        let dirPath = path.dirname(filePath);
+        while (true) {
+          if (fs.existsSync(dirPath) && fs.lstatSync(dirPath).isSymbolicLink()) {
+            return false;
+          }
+          const parent = path.dirname(dirPath);
+          if (parent === dirPath) break;
+          dirPath = parent;
+        }
+        return true;
+      } catch {
+        return false; // fail-closed
       }
-      return true;
-    } catch {
-      return false; // fail-closed
-    }
-  };
+    };
+  }
 }
 
 /**
@@ -200,6 +213,11 @@ function readTextWithSizeGuard(filePath, options = {}) {
  * ceiling. Reads 64 KiB at a time, preserving incomplete tail lines across
  * chunks. Strips a leading UTF-8 BOM from the very first line.
  *
+ * Uses `StringDecoder` from `node:string_decoder` to handle multi-byte UTF-8
+ * sequences that straddle chunk boundaries (emoji, CJK, non-Latin scripts).
+ * Without this, a chunk ending mid-sequence would produce U+FFFD replacement
+ * characters for the partial bytes.
+ *
  * @param {string} filePath - Path to read
  * @param {(line: string) => void} onLine - Callback for each complete line
  * @param {object} [options]
@@ -208,6 +226,7 @@ function readTextWithSizeGuard(filePath, options = {}) {
 function streamLinesSync(filePath, onLine, options = {}) {
   const { chunkBytes = 64 * 1024 } = options;
   const buf = Buffer.alloc(chunkBytes);
+  const decoder = new StringDecoder("utf8");
   let fd;
   try {
     fd = fs.openSync(filePath, "r");
@@ -216,7 +235,9 @@ function streamLinesSync(filePath, onLine, options = {}) {
     while (true) {
       const bytesRead = fs.readSync(fd, buf, 0, chunkBytes, null);
       if (bytesRead === 0) break;
-      let chunkText = leftover + buf.toString("utf8", 0, bytesRead);
+      // Buffer incomplete multi-byte sequences via StringDecoder so a sequence
+      // straddling a 64 KiB boundary is completed on the next read.
+      let chunkText = leftover + decoder.write(buf.subarray(0, bytesRead));
       if (atStart && chunkText.codePointAt(0) === 0xfeff) {
         chunkText = chunkText.slice(1);
       }
@@ -225,6 +246,10 @@ function streamLinesSync(filePath, onLine, options = {}) {
       leftover = pieces.pop() ?? "";
       for (const piece of pieces) onLine(piece);
     }
+    // Flush any remaining bytes held by the decoder. For well-formed UTF-8
+    // this is typically empty; truly invalid trailing bytes become U+FFFD
+    // rather than being silently dropped.
+    leftover += decoder.end();
     if (leftover.length > 0) onLine(leftover);
   } finally {
     if (fd !== undefined) {
