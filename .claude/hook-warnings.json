@@ -175,6 +175,26 @@
       "occurrences": 9,
       "occurrences_since_ack": 1,
       "count": "22"
+    },
+    {
+      "hook": "pre-push",
+      "type": "network-error",
+      "severity": "info",
+      "message": "npm audit skipped — network unavailable",
+      "action": "Check network connectivity and retry",
+      "timestamp": "2026-04-11T20:27:35.069Z",
+      "occurrences": 2,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-push",
+      "type": "trigger",
+      "severity": "warning",
+      "message": "Skill/agent files modified",
+      "action": "Validate",
+      "timestamp": "2026-04-11T20:27:35.622Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
     }
   ]
 }
