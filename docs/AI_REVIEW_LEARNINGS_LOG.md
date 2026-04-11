@@ -4501,3 +4501,129 @@ PR.
 **Commits:** 1c47c1b5 (CRITICAL), 7c14985d (safe-fs), 50bdbef6 (propagation),
 58b5e29a (CI tests), c0b3ee9e (complexity), 019a3a63 (todos cleanup), c3733c8c
 (minor + compliance).
+
+### Review #83 — PR #507 R2 (Mixed: Qodo Compliance + Qodo Suggestions + Gemini + CodeQL + SonarCloud)
+
+**Sources:** Qodo Compliance (4), Qodo Suggestions (11), Gemini (2 stale),
+CodeQL (1 escalated), SonarCloud (5 incl. 1 Security Hotspot). Total: ~22
+distinct items on the R1 commit range 1c47c1b5..8d4fe710.
+
+**Disposition:** 15 fixed, 0 deferred, 7 rejected (4 cross-round dedup from R1 +
+2 Gemini stale + 1 Qodo CRLF-in-loadStrict dead-code).
+
+**Agent:** security-auditor dispatched per PRE-TASK directive. Validated 5
+security items against 169 real safe-fs consumers. Verdicts: items 3 & 4
+approved as planned, items 1, 2, 5 approved with specific modifications. All
+modifications adopted before commit.
+
+**Fixed highlights:**
+
+- CodeQL escalation (C1): check-triggers.js clear-text logging. R1 mask was
+  insufficient (CodeQL has no redaction threshold — env values are a tainted
+  source, so any sink on the taint path trips it). Deleted the correlation log
+  line entirely. Session correlation happens via override-log.jsonl and SIEM
+  timestamp+host+process, not embedded env identifiers.
+- safe-fs.js security batch (C2, propagated to canonical + 8 skill copies):
+  - crypto.randomBytes tmp suffix + wx atomic create flag with EEXIST retry for
+    SIGKILLed-prior-run recovery (kills SonarCloud S2245 Hotspot).
+  - isSafeToWrite guard BEFORE mkdirSync in acquireLock (placement matters
+    because recursive mkdir silently traverses symlinked ancestors).
+  - Path redaction to path.basename() in breakStaleLock, tryBreakExistingLock,
+    releaseLock stderr messages. releaseLock also drops raw err.message.
+  - Defensive err.code extraction via shared errCode() helper in
+    guardLockSymlink, safeRenameSync, safeAtomicWriteSync, releaseLock, and new
+    spinUntilLockAcquired helper.
+  - Trust-model header comment explaining safe-fs is NOT a privilege-boundary
+    primitive, scoped to single-user CLI, out of scope for multi-user FS.
+- safeRenameSync CC 19→<=15 via extracted renameFallbackOverExisting + errCode.
+- streamLinesSync CRLF strip at emission via endsWith+slice (allocation-free on
+  LF-only path, byte-safe because 0x0D can't appear inside multi-byte UTF-8).
+  Extracted resolveChunkBytes + emitLine helpers to keep CC below 15.
+- acquireLock CC 16→<=15 via extracted resolveLockTimeout +
+  spinUntilLockAcquired.
+- ensureFinalDir TOCTOU fix in unify-findings.js (drop existsSync early-return,
+  rely on mkdirSync recursive:true with EEXIST tolerated).
+- todos-mutations.js opArchive: plain Error → TypeError for invalid-arg-shape.
+- backfill-reviews.ts: delete duplicate findProjectRoot, reuse the
+  findProjectRootForHelper added in R1 C1b.
+- todos-cli.test.ts: S1135 TODO false positive reworded same as R1 pattern.
+
+**FP bundle (landed in this round per user instruction):**
+
+- FP1: resolve-hook-warnings.js now has 6 new RESOLVE_CHECKS
+  (propagation-staged, propagation, pattern-compliance, cc, triggers) and
+  actually updates the live cache + ack file, not just the log.
+- FP2: check-propagation.js extractModifiedFunctions returns {added,
+  removedOnly} so pure deletions aren't reported as misses.
+- FP3: .claude/config/propagation-intentional-divergence.json registry with 8
+  entries covering PR #507 R1 false positives.
+- FP4: .husky/post-commit hook that runs the resolver after every commit.
+- docs/TRIGGERS.md + DEVELOPMENT.md updated for post-commit hook.
+- scripts/config/known-propagation-baseline.json: 2 pre-existing lstat-symlink
+  items baselined (scripts/check-session-gaps.js,
+  scripts/health/lib/health-log.js) to land FP bundle cleanly.
+
+**Rejected / advisory-closed:**
+
+- Gemini .cjs → .js (2 items) — stale repeat from R1, auto-rejected per
+  cross-round dedup (pr-agent.toml rule-set doesn't directly cover this but R1
+  review #82 established the precedent).
+- Qodo Compliance "Missing user identity" — cross-round dedup vs rule #1, #7.
+- Qodo Compliance "Path in error" (loadStrict) — cross-round dedup vs rule #5,
+  #6.
+- Qodo Compliance "Full path in logs" (breakStaleLock) — cross-round dedup vs
+  rule #6. (Partially addressed anyway via C2c path.basename redaction, but the
+  compliance item was already in prior-art rejection territory.)
+- Qodo suggestion "CRLF normalize in loadStrict" — technically REJECTED as dead
+  code. parseStrictJsonl already calls .trim() on each line, which strips
+  trailing \r. Agent item 5 confirmed the Qodo suggestion would be duplicate
+  work on the hot path. Initial C4b edit reverted, replaced with an explanatory
+  comment.
+
+**Qodo Compliance "Symlink TOCTOU" (NEW):** Architectural, not pre-existing.
+User chose disposition (B) document + suppress. Added TRUST MODEL header comment
+to scripts/lib/safe-fs.js and rule #28 to .qodo/pr-agent.toml. Agent validated
+against 169 consumers and confirmed trust model holds. Rule #28 includes an
+escape hatch: "If a future PR adds a consumer with elevated privileges or
+multi-user FS access, delete this rule and re-audit instead of extending the
+exemption."
+
+**Key learnings:**
+
+- Single-letter variable names trigger pattern-compliance as of recent registry
+  updates. When extracting helpers, use descriptive names even for
+  trivially-scoped locals (timeout, bytes — not n, t, b).
+- SonarCloud CC doesn't just count the main function body — chained validation
+  blocks (`!Number.isFinite || x < 0 || x > MAX`) each add +1 to CC. The R1 C2c
+  chunkBytes validation added +4 to streamLinesSync which got me into trouble in
+  R2 when CRLF strip added +2 more. Lesson: run check-cc.js after any commit
+  that adds validation logic, not just after big refactors.
+- Propagation registry divergence registry (FP3) + deletion-aware diff parser
+  (FP2) compose: FP2 is the common case (incidental deletions), FP3 is the
+  declared case (architectural divergence). Having both lets the check narrow
+  its scope without sacrificing coverage.
+- Post-commit auto-resolve (FP4) depends on FP1 actually writing the cache and
+  ack file, not just the log. The R1 version wrote only the log, which meant the
+  resolver was cosmetic — you'd still hit the stale warning at pre-push time
+  because the gate doesn't read the log.
+- Pre-commit cross-doc-deps gate enforces TRIGGERS.md + DEVELOPMENT.md updates
+  whenever .husky/ is modified. Don't forget this when adding new hooks —
+  surface the requirement during planning, not at commit time.
+
+**Process improvements:**
+
+- .qodo/REJECTED_PATTERNS.md now has 28 reviewer rules (added #28 for the
+  Symlink TOCTOU architectural rejection).
+- Post-commit hook + FP1-4 bundle closes the stale-warning loop for future
+  rounds.
+
+**Commits:**
+
+- 2fb384a2 (safe-fs hardening + CodeQL + CC refactor + trust model, amended from
+  9acd3220 to fix single-letter variable names)
+- 2add0221 (CRLF-in-streamLinesSync already in C2 commit; C4 commit is mkdir
+  TOCTOU + loadStrict CRLF rejection comment)
+- 82ed6401 (SonarCloud minor batch: TypeError, dedupe findProjectRoot, TODO
+  reword)
+- db90b4a2 (FP bundle: resolver + propagation check + divergence registry
+  - post-commit hook + doc updates + baseline additions)
