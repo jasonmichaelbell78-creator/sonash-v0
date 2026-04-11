@@ -5,10 +5,11 @@
  * Replaces in-skill Write-tool overwrites with locked, regression-checked
  * mutations. Mirrors the /add-debt → scripts/debt/intake-manual.js pattern.
  *
- * Why this exists (T30): the /todo skill previously read .planning/todos.jsonl,
- * mutated in memory, then overwrote the file with the Write tool. If the read
- * happened with stale context (compaction), the overwrite silently dropped any
- * entries the in-memory copy was missing. T26/T27/T28 were lost twice this way.
+ * Why this exists (T30): the slash-command skill that manages .planning/todos.jsonl
+ * previously read the file, mutated in memory, then overwrote it with the Write
+ * tool. If the read happened with stale context (compaction), the overwrite silently
+ * dropped any entries the in-memory copy was missing. T26/T27/T28 were lost twice
+ * this way.
  *
  * This CLI:
  *   - Acquires an advisory lock before any mutation
@@ -108,7 +109,7 @@ function loadStrict(filePath) {
   try {
     raw = readFileSync(filePath, "utf-8");
   } catch (err) {
-    if (err && err.code === "ENOENT") return [];
+    if (err?.code === "ENOENT") return [];
     fail(`cannot read ${filePath}: ${sanitizeError(err)}`, 2);
     return []; // unreachable, satisfies linter
   }
