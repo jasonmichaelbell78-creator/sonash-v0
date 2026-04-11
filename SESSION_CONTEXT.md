@@ -29,25 +29,30 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-11 (Session #275 COMPLETE — T39 CLOSED, all 107
-pattern-compliance violations dissolved, ready for commit+push+new PR)
-**Branch**: `planning-4826` **Working On**: **DONE — T39 continuation fully
-closed.** All 10 pattern- compliance categories cleared (§3.1 single-letter,
-§3.2 unbounded-read, §3.3 PII, §3.4 symlink-BLOCK, §3.5 binary-check, §3.6
-absolute-path-in-log, §3.7 regex-complexity, §3.8 process-env-inline, §3.9
-newline-lookahead, §3.10 singletons). Option D CC refactor scoped to touched
-files complete (7 functions ≤15). CC baseline snapshotted for 60 pre-existing
-untouched violations (T39 scope-preserving — user-approved). Runtime tests T1-T4
-all pass. Code-reviewer agent (T3) cleared diff with 0 blockers, 3 minor
-concerns (C2 fixed, C1+C3 filed as TDMS follow-ups).
+**Last Checkpoint**: 2026-04-11 (Session #275 mid-stream, T39 main work PUSHED,
+follow-up sweep pending — second /clear incoming) **Branch**: `planning-4826`
+**Working On**: **T39 FOLLOW-UP SWEEP.** The main T39 continuation (107
+pattern-compliance + Option D CC refactor) shipped in 4 commits
+`67e6ff61..05e0d6dc` — all pushed to origin. Now working the 5 minor follow-up
+items that the T3/T4 code-reviewer agents flagged as non-blocking but that the
+user explicitly asked to fix (everything except item 5, which is the 60-CC
+baseline — out of scope per Option D).
 
-**Next Step**: (1) /session-end skill to lock in metrics + doc-sync; (2) single
-commit with full T39 continuation message; (3) `git push` (no --no-verify); (4)
-`gh pr create` for new PR (PR #506 was closed while session was paused); (5)
-confirm with user before marking done.
+**CRITICAL**: Post-clear Claude MUST read `.research/T39_FOLLOWUP_PLAN.md`
+IMMEDIATELY. That file has the exact file list, patches, require-path
+conventions, and resume protocol for the 5 remaining items. Do NOT start work
+until you've read that file end-to-end.
 
-**Uncommitted Work**: Entire T39 continuation still in working tree — ~120 files
-modified + untracked. Nothing committed yet. This will be ONE commit.
+**Next Step**: Read `.research/T39_FOLLOWUP_PLAN.md` end-to-end, verify drift
+per §3 Step 2 (git log top should be `05e0d6dc`, pattern-compliance 0,
+cognitive-cc exit 0), present brief status to user, wait for "go", then execute
+§3 Step 4 in order (item 6 → item 3 → items 1+2 → item 4's 53-file sweep).
+Multi-commit acceptable (4-7 commits expected). NO push until user says "push".
+NO new PR until user says "create PR".
+
+**Uncommitted Work**: None — all 4 T39 main commits pushed. Working-tree should
+show only normal session drift (hook-warnings, state JSONL, metrics) at resume
+time.
 
 ---
 

@@ -164,6 +164,17 @@
       "timestamp": "2026-04-11T13:15:41.844Z",
       "occurrences": 9,
       "occurrences_since_ack": 8
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "Branch has >=20 commits — PR strongly recommended",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-11T18:40:57.455Z",
+      "occurrences": 13,
+      "occurrences_since_ack": 13,
+      "count": "20"
     }
   ]
 }
