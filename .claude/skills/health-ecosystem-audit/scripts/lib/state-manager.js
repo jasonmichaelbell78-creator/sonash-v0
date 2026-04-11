@@ -11,11 +11,12 @@
 
 "use strict";
 
-let fs, path, safeWriteFileSync, safeAppendFileSync, safeRenameSync;
+let fs, path, safeWriteFileSync, safeAppendFileSync, safeRenameSync, safeParseLine;
 try {
   fs = require("node:fs");
   path = require("node:path");
   ({ safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("./safe-fs"));
+  ({ safeParseLine } = require("./parse-jsonl-line"));
 } catch (err) {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
@@ -59,18 +60,7 @@ function createStateManager(rootDir, isSafeToWrite) {
 
     try {
       const content = fs.readFileSync(STATE_FILE, "utf8");
-      return content
-        .trim()
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => {
-          try {
-            return JSON.parse(line);
-          } catch {
-            return null;
-          }
-        })
-        .filter(Boolean);
+      return content.split("\n").map(safeParseLine).filter(Boolean);
     } catch {
       return [];
     }

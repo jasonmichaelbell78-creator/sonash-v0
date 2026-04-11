@@ -34,6 +34,7 @@ const path = safeRequire("node:path");
 const { execSync } = safeRequire("node:child_process");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line");
 
 const DOMAIN = "coverage_completeness";
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -59,20 +60,10 @@ function loadRegistry(ctx) {
 
   const registryPath = path.join(ctx.rootDir, "data", "ecosystem-v2", "test-registry.jsonl");
   try {
+    const stat = fs.statSync(registryPath);
+    if (stat.size > MAX_FILE_SIZE) return [];
     const content = fs.readFileSync(registryPath, "utf8");
-    const entries = content
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
-    return entries;
+    return content.split("\n").map(safeParseLine).filter(Boolean);
   } catch {
     return [];
   }

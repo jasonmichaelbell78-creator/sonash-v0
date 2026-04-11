@@ -28,6 +28,7 @@ const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const { isSafeToWrite } = require("../.claude/hooks/lib/symlink-guard");
 const { safeAppendFileSync, safeRenameSync } = require("./lib/safe-fs");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 // Shared rotation helper (entry-count-based)
 let rotateJsonl;
@@ -201,13 +202,8 @@ function countBypassesInWindow(check, windowDays) {
   const cutoff = Date.now() - windowDays * 24 * 60 * 60 * 1000;
   let count = 0;
   for (const line of content.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const e = JSON.parse(line);
-      if (e.check === check && new Date(e.timestamp).getTime() > cutoff) count++;
-    } catch {
-      /* skip malformed */
-    }
+    const e = safeParseLine(line);
+    if (e && e.check === check && new Date(e.timestamp).getTime() > cutoff) count++;
   }
   return count;
 }
@@ -308,17 +304,7 @@ function listOverrides() {
     return;
   }
 
-  const entries = content
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  const entries = content.split("\n").map(safeParseLine).filter(Boolean);
 
   if (entries.length === 0) {
     console.log("No overrides logged yet.\n");
@@ -365,17 +351,7 @@ function readEntries(logPath) {
     return [];
   }
 
-  return content
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  return content.split("\n").map(safeParseLine).filter(Boolean);
 }
 
 /**

@@ -23,6 +23,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { writeMasterDebtSync, appendMasterDebtSync, safeWriteFileSync } = require("../lib/safe-fs");
 const { isSafeToWrite } = require("../lib/security-helpers");
+const { safeParseLine, safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
@@ -105,31 +106,26 @@ function loadExistingItems() {
       const content = fs.readFileSync(MASTER_FILE, "utf8");
       const lines = content.split("\n").filter((line) => line.trim());
       for (const line of lines) {
-        try {
-          const item = JSON.parse(line);
-          if (item.id) {
-            const match = item.id.match(/DEBT-(\d+)/);
-            if (match) {
-              const num = Number.parseInt(match[1], 10);
-              if (num > maxId) maxId = num;
-            }
-            // Store full item for field preservation (only for valid DEBT-XXXX IDs)
-            if (typeof item.id === "string" && /^DEBT-\d+$/.test(item.id)) {
-              itemMap.set(item.id, item);
-            }
-            // Map by content_hash, source_id, AND fingerprint for stable ID lookup
-            if (item.content_hash) idMap.set(`hash:${item.content_hash}`, item.id);
-            if (item.source_id) idMap.set(`source:${item.source_id}`, item.id);
-            if (item.fingerprint) idMap.set(`fp:${item.fingerprint}`, item.id);
-            // Also map merged source IDs so dedup merges preserve the original ID
-            if (Array.isArray(item.merged_from)) {
-              for (const srcId of item.merged_from) {
-                idMap.set(`source:${srcId}`, item.id);
-              }
-            }
+        const item = safeParseLine(line);
+        if (!item || !item.id) continue;
+        const match = item.id.match(/DEBT-(\d+)/);
+        if (match) {
+          const num = Number.parseInt(match[1], 10);
+          if (num > maxId) maxId = num;
+        }
+        // Store full item for field preservation (only for valid DEBT-XXXX IDs)
+        if (typeof item.id === "string" && /^DEBT-\d+$/.test(item.id)) {
+          itemMap.set(item.id, item);
+        }
+        // Map by content_hash, source_id, AND fingerprint for stable ID lookup
+        if (item.content_hash) idMap.set(`hash:${item.content_hash}`, item.id);
+        if (item.source_id) idMap.set(`source:${item.source_id}`, item.id);
+        if (item.fingerprint) idMap.set(`fp:${item.fingerprint}`, item.id);
+        // Also map merged source IDs so dedup merges preserve the original ID
+        if (Array.isArray(item.merged_from)) {
+          for (const srcId of item.merged_from) {
+            idMap.set(`source:${srcId}`, item.id);
           }
-        } catch {
-          // Skip invalid lines
         }
       }
     } catch {
@@ -168,13 +164,12 @@ function readAndAssignIds() {
   const parseErrors = [];
 
   for (let i = 0; i < lines.length; i++) {
-    let item;
-    try {
-      item = JSON.parse(lines[i]);
-    } catch (err) {
-      parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
+    const { value: item, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      parseErrors.push({ line: i + 1, message: error.message });
       continue;
     }
+    if (!item) continue;
 
     const assignResult = assignStableId(item, idMap, usedIds, nextId);
     item.id = assignResult.id;
@@ -548,10 +543,10 @@ function loadMasterItems() {
   const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    try {
-      items.push(JSON.parse(line));
-    } catch {
+    const item = safeParseLine(lines[i]);
+    if (item) {
+      items.push(item);
+    } else {
       console.warn(`  Warning: invalid JSON at line ${i + 1} — skipping`);
     }
   }
@@ -584,12 +579,11 @@ function getMaxDebtId(masterItems) {
 
 /** Parse a single JSONL line, returning the item or null on failure */
 function parseJsonlLine(line, lineNum) {
-  try {
-    return JSON.parse(line.trim());
-  } catch {
+  const item = safeParseLine(line);
+  if (item === null && line.trim()) {
     console.warn(`  ⚠️ Invalid JSON in deduped.jsonl at line ${lineNum} — skipping`);
-    return null;
   }
+  return item;
 }
 
 /** Read deduped.jsonl lines, returning null if file missing/unreadable */

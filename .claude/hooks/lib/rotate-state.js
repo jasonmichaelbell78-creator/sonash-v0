@@ -12,6 +12,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeParseLine } = require("../../../scripts/lib/parse-jsonl-line");
 let sanitizeError;
 try {
   ({ sanitizeError } = require(
@@ -213,13 +214,10 @@ function expireJsonlByAge(filePath, maxDays, timestampField) {
     const before = lines.length;
 
     const kept = lines.filter((line) => {
-      try {
-        const entry = JSON.parse(line);
-        const ts = new Date(entry[field]).getTime();
-        return isNaN(ts) || ts > cutoff;
-      } catch {
-        return true; // Keep unparseable lines
-      }
+      const entry = safeParseLine(line);
+      if (!entry) return true; // Keep unparseable/blank lines
+      const ts = new Date(entry[field]).getTime();
+      return isNaN(ts) || ts > cutoff;
     });
 
     const after = kept.length;
@@ -294,15 +292,12 @@ function archiveRotateJsonl(filePath, maxEntries, keepCount) {
         const unacked = [];
         for (const line of lines) {
           let isUnacked = true;
-          try {
-            const entry = JSON.parse(line);
-            if (entry.timestamp) {
-              const ts = new Date(entry.timestamp);
-              if (!Number.isNaN(ts.getTime()) && ts <= lastCleared) isUnacked = false;
-            }
-          } catch {
-            /* malformed — treat as unacked */
+          const entry = safeParseLine(line);
+          if (entry && entry.timestamp) {
+            const ts = new Date(entry.timestamp);
+            if (!Number.isNaN(ts.getTime()) && ts <= lastCleared) isUnacked = false;
           }
+          // malformed/blank lines treated as unacked (fall through)
           (isUnacked ? unacked : acked).push(line);
         }
         const ackedToKeep = Math.max(0, keep - unacked.length);

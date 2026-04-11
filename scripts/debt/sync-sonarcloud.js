@@ -31,6 +31,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const readline = require("node:readline");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 const os = require("node:os");
 const generateContentHash = require("../lib/generate-content-hash");
 const { safeAppendFileSync, writeMasterDebtSync, appendMasterDebtSync } = require("../lib/safe-fs");
@@ -197,10 +198,11 @@ function loadMasterDebt() {
   const badLines = [];
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      items.push(JSON.parse(lines[i]));
-    } catch (err) {
-      badLines.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      badLines.push({ line: i + 1, message: error.message });
+    } else if (value) {
+      items.push(value);
     }
   }
 

@@ -17,7 +17,11 @@ import { readFileSync, existsSync } from "node:fs";
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
+
+const require = createRequire(import.meta.url);
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 // ES module __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -532,9 +536,10 @@ export function processFile(inputPath, outputPath, category) {
   const lines = content.split("\n").filter((l) => l.trim());
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      findings.push(JSON.parse(lines[i].trim()));
-    } catch {
+    const parsed = safeParseLine(lines[i]);
+    if (parsed) {
+      findings.push(parsed);
+    } else {
       console.warn(`Line ${i + 1}: Invalid JSON, skipping`);
     }
   }

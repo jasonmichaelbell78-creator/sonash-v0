@@ -27,6 +27,7 @@ const { execSync, execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { safeParseLine } = require("../../scripts/lib/parse-jsonl-line");
 let isSafeToWrite, sanitizeInput;
 let sanitizeError;
 try {
@@ -774,17 +775,7 @@ function readWarningsJsonl(filePath) {
     }
     const content = fs.readFileSync(filePath, "utf8").trim();
     if (!content) return { entries: [], error: null };
-    const entries = content
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const entries = content.split("\n").map(safeParseLine).filter(Boolean);
     return { entries, error: null };
   } catch (err) {
     if (err && err.code === "ENOENT") return { entries: [], error: "ENOENT" };
@@ -1360,14 +1351,7 @@ try {
       .split("\n")
       .filter((l) => l.trim())
       .slice(-500);
-    const todos = [];
-    for (const line of todoLines) {
-      try {
-        todos.push(JSON.parse(line));
-      } catch {
-        /* skip malformed */
-      }
-    }
+    const todos = todoLines.map(safeParseLine).filter(Boolean);
     const active = todos.filter((t) => !["completed", "archived"].includes(t.status));
     if (active.length > 0) {
       const p0 = active.filter((t) => t.priority === "P0").length;

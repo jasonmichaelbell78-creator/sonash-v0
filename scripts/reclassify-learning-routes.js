@@ -18,6 +18,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, readTextWithSizeGuard } = require("./lib/safe-fs.js");
+const { safeParseLineWithError } = require("./lib/parse-jsonl-line");
 const { sanitizeError, validatePathInDir } = require("./lib/security-helpers.js");
 
 const ROUTES_FILE = path.resolve(__dirname, "../.claude/state/learning-routes.jsonl"); // validatePathInDir: constant-path (no user input)
@@ -49,10 +50,11 @@ function readRoutes() {
     const lines = raw.split("\n").filter((line) => line.trim().length > 0);
     const entries = [];
     for (let i = 0; i < lines.length; i++) {
-      try {
-        entries.push(JSON.parse(lines[i]));
-      } catch {
+      const { value, error } = safeParseLineWithError(lines[i]);
+      if (error) {
         process.stderr.write(`[reclassify] WARNING: malformed JSONL at line ${i + 1} — skipping\n`);
+      } else if (value) {
+        entries.push(value);
       }
     }
     return entries;

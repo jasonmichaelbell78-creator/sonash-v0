@@ -21,6 +21,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
 const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const REPORTS_DIR = path.join(PROJECT_ROOT, "docs/archive/2025-dec-reports");
@@ -135,13 +136,8 @@ function loadExistingHashes() {
     return hashes;
   }
   for (const line of content.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const item = JSON.parse(line);
-      if (item.content_hash) hashes.add(item.content_hash);
-    } catch {
-      // skip
-    }
+    const item = safeParseLine(line);
+    if (item && item.content_hash) hashes.add(item.content_hash);
   }
   return hashes;
 }
@@ -156,13 +152,8 @@ function loadExistingIntakeIds() {
     return ids;
   }
   for (const line of content.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const item = JSON.parse(line);
-      if (item.id) ids.add(item.id);
-    } catch {
-      // skip
-    }
+    const item = safeParseLine(line);
+    if (item && item.id) ids.add(item.id);
   }
   return ids;
 }
@@ -177,13 +168,8 @@ function loadExistingOutputHashes() {
     return hashes;
   }
   for (const line of content.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const item = JSON.parse(line);
-      if (item.content_hash) hashes.add(item.content_hash);
-    } catch {
-      // skip
-    }
+    const item = safeParseLine(line);
+    if (item && item.content_hash) hashes.add(item.content_hash);
   }
   return hashes;
 }

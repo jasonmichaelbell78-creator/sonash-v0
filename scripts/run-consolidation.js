@@ -27,6 +27,7 @@
 const fs = require("node:fs"); // catch-verified: core module
 const path = require("node:path"); // catch-verified: core module
 const cp = require("node:child_process"); // catch-verified: core module
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 const { existsSync, readFileSync, mkdirSync, rmSync, lstatSync } = fs; // require() destructure
 const { copyFileSync } = fs; // require() destructure
 const { join } = path; // require() destructure
@@ -192,18 +193,7 @@ function loadReviews() {
       log(`⚠️  reviews.jsonl exceeds ${MAX_BYTES} bytes — skipping`, c.yellow);
       return [];
     }
-    return readFileSync(REVIEWS_FILE, "utf8")
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    return readFileSync(REVIEWS_FILE, "utf8").split("\n").map(safeParseLine).filter(Boolean);
   } catch (err) {
     log(`❌ Failed to read reviews.jsonl: ${sanitizeError(err)}`, c.red);
     return [];

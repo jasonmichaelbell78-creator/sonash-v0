@@ -18,6 +18,9 @@
  */
 
 const fs = require("node:fs");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
+
+const MAX_BYTES = 5 * 1024 * 1024;
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
@@ -32,18 +35,10 @@ const fixMode = process.argv.includes("--fix");
  */
 function readCommitLog() {
   try {
-    const content = fs.readFileSync(COMMIT_LOG, "utf8").trim();
-    if (!content) return [];
-    return content
-      .split("\n")
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const stat = fs.statSync(COMMIT_LOG);
+    if (stat.size > MAX_BYTES) return [];
+    const content = fs.readFileSync(COMMIT_LOG, "utf8");
+    return content.split("\n").map(safeParseLine).filter(Boolean);
   } catch {
     return [];
   }

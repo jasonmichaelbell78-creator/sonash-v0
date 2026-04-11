@@ -16,6 +16,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeAppendFileSync, appendMasterDebtSync } = require("../lib/safe-fs");
+const { safeParseLine, safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -32,18 +33,18 @@ const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
  * Returns true if parsed successfully, false otherwise.
  */
 function parseMasterLine(line, hashSet, idState, lineNum) {
-  try {
-    const item = JSON.parse(line);
-    if (item.content_hash) hashSet.add(item.content_hash);
-    if (item.id) {
-      const match = item.id.match(/DEBT-(\d+)/);
-      if (match) {
-        const num = Number.parseInt(match[1], 10);
-        if (num > idState.maxId) idState.maxId = num;
-      }
+  const item = safeParseLine(line);
+  if (!item) {
+    if (line && line.trim()) console.warn(`Skipping corrupt JSONL line ${lineNum ?? "?"}`);
+    return;
+  }
+  if (item.content_hash) hashSet.add(item.content_hash);
+  if (item.id) {
+    const match = item.id.match(/DEBT-(\d+)/);
+    if (match) {
+      const num = Number.parseInt(match[1], 10);
+      if (num > idState.maxId) idState.maxId = num;
     }
-  } catch {
-    console.warn(`Skipping corrupt JSONL line ${lineNum ?? "?"}`);
   }
 }
 
@@ -102,13 +103,11 @@ function loadInput() {
   const parseErrors = [];
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      items.push(JSON.parse(lines[i]));
-    } catch (err) {
-      parseErrors.push({
-        line: i + 1,
-        message: err instanceof Error ? err.message : String(err),
-      });
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      parseErrors.push({ line: i + 1, message: error.message });
+    } else if (value) {
+      items.push(value);
     }
   }
 

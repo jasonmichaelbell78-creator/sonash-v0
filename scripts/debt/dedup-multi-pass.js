@@ -22,6 +22,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
 const { safeWriteFileSync } = require("../lib/safe-fs");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const INPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/normalized-all.jsonl");
 const OUTPUT_FILE = path.join(__dirname, "../../docs/technical-debt/raw/deduped.jsonl");
@@ -302,10 +303,11 @@ function readInputItems() {
   const parseErrors = [];
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      items.push(JSON.parse(lines[i]));
-    } catch (err) {
-      parseErrors.push({ line: i + 1, message: err instanceof Error ? err.message : String(err) });
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      parseErrors.push({ line: i + 1, message: error.message });
+    } else if (value) {
+      items.push(value);
     }
   }
 

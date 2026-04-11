@@ -27,6 +27,7 @@
 
 const { readFileSync, existsSync, readdirSync, lstatSync } = require("node:fs");
 const path = require("node:path");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 const { join } = path;
 const { createInterface } = require("node:readline");
 
@@ -1371,11 +1372,9 @@ function readWarningsLog() {
   }
   const warnings = [];
   for (const line of rawLines) {
-    try {
-      const entry = JSON.parse(line);
+    const entry = safeParseLine(line);
+    if (entry) {
       warnings.push({ ...entry, category: entry.type || entry.category || "unknown" });
-    } catch {
-      // skip malformed lines
     }
   }
   return warnings;

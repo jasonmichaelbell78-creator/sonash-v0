@@ -15,6 +15,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError } = require("./lib/sanitize-error.js");
 const { safeWriteFileSync } = require("./lib/safe-fs.js");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 const ROOT = path.join(__dirname, "..");
 const FINDINGS_PATH = path.join(ROOT, ".planning", "orphan-detection", "findings.jsonl");
@@ -41,18 +42,7 @@ function parseFindings() {
     console.error("Run 'npm run orphans:detect' first.");
     process.exit(1);
   }
-  return raw
-    .trim()
-    .split("\n")
-    .filter(Boolean)
-    .map((line) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  return raw.split("\n").map(safeParseLine).filter(Boolean);
 }
 
 function groupByCategory(findings) {

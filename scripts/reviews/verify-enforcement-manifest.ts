@@ -12,6 +12,10 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { EnforcementRecord, EnforcementRecordSchema } from "./lib/enforcement-manifest";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line") as {
+  safeParseLineWithError: (line: string) => { value: unknown; error: Error | null };
+};
 
 // Walk up from __dirname until we find package.json
 function findProjectRoot(startDir: string): string {
@@ -44,8 +48,12 @@ function readManifest(filePath: string): EnforcementRecord[] {
 
   const lines = content.split(/\r?\n/).filter((l) => l.trim());
   for (const line of lines) {
+    const { value: parsed, error } = safeParseLineWithError(line);
+    if (error || !parsed) {
+      console.warn(`Warning: skipping invalid manifest line: ${line.slice(0, 80)}...`);
+      continue;
+    }
     try {
-      const parsed = JSON.parse(line);
       const validated = EnforcementRecordSchema.parse(parsed);
       records.push(validated);
     } catch {

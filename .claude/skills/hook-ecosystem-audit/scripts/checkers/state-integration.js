@@ -27,6 +27,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLineWithError } = safeRequire("../lib/parse-jsonl-line");
 
 const DOMAIN = "state_integration";
 
@@ -153,11 +154,8 @@ function checkStateFileHealth(stateDir, findings) {
       let corruptLines = 0;
 
       for (const line of lines) {
-        try {
-          JSON.parse(line);
-        } catch {
-          corruptLines++;
-        }
+        const { error } = safeParseLineWithError(line);
+        if (error) corruptLines++;
       }
 
       const isValid = corruptLines === 0;

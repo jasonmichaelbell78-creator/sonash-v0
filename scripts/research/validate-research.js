@@ -20,6 +20,7 @@ const { join, relative } = require("node:path");
 const { sanitizeError } = require("../lib/sanitize-error.cjs");
 const { safeWriteFileSync, readUtf8Sync } = require("../lib/safe-fs.js");
 const { parseCliArgs } = require("../lib/security-helpers.js");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const ROOT = join(__dirname, "..", "..");
 const RESEARCH_DIR = join(ROOT, ".research");
@@ -56,11 +57,9 @@ function readJsonl(filePath) {
     const lines = content.split("\n").filter((l) => l.trim().length > 0);
     const results = [];
     for (let i = 0; i < lines.length; i++) {
-      try {
-        results.push(JSON.parse(lines[i]));
-      } catch {
-        return { data: null, error: `Parse error at line ${i + 1}` };
-      }
+      const { value, error } = safeParseLineWithError(lines[i]);
+      if (error) return { data: null, error: `Parse error at line ${i + 1}` };
+      if (value) results.push(value);
     }
     return { data: results, error: null };
   } catch (err) {

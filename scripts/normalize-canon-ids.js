@@ -24,6 +24,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { safeWriteFileSync } = require("./lib/safe-fs.js");
+const { safeParseLineWithError } = require("./lib/parse-jsonl-line");
 
 const SEVERITY_ORDER = { S0: 0, S1: 1, S2: 2, S3: 3 };
 const EFFORT_ORDER = { E0: 0, E1: 1, E2: 2, E3: 3 };
@@ -150,19 +151,17 @@ function parseJsonl(content, filename, failFast = true) {
   const parseErrors = [];
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      findings.push(JSON.parse(lines[i]));
-    } catch (err) {
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
       // SECURITY: Do not log raw JSONL content - it may contain sensitive data
       // Only log line number, character count, and sanitized error message
       parseErrors.push({
         line: i + 1,
-        error: (err instanceof Error ? err.message : String(err)).replace(
-          /position \d+/,
-          "position [redacted]"
-        ),
+        error: error.message.replace(/position \d+/, "position [redacted]"),
         charCount: lines[i].length,
       });
+    } else if (value) {
+      findings.push(value);
     }
   }
 

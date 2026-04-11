@@ -30,6 +30,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeParseLine } = require("../../scripts/lib/parse-jsonl-line");
 let gitExec, projectDir, loadJson, saveJson;
 try {
   ({ gitExec, projectDir } = require("./lib/git-utils.js"));
@@ -103,16 +104,7 @@ function readRecentCommits(count) {
     if (!content) return [];
     const lines = content.split("\n").filter(Boolean);
     // Take last N entries (most recent)
-    return lines
-      .slice(-count)
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    return lines.slice(-count).map(safeParseLine).filter(Boolean);
   } catch {
     return [];
   }

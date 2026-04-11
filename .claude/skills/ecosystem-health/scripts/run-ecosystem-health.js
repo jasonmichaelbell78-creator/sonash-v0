@@ -34,6 +34,8 @@ try {
   safeWriteFileSync = null;
 }
 
+const { safeParseLine } = require(path.join(ROOT, "scripts", "lib", "parse-jsonl-line"));
+
 /**
  * Run health checks and return parsed JSON result.
  * @param {boolean} quick - Use quick mode
@@ -57,21 +59,13 @@ function runHealthCheck(quick) {
  * @param {string} filePath
  * @returns {Array}
  */
+const MAX_JSONL_BYTES = 5 * 1024 * 1024;
 function readJsonlEntries(filePath) {
   try {
-    const content = fs.readFileSync(filePath, "utf8").trim();
-    if (!content) return [];
-    return content
-      .split("\n")
-      .map((line) => {
-        if (!line) return null;
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const stat = fs.statSync(filePath);
+    if (stat.size > MAX_JSONL_BYTES) return [];
+    const content = fs.readFileSync(filePath, "utf8");
+    return content.split("\n").map(safeParseLine).filter(Boolean);
   } catch {
     return [];
   }

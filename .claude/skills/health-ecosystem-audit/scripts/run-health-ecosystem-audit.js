@@ -19,10 +19,11 @@
 
 "use strict";
 
-let fs, path;
+let fs, path, safeParseLine;
 try {
   fs = require("node:fs");
   path = require("node:path");
+  ({ safeParseLine } = require("./lib/parse-jsonl-line"));
 } catch (err) {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
@@ -90,23 +91,16 @@ const stateManager = createStateManager(ROOT_DIR, isSafeToWrite);
 const patchGenerator = createPatchGenerator(ROOT_DIR);
 
 // Load test registry once for all checkers (D#40)
+const MAX_REGISTRY_BYTES = 5 * 1024 * 1024;
 let registry = [];
 try {
   const registryPath = path.join(ROOT_DIR, "data", "ecosystem-v2", "test-registry.jsonl");
   if (fs.existsSync(registryPath)) {
-    const content = fs.readFileSync(registryPath, "utf8");
-    registry = content
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((line) => {
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const stat = fs.statSync(registryPath);
+    if (stat.size <= MAX_REGISTRY_BYTES) {
+      const content = fs.readFileSync(registryPath, "utf8");
+      registry = content.split("\n").map(safeParseLine).filter(Boolean);
+    }
   }
 } catch {
   console.error("  [warn] Could not load test registry");

@@ -19,6 +19,10 @@ import node_fs from "node:fs";
 import node_path from "node:path";
 import node_url from "node:url";
 import { execSync } from "node:child_process";
+import { createRequire } from "node:module";
+
+const requireForJsonl = createRequire(import.meta.url);
+const { safeParseLine, safeParseLineWithError } = requireForJsonl("./lib/parse-jsonl-line");
 
 const __filename = node_url.fileURLToPath(import.meta.url);
 const __dirname = node_path.dirname(__filename);
@@ -86,17 +90,7 @@ function loadFalsePositives() {
     return [];
   }
   const content = node_fs.readFileSync(FP_FILE, "utf8");
-  return content
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  return content.split("\n").map(safeParseLine).filter(Boolean);
 }
 
 function loadAuditFindings(filePath) {
@@ -108,15 +102,15 @@ function loadAuditFindings(filePath) {
     .split("\n")
     .filter((line) => line.trim())
     .map((line, index) => {
-      try {
-        return { ...JSON.parse(line), _lineNumber: index + 1 };
-      } catch (err) {
+      const { value, error } = safeParseLineWithError(line);
+      if (error) {
         return {
-          _parseError: err instanceof Error ? err.message : String(err),
+          _parseError: error.message,
           _lineNumber: index + 1,
           _raw: line,
         };
       }
+      return { ...value, _lineNumber: index + 1 };
     });
 }
 
