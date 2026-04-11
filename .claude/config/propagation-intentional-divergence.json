@@ -59,6 +59,18 @@
       "reason": "Same as writeMasterDebtSync — canonical-only DEBT writer. Skill copies dropped this in PR #507 R1 C2d.",
       "addedAt": "2026-04-11",
       "canonicalFile": "scripts/lib/safe-fs.js"
+    },
+    {
+      "funcName": "errCode",
+      "files": [
+        ".claude/hooks/user-prompt-handler.js",
+        "scripts/health/lib/utils.js",
+        "scripts/lib/learning-router.js",
+        "scripts/lib/read-jsonl.js"
+      ],
+      "reason": "In PR #507 R2 C2d I added a top-level `function errCode(err)` helper in scripts/lib/safe-fs.js (propagated to all 8 skill copies) for defensive .code extraction. The 4 files listed here have BLOCK-LOCAL `const errCode = ...` inline within catch blocks (e.g., `const errCode = err && typeof err === 'object' && 'code' in err ? String(err.code) : ''`). They are independent locals, NOT copies of the safe-fs helper. Follow-up candidate: consolidate the 4 locals into the shared safe-fs helper, but scope out of PR #507.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/lib/safe-fs.js"
     }
   ]
 }
