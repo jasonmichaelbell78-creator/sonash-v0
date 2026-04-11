@@ -4153,6 +4153,20 @@
       "file": "scripts/debt/resolve-bulk.js",
       "addedAt": "2026-04-11",
       "reason": "pre-existing at PR #507 R1 rule narrowing — old patternAbsence missed this. fs.rmSync + fs.unlinkSync without safe-fs guards. Schedule follow-up."
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/check-session-gaps.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R2 FP bundle commit. Uses bare statSync without lstatSync + isSymbolicLink (TOCTOU guard pattern from PR #388/#397). Not touched by PR #507 — baselining to land FP bundle cleanly. Schedule follow-up TDMS item."
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/health/lib/health-log.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R2 FP bundle commit. Uses bare statSync without lstatSync + isSymbolicLink (TOCTOU guard pattern from PR #388/#397). Not touched by PR #507 — baselining to land FP bundle cleanly. Schedule follow-up TDMS item."
     }
   ]
 }

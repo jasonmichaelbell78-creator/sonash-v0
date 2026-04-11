@@ -630,6 +630,21 @@ lint-staged's stash/restore cycle would drop the regenerated file from staging.
 detected, the hook reminds you to update `docs/AI_REVIEW_LEARNINGS_LOG.md` when
 addressing PR feedback.
 
+#### Post-commit Hook
+
+The post-commit hook (`.husky/post-commit`) runs
+`scripts/resolve-hook-warnings.js` after every successful commit. It re-executes
+the underlying check for each active hook warning; if the check now passes, the
+warning is cleared from `.claude/hook-warnings.json` and acked in
+`.claude/state/hook-warnings-ack.json`. The hook is advisory (best-effort, never
+fails the commit).
+
+Introduced in PR #507 R2 as part of the FP1–FP4 bundle that addressed the
+stale-warning push-blocker pattern. Without it, a commit that fixed a blocking
+check could still land but the pre-push escalation gate would keep blocking on
+the pre-fix warning until someone manually acked or ran
+`node scripts/resolve-hook-warnings.js`.
+
 #### Pre-push Hook
 
 The pre-push hook (`.husky/pre-push`) performs final validation:

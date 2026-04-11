@@ -1,0 +1,64 @@
+{
+  "$schema": "Intentional function-propagation divergence registry",
+  "description": "Functions that exist in multiple files but are INTENTIONALLY not kept in sync. check-propagation.js reads this file and filters out matching misses. Use sparingly — the default assumption is that same-named functions in multiple files are copies that should propagate together.",
+  "version": 1,
+  "updated": "2026-04-11",
+  "entries": [
+    {
+      "funcName": "appendWarning",
+      "files": [".claude/hooks/settings-guardian.js"],
+      "reason": "Local helper in settings-guardian.js that appends to a settings-audit log. Completely independent from scripts/append-hook-warning.js which manages the global hook-warnings.json cache. Same name, different surface, different contract. Confirmed unrelated in PR #507 R1.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/append-hook-warning.js"
+    },
+    {
+      "funcName": "checkLearningEffectiveness",
+      "files": [".claude/skills/alerts/scripts/run-alerts.js"],
+      "reason": "alerts skill has its own inline learning-effectiveness calculator that's been intentionally kept in-skill to avoid coupling the alerts runtime to scripts/health/. Different signature and scope from scripts/health/checkers/learning-effectiveness.js. Confirmed unrelated in PR #507 R1.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/health/checkers/learning-effectiveness.js"
+    },
+    {
+      "funcName": "atomicWriteViaTmp",
+      "files": ["scripts/lib/safe-fs.js"],
+      "reason": "Lives only in the canonical scripts/lib/safe-fs.js. Skill-copy safe-fs.js files (.claude/skills/*/scripts/lib/safe-fs.js) DO NOT carry this function — C2d trim in PR #507 R1 intentionally removed DEBT_DIR writers from skill copies since skills must never write to docs/technical-debt/ from their own libs. Used only by writeMasterDebtSync/appendMasterDebtSync which are canonical-only.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/lib/safe-fs.js"
+    },
+    {
+      "funcName": "ensureDebtDirs",
+      "files": ["scripts/lib/safe-fs.js"],
+      "reason": "Same as atomicWriteViaTmp — canonical-only helper for DEBT directory management. Skill copies intentionally dropped this in PR #507 R1 C2d.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/lib/safe-fs.js"
+    },
+    {
+      "funcName": "snapshotFile",
+      "files": ["scripts/lib/safe-fs.js"],
+      "reason": "Same as atomicWriteViaTmp — canonical-only snapshot helper for the DEBT writer rollback path. Skill copies dropped this in PR #507 R1 C2d because they never call it.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/lib/safe-fs.js"
+    },
+    {
+      "funcName": "rollbackFile",
+      "files": ["scripts/lib/safe-fs.js"],
+      "reason": "Canonical-only rollback helper used exclusively by appendMasterDebtSync. Skill copies dropped this in PR #507 R1 C2d alongside the DEBT writers.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/lib/safe-fs.js"
+    },
+    {
+      "funcName": "writeMasterDebtSync",
+      "files": ["scripts/lib/safe-fs.js"],
+      "reason": "Canonical-only MASTER_DEBT writer. Skill copies dropped this in PR #507 R1 C2d because skills must not write to docs/technical-debt/ from their own libs — TDMS writes always route through scripts/debt/intake-manual.js per MEMORY.md.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/lib/safe-fs.js"
+    },
+    {
+      "funcName": "appendMasterDebtSync",
+      "files": ["scripts/lib/safe-fs.js"],
+      "reason": "Same as writeMasterDebtSync — canonical-only DEBT writer. Skill copies dropped this in PR #507 R1 C2d.",
+      "addedAt": "2026-04-11",
+      "canonicalFile": "scripts/lib/safe-fs.js"
+    }
+  ]
+}

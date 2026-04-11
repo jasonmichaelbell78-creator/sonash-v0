@@ -214,6 +214,43 @@ npm test
 
 ---
 
+## 1.2 Husky Post-Commit Hook
+
+| Attribute     | Value                               |
+| ------------- | ----------------------------------- |
+| **Name**      | Husky Post-Commit                   |
+| **Location**  | `.husky/post-commit`                |
+| **Trigger**   | After every successful `git commit` |
+| **Execution** | Automatic (advisory, never blocks)  |
+
+### Description
+
+Runs `scripts/resolve-hook-warnings.js` after every commit to auto-clear hook
+warnings whose underlying check-script now passes. Closes the
+"fix-then-warning-stays-live" loop end-to-end: commit fixes the check, hook
+re-runs the check, warning clears from `.claude/hook-warnings.json` and
+`.claude/state/hook-warnings-ack.json`, next push proceeds cleanly.
+
+### Function
+
+- Synchronous run of the resolver so the result is visible in commit output
+- Best-effort — swallows any resolver error; never fails the commit itself
+- No-op if `scripts/resolve-hook-warnings.js` is missing (e.g. on a fresh
+  checkout before install)
+
+### History
+
+- Introduced in PR #507 R2 as part of the FP1–FP4 future-proofing bundle, which
+  addressed the stale-warning push-blocker that forced a manual ack +
+  `SKIP_PROPAGATION` push at the end of PR #507 R1.
+
+### Compliance Status
+
+- ✅ **Advisory**: Does not gate the commit, only cleans up stale state
+- ✅ **Automated**: Runs unconditionally after every successful commit
+
+---
+
 # 2. GITHUB ACTIONS (CI/CD)
 
 ## 2.1 CI Workflow
