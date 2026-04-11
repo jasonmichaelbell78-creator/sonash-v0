@@ -4050,6 +4050,13 @@
       "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
     },
     {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/todos-mutations.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — pure function module, zero fs.* calls (T30 extracted pure mutation helpers from todos-cli.js precisely so tests could import without triggering file IO). Actual writes happen in the caller. Symlink guards would be dead code."
+    },
+    {
       "type": "function",
       "key": "nextLine",
       "file": "scripts/debt/extract-audit-reports.js",

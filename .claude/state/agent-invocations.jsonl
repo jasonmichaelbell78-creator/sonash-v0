@@ -147,3 +147,4 @@
 {"agent":"general-purpose","description":"JSONL helper adoption — .claude/skills/ batch","outcome":"invoked","timestamp":"2026-04-11T03:36:09.065Z"}
 {"agent":"pr-review-toolkit:code-reviewer","description":"T3: code review T39 diff","outcome":"invoked","timestamp":"2026-04-11T14:17:52.306Z"}
 {"agent":"pr-review-toolkit:code-reviewer","description":"T4: code review parse-jsonl-line helper","outcome":"invoked","timestamp":"2026-04-11T14:18:05.954Z"}
+{"agent":"code-reviewer","description":"Pre-push code review gate","outcome":"invoked","timestamp":"2026-04-11T17:18:59.828Z"}
