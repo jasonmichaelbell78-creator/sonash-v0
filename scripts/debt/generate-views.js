@@ -321,12 +321,12 @@ function groupItems(items) {
 function generateViewFiles(items, bySeverity, byCategory, byStatus) {
   const today = formatDate(new Date());
 
-  if (!fs.existsSync(VIEWS_DIR)) {
-    if (!isSafeToWrite(VIEWS_DIR)) {
-      throw new Error(`Refusing to mkdir — parent path is unsafe: ${VIEWS_DIR}`);
-    }
-    fs.mkdirSync(VIEWS_DIR, { recursive: true });
+  // Remove the racy existsSync/mkdirSync sequence — rely on recursive: true
+  // which is idempotent. The safety check only needs to run once per call.
+  if (!isSafeToWrite(VIEWS_DIR)) {
+    throw new Error(`Refusing to mkdir — parent path is unsafe: ${VIEWS_DIR}`);
   }
+  fs.mkdirSync(VIEWS_DIR, { recursive: true });
 
   generateIndexFile(items, bySeverity, byCategory, byStatus, today);
   generateSeverityView(bySeverity, today);

@@ -265,7 +265,7 @@ function deduplicateCheck(learning, options) {
 
   for (const rawLine of lines) {
     const entry = safeParseLine(rawLine);
-    if (entry && entry.id === id) {
+    if (entry?.id === id) {
       return { isDuplicate: true, existingEntry: entry };
     }
   }

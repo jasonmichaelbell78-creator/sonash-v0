@@ -164,7 +164,14 @@ export function renderTodos(opts = {}) {
 }
 
 // --- Script entry point ---
-// Only auto-execute when invoked directly (not when imported as a library)
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
-  renderTodos({ dryRun: process.argv.includes("--dry-run") });
+// Only auto-execute when invoked directly (not when imported as a library).
+// Harden the entry-point check: guard against undefined argv[1] (which would
+// make pathToFileURL throw) and resolve to an absolute path before comparing
+// so the check works regardless of how the script is invoked.
+const entryArgv = process.argv[1];
+if (typeof entryArgv === "string" && entryArgv.length > 0) {
+  const entryHref = pathToFileURL(resolve(entryArgv)).href;
+  if (import.meta.url === entryHref) {
+    renderTodos({ dryRun: process.argv.includes("--dry-run") });
+  }
 }

@@ -318,7 +318,7 @@ function isValidJsonlFile(filePath) {
     if (!content) return true;
     const lines = content.split("\n").filter(Boolean);
     if (safeParseLineWithError(lines[0]).error) return false;
-    if (lines.length > 1 && safeParseLineWithError(lines[lines.length - 1]).error) return false;
+    if (lines.length > 1 && safeParseLineWithError(lines.at(-1)).error) return false;
     return true;
   } catch {
     return false;

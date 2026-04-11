@@ -35,7 +35,7 @@ const LOG_FILE = path.join(LOG_DIR, "intake-log.jsonl");
 function parseMasterLine(line, hashSet, idState, lineNum) {
   const item = safeParseLine(line);
   if (!item) {
-    if (line && line.trim()) console.warn(`Skipping corrupt JSONL line ${lineNum ?? "?"}`);
+    if (line?.trim()) console.warn(`Skipping corrupt JSONL line ${lineNum ?? "?"}`);
     return;
   }
   if (item.content_hash) hashSet.add(item.content_hash);

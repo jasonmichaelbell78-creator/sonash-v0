@@ -125,10 +125,12 @@ for (const [filename, schemaKey] of Object.entries(JSONL_FILES)) {
     if (!result.success) {
       fileErrors++;
       totalErrors++;
-      const id =
-        record && typeof record === "object" && "id" in record && record.id != null
-          ? String(record.id)
-          : `line-${i + 1}`;
+      // Only stringify primitive ids — non-primitives would produce
+      // Object's default "[object Object]" form (SonarCloud S2674 / S6565).
+      const rawId = record && typeof record === "object" && "id" in record ? record.id : undefined;
+      const isStringifiable =
+        rawId != null && (typeof rawId === "string" || typeof rawId === "number");
+      const id = isStringifiable ? String(rawId) : `line-${i + 1}`;
       const issues = result.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
       console.error(`  ${filename} [${id}]: ${issues}`);
     }

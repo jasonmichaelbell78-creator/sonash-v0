@@ -68,7 +68,7 @@ export function getNextReviewId(projectRoot: string): string {
 /** Parse a rev-N number from a JSONL line. Returns 0 if not parseable. */
 function parseRevNumber(rawLine: string): number {
   const record = safeParseLine(rawLine) as { id?: string } | null;
-  if (!record || !record.id) return 0;
+  if (!record?.id) return 0;
   const match = /^rev-(\d+)(?:-|$)/.exec(record.id);
   if (!match) return 0;
   return Number.parseInt(match[1], 10);

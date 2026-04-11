@@ -162,6 +162,17 @@ When reviewing files in scripts/ or .claude/hooks/:
     Suggesting per-download checksum verification on known-source binaries
     (e.g., GitHub releases) adds ceremony without security value.
     (Rejected across PRs #448-#470 — repeat noise on binary download scripts)
+
+27. Do NOT flag "logs include titles" or "possible PII in logs" on confidence
+    logging in scripts/debt/intake-manual.js and related TDMS intake code.
+    The `confidenceLogs` array in formatStats records the first 50 chars of
+    each normalized item title alongside its mapping confidence — these are
+    TDMS triage titles (e.g., "S1 fix: propagation sweep"), not user-sourced
+    PII. The logs are local developer diagnostics, not shipped artifacts.
+    (Rejected in PR #507 R1 — adds rule #27 to the standing suppression set
+    so the recurrence doesn't survive to R2. Qodo's "Custom Compliance"
+    section triggers this even when reviewer suppressions already exist,
+    because compliance rules use a separate engine from the reviewer.)
 """
 
 [pr_code_suggestions]

@@ -262,6 +262,9 @@ function parseReviewHeader(line) {
   const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/);
   if (!headerMatch) return null;
   const id = Number.parseInt(headerMatch[1], 10);
+  // Guard against Number.parseInt returning Infinity on pathologically long
+  // digit strings, which would corrupt downstream sort order.
+  if (!Number.isFinite(id)) return null;
   const titleAndDate = headerMatch[2].trim();
   const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
   const date = dateMatch ? dateMatch[1] : null;
@@ -820,7 +823,10 @@ function backupReviewsFile() {
       log("  ⚠️ Refusing to write backup: symlink detected (continuing anyway)");
       return;
     }
-    atomicWriteFileSync(bakPath, readFileSync(REVIEWS_FILE, "utf8"));
+    // Use copyFileSync instead of readFileSync + atomicWriteFileSync — avoids
+    // loading the entire reviews.jsonl into memory for the backup (Qodo 7/10
+    // on large-file efficiency).
+    copyFileSync(REVIEWS_FILE, bakPath);
     log(`  📦 Backup: reviews.jsonl.bak`);
   } catch {
     log("  ⚠️ Could not create backup (continuing anyway)");
@@ -850,7 +856,13 @@ function dedupeAndSortRetros(retros) {
     seen.add(key);
     out.push(r);
   }
-  out.sort((a, b) => a.pr - b.pr);
+  // Use a finite-number-safe comparator so malformed pr values (NaN, Infinity)
+  // don't produce unstable sort order.
+  out.sort((a, b) => {
+    const aPr = typeof a.pr === "number" && Number.isFinite(a.pr) ? a.pr : Number.POSITIVE_INFINITY;
+    const bPr = typeof b.pr === "number" && Number.isFinite(b.pr) ? b.pr : Number.POSITIVE_INFINITY;
+    return aPr - bPr;
+  });
   return out;
 }
 
