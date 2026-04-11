@@ -150,6 +150,22 @@ const GENERIC_NAMES = new Set([
   "info",
   "debug",
   "trace",
+  // JavaScript keywords / built-ins that look like function calls in the
+  // `+ <word>(args) {` regex at extractModifiedFunctions() (line 224). Without
+  // these, `switch (x) {`, `return someExpr(y)`, etc. are captured as "function
+  // definitions" and every file containing that keyword becomes a propagation
+  // miss. Only ≥6-char tokens matter (MIN_FUNC_NAME_LENGTH gates the rest).
+  "switch",
+  "return",
+  "typeof",
+  "import",
+  "export",
+  "static",
+  "default",
+  "continue",
+  "function",
+  "debugger",
+  "instanceof",
 ]);
 
 /**

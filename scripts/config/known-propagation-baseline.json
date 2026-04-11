@@ -4065,6 +4065,55 @@
     },
     {
       "type": "function",
+      "key": "safeRename",
+      "file": "scripts/archive/run-consolidation.v1.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent safeRename in the legacy consolidation script, different scope and signature from the skill state-managers. Not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "safeRename",
+      "file": "scripts/audit/track-resolutions.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent safeRename in track-resolutions, different scope and signature from the skill state-managers. Not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "safeRename",
+      "file": "scripts/run-consolidation.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent safeRename in the canonical consolidation script, different scope and signature from the skill state-managers. Not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "parseMarkdownReviews",
+      "file": "scripts/review-lifecycle.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — separate markdown-review parser with a different signature. review-lifecycle.js owns the primary sync path; sync-reviews-to-jsonl.js owns the archive repair path. Coincidental name collision, CC=75 on the review-lifecycle copy is already tracked in the known-debt CC baseline."
+    },
+    {
+      "type": "function",
+      "key": "countBySeverity",
+      "file": "scripts/audit/compare-audits.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent countBySeverity helper in compare-audits, different input shape. The T39 intake-audit extraction produced a differently-shaped helper; coincidental same name."
+    },
+    {
+      "type": "function",
+      "key": "logIntakeActivity",
+      "file": "scripts/debt/ingest-cleaned-intake.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — separate logIntakeActivity in the cleaned-intake script, operates on a different action payload. T39 intake-audit has its own variant; not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "parseMasterLine",
+      "file": "scripts/debt/ingest-cleaned-intake.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — both intake scripts have a local parseMasterLine with different signatures (process-review-needed uses (rawLine, hashes, sourceIds, lineNum); ingest-cleaned-intake uses (line, hashSet, idState, lineNum)). Coincidental name collision, not a propagation miss."
+    },
+    {
+      "type": "function",
       "key": "nextLine",
       "file": "scripts/debt/extract-context-debt.js",
       "addedAt": "2026-04-05",
