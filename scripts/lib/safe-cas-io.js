@@ -45,6 +45,7 @@ const path = require("node:path");
 const { refuseSymlinkWithParents, validatePathInDir } = require("./security-helpers.js");
 const { safeWriteFileSync } = require("./safe-fs.js");
 const { candidateSchema } = require("./analysis-schema.js");
+const { sanitizeError } = require("./sanitize-error.cjs");
 
 // Project root — derived from this file's location (scripts/lib/safe-cas-io.js).
 // Used only as the containment root for validatePathInDir() so read/write
@@ -161,8 +162,11 @@ function safeReadJson(filePath) {
     // Preserve SyntaxError type so callers can `instanceof SyntaxError` —
     // JSON.parse always throws SyntaxError, so reconstructing it here keeps
     // type-based error handling working while still adding file context.
-    const detail = err instanceof Error ? err.message : String(err);
-    throw new SyntaxError(`Failed to parse JSON in ${path.basename(filePath)}: ${detail}`);
+    // sanitizeError() scrubs absolute paths, env values, and credentials from
+    // the underlying error message before it's embedded in our rethrow.
+    throw new SyntaxError(
+      `Failed to parse JSON in ${path.basename(filePath)}: ${sanitizeError(err)}`
+    );
   }
 }
 
