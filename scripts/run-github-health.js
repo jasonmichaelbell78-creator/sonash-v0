@@ -139,7 +139,7 @@ function getRepoSlug() {
 /**
  * Check dedup guard — skip if last run was < DEDUP_MINUTES ago.
  * Returns last entry or null. Validates the stored timestamp before arithmetic
- * so a corrupt history entry cannot cause a silent NaN comparison.
+ * so a corrupt history entry cannot cause a silent Number.NaN comparison.
  */
 function checkDedup() {
   try {
