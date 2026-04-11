@@ -366,6 +366,24 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#63)</summary>
+
+- **Date:** 2026-04-11
+- **Reviews consolidated:** #80-#rev-81
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#62)</summary>
+
+- **Date:** 2026-04-11
+- **Reviews consolidated:** #80-#rev-81
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#61)</summary>
 
 - **Date:** 2026-04-10
@@ -1725,6 +1743,26 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 2     | 0        | 17       |
+
+---
+
+### Review rev-81: PR #505 R1 (2026-04-10)
+
+**Date:** 2026-04-10 | **PR:** #505 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 16    | 14    | 0        | 2        |
+
+**Patterns:**
+
+- shared-safe-cas-io-helper
+- fd-pinning-toctou-reads
+- isValidArtifactFile-strict
+- zod-empty-string-valid
+- cc-via-helper-extract
+- process-overview-diagram-drift
+- task-notification-result-field
 
 ## Key Patterns
 

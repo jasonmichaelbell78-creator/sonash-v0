@@ -1,5 +1,7 @@
 "use strict";
 
+const { sanitizeError } = require("./sanitize-error.cjs");
+
 /**
  * todos-mutations.js — Pure functions for /todo skill JSONL mutations.
  *
@@ -168,7 +170,7 @@ function parseStrictJsonl(raw) {
     try {
       records.push(JSON.parse(trimmed));
     } catch (err) {
-      throw new Error(`parse error at line ${i + 1}: ${err.message}`);
+      throw new Error(`parse error at line ${i + 1}: ${sanitizeError(err)}`);
     }
   }
   return records;

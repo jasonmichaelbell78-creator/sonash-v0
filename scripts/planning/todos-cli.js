@@ -129,7 +129,7 @@ function dispatchAdd(before, args) {
   try {
     payload = JSON.parse(args.data);
   } catch (err) {
-    fail(`add --data must be valid JSON: ${err.message}`);
+    fail(`add --data must be valid JSON: ${sanitizeError(err)}`);
   }
   return opAdd(before, payload);
 }
@@ -141,7 +141,7 @@ function dispatchEdit(before, args) {
   try {
     patch = JSON.parse(args.data);
   } catch (err) {
-    fail(`edit --data must be valid JSON: ${err.message}`);
+    fail(`edit --data must be valid JSON: ${sanitizeError(err)}`);
   }
   return opEdit(before, args.id, patch);
 }
@@ -252,14 +252,14 @@ function main() {
       process.stdout.write(summary + "\n");
     });
   } catch (err) {
-    fail(err.message, 2);
+    fail(sanitizeError(err), 2);
   }
 
   // Render outside the lock — render-todos.js does its own write
   try {
     renderTodos({ silent: true });
   } catch (err) {
-    process.stderr.write(`warning: render failed (${err.message})\n`);
+    process.stderr.write(`warning: render failed (${sanitizeError(err)})\n`);
     process.exit(0);
   }
 }

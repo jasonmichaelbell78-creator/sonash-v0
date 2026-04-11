@@ -17,11 +17,13 @@ exec > "$HOOK_OUTPUT_LOG" 2>&1
 # --- Wave 3: Timing infrastructure (D6, D7) ---
 HOOK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 CHECKS_TMPFILE=$(mktemp)
-add_exit_trap "rm -f '$CHECKS_TMPFILE'"
 
-# Display log on failure so developers see what went wrong (Gemini review #379)
-# Capture exit code before chain runs; display log to stderr on failure
-add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ]; then if [ -f "$HOOK_OUTPUT_LOG" ]; then exec 1>/dev/null; printf "\n--- PRE-COMMIT HOOK FAILED ---\n" >&2; cat "$HOOK_OUTPUT_LOG" >&2; printf "--- END OF LOGS ---\n" >&2; fi; write_hook_runs_jsonl "pre-commit" "$CHECKS_TMPFILE" "0"; fi'
+# T39: Single combined EXIT trap — captures HOOK_EXIT FIRST (before any command
+# overwrites $?), performs failure diagnostics + hook-runs.jsonl write while
+# CHECKS_TMPFILE is still readable, THEN cleans up the tmpfile. Previous
+# two-trap sequence had the rm-f trap fire first, destroying both the tmpfile
+# and the real exit code (see .husky/pre-push for the same fix).
+add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ]; then if [ -f "$HOOK_OUTPUT_LOG" ]; then exec 1>/dev/null; printf "\n--- PRE-COMMIT HOOK FAILED ---\n" >&2; cat "$HOOK_OUTPUT_LOG" >&2; printf "--- END OF LOGS ---\n" >&2; fi; if [ -s "$CHECKS_TMPFILE" ]; then write_hook_runs_jsonl "pre-commit" "$CHECKS_TMPFILE" "0"; fi; fi; rm -f "$CHECKS_TMPFILE"'
 
 # --- SKIP_CHECKS consolidation ---
 # Single variable: SKIP_CHECKS="cross-doc,patterns" SKIP_REASON="reason" git commit ...
@@ -73,15 +75,22 @@ if [ -n "$BRANCH_NAME" ] && [ "$BRANCH_NAME" != "main" ] && [ "$BRANCH_NAME" != 
       exit 1
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_STRONG" ]; then
       echo "  ⚠️  PR CREEP WARNING: $COMMIT_COUNT commits on this branch — PR strongly recommended" >&3
+      # T39: Stable message (commit count moves to --count field) so dedup on
+      # type+message matches across growing branch sizes. Previously every new
+      # commit created a distinct "N commits on branch" message that evaded
+      # dedup, producing 7+ duplicate active pr-creep warnings per branch.
       node scripts/append-hook-warning.js --hook=pre-commit --type=pr-creep --severity=warning \
-        --message="$COMMIT_COUNT commits on branch — PR strongly recommended" \
+        --message="Branch has >=20 commits — PR strongly recommended" \
         --action="Create PR: gh pr create" \
+        --count="$COMMIT_COUNT" \
         || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
     elif [ "$COMMIT_COUNT" -ge "$PR_CREEP_WARN" ]; then
       echo "  📋 Branch has $COMMIT_COUNT commits — Action: create a PR with \`gh pr create\`" >&3
+      # T39: Stable message — see comment on --severity=warning branch above.
       node scripts/append-hook-warning.js --hook=pre-commit --type=pr-creep --severity=info \
-        --message="$COMMIT_COUNT commits on branch" \
+        --message="Branch has >=10 commits — create PR soon" \
         --action="Create PR: gh pr create" \
+        --count="$COMMIT_COUNT" \
         || echo "  ⚠️ Failed to record hook warning (append-hook-warning.js)" >&3
     fi
   fi

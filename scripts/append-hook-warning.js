@@ -293,6 +293,7 @@ function buildWarningEntry({
   sinceAck,
   fileList,
   pattern,
+  count,
 }) {
   const entry = {
     hook,
@@ -306,6 +307,11 @@ function buildWarningEntry({
   if (pattern) entry.pattern = pattern;
   if (occurrences > 0) entry.occurrences = occurrences;
   if (sinceAck > 0) entry.occurrences_since_ack = sinceAck;
+  // T39: Optional `count` field for metrics where the varying number would
+  // otherwise defeat dedup (e.g., pr-creep "10 commits on branch" → stable
+  // message + count=10). Kept as separate field so dedup on type+message
+  // matches across commit counts.
+  if (count !== undefined && count !== null && count !== "") entry.count = count;
   return entry;
 }
 
@@ -345,7 +351,16 @@ function readAckState() {
   }
 }
 
-function appendWarning(hook, type, severity, message, action = null, files = null, pattern = null) {
+function appendWarning(
+  hook,
+  type,
+  severity,
+  message,
+  action = null,
+  files = null,
+  pattern = null,
+  count = null
+) {
   const data = readWarnings();
   // D30: Read ack state once, pass to both dedup and occurrence tracking
   const ackState = readAckState();
@@ -369,6 +384,7 @@ function appendWarning(hook, type, severity, message, action = null, files = nul
     sinceAck,
     fileList,
     pattern,
+    count,
   });
   data.warnings.push(entry);
 
@@ -423,12 +439,13 @@ if (args.clear === "true") {
     args.message,
     args.action || null,
     args.files || null,
-    args.pattern || null
+    args.pattern || null,
+    args.count || null
   );
   // Silent success for hook usage
 } else {
   console.error(
-    "Usage: --hook=<hook> --type=<type> --severity=<severity> --message=<message> [--action=<action>]"
+    "Usage: --hook=<hook> --type=<type> --severity=<severity> --message=<message> [--action=<action>] [--count=<n>]"
   );
   console.error("       --clear=true");
   process.exit(1);

@@ -543,13 +543,33 @@ function analyzeFile(filePath) {
 // ---------------------------------------------------------------------------
 // File filtering
 // ---------------------------------------------------------------------------
-const EXCLUDED_DIRS = ["node_modules", ".next/", "dist/", "dist-tests/", "consolidation-output/"];
+// T39: Aligned with scripts/check-cyclomatic-cc.js:172 so cognitive-cc and
+// cyclomatic-cc scan the same file set. Previously cognitive-cc scanned test
+// files (.test., .spec.), tests/ dir, .planning/, eslint-plugin-sonash/, etc.
+// while cyclomatic-cc excluded them — producing "cognitive warns, cyclomatic
+// passes" asymmetry that looked like a disconnect between the two checks.
+const EXCLUDED_PATTERNS = [
+  /\.test\./,
+  /\.spec\./,
+  /node_modules\//,
+  /dist\//,
+  /\.next\//,
+  /tests\//,
+  /eslint-plugin-sonash\//,
+  /\.claude\/hooks\/backup\//,
+  /\.claude\/state\//,
+  /docs\/archive\//,
+  /scripts\/reviews\/dist\//,
+  /\.planning\//,
+  /dist-tests\//,
+  /consolidation-output\//,
+];
 
 function filterJsFiles(files) {
   return files.filter((f) => {
     const ext = extname(f);
     if (ext !== ".js" && ext !== ".mjs") return false;
-    return !EXCLUDED_DIRS.some((dir) => f.includes(dir));
+    return !EXCLUDED_PATTERNS.some((pat) => pat.test(f));
   });
 }
 

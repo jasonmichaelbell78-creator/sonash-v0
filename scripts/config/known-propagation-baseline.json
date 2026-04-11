@@ -4076,27 +4076,6 @@
       "file": "scripts/tasks/resolve-dependencies.js",
       "addedAt": "2026-04-05",
       "reason": "false positive — unrelated local variable with same name, not a propagation miss"
-    },
-    {
-      "type": "pattern",
-      "key": "path-containment",
-      "file": "scripts/detect-orphans.js",
-      "addedAt": "2026-04-05",
-      "reason": "New scripts use validatePathInDir for containment — false positive from pattern checker not recognizing validated path.join"
-    },
-    {
-      "type": "pattern",
-      "key": "path-containment",
-      "file": "scripts/lib/reference-graph.js",
-      "addedAt": "2026-04-05",
-      "reason": "New scripts use validatePathInDir for containment — false positive from pattern checker not recognizing validated path.join"
-    },
-    {
-      "type": "pattern",
-      "key": "path-containment",
-      "file": "scripts/render-orphan-report.js",
-      "addedAt": "2026-04-05",
-      "reason": "New scripts use validatePathInDir for containment — false positive from pattern checker not recognizing validated path.join"
     }
   ]
 }

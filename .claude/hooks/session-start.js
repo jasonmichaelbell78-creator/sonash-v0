@@ -1312,55 +1312,42 @@ try {
   // Non-fatal — tool manifest may not exist or be unreadable
 }
 
-// Persist session-start warnings to JSONL so statusline can display them
+// Persist session-start warnings via append-hook-warning.js so the dedup,
+// occurrences tracking, ack-state check, and JSONL audit trail all work.
+//
+// T39: Previously this block wrote directly to hook-warnings-log.jsonl via
+// fs.appendFileSync, bypassing append-hook-warning.js entirely. Result: 19 of
+// 46 log entries (41%) were bypass-originated duplicates — same type+message
+// written every session start with no occurrence counter, no dedup, no ack
+// check. Routing through append-hook-warning.js restores D16 (JSONL canonical
+// source via the canonical writer) and eliminates the duplicate stream. The
+// previous "lastCleared + 1s" timestamp hack was a workaround for the bypass
+// itself — with routing fixed, the normal dedup path handles the concurrent-
+// clear race correctly (new entries always get current-time stamps, and
+// dedup only suppresses when a matching entry already exists post-clear).
 if (warningEntries.length > 0) {
-  try {
-    const logDir = path.join(projectDir, ".claude", "state");
-    const logPath = path.join(logDir, "hook-warnings-log.jsonl");
-    let guardOk = false;
+  const appendWarningScript = path.join(projectDir, "scripts", "append-hook-warning.js");
+  for (const w of warningEntries) {
     try {
-      const { isSafeToWrite: safe } = require(
-        path.join(projectDir, ".claude", "hooks", "lib", "symlink-guard")
+      const cliArgs = [
+        appendWarningScript,
+        "--hook=session-start",
+        `--type=${w.type}`,
+        "--severity=warning",
+        `--message=${w.message}`,
+      ];
+      if (w.action) cliArgs.push(`--action=${w.action}`);
+      execFileSync(process.execPath, cliArgs, {
+        cwd: projectDir,
+        stdio: ["ignore", "pipe", "pipe"],
+        timeout: 5000,
+      });
+    } catch (persistErr) {
+      // Non-fatal — never block session start on warning persistence
+      console.warn(
+        `session-start: warning persistence failed for type=${w.type}: ${sanitizeError(persistErr)}`
       );
-      guardOk = Boolean(safe(logPath));
-    } catch {
-      // Guard missing/unloadable — fail closed, skip persistence
     }
-    if (guardOk) {
-      fs.mkdirSync(logDir, { recursive: true });
-      // Read current lastCleared and set timestamps 1s after it,
-      // so warnings survive even if a concurrent session set lastCleared
-      // moments before this flush runs
-      let ts = new Date().toISOString();
-      try {
-        const ackRaw = fs.readFileSync(path.join(logDir, "hook-warnings-ack.json"), "utf8");
-        const ackData = JSON.parse(ackRaw);
-        if (ackData.lastCleared) {
-          const afterCleared = new Date(new Date(ackData.lastCleared).getTime() + 1000);
-          const now = new Date();
-          ts = (afterCleared > now ? afterCleared : now).toISOString();
-        }
-      } catch {
-        /* no ack file — use current time */
-      }
-      const lines = warningEntries.map((w) =>
-        JSON.stringify({
-          hook: "session-start",
-          type: w.type,
-          severity: "warning",
-          message: w.message,
-          action: w.action,
-          timestamp: ts,
-          actor: "hook-system",
-          user: "redacted",
-          outcome: "warned",
-        })
-      );
-      fs.appendFileSync(logPath, lines.join("\n") + "\n");
-    }
-  } catch (persistErr) {
-    // Non-fatal — never block session start on warning persistence
-    console.warn(`session-start: warning persistence failed: ${sanitizeError(persistErr)}`);
   }
 }
 

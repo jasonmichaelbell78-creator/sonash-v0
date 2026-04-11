@@ -6,9 +6,9 @@
       "severity": "warning",
       "message": "Review lifecycle validation issues found",
       "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-10T19:52:01.758Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 4
+      "timestamp": "2026-04-11T01:09:37.826Z",
+      "occurrences": 7,
+      "occurrences_since_ack": 6
     },
     {
       "hook": "session-start",
@@ -16,19 +16,59 @@
       "severity": "warning",
       "message": "S0: 26 critical debt items",
       "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-10T19:52:01.758Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 4
+      "timestamp": "2026-04-11T01:09:37.826Z",
+      "occurrences": 7,
+      "occurrences_since_ack": 6
     },
     {
-      "hook": "session-start",
-      "type": "cli-tools-missing",
+      "hook": "pre-commit",
+      "type": "propagation-staged",
       "severity": "warning",
-      "message": "CLI tools missing: rg",
-      "action": "bash scripts/install-cli-tools.sh",
-      "timestamp": "2026-04-10T19:52:01.758Z",
-      "occurrences": 4,
-      "occurrences_since_ack": 4
+      "message": "WARN-severity propagation misses in staged files",
+      "action": "Review sibling files for same patterns",
+      "timestamp": "2026-04-11T00:08:19.225Z",
+      "occurrences": 3,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "16 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-10T21:04:35.312Z",
+      "occurrences": 11,
+      "occurrences_since_ack": 11
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "15 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-10T20:54:07.413Z",
+      "occurrences": 11,
+      "occurrences_since_ack": 11
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "14 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-10T20:40:57.286Z",
+      "occurrences": 11,
+      "occurrences_since_ack": 11
+    },
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "warning",
+      "message": "13 commits on branch",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-10T20:29:59.131Z",
+      "occurrences": 11,
+      "occurrences_since_ack": 11
     },
     {
       "hook": "pre-push",
@@ -57,8 +97,8 @@
       "message": "12 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T18:15:43.438Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 7
+      "occurrences": 11,
+      "occurrences_since_ack": 11
     },
     {
       "hook": "pre-commit",
@@ -67,8 +107,8 @@
       "message": "11 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T18:13:47.861Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 7
+      "occurrences": 11,
+      "occurrences_since_ack": 11
     },
     {
       "hook": "pre-commit",
@@ -77,18 +117,8 @@
       "message": "10 commits on branch",
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-10T16:10:26.061Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 7
-    },
-    {
-      "hook": "pre-commit",
-      "type": "propagation-staged",
-      "severity": "error",
-      "message": "BLOCK-severity propagation misses in staged files",
-      "action": "Stage sibling files or fix the old pattern",
-      "timestamp": "2026-04-10T12:29:51.019Z",
-      "occurrences": 2,
-      "occurrences_since_ack": 1
+      "occurrences": 11,
+      "occurrences_since_ack": 11
     },
     {
       "hook": "pre-push",
@@ -101,44 +131,14 @@
       "occurrences_since_ack": 1
     },
     {
-      "hook": "pre-commit",
-      "type": "pr-creep",
+      "hook": "session-start",
+      "type": "session-end-missing",
       "severity": "warning",
-      "message": "13 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-10T20:29:59.131Z",
-      "occurrences": 8,
-      "occurrences_since_ack": 8
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "14 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-10T20:40:57.286Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 9
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "15 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-10T20:54:07.413Z",
-      "occurrences": 10,
-      "occurrences_since_ack": 10
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "16 commits on branch",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-10T21:04:35.312Z",
-      "occurrences": 11,
-      "occurrences_since_ack": 11
+      "message": "Previous session started 2h ago without session-end",
+      "action": "Review with /alerts",
+      "timestamp": "2026-04-11T02:49:26.297Z",
+      "occurrences": 7,
+      "occurrences_since_ack": 6
     }
   ]
 }
