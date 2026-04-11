@@ -35,6 +35,10 @@ try {
   process.exit(2);
 }
 
+// T39: Shared JSONL line parser — satisfies pattern-compliance multi-line-
+// reassembly detector (Reviews 353, 357, 358).
+const { safeParseLine } = require("./lib/parse-jsonl-line.js");
+
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
 try {
@@ -90,17 +94,8 @@ function countRecentOccurrences(type, sinceDaysAgo) {
     const cutoff = Date.now() - (sinceDaysAgo || 7) * 24 * 60 * 60 * 1000;
     let count = 0;
     for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      // T39: try/catch wraps JSON.parse(line) directly — pattern-compliance
-      // detector (Reviews 353/357/358) expects this exact shape so pretty-
-      // printed multi-line entries silently fail their parse and get skipped
-      // rather than bubbling up.
-      let entry;
-      try {
-        entry = JSON.parse(line);
-      } catch {
-        continue; // skip malformed
-      }
+      const entry = safeParseLine(line);
+      if (!entry) continue;
       if (entry.type === type && new Date(entry.timestamp).getTime() > cutoff) count++;
     }
     return count;
@@ -136,14 +131,8 @@ function countOccurrencesSince(type, sinceTimestamp) {
     const since = new Date(sinceTimestamp).getTime();
     let count = 0;
     for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      // T39: see countRecentOccurrences — pattern-compliance detector shape.
-      let entry;
-      try {
-        entry = JSON.parse(line);
-      } catch {
-        continue; // skip malformed
-      }
+      const entry = safeParseLine(line);
+      if (!entry) continue;
       if (entry.type === type && new Date(entry.timestamp).getTime() > since) count++;
     }
     return count;
@@ -229,14 +218,8 @@ function hasMatchInWarningsLog(type, message, sinceMs) {
     }
     const content = fs.readFileSync(logPath, "utf8");
     for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      // T39: see countRecentOccurrences — pattern-compliance detector shape.
-      let entry;
-      try {
-        entry = JSON.parse(line);
-      } catch {
-        continue; // skip malformed
-      }
+      const entry = safeParseLine(line);
+      if (!entry) continue;
       if (
         entry.type === type &&
         entry.message === message &&

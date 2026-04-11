@@ -73,11 +73,11 @@ for (const r of filteredRetros) {
 
     // Per-round breakdown
     for (const rev of prReviews) {
-      const revTotal = rev.total || 0;
-      const revFixed = rev.fixed || 0;
+      const revTotal = rev.total ?? 0;
+      const revFixed = rev.fixed ?? 0;
       const revRate = revTotal > 0 ? ((revFixed / revTotal) * 100).toFixed(1) : "N/A";
       console.log(
-        `      ${rev.id || "?"}: ${revTotal} items, ${revFixed} fixed (${revRate}%), ${rev.deferred || 0} deferred, ${rev.rejected || 0} rejected`
+        `      ${rev.id || "?"}: ${revTotal} items, ${revFixed} fixed (${revRate}%), ${rev.deferred ?? 0} deferred, ${rev.rejected ?? 0} rejected`
       );
     }
   } else {

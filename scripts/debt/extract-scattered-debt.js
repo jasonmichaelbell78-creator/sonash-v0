@@ -18,6 +18,7 @@ const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
 const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(PROJECT_ROOT, "docs/technical-debt");
@@ -200,13 +201,9 @@ function loadExistingHashes() {
     return hashes;
   }
   for (const line of content.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const item = JSON.parse(line);
-      if (item.content_hash) hashes.add(item.content_hash);
-    } catch {
-      // skip bad lines
-    }
+    const item = safeParseLine(line);
+    if (!item) continue;
+    if (item.content_hash) hashes.add(item.content_hash);
   }
   return hashes;
 }

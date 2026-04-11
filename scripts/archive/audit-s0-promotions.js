@@ -30,6 +30,7 @@ const BASELINE_COMMIT = "08763212";
 
 const readJsonl = require("./lib/read-jsonl");
 const { safeWriteFileSync, safeRenameSync } = require("./lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 function readJsonlFromGit(commit, relPath) {
   try {
@@ -44,12 +45,12 @@ function readJsonlFromGit(commit, relPath) {
       .split("\n")
       .filter(Boolean)
       .flatMap((l, idx) => {
-        try {
-          return [JSON.parse(l)];
-        } catch {
+        const item = safeParseLine(l);
+        if (!item) {
           console.warn(`  WARN: malformed JSON at git:${commit}:${relPath}:${idx + 1} — skipping`);
           return [];
         }
+        return [item];
       });
   } catch (err) {
     console.error(`Failed to read ${relPath} from git commit ${commit}: ${sanitizeError(err)}`);

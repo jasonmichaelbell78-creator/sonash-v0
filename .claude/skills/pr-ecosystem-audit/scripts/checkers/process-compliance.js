@@ -28,6 +28,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "process_compliance";
 
@@ -779,9 +780,10 @@ function loadJsonl(filePath) {
     let skipped = 0;
     const results = [];
     for (const line of lines) {
-      try {
-        results.push(JSON.parse(line));
-      } catch {
+      const entry = safeParseLine(line);
+      if (entry) {
+        results.push(entry);
+      } else {
         skipped++;
       }
     }

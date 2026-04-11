@@ -18,6 +18,7 @@ const { glob } = require("glob");
 
 const normalizeCategory = require("../lib/normalize-category");
 const { safeWriteFileSync } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const REVIEWS_DIR = path.join(__dirname, "../../docs/reviews");
 const AGGREGATION_DIR = path.join(__dirname, "../../docs/aggregation");
@@ -153,25 +154,19 @@ async function main() {
       console.warn(`  ⚠️ Failed to read ${relPath}: ${errMsg}`);
       continue;
     }
-    const lines = content.split("\n").filter((line) => line.trim());
-
     let fileItemCount = 0;
-    for (const line of lines) {
-      try {
-        const item = JSON.parse(line);
-        const processed = processReviewItem(item, file);
+    for (const line of content.split("\n")) {
+      const item = safeParseLine(line);
+      if (!item) continue;
+      const processed = processReviewItem(item, file);
 
-        if (seenIds.has(processed.source_id)) {
-          continue;
-        }
-        seenIds.add(processed.source_id);
-
-        items.push(processed);
-        fileItemCount++;
-      } catch (err) {
-        const errMsg = err instanceof Error ? err.message : String(err);
-        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${errMsg}`);
+      if (seenIds.has(processed.source_id)) {
+        continue;
       }
+      seenIds.add(processed.source_id);
+
+      items.push(processed);
+      fileItemCount++;
     }
 
     if (fileItemCount > 0) {
@@ -197,25 +192,19 @@ async function main() {
       console.warn(`  ⚠️ Failed to read ${relPath}: ${errMsg}`);
       continue;
     }
-    const lines = content.split("\n").filter((line) => line.trim());
-
     let fileItemCount = 0;
-    for (const line of lines) {
-      try {
-        const item = JSON.parse(line);
-        const processed = processReviewItem(item, file);
+    for (const line of content.split("\n")) {
+      const item = safeParseLine(line);
+      if (!item) continue;
+      const processed = processReviewItem(item, file);
 
-        if (seenIds.has(processed.source_id)) {
-          continue;
-        }
-        seenIds.add(processed.source_id);
-
-        items.push(processed);
-        fileItemCount++;
-      } catch (err) {
-        const errMsg = err instanceof Error ? err.message : String(err);
-        console.warn(`  ⚠️ Failed to parse line in ${relPath}: ${errMsg}`);
+      if (seenIds.has(processed.source_id)) {
+        continue;
       }
+      seenIds.add(processed.source_id);
+
+      items.push(processed);
+      fileItemCount++;
     }
 
     if (fileItemCount > 0) {

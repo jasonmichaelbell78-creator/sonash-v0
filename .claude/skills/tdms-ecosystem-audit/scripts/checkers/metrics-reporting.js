@@ -27,6 +27,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "metrics_reporting";
 
@@ -64,10 +65,11 @@ function parseJsonl(content) {
     .map((l) => l.replace(/\r$/, ""))
     .filter((l) => l.trim().length > 0);
 
-  for (const line of lines) {
-    try {
-      items.push(JSON.parse(line));
-    } catch {
+  for (const rawLine of lines) {
+    const parsed = safeParseLine(rawLine);
+    if (parsed !== null) {
+      items.push(parsed);
+    } else {
       invalidCount++;
     }
   }

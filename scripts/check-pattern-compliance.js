@@ -682,6 +682,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|\/)scripts\//,
     pathExcludeList: verifiedPatterns["unbounded-file-read"] || [],
+    excludeTests: true, // T39: test fixtures are small and controlled
   },
 
   // shell-command-injection: MIGRATED to ESLint sonash/no-shell-injection (AST-based)
@@ -930,6 +931,7 @@ const ANTI_PATTERNS = [
     pathExclude:
       /(?:^|[\\/])(?:check-pattern-compliance|safe-fs|security-helpers|session-start)\.js$/,
     pathExcludeList: verifiedPatterns["no-raw-fs-write"] || [],
+    excludeTests: true, // T39: test setup/teardown legitimately uses raw fs writes
   },
 
   // === Patterns automated from LEARNING_METRICS.md failing patterns ===
@@ -965,6 +967,7 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["jsonl-parse-no-try-catch"] || [],
+    excludeTests: true, // T39: test JSONL is controlled input
   },
 
   // Pattern: "Multi-line JSON reassembly" — 3 recurrences (Reviews: 353, 357, 358)
@@ -1009,6 +1012,7 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
     pathExclude: /(?:^|[\\/])(?:check-pattern-compliance|safe-fs)\.js$/,
     pathExcludeList: verifiedPatterns["multiline-json-reassembly"] || [],
+    excludeTests: true, // T39: test JSONL is controlled input
   },
 
   // Pattern: "Rename fallback guard" — 14 recurrences (Reviews: 339, 340, 341, 342, 345)
@@ -1545,6 +1549,7 @@ const ANTI_PATTERNS = [
     review: "Code readability — single-letter vars reduce maintainability",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
     pathFilter: /(?:^|\/)(?:app|components|pages|lib)\//,
+    excludeTests: true, // T39: test conventions (t, i, j, e, r) are idiomatic
   },
   {
     id: "no-todo-without-ticket",
@@ -1758,6 +1763,7 @@ const ANTI_PATTERNS = [
     fix: "Replace `[...].includes(x)` with `new Set([...]).has(x)` for O(1) lookups",
     review: "5 review recurrences — Set vs Array migration",
     fileTypes: [".js", ".ts", ".tsx"],
+    excludeTests: true, // T39: micro-optimization not critical in test assertions
   },
 
   // Multiple writeFileSync calls without try/catch — partial writes may leave repo inconsistent
@@ -1786,6 +1792,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|[\\/])(?:\.claude[\\/]hooks|scripts)[\\/]/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    excludeTests: true, // T39: tests legitimately do batch setup writes
   },
 
   // readFileSync with variable path and no binary file check — may crash on binary input
@@ -1844,6 +1851,7 @@ const ANTI_PATTERNS = [
     fileTypes: [".js", ".ts"],
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
+    excludeTests: true, // T39: test fixtures are known-text files
   },
 
   // --- Patterns from Learning Effectiveness Analysis (Session #257) ---
@@ -1926,6 +1934,7 @@ const ANTI_PATTERNS = [
     pathFilter: /(?:^|[\\/])scripts[\\/]/,
     pathExclude: /(?:^|[\\/])check-pattern-compliance\.js$/,
     pathExcludeList: verifiedPatterns["silent-json-parse"] || [],
+    excludeTests: true, // T39: test JSON is controlled input
   },
 
   // Symlink parent traversal (3x recurrence)
@@ -2174,12 +2183,23 @@ function detectFileType(filePath, content, ext) {
  * @param {string} normalizedPath - Normalized file path
  * @returns {boolean} True if pattern should be skipped
  */
+// T39: Test file exclusion regex for safety-oriented patterns where test
+// code is legitimately exempt (controlled fixtures, expected fail-loud
+// semantics, small test data). Used by patterns with `excludeTests: true`.
+// Matches:
+//   - Files under tests/, test/, __tests__/
+//   - Files with .test. or .spec. in the name
+const TEST_FILE_PATH_REGEX = /(?:^|[\\/])(?:tests?|__tests__)[\\/]|\.(?:test|spec)\./;
+
 function shouldSkipPattern(antiPattern, ext, normalizedPath) {
   // FP auto-disable: skip rules exceeding exclusion threshold (ENFR-07)
   if (FP_DISABLED_RULES.has(antiPattern.id)) return true;
   if (!antiPattern.fileTypes.includes(ext)) return true;
   if (antiPattern.pathFilter && !antiPattern.pathFilter.test(normalizedPath)) return true;
   if (antiPattern.pathExclude?.test(normalizedPath)) return true;
+  // T39: Opt-in test-file exclusion for safety patterns (fs writes, binary
+  // reads, JSONL parsing) where test code is legitimately exempt.
+  if (antiPattern.excludeTests && TEST_FILE_PATH_REGEX.test(normalizedPath)) return true;
   // Support array-based exclusions for S5843 regex complexity compliance
   if (antiPattern.pathExcludeList) {
     const fileName = normalizedPath.split("/").pop() || "";

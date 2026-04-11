@@ -65,6 +65,7 @@ function safeCloneObject(obj) {
 
 const { loadConfig } = require("../config/load-config");
 const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");

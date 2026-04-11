@@ -54,7 +54,7 @@ describe("checkPendingRefinements logic", () => {
     const escalated: unknown[] = [];
     const active: unknown[] = [];
     for (const e of parsed) {
-      const count = ((e.surfaced_count as number) || 0) + 1;
+      const count = ((e.surfaced_count as number) ?? 0) + 1;
       if (count >= 3) escalated.push({ ...e, surfaced_count: count });
       else active.push({ ...e, surfaced_count: count });
     }
@@ -79,7 +79,7 @@ describe("checkPendingRefinements logic", () => {
     const escalated: unknown[] = [];
     const active: unknown[] = [];
     for (const e of parsed) {
-      const count = ((e.surfaced_count as number) || 0) + 1;
+      const count = ((e.surfaced_count as number) ?? 0) + 1;
       if (count >= 3) escalated.push({ ...e, surfaced_count: count });
       else active.push({ ...e, surfaced_count: count });
     }

@@ -47,6 +47,8 @@ try {
   isSafeToWrite = () => false;
 }
 
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
+
 const ROOT = join(__dirname, "..");
 const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const REVIEWS_FILE = join(ROOT, ".claude", "state", "reviews.jsonl");
@@ -158,12 +160,9 @@ function loadExistingIds() {
     const content = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
     if (!content) return ids;
     for (const line of content.split("\n")) {
-      try {
-        const obj = JSON.parse(line);
-        if (typeof obj.id === "number") ids.add(obj.id);
-      } catch {
-        /* skip malformed */
-      }
+      const obj = safeParseLine(line);
+      if (!obj) continue;
+      if (typeof obj.id === "number") ids.add(obj.id);
     }
   } catch (err) {
     console.error("Failed to read reviews.jsonl:", sanitizeError(err));
@@ -885,12 +884,9 @@ function loadExistingRetroIds() {
     const jsonlContent = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
     if (!jsonlContent) return ids;
     for (const line of jsonlContent.split("\n")) {
-      try {
-        const obj = JSON.parse(line);
-        if (typeof obj.id === "string" && obj.id.startsWith("retro-")) ids.add(obj.id);
-      } catch {
-        /* skip */
-      }
+      const obj = safeParseLine(line);
+      if (!obj) continue;
+      if (typeof obj.id === "string" && obj.id.startsWith("retro-")) ids.add(obj.id);
     }
   } catch {
     /* skip */

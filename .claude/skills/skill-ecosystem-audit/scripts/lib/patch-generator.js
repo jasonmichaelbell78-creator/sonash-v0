@@ -11,10 +11,11 @@
 
 "use strict";
 
-let fs, path;
+let fs, path, safeParseLine;
 try {
   fs = require("node:fs");
   path = require("node:path");
+  ({ safeParseLine } = require("./parse-jsonl-line.js"));
 } catch (err) {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
@@ -132,15 +133,12 @@ function createPatchGenerator(rootDir) {
       const lines = content.trim().split("\n").filter(Boolean);
       let maxId = 0;
       for (const line of lines) {
-        try {
-          const entry = JSON.parse(line);
-          const match = (entry.id || "").match(/DEBT-(\d+)/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num > maxId) maxId = num;
-          }
-        } catch {
-          // skip malformed lines
+        const entry = safeParseLine(line);
+        if (!entry) continue;
+        const match = (entry.id || "").match(/DEBT-(\d+)/);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxId) maxId = num;
         }
       }
       return `DEBT-${maxId + 1}`;

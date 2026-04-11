@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.25 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.26 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-10 (Session #274)
+2026-04-10 (Session #275)
 
 ## Purpose
 
@@ -29,23 +29,20 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-10 (Session #274 end) **Branch**: `planning-4826`
-**Working On**: T29 Wave 4 Step 10 — batch upgrade of 12 TRUE quick-scan repos
-to Standard. **2 of 12 complete (firecrawl, MinerU)**. Remaining 10 (in priority
-order): crawl4ai, marker, surya, reader, tesseract, ArchiveBox, outline, qmd,
-nitter, lux-video-downloader.
+**Last Checkpoint**: 2026-04-10 (Session #275 end) **Branch**: `planning-4826`
+**Working On**: T39 comprehensive hook fix landed (3 commits on local branch, PR
+being created). Next: T29 Wave 4 Step 10 #3 (crawl4ai) resumes after PR lands.
 
-**Next Step**: Invoke `/repo-analysis https://github.com/unclecode/crawl4ai` via
-the Skill tool. **Standard is now the default** per SKILL.md v4.3 update in
-Session #274 — no `--depth` flag needed. Quick is now opt-in for triage only.
+**Next Step**: Review the T39 PR, merge, then invoke
+`/repo-analysis https://github.com/unclecode/crawl4ai` to continue Wave 4.
 
-**Uncommitted Work**: None after Session #274 session-end push.
+**Uncommitted Work**: Staged in final T39 session-end commit.
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 274 (since Jan 1, 2026)
+**Current Session Count**: 275 (since Jan 1, 2026)
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -54,6 +51,81 @@ Session #274 — no `--depth` flag needed. Quick is now opt-in for triage only.
 ---
 
 ## Recent Session Summaries
+
+**Session #275** (T39 HOOK DRIFT LOOP + CC DISCONNECT + NOISE REDUCTION):
+
+- **Branch**: `planning-4826`
+- **Commits (3+)**: `5961a604` (initial 9-fix batch), `177a9144` (pattern-
+  compliance iteration attempt), + final session-end commit with shared JSONL
+  helper + pattern-compliance test exclusions + ~30 additional fixes.
+- **Drift loop root cause found**: `.husky/pre-push` and `.husky/pre-commit`
+  both had broken failure-path EXIT traps — `add_exit_trap` chained `rm -f`
+  BEFORE the conditional `write_hook_runs_jsonl` call, so `rm`'s exit 0
+  overwrote `$?` and the failure branch was unreachable AND the tmpfile was
+  already deleted. Two compound bugs made failure logging structurally
+  impossible. Telemetry showed 0 fails across 49 pre-push runs despite real
+  failures. D6 and D25 effectively broken for months. Fixed with single combined
+  trap.
+- **Cognitive-cc real violation**: `scripts/planning/render-todos.js:70`
+  (renderTodos, CC 22) was the actual check blocking pushes — refactored to CC
+  ≤15 via helper extraction (renderActiveSection/Completed/Archived).
+- **CC disconnect harmonized**: cognitive-cc + cyclomatic-cc now use same file
+  exclusions (was: cognitive scanned test files, cyclomatic didn't), same
+  exit-code-2 handling (both now warn+continue on script error — user chose
+  "warn, fix on review" over block), same baseline-awareness (cyclomatic's
+  12-pattern exclusion list ported to cognitive).
+- **pr-creep noise fix**: `.husky/pre-commit` pr-creep messages were embedding
+  `$COMMIT_COUNT` literally, defeating dedup on type+message. New stable
+  message + `--count` field on `append-hook-warning.js`. Dedup verified
+  functionally.
+- **session-start bypass fix**: `.claude/hooks/session-start.js:1316-1365` was
+  writing directly to `hook-warnings-log.jsonl` via `fs.appendFileSync`,
+  bypassing `append-hook-warning.js`'s dedup entirely (41% of log entries were
+  bypass-originated). Now routes through the canonical writer.
+- **5 real err.message violations fixed**: `scripts/lib/todos-mutations.js:171`
+  and `scripts/planning/todos-cli.js:132,144,255,262` — wrapped with
+  `sanitizeError()`. Cleared all BLOCK-severity propagation-staged misses.
+- **Shared JSONL helper**: Created `scripts/lib/parse-jsonl-line.js` with
+  detector-compliant
+  `try { return JSON.parse(trimmed); } catch { return null; }` shape. Applied to
+  append-hook-warning.js and (via parallel agents) to 36+ scripts/ and
+  .claude/skills/ files. Per-skill helper copies created in 8 ecosystem audit
+  skills (self-contained). This alone dissolved ~40 JSONL warnings.
+- **Pattern-compliance checker improvements**: Added `excludeTests: true` field
+  to 7 safety-oriented detectors (writeFileSync, readFileSync binary check,
+  JSONL reassembly + line parse, JSON.parse try/catch, multiple writeFileSync,
+  OOM read+split, single-letter var, Set-over-Array) so test files no longer
+  trip patterns that are idiomatic in test code. Test conventions (controlled
+  fixtures, fail-loud semantics) are legitimately exempt. Dissolved 421+
+  warnings (620 → 163).
+- **Dead baseline cleanup**: 3 orphan `pattern:path-containment` entries removed
+  from `known-propagation-baseline.json`. 47 `function:*` entries KEPT —
+  verified live via `check-propagation.js:608, 623`.
+- **hook-checks.json drift updated**: cyclomatic-cc entry now documents the
+  warn-on-exit-2 behavior (FIX 4).
+- **Deep dive doc**: `.research/T39_DRIFT_LOOP_DEEP_DIVE.md` (6000+ words)
+  synthesizes findings from 5-layer parallel multi-agent discovery.
+- **Work-locale memory consulted**: User pointed to
+  `C:\Users\jason\Downloads\memory\memory\` — 8 load-bearing feedback files read
+  (commit_hook_state_files, propagation_fix, deep_plan_hook_discovery,
+  ack_requires_approval, never_defer_without_approval, no_session_end
+  \_assumptions, sws_session221_decisions, cross_locale_config). Remaining 27
+  files noted but not consumed (separate todo T43).
+- **Pattern warnings remaining (~163)**: Mix of production-code issues that
+  require per-file refactoring — writeFileSync → safeWriteFileSync migrations,
+  readFileSync binary checks, OOM size guards, single-letter var renames, regex
+  complexity splits. Filed for follow-up work (not fully addressed in this
+  session due to scope).
+- **T30 function-propagation**: `nextId`, `serializeJsonl`, `parseArgs` flagged
+  by check-propagation.js as "misses" — confirmed coincidental name collisions
+  in different files (debt ids vs todo ids vs patch ids). Not real duplicates.
+  Check-propagation.js's naive name matching is the source.
+- **FIX 1 verification**: Trap rewrite verified with synthetic shell test
+  harness on both success (exit 0 — no log) and failure (exit 1 — log written)
+  paths. Real-world verification pending (next actual push failure).
+- **FIX 7 verification**: Static analysis only — will verify on next
+  session-start when the new routing path runs for the first time.
+- **WHERE TO RESUME**: T39 PR merged → T29 Wave 4 Step 10 #3 (crawl4ai).
 
 **Session #274** (T29 WAVE 4 STEP 10 #2 — MINERU STANDARD + SKILL COMPLIANCE
 RESET):
@@ -137,107 +209,7 @@ CAUGHT):
 - **Push cancelled**: stale propagation-staged hook warning blocked push + user
   declined autonomous ack.
 
-**Session #272** (T29 WAVE 3 STEPS 7-8 + DEBT CLEANUP + WAVE 4 SCOPE
-CORRECTION):
-
-- **Branch**: `planning-4826`
-- **Cross-locale sync**: Work locale arrival, pulled from remote (14 commits
-  planning-4826 + 15 commits main fast-forwarded). 4 stashes cleared. 12 dirty
-  hook-state files discarded per "remote is canon".
-- **Todo additions**: T31 (hook state file tracking redesign — cross-locale
-  design issue, Category A telemetry vs Category B learning), T32 (/todo skill
-  invocation schema drift discovered during /todo add).
-- **T29 Wave 3 Steps 7-8** — 8 files updated: repo-analysis SKILL+REFERENCE (5+3
-  refs), website-analysis SKILL+REFERENCE (4+1 refs), analyze/SKILL.md Synthesis
-  Mode rewrite, analyze/REFERENCE.md §2.3+§3.1 rewrite, shared/CONVENTIONS.md
-  family list + line 115 + **new §17 Synthesis Output Contract added**,
-  CLAUDE.md line 215 trigger table row. DOCUMENTATION_INDEX.md regenerated.
-  patterns:check passed. No remaining /repo-synthesis or /website-synthesis refs
-  outside intentional deprecation stubs, version history, migration notes,
-  session history.
-- **Debt cleanup (3 items)**: (1) Deleted
-  `.claude/skills/schemas/synthesis-schema.ts` + updated validate-artifact.ts to
-  drop synthesis branch (analysis/findings validators intact). (2) Fixed
-  research-index.jsonl depth field for karpathy-autoresearch and
-  codecrafters-io-build-your-own-x (`deep`→`quick`) + output_dir paths corrected
-  from `.research/repo-analysis/` to `.research/analysis/`. (3) Deleted 4 stale
-  backup files in repo-analysis/ and website-analysis/ dirs.
-- **🔥 Wave 4 scope correction (major)**: Pre-Wave-4 audit ran
-  `node scripts/cas/self-audit.js` on sample repos and discovered that
-  `scripts/cas/migrate-v3.js` (Session #270 v3.0 migration) stamped
-  `depth: "quick"` on repos that actually have full Standard artifact sets.
-  **Real Wave 4 scope is 12 TRUE quick-scan repos, not 22.** The other 10 are
-  mislabeled — they have findings/summary/deep-read/content-eval/coverage-audit/
-  creator-view/value-map/journal-entries but their depth field is wrong. Plan
-  updated with new Step 8.5 (metadata patches + migrate-v3.js root-cause fix)
-  before revised Step 9 (12 repos, not 22) and Step 10 (~1.5-2h, not 2-3h).
-- **Extractions audit**: journal ↔ EXTRACTIONS.md consistent (196 entries / 23
-  sources both sides, matching counts). 11 of the 22 "quick" repos were missing
-  from extractions — turned out 11 of those 12 TRUE quicks have zero journal
-  entries (legitimate — quick scans don't produce candidates).
-- **Firecrawl pilot (paused)**: Attempted Wave 4A #1 pilot on firecrawl for
-  full-fidelity Standard run. Completed VALIDATE, Phase 0 Quick Scan API batch,
-  Phase 1 clone (1162 files, monorepo with 13 sub-apps: api/ui/playwright/redis/
-  postgres/test-suite + 7 SDKs in TS/JS/Python/Rust/Go/Java/Elixir). AGPL-3.0
-  license, 106,772 stars, 68.2% TypeScript. Paused before repomix to re-audit
-  Wave 4 scope. State saved at
-  `.claude/state/repo-analysis.firecrawl.state.json` with resume instructions.
-  Clone still on disk at `/tmp/repo-analysis-firecrawl/`.
-- **Session-begin triage**: Fixed `npm ci` + `npm run test:build` failures from
-  SessionStart hook. Acked 2 hook warnings (propagation-staged + trigger) and
-  synced lastCleared. 10 pre-flight scripts ran.
-- **WHERE TO RESUME**: Execute Wave 4 Step 8.5 (metadata patches for 10
-  mislabeled repos + audit migrate-v3.js), then revised Step 9 checklist (12
-  TRUE quicks), then Step 10 (per-repo Standard runs — consider pragmatic
-  deviations like skip repomix / inline dimension wave for very large repos like
-  firecrawl).
-
-**Session #271** (T29 WAVES 1-2 + WAVE 3 PARTIAL — /synthesize LIVE):
-
-- **Branch**: `planning-4826`
-- **Commits (4):** `3ff5c0b6`, `f77ed4a0`, `52e81a6a`, `20516d40`. Pushed.
-- **Pre-flight triage** (7 items addressed): fixed `consolidation.json`
-  validator to accept string IDs (`scripts/check-review-archive.js`); added
-  titles to rev-69..77 (9 JSONL records); fixed rendered view count (20→25);
-  binary-file extension allowlist in `scripts/archive-doc.js`; `npm audit fix`
-  cleared all 3 vulnerabilities (basic-ftp HIGH + 5 hono moderates);
-  `deleteBranchOnMerge` enabled on GitHub repo; SESSION_CONTEXT ROADMAP track
-  sync. Filed **DEBT-45646** (CI pattern compliance exits 1 on test-file warns —
-  investigation deferred to Track D).
-- **T29 Wave 1 (Steps 1-3):** Added `synthesisRecord` Zod schema to
-  `scripts/lib/analysis-schema.js` — 14 sub-schemas (themeSchema, gapSchema,
-  chainNodeSchema, opportunitySchema, changesSectionSchema, etc.) + 6 new enums
-  (sourceTierEnum, paradigmEnum, synthesisModeEnum, convergenceEnum,
-  opportunityRouteEnum, chainTierEnum). `analysisRecordCore.source_tier`
-  optional (T1-T4). `validate()` extended for `type='synthesis'`.
-  `scripts/cas/migrate-v3.js` fills source_tier defaults — all 34 analysis
-  records migrated (16 repos T1, 18 other T2). All 4 handler SKILL.md files
-  updated with new gate messaging (Quick Scan = preview, Standard =
-  artifact-producing) + source_tier semantics.
-- **T29 Wave 2 (Steps 4-5):** Created `/synthesize` skill —
-  `.claude/skills/synthesize/SKILL.md` (~290 lines: 7 critical rules, 6-option
-  state-aware menu, 7 process phases, 8 output sections, 10-dimension
-  self-audit). `REFERENCE.md` (~530 lines, 12 sections): paradigm templates,
-  cross-type detection (4 methods), candidate dedup with convergence boost, tier
-  weighting, incremental algorithm, re-synthesis change detection, self-audit
-  rubric, state file schema, subagent strategy, reading chain. Traceable to all
-  32 DECISIONS. `COMMAND_REFERENCE.md` updated.
-- **T29 Wave 3 (Step 6 only — partial):** Replaced `repo-synthesis/SKILL.md` and
-  `website-synthesis/SKILL.md` with deprecation redirects. Both `REFERENCE.md`
-  files deleted. Migration paths documented. Wave 3 Steps 7-8 (14 upstream
-  reference updates + CONVENTIONS Section 17) deferred.
-- **Code review (Wave 1 scripts):** APPROVED. 0 blockers. 2 warnings
-  (signal_strength duplicates convergenceEnum; existsSync→readFileSync race
-  pattern pre-existing) + 2 suggestions noted for future cleanup.
-- **Skipped push checks (user-authorized):** `cross-doc` (commit 20516d40 —
-  COMMAND_REFERENCE already updated in 52e81a6a); `cognitive-cc` (DEBT-45635
-  known exit 2).
-- **Hook summary:** 3 overrides, 1 warning, 8 warning types acked.
-- **WHERE TO RESUME:** T29 Wave 3 Steps 7-8 (14 reference updates + CONVENTIONS
-  Section 17), then Wave 4 (22 quick-scan upgrades, separate session), then Wave
-  5 (E2E testing + audit).
-
-> For older session summaries (including Session #270, #271), see
+> For older session summaries (including Session #270, #271, #272), see
 > [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
 
 ---
@@ -251,6 +223,7 @@ CORRECTION):
 | **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded. |
 | **T28 Content Analysis System**    | E2E DONE      | 25 sources, 236 candidates in journal. MinerU (#274) added 9 entries.           |
 | **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10: **2 of 12** (firecrawl, MinerU). Standard. Remaining 10.        |
+| **T39 Hook Drift Loop**            | FIX LANDED    | Drift loop + CC disconnect + noise reduction fixes in 3 commits. 620→163 warn.  |
 | **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                         |
 | **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                               |
 | **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                 |
@@ -277,7 +250,12 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **T29 Wave 4 Step 10 continuation** — Resume the Standard upgrade batch at
+1. **T39 PR merged + T39 follow-ups** — Once the Session #275 PR is reviewed and
+   merged, address the ~163 residual pattern-compliance warnings that did not
+   fit in one session: writeFileSync → safeWriteFileSync migrations in 32 files,
+   readFileSync binary checks, OOM size guards, single-letter var renames, regex
+   complexity splits. File as separate todo or TDMS items.
+2. **T29 Wave 4 Step 10 continuation** — Resume the Standard upgrade batch at
    **#3 of 12 = crawl4ai** (`unclecode/crawl4ai`). Apache-2.0. Standard depth is
    now the default per SKILL.md v4.3 — no `--depth` flag needed. Remaining after
    crawl4ai: marker, surya, reader, tesseract, ArchiveBox, outline, qmd, nitter,
@@ -285,25 +263,25 @@ Actions, manual setup).
    complete in full or be explicitly skipped by user decision** — no silent
    deferrals, no "blocked on decision" burial in JSONL, no skipping interactive
    steps (Tag Suggestion, Retro, Routing Menu).
-2. **T29 Wave 4 Step 10.5** — Full-corpus audit gate (every .research/analysis/
+3. **T29 Wave 4 Step 10.5** — Full-corpus audit gate (every .research/analysis/
    source). Runs AFTER Step 10 completes, BEFORE Wave 5.
-3. **T29 Wave 5** — E2E testing of `/synthesize` + 10-dim self-audit +
+4. **T29 Wave 5** — E2E testing of `/synthesize` + 10-dim self-audit +
    code-reviewer pass. Depends on Wave 4 completion.
-4. **Test `/recall`** — SQLite FTS5 query interface never tested with live data.
-5. **T31 — hook state file tracking redesign** — Category A telemetry vs
+5. **Test `/recall`** — SQLite FTS5 query interface never tested with live data.
+6. **T31 — hook state file tracking redesign** — Category A telemetry vs
    Category B learning, cross-locale sync destroys Cat B signal daily.
    Investigate gitignore / per-locale subdirs / merge-friendly formats /
    session-end reliability.
-6. **T33 — PreToolUse hook node PATH fix** — `node: command not found` on every
+7. **T33 — PreToolUse hook node PATH fix** — `node: command not found` on every
    Write/Edit (non-blocking stderr noise). Needs fnm/nvm PATH fix.
-7. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
-8. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-9. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-10. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
-11. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
-12. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
+8. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
+9. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+10. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
+11. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
+12. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+13. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
     detector scope (blocks clean push without SKIP_CC).
-13. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
+14. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
     file WARNs (fails main CI).
 
 ### After Debt-Runner

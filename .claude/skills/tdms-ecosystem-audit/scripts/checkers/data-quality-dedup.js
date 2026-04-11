@@ -30,6 +30,7 @@ const path = safeRequire("node:path");
 const crypto = safeRequire("node:crypto");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "data_quality_dedup";
 
@@ -79,18 +80,13 @@ function parseJsonlFile(filePath, maxSize) {
   const lines = content.split("\n");
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    try {
-      items.push(JSON.parse(line));
-    } catch (e) {
-      let msg;
-      if (e instanceof Error) {
-        msg = e.message;
-      } else {
-        msg = String(e);
-      }
-      parseErrors.push({ line: i + 1, error: msg });
+    const raw = lines[i];
+    if (!raw.trim()) continue;
+    const parsed = safeParseLine(raw);
+    if (parsed !== null) {
+      items.push(parsed);
+    } else {
+      parseErrors.push({ line: i + 1, error: "malformed JSON line" });
     }
   }
 

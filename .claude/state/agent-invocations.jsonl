@@ -142,3 +142,6 @@
 {"agent":"Explore","description":"L2 state-file writer scanner","outcome":"invoked","timestamp":"2026-04-11T02:10:13.590Z"}
 {"agent":"general-purpose","description":"L4 ground-truth live verification","outcome":"invoked","timestamp":"2026-04-11T02:10:31.657Z"}
 {"agent":"Explore","description":"L5 telemetry gap + prior decisions","outcome":"invoked","timestamp":"2026-04-11T02:13:15.064Z"}
+{"agent":"general-purpose","description":"JSONL helper adoption — scripts/ batch 1","outcome":"invoked","timestamp":"2026-04-11T03:35:29.288Z"}
+{"agent":"general-purpose","description":"JSONL helper adoption — scripts/ batch 2","outcome":"invoked","timestamp":"2026-04-11T03:35:42.934Z"}
+{"agent":"general-purpose","description":"JSONL helper adoption — .claude/skills/ batch","outcome":"invoked","timestamp":"2026-04-11T03:36:09.065Z"}

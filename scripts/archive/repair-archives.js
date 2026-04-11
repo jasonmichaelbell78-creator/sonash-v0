@@ -46,6 +46,8 @@ try {
   sanitizeError = (err) => (err instanceof Error ? err.name : String(typeof err));
 }
 
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
+
 function parseReviewsFromFile(filePath) {
   // Symlink guard: skip symlinks to prevent local file leakage
   if (fs.existsSync(filePath) && fs.lstatSync(filePath).isSymbolicLink()) return [];
@@ -196,24 +198,21 @@ function backfillFromJsonl(reviewMap, activeIds) {
 
   for (const jsonlPath of [JSONL_ARCHIVE_PATH, JSONL_PATH]) {
     if (!fs.existsSync(jsonlPath)) continue;
-    const lines = fs.readFileSync(jsonlPath, "utf8").trim().split("\n").filter(Boolean);
-    for (const line of lines) {
-      try {
-        const j = JSON.parse(line);
-        const id = Number(j.id);
-        if (!Number.isFinite(id) || !Number.isInteger(id) || id <= 0) continue;
-        const key = `review-${id}`;
-        if (!reviewMap.has(key) && !activeIds.has(key)) {
-          reviewMap.set(key, {
-            type: "review",
-            id,
-            content: generateMarkdownFromJsonl({ ...j, id }),
-            fromJsonl: true,
-          });
-          backfilledIds.add(id);
-        }
-      } catch {
-        // skip malformed lines
+    const content = fs.readFileSync(jsonlPath, "utf8");
+    for (const line of content.split("\n")) {
+      const j = safeParseLine(line);
+      if (!j) continue;
+      const id = Number(j.id);
+      if (!Number.isFinite(id) || !Number.isInteger(id) || id <= 0) continue;
+      const key = `review-${id}`;
+      if (!reviewMap.has(key) && !activeIds.has(key)) {
+        reviewMap.set(key, {
+          type: "review",
+          id,
+          content: generateMarkdownFromJsonl({ ...j, id }),
+          fromJsonl: true,
+        });
+        backfilledIds.add(id);
       }
     }
   }

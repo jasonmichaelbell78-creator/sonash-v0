@@ -29,6 +29,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "state_persistence";
 
@@ -321,10 +322,8 @@ function checkCommitLogIntegrity(stateDir, findings) {
 
   for (let i = 0; i < totalEntries; i++) {
     const line = lines[i];
-    let entry;
-    try {
-      entry = JSON.parse(line);
-    } catch {
+    const entry = safeParseLine(line);
+    if (!entry) {
       corruptLines++;
       continue;
     }

@@ -21,6 +21,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const generateContentHash = require("../lib/generate-content-hash");
 const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../..");
 const STATE_DIR = path.join(PROJECT_ROOT, ".claude/state");
@@ -41,13 +42,9 @@ function collectHashesFromFile(filePath, hashes) {
     return;
   }
   for (const line of content.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const item = JSON.parse(line);
-      if (item.content_hash) hashes.add(item.content_hash);
-    } catch {
-      // skip
-    }
+    const item = safeParseLine(line);
+    if (!item) continue;
+    if (item.content_hash) hashes.add(item.content_hash);
   }
 }
 
@@ -65,14 +62,10 @@ function computeNextSeq() {
   try {
     const content = fs.readFileSync(OUTPUT_FILE, "utf8");
     for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const item = JSON.parse(line);
-        const match = (item.id || "").match(/^INTAKE-CTX-(\d+)$/);
-        if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
-      } catch {
-        // skip
-      }
+      const item = safeParseLine(line);
+      if (!item) continue;
+      const match = (item.id || "").match(/^INTAKE-CTX-(\d+)$/);
+      if (match) nextSeq = Math.max(nextSeq, Number.parseInt(match[1], 10) + 1);
     }
   } catch {
     // skip

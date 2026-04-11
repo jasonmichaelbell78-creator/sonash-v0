@@ -11,6 +11,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeParseLine } = require("./parse-jsonl-line.js");
 
 /**
  * Patch types with their targets and actions.
@@ -188,15 +189,12 @@ function createPatchGenerator(rootDir) {
       const lines = content.trim().split("\n").filter(Boolean);
       let maxId = 0;
       for (const line of lines) {
-        try {
-          const entry = JSON.parse(line);
-          const match = (entry.id || "").match(/DEBT-(\d+)/);
-          if (match) {
-            const num = parseInt(match[1], 10);
-            if (num > maxId) maxId = num;
-          }
-        } catch {
-          // skip malformed lines
+        const entry = safeParseLine(line);
+        if (!entry) continue;
+        const match = (entry.id || "").match(/DEBT-(\d+)/);
+        if (match) {
+          const num = parseInt(match[1], 10);
+          if (num > maxId) maxId = num;
         }
       }
       return `DEBT-${maxId + 1}`;
