@@ -177,18 +177,32 @@ function loadExistingIds() {
     // a generic Error with this exact prefix and no dedicated code.
     const msg = err instanceof Error ? err.message : String(err);
     if (msg.includes("exceeds size guard")) {
+      // Guard against an older safe-fs export shape that lacks streamLinesSync.
+      // In practice the top-level require catch process.exit(2)s on load
+      // failure, but if safe-fs partially loaded we'd otherwise fall through
+      // to the wrong error branch with a misleading message.
+      if (typeof streamLinesSync !== "function") {
+        console.error("Failed to read reviews.jsonl: streamLinesSync unavailable in safe-fs");
+        return new Set();
+      }
+      const streamIds = new Set();
       try {
         streamLinesSync(REVIEWS_FILE, (line) => {
           const obj = safeParseLine(line);
           if (!obj) return;
-          if (typeof obj.id === "number") ids.add(obj.id);
+          if (typeof obj.id === "number") streamIds.add(obj.id);
         });
+        return streamIds;
       } catch (streamErr) {
+        // Silent partial-state is worse than an empty set: downstream dedupe
+        // would compute "new" against a stale prefix. Force a clean fresh
+        // set so duplicate-protection falls back to the file-level overwrite
+        // path, which is at least consistent.
         console.error("Failed to stream reviews.jsonl:", sanitizeError(streamErr));
+        return new Set();
       }
-    } else {
-      console.error("Failed to read reviews.jsonl:", sanitizeError(err));
     }
+    console.error("Failed to read reviews.jsonl:", sanitizeError(err));
   }
   return ids;
 }
@@ -284,9 +298,10 @@ function parseReviewHeader(line) {
   const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/);
   if (!headerMatch) return null;
   const id = Number.parseInt(headerMatch[1], 10);
-  // Guard against Number.parseInt returning Infinity on pathologically long
-  // digit strings AND against IDs beyond Number.MAX_SAFE_INTEGER, which would
-  // lose precision and corrupt dedupe/sort order downstream.
+  // Guard against Infinity from pathologically long digit strings AND against
+  // values beyond Number.MAX_SAFE_INTEGER which would silently lose precision
+  // during dedupe/sort. isSafeInteger covers both cases plus NaN; the > 0
+  // check normalizes on the domain invariant (review IDs are positive).
   if (!Number.isSafeInteger(id) || id <= 0) return null;
   const titleAndDate = headerMatch[2].trim();
   const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
