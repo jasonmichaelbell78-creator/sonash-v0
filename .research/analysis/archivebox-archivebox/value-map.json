@@ -1,0 +1,168 @@
+{
+  "schema_version": "2.0",
+  "repo": "ArchiveBox/ArchiveBox",
+  "scan_date": "2026-04-12",
+  "patternCandidates": [
+    {
+      "name": "MCP auto-discovery from CLI metadata",
+      "description": "Zero-schema MCP server that introspects Click CLI commands and auto-generates MCP tool definitions. ~200 lines. Uses CliRunner for execution. Eliminates manual schema duplication.",
+      "source": "archivebox/mcp/server.py + archivebox/mcp/README.md",
+      "relevance": "high",
+      "effort": "E1",
+      "novelty": "High",
+      "rank": 1,
+      "location": "archivebox/mcp/",
+      "pattern_novelty": "High",
+      "code_portability": 6,
+      "adoption_readiness": "Med",
+      "quality_signal": "High",
+      "extraction_effort": "E1",
+      "objective_score": 90,
+      "personal_fit_score": 72,
+      "fit_class": "active-sprint",
+      "notes": "Not directly portable (Python/Click vs Node/TypeScript) but the PRINCIPLE is portable. Derive MCP tools from existing CLI/API metadata instead of hand-writing schemas. Directly relevant to JASON-OS Domain 02a.",
+      "status": "identified",
+      "decision_date": null,
+      "decision_notes": null
+    },
+    {
+      "name": "Hook execution model with ordering and bg/fg lifecycle",
+      "description": "Production-grade hook system: event-family naming convention (on_{EventFamily}__{order}_{name}[.bg].{ext}), 2-digit ordering prefix for execution sequence, foreground/background distinction, SIGTERM finalization for background hooks, JSONL stdout contract.",
+      "source": "archivebox/hooks.py (header docstring + implementation)",
+      "relevance": "high",
+      "effort": "E1",
+      "novelty": "High",
+      "rank": 2,
+      "location": "archivebox/hooks.py",
+      "pattern_novelty": "High",
+      "code_portability": 4,
+      "adoption_readiness": "Med",
+      "quality_signal": "High",
+      "extraction_effort": "E1",
+      "objective_score": 85,
+      "personal_fit_score": 68,
+      "fit_class": "active-sprint",
+      "notes": "SoNash has better hook governance (analytics, warnings, audits) but ArchiveBox has better hook runtime semantics (ordering, bg/fg, SIGTERM). Complementary patterns. Relevant to hook-ecosystem-audit and T31.",
+      "status": "identified",
+      "decision_date": null,
+      "decision_notes": null
+    },
+    {
+      "name": "CLAUDE.md as structured developer philosophy document",
+      "description": "498-line CLAUDE.md encoding not just setup instructions but development philosophy: grep-friendly naming (consistent prefixes), minimize-unique-names principle, NO MOCKS testing standard, coverage-as-dead-code methodology. Goes beyond reference docs into opinionated guidance.",
+      "source": "CLAUDE.md",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "Med",
+      "rank": 3,
+      "location": "CLAUDE.md",
+      "pattern_novelty": "Med",
+      "code_portability": 8,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "objective_score": 82,
+      "personal_fit_score": 65,
+      "fit_class": "active-sprint",
+      "notes": "SoNash CLAUDE.md is 135 lines focused on rules/constraints. ArchiveBox CLAUDE.md is 498 lines including philosophy and methodology. Consider expanding SoNash CLAUDE.md or creating companion PHILOSOPHY.md.",
+      "status": "identified",
+      "decision_date": null,
+      "decision_notes": null
+    }
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "Coverage-as-dead-code-detector methodology",
+      "description": "Using pytest-cov JSON output + jq pipelines to find 0% coverage files as dead code candidates. Passive coverage collection during dev server usage for broader signal.",
+      "source": "CLAUDE.md (Coverage section)",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Med"
+    },
+    {
+      "name": "Claude Code in CI (claude.yml workflow)",
+      "description": "Claude Code running as GitHub Actions workflow in CI pipeline. Pattern for AI-assisted development automation.",
+      "source": ".github/workflows/claude.yml",
+      "relevance": "medium",
+      "effort": "E1",
+      "novelty": "Med"
+    },
+    {
+      "name": "Strict assertion testing convention",
+      "description": "Use exact counts (==) not loose bounds (>=) in test assertions. Forces tests to catch regressions rather than just pass.",
+      "source": "CLAUDE.md (Testing section)",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Low"
+    },
+    {
+      "name": "Plugin isolation principle",
+      "description": "Plugins forbidden from importing host application or framework (Django). Only 2 shared files allowed. Enforces true independence.",
+      "source": "CLAUDE.md (Plugin section)",
+      "relevance": "low",
+      "effort": "E0",
+      "novelty": "Low"
+    }
+  ],
+  "contentCandidates": [],
+  "antiPatternCandidates": [
+    {
+      "name": "SOLO_MAINTAINER_GOVERNANCE",
+      "description": "27K stars but 0/29 changesets with code review. Architectural decisions in prose docs (old/), not enforced contracts. 100% community health score masks governance gap.",
+      "source": "OpenSSF scorecard + GitHub branch protection analysis",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "Med"
+    },
+    {
+      "name": "PERMISSIVE_DEFAULTS_FOR_SELF_HOSTED",
+      "description": "ALLOWED_HOSTS='*', SESSION_COOKIE_SECURE=False, no HTTPS enforcement. Security-by-configuration rather than security-by-default.",
+      "source": "archivebox/config/common.py + archivebox/core/settings.py",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Low"
+    },
+    {
+      "name": "CONFIGURED_NOT_ENFORCED_TYPING",
+      "description": "Pyright configured in pyproject.toml but 48% type coverage with heavy Any usage. Type checker as CI decoration rather than enforcement gate.",
+      "source": "pyproject.toml + codebase type annotation analysis",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Low"
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "unclecode/crawl4ai",
+      "connection_type": "complementary",
+      "detail": "ArchiveBox is a self-hosted archiver; crawl4ai is a crawling framework. Both handle web content extraction but at different layers. ArchiveBox's hook-based extractor system could consume crawl4ai output."
+    },
+    {
+      "target_repo": "mendableai/firecrawl",
+      "connection_type": "complementary",
+      "detail": "firecrawl converts URLs to LLM-ready markdown; ArchiveBox preserves full-fidelity archives (PDF, WARC, DOM). Different goals with overlapping input patterns."
+    },
+    {
+      "target_repo": "HKUDS/CLI-Anything",
+      "connection_type": "shared-pattern",
+      "detail": "Both have plugin/hook systems with naming conventions. CLI-Anything's HARNESS.md + SKILL.md format shares philosophy with ArchiveBox's CLAUDE.md + hooks.py contract."
+    }
+  ],
+  "related_repos": [
+    {
+      "url": "https://github.com/ArchiveBox/abx-plugins",
+      "relationship": "uses",
+      "discovery_context": "Sibling plugin package referenced in pyproject.toml dependencies"
+    },
+    {
+      "url": "https://github.com/ArchiveBox/abx-dl",
+      "relationship": "uses",
+      "discovery_context": "Event bus framework that ArchiveBox integrates with for plugin execution"
+    },
+    {
+      "url": "https://github.com/gildas-lormeau/SingleFile",
+      "relationship": "uses",
+      "discovery_context": "SingleFile archiver integrated as a Chrome-based extractor plugin"
+    }
+  ]
+}

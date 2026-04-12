@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#69)</summary>
+
+- **Date:** 2026-04-12
+- **Reviews consolidated:** #80-#rev-84
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#68)</summary>
 
 - **Date:** 2026-04-11
@@ -1318,197 +1327,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review rev-64: PR #489 R1 — Mixed (2026-04-03) (2026-04-03)
-
-**Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 32    | 31    | 1        | 0        |
-
-**Patterns:**
-
-- symlink-bypass-size-gate
-- s5852-regex-dos-testfn
-- cc-reduction-extract-helpers
-- sanitizeError-import-path
-- source-traceability-singular
-- toctou-existsSync-removal
-- zip-tar-slip-pre-extraction
-- propagation-4-patterns-46-files
-- prettier-ci-research-files
-
----
-
-### Review rev-65: PR #489 R2 — Mixed (2026-04-03) (2026-04-03)
-
-**Date:** 2026-04-03 | **PR:** #489 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 5     | 0        | 1        |
-
-**Patterns:**
-
-- cross-platform-exe-naming
-- shell-true-removal
-- validateGitDir-tightened
-- toctou-existsSync-isSafeToWrite
-- cc-logResolveResult-extraction
-- gemini-stale-detection
-
----
-
-### Review review-pr491-r1: PR #491 R1 (2026-04-03)
-
-**Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 16    | 14    | 0        | 2        |
-
-**Patterns:**
-
-- unguarded-symlink-delete
-- repomix-bloat
-- dead-code-pattern-keywords
-- exit-code-doc-mismatch
-- string-raw-escaping
-- test-hardening
-
----
-
-### Review review-pr491-r2: PR #491 R2 (2026-04-03)
-
-**Date:** 2026-04-03 | **PR:** #491 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 18    | 0        | 3        |
-
-**Patterns:**
-
-- checker-fp-symlink-regex
-- checker-fp-json-parse
-- mkdirSync-before-guard
-- exit-code-2
-- tdms-data-quality
-- path-disclosure-fix
-
----
-
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review review-pr492-r1: PR #492 R1 - Mixed (Qodo + Suggestions + Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 27    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 12    | 9     | 7       |
-
-**Patterns:**
-
-- graphql-variables-repo-slug
-- sanitize-error-cjs-propagation-2nd-recurrence
-- toctou-existsSync-mkdirSync-4th-recurrence
-- cc-99-refactor-run-github-health
-- secret-alerts-paginate
-- regex-allow-dots-repo-name
-- null-snapshot-p2-not-green
-- exit-code-2-api-failures
-- stale-pr-updatedAt-basis
-- dedup-timestamp-finite-check
-- actor-in-history-record
-- no-silent-safeappend-fallback
-- no-remote-url-in-error
-- reviews-archive-id-string-dedup
-- agent-invocations-lowercase
-- deploy-env-conditional-main
-- sonar-s4036-batch-ack-nosonar
-- single-commit-propagation-sweep
-
-**Learnings:**
-
-- TOCTOU existsSync+mkdirSync is 4th-PR recurrence — direct
-  mkdirSync({recursive:true}) is idempotent
-- sanitize-error ESM/CJS mismatch is 2nd-PR recurrence — always use .cjs wrapper
-  for CJS scripts
-- CC refactor must precede logic changes in same file (retro bulk-448-470)
-- Propagation sweep caught 7 more sanitize-error files and 5 more TOCTOU files
-  beyond what reviewer flagged
-- Multi-source convergence (4 reviewers on GraphQL injection) is strongest
-  signal, auto-elevate
-
----
-
-### Review 507: PR #492 R2 — Mixed (Doc Lint CI + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
-
-**Date:** 2026-04-05 | **PR:** #492 | **Source:** ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review review-pr492-r2: PR #492 R2 - Mixed (Doc Lint + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
-
-**Date:** 2026-04-05 | **PR:** #492 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 68    | 68    | 0        | 0        |
-
-**Patterns:**
-
-- r1-r2-contradiction-exit-code
-- r1-r2-contradiction-actor-pii
-- pattern-checker-rule-bugs-8-fixes
-- signal-exit-code-[2-9]-to-[3-9]
-- binary-check-utf8-condition-inverted
-- symlink-traversal-bidirectional-testfn
-- silent-json-parse-multiline-try-detection
-- unbounded-read-statsync-size-guard-detection
-- regex-complexity-bounded-comment-recognition
-- multiline-jsonl-trycatch-recognition
-- sha256-hash-actor-for-pii-compliance
-- invalid-pr-timestamp-guard
-- cache-size-finite-check
-- grade-index-bounds-check
-- parent-symlink-guard-history
-- safe-fs-fail-loud-no-fallback
-- size-guard-staged-file-reader
-- release-please-stale-test-deletion
-- doc-lint-brainstorm-metadata
-- single-letter-var-rename-propagation
-
-**Learnings:**
-
-- R1->R2 contradictions resolved by middle path (SHA-256 hash for actor, checker
-  rule fix for exit code)
-- Infrastructure-level rule fixes eliminated ~55 FPs without touching production
-  scripts
-- Propagation sweeps surface pre-existing pattern violations in adjacent code
-- Bidirectional guard detection is correct pattern checker design
-- CI test files can be stale after infrastructure removal
-
----
-
 ### Review review-pr493-r1: PR #493 R1 - Mixed (Qodo + Gemini + SonarCloud + Doc Lint) (2026-04-05)
 
 **Date:** 2026-04-05 | **PR:** #493 | **Source:** mixed
@@ -1781,16 +1599,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 80: PR #504 R4 (Mixed: SonarCloud + Qodo Suggestions) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 2     | 0        | 17       |
-
----
-
 ### Review rev-81: PR #505 R1 (2026-04-10)
 
 **Date:** 2026-04-10 | **PR:** #505 | **Source:** mixed
@@ -1888,13 +1696,40 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 83: PR #507 R2 (Mixed: Qodo Compliance + Qodo Suggestions + Gemini + CodeQL + SonarCloud) (unknown)
+### Review rev-84: PR #507 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (2026-04-12)
 
-**Date:** unknown | **PR:** #507 | **Source:** manual
+**Date:** 2026-04-12 | **PR:** #507 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
+| 15    | 12    | 0        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 7     | 2     | 1       |
+
+**Patterns:**
+
+- lock-symlink-toctou
+- wx-flag-unoverridable
+- exdev-directory-refusal
+- source-symlink-guard
+- number-issafeinteger
+- stream-fallback-size-guard
+- malformed-pr-filter
+- cc-refactor-extract-helper
+- optional-chain
+- cross-round-dedup
+
+**Learnings:**
+
+- wx-must-be-written-last-to-be-unoverridable
+- exdev-and-eperm-fallbacks-must-share-helper
+- isSafeInteger-for-id-keys-not-isFinite
+- cross-round-dedup-saves-30min-per-repeat
+- security-auditor-accepts-settled-trust-model-quickly
 
 ## Key Patterns
 

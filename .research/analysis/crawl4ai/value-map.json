@@ -1,0 +1,150 @@
+{
+  "schema_version": "2.0",
+  "repo": "unclecode/crawl4ai",
+  "scan_date": "2026-04-12",
+  "patternCandidates": [
+    {
+      "name": "FilterChain + Scorer composition",
+      "description": "Composable filter/scorer pipeline for content gating.",
+      "source": "crawl4ai/deep_crawling/",
+      "relevance": "high",
+      "effort": "E1",
+      "novelty": "High",
+      "rank": 1,
+      "location": "crawl4ai/deep_crawling/",
+      "pattern_novelty": "High",
+      "code_portability": 5,
+      "adoption_readiness": "Med",
+      "quality_signal": "High",
+      "extraction_effort": "E1",
+      "objective_score": 88,
+      "personal_fit_score": 75,
+      "fit_class": "active-sprint",
+      "notes": "Principle portable to /analyze pipeline.",
+      "status": "identified",
+      "decision_date": null,
+      "decision_notes": null
+    },
+    {
+      "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+      "description": "Browser pool with tiered warmth and janitor lifecycle. 10x memory claim.",
+      "source": "deploy/docker/ARCHITECTURE.md",
+      "relevance": "high",
+      "effort": "E1",
+      "novelty": "High",
+      "rank": 2,
+      "location": "deploy/docker/",
+      "pattern_novelty": "High",
+      "code_portability": 4,
+      "adoption_readiness": "Med",
+      "quality_signal": "High",
+      "extraction_effort": "E1",
+      "objective_score": 85,
+      "personal_fit_score": 65,
+      "fit_class": "active-sprint",
+      "notes": "Resource pooling for JASON-OS.",
+      "status": "identified",
+      "decision_date": null,
+      "decision_notes": null
+    },
+    {
+      "name": "Hook lifecycle with 8 ordered hooks",
+      "description": "8 lifecycle hooks with clear sequence and security model.",
+      "source": "crawl4ai/async_crawler_strategy.py",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "High",
+      "rank": 3,
+      "location": "crawl4ai/async_crawler_strategy.py",
+      "pattern_novelty": "High",
+      "code_portability": 6,
+      "adoption_readiness": "High",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "objective_score": 82,
+      "personal_fit_score": 70,
+      "fit_class": "active-sprint",
+      "notes": "Combine with ArchiveBox governance.",
+      "status": "identified",
+      "decision_date": null,
+      "decision_notes": null
+    }
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "CrawlState save/load resume",
+      "description": "Persistent state for long-running tasks. No on_state_change callback.",
+      "source": "crawl4ai/adaptive_crawler.py",
+      "relevance": "medium",
+      "effort": "E1",
+      "novelty": "Med"
+    },
+    {
+      "name": "Strategy ABC with 55+ implementations",
+      "description": "Clean abstract hierarchy with runtime composition.",
+      "source": "crawl4ai/extraction_strategy.py",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Med"
+    },
+    {
+      "name": "Safe expression eval via AST",
+      "description": "User expressions validated: blocks imports, dunders, dangerous builtins.",
+      "source": "crawl4ai/extraction_strategy.py",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Med"
+    }
+  ],
+  "contentCandidates": [],
+  "antiPatternCandidates": [
+    {
+      "name": "DOCUMENTATION_PROMISES_CODE_GAPS",
+      "description": "Docs ahead of code reality. on_state_change does not exist.",
+      "source": "Analysis comparison",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "Med"
+    },
+    {
+      "name": "MONOLITHIC_UTILS",
+      "description": "utils.py at 3,778 lines.",
+      "source": "crawl4ai/utils.py",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Low"
+    },
+    {
+      "name": "DUPLICATE_FILES_IN_REPO",
+      "description": "Backup copies checked into VCS.",
+      "source": "crawl4ai/ directory",
+      "relevance": "low",
+      "effort": "E0",
+      "novelty": "Low"
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "ArchiveBox/ArchiveBox",
+      "connection_type": "complementary",
+      "detail": "ArchiveBox archives full-fidelity; crawl4ai extracts LLM-ready. Hook systems comparable but different strengths."
+    },
+    {
+      "target_repo": "mendableai/firecrawl",
+      "connection_type": "overlapping-finding",
+      "detail": "Both URL-to-LLM-content. firecrawl SaaS; crawl4ai self-hosted."
+    },
+    {
+      "target_repo": "opendatalab/MinerU",
+      "connection_type": "complementary",
+      "detail": "MinerU PDF/doc extraction; crawl4ai web pages."
+    }
+  ],
+  "related_repos": [
+    {
+      "url": "https://github.com/BerriAI/litellm",
+      "relationship": "uses",
+      "discovery_context": "LLM provider abstraction (forked as unclecode-litellm)"
+    }
+  ]
+}

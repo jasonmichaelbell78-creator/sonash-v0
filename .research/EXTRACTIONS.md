@@ -2,7 +2,7 @@
 
 Auto-generated from `extraction-journal.jsonl`. Do not edit directly.
 
-**Schema version:** 2.0 | **Total:** 236 candidates **By decision:** defer: 212,
+**Schema version:** 2.0 | **Total:** 250 candidates **By decision:** defer: 226,
 investigate: 2, extract: 20, skip: 2
 
 ---
@@ -367,3 +367,27 @@ investigate: 2, extract: 20, skip: 2
 | ----------------------------------------- | --------- | -------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------------------------- |
 | Context-over-filename retrieval principle | knowledge | defer    | 2026-04-09 | low     | E0     | medium    | -            | Make files findable by surrounding context. Valid principle, already implemented via analysis.json + FTS. |
 | Subfolder-per-project attachment pattern  | pattern   | defer    | 2026-04-09 | low     | E0     | low       | -            | Obsidian auto-creates attachments/ per project. Our slug-based dirs already do this.                      |
+
+## ArchiveBox/ArchiveBox (repo)
+
+| Candidate                                    | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                    |
+| -------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | -------------------------------------------------------------------------------------------------------- |
+| MCP auto-discovery from CLI metadata         | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Zero-schema MCP server introspecting Click CLI. ~200 lines. Principle portable to JASON-OS Domain 02a.   |
+| Hook execution model (ordering + bg/fg)      | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Event-family naming, 2-digit ordering, fg/bg with SIGTERM. Complements SoNash hook governance.           |
+| CLAUDE.md as structured developer philosophy | pattern      | defer    | 2026-04-12 | medium  | E0     | high      | -            | 498-line CLAUDE.md with grep-friendly naming, minimize-unique-names, NO MOCKS. Compare SoNash 135 lines. |
+| Coverage-as-dead-code-detector               | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | JSON+jq pipeline for 0% coverage files. Passive coverage during dev server. Relevant to T21 orphan.      |
+| Claude Code CI integration                   | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | claude.yml GitHub Actions workflow. AI-in-CI pattern for JASON-OS CI/CD domain.                          |
+| SOLO_MAINTAINER_GOVERNANCE                   | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | 27K stars, 0/29 changesets reviewed. Architectural docs in prose not contracts. Bus-factor warning.      |
+| CONFIGURED_NOT_ENFORCED_TYPING               | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | Pyright configured, 48% coverage, heavy Any/cast. Type checker as decoration not gate.                   |
+
+## unclecode/crawl4ai (repo)
+
+| Candidate                            | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                    |
+| ------------------------------------ | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ---------------------------------------------------------------------------------------- |
+| FilterChain + Scorer composition     | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Composable filter/scorer pipeline. Applicable to /analyze content gating.                |
+| 3-tier resource pool (PERM/HOT/COLD) | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Browser pool with tiered warmth and janitor. 10x memory. JASON-OS infrastructure.        |
+| Hook lifecycle with 8 ordered hooks  | pattern      | defer    | 2026-04-12 | high    | E0     | high      | -            | 8 lifecycle hooks with sequence, auth guidance, security model. Combine with ArchiveBox. |
+| CrawlState save/load resume          | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Persistent state for long-running tasks. NOTE: on_state_change does NOT exist.           |
+| Strategy ABC (55+ implementations)   | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Clean abstract hierarchy with runtime composition via FilterChain.                       |
+| DOCUMENTATION_PROMISES_CODE_GAPS     | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Docs describe features code implements partially. Verify before recommending.            |
+| MONOLITHIC_UTILS                     | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | utils.py at 3,778 lines. Domain functions in one file.                                   |

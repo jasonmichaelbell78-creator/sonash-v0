@@ -1,0 +1,10 @@
+{"category": "referenced_links", "item": "Discord community (active)", "status": "not_evaluated", "reason": "External community, not analyzable", "user_decision": "skip"}
+{"category": "referenced_links", "item": "litellm (LLM provider abstraction)", "status": "not_evaluated", "reason": "External dependency, forked version", "user_decision": "skip"}
+{"category": "internal_docs", "item": "docs/md_v2/complete-sdk-reference.md (234KB)", "status": "cataloged_not_read", "reason": "Monolithic reference, too large for full read", "user_decision": "skip"}
+{"category": "internal_docs", "item": "C4A-Script language docs", "status": "cataloged_not_read", "reason": "Custom DSL, minimal documentation noted", "user_decision": "skip"}
+{"category": "internal_docs", "item": "6 Jupyter notebooks", "status": "cataloged_not_read", "reason": "LinkedIn examples and release reviews, low relevance", "user_decision": "skip"}
+{"category": "internal_docs", "item": "21 blog/release posts", "status": "cataloged_not_read", "reason": "Release notes, cataloged but not individually read", "user_decision": "skip"}
+{"category": "structured_data", "item": "49 core dependencies in pyproject.toml", "status": "partially_analyzed", "reason": "Top-level reviewed, transitive not traced", "user_decision": "skip"}
+{"category": "cross_repo", "item": "firecrawl overlapping-finding connection", "status": "analyzed", "reason": "firecrawl comparison done: shared extraction composition pattern, complementary strengths"}
+{"category": "anomalies", "item": "adaptive_crawler copy.py (exact duplicate)", "status": "flagged", "reason": "Flagged as finding F004, not removed", "user_decision": "skip"}
+{"category": "anomalies", "item": "async_crawler_strategy.back.py (backup)", "status": "flagged", "reason": "Flagged as finding F004, not removed", "user_decision": "skip"}

@@ -1,0 +1,11 @@
+{"category":"referenced_links","item":"ArchiveBox Wiki (detailed setup, DB schema)","status":"not_evaluated","reason":"Wiki content not in repo clone, external resource"}
+{"category":"referenced_links","item":"abx-plugins package (sibling repo)","status":"not_evaluated","reason":"External repo, cataloged in related_repos"}
+{"category":"referenced_links","item":"abx-dl event bus framework (sibling repo)","status":"not_evaluated","reason":"External repo, cataloged in related_repos"}
+{"category":"referenced_links","item":"SingleFile project (archiving dependency)","status":"not_evaluated","reason":"External dependency, not analyzed"}
+{"category":"internal_docs","item":"old/TODO_hook_architecture.md","status":"cataloged_not_read","reason":"12 old/ planning docs cataloged in deep-read, individual content not read"}
+{"category":"internal_docs","item":"old/TODO_hook_concurrency.md","status":"cataloged_not_read","reason":"Background/foreground hook design doc — content summarized from hooks.py header"}
+{"category":"internal_docs","item":"website/ directory","status":"not_explored","reason":"Marketing/docs website, not analyzed for patterns"}
+{"category":"internal_docs","item":"pkg/ directory","status":"not_explored","reason":"Packaging configs for deb/brew/docker, low pattern value"}
+{"category":"internal_docs","item":"brew_dist/ directory","status":"not_explored","reason":"Homebrew distribution files, low pattern value"}
+{"category":"structured_data","item":"pyproject.toml full dependency graph","status":"partially_analyzed","reason":"Top-level deps reviewed, transitive graph not fully traced"}
+{"category":"cross_repo","item":"abx-dl event bus TypedEvents pattern","status":"not_traced","reason":"Referenced in services/ but external repo not cloned or analyzed"}
