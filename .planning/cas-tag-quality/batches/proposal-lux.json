@@ -1,0 +1,45 @@
+{
+  "batch_id": "lux-2026-04-12",
+  "source": "iawia002/lux",
+  "notes": "lux is a Go CLI video downloader whose engineering value is a compile-time init()+blank-import plugin registry that makes adding new site extractors trivially easy (46 extractors, domain-routed dispatch) paired with a Node-driven meta-CI pattern that generates 45 per-extractor workflows from a single template. Five entries cover two home-applicable knowledge/pattern items (plugin registry, CI template generation) and three security/governance anti-patterns (bearer tokens checked into git, globally disabled TLS verification, 23-line CONTRIBUTING with zero architecture docs).",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "iawia002/lux",
+      "candidate": "init()-based plugin registry with domain routing",
+      "type": "pattern",
+      "tags": ["go", "plugins", "architecture", "cli", "jason-os-relevant"]
+    },
+    {
+      "source": "iawia002/lux",
+      "candidate": "CI workflow generation from template",
+      "type": "knowledge",
+      "tags": [
+        "ci-cd",
+        "github",
+        "pipeline",
+        "best-practices",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "iawia002/lux",
+      "candidate": "HARDCODED_CREDENTIALS_IN_SOURCE",
+      "type": "anti-pattern",
+      "tags": ["security", "supply-chain", "authentication", "governance", "sonash-relevant"]
+    },
+    {
+      "source": "iawia002/lux",
+      "candidate": "DISABLED_TLS_VERIFICATION",
+      "type": "anti-pattern",
+      "tags": ["security", "http", "best-practices", "sonash-relevant"]
+    },
+    {
+      "source": "iawia002/lux",
+      "candidate": "DOCUMENTATION_ABSENT_FOR_CONTRIBUTORS",
+      "type": "anti-pattern",
+      "tags": ["docs-absence", "devex", "governance", "code-quality", "sonash-relevant"]
+    }
+  ]
+}

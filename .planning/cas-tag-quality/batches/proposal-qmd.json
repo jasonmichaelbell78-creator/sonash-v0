@@ -1,0 +1,149 @@
+{
+  "batch_id": "qmd-2026-04-12",
+  "source": "tobi/qmd",
+  "notes": "tobi/qmd is a privacy-first local knowledge-base search engine that ships as a Claude Code plugin (marketplace.json + MCP server + skills). Creator-view emphasizes high JASON-OS and SoNash relevance for its plugin packaging, skill frontmatter gates, query DSL, chunking, and hybrid retrieval patterns.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "tobi/qmd",
+      "candidate": "Claude Code plugin manifest (marketplace.json)",
+      "type": "pattern",
+      "tags": [
+        "claude-code",
+        "plugins",
+        "mcp",
+        "skill-architecture",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Skill frontmatter: allowed-tools + disable-model-invocation",
+      "type": "pattern",
+      "tags": [
+        "claude-code",
+        "skill",
+        "ai-instructions",
+        "security",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "MCP server as CLI subcommand (3 transports)",
+      "type": "pattern",
+      "tags": ["mcp", "cli", "claude-code", "tool-integration", "jason-os-relevant"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Query DSL with typed sub-queries (EBNF grammar)",
+      "type": "pattern",
+      "tags": [
+        "query-dsl",
+        "knowledge-management",
+        "rag-alternative",
+        "cas-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Scored markdown chunking algorithm",
+      "type": "pattern",
+      "tags": ["chunking", "markdown", "knowledge-management", "cas-relevant", "sonash-relevant"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "RRF + position-aware blending",
+      "type": "knowledge",
+      "tags": ["hybrid-retrieval", "rag-alternative", "knowledge-management", "cas-relevant"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Fixture-based eval harness with difficulty tiers",
+      "type": "pattern",
+      "tags": [
+        "evaluation-harness",
+        "testing",
+        "benchmarking",
+        "knowledge-management",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Release skill with disabled auto-invocation",
+      "type": "pattern",
+      "tags": [
+        "release-workflow",
+        "claude-code",
+        "skill",
+        "ci-cd",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "node-llama-cpp for privacy-first local inference",
+      "type": "knowledge",
+      "tags": ["local-inference", "llm", "security", "sonash-relevant"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "AST-aware code chunking via tree-sitter",
+      "type": "pattern",
+      "tags": ["chunking", "extraction", "knowledge-management", "cas-relevant"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Daemon mode with PID file management",
+      "type": "pattern",
+      "tags": ["mcp", "cli", "infrastructure", "deployment"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "LoRA SFT on small LLMs for domain tasks",
+      "type": "knowledge",
+      "tags": ["fine-tuning", "llm", "local-inference"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "HuggingFace Jobs for cheap cloud training",
+      "type": "knowledge",
+      "tags": ["fine-tuning", "llm", "deployment"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Rule-based reward function for RL",
+      "type": "knowledge",
+      "tags": ["fine-tuning", "reasoning", "llm"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Nix flake with home-manager module",
+      "type": "pattern",
+      "tags": ["deployment", "infrastructure", "devex"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Fine-tuning before exhausting prompt engineering",
+      "type": "anti-pattern",
+      "tags": ["fine-tuning", "prompt-engineering", "premature-optimization"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Caret ranges in reproducible-install packages",
+      "type": "anti-pattern",
+      "tags": ["version-pinning", "supply-chain", "deployment", "sonash-relevant"]
+    },
+    {
+      "source": "tobi/qmd",
+      "candidate": "Skill without invocation gate on destructive ops",
+      "type": "anti-pattern",
+      "tags": ["claude-code", "skill", "security", "ai-instructions", "sonash-relevant"]
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "batch_id": "bulk-transcribe-youtube-playlist-2026-04-12",
+  "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+  "notes": "Local-first YouTube playlist transcription tool using faster-whisper with GPU acceleration. Cross-repo validation point for T27 media extraction pipeline: pytubefix download, tuned Whisper params (beam_size=10, vad_filter), async download + sync GPU transcription, SpaCy + compromise.js two-stage NLP. Key anti-patterns: monolithic single-file layout, hard-coded config, and skipping captions even when YouTube has them.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "faster-whisper local transcription pipeline",
+      "type": "pattern",
+      "tags": [
+        "whisper",
+        "transcription",
+        "media-extraction",
+        "gpu-acceleration",
+        "youtube",
+        "python",
+        "pipeline",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "Whisper tuned params (beam_size=10, vad_filter)",
+      "type": "knowledge",
+      "tags": [
+        "whisper",
+        "transcription",
+        "hallucination",
+        "best-practices",
+        "python",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "Caption-first + Whisper-fallback architecture",
+      "type": "knowledge",
+      "tags": [
+        "caption-extraction",
+        "whisper",
+        "transcription",
+        "media-extraction",
+        "youtube",
+        "engine-fallback",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "Async download + sync GPU transcription",
+      "type": "pattern",
+      "tags": [
+        "concurrency",
+        "gpu-acceleration",
+        "transcription",
+        "media-extraction",
+        "rate-limiting",
+        "python",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "faster-whisper library",
+      "type": "content",
+      "tags": [
+        "whisper",
+        "transcription",
+        "gpu-acceleration",
+        "python",
+        "library",
+        "benchmarking",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "CUDA/GPU detection + CPU fallback",
+      "type": "pattern",
+      "tags": [
+        "gpu-acceleration",
+        "engine-fallback",
+        "infrastructure",
+        "python",
+        "deployment",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "SpaCy + compromise.js two-stage NLP",
+      "type": "pattern",
+      "tags": ["transcription", "pipeline", "python", "library", "sonash-relevant"]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "API vs local cost tradeoff",
+      "type": "knowledge",
+      "tags": [
+        "whisper",
+        "transcription",
+        "media-extraction",
+        "decision-matrix",
+        "deployment",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "compromise.js client-side NLP",
+      "type": "content",
+      "tags": ["library", "sonash-relevant", "chunking", "production-grade"]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "Monolithic single-file tool anti-pattern",
+      "type": "anti-pattern",
+      "tags": [
+        "monolithic-script",
+        "code-bloat",
+        "devex",
+        "technical-debt",
+        "python",
+        "utility-tool"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "Skip-captions-always anti-pattern",
+      "type": "anti-pattern",
+      "tags": [
+        "caption-extraction",
+        "whisper",
+        "transcription",
+        "media-extraction",
+        "youtube",
+        "premature-optimization",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "candidate": "Hard-coded source config anti-pattern",
+      "type": "anti-pattern",
+      "tags": ["hard-coded-config", "security", "devex", "technical-debt", "python"]
+    }
+  ]
+}

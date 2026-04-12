@@ -1,0 +1,98 @@
+{
+  "batch_id": "codecrafters-build-your-own-x-2026-04-12",
+  "source": "codecrafters-io/build-your-own-x",
+  "notes": "Curated awesome-list of 'build X from scratch' tutorials (31 categories, 390 links, 486K stars). Creator-view explicitly flags React internals (sonash-relevant), shell/CLI + skill-retirement (jason-os-relevant), and 31-category taxonomy as an organizing reference (cas-relevant). All tags drawn from existing vocabulary; no new vocab proposed because candidate terms (react, regex, git-internals, tutorial, from-scratch) failed the ≥3-entry recurrence test across the 295-corpus.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Build Your Own React (Pomber)",
+      "type": "content",
+      "tags": ["curated-list", "knowledge-management", "mental-model", "sonash-relevant"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Didact: DIY React",
+      "type": "content",
+      "tags": ["curated-list", "knowledge-management", "mental-model", "sonash-relevant"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Write Yourself a Git",
+      "type": "content",
+      "tags": ["curated-list", "knowledge-management", "mental-model", "jason-os-relevant"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Regex Matching Can Be Simple and Fast (Russ Cox)",
+      "type": "content",
+      "tags": ["curated-list", "knowledge-management", "mental-model", "sonash-relevant"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "31-Category Tutorial Taxonomy",
+      "type": "pattern",
+      "tags": [
+        "curated-list",
+        "taxonomy",
+        "knowledge-management",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Curated Link Format Pattern",
+      "type": "pattern",
+      "tags": ["curated-list", "markdown", "knowledge-management", "taxonomy"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Skill Retirement Process Design",
+      "type": "knowledge",
+      "tags": ["curated-list", "skill", "skill-bloat", "governance", "jason-os-relevant"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Build from Scratch Framing for Domain 01",
+      "type": "knowledge",
+      "tags": ["curated-list", "knowledge-management", "mental-model", "jason-os-relevant"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Celebrity Stagnation Lifecycle",
+      "type": "knowledge",
+      "tags": [
+        "curated-list",
+        "governance",
+        "knowledge-concentration",
+        "docs-absence",
+        "skill-bloat"
+      ]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Shell/CLI Tutorial Collection",
+      "type": "knowledge",
+      "tags": ["curated-list", "cli", "knowledge-management", "jason-os-relevant"]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Single-File-Everything Anti-Pattern",
+      "type": "anti-pattern",
+      "tags": [
+        "curated-list",
+        "markdown",
+        "code-bloat",
+        "knowledge-concentration",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "codecrafters-io/build-your-own-x",
+      "candidate": "Inline License Without LICENSE File",
+      "type": "anti-pattern",
+      "tags": ["curated-list", "licensing", "governance", "docs-absence"]
+    }
+  ]
+}

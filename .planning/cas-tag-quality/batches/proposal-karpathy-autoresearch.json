@@ -1,0 +1,135 @@
+{
+  "batch_id": "karpathy-autoresearch-2026-04-12",
+  "source": "karpathy/autoresearch",
+  "notes": "Karpathy's 3-file autonomous research harness (prepare.py + train.py + program.md) — a single-agent, single-metric, fixed-budget experiment loop with NEVER STOP autonomy. The creator-view frames it as a simplicity-discipline mirror to JASON-OS's multi-agent orchestration, so most entries are jason-os-relevant and carry agent-loop/autonomy-model concepts rather than concrete SoNash or CAS tech.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "program.md Agent Instruction Pattern",
+      "type": "pattern",
+      "tags": [
+        "ai-instructions",
+        "ai-agents",
+        "claude-md",
+        "system-prompt",
+        "skill-architecture",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Fixed-Budget Experimentation",
+      "type": "pattern",
+      "tags": [
+        "benchmarking",
+        "rate-limiting",
+        "ai-agents",
+        "orchestration",
+        "best-practices",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "3-File Architecture (Immutable/Editable/Instructions)",
+      "type": "pattern",
+      "tags": [
+        "architecture",
+        "skill-architecture",
+        "ai-instructions",
+        "ai-agents",
+        "best-practices",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Autonomous Crash Recovery Protocol",
+      "type": "pattern",
+      "tags": ["ai-agents", "reasoning", "state-machine", "best-practices", "jason-os-relevant"]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Results TSV Logging Convention",
+      "type": "pattern",
+      "tags": ["benchmarking", "extraction", "ai-agents", "pipeline"]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Simplicity Criterion for JASON-OS",
+      "type": "knowledge",
+      "tags": [
+        "skill-bloat",
+        "code-bloat",
+        "best-practices",
+        "mental-model",
+        "governance",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Protocol vs Workflow Design Space",
+      "type": "knowledge",
+      "tags": [
+        "ai-agents",
+        "orchestration",
+        "skill-architecture",
+        "mental-model",
+        "ai-instructions",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Autonomy Spectrum Design",
+      "type": "knowledge",
+      "tags": ["ai-agents", "orchestration", "mental-model", "governance", "jason-os-relevant"]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "analysis.ipynb Results Methodology",
+      "type": "content",
+      "tags": [
+        "benchmarking",
+        "extraction",
+        "ai-agents",
+        "pipeline",
+        "example",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Hidden Multi-Agent Architecture",
+      "type": "content",
+      "tags": [
+        "multi-agent",
+        "orchestration",
+        "subagents",
+        "ai-agents",
+        "architecture",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "No-License-on-Purpose Trap",
+      "type": "anti-pattern",
+      "tags": ["licensing", "governance", "supply-chain", "commercial-oss"]
+    },
+    {
+      "source": "karpathy/autoresearch",
+      "candidate": "Single-Metric Optimization Trap",
+      "type": "anti-pattern",
+      "tags": [
+        "benchmarking",
+        "mental-model",
+        "ai-agents",
+        "claims-vs-reality",
+        "premature-optimization"
+      ]
+    }
+  ]
+}

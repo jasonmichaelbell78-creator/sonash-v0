@@ -1,0 +1,48 @@
+{
+  "batch_id": "docs-composio-2026-04-12",
+  "source": "https://docs.composio.dev/docs",
+  "notes": "Composio's docs surface three transferable ideas (meta-tool runtime discovery, native-vs-MCP token tradeoff framework, llms.txt AI-readable manifest) plus an event trigger dual-model. Retag strips the forbidden entry-type tag `pattern` and the near-redundant `documentation` taxonomic tag that duplicated source_type; reuses existing `composio`, `mcp`, `tool-integration`, `ai-agents`, and `orchestration` vocabulary; and introduces one new concept tag (`dynamic-discovery`, 6x recurrence across the corpus) that captures the core transferable mechanism. Applicability tags (`jason-os-relevant`, `cas-relevant`) make explicit the creator-view framing that patterns matter more than the product for this user.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "https://docs.composio.dev/docs",
+      "candidate": "Meta-tool pattern for dynamic tool discovery",
+      "type": "architecture-pattern",
+      "tags": [
+        "ai-agents",
+        "tool-integration",
+        "auto-discovery",
+        "mcp",
+        "composio",
+        "orchestration",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "https://docs.composio.dev/docs",
+      "candidate": "Native vs MCP tradeoff framework with token cost data",
+      "type": "design-principle",
+      "tags": [
+        "mcp",
+        "ai-agents",
+        "tool-integration",
+        "architecture",
+        "composio",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://docs.composio.dev/docs",
+      "candidate": "llms.txt standard for AI-readable documentation",
+      "type": "pattern",
+      "tags": ["llm", "ai-agents", "markdown", "composio", "jason-os-relevant"]
+    },
+    {
+      "source": "https://docs.composio.dev/docs",
+      "candidate": "Event trigger dual model (webhook + polling)",
+      "type": "pattern",
+      "tags": ["ai-agents", "tool-integration", "architecture", "composio", "jason-os-relevant"]
+    }
+  ]
+}

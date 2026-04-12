@@ -1,0 +1,93 @@
+{
+  "batch_id": "safishamsi-graphify-2026-04-12",
+  "source": "safishamsi/graphify",
+  "notes": "graphify is a Python code-comprehension tool that builds a topology-based knowledge graph of a codebase using a dual-pass extract pipeline: tree-sitter AST parsing for code plus Claude subagents for semantic edges from docs, with every edge tagged EXTRACTED/INFERRED/AMBIGUOUS. Nine entries cover patterns (10-step skill orchestration, stateless MCP server, generic-walker language config, platform-specific skill variants), direct-application knowledge (confidence tagging taxonomy, threat-vector security model), and anti-patterns (unversioned graph persistence, oversized skill files, solo-maintainer velocity without review pressure).",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "Skill orchestration pipeline",
+      "type": "knowledge",
+      "tags": [
+        "skill-architecture",
+        "orchestration",
+        "multi-agent",
+        "pipeline",
+        "claude-code",
+        "caching",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "Confidence tagging taxonomy",
+      "type": "knowledge",
+      "tags": [
+        "confidence-tagging",
+        "taxonomy",
+        "extraction",
+        "rag",
+        "hallucination",
+        "cas-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "MCP server pattern",
+      "type": "pattern",
+      "tags": [
+        "mcp",
+        "tool-integration",
+        "llm-integration",
+        "caching",
+        "jason-os-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "LanguageConfig dataclass",
+      "type": "pattern",
+      "tags": ["extraction", "ast-parsing", "plugins", "architecture", "cas-relevant"]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "Threat-vector security model",
+      "type": "knowledge",
+      "tags": ["security", "best-practices", "markdown", "sonash-relevant", "jason-os-relevant"]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "Platform-specific skill variants",
+      "type": "pattern",
+      "tags": [
+        "skill-architecture",
+        "skill",
+        "plugins",
+        "claude-code",
+        "jason-os-relevant",
+        "devex"
+      ]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "Graph-only persistence without versioning",
+      "type": "anti-pattern",
+      "tags": ["technical-debt", "knowledge-management", "architecture", "claims-vs-reality"]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "Oversized skill files",
+      "type": "anti-pattern",
+      "tags": ["skill-bloat", "code-bloat", "skill-architecture", "claude-code", "sonash-relevant"]
+    },
+    {
+      "source": "safishamsi/graphify",
+      "candidate": "Ship fast skip review",
+      "type": "anti-pattern",
+      "tags": ["solo-maintainer", "governance", "security", "code-quality", "claims-vs-reality"]
+    }
+  ]
+}

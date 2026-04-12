@@ -1,0 +1,159 @@
+{
+  "batch_id": "teng-lin-notebooklm-py-2026-04-12",
+  "source": "teng-lin/notebooklm-py",
+  "notes": "Python NotebookLM wrapper that doubles as an agent-native package — Python API + CLI + SKILL.md + `skill install` command + 8 CI workflows including nightly RPC health monitoring. Highly relevant to JASON-OS skill distribution and CAS/sonash skill authoring patterns (autonomy rules, version stamping, external-contract monitoring).",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Skill Install + Version Stamping",
+      "type": "pattern",
+      "tags": [
+        "skill-distribution",
+        "drift-detection",
+        "skill",
+        "claude-code",
+        "python",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Autonomy Rules Section in SKILL.md",
+      "type": "pattern",
+      "tags": [
+        "autonomy-rules",
+        "skill",
+        "claude-code",
+        "ai-instructions",
+        "best-practices",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Nightly RPC Health Check",
+      "type": "pattern",
+      "tags": [
+        "external-api-monitoring",
+        "ci-cd",
+        "github",
+        "platform-risk",
+        "python",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Ambient CLAUDE.md PR Workflow",
+      "type": "pattern",
+      "tags": ["claude-md", "ai-instructions", "claude-code", "ci-cd", "devex", "sonash-relevant"]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Embedded Task() Subagent Patterns",
+      "type": "pattern",
+      "tags": [
+        "subagents",
+        "claude-code",
+        "skill",
+        "orchestration",
+        "ai-instructions",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Open Skills Ecosystem Investigation",
+      "type": "pattern",
+      "tags": ["skill-distribution", "plugins", "skill", "claude-code", "jason-os-relevant"]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "SKILL.md Autonomy Rules Template",
+      "type": "content",
+      "tags": [
+        "autonomy-rules",
+        "skill",
+        "claude-code",
+        "ai-instructions",
+        "best-practices",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "skill.py Install Mechanism",
+      "type": "content",
+      "tags": [
+        "skill-distribution",
+        "drift-detection",
+        "skill",
+        "claude-code",
+        "python",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "rpc-health.yml Workflow",
+      "type": "content",
+      "tags": ["external-api-monitoring", "ci-cd", "github", "platform-risk", "sonash-relevant"]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "CLAUDE.md Agent Guidance Pattern",
+      "type": "content",
+      "tags": [
+        "claude-md",
+        "ai-instructions",
+        "claude-code",
+        "best-practices",
+        "devex",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "AGENTS.md Separation",
+      "type": "knowledge",
+      "tags": [
+        "ai-instructions",
+        "multi-agent",
+        "subagents",
+        "claude-md",
+        "governance",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Undocumented API Dependency",
+      "type": "anti-pattern",
+      "tags": [
+        "platform-risk",
+        "external-api-monitoring",
+        "technical-debt",
+        "supply-chain",
+        "python"
+      ]
+    },
+    {
+      "source": "teng-lin/notebooklm-py",
+      "candidate": "Over-Engineered Install Mechanism",
+      "type": "anti-pattern",
+      "tags": [
+        "skill-distribution",
+        "code-bloat",
+        "premature-optimization",
+        "technical-debt",
+        "python"
+      ]
+    }
+  ]
+}

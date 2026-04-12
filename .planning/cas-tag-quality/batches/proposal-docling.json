@@ -1,0 +1,169 @@
+{
+  "batch_id": "docling-2026-04-12",
+  "source": "DS4SD/docling",
+  "notes": "Docling is an IBM-Research-backed document-extraction framework with clean backend/pipeline separation, a pluggy-based extension system, MCP server, and a unified DoclingDocument output across PDF/DOCX/audio/images. Creator-view positions it as T28's reference architecture and a candidate document-extraction backend, with three anti-patterns flagging premature complexity T28 should avoid.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "DS4SD/docling",
+      "candidate": "DoclingDocument tree structure",
+      "type": "knowledge",
+      "tags": [
+        "architecture",
+        "document-extraction",
+        "taxonomy",
+        "mental-model",
+        "knowledge-management",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Backend + Pipeline separation pattern",
+      "type": "pattern",
+      "tags": [
+        "architecture",
+        "pipeline",
+        "orchestration",
+        "document-extraction",
+        "cas-relevant",
+        "jason-os-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Plugin system via pluggy",
+      "type": "pattern",
+      "tags": [
+        "architecture",
+        "plugins",
+        "orchestration",
+        "tool-integration",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "docling-mcp as extraction backend",
+      "type": "content",
+      "tags": [
+        "mcp",
+        "document-extraction",
+        "tool-integration",
+        "extraction",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "ASR pipeline → unified output",
+      "type": "knowledge",
+      "tags": [
+        "architecture",
+        "pipeline",
+        "document-extraction",
+        "extraction",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Use docling instead of building document extractors",
+      "type": "knowledge",
+      "tags": [
+        "document-extraction",
+        "tool-integration",
+        "mcp",
+        "cas-relevant",
+        "jason-os-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Serializer hierarchy pattern",
+      "type": "pattern",
+      "tags": [
+        "architecture",
+        "pipeline",
+        "extraction",
+        "markdown",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Enrichment pipeline (toggleable)",
+      "type": "pattern",
+      "tags": [
+        "architecture",
+        "pipeline",
+        "depth-tiers",
+        "feature-flags",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Thread-safe pipeline design",
+      "type": "knowledge",
+      "tags": [
+        "architecture",
+        "pipeline",
+        "distributed-systems",
+        "production-grade",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "InputFormat enum (17 types)",
+      "type": "knowledge",
+      "tags": ["architecture", "document-extraction", "taxonomy", "cas-relevant"]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Don't replicate multi-package split prematurely",
+      "type": "anti-pattern",
+      "tags": [
+        "architecture",
+        "premature-optimization",
+        "code-bloat",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Don't build plugin system before you have plugins",
+      "type": "anti-pattern",
+      "tags": [
+        "architecture",
+        "plugins",
+        "premature-optimization",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "DS4SD/docling",
+      "candidate": "Don't adopt DoclingDocument wholesale",
+      "type": "anti-pattern",
+      "tags": [
+        "architecture",
+        "document-extraction",
+        "taxonomy",
+        "premature-optimization",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    }
+  ]
+}

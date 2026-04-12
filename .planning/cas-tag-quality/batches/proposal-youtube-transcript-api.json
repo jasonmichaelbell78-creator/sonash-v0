@@ -1,0 +1,134 @@
+{
+  "batch_id": "youtube-transcript-api-2026-04-12",
+  "source": "jdepoix/youtube-transcript-api",
+  "notes": "jdepoix/youtube-transcript-api is the caption-first extraction layer for T27 media pipeline — a Python library that reverse-engineers YouTube's innertube API with a mature error hierarchy, proxy-rotation infrastructure for IP-ban mitigation, and clean SRT/WebVTT formatters. Creator-view positions it as Layer 1 of a three-layer architecture (captions → pytubefix backup → Whisper fallback) and recommends adoption over building in-house.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "youtube-transcript-api as T27 primary extraction layer",
+      "type": "tool",
+      "tags": [
+        "youtube",
+        "media-extraction",
+        "transcription",
+        "python",
+        "library",
+        "production-grade",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "Innertube API reverse-engineering approach",
+      "type": "knowledge",
+      "tags": ["youtube", "media-extraction", "http", "platform-risk", "extraction", "cas-relevant"]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "Context-aware error hierarchy pattern",
+      "type": "pattern",
+      "tags": [
+        "architecture",
+        "best-practices",
+        "devex",
+        "production-grade",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "IP ban workaround operational guide",
+      "type": "content",
+      "tags": [
+        "youtube",
+        "proxy-rotation",
+        "rate-limiting",
+        "deployment",
+        "best-practices",
+        "media-extraction",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "Three-layer T27 extraction architecture",
+      "type": "knowledge",
+      "tags": [
+        "architecture",
+        "media-extraction",
+        "engine-fallback",
+        "graceful-degradation",
+        "pipeline",
+        "transcription",
+        "youtube",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "Proxy rotation infrastructure",
+      "type": "pattern",
+      "tags": [
+        "proxy-rotation",
+        "rate-limiting",
+        "deployment",
+        "http",
+        "media-extraction",
+        "production-grade",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "Manual vs auto-generated transcript priority",
+      "type": "knowledge",
+      "tags": [
+        "transcription",
+        "decision-matrix",
+        "taxonomy",
+        "media-extraction",
+        "youtube",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "SRT/WebVTT timestamp formatting",
+      "type": "pattern",
+      "tags": ["transcription", "media-extraction", "extraction", "best-practices", "cas-relevant"]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "Don't build own transcript fetcher (anti-pattern)",
+      "type": "anti-pattern",
+      "tags": [
+        "media-extraction",
+        "youtube",
+        "platform-risk",
+        "best-practices",
+        "tool-integration",
+        "transcription",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "jdepoix/youtube-transcript-api",
+      "candidate": "Ignore IP blocking for bulk (anti-pattern)",
+      "type": "anti-pattern",
+      "tags": [
+        "proxy-rotation",
+        "rate-limiting",
+        "youtube",
+        "deployment",
+        "media-extraction",
+        "platform-risk",
+        "cas-relevant"
+      ]
+    }
+  ]
+}

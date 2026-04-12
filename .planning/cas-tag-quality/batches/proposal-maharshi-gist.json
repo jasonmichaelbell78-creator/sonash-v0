@@ -1,0 +1,40 @@
+{
+  "batch_id": "maharshi-gist-2026-04-12",
+  "source": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+  "notes": "Maharshi-Pandya's contemplative-reasoning system prompt — a Jan 2025 snapshot advocating stream-of-consciousness LLM thinking with a <contemplator> tag and 10k-char minimum. Creator View frames it as a historical artifact whose 'exploration-over-conclusion' principle still maps to brainstorm/convergence-loop design (K1 = cas-relevant + jason-os-relevant), while the tag pattern itself (K2) is superseded by Claude native thinking and extended-reasoning models.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+      "candidate": "Exploration-over-conclusion as skill design principle",
+      "type": "design-principle",
+      "tags": [
+        "reasoning",
+        "contemplation",
+        "prompt-engineering",
+        "mental-model",
+        "ai-agents",
+        "llm",
+        "claude-code",
+        "cas-relevant",
+        "jason-os-relevant",
+        "blog"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+      "candidate": "Contemplator tag pattern (historical reference)",
+      "type": "pattern",
+      "tags": [
+        "prompt-engineering",
+        "system-prompt",
+        "reasoning",
+        "contemplation",
+        "claude-code",
+        "gpt-4o",
+        "claims-vs-reality",
+        "blog"
+      ]
+    }
+  ]
+}

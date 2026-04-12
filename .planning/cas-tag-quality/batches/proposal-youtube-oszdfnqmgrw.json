@@ -1,0 +1,61 @@
+{
+  "batch_id": "youtube-oszdfnqmgrw-2026-04-12",
+  "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+  "notes": "Chase AI walkthrough of Karpathy's Obsidian + Claude Code workflow: dump research into raw folders, have Claude generate structured wikis with a master index, use CLAUDE.md to teach the model how to navigate files. Sub-thousands-of-docs scale, zero retrieval infrastructure — presented as a lightweight RAG alternative.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+      "candidate": "Obsidian raw→wiki pipeline pattern",
+      "type": "pattern",
+      "tags": [
+        "obsidian",
+        "claude-code",
+        "llm-wiki",
+        "rag-alternative",
+        "knowledge-management",
+        "pipeline",
+        "personal-wiki",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+      "candidate": "CLAUDE.md as knowledge traversal controller",
+      "type": "knowledge",
+      "tags": [
+        "claude-md",
+        "claude-code",
+        "ai-instructions",
+        "knowledge-management",
+        "llm-wiki",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+      "candidate": "Obsidian Web Clipper",
+      "type": "content",
+      "tags": ["obsidian", "markdown", "extraction", "knowledge-management"]
+    },
+    {
+      "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+      "candidate": "Scale threshold decision framework",
+      "type": "knowledge",
+      "tags": ["rag", "rag-alternative", "knowledge-management", "mental-model", "personal-wiki"]
+    },
+    {
+      "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+      "candidate": "Overcomplicating knowledge retrieval",
+      "type": "anti-pattern",
+      "tags": [
+        "rag",
+        "rag-alternative",
+        "premature-optimization",
+        "knowledge-management",
+        "personal-wiki"
+      ]
+    }
+  ]
+}

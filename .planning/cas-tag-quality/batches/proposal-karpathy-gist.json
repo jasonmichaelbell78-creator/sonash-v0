@@ -1,0 +1,89 @@
+{
+  "batch_id": "karpathy-gist-2026-04-12",
+  "source": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+  "notes": "Karpathy's LLM Wiki gist — a pattern for LLM-maintained personal knowledge bases with three-layer architecture (raw sources / wiki / schema), an Ingest-Query-Lint operational triad, Index+Log dual navigation, and qmd as the local search primitive. Entries map directly to T4 memory, T16 JASON-OS, and T24 synthesis adoption, so most are jason-os-relevant and cas-relevant and carry the llm-wiki / personal-wiki / knowledge-management concept cluster rather than generic platform tags.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+      "candidate": "Three-layer architecture pattern for LLM knowledge bases",
+      "type": "architecture-pattern",
+      "tags": [
+        "knowledge-management",
+        "personal-wiki",
+        "llm-wiki",
+        "rag-alternative",
+        "architecture",
+        "claude-md",
+        "ai-instructions",
+        "mental-model",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+      "candidate": "Ingest-Query-Lint operational triad",
+      "type": "workflow-pattern",
+      "tags": [
+        "knowledge-management",
+        "personal-wiki",
+        "llm-wiki",
+        "orchestration",
+        "pipeline",
+        "rag-alternative",
+        "extraction",
+        "best-practices",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+      "candidate": "Answers-compound-into-wiki principle",
+      "type": "design-principle",
+      "tags": [
+        "knowledge-management",
+        "personal-wiki",
+        "llm-wiki",
+        "rag-alternative",
+        "extraction",
+        "best-practices",
+        "mental-model",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+      "candidate": "Index + Log dual navigation system",
+      "type": "implementation-pattern",
+      "tags": [
+        "knowledge-management",
+        "personal-wiki",
+        "llm-wiki",
+        "markdown",
+        "obsidian",
+        "best-practices",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
+      "candidate": "qmd local markdown search (MCP + CLI)",
+      "type": "tool",
+      "tags": [
+        "mcp",
+        "cli",
+        "markdown",
+        "knowledge-management",
+        "personal-wiki",
+        "llm-wiki",
+        "rag-alternative",
+        "utility-tool",
+        "jason-os-relevant"
+      ]
+    }
+  ]
+}

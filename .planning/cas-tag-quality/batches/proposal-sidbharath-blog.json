@@ -1,0 +1,83 @@
+{
+  "batch_id": "sidbharath-blog-2026-04-12",
+  "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+  "notes": "Sid Bharath's public Claude Code tutorial (Feb 2026) covering modes, CLAUDE.md, sub-agents, git workflows, MCP, hooks, plugins, skills, testing, CI/CD, and cloud teleportation. Six candidates captured: three knowledge items (teleportation, plugin marketplace, junior-engineer framing), one onboarding-template pattern, and two anti-patterns (features-without-enforcement, no-compaction-discussion) that validate our harness-level investments.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+      "candidate": "Cloud teleportation pattern",
+      "type": "knowledge",
+      "tags": [
+        "claude-code",
+        "orchestration",
+        "architecture",
+        "infrastructure",
+        "devex",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+      "candidate": "Plugin marketplace ecosystem",
+      "type": "knowledge",
+      "tags": ["claude-code", "plugins", "skill", "platform-risk", "jason-os-relevant"]
+    },
+    {
+      "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+      "candidate": "Junior engineer framing",
+      "type": "knowledge",
+      "tags": [
+        "claude-code",
+        "mental-model",
+        "ai-instructions",
+        "prompt-engineering",
+        "best-practices",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+      "candidate": "Tutorial structure as onboarding template",
+      "type": "pattern",
+      "tags": [
+        "claude-code",
+        "documentation",
+        "knowledge-management",
+        "tutorial",
+        "taxonomy",
+        "depth-tiers",
+        "sonash-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+      "candidate": "Features without enforcement",
+      "type": "anti-pattern",
+      "tags": [
+        "claude-code",
+        "hooks",
+        "claude-md",
+        "ai-instructions",
+        "enforcement",
+        "best-practices",
+        "claims-vs-reality",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+      "candidate": "No compaction discussion",
+      "type": "anti-pattern",
+      "tags": [
+        "claude-code",
+        "knowledge-management",
+        "docs-absence",
+        "mental-model",
+        "tutorial",
+        "jason-os-relevant"
+      ]
+    }
+  ]
+}
