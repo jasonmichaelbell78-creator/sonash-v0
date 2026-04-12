@@ -262,8 +262,19 @@ Same 4 candidate types. Write to `value-map.json`. Update
 
 ## Tag Suggestion (Phase 6c — MUST for Standard/Deep)
 
-Suggest tags based on: platform (`youtube`, `podcast`, `tiktok`), topic
-keywords, speaker/channel, candidate types. Per CONVENTIONS.md Section 14.
+After writing value-map.json, propose tags for the analysis record AND each
+extraction-journal entry per CONVENTIONS.md §14: **at least 3 semantic tags per
+entry** from the 8 categories (domain, technology, concept, technique, pattern,
+applicability, quality, taxonomic). No upper bound. Pull from
+`.research/tag-vocabulary.json`; for tags not in the vocabulary, propose with
+category + one-sentence definition for user approval.
+
+**Signal sources for media-analysis**: `creator-view.md`, entry `notes`,
+`engineer-view.md`, `transcript.md`, speaker/channel context.
+
+Present to user: "Suggested tags for [entry]: [list]. Accept, modify, or add
+your own?" Store accepted tags in `analysis.json.tags` AND each
+`extraction-journal.jsonl` entry. Do not pre-populate without approval.
 
 ---
 

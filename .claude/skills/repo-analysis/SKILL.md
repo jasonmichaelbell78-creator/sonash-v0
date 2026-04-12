@@ -398,17 +398,19 @@ repo hasn't been analyzed yet — they become leads for future analysis.
 
 ## Tag Suggestion (Phase 6c — MUST for Standard/Deep)
 
-After writing value-map.json, suggest 5-8 tags for the analysis record based on:
+After writing value-map.json, propose tags for the analysis record AND each
+extraction-journal entry per CONVENTIONS.md §14: **at least 3 semantic tags per
+entry** from the 8 categories (domain, technology, concept, technique, pattern,
+applicability, quality, taxonomic). No upper bound. Pull from
+`.research/tag-vocabulary.json`; for tags not in the vocabulary, propose with
+category + one-sentence definition for user approval.
 
-1. Source type: `repo`
-2. Repo type: e.g., `library`, `curated-list`
-3. Top dimensions: e.g., `architecture`, `security`
-4. Candidate types found: e.g., `pattern`, `anti-pattern`
-5. Topic keywords from creator view: e.g., `extraction`, `react`, `mcp`
+**Signal sources for repo-analysis**: `creator-view.md`, entry `notes`,
+`engineer-view.md`, `mined-links.jsonl`, top dependencies from repomix output.
 
-Present to user: "Suggested tags: [list]. Accept, modify, or add your own?"
-Store accepted tags in `analysis.json` `tags` array. Per CONVENTIONS.md
-Section 14.
+Present to user: "Suggested tags for [entry]: [list]. Accept, modify, or add
+your own?" Store accepted tags in `analysis.json.tags` AND each
+`extraction-journal.jsonl` entry. Do not pre-populate without approval.
 
 ---
 

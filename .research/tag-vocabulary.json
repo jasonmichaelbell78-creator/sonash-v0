@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "last_updated": "2026-04-12",
+  "description": "Controlled vocabulary for tags applied to analysis records and extraction journal entries. See .claude/skills/shared/CONVENTIONS.md §14 for rules.",
+  "categories": {
+    "domain": "Problem space or field (e.g., knowledge-management, security)",
+    "technology": "Concrete tech, tools, or protocols (e.g., react, mcp, sqlite)",
+    "concept": "Named ideas or abstractions (e.g., multi-agent, rag)",
+    "technique": "How-to methods (e.g., prompt-engineering, web-crawling)",
+    "pattern": "Architectural/design patterns with replicable shape (e.g., plugin-dispatch)",
+    "applicability": "Fit to user context (e.g., jason-os-relevant)",
+    "quality": "Source quality signal (e.g., production-grade, early-stage)",
+    "taxonomic": "Artifact type (e.g., framework, library) — use sparingly"
+  },
+  "tags": {},
+  "synonyms": {}
+}
