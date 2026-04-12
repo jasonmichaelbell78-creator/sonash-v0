@@ -2,7 +2,7 @@
 <!-- prettier-ignore-start -->
 # Qodo Rejected Patterns Tracker
 
-**Document Version:** 1.0 **Created:** 2026-04-11 **Last Updated:** 2026-04-11
+**Document Version:** 1.1 **Created:** 2026-04-11 **Last Updated:** 2026-04-12
 
 **Status:** ACTIVE
 
@@ -35,13 +35,13 @@ caught it because compliance runs on its own engine.
 
 | Rule # | Category                          | Origin PRs      | Times Rejected | One-line rationale                                              |
 | ------ | --------------------------------- | --------------- | -------------- | --------------------------------------------------------------- |
-| 1      | Missing actor context (JSON)      | #370-#371       | 5+             | JSON is ephemeral CI artifact; durable actor lives in jsonl     |
+| 1      | Missing actor context (JSON)      | #370-#371, #507 | 7+             | JSON is ephemeral CI artifact; durable actor lives in jsonl     |
 | 2      | Unstructured console logs         | #370-#371       | 5+             | Pre-existing CLI pattern; DEBT-0455 tracks                      |
 | 3      | Data quality in JSONL pipelines   | #366-#371       | ~100           | Pipeline output, not hand-edited                                |
 | 4      | Sensitive log persistence         | #368            | 4              | override-log.jsonl is intentional audit trail                   |
 | 5      | Silent JSONL parse catch          | #371 R1-R2      | 2              | Partial writes are expected; skip-and-continue is correct       |
-| 6      | Absolute path leakage in TDMS     | #371 R2         | 1              | Repo-relative enforced by pipeline; older entries pre-existing  |
-| 7      | Missing actor in intake log       | #379            | 5+             | Intake logs record what, not who                                |
+| 6      | Absolute path leakage in TDMS     | #371 R2, #507   | 3              | Repo-relative enforced by pipeline; older entries pre-existing  |
+| 7      | Missing actor in intake log       | #379, #507 R3   | 7+             | Intake logs record what, not who                                |
 | 8      | JSON.parse Date/Map/BigInt        | #379 R3-R7      | 5              | JSON can't produce those types                                  |
 | 9      | Top-level await in ESM files      | #397, #407, #411| 3+             | Valid in ESM modules                                            |
 | 10     | Repeat-rejection within same PR   | #378-#416       | pattern        | Same rule + file + rationale → skip                             |

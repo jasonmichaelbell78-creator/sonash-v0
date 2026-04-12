@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#68)</summary>
+
+- **Date:** 2026-04-11
+- **Reviews consolidated:** #80-#rev-83
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#67)</summary>
 
 - **Date:** 2026-04-11
@@ -1799,6 +1808,93 @@ deduplicated, non-overlapping ranges):
 - cc-via-helper-extract
 - process-overview-diagram-drift
 - task-notification-result-field
+
+---
+
+### Review rev-82: PR #507 R1: T39 hook drift + pattern-compliance + JSONL helper sweep (2026-04-11)
+
+**Date:** 2026-04-11 | **PR:** #507 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 42    | 35    | 0        | 7        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 6        | 17    | 11    | 2       |
+
+**Patterns:**
+
+- sanitize-error-sweep
+- broken-dist-require-path
+- codeql-clear-text-log
+- safe-fs-propagation
+- skill-copy-trim
+- propagation-rule-narrowing
+- cognitive-complexity-extraction
+- todo-false-positive-rewording
+- qodo-compliance-rule-27
+
+**Learnings:**
+
+- Qodo runs two rule engines: reviewer + compliance
+- Propagation patternAbsence mode is over-eager
+- Skill-copy divergence needs intentional trimming
+- S1135 TODO matches literal word
+- pr-creep should be advisory not blocking
+
+---
+
+### Review rev-83: PR #507 R2: safe-fs security hardening + CodeQL + CRLF + TOCTOU + FP bundle (2026-04-11)
+
+**Date:** 2026-04-11 | **PR:** #507 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 22    | 15    | 0        | 7        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 8     | 10    | 2       |
+
+**Patterns:**
+
+- codeql-full-removal
+- csprng-tmp-path
+- wx-atomic-create
+- lock-ancestor-symlink-guard
+- path-basename-redaction
+- trust-model-doc
+- crlf-strip-streamlines
+- mkdir-toctou-fix
+- cc-helper-extraction
+- typeerror-semantic-fix
+- duplicate-function-dedup
+- fp-autoresolve-bundle
+- qodo-compliance-rule-28
+
+**Learnings:**
+
+- CodeQL has no redaction threshold — any env-derived sink trips it
+- CC chained validation blocks each add +1 per condition
+- Post-commit auto-resolve needs cache+ack updates, log alone is cosmetic
+- Deletion-aware diff parser + divergence registry compose
+- Cross-doc-deps gate enforces docs when .husky/ changes
+- safe-fs trust model is explicit single-user CLI, documented in header
+
+---
+
+### Review 83: PR #507 R2 (Mixed: Qodo Compliance + Qodo Suggestions + Gemini + CodeQL + SonarCloud) (unknown)
+
+**Date:** unknown | **PR:** #507 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 2     | 0     | 0        | 0        |
 
 ## Key Patterns
 
@@ -4627,3 +4723,121 @@ exemption."
   reword)
 - db90b4a2 (FP bundle: resolver + propagation check + divergence registry
   - post-commit hook + doc updates + baseline additions)
+
+### Review #84 — PR #507 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions)
+
+**Sources:** SonarCloud (3), Qodo Compliance (3), Qodo Suggestions (9). Total:
+~15 distinct items on the R2 commit range 2fb384a2..d9b434b1 (with QS8 being a
+duplicate of QC3 and collapsing in triage).
+
+**Disposition:** 12 fixed, 0 deferred, 3 rejected (all cross-round repeats).
+
+**Agent:** security-auditor dispatched per PRE-TASK directive. Validated all 4
+safe-fs security changes in Commit A (lock symlink + size guard, EXDEV directory
+refusal via helper reuse, wx-unoverridable options normalization, empty-file BOM
+guard). Verdict: GO — all 4 changes APPROVED as written, propagation clean
+across 9 safe-fs.js files, no caller regression. Zero modifications needed
+before commit.
+
+**Fixed highlights:**
+
+- safe-fs.js R3 security batch (Commit A, propagated across canonical + 8 skill
+  copies):
+  - **tryBreakExistingLock** (QS1, Qodo importance 9): Added lstatSync + 16 KiB
+    size guard BEFORE readFileSync. Closes the TOCTOU gap where a symlink
+    planted at the lock path between the wx create attempt and the read-back
+    would cause arbitrary-file read of the symlink target. 16 KiB ceiling ≈ 130x
+    headroom over the ~120-byte lock payload. Stderr uses path.basename; ENOENT
+    race falls through to outer catch safely.
+  - **safeRenameSync EXDEV** (QS3, importance 6): Routed cross-device fallback
+    through renameFallbackOverExisting helper. Previously the EXDEV branch
+    called fs.copyFileSync+fs.unlinkSync inline, which would silently copy over
+    a destination directory's contents. Helper reuse consolidates the two
+    fallback branches (EXDEV + EPERM/EACCES/EEXIST) onto the same
+    directory-refusing path.
+  - **safeAtomicWriteSync options** (QS2+QS5+SC2, importance 8 + Sonar S6661):
+    Replaced `{ flag: "wx", ...(options || {}) }` three-in-one. Three-branch
+    normalization handles string encoding shorthand + object + undefined,
+    applies `flag: "wx"` LAST so callers cannot override it, and eliminates the
+    empty-object spread idiom flagged by Sonar. Regression scan (7 real callers)
+    confirmed none pass a bare string or `flag: "w"`.
+  - **readUtf8Sync empty guard** (QS7, importance 3): Added explicit empty-
+    string return before BOM strip. Semantically a no-op; defensive clarity.
+- sync-reviews-to-jsonl.js R3 batch (Commit B):
+  - **backupReviewsFile** (QC1, Qodo Compliance Security): Added lstatSync
+    source check before copyFileSync. The R1 patch only guarded the .bak
+    destination — a symlink at REVIEWS_FILE would have caused copyFileSync to
+    follow the link and write arbitrary local content into the backup. This is
+    the first R3 compliance item that wasn't a cross-round repeat.
+  - **parseReviewHeader** (QS4, importance 8): Number.isFinite →
+    Number.isSafeInteger && > 0. Catches IDs beyond Number.MAX_SAFE_INTEGER that
+    would pass isFinite but silently lose precision during dedupe/sort.
+  - **loadExistingIds** (QS6, importance 7): Stream-fallback via streamLinesSync
+    when readTextWithSizeGuard trips the 2 MiB ceiling. reviews.jsonl is well
+    under the limit today but will grow — this prevents a hard failure in future
+    review-lifecycle runs.
+  - **logRepairCoverage** (QS9, importance 5): Filter malformed PR numbers out
+    of the human-readable summary (NaN/Infinity are tolerated by the finite-safe
+    comparator but were rendered as "#NaN"). Report separately as "(+N
+    malformed)". Refactored to avoid nested ternary (S3358).
+- SonarCloud R3 cleanup (Commit C):
+  - **extractModifiedFunctions CC 17→<15** (SC1): Extracted
+    collectFunctionNamesFromDiff helper + hoisted ADD/REMOVE_FUNCTION_PATTERNS
+    to module-level constants. Outer function now chains two helper calls plus a
+    2-line removedOnly diff.
+  - **resolve-hook-warnings.js L211** (SC3): `err && err.code === "ENOENT"` →
+    `err?.code === "ENOENT"`. Trivial optional-chain.
+
+**Rejected / advisory-closed:**
+
+- QC2 Qodo Compliance "Missing user context / hardcoded operator in
+  logIntakeActivity" — cross-round dedup vs rules #1, #7. Previously rejected in
+  R1 (#82), R2 (#83), #371. REJECTED_PATTERNS.md counters bumped.
+- QC3 Qodo Compliance "Path in error — readTextWithSizeGuard throws with full
+  path" — cross-round dedup vs rules #5, #6. Previously rejected in R2 (#83) for
+  loadStrict. Same pattern, same rationale. REJECTED_PATTERNS.md counter bumped.
+- QS8 Qodo Suggestion "Redact paths in thrown errors — readTextWithSizeGuard
+  L266-268" — duplicate of QC3. Auto-rejected.
+
+**Key learnings:**
+
+- The `{ flag: "wx", ...(options || {}) }` idiom that landed in R2 fixed one
+  atomic-semantics bug but introduced two new ones: callers could override `wx`
+  by passing `{ flag: "w" }`, and SonarCloud flagged the `|| {}` empty spread.
+  The R3 refactor with spread-first-then-literal-key is the canonical
+  unoverridable-key pattern. Lesson: when applying the "apply defaults via
+  spread" idiom, always write the load-bearing key LAST.
+- Qodo routinely flags EXDEV inline copy+unlink as a directory-overwrite
+  vulnerability even though `renameFallbackOverExisting` already existed in the
+  module. The two fallback branches (EXDEV + EPERM/EACCES/EEXIST) should be
+  consolidated when either one needs a guard added — don't leave the other
+  branch as a latent regression path.
+- `Number.isFinite` vs `Number.isSafeInteger`: for IDs that will participate in
+  sort/dedup keys, always use isSafeInteger. The precision-loss bug is silent,
+  not a thrown error, which makes it nearly undebuggable in production once it
+  corrupts the JSONL.
+- Cross-round dedup is the single biggest R3+ time saver. QC2 and QC3 would have
+  consumed ~30 minutes of re-investigation without the tracker. The
+  .qodo/REJECTED_PATTERNS.md + tracker workflow paid off again.
+- security-auditor agent at R3 was a fast pass (under 2 minutes, zero
+  modifications requested), which validates the R2 trust model decision. The
+  agent had the context it needed from the R2 review + the in-line trust model
+  header comment and didn't need to re-scan all 169 consumers — it accepted them
+  as settled.
+
+**Process improvements:**
+
+- REJECTED_PATTERNS.md counters updated: rule #1 to 7+, rule #6 to 3, rule #7 to
+  7+. Document version bumped to 1.1.
+- The R3 round stayed small (3 commits, 12 fixes, 15-minute security-auditor
+  pass) because R1+R2 did the propagation sweep across all 9 safe-fs.js files.
+  Future safe-fs changes should continue to fan out to all copies in the first
+  commit, not split across rounds.
+
+**Commits:**
+
+- 2133bd31 (Commit A — safe-fs R3 security batch across 9 files)
+- c6c6873d (Commit B — sync-reviews-to-jsonl source symlink + isSafeInteger +
+  stream fallback + malformed PR filter)
+- f9559fb5 (Commit C — SonarCloud cleanup: check-propagation CC refactor +
+  resolve-hook-warnings optional chain)
