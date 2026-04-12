@@ -2,6 +2,46 @@
   "warnings": [
     {
       "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "error",
+      "message": "Branch has >=10 commits  create PR soon",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-12T21:15:15.507Z",
+      "occurrences": 20,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "tdms-s0",
+      "severity": "warning",
+      "message": "S0: 26 critical debt items",
+      "action": "npm run debt:report --severity=S0",
+      "timestamp": "2026-04-12T12:23:16.931Z",
+      "occurrences": 6,
+      "occurrences_since_ack": 2
+    },
+    {
+      "hook": "session-start",
+      "type": "review-lifecycle",
+      "severity": "warning",
+      "message": "Review lifecycle validation issues found",
+      "action": "npm run reviews:lifecycle",
+      "timestamp": "2026-04-12T12:23:16.843Z",
+      "occurrences": 6,
+      "occurrences_since_ack": 2
+    },
+    {
+      "hook": "session-start",
+      "type": "mcp-secrets",
+      "severity": "warning",
+      "message": "Encrypted but not decrypted",
+      "action": "node scripts/secrets/decrypt-secrets.js",
+      "timestamp": "2026-04-12T12:23:16.763Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
       "type": "agent",
       "severity": "warning",
       "message": "Agent compliance warnings - code changed without agent review",
@@ -21,45 +61,14 @@
       "occurrences_since_ack": 1
     },
     {
-      "hook": "session-start",
-      "type": "tdms-s0",
-      "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-11T20:41:19.563Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
-      "type": "review-lifecycle",
-      "severity": "warning",
-      "message": "Review lifecycle validation issues found",
-      "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-11T20:41:19.504Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 1
-    },
-    {
       "hook": "pre-push",
       "type": "network-error",
       "severity": "info",
       "message": "npm audit skipped  network unavailable",
       "action": "Check network connectivity and retry",
       "timestamp": "2026-04-11T20:27:35.069Z",
-      "occurrences": 2,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "error",
-      "message": "Branch has >=10 commits — create PR soon",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-12T21:15:15.507Z",
-      "occurrences": 20,
-      "occurrences_since_ack": 1,
-      "count": "10"
+      "occurrences": 3,
+      "occurrences_since_ack": 2
     }
   ]
 }
