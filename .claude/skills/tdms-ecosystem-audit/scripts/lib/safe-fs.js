@@ -168,9 +168,11 @@ function safeRenameSync(src, dest) {
   } catch (err) {
     const code = errCode(err);
     if (code === "EXDEV") {
-      // Cross-device: copy then remove source
-      fs.copyFileSync(absSrc, absDest);
-      fs.unlinkSync(absSrc);
+      // Cross-device: copy then remove source. Reuse renameFallbackOverExisting
+      // so cross-drive renames inherit the "refuse over directory" guard —
+      // without it, copyFileSync could overwrite a destination directory's
+      // contents or throw an opaque EISDIR on some platforms.
+      renameFallbackOverExisting(absSrc, absDest);
       return;
     }
     if (code === "EPERM" || code === "EACCES" || code === "EEXIST") {
@@ -205,7 +207,19 @@ function safeAtomicWriteSync(filePath, data, options) {
   if (!isSafeToWrite(tmpPath)) {
     throw new Error(`Refusing atomic write via symlinked tmp path: ${path.basename(tmpPath)}`);
   }
-  const writeOptions = { flag: "wx", ...(options || {}) };
+  // Normalize options: writeFileSync accepts a string (encoding shorthand),
+  // an object, or undefined. Handle all three shapes, then apply flag: "wx"
+  // LAST so callers cannot override it — that flag is load-bearing for the
+  // tmp-create-or-fail semantics below. Also avoids the "...(options || {})"
+  // empty-spread idiom (SonarCloud S6661) by not spreading a literal {}.
+  let writeOptions;
+  if (typeof options === "string") {
+    writeOptions = { encoding: options, flag: "wx" };
+  } else if (options && typeof options === "object") {
+    writeOptions = { ...options, flag: "wx" };
+  } else {
+    writeOptions = { flag: "wx" };
+  }
   try {
     try {
       fs.writeFileSync(tmpPath, data, writeOptions);
@@ -238,7 +252,9 @@ function safeAtomicWriteSync(filePath, data, options) {
  */
 function readUtf8Sync(filePath) {
   const content = fs.readFileSync(filePath, "utf8");
-  // Strip UTF-8 BOM if present
+  // Strip UTF-8 BOM if present. Explicit empty-file guard so codePointAt(0)
+  // is never called on a zero-length string — defensive clarity.
+  if (content.length === 0) return content;
   return content.codePointAt(0) === 0xfeff ? content.slice(1) : content;
 }
 
@@ -447,6 +463,24 @@ function isLockHolderAlive(existing) {
  */
 function tryBreakExistingLock(lockPath) {
   try {
+    // Symlink + size guard BEFORE reading. Without these, a symlink planted
+    // at the lock path between the wx create attempt and this read-back would
+    // cause arbitrary-file read, and a pathologically large file at the lock
+    // path would bloat memory. Lock files are ~120 bytes; 16 KiB is ample.
+    const st = fs.lstatSync(lockPath);
+    if (st.isSymbolicLink()) {
+      process.stderr.write(
+        `[safe-fs] WARNING: lock path is a symlink, refusing to read: ${path.basename(lockPath)}\n`
+      );
+      return false;
+    }
+    if (st.size > 16 * 1024) {
+      process.stderr.write(
+        `[safe-fs] WARNING: lock file oversized (${st.size} bytes), removing: ${path.basename(lockPath)}\n`
+      );
+      breakStaleLock(lockPath);
+      return true;
+    }
     const existing = JSON.parse(fs.readFileSync(lockPath, "utf8"));
     if (isLockHolderAlive(existing)) return false; // lock is valid
     breakStaleLock(lockPath);
