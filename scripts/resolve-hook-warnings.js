@@ -208,7 +208,7 @@ function runCheckerPasses(scriptRelPath, extraArgs = [], options = {}) {
       return false;
     }
     // Treat ENOENT / missing script as "can't verify" — leave active.
-    if (err && err.code === "ENOENT") return false;
+    if (err?.code === "ENOENT") return false;
     return false;
   }
 }

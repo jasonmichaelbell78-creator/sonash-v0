@@ -281,41 +281,46 @@ function parseDiff(diffOutput) {
  * (observed in PR #507 R1 when trimming DEBT_DIR writers from 8 safe-fs.js
  * skill copies).
  */
+// Regex sets for extractModifiedFunctions, lifted out of the function body so
+// each call to extractModifiedFunctions reuses the same compiled literals and
+// the function itself stays below the cognitive-complexity ceiling.
+const ADD_FUNCTION_PATTERNS = [
+  // function declarations: function loadJsonl(
+  /^\+.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
+  // const/let/var assignments: const loadJsonl = function/arrow
+  /^\+.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
+  // Method definitions in objects/classes: loadJsonl(args) { or loadJsonl: function
+  /^\+\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*\{/gm,
+  // Export function: export function loadJsonl(
+  /^\+.*\bexport\s+(?:default\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
+];
+
+const REMOVE_FUNCTION_PATTERNS = [
+  /^-.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
+  /^-.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
+];
+
+/**
+ * Collect function names matched by `patterns` from `diffContent`, filtered
+ * against MIN_FUNC_NAME_LENGTH and GENERIC_NAMES. Extracted so
+ * extractModifiedFunctions stays below the cognitive-complexity ceiling.
+ */
+function collectFunctionNamesFromDiff(diffContent, patterns) {
+  const names = new Set();
+  for (const pattern of patterns) {
+    for (const match of diffContent.matchAll(pattern)) {
+      const name = match[1];
+      if (name.length >= MIN_FUNC_NAME_LENGTH && !GENERIC_NAMES.has(name)) {
+        names.add(name);
+      }
+    }
+  }
+  return names;
+}
+
 function extractModifiedFunctions(diffContent) {
-  const added = new Set();
-  const removedAny = new Set();
-
-  const addPatterns = [
-    // function declarations: function loadJsonl(
-    /^\+.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
-    // const/let/var assignments: const loadJsonl = function/arrow
-    /^\+.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
-    // Method definitions in objects/classes: loadJsonl(args) { or loadJsonl: function
-    /^\+\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*\{/gm,
-    // Export function: export function loadJsonl(
-    /^\+.*\bexport\s+(?:default\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
-  ];
-  for (const pattern of addPatterns) {
-    for (const match of diffContent.matchAll(pattern)) {
-      const name = match[1];
-      if (name.length >= MIN_FUNC_NAME_LENGTH && !GENERIC_NAMES.has(name)) {
-        added.add(name);
-      }
-    }
-  }
-
-  const removePatterns = [
-    /^-.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
-    /^-.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
-  ];
-  for (const pattern of removePatterns) {
-    for (const match of diffContent.matchAll(pattern)) {
-      const name = match[1];
-      if (name.length >= MIN_FUNC_NAME_LENGTH && !GENERIC_NAMES.has(name)) {
-        removedAny.add(name);
-      }
-    }
-  }
+  const added = collectFunctionNamesFromDiff(diffContent, ADD_FUNCTION_PATTERNS);
+  const removedAny = collectFunctionNamesFromDiff(diffContent, REMOVE_FUNCTION_PATTERNS);
 
   // removedOnly = removed but not also added (pure deletions)
   const removedOnly = new Set();
