@@ -328,7 +328,7 @@ execution from deep-plan must enforce them manually.
 **Invocation tracking** (MUST):
 
 ```bash
-cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"deep-plan","type":"skill","success":true,"context":{"topic":"TOPIC","decisions":N}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"deep-plan","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"topic":"TOPIC","decisions":N}}'
 ```
 
 **Completion message:** List artifacts (DIAGNOSIS.md, DECISIONS.md, PLAN.md),

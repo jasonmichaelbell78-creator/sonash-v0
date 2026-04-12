@@ -14,7 +14,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError, validatePathInDir, slugify } = require("../lib/security-helpers.js");
-const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
+const { safeWriteFileSync, isSafeToWrite, readTextWithSizeGuard } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const JOURNAL_PATH = path.join(PROJECT_ROOT, ".research", "extraction-journal.jsonl");
@@ -74,7 +75,7 @@ function main() {
     process.exit(1);
   }
 
-  const lines = fs.readFileSync(JOURNAL_PATH, "utf8").trim().split("\n");
+  const lines = readTextWithSizeGuard(JOURNAL_PATH).trim().split("\n");
   let backfilled = 0;
   let skipped = 0;
   let alreadyTagged = 0;
@@ -86,37 +87,37 @@ function main() {
       updatedLines.push(line);
       continue;
     }
-    try {
-      const entry = JSON.parse(line);
-      if (entry.tags && entry.tags.length > 0) {
-        alreadyTagged++;
-        updatedLines.push(line);
-        continue;
-      }
-
-      // Look up tags for this source
-      const source = entry.source;
-      if (!source || typeof source !== "string" || source.trim().length === 0) {
-        skipped++;
-        updatedLines.push(line);
-        continue;
-      }
-      if (!tagCache.has(source)) {
-        tagCache.set(source, findTagsForSource(source));
-      }
-      const sourceTags = tagCache.get(source);
-
-      if (sourceTags) {
-        entry.tags = sourceTags;
-        updatedLines.push(JSON.stringify(entry));
-        backfilled++;
-      } else {
-        skipped++;
-        updatedLines.push(line);
-      }
-    } catch {
+    const entry = safeParseLine(line);
+    if (!entry) {
       updatedLines.push(line);
       skipped++;
+      continue;
+    }
+    if (entry.tags && entry.tags.length > 0) {
+      alreadyTagged++;
+      updatedLines.push(line);
+      continue;
+    }
+
+    // Look up tags for this source
+    const source = entry.source;
+    if (!source || typeof source !== "string" || source.trim().length === 0) {
+      skipped++;
+      updatedLines.push(line);
+      continue;
+    }
+    if (!tagCache.has(source)) {
+      tagCache.set(source, findTagsForSource(source));
+    }
+    const sourceTags = tagCache.get(source);
+
+    if (sourceTags) {
+      entry.tags = sourceTags;
+      updatedLines.push(JSON.stringify(entry));
+      backfilled++;
+    } else {
+      skipped++;
+      updatedLines.push(line);
     }
   }
 

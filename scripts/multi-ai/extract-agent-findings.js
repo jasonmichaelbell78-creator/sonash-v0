@@ -7,6 +7,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const outputFile = process.argv[2];
 const destFile = process.argv[3];
@@ -119,8 +120,8 @@ function processFindingJson(jsonStr) {
 }
 
 for (const line of lines) {
-  try {
-    const entry = JSON.parse(line);
+  const entry = safeParseLine(line);
+  if (entry) {
     if (entry.type === "assistant" && entry.message && entry.message.content) {
       // FIX 4: Normalize content to array. entry.message.content may be a
       // string (some APIs return plain text) or a single object instead of
@@ -177,8 +178,6 @@ for (const line of lines) {
         }
       }
     }
-  } catch {
-    // Skip invalid log lines
   }
 }
 

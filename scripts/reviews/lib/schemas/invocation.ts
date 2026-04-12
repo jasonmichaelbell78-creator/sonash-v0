@@ -21,9 +21,9 @@ export const InvocationRecord = BaseRecord.extend({
   tokens: z.preprocess((v) => {
     if (v === null || v === undefined) return null;
     if (typeof v === "string") {
-      const s = v.trim();
-      if (s === "") return null;
-      return s;
+      const trimmed = v.trim();
+      if (trimmed === "") return null;
+      return trimmed;
     }
     if (typeof v === "number") return v;
     return NaN;

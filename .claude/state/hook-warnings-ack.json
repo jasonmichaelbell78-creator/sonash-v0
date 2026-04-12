@@ -1,18 +1,19 @@
 {
   "acknowledged": {
-    "pr-creep": "2026-04-08T21:52:27.253Z",
-    "propagation-staged": "2026-04-10T21:00:00.000Z",
-    "trigger": "2026-04-10T10:56:16.606Z",
-    "session-end-missing": "2026-04-09T23:59:59.000Z",
-    "review-lifecycle": "2026-04-09T23:59:59.000Z",
-    "tdms-s0": "2026-04-09T23:59:59.000Z",
-    "mcp-secrets": "2026-04-08T11:11:41.405Z",
-    "pipeline-ratchet-baselines": "2026-04-08T11:11:27.927Z",
-    "reviewer": "2026-04-07T08:45:00.000Z",
-    "agent": "2026-04-08T11:11:27.927Z",
-    "audit": "2026-04-09T23:59:59.000Z",
-    "patterns": "2026-04-09T23:59:59.000Z",
-    "install-Installing root dependencies": "2026-04-09T23:59:59.000Z"
+    "pr-creep": "2026-04-11T19:22:50.000Z",
+    "propagation-staged": "2026-04-11T19:22:50.000Z",
+    "trigger": "2026-04-11T19:22:50.000Z",
+    "session-end-missing": "2026-04-11T19:22:50.000Z",
+    "review-lifecycle": "2026-04-11T19:22:50.000Z",
+    "tdms-s0": "2026-04-11T19:22:50.000Z",
+    "mcp-secrets": "2026-04-11T19:22:50.000Z",
+    "pipeline-ratchet-baselines": "2026-04-11T19:22:50.000Z",
+    "reviewer": "2026-04-11T19:22:50.000Z",
+    "agent": "2026-04-11T19:22:50.000Z",
+    "audit": "2026-04-11T19:22:50.000Z",
+    "patterns": "2026-04-11T19:22:50.000Z",
+    "install-Installing root dependencies": "2026-04-11T19:22:50.000Z",
+    "network-error": "2026-04-11T19:22:50.000Z"
   },
-  "lastCleared": "2026-04-10T10:56:18.482Z"
+  "lastCleared": "2026-04-11T19:23:06.497Z"
 }

@@ -27,6 +27,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLineWithError } = safeRequire("../lib/parse-jsonl-line");
 
 const DOMAIN = "state_integration";
 
@@ -153,11 +154,8 @@ function checkStateFileHealth(stateDir, findings) {
       let corruptLines = 0;
 
       for (const line of lines) {
-        try {
-          JSON.parse(line);
-        } catch {
-          corruptLines++;
-        }
+        const { error } = safeParseLineWithError(line);
+        if (error) corruptLines++;
       }
 
       const isValid = corruptLines === 0;
@@ -222,7 +220,7 @@ function checkStateFileHealth(stateDir, findings) {
           domain: DOMAIN,
           severity: "error",
           message: `${corruptLines} corrupt JSON line(s) in ${entry}`,
-          details: `${corruptLines} of ${lineCount} lines failed JSON.parse(). Data loss or write interruption likely.`,
+          details: `${corruptLines} of ${lineCount} lines failed to parse as JSON. Data loss or write interruption likely.`,
           impactScore: 75,
           frequency: corruptLines,
           blastRadius: 3,

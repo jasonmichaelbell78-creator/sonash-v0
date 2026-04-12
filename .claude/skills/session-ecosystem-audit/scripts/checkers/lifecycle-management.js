@@ -30,6 +30,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "lifecycle_management";
 
@@ -390,17 +391,11 @@ function checkSessionCounterAccuracy(rootDir, findings) {
   if (commitLogContent) {
     const lines = commitLogContent.split("\n").filter((l) => l.trim().length > 0);
     for (const line of lines) {
-      try {
-        const entry = JSON.parse(line);
-        const sessionNum = entry.session;
-        if (
-          typeof sessionNum === "number" &&
-          (commitLogMax === null || sessionNum > commitLogMax)
-        ) {
-          commitLogMax = sessionNum;
-        }
-      } catch {
-        // Skip malformed lines
+      const entry = safeParseLine(line);
+      if (!entry) continue;
+      const sessionNum = entry.session;
+      if (typeof sessionNum === "number" && (commitLogMax === null || sessionNum > commitLogMax)) {
+        commitLogMax = sessionNum;
       }
     }
   }

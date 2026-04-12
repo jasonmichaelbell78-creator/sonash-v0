@@ -20,6 +20,11 @@
 import { readFileSync, readdirSync, statSync, lstatSync, existsSync, realpathSync } from "node:fs";
 import { join, basename, resolve, sep, dirname, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+import { sanitizeError } from "./lib/sanitize-error.js";
+
+const requireForJsonl = createRequire(import.meta.url);
+const { safeParseLineWithError } = requireForJsonl("./lib/parse-jsonl-line");
 
 // Review #193: ES module __dirname equivalent for path containment checks
 const __filename = fileURLToPath(import.meta.url);
@@ -246,17 +251,12 @@ function checkDuplicateId(finding, lineNum, seenIds, result) {
  * Returns true if a valid finding was parsed, false otherwise.
  */
 function parseAndValidateLine(line, lineNum, seenIds, result) {
-  let finding;
-  try {
-    finding = JSON.parse(line);
-  } catch (err) {
-    result.addError(
-      lineNum,
-      "json",
-      `Invalid JSON: ${err instanceof Error ? err.message : String(err)}`
-    );
+  const { value: finding, error } = safeParseLineWithError(line);
+  if (error) {
+    result.addError(lineNum, "json", `Invalid JSON: ${sanitizeError(error)}`);
     return false;
   }
+  if (!finding) return false;
 
   checkDuplicateId(finding, lineNum, seenIds, result);
   validateFinding(finding, lineNum, result);

@@ -20,6 +20,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { loadConfig } = require("../config/load-config");
 const { validatePathInDir } = require("../lib/security-helpers");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
+
+const PLACEHOLDER_FILE_NAMES = new Set(["multiple", "various", "several", "unknown", "n/a", "tbd"]);
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const DEFAULT_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -129,9 +132,7 @@ function validateItem(item, lineNum) {
   if (item.file) {
     const f = String(item.file).trim();
     const isNumericOnly = /^\d[\d-]*$/.test(f);
-    const isPlaceholder = ["multiple", "various", "several", "unknown", "n/a", "tbd"].includes(
-      f.toLowerCase()
-    );
+    const isPlaceholder = PLACEHOLDER_FILE_NAMES.has(f.toLowerCase());
     const hasPathChars = f.includes(".") || f.includes("/") || f.includes("\\");
     if (isNumericOnly || isPlaceholder || !hasPathChars) {
       warnings.push(`Line ${lineNum}: Invalid file path: "${f}" (TDMS requires a real file path)`);
@@ -342,48 +343,46 @@ Exit codes:
 
   for (let i = 0; i < lines.length; i++) {
     const lineNum = i + 1;
-    const line = lines[i];
+    const { value: item, error: parseErr } = safeParseLineWithError(lines[i]);
 
-    try {
-      const item = JSON.parse(line);
-
-      // Always track IDs and hashes for duplicate detection (even in staged-only mode)
-      if (item.id) {
-        if (seenIds.has(item.id)) {
-          // Only report duplicate if the current line was changed
-          if (!changedLines || changedLines.has(lineNum)) {
-            duplicateIds.push({ id: item.id, line: lineNum });
-          }
-        }
-        seenIds.add(item.id);
-      }
-
-      if (item.content_hash) {
-        if (seenHashes.has(item.content_hash)) {
-          if (!changedLines || changedLines.has(lineNum)) {
-            duplicateHashes.push({
-              hash: item.content_hash.substring(0, 8),
-              line: lineNum,
-              id: item.id,
-            });
-          }
-        }
-        seenHashes.add(item.content_hash);
-      }
-
-      // Skip validation for unchanged lines in staged-only mode
-      if (changedLines && !changedLines.has(lineNum)) continue;
-
-      const { errors, warnings } = validateItem(item, lineNum);
-      allErrors.push(...errors);
-      allWarnings.push(...warnings);
-    } catch (err) {
+    if (parseErr) {
       // Skip parse errors for unchanged lines in staged-only mode
       if (changedLines && !changedLines.has(lineNum)) continue;
-      allErrors.push(
-        `Line ${lineNum}: JSON parse error: ${err instanceof Error ? err.message : String(err)}`
-      );
+      allErrors.push(`Line ${lineNum}: JSON parse error: ${parseErr.message}`);
+      continue;
     }
+    if (!item) continue;
+
+    // Always track IDs and hashes for duplicate detection (even in staged-only mode)
+    if (item.id) {
+      if (seenIds.has(item.id)) {
+        // Only report duplicate if the current line was changed
+        if (!changedLines || changedLines.has(lineNum)) {
+          duplicateIds.push({ id: item.id, line: lineNum });
+        }
+      }
+      seenIds.add(item.id);
+    }
+
+    if (item.content_hash) {
+      if (seenHashes.has(item.content_hash)) {
+        if (!changedLines || changedLines.has(lineNum)) {
+          duplicateHashes.push({
+            hash: item.content_hash.substring(0, 8),
+            line: lineNum,
+            id: item.id,
+          });
+        }
+      }
+      seenHashes.add(item.content_hash);
+    }
+
+    // Skip validation for unchanged lines in staged-only mode
+    if (changedLines && !changedLines.has(lineNum)) continue;
+
+    const { errors, warnings } = validateItem(item, lineNum);
+    allErrors.push(...errors);
+    allWarnings.push(...warnings);
   }
 
   // Add duplicate errors

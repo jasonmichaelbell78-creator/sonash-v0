@@ -25,6 +25,8 @@ function log(msg) {
   if (VERBOSE) console.log("  " + msg);
 }
 
+const STOPWORDS = new Set(["analysis", "the", "and", "for", "with", "from"]);
+
 function bandToScore(band) {
   const map = { Excellent: 85, Healthy: 70, "Needs Work": 45, Critical: 25 };
   return map[band] || 50;
@@ -56,7 +58,7 @@ function generateTags(data, dirName) {
     .trim()
     .split(/\s+/);
   for (const w of words) {
-    if (w.length >= 4 && !["analysis", "the", "and", "for", "with", "from"].includes(w)) {
+    if (w.length >= 4 && !STOPWORDS.has(w)) {
       tags.add(w);
     }
   }

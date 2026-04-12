@@ -10,7 +10,7 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
-/** Max file size for readFileSync+split operations (10MB) */
+/** Max file size for synchronous read+split operations (10MB) */
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 /**

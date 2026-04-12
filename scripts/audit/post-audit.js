@@ -25,6 +25,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
+const { sanitizeError } = require("../lib/sanitize-error.cjs");
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
 
@@ -72,12 +74,8 @@ function validateJsonlFile(filePath) {
   }
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      JSON.parse(lines[i]);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      errors.push(`Line ${i + 1}: ${msg}`);
-    }
+    const { error } = safeParseLineWithError(lines[i]);
+    if (error) errors.push(`Line ${i + 1}: ${sanitizeError(error)}`);
   }
 
   return { valid: errors.length === 0, lineCount: lines.length, errors };

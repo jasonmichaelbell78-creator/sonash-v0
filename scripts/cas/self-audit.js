@@ -25,6 +25,7 @@ const {
   slugify,
 } = require("../lib/security-helpers.js");
 const { safeReadText, safeReadJson, isValidArtifactFile } = require("../lib/safe-cas-io.js");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -253,16 +254,12 @@ function checkExtractions(slug, source) {
 
   let count = 0;
   let untagged = 0;
-  for (const line of lines) {
-    if (!line.trim()) continue;
-    try {
-      const entry = JSON.parse(line);
-      if (matchesSource(entry.source, source)) {
-        count++;
-        if (!entry.tags || entry.tags.length === 0) untagged++;
-      }
-    } catch {
-      // skip malformed
+  for (const rawLine of lines) {
+    const entry = safeParseLine(rawLine);
+    if (!entry) continue;
+    if (matchesSource(entry.source, source)) {
+      count++;
+      if (!entry.tags || entry.tags.length === 0) untagged++;
     }
   }
 

@@ -25,6 +25,8 @@ try {
   };
 }
 
+const { safeParseLine } = require("../../lib/parse-jsonl-line");
+
 let scoringComputeTrend;
 try {
   ({ computeTrend: scoringComputeTrend } = require("./scoring"));
@@ -66,21 +68,14 @@ function resolveLogPath(opts) {
  * @param {string} filePath
  * @returns {Array}
  */
+const MAX_HEALTH_LOG_BYTES = 5 * 1024 * 1024;
 function readAllEntries(filePath) {
   try {
-    const content = readFileSync(filePath, "utf8").trim();
-    if (!content) return [];
-    return content
-      .split("\n")
-      .map((line) => {
-        if (!line) return null;
-        try {
-          return JSON.parse(line);
-        } catch {
-          return null;
-        }
-      })
-      .filter(Boolean);
+    const { statSync } = require("node:fs");
+    const stat = statSync(filePath);
+    if (stat.size > MAX_HEALTH_LOG_BYTES) return [];
+    const content = readFileSync(filePath, "utf8");
+    return content.split("\n").map(safeParseLine).filter(Boolean);
   } catch {
     return [];
   }

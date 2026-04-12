@@ -13,7 +13,7 @@ import * as path from "node:path";
 import { ReviewRecord } from "./lib/schemas/review";
 import { appendRecord } from "./lib/write-jsonl";
 
-// Walk up from startDir until we find package.json
+// Walk up from startDir until we find package.json (works from source AND dist)
 function findProjectRoot(startDir: string): string {
   let dir = startDir;
   for (;;) {
@@ -27,6 +27,16 @@ function findProjectRoot(startDir: string): string {
     dir = parent;
   }
 }
+
+// Resolve helper via absolute path so compiled dist/write-review-record.js
+// still finds scripts/lib/parse-jsonl-line.js (relative "../lib/..." would
+// resolve to scripts/reviews/lib/... after compilation — which doesn't exist).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require(
+  path.join(findProjectRoot(__dirname), "scripts", "lib", "parse-jsonl-line.js")
+) as {
+  safeParseLine: (line: string) => unknown;
+};
 
 /**
  * Read reviews.jsonl and determine the next auto-assigned review ID.
@@ -56,18 +66,12 @@ export function getNextReviewId(projectRoot: string): string {
 }
 
 /** Parse a rev-N number from a JSONL line. Returns 0 if not parseable. */
-function parseRevNumber(line: string): number {
-  if (!line.trim()) return 0;
-  try {
-    const record = JSON.parse(line) as { id?: string };
-    if (!record.id) return 0;
-    const match = /^rev-(\d+)(?:-|$)/.exec(record.id);
-    if (!match) return 0;
-    return Number.parseInt(match[1], 10);
-  } catch {
-    // Skip malformed lines
-    return 0;
-  }
+function parseRevNumber(rawLine: string): number {
+  const record = safeParseLine(rawLine) as { id?: string } | null;
+  if (!record?.id) return 0;
+  const match = /^rev-(\d+)(?:-|$)/.exec(record.id);
+  if (!match) return 0;
+  return Number.parseInt(match[1], 10);
 }
 
 /**

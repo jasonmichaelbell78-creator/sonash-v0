@@ -1,0 +1,17 @@
+{
+  "pr": 507,
+  "round": 2,
+  "review_number": 83,
+  "source": "mixed",
+  "total": 22,
+  "fixed": 15,
+  "deferred": 0,
+  "rejected": 7,
+  "severity": { "critical": 2, "major": 8, "minor": 10, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commits": ["2fb384a2", "2add0221", "82ed6401", "db90b4a2"],
+  "security_auditor_verdict": "conditional (items 3, 4 as-planned; items 1, 2, 5 approved with modifications — all adopted)",
+  "started_at": "2026-04-11T23:59:00Z",
+  "completed_at": "2026-04-12T00:30:00Z"
+}

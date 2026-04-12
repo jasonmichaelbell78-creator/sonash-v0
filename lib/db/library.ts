@@ -47,11 +47,11 @@ export type PrayerInput = Omit<Prayer, "id" | "createdAt" | "updatedAt">;
 export async function getAllQuickLinks(includeInactive = false): Promise<QuickLink[]> {
   try {
     const linksRef = collection(db, "quick_links");
-    const q = includeInactive
+    const libraryQuery = includeInactive
       ? query(linksRef, orderBy("category"), orderBy("order"))
       : query(linksRef, where("isActive", "==", true), orderBy("category"), orderBy("order"));
 
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(libraryQuery);
     return snapshot.docs.map(
       (doc) =>
         ({
@@ -97,11 +97,11 @@ export async function toggleQuickLinkActive(id: string, isActive: boolean): Prom
 export async function getAllPrayers(includeInactive = false): Promise<Prayer[]> {
   try {
     const prayersRef = collection(db, "prayers");
-    const q = includeInactive
+    const prayersQuery = includeInactive
       ? query(prayersRef, orderBy("category"), orderBy("order"))
       : query(prayersRef, where("isActive", "==", true), orderBy("category"), orderBy("order"));
 
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(prayersQuery);
     return snapshot.docs.map(
       (doc) =>
         ({

@@ -89,6 +89,27 @@ export default [
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  // Per-skill script helpers (copies of scripts/lib/safe-fs.js and friends).
+  // These are CommonJS and need Node.js globals (process, module, require).
+  // __dirname/__filename are explicitly filtered out because the source files
+  // already declare `/* global __dirname */` at the top (the main copy in
+  // scripts/lib/safe-fs.js is linted under the config above, which uses the
+  // same filter, so the two are kept in sync to allow `cp` mirroring).
+  {
+    files: [
+      ".claude/skills/*/scripts/lib/safe-fs.js",
+      ".claude/skills/*/scripts/lib/parse-jsonl-line.js",
+    ],
+    languageOptions: {
+      sourceType: "commonjs",
+      globals: Object.fromEntries(
+        Object.entries(globals.node).filter(([k]) => !["__filename", "__dirname"].includes(k))
+      ),
+    },
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
   // Node.js test files using CommonJS (e2e, integration, performance tests)
   {
     files: ["tests/**/*.test.js"],

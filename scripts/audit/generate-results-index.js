@@ -4,6 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { isSafeToWrite } = require("../lib/security-helpers");
 
 // Resolve paths relative to repo root
 const repoRoot = path.resolve(__dirname, "../../");
@@ -280,9 +281,12 @@ function main() {
   console.log(`Repository root: ${repoRoot}`);
   console.log(`Audits directory: ${auditsDir}`);
 
-  // Ensure audits directory exists
+  // Ensure audits directory exists — guard parent against symlink redirection
   if (!fs.existsSync(auditsDir)) {
     console.warn(`Warning: Audits directory does not exist: ${auditsDir}`);
+    if (!isSafeToWrite(auditsDir)) {
+      throw new Error(`Refusing to mkdir — parent path is unsafe: ${auditsDir}`);
+    }
     fs.mkdirSync(auditsDir, { recursive: true });
   }
 

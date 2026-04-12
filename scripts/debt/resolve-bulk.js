@@ -22,7 +22,13 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { validatePathInDir, refuseSymlinkWithParents } = require("../lib/security-helpers");
-const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("../lib/safe-fs");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
+const {
+  safeWriteFileSync,
+  safeAppendFileSync,
+  safeRenameSync,
+  streamLinesSync,
+} = require("../lib/safe-fs");
 
 const REPO_ROOT = path.resolve(__dirname, "../..");
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
@@ -154,11 +160,11 @@ function loadMasterDebt() {
   const badLines = [];
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      items.push(JSON.parse(lines[i]));
-    } catch (err) {
-      const errMsg = err instanceof Error ? err.message : String(err);
-      badLines.push({ line: i + 1, message: errMsg });
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      badLines.push({ line: i + 1, message: error.message });
+    } else if (value) {
+      items.push(value);
     }
   }
 
@@ -457,15 +463,19 @@ Example:
   for (const filePath of planFiles) {
     try {
       if (!fs.existsSync(filePath)) continue;
-      const content = fs.readFileSync(filePath, "utf8");
-      const lines = content.split("\n");
-      for (let i = 0; i < lines.length; i++) {
+      let lineNum = 0;
+      streamLinesSync(filePath, (line) => {
+        lineNum++;
         for (const debtId of resolvedIds) {
-          if (lines[i].includes(debtId)) {
-            refsFound.push({ file: path.relative(REPO_ROOT, filePath), line: i + 1, id: debtId });
+          if (line.includes(debtId)) {
+            refsFound.push({
+              file: path.relative(REPO_ROOT, filePath),
+              line: lineNum,
+              id: debtId,
+            });
           }
         }
-      }
+      });
     } catch {
       // skip unreadable files
     }

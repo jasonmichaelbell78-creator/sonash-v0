@@ -22,6 +22,7 @@ const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 const { validateSkipReason } = require("./lib/validate-skip-reason");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 // Configuration
 const TRIGGERS = {
@@ -292,13 +293,9 @@ function checkReviewSyncTrigger() {
           .replaceAll("\r\n", "\n")
           .trim()
           .split("\n");
-        for (const line of lines) {
-          try {
-            const id = JSON.parse(line).id;
-            if (typeof id === "number" && id > jsonlMax) jsonlMax = id;
-          } catch {
-            /* skip */
-          }
+        for (const rawLine of lines) {
+          const obj = safeParseLine(rawLine);
+          if (obj && typeof obj.id === "number" && obj.id > jsonlMax) jsonlMax = obj.id;
         }
       } catch {
         /* skip */
@@ -355,6 +352,13 @@ function main() {
       );
       console.log("   (Override logged for audit trail)\n");
     } catch {
+      // CodeQL js/clear-text-logging: env-derived values must not reach
+      // console sinks, even masked. The override-log.jsonl audit trail
+      // (when writable) carries full session context; this stderr line
+      // is a failure signal only. Do not reintroduce USER_CONTEXT or
+      // SESSION_ID here — CodeQL has no redaction threshold, the sink
+      // is the problem. Correlation happens at the SIEM layer via
+      // timestamp+host+process, not via embedded env identifiers.
       console.error("⚠️ Override log failed for check: triggers");
       console.log("   ⚠️  WARNING: Override audit log write failed — entry not persisted\n");
     }

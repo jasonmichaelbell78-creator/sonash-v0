@@ -45,7 +45,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
-const os = require("node:os");
 const { execFileSync } = require("node:child_process");
 const generateContentHash = require("../lib/generate-content-hash");
 const normalizeFilePath = require("../lib/normalize-file-path");
@@ -65,6 +64,7 @@ function safeCloneObject(obj) {
 
 const { loadConfig } = require("../config/load-config");
 const { safeAppendFileSync } = require("../lib/safe-fs");
+const { safeParseLine, safeParseLineWithError } = require("../lib/parse-jsonl-line.js");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -475,14 +475,11 @@ function loadMasterDebt() {
   const badLines = [];
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      items.push(JSON.parse(lines[i]));
-    } catch (err) {
-      // Safe error message access - err may not be an Error instance
-      badLines.push({
-        line: i + 1,
-        message: err instanceof Error ? err.message : String(err),
-      });
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      badLines.push({ line: i + 1, message: error.message });
+    } else if (value) {
+      items.push(value);
     }
   }
 
@@ -595,16 +592,13 @@ function readDedupStats(finalItems) {
     const dedupLogPath = path.join(DEBT_DIR, "logs/dedup-log.jsonl");
     const dedupLogContent = fs.readFileSync(dedupLogPath, "utf8");
     const logEntries = dedupLogContent.split("\n").filter((l) => l.trim());
-    for (const entry of logEntries) {
-      try {
-        const e = JSON.parse(entry);
-        const passNum = Number.parseInt(String(e.pass), 10);
-        if (!Number.isFinite(passNum) || passNum < 0) continue;
-        const key = `pass_${passNum}`;
-        dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
-      } catch {
-        /* skip unparseable log entry */
-      }
+    for (const rawEntry of logEntries) {
+      const e = safeParseLine(rawEntry);
+      if (!e) continue;
+      const passNum = Number.parseInt(String(e.pass), 10);
+      if (!Number.isFinite(passNum) || passNum < 0) continue;
+      const key = `pass_${passNum}`;
+      dedupBreakdown[key] = (dedupBreakdown[key] || 0) + 1;
     }
   } catch {
     /* dedup log not available */
@@ -631,6 +625,52 @@ function readDedupStats(finalItems) {
   return { dedupBreakdown, reviewCount, clusterCount };
 }
 
+// Print the "Ingested" line with ID range if any items were added
+function printIngestedLine(newItems) {
+  if (newItems.length === 0) {
+    console.log(`  ✅ Ingested:  0 new items`);
+    return;
+  }
+  const firstId = newItems[0]?.id;
+  const lastId = newItems[newItems.length - 1]?.id;
+  console.log(`  ✅ Ingested:  ${newItems.length} new items (${firstId} – ${lastId})`);
+}
+
+// Print the multi-pass dedup breakdown section of the intake report
+function printDedupBreakdownSection(finalItems, dedupRemoved) {
+  const { dedupBreakdown, reviewCount, clusterCount } = readDedupStats(finalItems);
+  console.log("");
+  console.log("  🔄 Multi-Pass Dedup:");
+  const passNames = {
+    pass_0: "Parametric (numbers stripped)",
+    pass_1: "Exact hash match",
+    pass_2: "Near match (file+line+title)",
+    pass_3: "Semantic (file+title >90%)",
+    pass_4: "Cross-source (SonarCloud↔audit)",
+    pass_5: "Systemic pattern annotation",
+  };
+  for (const [key, name] of Object.entries(passNames)) {
+    const count = dedupBreakdown[key] ?? 0;
+    if (count > 0) console.log(`     ${name}: ${count}`);
+  }
+  console.log(`     Total merged: ${dedupRemoved}`);
+  if (clusterCount > 0) {
+    console.log(`     Systemic patterns: ${clusterCount} clusters identified`);
+  }
+  if (reviewCount > 0) {
+    console.log(`     ⚠️  ${reviewCount} items flagged for manual review`);
+  }
+}
+
+// Count items grouped by severity (S0..S3)
+function countBySeverity(items) {
+  const sevCounts = {};
+  for (const item of items) {
+    sevCounts[item.severity] = (sevCounts[item.severity] || 0) + 1;
+  }
+  return sevCounts;
+}
+
 // Print final intake & dedup report
 function printIntakeReport({
   inputLines,
@@ -649,48 +689,15 @@ function printIntakeReport({
   console.log("  INTAKE & DEDUP REPORT");
   console.log("═".repeat(60));
   console.log(`  📥 Input:     ${inputLines.length} findings from audit`);
-  if (newItems.length > 0) {
-    console.log(
-      `  ✅ Ingested:  ${newItems.length} new items (${newItems[0]?.id} – ${newItems[newItems.length - 1]?.id})`
-    );
-  } else {
-    console.log(`  ✅ Ingested:  ${newItems.length} new items`);
-  }
+  printIngestedLine(newItems);
   console.log(`  ⏭️  Hash dupes: ${duplicates.length} exact duplicates skipped`);
   console.log(`  ❌ Errors:    ${errors.length} validation failures`);
 
   if (dedupRan) {
-    const { dedupBreakdown, reviewCount, clusterCount } = readDedupStats(finalItems);
-    console.log("");
-    console.log("  🔄 Multi-Pass Dedup:");
-    const passNames = {
-      pass_0: "Parametric (numbers stripped)",
-      pass_1: "Exact hash match",
-      pass_2: "Near match (file+line+title)",
-      pass_3: "Semantic (file+title >90%)",
-      pass_4: "Cross-source (SonarCloud↔audit)",
-      pass_5: "Systemic pattern annotation",
-    };
-    for (const [key, name] of Object.entries(passNames)) {
-      const count = dedupBreakdown[key] ?? 0;
-      if (count > 0) {
-        console.log(`     ${name}: ${count}`);
-      }
-    }
-    console.log(`     Total merged: ${dedupRemoved}`);
-    if (clusterCount > 0) {
-      console.log(`     Systemic patterns: ${clusterCount} clusters identified`);
-    }
-    if (reviewCount > 0) {
-      console.log(`     ⚠️  ${reviewCount} items flagged for manual review`);
-    }
+    printDedupBreakdownSection(finalItems, dedupRemoved);
   }
 
-  const sevCounts = {};
-  for (const item of finalItems) {
-    sevCounts[item.severity] = (sevCounts[item.severity] || 0) + 1;
-  }
-
+  const sevCounts = countBySeverity(finalItems);
   console.log("");
   console.log("  📊 MASTER_DEBT.jsonl:");
   console.log(`     Total: ${finalItems.length} items`);
@@ -700,188 +707,166 @@ function printIntakeReport({
   console.log("═".repeat(60));
 }
 
-// Main function
-async function main() {
-  const args = process.argv.slice(2);
-
-  if (args.length === 0) {
+// Parse CLI args and return the validated input-file path.
+// Exits (code 1) on missing args, missing file, or no input file.
+function parseArgsOrExit(argv) {
+  if (argv.length === 0) {
     console.error("Usage: node scripts/debt/intake-audit.js <audit-output.jsonl>");
     console.error("\nOptions:");
     console.error("  --dry-run    Preview changes without writing");
     process.exit(1);
   }
-
-  const dryRun = args.includes("--dry-run");
-  const inputFile = args.find((arg) => !arg.startsWith("--"));
-
+  const dryRun = argv.includes("--dry-run");
+  const inputFile = argv.find((arg) => !arg.startsWith("--"));
   if (!inputFile) {
     console.error("Error: No input file specified");
     process.exit(1);
   }
-
   if (!fs.existsSync(inputFile)) {
     console.error(`Error: Input file not found: ${inputFile}`);
     process.exit(1);
   }
+  return { dryRun, inputFile };
+}
 
-  console.log("📥 Intake: Processing audit output...\n");
-  console.log(`  Input file: ${inputFile}`);
-  if (dryRun) console.log("  Mode: DRY RUN (no changes will be written)\n");
-
-  // Load input file - wrap in try/catch for race conditions and permission errors
+// Read the input JSONL file into a list of non-empty lines. Exits if the
+// read fails or the file is empty (exit 0 — empty is not an error).
+function readInputLinesOrExit(inputFile) {
   let inputContent;
   try {
     inputContent = fs.readFileSync(inputFile, "utf8");
   } catch (error_) {
-    console.error(
-      `Error: Failed to read input file: ${error_ instanceof Error ? error_.message : String(error_)}`
-    );
+    const msg = error_ instanceof Error ? error_.message : String(error_);
+    console.error(`Error: Failed to read input file: ${msg}`);
     process.exit(1);
   }
   const inputLines = inputContent.split("\n").filter((line) => line.trim());
-
   if (inputLines.length === 0) {
     console.log("  ⚠️ Input file is empty. Nothing to process.");
     process.exit(0);
   }
-
   console.log(`  📄 Found ${inputLines.length} items in input file\n`);
+  return inputLines;
+}
 
-  // Load existing master debt
-  const existingItems = loadMasterDebt();
-  console.log(`  📊 Existing MASTER_DEBT.jsonl: ${existingItems.length} items\n`);
+// Create an empty format-stats record (Doc Standards + enhancement audit)
+function createEmptyFormatStats() {
+  return { tdms: 0, "doc-standards": 0, "enhancement-audit": 0, mappings: {}, confidenceLogs: [] };
+}
 
-  // Build map of existing content hashes to IDs for O(1) lookup
+// Fold a mapping-metadata record into the aggregate formatStats bucket
+function applyMappingMetadata(formatStats, normalizedItem, mappingMetadata) {
+  if (!mappingMetadata) return;
+  formatStats[mappingMetadata.format_detected]++;
+  for (const mapping of mappingMetadata.mappings_applied || []) {
+    formatStats.mappings[mapping] = (formatStats.mappings[mapping] || 0) + 1;
+  }
+  if (mappingMetadata.confidence !== undefined) {
+    formatStats.confidenceLogs.push({
+      title: normalizedItem.title.substring(0, 50),
+      confidence: mappingMetadata.confidence,
+    });
+  }
+}
+
+// Process one input line into { kind: "ok"|"parse-error"|"validation-error"|"duplicate"|"skip", ... }
+function classifyInputLine(rawLine, inputFile, existingHashMap, formatStats) {
+  const { value: inputItem, error: parseErr } = safeParseLineWithError(rawLine);
+  if (parseErr) return { kind: "parse-error", message: parseErr.message };
+  if (!inputItem) return { kind: "skip" };
+
+  const result = validateAndNormalize(inputItem, inputFile);
+  if (!result.valid) return { kind: "validation-error", errors: result.errors };
+
+  const normalizedItem = result.item;
+  applyMappingMetadata(formatStats, normalizedItem, result.mappingMetadata);
+
+  if (existingHashMap.has(normalizedItem.content_hash)) {
+    return {
+      kind: "duplicate",
+      input: normalizedItem.title.substring(0, 50),
+      existingId: existingHashMap.get(normalizedItem.content_hash) || "unknown",
+    };
+  }
+  return { kind: "ok", item: normalizedItem, warnings: result.warnings || [] };
+}
+
+// Walk all input lines and produce the full intake bookkeeping in a single pass
+function processInputLines(inputLines, inputFile, existingItems) {
   const existingHashMap = new Map(existingItems.map((item) => [item.content_hash, item.id]));
-
-  // Process input items
   const newItems = [];
   const duplicates = [];
   const errors = [];
   const filePathWarnings = [];
+  const formatStats = createEmptyFormatStats();
   let nextId = getNextDebtId(existingItems);
 
-  // Track format statistics (Doc Standards + enhancement audit)
-  const formatStats = {
-    tdms: 0,
-    "doc-standards": 0,
-    "enhancement-audit": 0,
-    mappings: {},
-    confidenceLogs: [],
-  };
-
   for (let i = 0; i < inputLines.length; i++) {
-    const line = inputLines[i];
-    try {
-      const inputItem = JSON.parse(line);
-      const result = validateAndNormalize(inputItem, inputFile);
+    const result = classifyInputLine(inputLines[i], inputFile, existingHashMap, formatStats);
+    if (result.kind === "parse-error") {
+      errors.push({ line: i + 1, errors: [result.message] });
+      continue;
+    }
+    if (result.kind === "validation-error") {
+      errors.push({ line: i + 1, errors: result.errors });
+      continue;
+    }
+    if (result.kind === "duplicate") {
+      duplicates.push({ input: result.input, existingId: result.existingId });
+      continue;
+    }
+    if (result.kind !== "ok") continue;
 
-      if (!result.valid) {
-        errors.push({ line: i + 1, errors: result.errors });
-        continue;
-      }
-
-      const normalizedItem = result.item;
-      const mappingMetadata = result.mappingMetadata;
-
-      // Track format statistics
-      if (mappingMetadata) {
-        formatStats[mappingMetadata.format_detected]++;
-        for (const mapping of mappingMetadata.mappings_applied || []) {
-          formatStats.mappings[mapping] = (formatStats.mappings[mapping] || 0) + 1;
-        }
-        // Log confidence values for analysis (not stored in MASTER_DEBT)
-        if (mappingMetadata.confidence !== undefined) {
-          formatStats.confidenceLogs.push({
-            title: normalizedItem.title.substring(0, 50),
-            confidence: mappingMetadata.confidence,
-          });
-        }
-      }
-
-      // Check for duplicate using Map for O(1) lookup
-      if (existingHashMap.has(normalizedItem.content_hash)) {
-        duplicates.push({
-          input: normalizedItem.title.substring(0, 50),
-          existingId: existingHashMap.get(normalizedItem.content_hash) || "unknown",
-        });
-        continue;
-      }
-
-      // Track file path warnings
-      if (result.warnings && result.warnings.length > 0) {
-        filePathWarnings.push({
-          line: i + 1,
-          title: normalizedItem.title.substring(0, 60),
-          warnings: result.warnings,
-        });
-      }
-
-      // Assign DEBT ID
-      normalizedItem.id = `DEBT-${String(nextId).padStart(4, "0")}`;
-      nextId++;
-
-      newItems.push(normalizedItem);
-      existingHashMap.set(normalizedItem.content_hash, normalizedItem.id);
-    } catch (err) {
-      // Safe error message access - err may not be an Error instance
-      errors.push({
+    const { item: normalizedItem, warnings } = result;
+    if (warnings.length > 0) {
+      filePathWarnings.push({
         line: i + 1,
-        errors: [`JSON parse error: ${err instanceof Error ? err.message : String(err)}`],
+        title: normalizedItem.title.substring(0, 60),
+        warnings,
       });
     }
+    normalizedItem.id = `DEBT-${String(nextId).padStart(4, "0")}`;
+    nextId++;
+    newItems.push(normalizedItem);
+    existingHashMap.set(normalizedItem.content_hash, normalizedItem.id);
   }
 
-  // Report results
-  printProcessingResults(newItems, duplicates, errors, formatStats, filePathWarnings);
+  return { newItems, duplicates, errors, filePathWarnings, formatStats };
+}
 
-  // Write new items
-  if (newItems.length === 0) {
-    console.log("\n✅ No new items to add. MASTER_DEBT.jsonl unchanged.");
-    process.exit(0);
+// Print the dry-run preview of items that would be added
+function printDryRunPreview(newItems) {
+  console.log("\n🔍 DRY RUN: Would add the following items:");
+  for (const item of newItems.slice(0, 5)) {
+    console.log(`  - ${item.id}: ${item.title.substring(0, 60)}...`);
   }
-
-  if (dryRun) {
-    console.log("\n🔍 DRY RUN: Would add the following items:");
-    for (const item of newItems.slice(0, 5)) {
-      console.log(`  - ${item.id}: ${item.title.substring(0, 60)}...`);
-    }
-    if (newItems.length > 5) {
-      console.log(`  ... and ${newItems.length - 5} more items`);
-    }
-    process.exit(0);
+  if (newItems.length > 5) {
+    console.log(`  ... and ${newItems.length - 5} more items`);
   }
+}
 
-  // Append new items to raw pipeline files so full dedup can process them
+// Append new items to the raw pipeline files (normalized-all + deduped fallback)
+function writeNewItemsToPipeline(newItems) {
   console.log("\n📝 Writing new items to pipeline...");
   if (!fs.existsSync(DEBT_DIR)) {
     fs.mkdirSync(DEBT_DIR, { recursive: true });
   }
   const newLines = newItems.map((item) => JSON.stringify(item));
 
-  // Append to raw/normalized-all.jsonl (input for dedup-multi-pass)
   const NORMALIZED_FILE = path.join(DEBT_DIR, "raw/normalized-all.jsonl");
   fs.mkdirSync(path.dirname(NORMALIZED_FILE), { recursive: true });
   safeAppendFileSync(NORMALIZED_FILE, newLines.join("\n") + "\n");
 
-  // Also append to raw/deduped.jsonl as fallback
   const DEDUPED_FILE = path.join(DEBT_DIR, "raw/deduped.jsonl");
   fs.mkdirSync(path.dirname(DEDUPED_FILE), { recursive: true });
   safeAppendFileSync(DEDUPED_FILE, newLines.join("\n") + "\n");
+}
 
-  // Log intake activity (including format statistics and confidence values)
-  // Include user context for audit trail reconstruction (Qodo compliance)
-  let operatorContext;
-  try {
-    operatorContext =
-      os.userInfo().username || process.env.USER || process.env.USERNAME || "unknown";
-  } catch {
-    operatorContext = process.env.USER || process.env.USERNAME || "unknown";
-  }
-
+// Log the intake activity audit record (neutral operator label per PR #500 R1)
+function logIntakeActivity({ inputFile, inputLines, newItems, duplicates, errors, formatStats }) {
   logIntake({
     action: "intake-audit",
-    operator: operatorContext,
+    operator: "tdms-intake",
     input_file: inputFile,
     items_processed: inputLines.length,
     items_added: newItems.length,
@@ -895,47 +880,82 @@ async function main() {
       enhancement_audit_format: formatStats["enhancement-audit"],
       mappings_applied: formatStats.mappings,
     },
-    // Log confidence values for analysis (per JSONL_SCHEMA_STANDARD.md)
     confidence_logs: formatStats.confidenceLogs.length > 0 ? formatStats.confidenceLogs : undefined,
   });
+}
 
-  // Run multi-pass dedup then regenerate views
-  console.log("🔄 Running multi-pass dedup pipeline...");
-  let dedupRan = false;
+// Run a single child-process step of the post-intake pipeline. Warnings on
+// failure are non-fatal. Returns true if the step completed cleanly.
+function runPipelineStep(label, args, opts = {}) {
   try {
-    execFileSync(process.execPath, ["scripts/debt/dedup-multi-pass.js"], { stdio: "inherit" });
-    dedupRan = true;
+    execFileSync(process.execPath, args, { stdio: "inherit", ...opts });
+    return true;
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.warn(`  ⚠️ Multi-pass dedup failed: ${msg}. Falling back to views-only regeneration.`);
+    console.warn(`  ⚠️ ${label}: ${msg}`);
+    return false;
   }
+}
+
+// Run dedup, views regeneration, and roadmap-ref assignment. Returns flags
+// indicating which stages completed so the caller can render the final report.
+function runPostIntakePipeline() {
+  console.log("🔄 Running multi-pass dedup pipeline...");
+  const dedupRan = runPipelineStep(
+    "Multi-pass dedup failed. Falling back to views-only regeneration.",
+    ["scripts/debt/dedup-multi-pass.js"]
+  );
 
   console.log("🔄 Regenerating views...");
-  let viewsRan = false;
-  try {
-    execFileSync(process.execPath, [path.join(__dirname, "generate-views.js")], {
-      cwd: __dirname,
-      stdio: "inherit",
-    });
-    viewsRan = true;
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.warn(
-      `  ⚠️ Failed to regenerate views: ${msg}. Run manually: node scripts/debt/generate-views.js`
-    );
-  }
+  const viewsRan = runPipelineStep(
+    "Failed to regenerate views. Run manually: node scripts/debt/generate-views.js",
+    [path.join(__dirname, "generate-views.js")],
+    { cwd: __dirname }
+  );
 
   console.log("🔄 Assigning roadmap references...");
-  try {
-    execFileSync(process.execPath, ["scripts/debt/assign-roadmap-refs.js"], { stdio: "inherit" });
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.warn(
-      `  ⚠️ Failed to assign roadmap refs: ${msg}. Run manually: node scripts/debt/assign-roadmap-refs.js`
-    );
+  runPipelineStep(
+    "Failed to assign roadmap refs. Run manually: node scripts/debt/assign-roadmap-refs.js",
+    ["scripts/debt/assign-roadmap-refs.js"]
+  );
+
+  return { dedupRan, viewsRan };
+}
+
+// Main function
+async function main() {
+  const { dryRun, inputFile } = parseArgsOrExit(process.argv.slice(2));
+
+  console.log("📥 Intake: Processing audit output...\n");
+  console.log(`  Input file: ${inputFile}`);
+  if (dryRun) console.log("  Mode: DRY RUN (no changes will be written)\n");
+
+  const inputLines = readInputLinesOrExit(inputFile);
+  const existingItems = loadMasterDebt();
+  console.log(`  📊 Existing MASTER_DEBT.jsonl: ${existingItems.length} items\n`);
+
+  const { newItems, duplicates, errors, filePathWarnings, formatStats } = processInputLines(
+    inputLines,
+    inputFile,
+    existingItems
+  );
+
+  printProcessingResults(newItems, duplicates, errors, formatStats, filePathWarnings);
+
+  if (newItems.length === 0) {
+    console.log("\n✅ No new items to add. MASTER_DEBT.jsonl unchanged.");
+    process.exit(0);
+  }
+  if (dryRun) {
+    printDryRunPreview(newItems);
+    process.exit(0);
   }
 
-  // Print final intake & dedup report
+  writeNewItemsToPipeline(newItems);
+  logIntakeActivity({ inputFile, inputLines, newItems, duplicates, errors, formatStats });
+
+  const { dedupRan, viewsRan } = runPostIntakePipeline();
+
   printIntakeReport({
     inputLines,
     newItems,

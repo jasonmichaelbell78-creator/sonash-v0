@@ -109,14 +109,14 @@ export const MeetingsService = {
       // For now, sorting by time client-side might be safer until index is built,
       // but let's try server-side sort if we can.
       const meetingsRef = collection(db, "meetings");
-      const q = query(
+      const meetingsQuery = query(
         meetingsRef,
         where("day", "==", day),
         limit(200)
         // orderBy("time", "asc") // Requires index, might fail first time. Let's do client sort for safety if index missing.
       );
 
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(meetingsQuery);
       // SECURITY: Spread data first, then id to ensure Firestore doc ID takes precedence
       const meetings = snapshot.docs.map((d) => ({ ...d.data(), id: d.id }) as Meeting);
 
@@ -173,7 +173,7 @@ export const MeetingsService = {
       // Build query with server-side ordering by dayIndex and time
       // dayIndex is numeric (0=Sunday, 1=Monday, ..., 6=Saturday) for proper week-order sorting
       // This requires a composite index on [dayIndex, time] defined in firestore.indexes.json
-      let q = query(
+      let meetingsQuery = query(
         meetingsRef,
         orderBy("dayIndex", "asc"),
         orderBy("time", "asc"),
@@ -182,7 +182,7 @@ export const MeetingsService = {
 
       // If continuing from previous page, start after the last document
       if (lastDocument) {
-        q = query(
+        meetingsQuery = query(
           meetingsRef,
           orderBy("dayIndex", "asc"),
           orderBy("time", "asc"),
@@ -191,7 +191,7 @@ export const MeetingsService = {
         );
       }
 
-      const snapshot = await getDocs(q);
+      const snapshot = await getDocs(meetingsQuery);
       const meetings = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as Meeting);
 
       // CRITICAL: Do NOT re-sort client-side in paginated queries!

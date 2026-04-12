@@ -1,0 +1,16 @@
+{
+  "pr": 507,
+  "round": 1,
+  "review_number": 82,
+  "source": "mixed",
+  "total": 42,
+  "fixed": 35,
+  "deferred": 0,
+  "rejected": 7,
+  "severity": { "critical": 6, "major": 17, "minor": 11, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commits": ["1c47c1b5", "7c14985d", "50bdbef6", "58b5e29a", "c0b3ee9e", "019a3a63", "c3733c8c"],
+  "started_at": "2026-04-11T00:00:00Z",
+  "completed_at": "2026-04-11T23:59:00Z"
+}

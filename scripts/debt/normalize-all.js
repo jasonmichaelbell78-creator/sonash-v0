@@ -18,6 +18,8 @@ const normalizeFilePath = require("../lib/normalize-file-path");
 const { glob } = require("glob");
 const { loadConfig } = require("../config/load-config");
 const { safeWriteFileSync } = require("../lib/safe-fs");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
+const { sanitizeError } = require("../lib/sanitize-error.cjs");
 
 const RAW_DIR = path.join(__dirname, "../../docs/technical-debt/raw");
 const OUTPUT_FILE = path.join(RAW_DIR, "normalized-all.jsonl");
@@ -116,24 +118,22 @@ async function main() {
     try {
       content = fs.readFileSync(file, "utf8");
     } catch (error_) {
-      const msg = error_ instanceof Error ? error_.message : String(error_);
-      console.warn(`  ⚠️ Failed to read ${path.basename(file)}: ${msg}`);
+      console.warn(`  ⚠️ Failed to read ${path.basename(file)}: ${sanitizeError(error_)}`);
       continue;
     }
     const lines = content.split("\n").filter((line) => line.trim());
 
     let fileItemCount = 0;
-    for (const line of lines) {
-      try {
-        const item = JSON.parse(line);
-        const normalized = normalizeItem(item);
-        items.push(normalized);
-        fileItemCount++;
-      } catch (err) {
-        console.warn(
-          `  ⚠️ Failed to parse line in ${fileName}: ${err instanceof Error ? err.message : String(err)}`
-        );
+    for (const rawLine of lines) {
+      const { value: item, error } = safeParseLineWithError(rawLine);
+      if (error) {
+        console.warn(`  ⚠️ Failed to parse line in ${fileName}: ${sanitizeError(error)}`);
+        continue;
       }
+      if (!item) continue;
+      const normalized = normalizeItem(item);
+      items.push(normalized);
+      fileItemCount++;
     }
 
     console.log(`  📄 ${fileName}: ${fileItemCount} items normalized`);

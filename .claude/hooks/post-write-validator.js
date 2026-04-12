@@ -21,6 +21,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeParseLine, safeParseLineWithError } = require("../../scripts/lib/parse-jsonl-line");
 let isSafeToWrite;
 try {
   ({ isSafeToWrite } = require("./lib/symlink-guard"));
@@ -408,12 +409,11 @@ function loadAuditFindings(normalized) {
   const findings = [];
   const lines = content.split("\n").filter((l) => l.trim());
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    try {
-      const f = JSON.parse(line);
-      findings.push({ ...f, _lineNumber: i + 1 });
-    } catch {
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
       findings.push({ _parseError: true, _lineNumber: i + 1 });
+    } else if (value) {
+      findings.push({ ...value, _lineNumber: i + 1 });
     }
   }
 
@@ -1145,13 +1145,8 @@ function testRegistryReminder() {
     const normalizedFilePath = filePath.replace(/\\/g, "/");
     const lines = fs.readFileSync(registryPath, "utf8").split("\n");
     const found = lines.some((line) => {
-      if (!line.trim()) return false;
-      try {
-        const entry = JSON.parse(line);
-        return entry.path === normalizedFilePath;
-      } catch {
-        return false;
-      }
+      const entry = safeParseLine(line);
+      return entry ? entry.path === normalizedFilePath : false;
     });
     if (!found) {
       console.error(`[suggest] New test file not in registry: ${sanitizeInput(filePath)}`);

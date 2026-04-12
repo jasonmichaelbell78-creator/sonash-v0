@@ -27,6 +27,7 @@ const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const { safeReadJson, safeReadText, validateCandidate } = require("../lib/safe-cas-io.js");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const VALUE_MAP_PATH = path.join(
@@ -83,10 +84,10 @@ function loadValueMapCandidates() {
   ];
 
   console.log(
-    `value-map candidates: pattern=${vm.pattern_candidates?.length || 0} ` +
-      `knowledge=${vm.knowledge_candidates?.length || 0} ` +
-      `content=${vm.content_candidates?.length || 0} ` +
-      `anti-pattern=${vm.anti_pattern_candidates?.length || 0} ` +
+    `value-map candidates: pattern=${vm.pattern_candidates?.length ?? 0} ` +
+      `knowledge=${vm.knowledge_candidates?.length ?? 0} ` +
+      `content=${vm.content_candidates?.length ?? 0} ` +
+      `anti-pattern=${vm.anti_pattern_candidates?.length ?? 0} ` +
       `total=${all.length}`
   );
 
@@ -106,13 +107,9 @@ function loadJournalAndCount() {
     process.exit(1);
   }
 
-  const existingForSource = existingLines.filter((l) => {
-    try {
-      const e = JSON.parse(l);
-      return e.source === SOURCE;
-    } catch {
-      return false;
-    }
+  const existingForSource = existingLines.filter((rawLine) => {
+    const parsed = safeParseLine(rawLine);
+    return parsed ? parsed.source === SOURCE : false;
   });
   console.log(`existing journal entries for ${SOURCE}: ${existingForSource.length}`);
 

@@ -31,6 +31,7 @@ const { safeWriteFileSync, safeAppendFileSync } = require(
 );
 
 const { classify } = require(path.join(__dirname, "lib", "confidence-classifier.js"));
+const { safeParseLine } = require(path.join(__dirname, "lib", "parse-jsonl-line.js"));
 
 const PROJECT_ROOT = path.resolve(__dirname, "..");
 const DEFAULT_ROUTES_PATH = path.join(PROJECT_ROOT, ".claude", "state", "learning-routes.jsonl");
@@ -68,18 +69,18 @@ function readJsonl(filePath) {
   const entries = [];
   let malformed = 0;
   let invalid = 0;
-  for (const line of lines) {
-    try {
-      const parsed = JSON.parse(line);
-      // Validate: entries must be objects with required fields
-      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed) || !parsed.id) {
-        invalid++;
-        continue;
-      }
-      entries.push(parsed);
-    } catch {
+  for (const rawLine of lines) {
+    const parsed = safeParseLine(rawLine);
+    if (!parsed) {
       malformed++;
+      continue;
     }
+    // Validate: entries must be objects with required fields
+    if (typeof parsed !== "object" || Array.isArray(parsed) || !parsed.id) {
+      invalid++;
+      continue;
+    }
+    entries.push(parsed);
   }
   if (malformed > 0 || invalid > 0) {
     console.error(

@@ -13,6 +13,10 @@
 
 import { readFileSync, existsSync } from "node:fs";
 import { resolve, relative, isAbsolute, dirname } from "node:path";
+import { createRequire } from "node:module";
+
+const requireForJsonl = createRequire(import.meta.url);
+const { safeParseLine } = requireForJsonl("../lib/parse-jsonl-line");
 import { fileURLToPath } from "node:url";
 import { safeWriteFileSync } from "../lib/safe-fs.js";
 
@@ -163,15 +167,8 @@ export function detectFormat(input) {
   const lines = trimmed.split("\n").filter((l) => l.trim());
   if (lines.length > 0 && lines[0].trim().startsWith("{")) {
     const validJsonLines = lines.filter((line) => {
-      try {
-        const parsed = JSON.parse(line.trim());
-        return typeof parsed === "object" && !Array.isArray(parsed);
-      } catch (err) {
-        // Expected for non-JSON lines during format detection
-        if (process.env.VERBOSE)
-          console.warn(`Warning: ${err instanceof Error ? err.message : String(err)}`);
-        return false;
-      }
+      const parsed = safeParseLine(line);
+      return parsed !== null && typeof parsed === "object" && !Array.isArray(parsed);
     });
     // If >50% are valid JSON objects, treat as JSONL
     if (validJsonLines.length / lines.length > 0.5) {
@@ -250,15 +247,12 @@ function parseJsonl(input) {
 
     // Fast path: try parsing the line as a complete JSON object
     if (!accumulator && line.startsWith("{")) {
-      try {
-        const parsed = JSON.parse(line);
-        if (typeof parsed === "object" && !Array.isArray(parsed)) {
-          findings.push(parsed);
-          continue;
-        }
-      } catch {
-        // Not a complete JSON object on this line — fall through to accumulator
+      const parsed = safeParseLine(line);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        findings.push(parsed);
+        continue;
       }
+      // Not a complete JSON object on this line — fall through to accumulator
     }
 
     // Accumulate wrapped lines by tracking brace depth with string state

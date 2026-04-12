@@ -2,6 +2,7 @@
 
 import React, { Component, type ErrorInfo, type ReactNode } from "react";
 import { logger } from "@/lib/logger";
+import { IS_DEV } from "@/lib/config/env";
 
 const COPY_SUCCESS_RESET_MS = 2000; // Reset "Copied!" feedback after 2 seconds
 import {
@@ -212,7 +213,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
             </div>
 
-            {process.env.NODE_ENV === "development" && this.state.error && (
+            {IS_DEV && this.state.error && (
               <details className="mt-6 text-left">
                 <summary className="cursor-pointer text-sm text-gray-500 hover:text-gray-700">
                   Error details (dev only)

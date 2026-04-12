@@ -241,7 +241,7 @@ Present before/after comparison. If score didn't improve, investigate why.
    save to history JSONL `feedback` field.
 3. **Invocation tracking** (MUST):
    ```bash
-   cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"script-ecosystem-audit","type":"ecosystem-audit","success":true,"context":{}}'
+   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"script-ecosystem-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{}}'
    ```
 4. Delete progress file (audit complete)
 

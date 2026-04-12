@@ -1,0 +1,27 @@
+#!/bin/sh
+# Post-commit hook — auto-resolve stale hook warnings
+#
+# PR #507 R1 followup (FP4): after every commit, re-run resolve-hook-warnings.js
+# so warnings whose underlying check-script now passes get cleared from
+# .claude/hook-warnings.json and acked in .claude/state/hook-warnings-ack.json.
+#
+# Why: before FP1+FP4, a commit that fixed a blocking check (e.g., propagation-
+# staged) would land successfully but the pre-push escalation gate would still
+# block on the stale warning from BEFORE the fix. This hook closes the loop:
+# commit → re-run checks → clear stale warnings → push unblocked.
+#
+# Best-effort: never fails the commit. Runs in background so it can't slow
+# down commit feedback.
+
+REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo .)"
+RESOLVER="$REPO_ROOT/scripts/resolve-hook-warnings.js"
+
+if [ ! -f "$RESOLVER" ]; then
+  exit 0
+fi
+
+# Run synchronously so the result is visible in the commit feedback, but
+# swallow any error — the resolver is advisory, not gating.
+node "$RESOLVER" 2>/dev/null || true
+
+exit 0

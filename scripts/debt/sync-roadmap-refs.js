@@ -12,6 +12,10 @@
 import { readFileSync, existsSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,14 +51,10 @@ function loadDebtIds() {
     }
     const lines = content.split("\n").filter((line) => line.trim());
 
-    for (const line of lines) {
-      try {
-        const item = JSON.parse(line);
-        if (item.id) {
-          ids.add(String(item.id).trim().toUpperCase());
-        }
-      } catch {
-        // Skip invalid JSON lines
+    for (const rawLine of lines) {
+      const item = safeParseLine(rawLine);
+      if (item && item.id) {
+        ids.add(String(item.id).trim().toUpperCase());
       }
     }
   } catch (err) {

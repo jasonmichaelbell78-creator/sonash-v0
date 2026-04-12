@@ -27,6 +27,7 @@ const crypto = require("node:crypto");
 const { execFileSync } = require("node:child_process");
 const { loadConfig } = require("../config/load-config");
 const { safeWriteFileSync } = require("../lib/safe-fs");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 // Import error sanitization helper
 let sanitizeError;
@@ -179,9 +180,16 @@ function loadJsonlFile(filePath) {
   const errors = [];
 
   for (let i = 0; i < lines.length; i++) {
+    const { value: parsed, error: parseError } = safeParseLineWithError(lines[i]);
+    if (parseError) {
+      errors.push({
+        type: "PARSE_ERROR",
+        line: i + 1,
+        message: `Invalid JSON on line ${i + 1}: ${parseError.message}`,
+      });
+      continue;
+    }
     try {
-      const parsed = JSON.parse(lines[i]);
-
       // JSONL findings must be objects; reject primitives and arrays
       if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) {
         errors.push({

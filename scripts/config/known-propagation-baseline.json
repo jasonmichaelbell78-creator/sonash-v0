@@ -4050,11 +4050,67 @@
       "reason": "pre-existing — tracked as DEBT-45636 (refuse-symlink 36 files)"
     },
     {
+      "type": "pattern",
+      "key": "refuse-symlink",
+      "file": "scripts/lib/todos-mutations.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — pure function module, zero fs.* calls (T30 extracted pure mutation helpers from todos-cli.js precisely so tests could import without triggering file IO). Actual writes happen in the caller. Symlink guards would be dead code."
+    },
+    {
       "type": "function",
       "key": "nextLine",
       "file": "scripts/debt/extract-audit-reports.js",
       "addedAt": "2026-04-05",
       "reason": "false positive — unrelated local variable with same name, not a propagation miss"
+    },
+    {
+      "type": "function",
+      "key": "safeRename",
+      "file": "scripts/archive/run-consolidation.v1.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent safeRename in the legacy consolidation script, different scope and signature from the skill state-managers. Not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "safeRename",
+      "file": "scripts/audit/track-resolutions.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent safeRename in track-resolutions, different scope and signature from the skill state-managers. Not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "safeRename",
+      "file": "scripts/run-consolidation.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent safeRename in the canonical consolidation script, different scope and signature from the skill state-managers. Not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "parseMarkdownReviews",
+      "file": "scripts/review-lifecycle.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — separate markdown-review parser with a different signature. review-lifecycle.js owns the primary sync path; sync-reviews-to-jsonl.js owns the archive repair path. Coincidental name collision, CC=75 on the review-lifecycle copy is already tracked in the known-debt CC baseline."
+    },
+    {
+      "type": "function",
+      "key": "countBySeverity",
+      "file": "scripts/audit/compare-audits.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — independent countBySeverity helper in compare-audits, different input shape. The T39 intake-audit extraction produced a differently-shaped helper; coincidental same name."
+    },
+    {
+      "type": "function",
+      "key": "logIntakeActivity",
+      "file": "scripts/debt/ingest-cleaned-intake.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — separate logIntakeActivity in the cleaned-intake script, operates on a different action payload. T39 intake-audit has its own variant; not a propagation miss."
+    },
+    {
+      "type": "function",
+      "key": "parseMasterLine",
+      "file": "scripts/debt/ingest-cleaned-intake.js",
+      "addedAt": "2026-04-11",
+      "reason": "false positive — both intake scripts have a local parseMasterLine with different signatures (process-review-needed uses (rawLine, hashes, sourceIds, lineNum); ingest-cleaned-intake uses (line, hashSet, idState, lineNum)). Coincidental name collision, not a propagation miss."
     },
     {
       "type": "function",
@@ -4079,24 +4135,38 @@
     },
     {
       "type": "pattern",
-      "key": "path-containment",
-      "file": "scripts/detect-orphans.js",
-      "addedAt": "2026-04-05",
-      "reason": "New scripts use validatePathInDir for containment — false positive from pattern checker not recognizing validated path.join"
+      "key": "refuse-symlink",
+      "file": "scripts/archive/repair-archives.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R1 rule narrowing — old patternAbsence missed this. fs.copyFileSync + fs.unlinkSync without safe-fs guards. Schedule follow-up to add safeRenameSync/isSafeToWrite."
     },
     {
       "type": "pattern",
-      "key": "path-containment",
-      "file": "scripts/lib/reference-graph.js",
-      "addedAt": "2026-04-05",
-      "reason": "New scripts use validatePathInDir for containment — false positive from pattern checker not recognizing validated path.join"
+      "key": "refuse-symlink",
+      "file": "scripts/cas/rebuild-index.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R1 rule narrowing — old patternAbsence missed this. fs.unlinkSync(DB_PATH) without isSafeToWrite. Schedule follow-up."
     },
     {
       "type": "pattern",
-      "key": "path-containment",
-      "file": "scripts/render-orphan-report.js",
-      "addedAt": "2026-04-05",
-      "reason": "New scripts use validatePathInDir for containment — false positive from pattern checker not recognizing validated path.join"
+      "key": "refuse-symlink",
+      "file": "scripts/debt/resolve-bulk.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R1 rule narrowing — old patternAbsence missed this. fs.rmSync + fs.unlinkSync without safe-fs guards. Schedule follow-up."
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/check-session-gaps.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R2 FP bundle commit. Uses bare statSync without lstatSync + isSymbolicLink (TOCTOU guard pattern from PR #388/#397). Not touched by PR #507 — baselining to land FP bundle cleanly. Schedule follow-up TDMS item."
+    },
+    {
+      "type": "pattern",
+      "key": "lstat-symlink",
+      "file": "scripts/health/lib/health-log.js",
+      "addedAt": "2026-04-11",
+      "reason": "pre-existing at PR #507 R2 FP bundle commit. Uses bare statSync without lstatSync + isSymbolicLink (TOCTOU guard pattern from PR #388/#397). Not touched by PR #507 — baselining to land FP bundle cleanly. Schedule follow-up TDMS item."
     }
   ]
 }

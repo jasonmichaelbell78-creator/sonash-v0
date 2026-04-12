@@ -34,10 +34,12 @@ try {
     path.join(ROOT, "scripts", "lib", "safe-fs.js")
   ));
 } catch {
-  // Fallback: use raw fs (for environments where safe-fs is unavailable)
-  safeWriteFileSync = (filePath, data, options) => fs.writeFileSync(filePath, data, options);
+  // Fail-closed fallback: refuse writes if safe-fs is unavailable (no symlink guard)
+  safeWriteFileSync = () => {
+    throw new Error("safe-fs unavailable — refusing raw write without symlink guard");
+  };
   withLock = (_filePath, fn) => fn();
-  isSafeToWrite = () => true;
+  isSafeToWrite = () => false;
 }
 
 // ---------------------------------------------------------------------------

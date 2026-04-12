@@ -409,7 +409,7 @@ patterns, systemic issues). Save to state file `learnings` field.
 **Invocation tracking** (MUST):
 
 ```bash
-cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"audit-agent-quality","type":"skill","success":true,"context":{"agents_audited":N,"grade":"X"}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"audit-agent-quality","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"agents_audited":N,"grade":"X"}}'
 ```
 
 Present: artifact manifest, ecosystem grade, top 3 systemic findings, next steps

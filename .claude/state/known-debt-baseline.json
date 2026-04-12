@@ -20,9 +20,30 @@
     },
     "cognitive-complexity": {
       ".claude/hooks/session-start.js": 21,
+      ".claude/skills/doc-ecosystem-audit/scripts/lib/patch-generator.js": 23,
+      ".claude/skills/health-ecosystem-audit/scripts/checkers/alert-system.js": 41,
+      ".claude/skills/health-ecosystem-audit/scripts/checkers/data-persistence.js": 34,
+      ".claude/skills/health-ecosystem-audit/scripts/lib/patch-generator.js": 23,
+      ".claude/skills/hook-ecosystem-audit/scripts/lib/patch-generator.js": 23,
+      ".claude/skills/pr-ecosystem-audit/scripts/checkers/effectiveness-metrics.js": 24,
+      ".claude/skills/pr-ecosystem-audit/scripts/checkers/feedback-integration.js": 18,
+      ".claude/skills/pr-ecosystem-audit/scripts/checkers/pattern-lifecycle.js": 16,
+      ".claude/skills/pr-ecosystem-audit/scripts/checkers/process-compliance.js": 30,
+      ".claude/skills/pr-ecosystem-audit/scripts/lib/patch-generator.js": 31,
+      ".claude/skills/script-ecosystem-audit/scripts/lib/patch-generator.js": 23,
+      ".claude/skills/session-ecosystem-audit/scripts/checkers/lifecycle-management.js": 21,
+      ".claude/skills/session-ecosystem-audit/scripts/checkers/state-persistence.js": 38,
+      ".claude/skills/skill-ecosystem-audit/scripts/lib/patch-generator.js": 23,
+      ".claude/skills/tdms-ecosystem-audit/scripts/checkers/data-quality-dedup.js": 94,
+      ".claude/skills/tdms-ecosystem-audit/scripts/checkers/file-io-safety.js": 54,
+      ".claude/skills/tdms-ecosystem-audit/scripts/checkers/metrics-reporting.js": 73,
+      ".claude/skills/tdms-ecosystem-audit/scripts/checkers/roadmap-integration.js": 30,
+      ".claude/skills/tdms-ecosystem-audit/scripts/lib/patch-generator.js": 23,
       "scripts/check-pattern-compliance.js": 36,
-      "scripts/check-triggers.js": 34,
-      "scripts/generate-documentation-index.mjs": 22
+      "scripts/debt/escalate-deferred.js": 24,
+      "scripts/debt/extract-audits.js": 25,
+      "scripts/debt/extract-reviews.js": 41,
+      "scripts/review-lifecycle.js": 75
     },
     "cyclomatic-complexity": {
       "scripts/cas/migrate-schemas.js": 36,
@@ -42,5 +63,5 @@
       ]
     }
   },
-  "generated": "2026-04-10T20:53:29.176Z"
+  "generated": "2026-04-11T14:29:24.047Z"
 }

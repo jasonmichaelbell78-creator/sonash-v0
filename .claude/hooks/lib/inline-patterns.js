@@ -99,7 +99,7 @@ const INLINE_PATTERNS = [
     id: "todo-without-ticket",
     pattern: /\/\/\s*TODO(?!\s*\(|\s*\[)/g,
     message: "TODO comment without ticket reference - may be forgotten",
-    fix: "Add ticket reference: // TODO(PROJ-123) or // TODO[username]",
+    fix: "Add ticket reference like TODO(PROJ-123) or TODO[username] after the comment marker",
     fileTypes: [".js", ".ts", ".tsx", ".jsx"],
   },
   {

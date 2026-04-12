@@ -11,6 +11,31 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+// Walk up from startDir until we find package.json (works from source AND dist)
+function findProjectRootForHelper(startDir: string): string {
+  let dir = startDir;
+  for (;;) {
+    try {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    } catch {
+      // existsSync race condition -- continue walking
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) throw new Error("Could not find project root");
+    dir = parent;
+  }
+}
+
+// Resolve helper via absolute path so compiled dist/dedup-debt.js still finds
+// scripts/lib/parse-jsonl-line.js (relative "../lib/..." would resolve to
+// scripts/reviews/lib/... after compilation — which doesn't exist).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require(
+  path.join(findProjectRootForHelper(__dirname), "scripts", "lib", "parse-jsonl-line.js")
+) as {
+  safeParseLine: (line: string) => unknown;
+};
+
 // =========================================================
 // Types
 // =========================================================
@@ -216,13 +241,14 @@ function readDebtItems(masterPath: string): DebtItem[] {
   const lines = rawContent.trim().split("\n");
   const items: DebtItem[] = [];
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    try {
-      items.push(JSON.parse(line) as DebtItem);
-    } catch {
-      console.warn(`Warning: malformed JSON at line ${i + 1}, skipping`);
+    const parsed = safeParseLine(lines[i]);
+    if (parsed === null) {
+      if (lines[i].trim()) {
+        console.warn(`Warning: malformed JSON at line ${i + 1}, skipping`);
+      }
+      continue;
     }
+    items.push(parsed as DebtItem);
   }
   return items;
 }
@@ -257,14 +283,11 @@ function atomicWriteWithFallback(tmpPath: string, destPath: string): void {
       }
       fs.copyFileSync(tmpPath, destPath);
     } else {
-      // Destination doesn't exist: use create-only flag to avoid clobbering via race
-      const data = fs.readFileSync(tmpPath);
-      const fd = fs.openSync(destPath, "wx", 0o644);
-      try {
-        fs.writeFileSync(fd, data);
-      } finally {
-        fs.closeSync(fd);
-      }
+      // Destination doesn't exist: use COPYFILE_EXCL so the copy fails atomically
+      // if a concurrent writer creates destPath between existsSync and copyFileSync.
+      // This replaces an earlier read-then-write-with-"wx" pattern; copyFileSync
+      // with EXCL is equivalent but avoids an intermediate Buffer read.
+      fs.copyFileSync(tmpPath, destPath, fs.constants.COPYFILE_EXCL);
     }
     try {
       fs.unlinkSync(tmpPath);

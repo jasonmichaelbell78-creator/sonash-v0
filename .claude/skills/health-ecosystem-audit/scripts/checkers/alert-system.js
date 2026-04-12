@@ -29,6 +29,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "alert_system";
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -190,18 +191,15 @@ function countStaleWarnings(lines, days) {
   const cutoffTime = cutoff.getTime();
   let count = 0;
   for (const line of lines) {
-    try {
-      const entry = JSON.parse(line);
-      if (entry.lifecycle === "new" || entry.lifecycle === "active") {
-        if (typeof entry.date === "string") {
-          const t = new Date(entry.date).getTime();
-          if (Number.isFinite(t) && t < cutoffTime) {
-            count++;
-          }
+    const entry = safeParseLine(line);
+    if (!entry) continue;
+    if (entry.lifecycle === "new" || entry.lifecycle === "active") {
+      if (typeof entry.date === "string") {
+        const t = new Date(entry.date).getTime();
+        if (Number.isFinite(t) && t < cutoffTime) {
+          count++;
         }
       }
-    } catch {
-      // skip
     }
   }
   return count;
@@ -229,22 +227,19 @@ function checkWarningLifecycle(dataDir, warningContent, findings) {
         let resolvedTotal = 0;
 
         for (const line of lines) {
-          try {
-            const entry = JSON.parse(line);
-            totalWarnings++;
+          const entry = safeParseLine(line);
+          if (!entry) continue;
+          totalWarnings++;
 
-            if (entry.lifecycle && validLifecycles.has(entry.lifecycle)) {
-              validLifecycleCount++;
-            }
+          if (entry.lifecycle && validLifecycles.has(entry.lifecycle)) {
+            validLifecycleCount++;
+          }
 
-            if (entry.lifecycle === "resolved") {
-              resolvedTotal++;
-              if (entry.resolved_date) {
-                resolvedWithDate++;
-              }
+          if (entry.lifecycle === "resolved") {
+            resolvedTotal++;
+            if (entry.resolved_date) {
+              resolvedWithDate++;
             }
-          } catch {
-            // malformed line
           }
         }
 
@@ -364,11 +359,8 @@ function checkScoreDegradation(dataDir, alertsContent, findings) {
         const entries = [];
 
         for (const line of lines) {
-          try {
-            entries.push(JSON.parse(line));
-          } catch {
-            // skip
-          }
+          const entry = safeParseLine(line);
+          if (entry) entries.push(entry);
         }
 
         if (entries.length >= 2) {

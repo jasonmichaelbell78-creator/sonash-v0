@@ -14,6 +14,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const SCRIPT_DIR = __dirname;
 const ROOT = path.resolve(SCRIPT_DIR, "../..");
@@ -111,24 +112,25 @@ for (const [filename, schemaKey] of Object.entries(JSONL_FILES)) {
   let fileErrors = 0;
   for (let i = 0; i < lines.length; i++) {
     totalRecords++;
-    let record;
-    try {
-      record = JSON.parse(lines[i]);
-    } catch {
+    const { value: record, error: parseErr } = safeParseLineWithError(lines[i]);
+    if (parseErr) {
       fileErrors++;
       totalErrors++;
       console.error(`  ${filename} line ${i + 1}: JSON parse error`);
       continue;
     }
+    if (!record) continue;
 
     const result = schema.safeParse(record);
     if (!result.success) {
       fileErrors++;
       totalErrors++;
-      const id =
-        record && typeof record === "object" && "id" in record && record.id != null
-          ? String(record.id)
-          : `line-${i + 1}`;
+      // Only stringify primitive ids — non-primitives would produce
+      // Object's default "[object Object]" form (SonarCloud S2674 / S6565).
+      const rawId = record && typeof record === "object" && "id" in record ? record.id : undefined;
+      const isStringifiable =
+        rawId != null && (typeof rawId === "string" || typeof rawId === "number");
+      const id = isStringifiable ? String(rawId) : `line-${i + 1}`;
       const issues = result.error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join(", ");
       console.error(`  ${filename} [${id}]: ${issues}`);
     }

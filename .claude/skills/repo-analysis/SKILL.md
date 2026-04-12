@@ -574,7 +574,7 @@ file. This persists across sessions and enables process improvement.
 On "Done" routing, track invocation:
 
 ```bash
-cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"repo-analysis","type":"skill","success":true,"context":{"repo":"TARGET_REPO","depth":"DEPTH"}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"repo-analysis","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"repo":"TARGET_REPO","depth":"DEPTH"}}'
 ```
 
 ---

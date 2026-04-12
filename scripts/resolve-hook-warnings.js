@@ -60,9 +60,12 @@ try {
   sanitizeError = (e) => (e instanceof Error ? e.constructor.name : "unknown error");
 }
 
+const { safeParseLine } = require("./lib/parse-jsonl-line");
+
 const ROOT_DIR = path.join(__dirname, "..");
 const LOG_PATH = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-log.jsonl");
 const ACK_PATH = path.join(ROOT_DIR, ".claude", "state", "hook-warnings-ack.json");
+const CACHE_PATH = path.join(ROOT_DIR, ".claude", "hook-warnings.json");
 
 const args = new Set(process.argv.slice(2));
 const VERBOSE = args.has("--verbose");
@@ -157,7 +160,58 @@ const RESOLVE_CHECKS = {
       return false; // Still missing
     }
   },
+
+  // PR #507 R1 followup: re-run underlying check-script, pass = resolved.
+  // Shared helper — spawns a node subprocess for a project script and returns
+  // true iff exit 0. All checkers below follow the same shape.
+  "propagation-staged": () => runCheckerPasses("scripts/check-propagation-staged.js"),
+
+  propagation: () => runCheckerPasses("scripts/check-propagation.js"),
+
+  "pattern-compliance": () => runCheckerPasses("scripts/check-pattern-compliance.js"),
+
+  "cognitive-cc": () =>
+    runCheckerPasses("scripts/check-cc.js", [], { ignoreExit: true, preexisting: true }),
+
+  "cyclomatic-cc": () =>
+    runCheckerPasses("scripts/check-cyclomatic-cc.js", [], { ignoreExit: true, preexisting: true }),
+
+  // Trigger warnings fire on skill/agent file modifications without follow-up
+  // validation. They auto-resolve at next session-start since the modifications
+  // are inspected there; mirror session-end-missing.
+  trigger: () => true,
+  triggers: () => true,
 };
+
+/**
+ * Spawn a node checker script and return true iff it exits 0.
+ * Accepts an options bag for behaviours peculiar to the CC checkers, which
+ * always return non-zero when violations exist regardless of whether those
+ * violations are pre-existing (and therefore not caused by the current state).
+ */
+function runCheckerPasses(scriptRelPath, extraArgs = [], options = {}) {
+  const { ignoreExit = false, preexisting = false } = options;
+  try {
+    execFileSync(process.execPath, [path.join(ROOT_DIR, scriptRelPath), ...extraArgs], {
+      cwd: ROOT_DIR,
+      stdio: "pipe",
+      timeout: 60_000,
+      encoding: "utf8",
+    });
+    return true;
+  } catch (err) {
+    if (ignoreExit && preexisting) {
+      // For CC checkers: non-zero exit is expected when the codebase has any
+      // pre-existing violations. The warning was raised because a SPECIFIC
+      // commit touched a function — we can't auto-resolve without comparing
+      // against the point-in-time. Leave active (don't auto-ack).
+      return false;
+    }
+    // Treat ENOENT / missing script as "can't verify" — leave active.
+    if (err?.code === "ENOENT") return false;
+    return false;
+  }
+}
 
 /**
  * Read JSONL log entries safely
@@ -175,13 +229,11 @@ function readLogEntries() {
     }
     const content = fs.readFileSync(LOG_PATH, "utf8");
     const entries = [];
-    for (const line of content.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        entries.push(JSON.parse(line));
-      } catch {
-        entries.push({ _raw: line, _malformed: true });
-      }
+    for (const rawLine of content.split("\n")) {
+      if (!rawLine.trim()) continue;
+      const parsed = safeParseLine(rawLine);
+      if (parsed) entries.push(parsed);
+      else entries.push({ _raw: rawLine, _malformed: true });
     }
     return entries;
   } catch {
@@ -288,6 +340,86 @@ function markResolvedEntries(entries, resolvedTypes, timestamp) {
 }
 
 /**
+ * Update the live warnings cache (.claude/hook-warnings.json) by filtering
+ * out any warning whose type is in `resolvedTypes`. This is what the pre-push
+ * escalation gate reads, so updating it is what actually unblocks the push.
+ *
+ * @returns {number} Count of warnings removed from the cache
+ */
+function updateCache(resolvedTypes) {
+  if (resolvedTypes.size === 0) return 0;
+  try {
+    if (!fs.existsSync(CACHE_PATH)) return 0;
+    const st = fs.lstatSync(CACHE_PATH);
+    if (st.isSymbolicLink()) {
+      console.error("hook-warnings.json is a symlink — skipping cache update");
+      return 0;
+    }
+    const data = JSON.parse(fs.readFileSync(CACHE_PATH, "utf8"));
+    const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+    const before = warnings.length;
+    data.warnings = warnings.filter((w) => !resolvedTypes.has(w.type));
+    const removed = before - data.warnings.length;
+    if (removed === 0) return 0;
+    if (!isSafeToWrite(CACHE_PATH)) return 0;
+    const tmp = `${CACHE_PATH}.tmp.${process.pid}`;
+    safeWriteFileSync(tmp, JSON.stringify(data, null, 2) + "\n");
+    try {
+      fs.rmSync(CACHE_PATH, { force: true });
+    } catch {
+      // ignore
+    }
+    safeRenameSync(tmp, CACHE_PATH);
+    return removed;
+  } catch (e) {
+    console.error("Failed to update warnings cache:", sanitizeError(e));
+    return 0;
+  }
+}
+
+/**
+ * Update the ack file so resolved types have an ack timestamp newer than
+ * any warning of that type in the cache. Mirrors the pre-push escalation
+ * gate's filter logic so auto-resolve and manual ack behave identically.
+ *
+ * @returns {boolean} true on success
+ */
+function updateAckForResolved(resolvedTypes, timestamp) {
+  if (resolvedTypes.size === 0) return true;
+  try {
+    let ack = { acknowledged: {}, lastCleared: null };
+    if (fs.existsSync(ACK_PATH)) {
+      const st = fs.lstatSync(ACK_PATH);
+      if (st.isSymbolicLink()) {
+        console.error("hook-warnings-ack.json is a symlink — skipping ack update");
+        return false;
+      }
+      const parsed = JSON.parse(fs.readFileSync(ACK_PATH, "utf8"));
+      if (parsed && typeof parsed === "object") {
+        ack.acknowledged = parsed.acknowledged || {};
+        ack.lastCleared = parsed.lastCleared || null;
+      }
+    }
+    for (const type of resolvedTypes) {
+      ack.acknowledged[type] = timestamp;
+    }
+    if (!isSafeToWrite(ACK_PATH)) return false;
+    const tmp = `${ACK_PATH}.tmp.${process.pid}`;
+    safeWriteFileSync(tmp, JSON.stringify(ack, null, 2) + "\n");
+    try {
+      fs.rmSync(ACK_PATH, { force: true });
+    } catch {
+      // ignore
+    }
+    safeRenameSync(tmp, ACK_PATH);
+    return true;
+  } catch (e) {
+    console.error("Failed to update ack file:", sanitizeError(e));
+    return false;
+  }
+}
+
+/**
  * Main: resolve stale warnings
  */
 function main() {
@@ -320,10 +452,23 @@ function main() {
     return;
   }
 
-  // Write updated log
-  if (writeLogEntries(entries)) {
-    console.log(`Resolved ${resolvedCount} warning(s): ${[...resolvedTypes].join(", ")}`);
+  // Write updated log (history of resolutions)
+  if (!writeLogEntries(entries)) {
+    console.error("Log write failed — aborting before touching cache/ack");
+    return;
   }
+
+  // Update the live warnings cache and ack state so the pre-push escalation
+  // gate and /alerts both see the resolution immediately (without this step
+  // auto-resolve is cosmetic — the cache stays stale until /alerts or
+  // append-hook-warning.js rewrites it).
+  const cacheRemoved = updateCache(resolvedTypes);
+  const ackUpdated = updateAckForResolved(resolvedTypes, now);
+
+  const parts = [`Resolved ${resolvedCount} log entry(ies)`];
+  if (cacheRemoved > 0) parts.push(`${cacheRemoved} cache entry(ies) removed`);
+  if (ackUpdated) parts.push(`ack file updated`);
+  console.log(`${parts.join(", ")}: ${[...resolvedTypes].join(", ")}`);
 }
 
 main();

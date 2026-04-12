@@ -299,7 +299,7 @@ to `docs/AI_REVIEW_LEARNINGS_LOG.md`. **8.4** Sync:
 
 ```bash
 npm run reviews:sync -- --apply
-node dist/write-invocation.js --data '...'
+cd scripts/reviews && npx tsx write-invocation.ts --data '...'
 ```
 
 **Done when:** JSONL written, markdown appended, sync succeeded.

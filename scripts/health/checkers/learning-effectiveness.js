@@ -16,9 +16,52 @@ const BENCHMARKS = {
   recurrence_rate: { good: 20, average: 40, poor: 60 },
 };
 
-function checkLearningEffectiveness() {
-  const metrics = {};
+// Extract metric rows via simple line match + pipe split. Complex full-row
+// regexes trip SonarCloud S5852; pipe-split is cheaper and equally precise
+// for this fixed table shape.
+//
+// Returns { value, signal } or null if the row is missing / unparseable.
+function parseViolationsPerPr(content) {
+  const lineMatch = content.match(/Violations per PR[^\n]*/);
+  if (!lineMatch) return null;
+  const cells = lineMatch[0].split("|").map((c) => c.trim());
+  // cells shape: ["Violations per PR (30-day)", "X.XX", "signal", ...]
+  if (cells.length < 3) return null;
+  const parsed = Number.parseFloat(cells[1]);
+  if (Number.isNaN(parsed)) return null;
+  return { value: parsed, signal: cells[2] || null };
+}
 
+// "Recurring categories" row: pull the percent value from within parens.
+// Returns a number or null.
+function parseRecurrenceRate(content) {
+  const lineMatch = content.match(/Recurring categories[^\n]*/);
+  if (!lineMatch) return null;
+  const percentMatch = lineMatch[0].match(/\(([\d.]+)%\)/);
+  if (!percentMatch) return null;
+  const parsed = Number.parseFloat(percentMatch[1]);
+  return Number.isNaN(parsed) ? null : parsed;
+}
+
+function scoreViolationsPerPr(parsed) {
+  if (!parsed || parsed.signal === "insufficient_data") return null;
+  return {
+    value: parsed.value,
+    ...scoreMetric(parsed.value, BENCHMARKS.violations_per_pr),
+    benchmark: BENCHMARKS.violations_per_pr,
+  };
+}
+
+function scoreRecurrenceRate(value) {
+  if (value === null) return null;
+  return {
+    value,
+    ...scoreMetric(value, BENCHMARKS.recurrence_rate),
+    benchmark: BENCHMARKS.recurrence_rate,
+  };
+}
+
+function checkLearningEffectiveness() {
   const metricsPath = path.join(ROOT_DIR, "docs", "LEARNING_METRICS.md");
   let content;
   try {
@@ -27,32 +70,12 @@ function checkLearningEffectiveness() {
     return { metrics: {}, no_data: true };
   }
 
-  // Match new MVM format: "| Violations per PR (30-day) | X.XX | signal |"
-  const vprMatch = content.match(/Violations per PR\s*\([^)]+\)\s*\|\s*([\d.]+)\s*\|\s*(\S+)/);
-  // Match: "| Recurring categories | N/M (XX.X%) | signal |"
-  const recMatch = content.match(
-    /Recurring categories\s*\|\s*\d+\/\d+\s*\(([\d.]+)%\)\s*\|\s*(\S+)/
-  );
+  const metrics = {};
+  const vpr = scoreViolationsPerPr(parseViolationsPerPr(content));
+  if (vpr) metrics.violations_per_pr = vpr;
 
-  const violationsPerPr = vprMatch ? Number.parseFloat(vprMatch[1]) : null;
-  const vprSignal = vprMatch ? vprMatch[2] : null;
-  const recurrenceRate = recMatch ? Number.parseFloat(recMatch[1]) : null;
-
-  if (violationsPerPr !== null && vprSignal !== "insufficient_data") {
-    metrics.violations_per_pr = {
-      value: violationsPerPr,
-      ...scoreMetric(violationsPerPr, BENCHMARKS.violations_per_pr),
-      benchmark: BENCHMARKS.violations_per_pr,
-    };
-  }
-
-  if (recurrenceRate !== null) {
-    metrics.recurrence_rate = {
-      value: recurrenceRate,
-      ...scoreMetric(recurrenceRate, BENCHMARKS.recurrence_rate),
-      benchmark: BENCHMARKS.recurrence_rate,
-    };
-  }
+  const rec = scoreRecurrenceRate(parseRecurrenceRate(content));
+  if (rec) metrics.recurrence_rate = rec;
 
   const hasData = Object.keys(metrics).length > 0;
   return { metrics, no_data: !hasData };

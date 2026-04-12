@@ -25,6 +25,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 // Get repository root for consistent log location
 function getRepoRoot() {
@@ -128,17 +129,7 @@ function readSessionLog() {
     return [];
   }
 
-  return content
-    .split("\n")
-    .filter((line) => line.trim())
-    .map((line) => {
-      try {
-        return JSON.parse(line);
-      } catch {
-        return null;
-      }
-    })
-    .filter(Boolean);
+  return content.split("\n").map(safeParseLine).filter(Boolean);
 }
 
 // Get current session events (since last session_start)

@@ -31,6 +31,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "data_persistence";
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
@@ -255,28 +256,28 @@ function checkSchemaValidation(dataDir, findings) {
 
         for (const line of lines) {
           totalEntries++;
-          try {
-            const entry = JSON.parse(line);
-            const hasRequired = requiredFields.every((f) => entry[f] !== undefined);
-            if (hasRequired) {
-              validEntries++;
-            } else {
-              const missing = requiredFields.filter((f) => entry[f] === undefined);
-              findings.push({
-                id: "HMS-320",
-                category: "schema_validation",
-                domain: DOMAIN,
-                severity: "warning",
-                message: `Health log entry missing required fields: ${missing.join(", ")}`,
-                details: `Entry timestamp: ${entry.timestamp || "unknown"}. Missing fields cause downstream parse failures.`,
-                impactScore: 50,
-                frequency: 1,
-                blastRadius: 2,
-              });
-            }
-          } catch {
+          const entry = safeParseLine(line);
+          if (!entry) {
             // Corrupt entry — handled in corrupt_entry_detection
             totalEntries--; // Don't count for schema validation
+            continue;
+          }
+          const hasRequired = requiredFields.every((f) => entry[f] !== undefined);
+          if (hasRequired) {
+            validEntries++;
+          } else {
+            const missing = requiredFields.filter((f) => entry[f] === undefined);
+            findings.push({
+              id: "HMS-320",
+              category: "schema_validation",
+              domain: DOMAIN,
+              severity: "warning",
+              message: `Health log entry missing required fields: ${missing.join(", ")}`,
+              details: `Entry timestamp: ${entry.timestamp || "unknown"}. Missing fields cause downstream parse failures.`,
+              impactScore: 50,
+              frequency: 1,
+              blastRadius: 2,
+            });
           }
         }
       }
@@ -298,14 +299,14 @@ function checkSchemaValidation(dataDir, findings) {
 
         for (const line of lines) {
           totalEntries++;
-          try {
-            const entry = JSON.parse(line);
-            const hasRequired = warningFields.every((f) => entry[f] !== undefined);
-            if (hasRequired) {
-              validEntries++;
-            }
-          } catch {
+          const entry = safeParseLine(line);
+          if (!entry) {
             totalEntries--;
+            continue;
+          }
+          const hasRequired = warningFields.every((f) => entry[f] !== undefined);
+          if (hasRequired) {
+            validEntries++;
           }
         }
       }
@@ -352,26 +353,23 @@ function checkTimestampConsistency(dataDir, _findings) {
       const lines = content.split("\n").filter((l) => l.trim());
 
       for (const line of lines) {
-        try {
-          const entry = JSON.parse(line);
-          if (entry.timestamp) {
-            totalTimestamps++;
-            if (isoPattern.test(entry.timestamp)) {
-              const d = new Date(entry.timestamp);
-              if (!isNaN(d.getTime())) {
-                validTimestamps++;
-              }
-            }
-          }
-          if (entry.date) {
-            totalTimestamps++;
-            // date format: YYYY-MM-DD
-            if (/^\d{4}-\d{2}-\d{2}$/.test(entry.date)) {
+        const entry = safeParseLine(line);
+        if (!entry) continue;
+        if (entry.timestamp) {
+          totalTimestamps++;
+          if (isoPattern.test(entry.timestamp)) {
+            const d = new Date(entry.timestamp);
+            if (!isNaN(d.getTime())) {
               validTimestamps++;
             }
           }
-        } catch {
-          // malformed line
+        }
+        if (entry.date) {
+          totalTimestamps++;
+          // date format: YYYY-MM-DD
+          if (/^\d{4}-\d{2}-\d{2}$/.test(entry.date)) {
+            validTimestamps++;
+          }
         }
       }
     } catch {

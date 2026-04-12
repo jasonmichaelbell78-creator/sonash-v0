@@ -21,6 +21,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { safeWriteFile } = require("../lib/security-helpers");
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const DEFERRED_FILE = path.join(__dirname, "../../data/ecosystem-v2/deferred-items.jsonl");
 const INTAKE_SCRIPT = path.join(__dirname, "intake-pr-deferred.js");
@@ -83,15 +84,12 @@ function readDeferredItems(filePath) {
     throw error;
   }
 
-  const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
 
-  for (const line of lines) {
-    try {
-      items.push(JSON.parse(line));
-    } catch {
-      // Skip malformed lines
-    }
+  for (const line of content.split("\n")) {
+    const entry = safeParseLine(line);
+    if (!entry) continue;
+    items.push(entry);
   }
 
   return items;

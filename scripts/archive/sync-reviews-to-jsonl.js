@@ -29,10 +29,16 @@ const { existsSync, readFileSync, lstatSync, rmSync, mkdirSync } = fs; // requir
 const { copyFileSync } = fs; // require() destructure
 const { join } = pathMod; // require() destructure
 
-// Safe-fs wrappers (symlink guard + EXDEV fallback)
-let safeWriteFileSync, safeAppendFileSync;
+// Safe-fs wrappers (symlink guard + EXDEV fallback + read size guard)
+// Note: require path is ../lib because this file lives in scripts/archive/
+let safeWriteFileSync, safeAppendFileSync, readTextWithSizeGuard, streamLinesSync;
 try {
-  ({ safeWriteFileSync, safeAppendFileSync } = require("./lib/safe-fs"));
+  ({
+    safeWriteFileSync,
+    safeAppendFileSync,
+    readTextWithSizeGuard,
+    streamLinesSync,
+  } = require("../lib/safe-fs"));
 } catch {
   console.error("safe-fs unavailable; cannot safely write files");
   process.exit(2);
@@ -41,11 +47,13 @@ try {
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
 try {
-  ({ isSafeToWrite } = require("./lib/security-helpers"));
+  ({ isSafeToWrite } = require("../lib/security-helpers"));
 } catch {
   console.error("security-helpers unavailable; refusing to write");
   isSafeToWrite = () => false;
 }
+
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const ROOT = join(__dirname, "..");
 const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
@@ -155,309 +163,343 @@ function loadExistingIds() {
   if (!existsSync(REVIEWS_FILE)) return ids;
 
   try {
-    const content = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
+    const content = readTextWithSizeGuard(REVIEWS_FILE).replaceAll("\r\n", "\n").trim();
     if (!content) return ids;
     for (const line of content.split("\n")) {
-      try {
-        const obj = JSON.parse(line);
-        if (typeof obj.id === "number") ids.add(obj.id);
-      } catch {
-        /* skip malformed */
-      }
+      const obj = safeParseLine(line);
+      if (!obj) continue;
+      if (typeof obj.id === "number") ids.add(obj.id);
     }
   } catch (err) {
+    // Size guard tripped — fall back to streaming parse so we don't hard-fail
+    // once reviews.jsonl grows past the 2 MiB default whole-file ceiling. The
+    // string-match on err.message is deliberate: readTextWithSizeGuard throws
+    // a generic Error with this exact prefix and no dedicated code.
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("exceeds size guard")) {
+      // Guard against an older safe-fs export shape that lacks streamLinesSync.
+      // In practice the top-level require catch process.exit(2)s on load
+      // failure, but if safe-fs partially loaded we'd otherwise fall through
+      // to the wrong error branch with a misleading message.
+      if (typeof streamLinesSync !== "function") {
+        console.error("Failed to read reviews.jsonl: streamLinesSync unavailable in safe-fs");
+        return new Set();
+      }
+      const streamIds = new Set();
+      try {
+        streamLinesSync(REVIEWS_FILE, (line) => {
+          const obj = safeParseLine(line);
+          if (!obj) return;
+          if (typeof obj.id === "number") streamIds.add(obj.id);
+        });
+        return streamIds;
+      } catch (streamErr) {
+        // Silent partial-state is worse than an empty set: downstream dedupe
+        // would compute "new" against a stale prefix. Force a clean fresh
+        // set so duplicate-protection falls back to the file-level overwrite
+        // path, which is at least consistent.
+        console.error("Failed to stream reviews.jsonl:", sanitizeError(streamErr));
+        return new Set();
+      }
+    }
     console.error("Failed to read reviews.jsonl:", sanitizeError(err));
   }
   return ids;
 }
 
-/**
- * Parse reviews from the markdown learning log.
- * Extracts: id, date, title, source, pr, patterns, fixed, deferred, learnings
- */
-function parseMarkdownReviews(content) {
+// ── Review parsing helpers (extracted to keep parseMarkdownReviews CC ≤15) ────
+
+// Metadata labels that must not be stored as "patterns" (they're field headers).
+const REVIEW_PATTERN_SKIP = new Set([
+  "source",
+  "pr",
+  "prbranch",
+  "items",
+  "fixed",
+  "deferred",
+  "rejected",
+  "total-items",
+  "total",
+  "suggestions",
+  "resolution",
+  "resolution-stats",
+  "patterns-identified",
+  "patterns",
+  "pattern",
+  "key-patterns",
+  "key-learning",
+  "key-learnings",
+  "key-fix",
+  "key-fixes",
+  "context",
+  "rejections",
+  "process",
+  "approach",
+]);
+
+const REVIEW_LEARNING_METADATA_MARKERS = [
+  "**Source:**",
+  "**PR/Branch:**",
+  "**Suggestions:**",
+  "**Resolution Stats:**",
+  "**Patterns Identified:**",
+  "**Rejected:**",
+  "**Resolution:**",
+  "**Deferred:**",
+];
+
+// Normalize free text into a pattern slug (lowercase, alphanumeric+dash, ≤60).
+function normalizeReviewPatternSlug(text) {
+  return text
+    .trim()
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9\s-]/g, "")
+    .replaceAll(/\s+/g, "-")
+    .slice(0, 60);
+}
+
+// Add a pattern to review.patterns if it passes the validity + dedup gates.
+function pushReviewPatternIfNew(review, rawText) {
+  const pattern = normalizeReviewPatternSlug(rawText);
+  if (
+    pattern &&
+    pattern.length > 3 &&
+    !REVIEW_PATTERN_SKIP.has(pattern) &&
+    !review.patterns.includes(pattern)
+  ) {
+    review.patterns.push(pattern);
+  }
+}
+
+// Create an empty review entry with all fields pre-initialized.
+function createEmptyReviewEntry(id, title, date) {
+  return {
+    id,
+    date,
+    title,
+    source: null,
+    pr: null,
+    patterns: [],
+    fixed: 0,
+    deferred: 0,
+    rejected: 0,
+    critical: 0,
+    major: 0,
+    minor: 0,
+    trivial: 0,
+    total: 0,
+    learnings: [],
+    _rawLines: [],
+  };
+}
+
+// Parse a `## Review #N: Title (YYYY-MM-DD)` header line, or return null.
+function parseReviewHeader(line) {
+  const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/);
+  if (!headerMatch) return null;
+  const id = Number.parseInt(headerMatch[1], 10);
+  // Guard against Infinity from pathologically long digit strings AND against
+  // values beyond Number.MAX_SAFE_INTEGER which would silently lose precision
+  // during dedupe/sort. isSafeInteger covers both cases plus Number.NaN; the
+  // > 0 check normalizes on the domain invariant (review IDs are positive).
+  if (!Number.isSafeInteger(id) || id <= 0) return null;
+  const titleAndDate = headerMatch[2].trim();
+  const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
+  const date = dateMatch ? dateMatch[1] : null;
+  const title = dateMatch
+    ? titleAndDate.slice(0, titleAndDate.lastIndexOf("(")).trim()
+    : titleAndDate;
+  return createEmptyReviewEntry(id, title, date);
+}
+
+// First pass: split markdown content into review blocks with unparsed _rawLines.
+function splitContentIntoReviewBlocks(content) {
   const reviews = [];
   const lines = content.split("\n");
   let current = null;
   let inFence = false;
-
   for (const line of lines) {
-    // Skip content inside fenced code blocks to avoid parsing headers from examples
     if (line.trim().startsWith("```")) {
       inFence = !inFence;
       continue;
     }
     if (inFence) continue;
-
-    // Match #### Review #N: Title (YYYY-MM-DD)
-    const headerMatch = line.match(/^#{2,4}\s+Review\s+#(\d+):?\s*(.*)/);
-    if (headerMatch) {
+    const newReview = parseReviewHeader(line);
+    if (newReview) {
       if (current) reviews.push(current);
-
-      const id = Number.parseInt(headerMatch[1], 10);
-      const titleAndDate = headerMatch[2].trim();
-      const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
-      const date = dateMatch ? dateMatch[1] : null;
-      const title = dateMatch
-        ? titleAndDate.slice(0, titleAndDate.lastIndexOf("(")).trim()
-        : titleAndDate;
-
-      current = {
-        id,
-        date,
-        title,
-        source: null,
-        pr: null,
-        patterns: [],
-        fixed: 0,
-        deferred: 0,
-        rejected: 0,
-        critical: 0,
-        major: 0,
-        minor: 0,
-        trivial: 0,
-        total: 0,
-        learnings: [],
-        _rawLines: [],
-      };
+      current = newReview;
       continue;
     }
-
-    if (!current) continue;
-    current._rawLines.push(line);
+    if (current) current._rawLines.push(line);
   }
-
   if (current) reviews.push(current);
+  return reviews;
+}
 
-  // Second pass: extract structured fields from raw lines
-  for (const review of reviews) {
-    const raw = review._rawLines.join("\n");
+// Extract the normalized `source` tag from a review's raw text.
+function extractReviewSource(raw) {
+  const sourceMatch = raw.match(/\*\*Source:\*\*\s*([^\n*]+)/);
+  if (!sourceMatch) return null;
+  const src = sourceMatch[1].toLowerCase().trim();
+  const parts = [];
+  if (src.includes("sonarcloud") || src.includes("sonarqube")) parts.push("sonarcloud");
+  if (src.includes("qodo")) parts.push("qodo");
+  if (src.includes("ci") || src.includes("github")) parts.push("ci");
+  if (src.includes("coderabbit")) parts.push("coderabbit");
+  return parts.length > 0 ? parts.join("+") : "manual";
+}
 
-    // Source
-    const sourceMatch = raw.match(/\*\*Source:\*\*\s*([^\n*]+)/);
-    if (sourceMatch) {
-      const src = sourceMatch[1].toLowerCase().trim();
-      const parts = [];
-      if (src.includes("sonarcloud") || src.includes("sonarqube")) parts.push("sonarcloud");
-      if (src.includes("qodo")) parts.push("qodo");
-      if (src.includes("ci") || src.includes("github")) parts.push("ci");
-      if (src.includes("coderabbit")) parts.push("coderabbit");
-      review.source = parts.length > 0 ? parts.join("+") : "manual";
+// Extract the fixed/deferred/rejected count fields from raw text.
+function extractReviewResolutionCounts(raw) {
+  const result = { fixed: 0, deferred: 0, rejected: 0 };
+  const fixedMatch = raw.match(/Fixed:\s*(\d+)/i) || raw.match(/fixed\s*(\d+)/i);
+  if (fixedMatch) result.fixed = Number.parseInt(fixedMatch[1], 10);
+  const deferredMatch = raw.match(/Deferred:\s*(\d+)/i) || raw.match(/deferred\s*(\d+)/i);
+  if (deferredMatch) result.deferred = Number.parseInt(deferredMatch[1], 10);
+  const rejectedMatch = raw.match(/Rejected:\s*(\d+)/i) || raw.match(/rejected\s*(\d+)/i);
+  if (rejectedMatch) result.rejected = Number.parseInt(rejectedMatch[1], 10);
+  return result;
+}
+
+// Fallback: sum the paren-count tokens on the **Source:** line when severity
+// counts are all zero but a total exists (e.g., "SonarCloud (3) + Qodo (6)").
+function deriveSourceBreakdownTotal(raw) {
+  const sourceBreakdown = raw.match(/\*\*Source:\*\*\s*([^\n]+)/);
+  if (!sourceBreakdown) return null;
+  const sourceCounts = [...sourceBreakdown[1].matchAll(/\((\d+)\)/g)];
+  const sourceTotal = sourceCounts.reduce((sum, m) => sum + Number.parseInt(m[1], 10), 0);
+  if (sourceTotal <= 0) return null;
+  return { sourceBreakdown: sourceBreakdown[1].trim(), total: sourceTotal };
+}
+
+// Fill review.critical/major/minor/trivial/total and the source-breakdown fallback.
+function applyReviewSeverityBreakdown(review, raw) {
+  review.critical = parseSeverityCount(raw, "CRITICAL");
+  review.major = parseSeverityCount(raw, "MAJOR");
+  review.minor = parseSeverityCount(raw, "MINOR");
+  review.trivial = parseSeverityCount(raw, "TRIVIAL");
+  const totalFromTotal = parseSeverityCount(raw, "total");
+  const totalFromItems = parseSeverityCount(raw, "items");
+  review.total = totalFromTotal || totalFromItems;
+  if (review.total > 0 && review.critical === 0 && review.major === 0 && review.minor === 0) {
+    const fallback = deriveSourceBreakdownTotal(raw);
+    if (fallback) {
+      review.sourceBreakdown = fallback.sourceBreakdown;
+      review.total = fallback.total;
     }
-
-    // PR number
-    const prMatch = raw.match(/PR\s*#(\d+)/);
-    if (prMatch) review.pr = Number.parseInt(prMatch[1], 10);
-
-    // Fixed count
-    const fixedMatch = raw.match(/Fixed:\s*(\d+)/i) || raw.match(/fixed\s*(\d+)/i);
-    if (fixedMatch) review.fixed = Number.parseInt(fixedMatch[1], 10);
-
-    // Deferred count
-    const deferredMatch = raw.match(/Deferred:\s*(\d+)/i) || raw.match(/deferred\s*(\d+)/i);
-    if (deferredMatch) review.deferred = Number.parseInt(deferredMatch[1], 10);
-
-    // Rejected count
-    const rejectedMatch = raw.match(/Rejected:\s*(\d+)/i) || raw.match(/rejected\s*(\d+)/i);
-    if (rejectedMatch) review.rejected = Number.parseInt(rejectedMatch[1], 10);
-
-    // Severity breakdown — uses string-based parsing (no regex) via parseSeverityCount
-    review.critical = parseSeverityCount(raw, "CRITICAL");
-    review.major = parseSeverityCount(raw, "MAJOR");
-    review.minor = parseSeverityCount(raw, "MINOR");
-    review.trivial = parseSeverityCount(raw, "TRIVIAL");
-
-    // Total items from "N total" or "N items" pattern
-    const totalFromTotal = parseSeverityCount(raw, "total");
-    const totalFromItems = parseSeverityCount(raw, "items");
-    review.total = totalFromTotal || totalFromItems;
-
-    // If total found but no severity breakdown, derive from source counts
-    // e.g., "SonarCloud (3) + Qodo Suggestions (6)" in Source line
-    if (review.total > 0 && review.critical === 0 && review.major === 0 && review.minor === 0) {
-      const sourceBreakdown = raw.match(/\*\*Source:\*\*\s*([^\n]+)/);
-      if (sourceBreakdown) {
-        const sourceCounts = [...sourceBreakdown[1].matchAll(/\((\d+)\)/g)];
-        const sourceTotal = sourceCounts.reduce((sum, m) => sum + Number.parseInt(m[1], 10), 0);
-        if (sourceTotal > 0) {
-          review.sourceBreakdown = sourceBreakdown[1].trim();
-          review.total = sourceTotal;
-        }
-      }
-    }
-
-    // Patterns extraction — supports multiple markdown formats:
-    // 1. Numbered bold: "1. **Pattern name**: description"
-    // 2. Bullet bold: "- **Pattern name**: description"
-    // 3. Inline: "**Patterns:** text; text; text" or "**Pattern:** text"
-    // 4. Key Patterns bullets: "- Pattern name: description" (under Key Patterns section)
-
-    // Metadata labels to skip — these are field headers, not patterns
-    const PATTERN_SKIP = new Set([
-      "source",
-      "pr",
-      "prbranch",
-      "items",
-      "fixed",
-      "deferred",
-      "rejected",
-      "total-items",
-      "total",
-      "suggestions",
-      "resolution",
-      "resolution-stats",
-      "patterns-identified",
-      "patterns",
-      "pattern",
-      "key-patterns",
-      "key-learning",
-      "key-learnings",
-      "key-fix",
-      "key-fixes",
-      "context",
-      "rejections",
-      "process",
-      "approach",
-    ]);
-
-    // Format 1+2: numbered or bullet items with bold text
-    const boldItemMatches = raw.matchAll(/^(?:\d+\.|-)\s+\*\*([^*]+)\*\*/gm);
-    for (const m of boldItemMatches) {
-      const pattern = m[1]
-        .trim()
-        .toLowerCase()
-        .replaceAll(/[^a-z0-9\s-]/g, "")
-        .replaceAll(/\s+/g, "-")
-        .slice(0, 60);
-      if (
-        pattern &&
-        pattern.length > 3 &&
-        !PATTERN_SKIP.has(pattern) &&
-        !review.patterns.includes(pattern)
-      ) {
-        review.patterns.push(pattern);
-      }
-    }
-
-    // Format 3: inline patterns after **Pattern(s):** header (semicolon-/comma-separated)
-    // Matches "**Pattern:**" or "**Patterns:**" but not other bold labels
-    const inlinePatternMatch = /\*\*Patterns?:?\*\*:?\s+([^\n]+)/i.exec(raw);
-    if (inlinePatternMatch) {
-      const inlineText = inlinePatternMatch[1].trim();
-      // Split on semicolons or commas for multiple patterns
-      const parts = inlineText
-        .split(/[;,]/)
-        .map((s) => s.trim())
-        .filter(Boolean);
-      for (const part of parts) {
-        const pattern = part
-          .trim()
-          .toLowerCase()
-          .replaceAll(/[^a-z0-9\s-]/g, "")
-          .replaceAll(/\s+/g, "-")
-          .slice(0, 60);
-        if (
-          pattern &&
-          pattern.length > 3 &&
-          !PATTERN_SKIP.has(pattern) &&
-          !review.patterns.includes(pattern)
-        ) {
-          review.patterns.push(pattern);
-        }
-      }
-    }
-
-    // Format 4: bullet items under "Key Patterns" or "Patterns Identified" sections
-    // Line-by-line header search avoids Unicode length mismatch from toLowerCase()
-    const rawLines = raw.split("\n");
-    let sectionHeaderIdx = -1;
-    for (let li = 0; li < rawLines.length; li++) {
-      const lower = rawLines[li].toLowerCase();
-      if (lower.includes("**key patterns") || lower.includes("**patterns identified")) {
-        sectionHeaderIdx = li;
-        break;
-      }
-    }
-    let sectionBody = null;
-    if (sectionHeaderIdx >= 0) {
-      // Collect body lines after the header until a terminator
-      const bodyLines = [];
-      let scanned = 0;
-      for (let li = sectionHeaderIdx + 1; li < rawLines.length; li++) {
-        const t = rawLines[li].trimStart();
-        if (t.startsWith("**") || t.startsWith("---") || /^#{2,4}\s/.test(t)) break;
-        bodyLines.push(rawLines[li]);
-        scanned++;
-        if (scanned >= 200) break; // safety cap for missing terminators
-      }
-      sectionBody = bodyLines.join("\n");
-    }
-    if (sectionBody) {
-      // Line-by-line string parsing to avoid regex backtracking (S5852 two-strikes)
-      for (const bulletLine of sectionBody.split("\n")) {
-        const trimmed = bulletLine.trimStart();
-        if (!trimmed.startsWith("-")) continue;
-        // Strip leading "- " and optional bold markers "**"
-        let text = trimmed.slice(1).trimStart();
-        if (text.startsWith("**")) text = text.slice(2);
-        else if (text.startsWith("*")) text = text.slice(1);
-        // Stop at colon or star (captures pattern name only)
-        const colonIdx = text.indexOf(":");
-        const starIdx = text.indexOf("*");
-        if (colonIdx > 0 && (starIdx < 0 || colonIdx < starIdx)) text = text.slice(0, colonIdx);
-        else if (starIdx > 0) text = text.slice(0, starIdx);
-        const pattern = text
-          .trim()
-          .toLowerCase()
-          .replaceAll(/[^a-z0-9\s-]/g, "")
-          .replaceAll(/\s+/g, "-")
-          .slice(0, 60);
-        if (
-          pattern &&
-          pattern.length > 3 &&
-          !PATTERN_SKIP.has(pattern) &&
-          !review.patterns.includes(pattern)
-        ) {
-          review.patterns.push(pattern);
-        }
-      }
-    }
-
-    // Learnings from "Key Learnings" or "Lesson" sections
-    // Skip metadata lines that aren't actual learnings
-    const METADATA_MARKERS = [
-      "**Source:**",
-      "**PR/Branch:**",
-      "**Suggestions:**",
-      "**Resolution Stats:**",
-      "**Patterns Identified:**",
-      "**Rejected:**",
-      "**Resolution:**",
-      "**Deferred:**",
-    ];
-    const learningLines = raw.match(/[-*]\s+(?:`[^`]+`\s+)?[A-Z].{15,}/g) || [];
-    const seenLearnings = new Set();
-    for (const ll of learningLines.slice(0, 7)) {
-      const cleaned = ll.replace(/^[-*]\s+/, "").trim();
-      // Skip lines that are metadata headers, not learnings
-      const isMetadata = METADATA_MARKERS.some((marker) => cleaned.includes(marker));
-      if (
-        !isMetadata &&
-        cleaned.length > 20 &&
-        cleaned.length < 300 &&
-        !seenLearnings.has(cleaned)
-      ) {
-        review.learnings.push(cleaned);
-        seenLearnings.add(cleaned);
-      }
-    }
-
-    // Clean up
-    delete review._rawLines;
-    if (!review.date) review.date = "unknown";
-    if (!review.source) review.source = "manual";
   }
+}
 
+// Format 1+2: numbered/bullet items with bold text — `1. **Pattern**` or `- **Pattern**`.
+function applyBoldItemPatterns(review, raw) {
+  const boldItemMatches = raw.matchAll(/^(?:\d+\.|-)\s+\*\*([^*]+)\*\*/gm);
+  for (const m of boldItemMatches) pushReviewPatternIfNew(review, m[1]);
+}
+
+// Format 3: inline `**Pattern(s):** foo; bar; baz` list.
+function applyInlinePatterns(review, raw) {
+  const inlineMatch = raw.match(/\*\*Patterns?:?\*\*:?\s+([^\n]+)/i);
+  if (!inlineMatch) return;
+  const parts = inlineMatch[1]
+    .trim()
+    .split(/[;,]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  for (const part of parts) pushReviewPatternIfNew(review, part);
+}
+
+// Locate the "Key Patterns" / "Patterns Identified" section body (raw text
+// between the header line and the next terminator). Returns null on miss.
+function findPatternsSectionBody(rawLines) {
+  let headerIdx = -1;
+  for (let li = 0; li < rawLines.length; li++) {
+    const lower = rawLines[li].toLowerCase();
+    if (lower.includes("**key patterns") || lower.includes("**patterns identified")) {
+      headerIdx = li;
+      break;
+    }
+  }
+  if (headerIdx < 0) return null;
+  const bodyLines = [];
+  let scanned = 0;
+  for (let li = headerIdx + 1; li < rawLines.length; li++) {
+    const trimmed = rawLines[li].trimStart();
+    if (trimmed.startsWith("**") || trimmed.startsWith("---") || /^#{2,4}\s/.test(trimmed)) break;
+    bodyLines.push(rawLines[li]);
+    scanned++;
+    if (scanned >= 200) break;
+  }
+  return bodyLines.join("\n");
+}
+
+// Pull the pattern name out of one `- Pattern name: description` bullet line.
+function extractPatternFromBulletLine(bulletLine) {
+  const trimmed = bulletLine.trimStart();
+  if (!trimmed.startsWith("-")) return null;
+  let text = trimmed.slice(1).trimStart();
+  if (text.startsWith("**")) text = text.slice(2);
+  else if (text.startsWith("*")) text = text.slice(1);
+  const colonIdx = text.indexOf(":");
+  const starIdx = text.indexOf("*");
+  if (colonIdx > 0 && (starIdx < 0 || colonIdx < starIdx)) return text.slice(0, colonIdx);
+  if (starIdx > 0) return text.slice(0, starIdx);
+  return text;
+}
+
+// Format 4: bullets beneath a "Key Patterns" / "Patterns Identified" section.
+function applySectionBodyPatterns(review, raw) {
+  const rawLines = raw.split("\n");
+  const sectionBody = findPatternsSectionBody(rawLines);
+  if (!sectionBody) return;
+  for (const bulletLine of sectionBody.split("\n")) {
+    const patternText = extractPatternFromBulletLine(bulletLine);
+    if (patternText) pushReviewPatternIfNew(review, patternText);
+  }
+}
+
+// Pull up to 7 "Key Learnings"-style bullet lines out of raw text.
+function applyReviewLearnings(review, raw) {
+  const learningLines = raw.match(/[-*]\s+(?:`[^`]+`\s+)?[A-Z].{15,}/g) || [];
+  const seenLearnings = new Set();
+  for (const ll of learningLines.slice(0, 7)) {
+    const cleaned = ll.replace(/^[-*]\s+/, "").trim();
+    const isMetadata = REVIEW_LEARNING_METADATA_MARKERS.some((marker) => cleaned.includes(marker));
+    if (isMetadata) continue;
+    if (cleaned.length <= 20 || cleaned.length >= 300) continue;
+    if (seenLearnings.has(cleaned)) continue;
+    review.learnings.push(cleaned);
+    seenLearnings.add(cleaned);
+  }
+}
+
+// Second-pass enrichment: run every extractor against the review's raw lines
+// and then drop the `_rawLines` scratch field.
+function enrichReviewFromRawLines(review) {
+  const raw = review._rawLines.join("\n");
+  const source = extractReviewSource(raw);
+  if (source) review.source = source;
+  const prMatch = raw.match(/PR\s*#(\d+)/);
+  if (prMatch) review.pr = Number.parseInt(prMatch[1], 10);
+  Object.assign(review, extractReviewResolutionCounts(raw));
+  applyReviewSeverityBreakdown(review, raw);
+  applyBoldItemPatterns(review, raw);
+  applyInlinePatterns(review, raw);
+  applySectionBodyPatterns(review, raw);
+  applyReviewLearnings(review, raw);
+  delete review._rawLines;
+  if (!review.date) review.date = "unknown";
+  if (!review.source) review.source = "manual";
+}
+
+/**
+ * Parse reviews from the markdown learning log.
+ * Extracts: id, date, title, source, pr, patterns, fixed, deferred, learnings.
+ * Heavy lifting is delegated to the per-field extractors above so this
+ * orchestrator stays below the cognitive-complexity threshold.
+ */
+function parseMarkdownReviews(content) {
+  const reviews = splitContentIntoReviewBlocks(content);
+  for (const review of reviews) enrichReviewFromRawLines(review);
   return reviews;
 }
 
@@ -562,36 +604,43 @@ function rowHasRoundCell(cells) {
   return false;
 }
 
-function extractRetroAutomation(raw) {
-  const automationCandidates = [];
-  const lines = raw.split("\n");
+// Return true when a table-row cell is a usable automation-candidate name.
+function isCandidateNameCell(name) {
+  return Boolean(name) && !name.startsWith("---") && !name.startsWith("Pattern");
+}
 
-  for (const line of lines) {
+// Collect automation candidates from `| Pattern | Rounds | ... |` table rows.
+function collectCandidatesFromTableRows(raw, maxCount) {
+  const out = [];
+  for (const line of raw.split("\n")) {
+    if (out.length >= maxCount) break;
     const trimmed = line.trim();
     if (!trimmed.startsWith("|")) continue;
     const cells = trimmed.split("|");
-    if (!rowHasRoundCell(cells) || cells.length < 2) continue;
+    if (cells.length < 2 || !rowHasRoundCell(cells)) continue;
     const name = (cells[1] || "").trim();
-    if (
-      name &&
-      !name.startsWith("---") &&
-      !name.startsWith("Pattern") &&
-      automationCandidates.length < 10
-    ) {
-      automationCandidates.push(name);
-    }
+    if (isCandidateNameCell(name)) out.push(name);
   }
+  return out;
+}
 
-  // Also from "Automation candidates:" bullet/prose
+// Parse the `**Automation candidates:** foo, bar (~5 min), baz` prose list.
+function collectCandidatesFromInlineBullet(raw, maxCount) {
   const autoBullet = raw.match(/\*\*Automation candidates:\*\*\s*([^\n]+)/);
-  if (autoBullet && automationCandidates.length === 0) {
-    const items = autoBullet[1].split(/,\s*/);
-    for (const item of items.slice(0, 10)) {
-      const cleaned = item.replace(/\(~?\d+\s*min\)/, "").trim();
-      if (cleaned) automationCandidates.push(cleaned);
-    }
+  if (!autoBullet) return [];
+  const out = [];
+  for (const item of autoBullet[1].split(/,\s*/).slice(0, maxCount)) {
+    const cleaned = item.replace(/\(~?\d+\s*min\)/, "").trim();
+    if (cleaned) out.push(cleaned);
   }
+  return out;
+}
 
+function extractRetroAutomation(raw) {
+  const MAX_CANDIDATES = 10;
+  const fromTable = collectCandidatesFromTableRows(raw, MAX_CANDIDATES);
+  const automationCandidates =
+    fromTable.length > 0 ? fromTable : collectCandidatesFromInlineBullet(raw, MAX_CANDIDATES);
   return { automationCandidates };
 }
 
@@ -699,36 +748,62 @@ function enrichRetroEntries(retros) {
  * Parse PR retrospective entries from the markdown.
  * Finds ### PR #N Retrospective sections and extracts structured data.
  */
-function parseRetrospectives(content) {
+// Parse a `### PR #N Retrospective (YYYY-MM-DD)` heading, or return null.
+function parseRetroHeading(line) {
+  const retroMatch = line.match(/^###\s+PR\s+#(\d+)\s+Retrospective\s*\((\d{4}-\d{2}-\d{2})\)/);
+  if (!retroMatch) return null;
+  return createRetroEntry(retroMatch[1], retroMatch[2]);
+}
+
+// Classify one line during the retrospective block scan. Returns a tag so the
+// outer loop stays below cognitive-complexity threshold.
+function classifyRetroLine(line, inFence) {
+  if (line.trim().startsWith("```")) return { kind: "fence-toggle" };
+  if (inFence) return { kind: "skip" };
+  const heading = parseRetroHeading(line);
+  if (heading) return { kind: "heading", heading };
+  if (isSectionEndHeading(line)) return { kind: "section-end" };
+  return { kind: "body" };
+}
+
+// Apply one classified retro line to the accumulating (retros, current) state.
+// Returns the new `current` block (or null) and mutates retros in place.
+function applyClassifiedRetroLine(classified, line, current, retros) {
+  switch (classified.kind) {
+    case "heading":
+      if (current) retros.push(current);
+      return classified.heading;
+    case "section-end":
+      if (current) retros.push(current);
+      return null;
+    case "body":
+      if (current) current._rawLines.push(line);
+      return current;
+    default:
+      return current;
+  }
+}
+
+// Split markdown content into retrospective blocks with unparsed _rawLines.
+function splitContentIntoRetroBlocks(content) {
   const retros = [];
-  const lines = content.split("\n");
   let current = null;
   let inFence = false;
-
-  for (const line of lines) {
-    if (line.trim().startsWith("```")) {
+  for (const line of content.split("\n")) {
+    const classified = classifyRetroLine(line, inFence);
+    if (classified.kind === "fence-toggle") {
       inFence = !inFence;
       continue;
     }
-    if (inFence) continue;
-
-    const retroMatch = line.match(/^###\s+PR\s+#(\d+)\s+Retrospective\s*\((\d{4}-\d{2}-\d{2})\)/);
-    if (retroMatch) {
-      if (current) retros.push(current);
-      current = createRetroEntry(retroMatch[1], retroMatch[2]);
-      continue;
-    }
-
-    if (current && isSectionEndHeading(line)) {
-      retros.push(current);
-      current = null;
-      continue;
-    }
-
-    if (current) current._rawLines.push(line);
+    if (classified.kind === "skip") continue;
+    current = applyClassifiedRetroLine(classified, line, current, retros);
   }
-
   if (current) retros.push(current);
+  return retros;
+}
+
+function parseRetrospectives(content) {
+  const retros = splitContentIntoRetroBlocks(content);
   enrichRetroEntries(retros);
   return retros;
 }
@@ -777,6 +852,99 @@ function loadArchiveContent() {
   return combined;
 }
 
+// Back up the existing reviews.jsonl beside itself (symlink-guarded, atomic).
+function backupReviewsFile() {
+  if (!existsSync(REVIEWS_FILE)) return;
+  const bakPath = REVIEWS_FILE + ".bak";
+  try {
+    // Guard the SOURCE, not just the destination: if REVIEWS_FILE itself is
+    // a symlink (deliberately or accidentally planted), copyFileSync would
+    // follow it and copy whatever the link targets into our .bak — exactly
+    // the data-exposure risk Qodo flagged in R3 compliance.
+    if (lstatSync(REVIEWS_FILE).isSymbolicLink()) {
+      log("  ⚠️ Refusing to back up: source is a symlink (continuing anyway)");
+      return;
+    }
+    if (!isSafeToWrite(bakPath)) {
+      log("  ⚠️ Refusing to write backup: symlink detected (continuing anyway)");
+      return;
+    }
+    // Use copyFileSync instead of readFileSync + atomicWriteFileSync — avoids
+    // loading the entire reviews.jsonl into memory for the backup (Qodo 7/10
+    // on large-file efficiency).
+    copyFileSync(REVIEWS_FILE, bakPath);
+    log(`  📦 Backup: reviews.jsonl.bak`);
+  } catch {
+    log("  ⚠️ Could not create backup (continuing anyway)");
+  }
+}
+
+// Deduplicate reviews by numeric id (first occurrence wins) and sort ascending.
+function dedupeAndSortReviews(reviews) {
+  const seenReviewIds = new Set();
+  const out = [];
+  for (const r of reviews) {
+    if (seenReviewIds.has(r.id)) continue;
+    seenReviewIds.add(r.id);
+    out.push(r);
+  }
+  out.sort((a, b) => a.id - b.id);
+  return out;
+}
+
+// Deduplicate retros by (pr, date) — retro.id may be undefined — and sort by pr.
+function dedupeAndSortRetros(retros) {
+  const seen = new Set();
+  const out = [];
+  for (const r of retros) {
+    const key = `retrospective:${String(r.pr ?? "")}:${String(r.date ?? "")}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(r);
+  }
+  // Use a finite-number-safe comparator so malformed pr values (Number.NaN,
+  // Infinity) don't produce unstable sort order.
+  out.sort((a, b) => {
+    const aPr = typeof a.pr === "number" && Number.isFinite(a.pr) ? a.pr : Number.POSITIVE_INFINITY;
+    const bPr = typeof b.pr === "number" && Number.isFinite(b.pr) ? b.pr : Number.POSITIVE_INFINITY;
+    return aPr - bPr;
+  });
+  return out;
+}
+
+// Print the coverage summary lines for a successfully-rebuilt reviews.jsonl.
+function logRepairCoverage(dedupedReviews, dedupedRetros) {
+  log(`  ✅ Rebuilt reviews.jsonl:`);
+  const firstId = dedupedReviews[0]?.id ?? "?";
+  const lastId = dedupedReviews.at(-1)?.id ?? "?";
+  log(`     Reviews: ${dedupedReviews.length} (IDs: #${firstId}-#${lastId})`);
+  // Filter out malformed PR numbers (non-finite Number.NaN / Infinity are
+  // tolerated by dedupeAndSortRetros via the finite-number comparator, but
+  // must not appear in the human-readable summary as a literal "#" + Number.NaN
+  // token). Report the invalid count separately so the total still adds up.
+  const validPrs = dedupedRetros
+    .map((r) => r.pr)
+    .filter((pr) => typeof pr === "number" && Number.isFinite(pr));
+  const invalidCount = dedupedRetros.length - validPrs.length;
+  const prList = validPrs.map((pr) => "#" + pr).join(", ");
+  const malformedSuffix = invalidCount > 0 ? ` (+${invalidCount} malformed)` : "";
+  let prSummary;
+  if (prList !== "") {
+    prSummary = prList + malformedSuffix;
+  } else if (invalidCount > 0) {
+    prSummary = `${invalidCount} malformed`;
+  } else {
+    prSummary = "none";
+  }
+  log(`     Retros:  ${dedupedRetros.length} (PRs: ${prSummary})`);
+  const withPatterns = dedupedReviews.filter((r) => r.patterns.length > 0);
+  log(`     Patterns: ${withPatterns.length}/${dedupedReviews.length} entries have patterns`);
+  const withSeverity = dedupedReviews.filter((r) => r.critical + r.major + r.minor + r.trivial > 0);
+  log(`     Severity data: ${withSeverity.length}/${dedupedReviews.length} entries have breakdown`);
+  const withLearnings = dedupedReviews.filter((r) => r.learnings.length > 0);
+  log(`     Learnings: ${withLearnings.length}/${dedupedReviews.length} entries have learnings`);
+}
+
 /**
  * Handle --repair mode: full rebuild of reviews.jsonl from markdown.
  * Reads from both the active log AND archive files for complete coverage.
@@ -795,53 +963,15 @@ function runRepairMode(content) {
     mkdirSync(stateDir, { recursive: true });
   }
 
-  // Back up existing file (with symlink guard and atomic write)
-  if (existsSync(REVIEWS_FILE)) {
-    const bakPath = REVIEWS_FILE + ".bak";
-    try {
-      if (isSafeToWrite(bakPath)) {
-        atomicWriteFileSync(bakPath, readFileSync(REVIEWS_FILE, "utf8"));
-        log(`  📦 Backup: reviews.jsonl.bak`);
-      } else {
-        log("  ⚠️ Refusing to write backup: symlink detected (continuing anyway)");
-      }
-    } catch {
-      log("  ⚠️ Could not create backup (continuing anyway)");
-    }
-  }
+  backupReviewsFile();
 
-  // Load from active log + all archive files for complete coverage
-  // Active log first: wins dedup on ID collisions (newer data takes priority)
-  const archiveContent = loadArchiveContent();
-  const combinedContent = content + "\n" + archiveContent;
+  // Load from active log + all archive files for complete coverage.
+  // Active log first: wins dedup on ID collisions (newer data takes priority).
+  const combinedContent = content + "\n" + loadArchiveContent();
   log(`  📚 Reading from active log + archive files`);
 
-  const reviews = parseMarkdownReviews(combinedContent);
-  const retros = parseRetrospectives(combinedContent);
-
-  // Deduplicate by ID (archives may have overlapping entries due to number collisions)
-  const seenReviewIds = new Set();
-  const dedupedReviews = [];
-  for (const r of reviews) {
-    if (!seenReviewIds.has(r.id)) {
-      seenReviewIds.add(r.id);
-      dedupedReviews.push(r);
-    }
-  }
-
-  const seenRetroKeys = new Set();
-  const dedupedRetros = [];
-  for (const r of retros) {
-    // Composite key: r.id may be undefined for retros; use pr+date for uniqueness
-    const key = `retrospective:${String(r.pr ?? "")}:${String(r.date ?? "")}`;
-    if (!seenRetroKeys.has(key)) {
-      seenRetroKeys.add(key);
-      dedupedRetros.push(r);
-    }
-  }
-  // Sort by numeric id, retros go after reviews
-  dedupedReviews.sort((a, b) => a.id - b.id);
-  dedupedRetros.sort((a, b) => a.pr - b.pr);
+  const dedupedReviews = dedupeAndSortReviews(parseMarkdownReviews(combinedContent));
+  const dedupedRetros = dedupeAndSortRetros(parseRetrospectives(combinedContent));
 
   const allLines = [...dedupedReviews, ...dedupedRetros].map((r) => JSON.stringify(r));
   try {
@@ -852,26 +982,7 @@ function runRepairMode(content) {
     return;
   }
 
-  log(`  ✅ Rebuilt reviews.jsonl:`);
-  log(
-    `     Reviews: ${dedupedReviews.length} (IDs: #${dedupedReviews[0]?.id || "?"}-#${dedupedReviews.at(-1)?.id || "?"})`
-  );
-  log(
-    `     Retros:  ${dedupedRetros.length} (PRs: ${dedupedRetros.map((r) => "#" + r.pr).join(", ") || "none"})`
-  );
-
-  // Report pattern coverage
-  const withPatterns = dedupedReviews.filter((r) => r.patterns.length > 0);
-  log(`     Patterns: ${withPatterns.length}/${dedupedReviews.length} entries have patterns`);
-
-  // Report severity coverage
-  const withSeverity = dedupedReviews.filter((r) => r.critical + r.major + r.minor + r.trivial > 0);
-  log(`     Severity data: ${withSeverity.length}/${dedupedReviews.length} entries have breakdown`);
-
-  // Report learnings quality
-  const withLearnings = dedupedReviews.filter((r) => r.learnings.length > 0);
-  log(`     Learnings: ${withLearnings.length}/${dedupedReviews.length} entries have learnings`);
-
+  logRepairCoverage(dedupedReviews, dedupedRetros);
   process.exitCode = 0;
 }
 
@@ -882,15 +993,12 @@ function loadExistingRetroIds() {
   const ids = new Set();
   if (!existsSync(REVIEWS_FILE)) return ids;
   try {
-    const jsonlContent = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
+    const jsonlContent = readTextWithSizeGuard(REVIEWS_FILE).replaceAll("\r\n", "\n").trim();
     if (!jsonlContent) return ids;
     for (const line of jsonlContent.split("\n")) {
-      try {
-        const obj = JSON.parse(line);
-        if (typeof obj.id === "string" && obj.id.startsWith("retro-")) ids.add(obj.id);
-      } catch {
-        /* skip */
-      }
+      const obj = safeParseLine(line);
+      if (!obj) continue;
+      if (typeof obj.id === "string" && obj.id.startsWith("retro-")) ids.add(obj.id);
     }
   } catch {
     /* skip */
@@ -948,19 +1056,17 @@ function parseNumericId(id) {
  * Returns a Map<number, object>. Skips malformed lines silently.
  */
 function loadExistingReviewObjects() {
+  const { safeParseLine } = require("../lib/parse-jsonl-line");
   const existingById = new Map();
   if (!existsSync(REVIEWS_FILE)) return existingById;
   try {
-    const jsonlRaw = readFileSync(REVIEWS_FILE, "utf8").replaceAll("\r\n", "\n").trim();
+    const jsonlRaw = readTextWithSizeGuard(REVIEWS_FILE).replaceAll("\r\n", "\n").trim();
     if (jsonlRaw) {
-      for (const line of jsonlRaw.split("\n")) {
-        try {
-          const obj = JSON.parse(line);
-          const idNum = parseNumericId(obj.id);
-          if (Number.isFinite(idNum)) existingById.set(idNum, obj);
-        } catch {
-          /* skip malformed */
-        }
+      for (const rawLine of jsonlRaw.split("\n")) {
+        const obj = safeParseLine(rawLine);
+        if (!obj) continue;
+        const idNum = parseNumericId(obj.id);
+        if (Number.isFinite(idNum)) existingById.set(idNum, obj);
       }
     }
   } catch {

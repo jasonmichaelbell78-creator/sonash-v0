@@ -74,8 +74,50 @@ const JSON_OUTPUT = process.argv.includes("--json");
 const registry = loadRegistry({ verbose: VERBOSE });
 const baselineEntries = loadBaseline({ verbose: VERBOSE });
 
+// ---- Load intentional-divergence registry ----
+// Functions listed here are INTENTIONALLY not kept in sync across copies —
+// e.g., canonical-only helpers whose skill-copy variants were trimmed, or
+// local helpers that happen to share a name with a canonical function.
+// check-propagation.js filters misses against this list as a second pass
+// after baseline filtering.
+const DIVERGENCE_PATH = join(
+  __dirname,
+  "..",
+  ".claude",
+  "config",
+  "propagation-intentional-divergence.json"
+);
+function loadDivergenceRegistry() {
+  try {
+    const st = lstatSync(DIVERGENCE_PATH);
+    if (st.isSymbolicLink()) return { entries: [] };
+    const raw = readFileSync(DIVERGENCE_PATH, "utf8");
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed.entries) ? parsed : { entries: [] };
+  } catch {
+    // Missing or malformed file — treat as empty (divergence registry is opt-in)
+    return { entries: [] };
+  }
+}
 /** Normalize path separators for cross-platform comparison */
 const toPosixPath = (filePath) => String(filePath).replaceAll("\\", "/");
+
+const divergenceRegistry = loadDivergenceRegistry();
+const divergenceByFunc = new Map();
+for (const entry of divergenceRegistry.entries) {
+  if (!entry || typeof entry.funcName !== "string") continue;
+  const files = Array.isArray(entry.files) ? entry.files.map((f) => toPosixPath(f)) : [];
+  divergenceByFunc.set(entry.funcName, new Set(files));
+}
+/**
+ * True if `funcName` appearing in `file` is an intentional divergence,
+ * i.e., the registry declares this file as a known-independent copy.
+ */
+function isIntentionalDivergence(funcName, file) {
+  const files = divergenceByFunc.get(funcName);
+  if (!files) return false;
+  return files.has(toPosixPath(file));
+}
 
 /** Convert repo-relative paths into an FS-friendly path */
 const toFsPath = (filePath) =>
@@ -150,6 +192,22 @@ const GENERIC_NAMES = new Set([
   "info",
   "debug",
   "trace",
+  // JavaScript keywords / built-ins that look like function calls in the
+  // `+ <word>(args) {` regex at extractModifiedFunctions() (line 224). Without
+  // these, `switch (x) {`, `return someExpr(y)`, etc. are captured as "function
+  // definitions" and every file containing that keyword becomes a propagation
+  // miss. Only ≥6-char tokens matter (MIN_FUNC_NAME_LENGTH gates the rest).
+  "switch",
+  "return",
+  "typeof",
+  "import",
+  "export",
+  "static",
+  "default",
+  "continue",
+  "function",
+  "debugger",
+  "instanceof",
 ]);
 
 /**
@@ -200,7 +258,10 @@ function parseDiff(diffOutput) {
     if (!filePath.endsWith(".js") && !filePath.endsWith(".mjs")) continue;
     if (!SEARCH_DIRS.some((dir) => filePath.startsWith(dir))) continue;
 
-    const funcNames = extractModifiedFunctions(fileDiff);
+    // Only consider `added` (new or still-present) definitions for the
+    // propagation-miss analyzer. Pure deletions are intentional removals
+    // and must not be reported as "function out of sync across copies".
+    const { added: funcNames } = extractModifiedFunctions(fileDiff);
     if (funcNames.size > 0) {
       files.set(filePath, funcNames);
     }
@@ -209,47 +270,69 @@ function parseDiff(diffOutput) {
 }
 
 /**
- * Extract function names from diff hunks (only from modified lines).
+ * Extract function names from diff hunks, separating added (or still-present)
+ * definitions from pure-deletion definitions.
+ *
+ * Returns `{ added: Set, removedOnly: Set }`. The miss-detection analyzer
+ * should only consider `added` — a function that was DELETED from a file and
+ * still lives in other files is an intentional removal, not a propagation
+ * miss. The old implementation merged both sets and produced false positives
+ * on every commit that deleted a shared helper from one of multiple copies
+ * (observed in PR #507 R1 when trimming DEBT_DIR writers from 8 safe-fs.js
+ * skill copies).
  */
-function extractModifiedFunctions(diffContent) {
-  const funcNames = new Set();
+// Regex sets for extractModifiedFunctions, lifted out of the function body so
+// each call to extractModifiedFunctions reuses the same compiled literals and
+// the function itself stays below the cognitive-complexity ceiling.
+// NOTE: comments here deliberately avoid writing out the literal
+// `function <name>(` form, because this file is parsed by its own
+// extractModifiedFunctions during pre-push, and prose examples would
+// otherwise be matched as spurious added/removed function declarations.
+const ADD_FUNCTION_PATTERNS = [
+  // Added-line function declarations
+  /^\+.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
+  // Added-line const/let/var assignments to a function or arrow
+  /^\+.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
+  // Added-line method definitions in objects/classes
+  /^\+\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*\{/gm,
+  // Added-line export function declarations (default or named)
+  /^\+.*\bexport\s+(?:default\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
+];
 
-  // Patterns to match function definitions in added/modified lines
-  const patterns = [
-    // function declarations: function loadJsonl(
-    /^\+.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
-    // const/let/var assignments: const loadJsonl = function/arrow
-    /^\+.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
-    // Method definitions in objects/classes: loadJsonl(args) { or loadJsonl: function
-    /^\+\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*\{/gm,
-    // Export function: export function loadJsonl(
-    /^\+.*\bexport\s+(?:default\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
-  ];
+const REMOVE_FUNCTION_PATTERNS = [
+  /^-.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
+  /^-.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
+];
 
+/**
+ * Collect function names matched by `patterns` from `diffContent`, filtered
+ * against MIN_FUNC_NAME_LENGTH and GENERIC_NAMES. Extracted so
+ * extractModifiedFunctions stays below the cognitive-complexity ceiling.
+ */
+function collectFunctionNamesFromDiff(diffContent, patterns) {
+  const names = new Set();
   for (const pattern of patterns) {
     for (const match of diffContent.matchAll(pattern)) {
       const name = match[1];
       if (name.length >= MIN_FUNC_NAME_LENGTH && !GENERIC_NAMES.has(name)) {
-        funcNames.add(name);
+        names.add(name);
       }
     }
   }
+  return names;
+}
 
-  // Also extract function names from removed lines (context for what was changed)
-  const removePatterns = [
-    /^-.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
-    /^-.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
-  ];
-  for (const pattern of removePatterns) {
-    for (const match of diffContent.matchAll(pattern)) {
-      const name = match[1];
-      if (name.length >= MIN_FUNC_NAME_LENGTH && !GENERIC_NAMES.has(name)) {
-        funcNames.add(name);
-      }
-    }
+function extractModifiedFunctions(diffContent) {
+  const added = collectFunctionNamesFromDiff(diffContent, ADD_FUNCTION_PATTERNS);
+  const removedAny = collectFunctionNamesFromDiff(diffContent, REMOVE_FUNCTION_PATTERNS);
+
+  // removedOnly = removed but not also added (pure deletions)
+  const removedOnly = new Set();
+  for (const name of removedAny) {
+    if (!added.has(name)) removedOnly.add(name);
   }
 
-  return funcNames;
+  return { added, removedOnly };
 }
 
 /**
@@ -600,12 +683,15 @@ function analyze() {
 // ---- Main ----
 const { misses, total, patternWarnings, triggeredPatterns, duration_ms } = analyze();
 
-// Filter out baselined violations using shared isBaselined()
+// Filter out baselined violations using shared isBaselined(), then filter
+// out intentional-divergence entries so the two-layer suppression composes.
 const newMisses = misses
   .map((m) => ({
     ...m,
     missedIn: m.missedIn.filter(
-      (loc) => !isBaselined(baselineEntries, "function", m.funcName, loc.file)
+      (loc) =>
+        !isBaselined(baselineEntries, "function", m.funcName, loc.file) &&
+        !isIntentionalDivergence(m.funcName, loc.file)
     ),
   }))
   .filter((m) => m.missedIn.length > 0);

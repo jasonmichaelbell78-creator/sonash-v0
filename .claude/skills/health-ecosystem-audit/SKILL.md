@@ -246,7 +246,7 @@ History: `.claude/state/health-ecosystem-audit-history.jsonl`
    consumed by `/alerts` for the Test Health category.
 3. **Invocation tracking** (MUST):
    ```bash
-   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"health-ecosystem-audit","type":"skill","success":true,"context":{"score":SCORE,"grade":"GRADE"}}'
+   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"health-ecosystem-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"score":SCORE,"grade":"GRADE"}}'
    ```
 4. **Closure signal** (MUST): List all artifacts
 5. **Cleanup** (SHOULD): Delete progress file

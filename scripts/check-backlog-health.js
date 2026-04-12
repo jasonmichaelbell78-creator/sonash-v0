@@ -18,6 +18,10 @@
  */
 
 import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
+
+const requireForJsonl = createRequire(import.meta.url);
+const { safeParseLineWithError } = requireForJsonl("./lib/parse-jsonl-line");
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -47,10 +51,8 @@ function parseSingleEntry(line) {
     return { error: `Line too large (${line.length} chars)` };
   }
 
-  let entry;
-  try {
-    entry = JSON.parse(line);
-  } catch {
+  const { value: entry, error: parseErr } = safeParseLineWithError(line);
+  if (parseErr) {
     return { error: "Invalid JSON" };
   }
 

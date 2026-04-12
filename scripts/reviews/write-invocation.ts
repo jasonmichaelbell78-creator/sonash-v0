@@ -30,11 +30,21 @@ function findProjectRoot(startDir: string): string {
 /**
  * Write a validated InvocationRecord to invocations.jsonl.
  *
- * Auto-assigns id as `inv-{timestamp}` if no id provided.
- * Auto-assigns date as today (YYYY-MM-DD) if no date provided.
+ * Auto-fills the following BaseRecord fields when the caller omits them:
+ *   - id              -> `inv-{timestamp}-{pid}-{seq}`
+ *   - date            -> today (YYYY-MM-DD)
+ *   - schema_version  -> 1
+ *   - completeness    -> "stub"
+ *   - origin          -> { type: "manual" }
+ *
+ * The schema_version/completeness/origin defaults exist so legacy skill
+ * snippets (predating the BaseRecord schema bump) keep working without a
+ * coordinated 18-skill sweep. Callers SHOULD still pass explicit values when
+ * they have them — see .claude/skills/_shared/SKILL_STANDARDS.md "Invocation
+ * Tracking" for the canonical caller snippet. (T32 fix.)
  *
  * @param projectRoot - Absolute path to project root
- * @param data - Invocation data (id and date auto-assigned if missing)
+ * @param data - Invocation data (id, date, and BaseRecord fields auto-filled if missing)
  * @returns The validated record that was written
  */
 export function writeInvocation(
@@ -45,6 +55,9 @@ export function writeInvocation(
     ...data,
     id: data.id ?? `inv-${Date.now()}-${process.pid}-${++__invSeq}`,
     date: data.date ?? new Date().toISOString().slice(0, 10),
+    schema_version: data.schema_version ?? 1,
+    completeness: data.completeness ?? "stub",
+    origin: data.origin ?? { type: "manual" },
   };
 
   const validated = InvocationRecord.parse(recordData);

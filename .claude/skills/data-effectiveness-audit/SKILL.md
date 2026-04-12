@@ -301,7 +301,7 @@ Re-run scoring to confirm improvements:
 1. **Auto-learnings** (MUST): 2-3 data-driven insights about system health.
 2. **Invocation tracking** (MUST):
    ```bash
-   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"data-effectiveness-audit","type":"skill","success":true,"context":{"score":SCORE,"grade":"GRADE"}}'
+   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"data-effectiveness-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"score":SCORE,"grade":"GRADE"}}'
    ```
 3. **Closure signal** (MUST): List all artifacts created/modified.
 4. **Cleanup** (SHOULD): Remove any temporary files.

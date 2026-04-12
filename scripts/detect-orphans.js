@@ -18,8 +18,9 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 const { buildGraph, walkDir, resolveAsFilePath, ROOT } = require("./lib/reference-graph.js");
 const { sanitizeError } = require("./lib/sanitize-error.js");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 const { validatePathInDir } = require("./lib/security-helpers.js");
-const { safeWriteFileSync } = require("./lib/safe-fs.js");
+const { safeWriteFileSync, readTextWithSizeGuard } = require("./lib/safe-fs.js");
 
 const FINDINGS_PATH = path.join(ROOT, ".planning", "orphan-detection", "findings.jsonl");
 const TODOS_PATH = path.join(ROOT, ".planning", "todos.jsonl");
@@ -590,16 +591,8 @@ function adjustConfidenceByRecency(finding) {
 function applyDiff(findings) {
   let previousFindings;
   try {
-    const raw = fs.readFileSync(FINDINGS_PATH, "utf8");
-    const lines = raw.trim().split("\n").filter(Boolean);
-    previousFindings = [];
-    for (const line of lines) {
-      try {
-        previousFindings.push(JSON.parse(line));
-      } catch {
-        // Skip malformed JSONL lines — keep diff resilient
-      }
-    }
+    const raw = readTextWithSizeGuard(FINDINGS_PATH);
+    previousFindings = raw.split("\n").map(safeParseLine).filter(Boolean);
   } catch {
     for (const f of findings) f.diffStatus = "NEW";
     return null;

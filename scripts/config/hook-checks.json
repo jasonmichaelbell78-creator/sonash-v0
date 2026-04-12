@@ -839,7 +839,7 @@
     {
       "id": "cyclomatic-cc",
       "name": "Cyclomatic Complexity",
-      "description": "Checks cyclomatic complexity (CC <= 15) on JS files in push diff via ESLint complexity rule",
+      "description": "Checks cyclomatic complexity (CC <= 15) on JS files in push diff via ESLint complexity rule. T39: exit 2 (script error) warns rather than blocks — harmonized with cognitive-cc.",
       "hook": "pre-push",
       "wave": 7,
       "command": "npx eslint --no-config-lookup --rule 'complexity: [error, 15]' --parser-options=ecmaVersion:2025 -- <files>",
@@ -849,7 +849,8 @@
       "skip_flag": "SKIP_CC",
       "exit_codes": {
         "0": "pass",
-        "1": "complexity violations (CC > 15) — violation"
+        "1": "complexity violations (CC > 15) — violation",
+        "2": "script error — warning (T39: non-blocking to match cognitive-cc)"
       },
       "condition": {
         "type": "staged_files_match",

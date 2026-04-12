@@ -18,6 +18,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync } = require("./lib/safe-fs");
 const { validatePathInDir } = require("./lib/security-helpers.js");
+const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 const ROOT = path.resolve(__dirname, ".."); // validatePathInDir: constant-path (no user input)
 const JSONL_PATH = path.join(ROOT, ".claude", "state", "hook-warnings-log.jsonl");
@@ -42,12 +43,17 @@ if (!ack.acknowledged || typeof ack.acknowledged !== "object") {
   process.exit(0);
 }
 
-// Read JSONL entries (refuse symlinks)
+// Read JSONL entries (refuse symlinks, cap oversize reads)
+const WARNINGS_LOG_MAX_BYTES = 2 * 1024 * 1024;
 let lines;
 try {
   const jsonlSt = fs.lstatSync(JSONL_PATH);
   if (jsonlSt.isSymbolicLink()) {
     console.log("Warnings log is symlinked — refusing to read");
+    process.exit(0);
+  }
+  if (jsonlSt.size > WARNINGS_LOG_MAX_BYTES) {
+    console.log(`Warnings log exceeds ${WARNINGS_LOG_MAX_BYTES} bytes — rotate before retry`);
     process.exit(0);
   }
   lines = fs.readFileSync(JSONL_PATH, "utf8").trim().split("\n").filter(Boolean);
@@ -63,13 +69,9 @@ const acknowledged = ack.acknowledged;
 const unresolvedTypes = new Set();
 let allTypesAcked = true;
 
-for (const line of lines) {
-  let entry;
-  try {
-    entry = JSON.parse(line);
-  } catch {
-    continue;
-  }
+for (const rawLine of lines) {
+  const entry = safeParseLine(rawLine);
+  if (!entry) continue;
 
   // Skip resolved
   if (entry.resolved) continue;
@@ -101,15 +103,12 @@ if (!allTypesAcked) {
   for (const type of unresolvedTypes) {
     const typeAckTime = acknowledged[type] ? new Date(acknowledged[type]).getTime() : 0;
     // Check if any entry of this type is after the type ack
-    const hasUnacked = lines.some((line) => {
-      try {
-        const e = JSON.parse(line);
-        if (e.resolved || e.type !== type) return false;
-        const t = new Date(e.timestamp).getTime();
-        return t > lastCleared && t > typeAckTime;
-      } catch {
-        return false;
-      }
+    const hasUnacked = lines.some((rawLine) => {
+      const e = safeParseLine(rawLine);
+      if (!e) return false;
+      if (e.resolved || e.type !== type) return false;
+      const t = new Date(e.timestamp).getTime();
+      return t > lastCleared && t > typeAckTime;
     });
     if (hasUnacked) unacked.push(type);
   }

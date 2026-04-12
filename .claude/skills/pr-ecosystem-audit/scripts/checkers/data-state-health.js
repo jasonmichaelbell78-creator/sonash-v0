@@ -28,6 +28,7 @@ const path = safeRequire("node:path");
 const { execFileSync } = safeRequire("node:child_process");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine, safeParseLineWithError } = safeRequire("../lib/parse-jsonl-line");
 
 const DOMAIN = "data_state_health";
 
@@ -86,17 +87,14 @@ function runSyncCheck(rootDir) {
  */
 function extractMaxReviewId(reviewLines) {
   return reviewLines.reduce((max, line) => {
-    try {
-      const entry = JSON.parse(line);
-      const id = typeof entry.id === "string" ? entry.id : "";
-      const reviewMatch = id.match(/review(?:[-_#\s])?(\d+)/i);
-      if (reviewMatch) return Math.max(max, parseInt(reviewMatch[1], 10));
-      const nums = id.match(/\d+/g);
-      const last = nums && nums.length > 0 ? nums[nums.length - 1] : null;
-      return last ? Math.max(max, parseInt(last, 10)) : max;
-    } catch {
-      return max;
-    }
+    const entry = safeParseLine(line);
+    if (!entry) return max;
+    const id = typeof entry.id === "string" ? entry.id : "";
+    const reviewMatch = id.match(/review(?:[-_#\s])?(\d+)/i);
+    if (reviewMatch) return Math.max(max, parseInt(reviewMatch[1], 10));
+    const nums = id.match(/\d+/g);
+    const last = nums && nums.length > 0 ? nums[nums.length - 1] : null;
+    return last ? Math.max(max, parseInt(last, 10)) : max;
   }, 0);
 }
 
@@ -150,8 +148,12 @@ function checkConsolidationPointer(rootDir) {
 function isStateFileValid(sf) {
   const content = fs.readFileSync(sf.path, "utf8");
   if (sf.type === "json") {
-    JSON.parse(content);
-    return true;
+    try {
+      JSON.parse(content);
+      return true;
+    } catch {
+      return false;
+    }
   }
   if (sf.type === "jsonl") {
     const lines = content
@@ -159,9 +161,9 @@ function isStateFileValid(sf) {
       .map((l) => l.replace(/\r$/, ""))
       .filter((l) => l.trim().length > 0);
     if (lines.length === 0) return false;
-    for (const line of lines) {
+    for (const rawLine of lines) {
       try {
-        JSON.parse(line);
+        JSON.parse(rawLine);
       } catch {
         return false;
       }
@@ -604,11 +606,8 @@ function checkArchiveRetentionHealth(rootDir, findings) {
 function countCorruptedJsonlLines(lines) {
   let corrupted = 0;
   for (const line of lines) {
-    try {
-      JSON.parse(line);
-    } catch {
-      corrupted++;
-    }
+    const { error } = safeParseLineWithError(line);
+    if (error) corrupted++;
   }
   return corrupted;
 }
@@ -657,12 +656,9 @@ function measureJsonlDrift(rootDir) {
     // Count only review entries (numeric id), not retros (string id like "retro-379")
     let jsonlReviewCount = 0;
     for (const line of lines) {
-      try {
-        const entry = JSON.parse(line);
-        if (typeof entry.id === "number") jsonlReviewCount++;
-      } catch {
-        // counted in corruptedLines
-      }
+      const entry = safeParseLine(line);
+      if (entry && typeof entry.id === "number") jsonlReviewCount++;
+      // parse errors already counted in corruptedLines
     }
     const markdownReviewCount = countMarkdownReviews(rootDir);
     const driftCount = Math.abs(jsonlReviewCount - markdownReviewCount);
@@ -687,16 +683,13 @@ function measurePatternCoverage(rootDir) {
     let totalReviews = 0;
     let withPatterns = 0;
     for (const line of lines) {
-      try {
-        const entry = JSON.parse(line);
-        // Only count actual reviews, not retros
-        if (entry.type === "retrospective") continue;
-        totalReviews++;
-        if (Array.isArray(entry.patterns) && entry.patterns.length > 0) {
-          withPatterns++;
-        }
-      } catch {
-        // skip corrupt lines
+      const entry = safeParseLine(line);
+      if (!entry) continue; // skip blank/corrupt lines
+      // Only count actual reviews, not retros
+      if (entry.type === "retrospective") continue;
+      totalReviews++;
+      if (Array.isArray(entry.patterns) && entry.patterns.length > 0) {
+        withPatterns++;
       }
     }
     const coveragePct = totalReviews > 0 ? Math.round((withPatterns / totalReviews) * 100) : 0;

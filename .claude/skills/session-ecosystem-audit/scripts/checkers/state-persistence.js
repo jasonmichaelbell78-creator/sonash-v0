@@ -29,6 +29,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "state_persistence";
 
@@ -321,10 +322,8 @@ function checkCommitLogIntegrity(stateDir, findings) {
 
   for (let i = 0; i < totalEntries; i++) {
     const line = lines[i];
-    let entry;
-    try {
-      entry = JSON.parse(line);
-    } catch {
+    const entry = safeParseLine(line);
+    if (!entry) {
       corruptLines++;
       continue;
     }
@@ -358,7 +357,7 @@ function checkCommitLogIntegrity(stateDir, findings) {
       domain: DOMAIN,
       severity: "error",
       message: `${corruptLines} corrupt JSON line(s) in commit-log.jsonl`,
-      details: `${corruptLines} of ${totalEntries} lines failed JSON.parse(). Data may have been truncated during write.`,
+      details: `${corruptLines} of ${totalEntries} lines failed to parse as JSON. Data may have been truncated during write.`,
       impactScore: 75,
       frequency: corruptLines,
       blastRadius: 3,

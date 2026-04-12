@@ -42,7 +42,7 @@ Accept empty / "none" to proceed. If provided, save to history JSONL
 ### 3. Invocation Tracking (MUST)
 
 ```bash
-cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"{audit-name}-ecosystem-audit","type":"skill","success":true,"context":{"score":SCORE,"grade":"GRADE"}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"{audit-name}-ecosystem-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"score":SCORE,"grade":"GRADE"}}'
 ```
 
 ### 4. Closure Signal (MUST)

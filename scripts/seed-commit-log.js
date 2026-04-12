@@ -15,11 +15,12 @@
  */
 
 // Core Node.js modules (try/catch satisfies pattern-compliance require guard)
-let fs, path, execFileSync;
+let fs, path, execFileSync, readTextWithSizeGuard;
 try {
   fs = require("node:fs");
   path = require("node:path");
   ({ execFileSync } = require("node:child_process"));
+  ({ readTextWithSizeGuard } = require("./lib/safe-fs"));
 } catch (err) {
   console.error("Failed to load core modules:", err instanceof Error ? err.message : String(err));
   process.exit(1);
@@ -51,6 +52,8 @@ try {
   process.exit(2);
 }
 
+const { safeParseLine } = require("./lib/parse-jsonl-line");
+
 // Symlink guard (Review #316-#323)
 let isSafeToWrite;
 try {
@@ -69,7 +72,7 @@ const count = isSync ? 500 : Math.max(1, Math.min(Number.parseInt(process.argv[2
  */
 function getSessionCounter() {
   try {
-    const content = fs.readFileSync(SESSION_CONTEXT, "utf8");
+    const content = readTextWithSizeGuard(SESSION_CONTEXT);
     // Pure string parsing — no regex (SonarCloud S5852 two-strikes)
     for (const line of content.split("\n")) {
       const lower = line.toLowerCase();
@@ -195,15 +198,12 @@ function writeEntries(entries) {
  */
 function findLastHash(lines) {
   for (let i = lines.length - 1; i >= 0; i--) {
-    const line = lines[i].trim();
-    if (!line.startsWith("{")) continue;
-    try {
-      const entry = JSON.parse(line);
-      const hash = entry && typeof entry === "object" ? entry.hash : null;
-      if (typeof hash === "string" && /^[\da-f]{7,40}$/i.test(hash)) return hash;
-    } catch {
-      continue;
-    }
+    const rawLine = lines[i];
+    if (!rawLine.trim().startsWith("{")) continue;
+    const entry = safeParseLine(rawLine);
+    if (!entry) continue;
+    const hash = typeof entry === "object" ? entry.hash : null;
+    if (typeof hash === "string" && /^[\da-f]{7,40}$/i.test(hash)) return hash;
   }
   return null;
 }

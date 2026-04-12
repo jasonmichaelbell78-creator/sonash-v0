@@ -50,13 +50,13 @@ export function calculateDistance(point1: Coordinates, point2: Coordinates): num
   const deltaLng = toRadians(point2.lng - point1.lng);
 
   // Haversine formula
-  const a =
+  const haversineA =
     Math.sin(deltaLat / 2) * Math.sin(deltaLat / 2) +
     Math.cos(lat1) * Math.cos(lat2) * Math.sin(deltaLng / 2) * Math.sin(deltaLng / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const angularDistance = 2 * Math.atan2(Math.sqrt(haversineA), Math.sqrt(1 - haversineA));
 
-  return EARTH_RADIUS_MILES * c;
+  return EARTH_RADIUS_MILES * angularDistance;
 }
 
 /**

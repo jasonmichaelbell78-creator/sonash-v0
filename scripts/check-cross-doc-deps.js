@@ -30,6 +30,8 @@ const { loadConfigWithRegex } = require("./config/load-config");
 const { validateSkipReason } = require("./lib/validate-skip-reason");
 const { safeWriteFile, validatePathInDir } = require("./lib/security-helpers");
 
+const HASH_COMMENT_EXTS = new Set(["sh", "bash", "zsh", "py", "rb", "yml", "yaml", "toml"]);
+
 // Parse arguments
 const args = process.argv.slice(2);
 const verbose = args.includes("--verbose");
@@ -198,8 +200,7 @@ function isTrivialChange(file) {
         // - status badge updates, date updates, version bumps
         // Note: # means "comment" in .sh/.yml/.py but "heading" in .md
         const ext = gitPath.split(".").pop()?.toLowerCase();
-        const hashIsComment =
-          ext && ["sh", "bash", "zsh", "py", "rb", "yml", "yaml", "toml"].includes(ext);
+        const hashIsComment = ext && HASH_COMMENT_EXTS.has(ext);
         // Check if a line is trivial (comment, whitespace, doc metadata)
         // Uses string checks for HTML comment markers to avoid CodeQL js/bad-tag-filter (Review #315)
         const isTrivialLine = (line) => {

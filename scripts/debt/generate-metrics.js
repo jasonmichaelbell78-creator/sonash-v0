@@ -20,6 +20,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, safeAppendFileSync } = require("../lib/safe-fs");
+const { isSafeToWrite } = require("../lib/security-helpers");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const BASE_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(BASE_DIR, "MASTER_DEBT.jsonl");
@@ -57,12 +59,11 @@ function loadMasterDebt() {
   const errors = [];
 
   for (let i = 0; i < lines.length; i++) {
-    try {
-      items.push(JSON.parse(lines[i]));
-    } catch (err) {
-      // Review #224: Safe error message access
-      const errMsg = err instanceof Error ? err.message : String(err);
-      errors.push({ line: i + 1, error: errMsg });
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      errors.push({ line: i + 1, error: error.message });
+    } else if (value) {
+      items.push(value);
     }
   }
 
@@ -335,6 +336,9 @@ ${Object.entries(metrics.by_source)
 function logMetricsGeneration(metrics) {
   try {
     if (!fs.existsSync(LOG_DIR)) {
+      if (!isSafeToWrite(LOG_DIR)) {
+        throw new Error(`Refusing to mkdir — parent path is unsafe: ${LOG_DIR}`);
+      }
       fs.mkdirSync(LOG_DIR, { recursive: true });
     }
 

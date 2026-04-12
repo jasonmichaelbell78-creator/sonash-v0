@@ -69,8 +69,17 @@ function collectMdReferences(dir) {
     /(?:^|\s)\/([a-z][\w-]*(?::[a-z][\w-]*)?)(?:\s|$|[.,;)])/gm,
     // Agent subagent_type references: subagent_type=name or subagent_type="name"
     /subagent_type\s*[=:]\s*["']?([A-Za-z][\w-]*)["']?/g,
-    // Spawn agent references: spawn/launch/use X agent
-    /(?:spawn|launch|use)\s+(?:the\s+)?[`"']?([a-z][\w-]+)[`"']?\s+agent/gi,
+    // Spawn agent references, split into 4 simpler patterns to stay under the
+    // SonarCloud S5852 regex-complexity threshold. Each targets one of the
+    // four optional shapes the combined pattern used to handle.
+    // (a) "spawn/launch/use the <name> agent"
+    /(?:spawn|launch|use)\s+the\s+([a-z][\w-]+)\s+agent/gi,
+    // (b) "spawn/launch/use <name> agent" (no "the", no quotes)
+    /(?:spawn|launch|use)\s+([a-z][\w-]+)\s+agent/gi,
+    // (c) "spawn/launch/use `<name>`/\"<name>\"/'<name>' agent" (quoted name)
+    /(?:spawn|launch|use)\s+[`"']([a-z][\w-]+)[`"']\s+agent/gi,
+    // (d) "spawn/launch/use the `<name>` agent" (the + quoted name)
+    /(?:spawn|launch|use)\s+the\s+[`"']([a-z][\w-]+)[`"']\s+agent/gi,
   ];
 
   for (const file of files) {

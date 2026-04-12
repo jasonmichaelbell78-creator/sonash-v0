@@ -88,13 +88,13 @@
     },
     {
       "id": "refuse-symlink",
-      "description": "Symlink rejection — use refuseSymlink(), isSafeToWrite(), or safeWriteFileSync()",
+      "description": "Symlink rejection — use refuseSymlink(), isSafeToWrite(), or safeWriteFileSync() for fs mutations",
       "pattern": "\\b(?:refuseSymlink\\w*|isSafeToWrite|safeWriteFileSync|safeAppendFileSync)\\s*\\(",
-      "antiPattern": null,
+      "antiPattern": "\\bfs\\.(?:appendFileSync|renameSync|truncateSync|copyFileSync|rmSync|unlinkSync)\\s*\\((?!.*(?:isSafeToWrite|safeWriteFileSync|safeAppendFileSync|refuseSymlink))",
       "searchGlob": ["scripts/**/*.js", ".claude/hooks/**/*.js"],
       "severity": "BLOCK",
-      "missDetection": "patternAbsence",
-      "source": "PR #397, #503 — symlink guard propagation (updated to recognize safe-fs variants)"
+      "missDetection": "antiPattern",
+      "source": "PR #397, #503 — symlink guard propagation. Updated PR #507 R1: switched from patternAbsence to antiPattern so parser-only files (parse-jsonl-line.js) that do zero file I/O no longer trigger. Pairs with safe-to-write which covers writeFileSync specifically."
     },
     {
       "id": "number-nan",

@@ -3,6 +3,8 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { readTextWithSizeGuard } = require("../lib/safe-fs");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 // Resolve paths relative to repo root
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
@@ -312,11 +314,11 @@ function checkEcosystemAuditDirectories() {
 
 function isValidJsonlFile(filePath) {
   try {
-    const content = fs.readFileSync(filePath, "utf8").trim();
+    const content = readTextWithSizeGuard(filePath).trim();
     if (!content) return true;
     const lines = content.split("\n").filter(Boolean);
-    JSON.parse(lines[0]);
-    if (lines.length > 1) JSON.parse(lines[lines.length - 1]);
+    if (safeParseLineWithError(lines[0]).error) return false;
+    if (lines.length > 1 && safeParseLineWithError(lines.at(-1)).error) return false;
     return true;
   } catch {
     return false;

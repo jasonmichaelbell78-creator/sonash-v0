@@ -37,6 +37,7 @@ const { sanitizeError } = require("../lib/security-helpers.js");
 const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
 const { validate } = require("../lib/analysis-schema.js");
 const { safeReadJson, safeReadText, validateCandidate } = require("../lib/safe-cas-io.js");
+const { safeParseLineWithError } = require("../lib/parse-jsonl-line");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -73,13 +74,12 @@ function loadJournal() {
   const entries = [];
   const lines = raw.split("\n");
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    try {
-      entries.push(JSON.parse(line));
-    } catch (err) {
-      console.warn(`  Journal line ${i + 1} parse error: ${sanitizeError(err)}`);
+    const { value, error } = safeParseLineWithError(lines[i]);
+    if (error) {
+      console.warn(`  Journal line ${i + 1} parse error: ${sanitizeError(error)}`);
+      continue;
     }
+    if (value) entries.push(value);
   }
   return entries;
 }

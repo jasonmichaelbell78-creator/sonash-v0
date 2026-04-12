@@ -378,7 +378,7 @@ function runSync() {
   const contentKeys = new Set();
   for (const rec of allRecords) {
     if (rec.pr && rec.date && typeof rec.total === "number") {
-      contentKeys.add(`${rec.pr}|${rec.date}|${rec.total}|${rec.fixed || 0}|${rec.rejected || 0}`);
+      contentKeys.add(`${rec.pr}|${rec.date}|${rec.total}|${rec.fixed ?? 0}|${rec.rejected ?? 0}`);
     }
   }
 
@@ -391,7 +391,7 @@ function runSync() {
     if (!idExists) {
       // Secondary check: content-based dedup (same PR + date + counts = same review)
       if (r.pr && r.date && typeof r.total === "number") {
-        const contentKey = `${r.pr}|${r.date}|${r.total}|${r.fixed || 0}|${r.rejected || 0}`;
+        const contentKey = `${r.pr}|${r.date}|${r.total}|${r.fixed ?? 0}|${r.rejected ?? 0}`;
         if (contentKeys.has(contentKey)) return []; // Already exists under a different ID
       }
       return [r];

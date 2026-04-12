@@ -27,6 +27,7 @@ const fs = safeRequire("node:fs");
 const path = safeRequire("node:path");
 const { scoreMetric } = safeRequire("../lib/scoring");
 const { BENCHMARKS } = safeRequire("../lib/benchmarks");
+const { safeParseLine } = safeRequire("../lib/parse-jsonl-line.js");
 
 const DOMAIN = "metrics_reporting";
 
@@ -64,10 +65,11 @@ function parseJsonl(content) {
     .map((l) => l.replace(/\r$/, ""))
     .filter((l) => l.trim().length > 0);
 
-  for (const line of lines) {
-    try {
-      items.push(JSON.parse(line));
-    } catch {
+  for (const rawLine of lines) {
+    const parsed = safeParseLine(rawLine);
+    if (parsed !== null) {
+      items.push(parsed);
+    } else {
       invalidCount++;
     }
   }
@@ -793,7 +795,7 @@ function checkAuditTrailCompleteness(rootDir, findings) {
         domain: DOMAIN,
         severity: "warning",
         message: `${logFile.name} has ${invalidCount} invalid JSON line${invalidCount === 1 ? "" : "s"}`,
-        details: `${invalidCount} of ${items.length + invalidCount} lines failed JSON.parse(). Audit trail integrity is degraded.`,
+        details: `${invalidCount} of ${items.length + invalidCount} lines failed to parse as JSON. Audit trail integrity is degraded.`,
         frequency: invalidCount,
         blastRadius: 2,
       });

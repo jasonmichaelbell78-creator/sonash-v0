@@ -11,10 +11,12 @@
 
 "use strict";
 
-let fs, path;
+let fs, path, safeWriteFileSync, safeAppendFileSync, safeRenameSync, safeParseLine;
 try {
   fs = require("node:fs");
   path = require("node:path");
+  ({ safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("./safe-fs"));
+  ({ safeParseLine } = require("./parse-jsonl-line"));
 } catch (err) {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
@@ -51,18 +53,7 @@ function createStateManager(rootDir, isSafeToWrite) {
 
     try {
       const content = fs.readFileSync(STATE_FILE, "utf8");
-      return content
-        .trim()
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => {
-          try {
-            return JSON.parse(line);
-          } catch {
-            return null;
-          }
-        })
-        .filter(Boolean);
+      return content.split("\n").map(safeParseLine).filter(Boolean);
     } catch {
       return [];
     }
@@ -101,20 +92,7 @@ function createStateManager(rootDir, isSafeToWrite) {
         if (!isSafeToWrite(tmpPath)) return false;
         if (!isSafeToWrite(bakPath)) return false;
         const content = trimmed.map((e) => JSON.stringify(e)).join("\n") + "\n" + line;
-        fs.writeFileSync(tmpPath, content, "utf8");
-        const safeRename = (src, dest) => {
-          try {
-            fs.renameSync(src, dest);
-          } catch {
-            // Cross-device or dest-exists fallback
-            fs.copyFileSync(src, dest);
-            try {
-              fs.unlinkSync(src);
-            } catch {
-              /* best-effort cleanup */
-            }
-          }
-        };
+        safeWriteFileSync(tmpPath, content, "utf8");
         try {
           if (fs.existsSync(STATE_FILE)) {
             try {
@@ -122,9 +100,9 @@ function createStateManager(rootDir, isSafeToWrite) {
             } catch {
               /* ignore */
             }
-            safeRename(STATE_FILE, bakPath);
+            safeRenameSync(STATE_FILE, bakPath);
           }
-          safeRename(tmpPath, STATE_FILE);
+          safeRenameSync(tmpPath, STATE_FILE);
           try {
             fs.rmSync(bakPath, { force: true });
           } catch {
@@ -133,7 +111,7 @@ function createStateManager(rootDir, isSafeToWrite) {
         } catch {
           try {
             if (fs.existsSync(bakPath) && !fs.existsSync(STATE_FILE)) {
-              safeRename(bakPath, STATE_FILE);
+              safeRenameSync(bakPath, STATE_FILE);
             }
           } catch {
             /* ignore */
@@ -150,7 +128,7 @@ function createStateManager(rootDir, isSafeToWrite) {
           console.error("  [warn] State file failed symlink guard, skipping write");
           return false;
         }
-        fs.appendFileSync(STATE_FILE, line, "utf8");
+        safeAppendFileSync(STATE_FILE, line, "utf8");
       }
 
       return true;
@@ -242,7 +220,7 @@ function createStateManager(rootDir, isSafeToWrite) {
         return false;
       }
 
-      fs.writeFileSync(baselinePath, JSON.stringify(entry, null, 2) + "\n", "utf8");
+      safeWriteFileSync(baselinePath, JSON.stringify(entry, null, 2) + "\n", "utf8");
       return true;
     } catch (err) {
       let errMsg;

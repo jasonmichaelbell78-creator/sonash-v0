@@ -7,10 +7,16 @@
  * - CRLF line endings
  * - Parse error warnings (non-fatal)
  * - Fatal read errors (process.exit)
+ *
+ * Uses a synchronous chunk-streaming helper so this library caller can tolerate
+ * arbitrary input size without a 2 MiB whole-file ceiling.
  */
 
-import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { join } from "node:path";
+
+const require = createRequire(import.meta.url);
+const { streamLinesSync } = require("../../lib/safe-fs");
 
 /**
  * Read and parse a JSONL file from the planning directory.
@@ -21,24 +27,21 @@ import { join } from "node:path";
  */
 export function readJsonl(planningDir, filename) {
   const filepath = join(planningDir, filename);
+  const results = [];
+  let lineNum = 0;
   try {
-    const entries = readFileSync(filepath, "utf-8")
-      .split("\n")
-      .map((line, i) => ({ line, lineNum: i + 1 }))
-      .filter(({ line }) => {
-        const trimmed = line.trim();
-        return trimmed && !trimmed.startsWith("//");
-      });
-    const results = [];
-    for (const { line, lineNum } of entries) {
+    streamLinesSync(filepath, (rawLine) => {
+      lineNum++;
+      const trimmed = rawLine.trim();
+      if (!trimmed || trimmed.startsWith("//")) return;
       try {
-        results.push(JSON.parse(line.trim()));
+        results.push(JSON.parse(trimmed));
       } catch (err) {
         console.warn(
           `WARNING: ${filename} line ${lineNum}: parse error — ${err instanceof Error ? err.message : String(err)}`
         );
       }
-    }
+    });
     return results;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);

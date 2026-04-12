@@ -23,6 +23,7 @@ const crypto = require("node:crypto");
 
 const safeFs = require(path.join(__dirname, "safe-fs.js"));
 const { isSafeToWrite, withLock, safeAppendFileSync } = safeFs;
+const { safeParseLine } = require(path.join(__dirname, "parse-jsonl-line.js"));
 
 // Import sanitizeError + slugify from security-helpers (CommonJS), with inline fallback
 let sanitizeError;
@@ -262,14 +263,10 @@ function deduplicateCheck(learning, options) {
 
   const lines = content.split("\n").filter((line) => line.trim().length > 0);
 
-  for (const line of lines) {
-    try {
-      const entry = JSON.parse(line);
-      if (entry.id === id) {
-        return { isDuplicate: true, existingEntry: entry };
-      }
-    } catch {
-      // Skip malformed lines
+  for (const rawLine of lines) {
+    const entry = safeParseLine(rawLine);
+    if (entry?.id === id) {
+      return { isDuplicate: true, existingEntry: entry };
     }
   }
 

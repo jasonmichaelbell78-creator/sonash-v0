@@ -236,7 +236,8 @@ if [[ -z "$tools" ]]; then
   tools="fzf bat fd delta zoxide eza starship yazi lazygit yq gron htmlq difft rg"
 fi
 
-for tool in $tools; do
+while IFS= read -r tool; do
+  [[ -z "$tool" ]] && continue
   if check_tool "$tool" "$tool" --version 2>/dev/null; then
     already=$((already + 1))
     continue
@@ -272,7 +273,7 @@ for tool in $tools; do
   printf "  %-12s ✗ FAILED\n" "$tool"
   missing_list="$missing_list $tool"
   failed=$((failed + 1))
-done
+done <<< "$(printf '%s\n' $tools)"
 
 echo ""
 echo "=== Results ==="

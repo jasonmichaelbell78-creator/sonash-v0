@@ -11,42 +11,16 @@
 
 "use strict";
 
-let fs, path;
+let fs, path, safeWriteFileSync, safeAppendFileSync, safeRenameSync, safeParseLine;
 try {
   fs = require("node:fs");
   path = require("node:path");
+  ({ safeWriteFileSync, safeAppendFileSync, safeRenameSync } = require("./safe-fs"));
+  ({ safeParseLine } = require("./parse-jsonl-line"));
 } catch (err) {
   const code = err instanceof Error && err.code ? err.code : "UNKNOWN";
   console.error(`Fatal: failed to load core Node.js modules (${code})`);
   process.exit(1);
-}
-
-/** Lazily resolved safe-fs helpers, keyed by rootDir to avoid cross-instance contamination */
-const _safeFsCache = new Map();
-function getSafeFs(rootDir) {
-  const cached = _safeFsCache.get(rootDir);
-  if (cached) return cached;
-  let result;
-  try {
-    result = require(path.join(rootDir, "scripts", "lib", "safe-fs"));
-  } catch {
-    // Fallback: thin wrappers that delegate straight to fs (no extra guard needed
-    // because callers already passed isSafeToWrite checks before reaching these)
-    result = {
-      safeWriteFileSync: (p, d, o) => fs.writeFileSync(p, d, o),
-      safeAppendFileSync: (p, d, o) => fs.appendFileSync(p, d, o),
-      safeRenameSync: (src, dest) => {
-        try {
-          fs.renameSync(src, dest);
-        } catch {
-          fs.copyFileSync(src, dest);
-          fs.unlinkSync(src);
-        }
-      },
-    };
-  }
-  _safeFsCache.set(rootDir, result);
-  return result;
 }
 
 /** Max file size for read operations (5MB) */
@@ -86,18 +60,7 @@ function createStateManager(rootDir, isSafeToWrite) {
 
     try {
       const content = fs.readFileSync(STATE_FILE, "utf8");
-      return content
-        .trim()
-        .split("\n")
-        .filter(Boolean)
-        .map((line) => {
-          try {
-            return JSON.parse(line);
-          } catch {
-            return null;
-          }
-        })
-        .filter(Boolean);
+      return content.split("\n").map(safeParseLine).filter(Boolean);
     } catch {
       return [];
     }
@@ -132,7 +95,6 @@ function createStateManager(rootDir, isSafeToWrite) {
         return false;
       }
 
-      const { safeWriteFileSync, safeAppendFileSync, safeRenameSync } = getSafeFs(rootDir);
       const line = JSON.stringify(entry) + "\n";
 
       const existing = readEntries();
@@ -276,7 +238,6 @@ function createStateManager(rootDir, isSafeToWrite) {
         return false;
       }
 
-      const { safeWriteFileSync } = getSafeFs(rootDir);
       safeWriteFileSync(baselinePath, JSON.stringify(entry, null, 2) + "\n", "utf8");
       return true;
     } catch (err) {

@@ -19,7 +19,13 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { execFileSync } = require("node:child_process");
-const { safeWriteFileSync, safeAppendFileSync, writeMasterDebtSync } = require("../lib/safe-fs");
+const {
+  safeWriteFileSync,
+  safeAppendFileSync,
+  writeMasterDebtSync,
+  readTextWithSizeGuard,
+} = require("../lib/safe-fs");
+const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const DEBT_DIR = path.join(__dirname, "../../docs/technical-debt");
 const MASTER_FILE = path.join(DEBT_DIR, "MASTER_DEBT.jsonl");
@@ -66,12 +72,9 @@ function loadMasterDebt() {
   }
   const lines = content.split("\n").filter((line) => line.trim());
   const items = [];
-  for (const line of lines) {
-    try {
-      items.push(JSON.parse(line));
-    } catch {
-      /* skip malformed */
-    }
+  for (const rawLine of lines) {
+    const parsed = safeParseLine(rawLine);
+    if (parsed) items.push(parsed);
   }
   return items;
 }
@@ -274,7 +277,7 @@ function scanFilesForDebtRef(planFiles, debtId, ROOT) {
   for (const filePath of planFiles) {
     try {
       if (!fs.existsSync(filePath)) continue;
-      const content = fs.readFileSync(filePath, "utf8");
+      const content = readTextWithSizeGuard(filePath);
       const lines = content.split("\n");
       for (let i = 0; i < lines.length; i++) {
         if (lines[i].includes(debtId)) {

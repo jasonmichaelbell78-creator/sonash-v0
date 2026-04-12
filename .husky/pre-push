@@ -8,10 +8,15 @@
 # --- Wave 3: Timing infrastructure (D6, D7) ---
 HOOK_START_NS=$(date +%s%N 2>/dev/null || date +%s)
 CHECKS_TMPFILE=$(mktemp)
-add_exit_trap "rm -f '$CHECKS_TMPFILE'"
 
-# Record failure in hook-runs.jsonl if script crashes before normal recording
-add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ]; then write_hook_runs_jsonl "pre-push" "$CHECKS_TMPFILE" "0"; fi'
+# T39: Single combined EXIT trap — captures HOOK_EXIT FIRST (before any command
+# overwrites $?), conditionally writes the failure record while CHECKS_TMPFILE
+# is still readable, THEN cleans up. The previous two-trap sequence had two
+# compound bugs: (1) `rm -f` ran first and its exit 0 overwrote $?, making
+# HOOK_EXIT always 0 and the failure branch unreachable; (2) even if it fired,
+# the tmpfile was already deleted. Result: 0 failed pre-push runs logged across
+# 49 samples despite 10+ real failures — D6/D25 effectively broken.
+add_exit_trap 'HOOK_EXIT=$?; if [ "$HOOK_EXIT" -ne 0 ] && [ -s "$CHECKS_TMPFILE" ]; then write_hook_runs_jsonl "pre-push" "$CHECKS_TMPFILE" "0"; fi; rm -f "$CHECKS_TMPFILE"'
 
 _shared_init_fnm
 
@@ -519,10 +524,12 @@ if [ "$_cyc_skip" -eq 0 ] && [ -f scripts/check-cyclomatic-cc.js ]; then
     echo "  ✅ Cyclomatic complexity passed (CC ≤15, baseline-aware)"
     echo "cyclomatic-cc|pass|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
   else
-    echo "  ❌ Cyclomatic CC check errored (exit $_cyc_rc)"
-    echo "  Override: SKIP_REASON=\"reason\" SKIP_CC=1 git push"
-    echo "cyclomatic-cc|fail|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
-    exit 1
+    # T39: Harmonize with cognitive-cc (line 545-548) — exit 2 is a SCRIPT
+    # error (not a violation), so warn and continue rather than block. If the
+    # error is real, code-review picks it up. Previously this blocked push
+    # while cognitive-cc's exit 2 warned, creating asymmetric behavior.
+    echo "  ⚠️ Cyclomatic CC check errored (exit $_cyc_rc), continuing"
+    echo "cyclomatic-cc|warn|${_PARALLEL_DURATION_MS}" >> "$CHECKS_TMPFILE"
   fi
 elif [ "$_cyc_skip" -eq 0 ]; then
   echo "cyclomatic-cc|skip|0" >> "$CHECKS_TMPFILE"

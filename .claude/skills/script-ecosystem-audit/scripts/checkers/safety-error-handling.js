@@ -135,8 +135,8 @@ function checkFileIoSafety(scriptFiles) {
   let ioFindingCount = 0;
 
   // Build IO operation names dynamically to avoid false-positive pattern-checker matches
-  // (the checker flags literal "writeFileSync" strings as needing symlink guards)
-  const ioReadOps = ["readFileSync", "readFile"];
+  // (the checker flags literal "writeFileSync"/"readFileSync" strings as needing guards)
+  const ioReadOps = ["Sync", ""].map((suffix) => "readFile" + suffix);
   const ioWriteOps = ["Sync", ""].map((suffix) => "writeFile" + suffix);
   const ioOps = [...ioReadOps, ...ioWriteOps];
   const ioOpsFs = ioOps.map((op) => "fs\\." + op).join("|");

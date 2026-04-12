@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import MoodSparkline from "../visualizations/mood-sparkline";
 import { AuthErrorBanner } from "@/components/status/auth-error-banner";
 import { logger, maskIdentifier } from "@/lib/logger";
+import { IS_DEV } from "@/lib/config/env";
 import { getTodayDateId, formatDateForDisplay } from "@/lib/utils/date-utils";
 import { toDate } from "@/lib/types/firebase-types";
 import { STORAGE_KEYS, DEBOUNCE_DELAYS, buildPath } from "@/lib/constants";
@@ -628,7 +629,7 @@ export default function TodayPage({ nickname, onNavigate }: TodayPageProps) {
         cravings: dataToSave.cravings,
         used: dataToSave.used,
       };
-      if (process.env.NODE_ENV === "development") {
+      if (IS_DEV) {
         logger.info("Attempting to save daily log", {
           hasMood: !!saveData.mood,
           hasCravings: saveData.cravings !== null,

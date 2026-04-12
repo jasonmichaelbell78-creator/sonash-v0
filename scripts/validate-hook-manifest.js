@@ -28,6 +28,8 @@ const path = require("node:path");
 // Use sanitizeError from security-helpers (CJS-compatible)
 const { sanitizeError } = require("./lib/security-helpers");
 
+const VALID_CHECK_CATEGORIES = new Set(["security", "quality", "compliance", "docs", "testing"]);
+
 const projectDir = path.resolve(__dirname, "..");
 const MANIFEST_PATH = path.join(projectDir, "scripts", "config", "hook-checks.json");
 const PRE_COMMIT_PATH = path.join(projectDir, ".husky", "pre-commit");
@@ -312,10 +314,7 @@ function validateCheckEnums(check, errors) {
       `Check '${check.id}': invalid hook value '${check.hook}' (must be pre-commit|pre-push)`
     );
   }
-  if (
-    typeof check.category !== "string" ||
-    !["security", "quality", "compliance", "docs", "testing"].includes(check.category)
-  ) {
+  if (typeof check.category !== "string" || !VALID_CHECK_CATEGORIES.has(check.category)) {
     errors.push(`Check '${check.id}': invalid category '${check.category}'`);
   }
 }

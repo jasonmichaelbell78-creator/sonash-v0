@@ -391,7 +391,7 @@ to Phase 8.
 3. **Invocation tracking** (MUST):
 
    ```bash
-   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"hook-ecosystem-audit","type":"skill","success":true,"context":{"score":SCORE,"grade":"GRADE"}}'
+   cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"hook-ecosystem-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"score":SCORE,"grade":"GRADE"}}'
    ```
 
 4. **Closure signal** (MUST):

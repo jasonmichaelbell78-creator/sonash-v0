@@ -134,3 +134,22 @@
 {"agent":"documentation-expert","description":"Documentation quality audit of MinerU","outcome":"invoked","timestamp":"2026-04-10T16:32:04.444Z"}
 {"agent":"test-engineer","description":"Test infrastructure audit of MinerU","outcome":"invoked","timestamp":"2026-04-10T16:32:20.944Z"}
 {"agent":"backend-architect","description":"Architecture analysis of MinerU","outcome":"invoked","timestamp":"2026-04-10T16:32:43.377Z"}
+{"agent":"security-auditor","description":"Audit CAS symlink hardening gap","outcome":"invoked","timestamp":"2026-04-10T19:53:46.950Z"}
+{"agent":"code-reviewer","description":"Code review T30+T32 fix","outcome":"invoked","timestamp":"2026-04-11T00:29:18.097Z"}
+{"agent":"episodic-memory:search-conversations","description":"Search episodic memory for pre-push issues","outcome":"invoked","timestamp":"2026-04-11T01:48:31.825Z"}
+{"agent":"Explore","description":"L1 pre-push subsystem explorer","outcome":"invoked","timestamp":"2026-04-11T02:05:40.641Z"}
+{"agent":"Explore","description":"L3 CC disconnect explorer","outcome":"invoked","timestamp":"2026-04-11T02:06:20.341Z"}
+{"agent":"Explore","description":"L2 state-file writer scanner","outcome":"invoked","timestamp":"2026-04-11T02:10:13.590Z"}
+{"agent":"general-purpose","description":"L4 ground-truth live verification","outcome":"invoked","timestamp":"2026-04-11T02:10:31.657Z"}
+{"agent":"Explore","description":"L5 telemetry gap + prior decisions","outcome":"invoked","timestamp":"2026-04-11T02:13:15.064Z"}
+{"agent":"general-purpose","description":"JSONL helper adoption — scripts/ batch 1","outcome":"invoked","timestamp":"2026-04-11T03:35:29.288Z"}
+{"agent":"general-purpose","description":"JSONL helper adoption — scripts/ batch 2","outcome":"invoked","timestamp":"2026-04-11T03:35:42.934Z"}
+{"agent":"general-purpose","description":"JSONL helper adoption — .claude/skills/ batch","outcome":"invoked","timestamp":"2026-04-11T03:36:09.065Z"}
+{"agent":"pr-review-toolkit:code-reviewer","description":"T3: code review T39 diff","outcome":"invoked","timestamp":"2026-04-11T14:17:52.306Z"}
+{"agent":"pr-review-toolkit:code-reviewer","description":"T4: code review parse-jsonl-line helper","outcome":"invoked","timestamp":"2026-04-11T14:18:05.954Z"}
+{"agent":"code-reviewer","description":"Pre-push code review gate","outcome":"invoked","timestamp":"2026-04-11T17:18:59.828Z"}
+{"agent":"code-reviewer","description":"Review script changes","outcome":"invoked","timestamp":"2026-04-11T18:42:04.860Z"}
+{"agent":"Explore","description":"Search codebase","outcome":"invoked","timestamp":"2026-04-11T18:42:04.973Z"}
+{"agent":"code-reviewer","description":"Review 4 T39 follow-up commits","outcome":"invoked","timestamp":"2026-04-11T20:20:29.678Z"}
+{"agent":"code-reviewer","description":"Review script changes","outcome":"invoked","timestamp":"2026-04-11T20:27:26.926Z"}
+{"agent":"Explore","description":"Search codebase","outcome":"invoked","timestamp":"2026-04-11T20:27:27.008Z"}

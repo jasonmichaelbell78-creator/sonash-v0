@@ -191,7 +191,7 @@ Present aggregate summary, collect final approval, apply accepted decisions.
 tracking** (MUST):
 
 ```bash
-cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"audit-{name}","type":"skill","success":true,"context":{}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"audit-{name}","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{}}'
 ```
 
 ## Version History
@@ -435,7 +435,7 @@ Save to state file `learnings` field.
 **Invocation tracking** (MUST):
 
 ```bash
-cd scripts/reviews && node dist/write-invocation.js --data '{"skill":"audit-{name}","type":"skill","success":true,"context":{}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"audit-{name}","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{}}'
 ```
 
 ## Integration

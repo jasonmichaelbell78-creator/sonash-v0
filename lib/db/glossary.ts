@@ -23,8 +23,8 @@ const COLLECTION = "glossary";
 
 export const GlossaryService = {
   getAllTerms: async (): Promise<GlossaryTerm[]> => {
-    const q = query(collection(db, COLLECTION));
-    const snapshot = await getDocs(q);
+    const glossaryQuery = query(collection(db, COLLECTION));
+    const snapshot = await getDocs(glossaryQuery);
     return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as GlossaryTerm);
   },
 

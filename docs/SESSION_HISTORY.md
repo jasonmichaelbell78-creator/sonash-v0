@@ -27,6 +27,51 @@ historical context while keeping SESSION_CONTEXT.md small and actionable.
 
 ## 2026-04 Sessions
 
+### Session #272 (2026-04-09)
+
+**Focus**: T29 Wave 3 Steps 7-8 + debt cleanup + Wave 4 scope correction
+
+- **Branch**: `planning-4826`
+- Cross-locale sync: Work locale arrival, pulled from remote (14 commits
+  planning-4826 + 15 commits main fast-forwarded). 4 stashes cleared. 12 dirty
+  hook-state files discarded per "remote is canon".
+- Todo additions: T31 (hook state file tracking redesign), T32 (/todo skill
+  invocation schema drift).
+- **T29 Wave 3 Steps 7-8** — 8 files updated: repo-analysis SKILL+REFERENCE,
+  website-analysis SKILL+REFERENCE, analyze/SKILL.md Synthesis Mode rewrite,
+  analyze/REFERENCE.md §2.3+§3.1 rewrite, shared/CONVENTIONS.md family list +
+  new §17 Synthesis Output Contract, CLAUDE.md trigger table row.
+- Debt cleanup (3 items): deleted synthesis-schema.ts + validator branch; fixed
+  research-index.jsonl depth field; deleted 4 stale backup files.
+- **Wave 4 scope correction**: Pre-audit discovered `scripts/cas/migrate-v3.js`
+  stamped `depth: "quick"` on repos with full Standard artifacts. Real Wave 4
+  scope is 12 TRUE quick-scan repos, not 22. Plan updated with Step 8.5
+  (metadata patches + migrate-v3.js root-cause fix).
+- Extractions audit: journal ↔ EXTRACTIONS.md consistent (196 / 23).
+- Firecrawl pilot paused before repomix, resumable state saved.
+
+### Session #271 (2026-04-08)
+
+**Focus**: T29 Waves 1-2 + Wave 3 partial — /synthesize LIVE
+
+- **Branch**: `planning-4826`
+- **Commits (4)**: `3ff5c0b6`, `f77ed4a0`, `52e81a6a`, `20516d40`. Pushed.
+- **Pre-flight triage** (7 items): fixed consolidation.json validator, added
+  titles to rev-69..77, fixed rendered view count (20→25), binary-file allowlist
+  in archive-doc.js, `npm audit fix` cleared 3 vulns, deleteBranchOnMerge
+  enabled, SESSION_CONTEXT ROADMAP sync. Filed DEBT-45646.
+- **T29 Wave 1**: Added synthesisRecord Zod schema to analysis-schema.js (14
+  sub-schemas + 6 enums). source_tier optional (T1-T4). migrate-v3.js fills
+  defaults — 34 records migrated (16 T1, 18 T2). 4 handler SKILLs updated.
+- **T29 Wave 2**: Created /synthesize skill. SKILL.md (~290 lines), REFERENCE.md
+  (~530 lines, 12 sections), COMMAND_REFERENCE.md updated. Traceable to 32
+  DECISIONS.
+- **T29 Wave 3 (partial)**: repo-synthesis and website-synthesis redirected to
+  deprecation stubs. Steps 7-8 deferred.
+- Code review Wave 1 scripts: APPROVED, 0 blockers, 2 warnings, 2 suggestions.
+- **Skipped push checks**: cross-doc (20516d40), cognitive-cc (DEBT-45635).
+- **Hook summary**: 3 overrides, 1 warning, 8 types acked.
+
 ### Session #270 (2026-04-09)
 
 **Focus**: T28 CAS E2E test + synthesis deep-plan + todo JSONL recovery

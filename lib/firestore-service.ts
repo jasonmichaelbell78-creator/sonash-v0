@@ -306,12 +306,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
       try {
         const logsRef = deps.collection(deps.db, buildPath.dailyLogsCollection(userId));
-        const q = deps.query(
+        const historyQuery = deps.query(
           logsRef,
           deps.orderBy("dateId", "desc"),
           deps.limit(QUERY_LIMITS.HISTORY_MAX)
         );
-        const snapshot = await deps.getDocs(q);
+        const snapshot = await deps.getDocs(historyQuery);
 
         const entries = snapshot.docs.map(
           (doc) =>
@@ -335,12 +335,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
 
       try {
         const entriesRef = deps.collection(deps.db, buildPath.inventoryEntries(userId));
-        const q = deps.query(
+        const inventoryQuery = deps.query(
           entriesRef,
           deps.orderBy("createdAt", "desc"),
           deps.limit(limitCount || QUERY_LIMITS.INVENTORY_MAX)
         );
-        const snapshot = await deps.getDocs(q);
+        const snapshot = await deps.getDocs(inventoryQuery);
 
         const entries = snapshot.docs.map((doc) => ({
           id: doc.id,
@@ -401,8 +401,12 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
      */
     async getLatestLighthouseRun(): Promise<(Record<string, unknown> & { id: string }) | null> {
       const historyRef = deps.collection(deps.db, "dev", "lighthouse", "history");
-      const q = deps.query(historyRef, deps.orderBy("timestamp", "desc"), deps.limit(1));
-      const snapshot = await deps.getDocs(q);
+      const lighthouseQuery = deps.query(
+        historyRef,
+        deps.orderBy("timestamp", "desc"),
+        deps.limit(1)
+      );
+      const snapshot = await deps.getDocs(lighthouseQuery);
 
       if (snapshot.empty) return null;
 
@@ -426,13 +430,13 @@ export const createFirestoreService = (overrides: Partial<FirestoreDependencies>
       const sevenDaysAgoId = format(sevenDaysAgo, "yyyy-MM-dd");
 
       const logsRef = deps.collection(deps.db, buildPath.dailyLogsCollection(userId));
-      const q = deps.query(
+      const weeklyStatsQuery = deps.query(
         logsRef,
         deps.where("date", ">=", sevenDaysAgoId),
         deps.orderBy("date", "desc"),
         deps.limit(WEEKLY_STATS_DAYS)
       );
-      const snapshot = await deps.getDocs(q);
+      const snapshot = await deps.getDocs(weeklyStatsQuery);
 
       const uniqueDays = new Set(snapshot.docs.map((d) => d.data().date as string));
 

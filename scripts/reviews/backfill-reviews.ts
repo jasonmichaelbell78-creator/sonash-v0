@@ -21,8 +21,34 @@ import { ReviewRecord, type ReviewRecordType } from "./lib/schemas/review";
 import { RetroRecord, type RetroRecordType } from "./lib/schemas/retro";
 import type { CompletenessTierType } from "./lib/schemas/shared";
 
+// Walk up from startDir until we find package.json (works from source AND dist)
+function findProjectRootForHelper(startDir: string): string {
+  let dir = startDir;
+  for (;;) {
+    try {
+      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
+    } catch {
+      // existsSync race condition -- continue walking
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) throw new Error("Could not find project root");
+    dir = parent;
+  }
+}
+
+// Resolve helpers via absolute paths so compiled dist/backfill-reviews.js still
+// finds scripts/lib/* (relative "../lib/..." would resolve to scripts/reviews/lib/...
+// after compilation — which doesn't exist).
+const LIB_ROOT = path.join(findProjectRootForHelper(__dirname), "scripts", "lib");
+
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { isSafeToWrite } = require("../lib/safe-fs") as { isSafeToWrite: (p: string) => boolean };
+const { isSafeToWrite } = require(path.join(LIB_ROOT, "safe-fs.js")) as {
+  isSafeToWrite: (p: string) => boolean;
+};
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require(path.join(LIB_ROOT, "parse-jsonl-line.js")) as {
+  safeParseLine: (line: string) => unknown;
+};
 
 // ---- Atomic write helper ----------------------------------------------------
 
@@ -67,24 +93,11 @@ function writeAtomicSafe(filePath: string, content: string): void {
 
 // ---- Helpers ----------------------------------------------------------------
 
-/**
- * Walk up from startDir until we find package.json (works from both source and dist).
- */
-function findProjectRoot(startDir: string): string {
-  let dir = startDir;
-  for (;;) {
-    try {
-      if (fs.existsSync(path.join(dir, "package.json"))) return dir;
-    } catch {
-      // existsSync race condition -- continue walking
-    }
-    const parent = path.dirname(dir);
-    if (parent === dir) throw new Error("Could not find project root");
-    dir = parent;
-  }
-}
-
-const PROJECT_ROOT = findProjectRoot(__dirname);
+// PROJECT_ROOT reuses findProjectRootForHelper (declared above for the
+// absolute-path require of scripts/lib/*) — there used to be a second
+// findProjectRoot with an identical body; SonarCloud S4144 flagged the
+// duplication in R2, so the two have been merged into the upper helper.
+const PROJECT_ROOT = findProjectRootForHelper(__dirname);
 
 /**
  * Safely read a file, returning null on any error.
@@ -694,14 +707,12 @@ export function migrateV1Records(
 
   const lines = content.split("\n").filter((l) => l.trim().length > 0);
   for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-    const line = lines[lineIdx];
-    let v1: V1Record;
-    try {
-      v1 = JSON.parse(line) as V1Record;
-    } catch {
+    const parsedLine = safeParseLine(lines[lineIdx]);
+    if (!parsedLine) {
       console.warn(`Warning: Could not parse v1 record at line ${lineIdx + 1}`);
       continue;
     }
+    const v1 = parsedLine as V1Record;
 
     const rawId = v1.id;
     let numericId: number;
@@ -817,12 +828,10 @@ function validateOutputFile(
   let errors = 0;
   const content = fs.readFileSync(filePath, "utf8");
   const outputLines = content.split("\n").filter((l) => l.trim().length > 0);
-  for (const line of outputLines) {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(line);
-    } catch {
-      console.error(`  ${label} JSON parse error: ${line.slice(0, 80)}`);
+  for (const rawLine of outputLines) {
+    const parsed = safeParseLine(rawLine);
+    if (!parsed) {
+      console.error(`  ${label} JSON parse error: ${rawLine.slice(0, 80)}`);
       errors++;
       continue;
     }

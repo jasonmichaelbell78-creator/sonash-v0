@@ -18,6 +18,10 @@ import { readFileSync } from "fs";
 import { analysisSchema } from "./analysis-schema.js";
 import { findingSchema } from "./findings-schema.js";
 import { sanitizeError } from "../../../scripts/lib/sanitize-error.js";
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLineWithError } = require("../../../scripts/lib/parse-jsonl-line") as {
+  safeParseLineWithError: (line: string) => { value: unknown; error: Error | null };
+};
 
 const VALID_TYPES = ["analysis", "findings"] as const;
 
@@ -49,8 +53,13 @@ try {
       .filter((l) => l.trim());
     let errors = 0;
     for (let i = 0; i < lines.length; i++) {
-      const parsed = JSON.parse(lines[i]);
-      const result = findingSchema.safeParse(parsed);
+      const { value, error } = safeParseLineWithError(lines[i]);
+      if (error) {
+        console.error(`Line ${i + 1}: JSON parse error — ${sanitizeError(error)}`);
+        errors++;
+        continue;
+      }
+      const result = findingSchema.safeParse(value);
       if (!result.success) {
         console.error(`Line ${i + 1}: ${JSON.stringify(result.error.issues)}`);
         errors++;

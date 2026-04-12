@@ -19,6 +19,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { safeWriteFileSync, safeRenameSync, isSafeToWrite } = require("../lib/safe-fs");
 const { validatePathInDir, sanitizeError } = require("../lib/security-helpers.js");
+const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 
 const ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const MASTER_PATH = path.join(ROOT, "docs/technical-debt/MASTER_DEBT.jsonl");
@@ -53,12 +54,12 @@ try {
   process.exit(1);
 }
 const allItems = lines.flatMap((l, idx) => {
-  try {
-    return [JSON.parse(l)];
-  } catch {
-    console.warn(`  WARN: skipping malformed JSON at MASTER_DEBT.jsonl:${idx + 1}`);
+  const item = safeParseLine(l);
+  if (!item) {
+    console.warn(`  WARN: skipping blank or malformed JSON at MASTER_DEBT.jsonl:${idx + 1}`);
     return [];
   }
+  return [item];
 });
 const flaggedItems = allItems.filter((item) => flaggedIds.has(item.id));
 
@@ -162,7 +163,7 @@ const genuinelyUnresolved = new Set([
   // writeFileSync without atomic write in suggest-pattern-automation.js line 404
   "DEBT-2176",
 
-  // writeFileSync in archive-doc.js — uses tmp file now (line 238: writeFileSync(tmpPath...))
+  // writeFileSync in archive-doc.js uses tmp file now (line 238: atomic write via tmpPath)
   // Actually this IS using atomic write pattern now — move to false alarm
   // "DEBT-2177",  -- moved to false alarms below
 
@@ -236,7 +237,7 @@ const genuinelyUnresolved = new Set([
 ]);
 
 // Items where archive-doc.js actually uses atomic write now
-falseAlarms.add("DEBT-2177"); // writeFileSync(tmpPath...) is atomic pattern
+falseAlarms.add("DEBT-2177"); // atomic write via tmpPath is the safe pattern
 falseAlarms.add("DEBT-2513"); // INLINE_PATTERNS not found — likely refactored
 
 // ─── Categorize all 62 items ──────────────────────────────────────────────────
@@ -312,27 +313,27 @@ let resolvedCount = 0;
 if (writeMode) {
   const updatedLines = [];
   for (const line of lines) {
-    try {
-      const item = JSON.parse(line);
+    const item = safeParseLine(line);
+    if (!item) {
+      updatedLines.push(line);
+      continue;
+    }
 
-      if (toRevert.has(item.id) && item.status === "RESOLVED") {
-        item.status = "VERIFIED";
-        item.resolution_note =
-          (item.resolution_note || "") +
-          " [Re-opened by reverify-resolved.js 2026-02-21: pattern still detected in codebase]";
-        revertedCount++;
-        updatedLines.push(JSON.stringify(item));
-      } else if (toResolve.has(item.id) && item.status === "VERIFIED") {
-        item.status = "RESOLVED";
-        item.resolution_note =
-          (item.resolution_note || "") +
-          " [Re-resolved by reverify-resolved.js 2026-02-21: verified code was actually fixed]";
-        resolvedCount++;
-        updatedLines.push(JSON.stringify(item));
-      } else {
-        updatedLines.push(line);
-      }
-    } catch {
+    if (toRevert.has(item.id) && item.status === "RESOLVED") {
+      item.status = "VERIFIED";
+      item.resolution_note =
+        (item.resolution_note || "") +
+        " [Re-opened by reverify-resolved.js 2026-02-21: pattern still detected in codebase]";
+      revertedCount++;
+      updatedLines.push(JSON.stringify(item));
+    } else if (toResolve.has(item.id) && item.status === "VERIFIED") {
+      item.status = "RESOLVED";
+      item.resolution_note =
+        (item.resolution_note || "") +
+        " [Re-resolved by reverify-resolved.js 2026-02-21: verified code was actually fixed]";
+      resolvedCount++;
+      updatedLines.push(JSON.stringify(item));
+    } else {
       updatedLines.push(line);
     }
   }
@@ -350,24 +351,24 @@ if (writeMode) {
     const dedupedLines = fs.readFileSync(DEDUPED_PATH, "utf8").split("\n").filter(Boolean);
     const dedupedUpdated = [];
     for (const line of dedupedLines) {
-      try {
-        const item = JSON.parse(line);
-        if (toRevert.has(item.id) && item.status === "RESOLVED") {
-          item.status = "VERIFIED";
-          item.resolution_note =
-            (item.resolution_note || "") +
-            " [Re-opened by reverify-resolved.js 2026-02-21: pattern still detected in codebase]";
-          dedupedUpdated.push(JSON.stringify(item));
-        } else if (toResolve.has(item.id) && item.status === "VERIFIED") {
-          item.status = "RESOLVED";
-          item.resolution_note =
-            (item.resolution_note || "") +
-            " [Re-resolved by reverify-resolved.js 2026-02-21: verified code was actually fixed]";
-          dedupedUpdated.push(JSON.stringify(item));
-        } else {
-          dedupedUpdated.push(line);
-        }
-      } catch {
+      const item = safeParseLine(line);
+      if (!item) {
+        dedupedUpdated.push(line);
+        continue;
+      }
+      if (toRevert.has(item.id) && item.status === "RESOLVED") {
+        item.status = "VERIFIED";
+        item.resolution_note =
+          (item.resolution_note || "") +
+          " [Re-opened by reverify-resolved.js 2026-02-21: pattern still detected in codebase]";
+        dedupedUpdated.push(JSON.stringify(item));
+      } else if (toResolve.has(item.id) && item.status === "VERIFIED") {
+        item.status = "RESOLVED";
+        item.resolution_note =
+          (item.resolution_note || "") +
+          " [Re-resolved by reverify-resolved.js 2026-02-21: verified code was actually fixed]";
+        dedupedUpdated.push(JSON.stringify(item));
+      } else {
         dedupedUpdated.push(line);
       }
     }

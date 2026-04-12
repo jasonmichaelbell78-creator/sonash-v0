@@ -25,6 +25,16 @@ function findProjectRoot(startDir: string): string {
   }
 }
 
+// Resolve helper via absolute path so compiled dist/write-deferred-items.js
+// still finds scripts/lib/parse-jsonl-line.js (relative "../lib/..." would
+// resolve to scripts/reviews/lib/... after compilation — which doesn't exist).
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { safeParseLine } = require(
+  path.join(findProjectRoot(__dirname), "scripts", "lib", "parse-jsonl-line.js")
+) as {
+  safeParseLine: (line: string) => unknown;
+};
+
 /** Input shape for each deferred item */
 export interface DeferredItemInput {
   finding: string;
@@ -50,18 +60,14 @@ function findNextDeferredIndex(filePath: string, reviewId: string): number {
     let maxExisting = 0;
     const escapedId = reviewId.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
     const idPattern = new RegExp("^" + escapedId + String.raw`-deferred-(\d+)$`);
-    for (const line of existing.split("\n")) {
-      if (!line.trim()) continue;
-      try {
-        const parsed = JSON.parse(line) as { id?: unknown };
-        const id = typeof parsed.id === "string" ? parsed.id : "";
-        const m = idPattern.exec(id);
-        if (m) {
-          const n = Number.parseInt(m[1], 10);
-          if (n > maxExisting) maxExisting = n;
-        }
-      } catch {
-        // ignore malformed lines
+    for (const rawLine of existing.split("\n")) {
+      const parsed = safeParseLine(rawLine) as { id?: unknown } | null;
+      if (!parsed) continue;
+      const id = typeof parsed.id === "string" ? parsed.id : "";
+      const m = idPattern.exec(id);
+      if (m) {
+        const n = Number.parseInt(m[1], 10);
+        if (n > maxExisting) maxExisting = n;
       }
     }
     return maxExisting + 1;
