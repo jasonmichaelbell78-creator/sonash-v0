@@ -98,7 +98,7 @@ function validateBatchShape(batch) {
  */
 function addNewVocabulary(vocab, newVocabList) {
   const errors = [];
-  const out = JSON.parse(JSON.stringify(vocab));
+  const out = structuredClone(vocab);
   for (const nv of newVocabList) {
     const { tag, category, definition } = nv;
     if (out.tags[tag]) {
@@ -176,13 +176,13 @@ function classifyTags(tags, vocab) {
  * Count tags in semantic categories (everything except taxonomic).
  */
 function semanticCount(tags, vocab) {
-  let n = 0;
-  for (const t of tags) {
-    const entry = vocab.tags[t];
+  let count = 0;
+  for (const tag of tags) {
+    const entry = vocab.tags[tag];
     if (!entry) continue;
-    if (entry.category !== "taxonomic") n++;
+    if (entry.category !== "taxonomic") count++;
   }
-  return n;
+  return count;
 }
 
 /**
@@ -231,7 +231,7 @@ function applyBatch(journalEntries, batch, vocab) {
  * Tags not in vocabulary are ignored (not auto-added).
  */
 function recomputeCounts(vocab, journalEntries) {
-  const out = JSON.parse(JSON.stringify(vocab));
+  const out = structuredClone(vocab);
   for (const k of Object.keys(out.tags)) {
     out.tags[k].count = 0;
   }

@@ -7,8 +7,8 @@ description: >-
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-04-08
+**Document Version:** 1.1
+**Last Updated:** 2026-04-12
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -48,20 +48,35 @@ searchable here.
 
 ## Presenting Results
 
+Each result comes with **category-aware tag groupings** per CONVENTIONS.md §14:
+`semantic_tags` (grouped by category), `taxonomic_tags`, and `orphan_tags`
+(legacy tags awaiting retag).
+
 ### For extraction queries (default)
 
-Present as a table or list:
+Present as a list. "About:" shows semantic tags flat (middle-dot separated).
+"Type:" shows taxonomic tags. "Legacy tags:" appears only when `orphan_tags` is
+non-empty — signals un-retagged entries.
 
 ```
 Found 8 results for "architecture":
 
 1. Auto-routing via type detection [pattern]
    Source: unstructured-io/unstructured (repo) | Novelty: high | Effort: E2
+
+   About: knowledge-management · claude-code · multi-agent · jason-os-relevant
+   Type: framework
+
    "partition() auto-detects file type via libmagic, routes to format-specific
    partitioner."
 
 2. Per-site extractor plugin architecture [pattern]
    Source: iawia002/lux (repo) | Novelty: high | Effort: E2
+
+   About: extraction · web-crawling
+   Type: utility-tool
+   Legacy tags: repo, anti-pattern
+
    "44-site video downloader with per-site extractor plugins."
 ```
 
@@ -78,7 +93,17 @@ Found 8 results for "architecture":
 
 ### For stats (--stats)
 
-Present the summary, breakdowns by type/novelty, and top tags.
+Present four groupings:
+
+1. **Summary**: sources, extractions, unique_tags counts
+2. **By source type / novelty**: existing breakdowns
+3. **Vocabulary**: `total_size` plus `by_category` (how many tags live in each
+   of the 8 categories) and `top_tags_by_category` (top 5 per category by
+   journal-applied count)
+4. **Orphan / legacy health**: `orphan_tags_in_journal` (tags used in journal
+   but missing from the vocabulary — signals retag gaps) and
+   `legacy_tags_in_journal` (forbidden tags or unresolved synonyms still
+   appearing — will clear after retag)
 
 ## Follow-Up Options
 
@@ -111,6 +136,7 @@ Done. [N] sources, [M] extractions indexed.
 
 ## Version History
 
-| Version | Date       | Description                              |
-| ------- | ---------- | ---------------------------------------- |
-| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269) |
+| Version | Date       | Description                                                                                    |
+| ------- | ---------- | ---------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-04-12 | T40 Part C — category-aware tag display (semantic/taxonomic/orphan) + vocabulary-aware --stats |
+| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269)                                                       |
