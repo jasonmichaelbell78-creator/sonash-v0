@@ -1,8 +1,8 @@
 # Quick Scan → Standard Upgrade Checklist
 
 <!-- prettier-ignore-start -->
-**Document Version:** 3.0
-**Last Updated:** 2026-04-10 (Session #273)
+**Document Version:** 3.1
+**Last Updated:** 2026-04-12 (Session #275 handoff)
 **Status:** ACTIVE
 **Purpose:** Prioritized checklist for T29 Wave 4 (Step 10) — upgrade **12 TRUE quick-scan repos** to Standard depth.
 <!-- prettier-ignore-end -->
@@ -159,9 +159,11 @@ freshness.
 
 ### Bucket A — CAS content-extraction infrastructure
 
-- [ ] 1. firecrawl (resumable from Session #272 pilot state)
-- [ ] 2. MinerU
-- [ ] 3. crawl4ai
+- [x] 1. firecrawl ✅ Session #273 (commit `5a0b6b0d`, manual bypass-skill +
+     Step 10.5 audit)
+- [x] 2. MinerU ✅ Session #274 (commit `34e647fd`, full skill compliance,
+     self-audit 14/0/0)
+- [ ] 3. crawl4ai ← **NEXT per Session #274 handoff**
 - [ ] 4. marker
 - [ ] 5. surya
 - [ ] 6. reader
@@ -203,3 +205,6 @@ freshness.
 | ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
 | #272    | 2026-04-10 | Checklist v2.0 created (22 repos — later corrected)                                                                                          |
 | #273    | 2026-04-10 | v3.0 — scope corrected to 12 TRUE quicks after Step 8.5 executed, actual quality/stars populated, priority re-ranked qualitative + tie-break |
+| #273    | 2026-04-10 | **Wave 4 #1 firecrawl ✅** — Standard artifacts built manually (bypass-skill); Step 10.5 audit for firecrawl completed                       |
+| #274    | 2026-04-10 | **Wave 4 #2 MinerU ✅** — full skill compliance (Tag + Retro + Routing all executed), self-audit PASS 14/0/0; set the deliverable bar        |
+| #275    | 2026-04-12 | Handoff — PR #507 R3 merged + branch cleanup; user will invoke /analyze for each remaining Wave 4 repo separately (discipline decision)      |
