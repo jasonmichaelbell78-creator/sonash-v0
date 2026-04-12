@@ -1,0 +1,78 @@
+{
+  "schema_version": "2.0",
+  "repo": "zedeus/nitter",
+  "scan_date": "2026-04-12",
+  "patternCandidates": [],
+  "knowledgeCandidates": [
+    {
+      "name": "Docker container hardening (RO fs + CAP_DROP ALL)",
+      "description": "Read-only filesystem, CAP_DROP ALL, non-root uid 998, alpine minimal, health checks. Best Docker hardening in T29 corpus.",
+      "source": "Dockerfile + docker-compose.yml",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "High"
+    },
+    {
+      "name": "Session pool with per-endpoint rate limiting",
+      "description": "Multiple sessions rotate on rate limits. Per-session per-endpoint tracking with preemptive backoff.",
+      "source": "src/auth.nim",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Med"
+    },
+    {
+      "name": "Parser versioning for unstable APIs",
+      "description": "Experimental module allows parallel parser development. Isolates blast radius of upstream API changes.",
+      "source": "src/experimental/parser/",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Med"
+    }
+  ],
+  "contentCandidates": [],
+  "antiPatternCandidates": [
+    {
+      "name": "ADVERSARIAL_DEPENDENCY",
+      "description": "Building product on scraping hostile platform. Twitter killed nitter by changing APIs. 12.8K stars, effectively dead.",
+      "source": "Project history + README",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "High"
+    },
+    {
+      "name": "XSS_IN_CONTENT_RENDERER",
+      "description": "Rendering untrusted content without HTML escaping. Karax verbatim bypasses escaping.",
+      "source": "src/views/tweet.nim",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "Med"
+    },
+    {
+      "name": "SECURITY_HEADERS_ABSENT",
+      "description": "No CSP, X-Frame-Options, HSTS in web application. Zero defense-in-depth.",
+      "source": "Web security analysis",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Low"
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "ArchiveBox/ArchiveBox",
+      "connection_type": "complementary",
+      "detail": "Both proxy/archive web content. ArchiveBox archives pages; nitter proxies Twitter. Both use caching layers."
+    },
+    {
+      "target_repo": "iawia002/lux",
+      "connection_type": "complementary",
+      "detail": "lux downloads video from Twitter (among others); nitter renders Twitter content. Both scrape Twitter without API."
+    }
+  ],
+  "related_repos": [
+    {
+      "url": "https://github.com/zedeus/redis",
+      "relationship": "uses",
+      "discovery_context": "Custom Redis fork pinned in nimble dependencies"
+    }
+  ]
+}

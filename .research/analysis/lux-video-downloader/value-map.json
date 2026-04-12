@@ -1,0 +1,98 @@
+{
+  "schema_version": "2.0",
+  "repo": "iawia002/lux",
+  "scan_date": "2026-04-12",
+  "patternCandidates": [
+    {
+      "name": "init()-based plugin registry with domain routing",
+      "description": "Single-method Extractor interface + global map + init() auto-registration + blank imports + universal fallback. 46 extractors, zero boilerplate.",
+      "source": "extractors/extractors.go + app/register.go",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Med",
+      "rank": 1,
+      "location": "extractors/",
+      "pattern_novelty": "Med",
+      "code_portability": 3,
+      "adoption_readiness": "Low",
+      "quality_signal": "High",
+      "extraction_effort": "E0",
+      "objective_score": 78,
+      "personal_fit_score": 35,
+      "fit_class": "park-for-later",
+      "notes": "Go-specific pattern. Principle universal but implementation not portable to Node/TS.",
+      "status": "identified",
+      "decision_date": null,
+      "decision_notes": null
+    }
+  ],
+  "knowledgeCandidates": [
+    {
+      "name": "CI workflow generation from template",
+      "description": "Node script generates 45 GitHub Actions workflows from single template. Per-extractor CI isolation.",
+      "source": "script/generate_github_action_template.js",
+      "relevance": "medium",
+      "effort": "E1",
+      "novelty": "Med"
+    },
+    {
+      "name": "Per-site CI isolation pattern",
+      "description": "Each of 46 extractors has own CI workflow and README badge. Independent failure signals.",
+      "source": ".github/workflows/stream_*.yml",
+      "relevance": "low",
+      "effort": "E0",
+      "novelty": "Low"
+    }
+  ],
+  "contentCandidates": [],
+  "antiPatternCandidates": [
+    {
+      "name": "HARDCODED_CREDENTIALS_IN_SOURCE",
+      "description": "Twitter bearer token and Weibo session cookie checked into git. Normalizes credential exposure.",
+      "source": "extractors/twitter/twitter.go:58, extractors/weibo/weibo.go:154",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "Med"
+    },
+    {
+      "name": "DISABLED_TLS_VERIFICATION",
+      "description": "InsecureSkipVerify: true on all HTTPS connections. Global MITM vulnerability.",
+      "source": "request/request.go:56",
+      "relevance": "high",
+      "effort": "E0",
+      "novelty": "Low"
+    },
+    {
+      "name": "DOCUMENTATION_ABSENT_FOR_CONTRIBUTORS",
+      "description": "46 extractors, 30 contributors, 23-line CONTRIBUTING.md, zero architecture docs.",
+      "source": "CONTRIBUTING.md",
+      "relevance": "medium",
+      "effort": "E0",
+      "novelty": "Low"
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "ArchiveBox/ArchiveBox",
+      "connection_type": "complementary",
+      "detail": "ArchiveBox could use lux as a video extraction backend. Both handle media URLs but at different layers -- lux extracts video streams, ArchiveBox archives full pages."
+    },
+    {
+      "target_repo": "unclecode/crawl4ai",
+      "connection_type": "complementary",
+      "detail": "crawl4ai extracts web content for LLMs; lux extracts video/audio streams. Different content types from same URL input pattern."
+    }
+  ],
+  "related_repos": [
+    {
+      "url": "https://github.com/kkdai/youtube",
+      "relationship": "uses",
+      "discovery_context": "Go YouTube library used as dependency (go.mod)"
+    },
+    {
+      "url": "https://github.com/yt-dlp/yt-dlp",
+      "relationship": "similar-to",
+      "discovery_context": "Python equivalent -- lux is often compared to yt-dlp"
+    }
+  ]
+}

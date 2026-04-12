@@ -59,16 +59,6 @@ function main() {
     .map(([k, v]) => `${k}: ${v}`)
     .join(", ");
 
-  const lines = [
-    "# Extraction Candidates — Cross-Entity Summary",
-    "",
-    "Auto-generated from `extraction-journal.jsonl`. Do not edit directly.",
-    "",
-    `**Schema version:** 2.0 | **Total:** ${entries.length} candidates **By decision:** ${decisionSummary}`,
-    "",
-    "---",
-  ];
-
   // Sort sources: repos first, then websites, then others
   const sourceOrder = [...bySource.keys()].sort((a, b) => {
     const aIsUrl = a.startsWith("http");
@@ -77,6 +67,53 @@ function main() {
     if (!aIsUrl && bIsUrl) return -1;
     return a.localeCompare(b);
   });
+
+  // Build TOC data
+  const tocRows = [];
+  for (const source of sourceOrder) {
+    const sourceEntries = bySource.get(source);
+    const sourceType = sourceEntries[0]?.source_type || "repo";
+    const total = sourceEntries.length;
+    const typeCounts = { pattern: 0, knowledge: 0, "anti-pattern": 0, content: 0 };
+    for (const e of sourceEntries) {
+      const t = (e.type || "").toLowerCase();
+      if (t.includes("pattern") && !t.includes("anti")) typeCounts.pattern++;
+      else if (t.includes("anti")) typeCounts["anti-pattern"]++;
+      else if (t.includes("knowledge")) typeCounts.knowledge++;
+      else if (t.includes("content")) typeCounts.content++;
+      else typeCounts.pattern++; // architecture-pattern, tool, etc.
+    }
+    // Generate anchor: lowercase, replace non-alphanumeric with hyphens
+    const anchor = source
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    tocRows.push({ source, sourceType, anchor, total, ...typeCounts });
+  }
+
+  const lines = [
+    "# Extraction Candidates — Cross-Entity Summary",
+    "",
+    "Auto-generated from `extraction-journal.jsonl` by `scripts/cas/generate-extractions-md.js`.",
+    "Do not edit directly — run `node scripts/cas/generate-extractions-md.js` to rebuild.",
+    "",
+    `**Total:** ${entries.length} candidates across ${bySource.size} sources | **By decision:** ${decisionSummary}`,
+    "",
+    "---",
+    "",
+    "## Table of Contents",
+    "",
+    "| Source | Type | Total | Pattern | Knowledge | Anti-Pattern | Content |",
+    "| ------ | ---- | ----- | ------- | --------- | ------------ | ------- |",
+  ];
+
+  for (const row of tocRows) {
+    lines.push(
+      `| [${escapeCell(row.source)}](#${row.anchor}-${row.sourceType}) | ${row.sourceType} | ${row.total} | ${row.pattern} | ${row.knowledge} | ${row["anti-pattern"]} | ${row.content} |`
+    );
+  }
+
+  lines.push("", "---");
 
   for (const source of sourceOrder) {
     const sourceEntries = bySource.get(source);

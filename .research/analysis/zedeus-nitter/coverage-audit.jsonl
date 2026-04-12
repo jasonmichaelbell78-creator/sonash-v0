@@ -1,0 +1,5 @@
+{"category": "referenced_links", "item": "GitHub Wiki (session tokens, instances, Nginx/Apache)", "status": "not_evaluated", "reason": "External wiki, not in repo", "user_decision": "skip"}
+{"category": "referenced_links", "item": "Docker Hub zedeus/nitter", "status": "not_evaluated", "reason": "External registry", "user_decision": "skip"}
+{"category": "internal_docs", "item": "tools/get_session.py + create_session_browser.py", "status": "cataloged_not_read", "reason": "Session management tools, cataloged in deep-read", "user_decision": "skip"}
+{"category": "internal_docs", "item": "src/experimental/parser/ (new parser modules)", "status": "cataloged_not_read", "reason": "Referenced in architecture, code not read line-by-line", "user_decision": "skip"}
+{"category": "cross_repo", "item": "zedeus/redis (custom fork)", "status": "not_analyzed", "reason": "Custom Redis fork, not in T29 scope", "user_decision": "skip"}

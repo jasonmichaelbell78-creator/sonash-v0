@@ -467,15 +467,10 @@ future reference. Do not silently discard — the record ensures the next run or
 
 After writing value-map.json, update both cross-repo extraction files:
 
-1. **EXTRACTIONS.md** (`.research/EXTRACTIONS.md`) — Human-readable cross-repo
-   summary. Update the repo's section with current candidates (pattern
-   - knowledge), verdict, scan depth, and skill version. Update header totals
-     (candidate count, deferred count). Add cross-reference notes where
-     candidates overlap with other repos.
-
-2. **extraction-journal.jsonl** (`.research/extraction-journal.jsonl`) —
+1. **extraction-journal.jsonl** (`.research/extraction-journal.jsonl`) —
    Machine-readable per-candidate records. Unified v2.0 schema shared with
    website-analysis. One line per candidate:
+
    ```json
    {
      "schema_version": "2.0",
@@ -493,12 +488,22 @@ After writing value-map.json, update both cross-repo extraction files:
      "relevance": "high|medium|low"
    }
    ```
+
    Remove stale entries for the repo being re-analyzed. Write fresh entries for
    all candidates in value-map.json.
 
-Both files are canonical — EXTRACTIONS.md is the reading interface,
-extraction-journal.jsonl is the data interface. EXTRACTIONS.md is auto-generated
-from the journal. Both MUST be updated on every Standard/Deep analysis.
+2. **EXTRACTIONS.md** (`.research/EXTRACTIONS.md`) — Human-readable cross-repo
+   summary with Table of Contents. **Do NOT edit manually.** After updating the
+   journal, run:
+   ```bash
+   node scripts/cas/generate-extractions-md.js
+   ```
+   This regenerates the entire file from the journal including header stats, TOC
+   (source, type, candidate counts by category), and per-source tables.
+
+Both files are canonical — extraction-journal.jsonl is the data source,
+EXTRACTIONS.md is the generated reading interface. The journal is always updated
+first; EXTRACTIONS.md is always regenerated, never manually appended.
 
 ## Per-Phase Artifact Gate (MUST)
 
@@ -534,10 +539,10 @@ CONVENTIONS.md Section 8, plus domain-specific checks:
 5. **Regression check:** If prior analysis exists for this repo, compare finding
    count delta — flag significant changes
 6. **REFERENCE.md contract:** Verify output structure matches documented schema
-7. **EXTRACTIONS.md section exists:**
-   `grep -c "$SOURCE" .research/EXTRACTIONS.md` must return >= 1. Both
-   extraction-journal.jsonl AND EXTRACTIONS.md are MUST artifacts — the journal
-   is data, EXTRACTIONS.md is the reading interface.
+7. **Extraction journal entries exist:**
+   `grep -c "$SOURCE" .research/extraction-journal.jsonl` must return >= 1. Then
+   run `node scripts/cas/generate-extractions-md.js` to rebuild EXTRACTIONS.md.
+   Verify the script output confirms the source is included.
 8. **Tags populated:** `analysis.json.tags` array must be non-empty. Tags
    require user approval in Phase 6c before self-audit runs.
 9. **Coverage audit user decision recorded:** Every item in

@@ -1,119 +1,255 @@
 {
-  "id": "4c1440b0-a391-4c59-a431-fe3256261b3d",
+  "id": "lux-video-downloader-2026-04-12",
   "schema_version": "3.0",
   "source_type": "repo",
   "source": "iawia002/lux",
   "slug": "lux-video-downloader",
-  "title": "Fast and simple video download library and CLI tool written in Go",
-  "analyzed_at": "2026-04-07",
-  "depth": "quick",
-  "tags": ["repo", "cli-tool", "video", "downloader", "repository"],
+  "title": "lux",
+  "analyzed_at": "2026-04-12T14:30:00Z",
+  "depth": "standard",
+  "source_tier": "T1",
+  "tags": ["repo", "application", "go", "video-downloader", "plugin", "anti-pattern", "security"],
   "scoring": {
-    "quality_band": "Healthy",
-    "quality_score": 65,
+    "quality_band": "Needs Work",
+    "quality_score": 58,
     "personal_fit_band": "Needs Work",
-    "personal_fit_score": 50,
+    "personal_fit_score": 42,
     "classification": "park-for-later"
   },
-  "summary": "This repo understands multi-platform video downloading at scale — 40+ supported sites with per-site extractors, per-site CI workflows, and a clean plugin architecture in Go.  It's the broadest video download tool in the T27 analysis series, expanding scope beyond YouTube to TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, and 30+ more.",
-  "creator_view": "This repo understands multi-platform video downloading at scale — 40+ supported sites with per-site extractors, per-site CI workflows, and a clean plugin architecture in Go. It's the broadest video download tool in the T27 analysis series, expanding scope beyond YouTube to TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, and 30+ more. For T27, this represents the 'download video for Whisper' path when neither transcripts nor captions are available — especially on non-YouTube platforms. The per-site extractor architecture (extractors/<site>/<site>.go) is the gold standard for multi-platform content extraction plugins.",
-  "candidates": [],
+  "summary": "Go video downloader CLI (31K stars, MIT). Excellent plugin registry pattern (46 extractors). Critical security gaps: hardcoded credentials, disabled TLS verification, OpenSSF 3.2/10. Documentation user-focused but developer-hostile.",
+  "creator_view": "See creator-view.md",
+  "candidates": [
+    {
+      "name": "init()-based plugin registry",
+      "type": "pattern",
+      "description": "Single-method interface + global map + init() registration. 46 extractors.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["architecture", "plugin", "go"]
+    },
+    {
+      "name": "CI workflow generation",
+      "type": "knowledge",
+      "description": "Node script generates 45 workflows from template.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["ci-cd", "meta-tooling"]
+    },
+    {
+      "name": "HARDCODED_CREDENTIALS",
+      "type": "anti-pattern",
+      "description": "Twitter token + Weibo cookie in source.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "anti-pattern"]
+    },
+    {
+      "name": "DISABLED_TLS_VERIFICATION",
+      "type": "anti-pattern",
+      "description": "InsecureSkipVerify globally.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "anti-pattern"]
+    },
+    {
+      "name": "DOCS_ABSENT_FOR_CONTRIBUTORS",
+      "type": "anti-pattern",
+      "description": "23-line CONTRIBUTING, no architecture docs.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["documentation", "anti-pattern"]
+    }
+  ],
   "last_synthesized_at": null,
-  "skillVersion": "4.3",
-  "repo": {
-    "full_name": "iawia002/lux",
-    "html_url": "https://github.com/iawia002/lux",
-    "description": "Fast and simple video download library and CLI tool written in Go",
+  "metadata": {
+    "url": "https://github.com/iawia002/lux",
+    "scan_version": "4.5",
+    "files_cloned": 220,
+    "stars": 31021,
     "language": "Go",
-    "stars": 31013,
-    "forks": 3246,
-    "watchers": 31013,
-    "open_issues_count": 534,
-    "created_at": "2018-02-24T11:29:03Z",
-    "pushed_at": "2026-03-29T18:18:56Z",
-    "archived": false,
-    "fork": false,
     "license": "MIT",
-    "topics": ["video", "downloader", "youtube", "bilibili", "go", "golang", "crawler", "scraper"],
-    "default_branch": "master",
+    "created_at": "2018-02-24",
+    "pushed_at": "2026-03-29",
+    "age_days": 2970,
     "size_kb": 2566,
-    "total_commits": 869,
-    "contributor_count": 30,
-    "ci_workflow_runs": 2865,
-    "supported_sites": "40+"
+    "forks": 3246,
+    "open_issues": 535,
+    "contributors": 30,
+    "is_fork": false,
+    "is_archived": false
   },
-  "analysisDate": "2026-04-07",
-  "repoType": "cli-tool",
+  "repo_type": "application",
+  "repo_type_secondary": null,
   "dimensions": {
-    "QS-01_activity_recency": {
-      "score": 4,
-      "max": 5,
-      "detail": "Pushed 9 days ago. 869 commits. Active."
+    "QS-01_activity": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "Pushed 2 weeks ago"
     },
     "QS-02_engagement": {
-      "score": 5,
-      "max": 5,
-      "detail": "31,013 stars, 3,246 forks. Massive adoption."
+      "score": 88,
+      "band": "Excellent",
+      "detail": "31K stars, 3.2K forks"
     },
-    "QS-03_archived_abandoned": {
-      "score": 5,
-      "max": 5,
-      "detail": "Active, not archived."
+    "QS-14_openssf": {
+      "score": 32,
+      "band": "Critical",
+      "detail": "3.2/10"
     },
-    "QS-04_license": {
-      "score": 5,
-      "max": 5,
-      "detail": "MIT license."
-    },
-    "QS-05_cicd": {
-      "score": 5,
-      "max": 5,
-      "detail": "2,865 CI runs. 46 per-site test workflows + CI + goreleaser + builder. Exceptional."
-    },
-    "QS-10_community_health": {
-      "score": 3,
-      "max": 5,
-      "detail": "71/100. Has CONTRIBUTING.md, issue templates. Missing code of conduct, security."
-    },
-    "QS-12_contributor_count": {
-      "score": 5,
-      "max": 5,
-      "detail": "30 contributors."
-    }
-  },
-  "summaryBands": {
-    "security": {
-      "band": "Moderate",
-      "score": 42,
-      "max": 100
-    },
-    "reliability": {
-      "band": "High",
+    "ST-01_subprocess": {
       "score": 72,
-      "max": 100
+      "band": "Healthy",
+      "detail": "Safe exec patterns, ffmpeg -safe 0 concern"
     },
-    "maintainability": {
-      "band": "High",
-      "score": 70,
-      "max": 100
+    "ST-02_tests": {
+      "score": 42,
+      "band": "Needs Work",
+      "detail": "52 test files, live API deps, CI failures"
     },
-    "documentation": {
-      "band": "High",
-      "score": 65,
-      "max": 100
+    "ST-03_test_ci": {
+      "score": 78,
+      "band": "Healthy",
+      "detail": "Multi-platform, per-site monitoring, weekly regression"
     },
-    "process": {
-      "band": "High",
-      "score": 68,
-      "max": 100
+    "ST-04_structure": {
+      "score": 82,
+      "band": "Excellent",
+      "detail": "Clean Go packages, 46 extractor dirs"
     },
-    "velocity": {
-      "band": "High",
+    "ST-05_reuse": {
       "score": 75,
-      "max": 100
+      "band": "Healthy",
+      "detail": "Shared request/utils/parser, some duplication"
+    },
+    "ST-06_plugins": {
+      "score": 88,
+      "band": "Excellent",
+      "detail": "Elegant init() registry, 46 extractors"
+    },
+    "ST-07_credentials": {
+      "score": 28,
+      "band": "Critical",
+      "detail": "Hardcoded tokens, global credential storage"
+    },
+    "ST-08_path_safety": {
+      "score": 55,
+      "band": "Needs Work",
+      "detail": "TOCTOU, escape bypass, 0644 temp files"
+    },
+    "ST-09_type_safety": {
+      "score": 84,
+      "band": "Excellent",
+      "detail": "Go static typing, clean interfaces"
+    },
+    "ST-10_deps": {
+      "score": 79,
+      "band": "Healthy",
+      "detail": "21 direct deps, all pinned"
+    },
+    "ST-11_errors": {
+      "score": 81,
+      "band": "Excellent",
+      "detail": "pkg/errors wrapping, sentinels, graceful degradation"
+    },
+    "ST-12_registry": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "46 extractors with capability matrix"
+    },
+    "ST-13_docs": {
+      "score": 32,
+      "band": "Critical",
+      "detail": "Good README, no arch docs, 23-line CONTRIBUTING"
+    },
+    "ST-14_scaffolding": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "7 install methods, GoReleaser, 26-platform builds"
     }
   },
-  "absencePattern": "mature-cli-tool",
-  "creatorLens": "This repo understands multi-platform video downloading at scale — 40+ supported sites with per-site extractors, per-site CI workflows, and a clean plugin architecture in Go. It's the broadest video download tool in the T27 analysis series, expanding scope beyond YouTube to TikTok, Instagram, Bilibili, Reddit, Vimeo, Twitter/X, and 30+ more. For T27, this represents the 'download video for Whisper' path when neither transcripts nor captions are available — especially on non-YouTube platforms. The per-site extractor architecture (extractors/<site>/<site>.go) is the gold standard for multi-platform content extraction plugins.",
-  "source_tier": "T1"
+  "summary_bands": {
+    "Security": {
+      "score": 38,
+      "band": "Critical"
+    },
+    "Reliability": {
+      "score": 55,
+      "band": "Needs Work"
+    },
+    "Maintainability": {
+      "score": 72,
+      "band": "Healthy"
+    },
+    "Documentation": {
+      "score": 52,
+      "band": "Needs Work"
+    },
+    "Process": {
+      "score": 55,
+      "band": "Needs Work"
+    },
+    "Velocity": {
+      "score": 75,
+      "band": "Healthy"
+    }
+  },
+  "absence_patterns": [
+    {
+      "pattern": "SECURITY_NEGLIGENCE",
+      "confidence": "High",
+      "evidence": "Hardcoded creds, disabled TLS, OpenSSF 3.2/10"
+    },
+    {
+      "pattern": "DOCUMENTATION_DEFICIT",
+      "confidence": "High",
+      "evidence": "23-line CONTRIBUTING, no arch docs despite 46 extractors"
+    },
+    {
+      "pattern": "MAINTENANCE_STRETCHED",
+      "confidence": "Medium",
+      "evidence": "535 open issues, 0/10 Maintained, 3/5 CI failures"
+    }
+  ],
+  "adoption_assessment": {
+    "verdict": "Extract",
+    "verdict_score": 42,
+    "dimensions": {
+      "WR-01": {
+        "score": 25,
+        "band": "Critical",
+        "detail": "Go CLI vs Node/Next.js web app"
+      },
+      "WR-02": {
+        "score": 30,
+        "band": "Critical",
+        "detail": "No API, CLI-only"
+      },
+      "WR-03": {
+        "score": 45,
+        "band": "Needs Work",
+        "detail": "535 issues, stretched maintenance"
+      },
+      "WR-04": {
+        "score": 85,
+        "band": "Excellent",
+        "detail": "MIT, open source, portable binary"
+      },
+      "WR-05": {
+        "score": 30,
+        "band": "Critical",
+        "detail": "Video downloading not SoNash domain"
+      },
+      "WR-06": {
+        "score": 65,
+        "band": "Healthy",
+        "detail": "8 years, 31K stars, 7 package managers"
+      }
+    },
+    "recommendation": "Extract CI generation pattern and plugin registry as architecture references. Do not adopt."
+  }
 }

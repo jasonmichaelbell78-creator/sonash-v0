@@ -1,0 +1,264 @@
+{
+  "id": "vikparuchuri-marker-2026-04-12",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "VikParuchuri/marker",
+  "slug": "vikparuchuri-marker",
+  "title": "marker",
+  "analyzed_at": "2026-04-12T15:30:00Z",
+  "depth": "standard",
+  "source_tier": "T1",
+  "tags": [
+    "repo",
+    "library",
+    "python",
+    "pdf-conversion",
+    "benchmarking",
+    "pipeline",
+    "gpl",
+    "anti-pattern"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 69,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 45,
+    "classification": "park-for-later"
+  },
+  "summary": "PDF-to-markdown converter (33.7K stars, GPL-3.0). Excellent benchmark methodology (7 methods, 2 scorers). Clean 3-stage pipeline. Critical security gaps and GPL license block adoption. Extract patterns only.",
+  "creator_view": "See creator-view.md",
+  "candidates": [
+    {
+      "name": "Benchmark registry (7 methods, 2 scorers)",
+      "type": "pattern",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["benchmarking", "registry", "methodology"]
+    },
+    {
+      "name": "3-stage pipeline architecture",
+      "type": "knowledge",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["architecture", "pipeline"]
+    },
+    {
+      "name": "ConfigParser introspection",
+      "type": "knowledge",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["architecture", "discovery"]
+    },
+    {
+      "name": "GPL_LICENSE_TRAP",
+      "type": "anti-pattern",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["licensing", "anti-pattern"]
+    },
+    {
+      "name": "SECURITY_AS_AFTERTHOUGHT",
+      "type": "anti-pattern",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "anti-pattern"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "url": "https://github.com/VikParuchuri/marker",
+    "scan_version": "4.5",
+    "files_cloned": 328,
+    "stars": 33717,
+    "language": "Python",
+    "license": "GPL-3.0",
+    "created_at": "2023-10-30",
+    "pushed_at": "2026-04-10",
+    "age_days": 530,
+    "size_kb": 18461,
+    "forks": 2333,
+    "open_issues": 403,
+    "contributors": 27,
+    "is_fork": false,
+    "is_archived": false
+  },
+  "repo_type": "library",
+  "repo_type_secondary": "tool",
+  "dimensions": {
+    "QS-01_activity": {
+      "score": 88,
+      "band": "Excellent",
+      "detail": "Pushed 2 days ago"
+    },
+    "QS-02_engagement": {
+      "score": 90,
+      "band": "Excellent",
+      "detail": "33.7K stars, 2.3K forks"
+    },
+    "QS-04_license": {
+      "score": 40,
+      "band": "Needs Work",
+      "detail": "GPL-3.0 copyleft"
+    },
+    "QS-10_community": {
+      "score": 50,
+      "band": "Needs Work",
+      "detail": "50% health, no CONTRIBUTING/SECURITY"
+    },
+    "ST-01_subprocess": {
+      "score": 35,
+      "band": "Critical",
+      "detail": "Shell injection in chunk_convert.py"
+    },
+    "ST-02_tests": {
+      "score": 82,
+      "band": "Excellent",
+      "detail": "33 test files, GPU CI, HuggingFace dataset"
+    },
+    "ST-03_test_ci": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "4 workflows, GPU-enforced, benchmark validation"
+    },
+    "ST-04_structure": {
+      "score": 82,
+      "band": "Excellent",
+      "detail": "11 modular subsystems, clean separation"
+    },
+    "ST-05_reuse": {
+      "score": 78,
+      "band": "Healthy",
+      "detail": "Strong base classes, config injection"
+    },
+    "ST-06_plugins": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "6 extension points, pluggable pipeline"
+    },
+    "ST-07_credentials": {
+      "score": 42,
+      "band": "Needs Work",
+      "detail": "AWS defaults, unmasked API keys"
+    },
+    "ST-08_path_safety": {
+      "score": 30,
+      "band": "Critical",
+      "detail": "Path traversal in upload, no PDF limits"
+    },
+    "ST-09_types": {
+      "score": 81,
+      "band": "Excellent",
+      "detail": "459 annotations, Pydantic, BlockTypes enum"
+    },
+    "ST-10_deps": {
+      "score": 75,
+      "band": "Healthy",
+      "detail": "Poetry, caret-pinned ML deps"
+    },
+    "ST-11_errors": {
+      "score": 70,
+      "band": "Healthy",
+      "detail": "Good fallbacks, over-broad catches"
+    },
+    "ST-12_registry": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "Provider, block, benchmark registries"
+    },
+    "ST-13_docs": {
+      "score": 88,
+      "band": "Excellent",
+      "detail": "567-line README with benchmarks"
+    },
+    "ST-14_scaffolding": {
+      "score": 75,
+      "band": "Healthy",
+      "detail": "Poetry, 6 CLI commands, PyPI"
+    }
+  },
+  "summary_bands": {
+    "Security": {
+      "score": 35,
+      "band": "Critical"
+    },
+    "Reliability": {
+      "score": 76,
+      "band": "Healthy"
+    },
+    "Maintainability": {
+      "score": 78,
+      "band": "Healthy"
+    },
+    "Documentation": {
+      "score": 72,
+      "band": "Healthy"
+    },
+    "Process": {
+      "score": 70,
+      "band": "Healthy"
+    },
+    "Velocity": {
+      "score": 82,
+      "band": "Excellent"
+    }
+  },
+  "absence_patterns": [
+    {
+      "pattern": "SECURITY_NEGLIGENCE",
+      "confidence": "High",
+      "evidence": "Shell injection + path traversal + credential exposure"
+    },
+    {
+      "pattern": "GOVERNANCE_DEFICIT",
+      "confidence": "High",
+      "evidence": "50% community health, no CONTRIBUTING/SECURITY/CODE_OF_CONDUCT"
+    },
+    {
+      "pattern": "LICENSE_BARRIER",
+      "confidence": "High",
+      "evidence": "GPL-3.0 blocks adoption"
+    }
+  ],
+  "adoption_assessment": {
+    "verdict": "Extract",
+    "verdict_score": 45,
+    "dimensions": {
+      "WR-01": {
+        "score": 35,
+        "band": "Critical",
+        "detail": "Python ML pipeline vs Node/Next.js web app"
+      },
+      "WR-02": {
+        "score": 25,
+        "band": "Critical",
+        "detail": "GPU required, heavy ML deps"
+      },
+      "WR-03": {
+        "score": 40,
+        "band": "Needs Work",
+        "detail": "403 issues, GPL maintenance burden"
+      },
+      "WR-04": {
+        "score": 20,
+        "band": "Critical",
+        "detail": "GPL-3.0 copyleft lock-in"
+      },
+      "WR-05": {
+        "score": 55,
+        "band": "Needs Work",
+        "detail": "PDF conversion not SoNash domain"
+      },
+      "WR-06": {
+        "score": 72,
+        "band": "Healthy",
+        "detail": "18 months, 33.7K stars, PyPI"
+      }
+    },
+    "recommendation": "GPL blocks adoption. Extract benchmark registry pattern and pipeline architecture as knowledge only."
+  }
+}
