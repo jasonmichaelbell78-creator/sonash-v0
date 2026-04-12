@@ -31,9 +31,14 @@ const { join } = pathMod; // require() destructure
 
 // Safe-fs wrappers (symlink guard + EXDEV fallback + read size guard)
 // Note: require path is ../lib because this file lives in scripts/archive/
-let safeWriteFileSync, safeAppendFileSync, readTextWithSizeGuard;
+let safeWriteFileSync, safeAppendFileSync, readTextWithSizeGuard, streamLinesSync;
 try {
-  ({ safeWriteFileSync, safeAppendFileSync, readTextWithSizeGuard } = require("../lib/safe-fs"));
+  ({
+    safeWriteFileSync,
+    safeAppendFileSync,
+    readTextWithSizeGuard,
+    streamLinesSync,
+  } = require("../lib/safe-fs"));
 } catch {
   console.error("safe-fs unavailable; cannot safely write files");
   process.exit(2);
@@ -166,7 +171,24 @@ function loadExistingIds() {
       if (typeof obj.id === "number") ids.add(obj.id);
     }
   } catch (err) {
-    console.error("Failed to read reviews.jsonl:", sanitizeError(err));
+    // Size guard tripped — fall back to streaming parse so we don't hard-fail
+    // once reviews.jsonl grows past the 2 MiB default whole-file ceiling. The
+    // string-match on err.message is deliberate: readTextWithSizeGuard throws
+    // a generic Error with this exact prefix and no dedicated code.
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes("exceeds size guard")) {
+      try {
+        streamLinesSync(REVIEWS_FILE, (line) => {
+          const obj = safeParseLine(line);
+          if (!obj) return;
+          if (typeof obj.id === "number") ids.add(obj.id);
+        });
+      } catch (streamErr) {
+        console.error("Failed to stream reviews.jsonl:", sanitizeError(streamErr));
+      }
+    } else {
+      console.error("Failed to read reviews.jsonl:", sanitizeError(err));
+    }
   }
   return ids;
 }
@@ -263,8 +285,9 @@ function parseReviewHeader(line) {
   if (!headerMatch) return null;
   const id = Number.parseInt(headerMatch[1], 10);
   // Guard against Number.parseInt returning Infinity on pathologically long
-  // digit strings, which would corrupt downstream sort order.
-  if (!Number.isFinite(id)) return null;
+  // digit strings AND against IDs beyond Number.MAX_SAFE_INTEGER, which would
+  // lose precision and corrupt dedupe/sort order downstream.
+  if (!Number.isSafeInteger(id) || id <= 0) return null;
   const titleAndDate = headerMatch[2].trim();
   const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
   const date = dateMatch ? dateMatch[1] : null;
@@ -819,6 +842,14 @@ function backupReviewsFile() {
   if (!existsSync(REVIEWS_FILE)) return;
   const bakPath = REVIEWS_FILE + ".bak";
   try {
+    // Guard the SOURCE, not just the destination: if REVIEWS_FILE itself is
+    // a symlink (deliberately or accidentally planted), copyFileSync would
+    // follow it and copy whatever the link targets into our .bak — exactly
+    // the data-exposure risk Qodo flagged in R3 compliance.
+    if (lstatSync(REVIEWS_FILE).isSymbolicLink()) {
+      log("  ⚠️ Refusing to back up: source is a symlink (continuing anyway)");
+      return;
+    }
     if (!isSafeToWrite(bakPath)) {
       log("  ⚠️ Refusing to write backup: symlink detected (continuing anyway)");
       return;
@@ -872,8 +903,25 @@ function logRepairCoverage(dedupedReviews, dedupedRetros) {
   const firstId = dedupedReviews[0]?.id ?? "?";
   const lastId = dedupedReviews.at(-1)?.id ?? "?";
   log(`     Reviews: ${dedupedReviews.length} (IDs: #${firstId}-#${lastId})`);
-  const prList = dedupedRetros.map((r) => "#" + r.pr).join(", ");
-  log(`     Retros:  ${dedupedRetros.length} (PRs: ${prList === "" ? "none" : prList})`);
+  // Filter out malformed PR numbers (non-finite NaN/Infinity are tolerated by
+  // dedupeAndSortRetros via the finite-number comparator, but must not appear
+  // in the human-readable summary as "#NaN"). Report the invalid count
+  // separately so the total still adds up.
+  const validPrs = dedupedRetros
+    .map((r) => r.pr)
+    .filter((pr) => typeof pr === "number" && Number.isFinite(pr));
+  const invalidCount = dedupedRetros.length - validPrs.length;
+  const prList = validPrs.map((pr) => "#" + pr).join(", ");
+  const malformedSuffix = invalidCount > 0 ? ` (+${invalidCount} malformed)` : "";
+  let prSummary;
+  if (prList !== "") {
+    prSummary = prList + malformedSuffix;
+  } else if (invalidCount > 0) {
+    prSummary = `${invalidCount} malformed`;
+  } else {
+    prSummary = "none";
+  }
+  log(`     Retros:  ${dedupedRetros.length} (PRs: ${prSummary})`);
   const withPatterns = dedupedReviews.filter((r) => r.patterns.length > 0);
   log(`     Patterns: ${withPatterns.length}/${dedupedReviews.length} entries have patterns`);
   const withSeverity = dedupedReviews.filter((r) => r.critical + r.major + r.minor + r.trivial > 0);
