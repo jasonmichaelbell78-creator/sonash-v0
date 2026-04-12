@@ -12,6 +12,517 @@
     "quality": "Source quality signal (e.g., production-grade, early-stage)",
     "taxonomic": "Artifact type (e.g., framework, library) — use sparingly"
   },
-  "tags": {},
-  "synonyms": {}
+  "tags": {
+    "framework": {
+      "category": "taxonomic",
+      "definition": "Opinionated scaffolding with extension points (e.g., Next.js, Django)",
+      "count": 43
+    },
+    "library": {
+      "category": "taxonomic",
+      "definition": "Focused code module called from consuming projects",
+      "count": 35
+    },
+    "research-tool": {
+      "category": "taxonomic",
+      "definition": "Tool designed for research workflows rather than production use",
+      "count": 24
+    },
+    "curated-list": {
+      "category": "taxonomic",
+      "definition": "Human-maintained awesome-list style collection of resources",
+      "count": 22
+    },
+    "documentation": {
+      "category": "taxonomic",
+      "definition": "Documentation site or reference manual as the primary artifact",
+      "count": 20
+    },
+    "application": {
+      "category": "taxonomic",
+      "definition": "Installable, runnable end-user application",
+      "count": 18
+    },
+    "blog": {
+      "category": "taxonomic",
+      "definition": "Blog or personal site publishing individual posts",
+      "count": 13
+    },
+    "utility-tool": {
+      "category": "taxonomic",
+      "definition": "Single-purpose utility performing a discrete task",
+      "count": 12
+    },
+    "tool-demo": {
+      "category": "taxonomic",
+      "definition": "Demonstration of how to use a tool, often stripped-down",
+      "count": 10
+    },
+    "example": {
+      "category": "taxonomic",
+      "definition": "Example code, cookbook, or illustration of a pattern or approach",
+      "count": 7
+    },
+    "paper": {
+      "category": "taxonomic",
+      "definition": "Academic paper, preprint, or formal research publication",
+      "count": 4
+    },
+    "template": {
+      "category": "taxonomic",
+      "definition": "Starter project or boilerplate meant to be copied and customized",
+      "count": 1
+    },
+    "claude-code": {
+      "category": "technology",
+      "definition": "Anthropic's Claude Code CLI or the Claude model family it uses",
+      "count": 18
+    },
+    "obsidian": {
+      "category": "technology",
+      "definition": "Obsidian note-taking application and its plugin ecosystem",
+      "count": 14
+    },
+    "mcp": {
+      "category": "technology",
+      "definition": "Model Context Protocol for connecting AI tools to external systems",
+      "count": 6
+    },
+    "llm": {
+      "category": "technology",
+      "definition": "Large Language Model as a technology category",
+      "count": 5
+    },
+    "tmux": {
+      "category": "technology",
+      "definition": "Terminal multiplexer for session and pane management",
+      "count": 5
+    },
+    "markdown": {
+      "category": "technology",
+      "definition": "Markdown format and its processing tooling",
+      "count": 5
+    },
+    "teammatetool": {
+      "category": "technology",
+      "definition": "TeammateTool — specific product/project referenced in analyses",
+      "count": 5
+    },
+    "oauth": {
+      "category": "technology",
+      "definition": "OAuth authentication protocol",
+      "count": 4
+    },
+    "composio": {
+      "category": "technology",
+      "definition": "Composio SaaS platform for agent tool integration",
+      "count": 4
+    },
+    "claude-md": {
+      "category": "technology",
+      "definition": "CLAUDE.md file convention for per-project AI instructions",
+      "count": 3
+    },
+    "gpt-4o": {
+      "category": "technology",
+      "definition": "OpenAI GPT-4o model",
+      "count": 2
+    },
+    "openapi": {
+      "category": "technology",
+      "definition": "OpenAPI specification for describing REST APIs",
+      "count": 2
+    },
+    "docker": {
+      "category": "technology",
+      "definition": "Docker containerization platform",
+      "count": 2
+    },
+    "github": {
+      "category": "technology",
+      "definition": "GitHub platform (API, Actions, features beyond generic git)",
+      "count": 2
+    },
+    "redis": {
+      "category": "technology",
+      "definition": "Redis in-memory data store",
+      "count": 1
+    },
+    "go": {
+      "category": "technology",
+      "definition": "Go programming language",
+      "count": 1
+    },
+    "cli": {
+      "category": "technology",
+      "definition": "Command-line interface as a deliverable surface",
+      "count": 1
+    },
+    "http": {
+      "category": "technology",
+      "definition": "HTTP protocol and its semantics",
+      "count": 1
+    },
+    "architecture": {
+      "category": "domain",
+      "definition": "System architecture as a problem space or concern",
+      "count": 13
+    },
+    "knowledge-management": {
+      "category": "domain",
+      "definition": "Organizing, capturing, and retrieving knowledge",
+      "count": 13
+    },
+    "security": {
+      "category": "domain",
+      "definition": "Security concerns, threat models, and hardening",
+      "count": 10
+    },
+    "ci-cd": {
+      "category": "domain",
+      "definition": "Continuous integration and continuous deployment pipelines",
+      "count": 7
+    },
+    "ai-agents": {
+      "category": "domain",
+      "definition": "AI agent development, coordination, and operation",
+      "count": 4
+    },
+    "saas": {
+      "category": "domain",
+      "definition": "Software-as-a-Service as a business or deployment model",
+      "count": 4
+    },
+    "authentication": {
+      "category": "domain",
+      "definition": "User authentication and session management",
+      "count": 4
+    },
+    "deployment": {
+      "category": "domain",
+      "definition": "Deploying software to production environments",
+      "count": 4
+    },
+    "testing": {
+      "category": "domain",
+      "definition": "Automated testing, test strategy, and coverage",
+      "count": 4
+    },
+    "tool-integration": {
+      "category": "domain",
+      "definition": "Integrating external tools into an application",
+      "count": 4
+    },
+    "supply-chain": {
+      "category": "domain",
+      "definition": "Software supply chain security and dependency provenance",
+      "count": 2
+    },
+    "technical-debt": {
+      "category": "domain",
+      "definition": "Managing and tracking technical debt",
+      "count": 2
+    },
+    "distributed-systems": {
+      "category": "domain",
+      "definition": "Distributed computing concerns and patterns",
+      "count": 1
+    },
+    "infrastructure": {
+      "category": "domain",
+      "definition": "Infrastructure concerns (hosting, networking, provisioning)",
+      "count": 1
+    },
+    "governance": {
+      "category": "domain",
+      "definition": "Project or organizational governance, policies, decision-making",
+      "count": 1
+    },
+    "devex": {
+      "category": "domain",
+      "definition": "Developer experience concerns",
+      "count": 1
+    },
+    "code-quality": {
+      "category": "domain",
+      "definition": "Code quality concerns beyond testing",
+      "count": 1
+    },
+    "ai-integration": {
+      "category": "domain",
+      "definition": "Integrating AI capabilities generally into applications",
+      "count": 1
+    },
+    "llm-integration": {
+      "category": "domain",
+      "definition": "Integrating LLMs specifically into applications",
+      "count": 1
+    },
+    "subagents": {
+      "category": "concept",
+      "definition": "Claude Code subagents (includes 'agents' in older usage)",
+      "count": 12
+    },
+    "personal-wiki": {
+      "category": "concept",
+      "definition": "Personal knowledge wiki pattern for individual use",
+      "count": 11
+    },
+    "multi-agent": {
+      "category": "concept",
+      "definition": "Multiple agents working together, often on parallel tasks",
+      "count": 7
+    },
+    "swarm": {
+      "category": "concept",
+      "definition": "Swarm-style agent coordination — many agents, emergent behavior",
+      "count": 7
+    },
+    "orchestration": {
+      "category": "concept",
+      "definition": "Coordinating multiple components or agents",
+      "count": 6
+    },
+    "llm-wiki": {
+      "category": "concept",
+      "definition": "LLM-powered wiki — AI-assisted knowledge base",
+      "count": 6
+    },
+    "skill": {
+      "category": "concept",
+      "definition": "Claude Code skill or similar plugin abstraction",
+      "count": 6
+    },
+    "rag-alternative": {
+      "category": "concept",
+      "definition": "Alternative approach to retrieval-augmented generation",
+      "count": 5
+    },
+    "taxonomy": {
+      "category": "concept",
+      "definition": "Classification scheme or hierarchical categorization",
+      "count": 3
+    },
+    "rag": {
+      "category": "concept",
+      "definition": "Retrieval-augmented generation",
+      "count": 2
+    },
+    "hooks": {
+      "category": "concept",
+      "definition": "Hook system for extending runtime behavior (Claude Code hooks, git hooks)",
+      "count": 2
+    },
+    "reasoning": {
+      "category": "concept",
+      "definition": "Explicit reasoning strategies or chains",
+      "count": 2
+    },
+    "contemplation": {
+      "category": "concept",
+      "definition": "Deliberate contemplation or thinking phase in agent design",
+      "count": 2
+    },
+    "depth-tiers": {
+      "category": "concept",
+      "definition": "Tiered depth levels for analysis or processing (quick/standard/deep)",
+      "count": 2
+    },
+    "plugins": {
+      "category": "concept",
+      "definition": "Plugin system for modular extension",
+      "count": 2
+    },
+    "state-machine": {
+      "category": "concept",
+      "definition": "Explicit state-machine pattern for flow control",
+      "count": 1
+    },
+    "skill-architecture": {
+      "category": "concept",
+      "definition": "Architectural patterns for building skills",
+      "count": 1
+    },
+    "ai-instructions": {
+      "category": "concept",
+      "definition": "Written instructions for AI behavior (e.g., CLAUDE.md files)",
+      "count": 1
+    },
+    "mental-model": {
+      "category": "concept",
+      "definition": "Explicit mental-model framing for a concept",
+      "count": 1
+    },
+    "marketplace": {
+      "category": "concept",
+      "definition": "Marketplace pattern for distributing plugins or tools",
+      "count": 1
+    },
+    "teams": {
+      "category": "concept",
+      "definition": "Agent teams or role-based multi-agent arrangement",
+      "count": 1
+    },
+    "extraction": {
+      "category": "technique",
+      "definition": "Extracting patterns, content, or structured data from sources",
+      "count": 4
+    },
+    "prompt-engineering": {
+      "category": "technique",
+      "definition": "Designing and refining LLM prompts",
+      "count": 2
+    },
+    "deep-research": {
+      "category": "technique",
+      "definition": "Structured multi-step research methodology",
+      "count": 2
+    },
+    "system-prompt": {
+      "category": "technique",
+      "definition": "Designing system prompts for model behavior",
+      "count": 2
+    },
+    "pipeline": {
+      "category": "technique",
+      "definition": "Pipeline-style chained processing technique",
+      "count": 2
+    },
+    "caching": {
+      "category": "technique",
+      "definition": "Caching strategies and invalidation",
+      "count": 1
+    },
+    "benchmarking": {
+      "category": "technique",
+      "definition": "Performance benchmarking methodology",
+      "count": 1
+    },
+    "filtering": {
+      "category": "technique",
+      "definition": "Filtering inputs or outputs by criteria",
+      "count": 1
+    },
+    "rate-limiting": {
+      "category": "technique",
+      "definition": "Rate-limiting techniques and backoff strategies",
+      "count": 1
+    },
+    "feature-flags": {
+      "category": "technique",
+      "definition": "Feature flag system for rollout or experimentation",
+      "count": 1
+    },
+    "jason-os-relevant": {
+      "category": "applicability",
+      "definition": "Directly applicable to the JASON-OS portable Claude Code OS vision",
+      "count": 0
+    },
+    "cas-relevant": {
+      "category": "applicability",
+      "definition": "Directly applicable to the Content Analysis System (T28) work",
+      "count": 0
+    },
+    "sonash-relevant": {
+      "category": "applicability",
+      "definition": "Directly applicable to the SoNash codebase",
+      "count": 0
+    },
+    "skill-bloat": {
+      "category": "quality",
+      "definition": "Skill system has accumulated excess complexity or breadth",
+      "count": 1
+    },
+    "code-bloat": {
+      "category": "quality",
+      "definition": "Code has accumulated excess complexity or size",
+      "count": 1
+    },
+    "dead-code": {
+      "category": "quality",
+      "definition": "Dead or unreachable code in source",
+      "count": 1
+    },
+    "commercial-oss": {
+      "category": "quality",
+      "definition": "Open-source project with commercial interests or dual licensing",
+      "count": 1
+    },
+    "platform-risk": {
+      "category": "quality",
+      "definition": "Risk from dependency on a specific platform",
+      "count": 1
+    },
+    "hallucination": {
+      "category": "quality",
+      "definition": "Source demonstrates or discusses LLM hallucination",
+      "count": 1
+    },
+    "docs-absence": {
+      "category": "quality",
+      "definition": "Source is missing meaningful documentation",
+      "count": 1
+    },
+    "best-practices": {
+      "category": "quality",
+      "definition": "Source encodes or demonstrates best practices",
+      "count": 1
+    },
+    "claims-vs-reality": {
+      "category": "quality",
+      "definition": "Source's claims don't match its actual behavior or quality",
+      "count": 1
+    },
+    "licensing": {
+      "category": "quality",
+      "definition": "Licensing concerns or patterns worth noting",
+      "count": 1
+    },
+    "knowledge-concentration": {
+      "category": "quality",
+      "definition": "Knowledge concentrated in one place (risk or benefit)",
+      "count": 1
+    },
+    "sdk-duplication": {
+      "category": "quality",
+      "definition": "Duplicated SDK surfaces across language bindings",
+      "count": 1
+    },
+    "premature-optimization": {
+      "category": "quality",
+      "definition": "Source contains or demonstrates premature optimization",
+      "count": 1
+    },
+    "flakiness": {
+      "category": "quality",
+      "definition": "Source demonstrates or discusses test or system flakiness",
+      "count": 1
+    }
+  },
+  "synonyms": {
+    "examples": "example",
+    "exemplar": "example",
+    "cookbook": "example",
+    "plugin": "plugins",
+    "ci": "ci-cd",
+    "knowledge-base": "knowledge-management",
+    "classification": "taxonomy",
+    "arxiv": "paper",
+    "claude": "claude-code",
+    "agents": "subagents"
+  },
+  "forbidden": {
+    "source_type_duplication": ["repo", "website", "document", "media"],
+    "entry_type_duplication": [
+      "pattern",
+      "anti-pattern",
+      "knowledge",
+      "content",
+      "architecture-pattern",
+      "design-principle",
+      "workflow-pattern",
+      "implementation-pattern"
+    ],
+    "too_vague": ["tool"]
+  }
 }
