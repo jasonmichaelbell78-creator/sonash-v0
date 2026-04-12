@@ -1,8 +1,9 @@
 # Session Context
 
-**Document Version**: 8.27 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.28 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-11 (Session #275 COMPLETE)
+2026-04-12 (Session #276 continuation — pre-`/clear` checkpoint for CAS tag
+quality plan execution)
 
 ## Purpose
 
@@ -29,47 +30,53 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-11 (Session #275 FOLLOW-UP SWEEP COMPLETE, PR #507
-CREATED) **Branch**: `planning-4826` **Working On**: **T39 FULLY CLOSED.** All
-T39 work plus T30 + T32 trailing work consolidated into PR #507. 28 commits, 248
-files changed, +27,130 / −16,270 lines. Branch pushed to origin, PR is OPEN and
-awaiting external review (CodeRabbit + SonarCloud + Gemini).
+**Last Checkpoint**: 2026-04-12 (Session #276 continuation — pre-`/clear`)
+**Branch**: `planning-41226` **Working On**: Ready to execute the **CAS tag
+quality plan** (`.planning/cas-tag-quality/PLAN.md`).
 
-**PR**: https://github.com/jasonmichaelbell78-creator/sonash-v0/pull/507
-(replaces closed PR #506) — title: _T39 hook drift + pattern-compliance + JSONL
-helper sweep (T30/T32 trailing work)_. Full ultra-detailed PR body preserved at
-`.research/T39_PR_BODY.md` for reference.
+**This session's work (summary)**:
 
-**Follow-up sweep summary (this session)**: 5 commits landed after the main T39
-work: (1) `6e4a4d84` NaN doc comment reword, (2) `cb129d22` parse-jsonl-line.js
-header sync across 9 copies, (3) `9ec93d4a` streamLinesSync UTF-8 StringDecoder
+1. Two Standard repo-analyses: `outline/outline` (Extract verdict, 15
+   candidates) and `tobi/qmd` (Adopt-and-Extract verdict, 18 candidates — rare
+   dual-lens score). EXTRACTIONS.md regenerated: 277 → 295 candidates across 30
+   → 31 sources.
+2. Cherry-picked 3 commits from `worktree-smtasks` into `planning-41226`:
+   - `8a75b375` — CLAUDE.md v6.0 (40% reduction) + settings cleanup (from
+     smtasks `872bffdb`)
+   - `9a22e2ee` — add T45 (hook-based skill compliance) (from `86a5f82e`)
+   - `88612a1c` — **the CAS tag quality plan itself** (from `43a33574`)
+3. Conflict resolution strategy: append-only JSONL files = **union both sides**;
+   counter/timestamp JSON + auto-generated docs = **HEAD** (newer wins);
+   `TODOS.md` = **custom merge** (HEAD base + 4 smtasks-only todos + T45
+   inserted, summary now "29 active"); `CLAUDE.md` auto-merged cleanly.
+4. Cleanup: removed 79MB of stray files from `scripts/reviews/.claude/` and
+   `scripts/reviews/.research/` (leaked from `cwd` confusion earlier).
 
-- safe-fs dual-path require, (4) `fae8efb8` JSONL helper sweep across 53 files,
-  (5) `1fd882db` saved the follow-up plan before context clear. Plus 3 state
-  drift commits (`9e126ce6`, `ef649664`, `53173b88`). All verification passed:
-  patterns 0, propagation clean, cyclomatic-cc clean, lint 16 warn / 0 err
-  (baseline), tests 3720 pass / 0 fail / 1 skip.
+**7 new commits** ahead of any remote. Working tree is clean. Tests not yet
+re-run post-cherry-pick (do this before any PR).
 
-**Code-reviewer verdict** on the follow-up sweep: OK — safe to push, 0 blockers,
-2 cosmetic non-blocking concerns (both filed as TDMS follow-ups in PR body):
-check-session-gaps.js could upgrade silent-skip to error-reporting variant;
-ecosystem-health/run-ecosystem-health.js uses absolute-path require instead of
-relative-path convention.
+**Next Step**: Execute `.planning/cas-tag-quality/PLAN.md`. Plan is APPROVED
+(user confirmed decisions 2026-04-12). Three parts:
 
-**Known skips used on push** (both user-authorized per guardrail #14):
-`SKIP_CC=1 SKIP_CC_REASON="unbaselined violations"` (44 pre-existing legacy CC
-violations, none T39-touched),
-`SKIP_CHECKS="pr-creep" SKIP_REASON="user authorized"` (27+ commits on branch —
-PR deferred until sweep complete).
+- **Part A**: Fix at source — rewrite CONVENTIONS.md §14 (taxonomic vs semantic
+  tags), cap taxonomic at 1-2 per entry, require 3-5 semantic, forbid
+  `repo`/`website`/`document`/`media` tags (redundant with `type` field). Create
+  `.research/tag-vocabulary.json`.
+- **Part B**: Retag all 236 existing entries (now 295 after this session's
+  additions) in **batches of 5-10** for user approval.
+- **Part C**: (read `PLAN.md` for full detail beyond line 60 — not read this
+  session)
 
-**Next Step**: Await PR #507 external review cycle. When CodeRabbit/SonarCloud
-feedback arrives, process via `/pr-review`. After merge, resume **T29 Wave 4
-Step 10 #3 = crawl4ai** (`unclecode/crawl4ai`, Standard depth default). No
-uncommitted T39 work remains — ready to start next initiative.
+**Plan file location**: `.planning/cas-tag-quality/PLAN.md` (landed in commit
+`88612a1c`).
 
-**Uncommitted Work**: Possible residual `.claude/override-log.jsonl` drift from
-the push operation itself (infinite-loop edge case — committing it generates
-another entry). Safe to ignore; next routine commit will sweep it.
+**Uncommitted Work**: None.
+
+**Smtasks worktree**: Still exists at
+`C:/Users/jason/Workspace/dev-projects/sonash-v0/.claude/worktrees/smtasks` on
+branch `worktree-smtasks` at `43a33574`. All 3 commits are now replicated on
+`planning-41226` via cherry-pick — if user wants to remove the worktree,
+`git worktree remove .claude/worktrees/smtasks`.
 
 ---
 
@@ -77,12 +84,13 @@ another entry). Safe to ignore; next routine commit will sweep it.
 
 **Current Session Count**: 276 (since Jan 1, 2026)
 
-> **Session #276 handoff (mid-session):** T29 Wave 4 Step 10 — 8 of 12 repos
-> done. Completed this session: ArchiveBox (#4), crawl4ai (#5), lux (#6), marker
-> (#7), nitter (#8). Remaining 4: surya, reader, tesseract, outline/qmd.
-> repo-analysis SKILL.md v4.5 (process fixes). generate-extractions-md.js now
-> produces TOC. EXTRACTIONS.md regenerated from journal (262 candidates, 29
-> sources). 2 feedback memories saved. Branch: `planning-41226`.
+> **Session #276 handoff (continuation, pre-`/clear` 2026-04-12):** Added 2
+> Standard analyses this continuation — `outline/outline` + `tobi/qmd`.
+> EXTRACTIONS.md now 295 candidates / 31 sources. Cherry-picked 3 commits from
+> `worktree-smtasks` onto `planning-41226`: CLAUDE.md v6.0, T45 todo, and the
+> CAS tag quality PLAN.md. **Next session priority: execute
+> `.planning/cas-tag-quality/PLAN.md`.** For exact Wave 4 Step 10 progress,
+> check `.research/analysis/` + `git log`. Branch: `planning-41226`.
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -286,8 +294,9 @@ CAUGHT):
 | **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                            |
 | **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                           |
 | **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded.  |
-| **T28 Content Analysis System**    | E2E DONE      | 25 sources, 236 candidates in journal. MinerU (#274) added 9 entries.            |
-| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10: **2 of 12** (firecrawl, MinerU). Standard. Remaining 10.         |
+| **T28 Content Analysis System**    | E2E DONE      | 31 sources, 295 candidates in journal (+outline, +qmd in #276 cont.).            |
+| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10 in progress; exact count in `.research/analysis/` + `git log`.    |
+| **T40 CAS tag quality**            | PLAN APPROVED | `.planning/cas-tag-quality/PLAN.md` ready for execution. Top priority next.      |
 | **T39 Hook Drift Loop**            | CLOSED        | Drift loop + pattern-compliance 0/0 + Option D CC refactor. 316→0. Needs new PR. |
 | **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                          |
 | **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                |
@@ -314,6 +323,12 @@ Actions, manual setup).
 ## Next Session Goals
 
 ### Immediate Priority
+
+0. **CAS tag quality plan execution (T40)** — NEW TOP PRIORITY. Plan lives at
+   `.planning/cas-tag-quality/PLAN.md` (landed commit `88612a1c`). APPROVED,
+   ready for implementation. Part A: rewrite CONVENTIONS.md §14
+   - create `.research/tag-vocabulary.json`. Part B: retag 295 existing entries
+     in batches of 5-10 for user approval. Read PLAN.md fully before starting.
 
 1. **T39 continuation PR review + merge** — Review the new T39 PR created after
    this session's commit (PR #506 was closed while paused; new PR number TBD).
