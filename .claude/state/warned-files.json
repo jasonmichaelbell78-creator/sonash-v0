@@ -1,11 +1,1 @@
-{
-  ".claude\\skills\\doc-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  ".claude\\skills\\health-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  ".claude\\skills\\hook-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  ".claude\\skills\\pr-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  ".claude\\skills\\script-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  ".claude\\skills\\session-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  ".claude\\skills\\skill-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  ".claude\\skills\\tdms-ecosystem-audit\\scripts\\lib\\safe-fs.js": 1,
-  "scripts\\lib\\safe-fs.js": 1
-}
+{}
