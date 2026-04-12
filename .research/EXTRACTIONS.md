@@ -4,7 +4,7 @@ Auto-generated from `extraction-journal.jsonl` by
 `scripts/cas/generate-extractions-md.js`. Do not edit directly — run
 `node scripts/cas/generate-extractions-md.js` to rebuild.
 
-**Total:** 262 candidates across 29 sources | **By decision:** defer: 238,
+**Total:** 295 candidates across 31 sources | **By decision:** defer: 271,
 investigate: 2, extract: 20, skip: 2
 
 ---
@@ -26,9 +26,11 @@ investigate: 2, extract: 20, skip: 2
 | [ksharlandjiev/bedrock-summarize-audio-video-text](#ksharlandjiev-bedrock-summarize-audio-video-text-repo)                                                                                                               | repo     | 10    | 5       | 1         | 2            | 2       |
 | [mendableai/firecrawl](#mendableai-firecrawl-repo)                                                                                                                                                                       | repo     | 21    | 5       | 5         | 4            | 7       |
 | [opendatalab/MinerU](#opendatalab-mineru-repo)                                                                                                                                                                           | repo     | 19    | 3       | 7         | 7            | 2       |
+| [outline/outline](#outline-outline-repo)                                                                                                                                                                                 | repo     | 15    | 9       | 2         | 4            | 0       |
 | [public-apis/public-apis](#public-apis-public-apis-repo)                                                                                                                                                                 | repo     | 10    | 3       | 1         | 2            | 4       |
 | [safishamsi/graphify](#safishamsi-graphify-repo)                                                                                                                                                                         | repo     | 9     | 3       | 3         | 3            | 0       |
 | [teng-lin/notebooklm-py](#teng-lin-notebooklm-py-repo)                                                                                                                                                                   | repo     | 13    | 6       | 1         | 2            | 4       |
+| [tobi/qmd](#tobi-qmd-repo)                                                                                                                                                                                               | repo     | 18    | 10      | 5         | 3            | 0       |
 | [unclecode/crawl4ai](#unclecode-crawl4ai-repo)                                                                                                                                                                           | repo     | 7     | 3       | 2         | 2            | 0       |
 | [unstructured-io/unstructured](#unstructured-io-unstructured-repo)                                                                                                                                                       | repo     | 13    | 5       | 4         | 3            | 1       |
 | [VikParuchuri/marker](#vikparuchuri-marker-repo)                                                                                                                                                                         | repo     | 5     | 1       | 2         | 2            | 0       |
@@ -262,6 +264,26 @@ investigate: 2, extract: 20, skip: 2
 | MinerU 1.x technical report                           | content      | skip     | 2026-04-10 | low     | E0     | low       | -            | arxiv 2409.18839 - 18 authors, PDF-Extract-Kit + pre/post-processing rules. Background reading only. Low direct relevanc  |
 | MinerU 2.5 technical report                           | content      | defer    | 2026-04-10 | medium  | E0     | medium    | -            | arxiv 2509.22186 - 61 authors, 1.2B VLM, coarse-to-fine two-stage parsing. Low direct relevance but the two-stage framin  |
 
+## outline/outline (repo)
+
+| Candidate                                           | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| --------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| MCP OAuth scope-filtered tool registration          | pattern      | defer    | 2026-04-12 | high    | E2     | high      | -            | Production MCP server filtering tools by OAuth scopes. 7 tool modules. Uses @modelcontextprotocol/sdk with Zod. JASON-OS |
+| Command pattern (transport-agnostic business logic) | knowledge    | defer    | 2026-04-12 | high    | E1     | high      | -            | ~20 commands in server/commands/ (~8700 lines). Both API routes and MCP tools delegate to same commands. Transport-agnos |
+| PluginManager hook type registry                    | pattern      | defer    | 2026-04-12 | high    | E2     | high      | -            | 10 hook types, priority ordering, auto-discovery via glob, plugin.json manifests. Structural client/server/shared split  |
+| buildAPIContext() MCP-to-API bridge                 | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Bridge function constructing Koa APIContext from MCP request context. Enables MCP tool reuse of existing API infrastruct |
+| @Encrypted field-level decorator                    | pattern      | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Sequelize decorator for transparent AES field encryption. Applied at model layer. Relevant to SoNash M4.5 Security & Pri |
+| TestServer ephemeral-port integration testing       | pattern      | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Custom test utility starting real Koa server on port 0. Tests exercise actual transport, middleware, serialization.      |
+| Abstract generic Store<T> with request dedup        | pattern      | defer    | 2026-04-12 | medium  | E1     | medium    | -            | MobX base store with generic typing, observable data Map, request deduplication via Symbol-keyed promise tracking.       |
+| PersistenceExtension race condition prevention      | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | SELECT FOR UPDATE in Y.js persistence to prevent concurrent write races. General lesson in collaborative editing safety. |
+| Content-as-code onboarding templates                | pattern      | defer    | 2026-04-12 | low     | E0     | medium    | -            | 4 markdown templates in server/onboarding/ injected into new workspaces. Relevant to SoNash M7.3.                        |
+| Presenter response formatting layer                 | pattern      | defer    | 2026-04-12 | low     | E1     | low       | -            | JSON response formatting between models and API/MCP consumers. Per-model presenters.                                     |
+| Bull queue processor BaseProcessor                  | pattern      | defer    | 2026-04-12 | low     | E1     | low       | -            | Base class for async job processors. ~20 specialized implementations for event-driven background work.                   |
+| RPC-over-POST API pattern                           | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | POST for everything including reads. Abandons HTTP caching and semantics. Don't regress from SoNash REST-like approach.  |
+| Externalized documentation                          | anti-pattern | defer    | 2026-04-12 | low     | E0     | high      | -            | All contributor docs externalized. No CONTRIBUTING.md, .env.example, or API docs in repo. SoNash in-repo approach is bet |
+| CSP wildcard security debt                          | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | connect-src: \* from Safari WebSocket bug fixed in Safari 15. Temporary workaround became permanent.                     |
+| Fat route files                                     | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | documents.ts handles ~30 endpoints. Command pattern keeps logic clean but routing layer is discovery burden.             |
+
 ## public-apis/public-apis (repo)
 
 | Candidate                                | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                  |
@@ -308,6 +330,29 @@ investigate: 2, extract: 20, skip: 2
 | AGENTS.md Separation                | knowledge    | defer       | 2026-04-06 | low     | E0     | medium    | -            | Separate file for multi-agent guidance. Consider if CLAUDE.md Section 7 grows.                                            |
 | Undocumented API Dependency         | anti-pattern | defer       | 2026-04-06 | medium  | E0     | medium    | -            | Entire project wraps obfuscated Google RPC endpoints. Prefer documented APIs.                                             |
 | Over-Engineered Install Mechanism   | anti-pattern | defer       | 2026-04-06 | low     | E0     | medium    | -            | 280 lines for copy file + stamp version. Extract pattern, not complexity.                                                 |
+
+## tobi/qmd (repo)
+
+| Candidate                                                   | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Claude Code plugin manifest (marketplace.json)              | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Plugin manifest bundling MCP server + skills for 'claude plugin marketplace add' installation. Enables JASON-OS portabil |
+| Skill frontmatter: allowed-tools + disable-model-invocation | pattern      | defer    | 2026-04-12 | high    | E0     | high      | -            | Frontmatter declarations enforcing tool access restrictions and preventing auto-invocation on destructive skills.        |
+| MCP server as CLI subcommand (3 transports)                 | pattern      | defer    | 2026-04-12 | high    | E2     | high      | -            | MCP server via 'qmd mcp' subcommand. Stdio, HTTP foreground, HTTP daemon with PID file management. Reference for JASON-O |
+| Query DSL with typed sub-queries (EBNF grammar)             | pattern      | defer    | 2026-04-12 | high    | E2     | high      | -            | Formal EBNF grammar for search queries with typed sub-queries (lex/vec/hyde) and intent disambiguation. 182-line spec.   |
+| Scored markdown chunking algorithm                          | pattern      | defer    | 2026-04-12 | medium  | E1     | high      | -            | Break point scoring H1=100 down to line=1 with squared distance decay. 900 tokens/chunk, 15% overlap. Applicable to SoNa |
+| RRF + position-aware blending                               | knowledge    | defer    | 2026-04-12 | medium  | E1     | high      | -            | Reciprocal Rank Fusion with k=60, original query 2x weight, top-rank bonus, position-aware blend 75/60/40% for ranks 1-3 |
+| Fixture-based eval harness with difficulty tiers            | pattern      | defer    | 2026-04-12 | medium  | E1     | high      | -            | Easy/medium/hard query classification with expected docs. Precision@k, recall, MRR, F1 across 4 backends.                |
+| Release skill with disabled auto-invocation                 | pattern      | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Release workflow with disable-model-invocation: true. Enforces exact dep pinning. Keep a Changelog format.               |
+| node-llama-cpp for privacy-first local inference            | knowledge    | defer    | 2026-04-12 | high    | E0     | high      | -            | Node wrapper for llama.cpp. Runs GGUF models locally with GPU acceleration. Relevant to SoNash privacy-first vision.     |
+| AST-aware code chunking via tree-sitter                     | pattern      | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Tree-sitter parsing for TS/JS/Python/Go/Rust. Chunks at function/class/import boundaries.                                |
+| Daemon mode with PID file management                        | pattern      | defer    | 2026-04-12 | low     | E1     | medium    | -            | HTTP server --daemon flag. PID at ~/.cache/qmd/mcp.pid. Idle context disposal after 5 min.                               |
+| LoRA SFT on small LLMs for domain tasks                     | knowledge    | defer    | 2026-04-12 | high    | E0     | low       | -            | LoRA rank 16, alpha 32, Qwen3-1.7B, 5 epochs. 92% eval score. $1.50 per run on HF A10G.                                  |
+| HuggingFace Jobs for cheap cloud training                   | knowledge    | defer    | 2026-04-12 | medium  | E0     | low       | -            | hf jobs uv run executes SFT for ~$1.50. Self-contained scripts.                                                          |
+| Rule-based reward function for RL                           | knowledge    | defer    | 2026-04-12 | medium  | E0     | low       | -            | 5-dimension scoring. Deterministic, no LLM judge. Suitable as RL signal.                                                 |
+| Nix flake with home-manager module                          | pattern      | defer    | 2026-04-12 | low     | E2     | low       | -            | flake.nix with homeModules.default for NixOS users. programs.qmd.enable option.                                          |
+| Fine-tuning before exhausting prompt engineering            | anti-pattern | defer    | 2026-04-12 | medium  | E0     | medium    | -            | qmd tried GEPA prompt optimization before SFT. Order matters - prompt first, then fine-tune.                             |
+| Caret ranges in reproducible-install packages               | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | Exact pins required for platform-binary shipping packages. SoNash uses carets.                                           |
+| Skill without invocation gate on destructive ops            | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Destructive skills should declare disable-model-invocation. SoNash skills rely on prose guardrails.                      |
 
 ## unclecode/crawl4ai (repo)
 

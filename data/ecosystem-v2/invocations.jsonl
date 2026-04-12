@@ -43,3 +43,5 @@
 {"id":"inv-1776012909604-23708-1","date":"2026-04-12","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual"},"skill":"repo-analysis","type":"skill","success":true,"tokens":null,"context":{}}
 {"id":"inv-1776015636247-19744-1","date":"2026-04-12","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual"},"skill":"repo-analysis","type":"skill","success":true,"tokens":null,"context":{}}
 {"id":"inv-1776019175943-36704-1","date":"2026-04-12","schema_version":1,"completeness":"full","completeness_missing":[],"origin":{"type":"manual"},"skill":"repo-analysis","type":"skill","success":true,"tokens":null,"context":{}}
+{"id":"inv-1776021885363-52600-1","date":"2026-04-12","schema_version":1,"completeness":"stub","completeness_missing":[],"origin":{"type":"manual"},"skill":"repo-analysis","type":"skill","success":true,"tokens":null,"context":{}}
+{"id":"inv-1776027399467-51004-1","date":"2026-04-12","schema_version":1,"completeness":"stub","completeness_missing":[],"origin":{"type":"manual"},"skill":"repo-analysis","type":"skill","success":true,"tokens":null,"context":{}}

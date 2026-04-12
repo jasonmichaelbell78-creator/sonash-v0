@@ -7,7 +7,16 @@
   "title": "qmd",
   "analyzed_at": "2026-04-09T10:47:45.076Z",
   "depth": "quick",
-  "tags": ["repo", "tool", "typescript", "repository", "analysis"],
+  "tags": [
+    "repo",
+    "tool",
+    "typescript",
+    "mcp-server",
+    "claude-code-plugin",
+    "hybrid-search",
+    "local-ai",
+    "rag"
+  ],
   "scoring": {
     "quality_band": "Excellent",
     "quality_score": 81,
@@ -15,8 +24,8 @@
     "personal_fit_score": 50,
     "classification": "park-for-later"
   },
-  "summary": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking — all on-device via node-llama-cpp with GGUF models.  The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context.",
-  "creator_view": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking — all on-device via node-llama-cpp with GGUF models. The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context. This is a retrieval pattern, not extraction, but directly relevant to T28's analysis layer — how do you search across heterogeneous extracted content? Also has MCP server with query/get/multi_get/status tools. TypeScript.",
+  "summary": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking \u00e2\u20ac\u201d all on-device via node-llama-cpp with GGUF models.  The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context.",
+  "creator_view": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking \u00e2\u20ac\u201d all on-device via node-llama-cpp with GGUF models. The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context. This is a retrieval pattern, not extraction, but directly relevant to T28's analysis layer \u00e2\u20ac\u201d how do you search across heterogeneous extracted content? Also has MCP server with query/get/multi_get/status tools. TypeScript.",
   "candidates": [],
   "last_synthesized_at": null,
   "schemaVersion": "4.3",
@@ -60,7 +69,7 @@
       "score": 85
     }
   },
-  "creatorLens": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking — all on-device via node-llama-cpp with GGUF models. The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context. This is a retrieval pattern, not extraction, but directly relevant to T28's analysis layer — how do you search across heterogeneous extracted content? Also has MCP server with query/get/multi_get/status tools. TypeScript.",
+  "creatorLens": "QMD is a local search engine for docs/knowledge bases using BM25 + vector + LLM reranking \u00e2\u20ac\u201d all on-device via node-llama-cpp with GGUF models. The KEY insight is the context tree: 'qmd context add qmd://notes \"Personal notes\"' attaches hierarchical context to collections, and matching sub-documents return their parent context. This is a retrieval pattern, not extraction, but directly relevant to T28's analysis layer \u00e2\u20ac\u201d how do you search across heterogeneous extracted content? Also has MCP server with query/get/multi_get/status tools. TypeScript.",
   "context": {
     "t28Relevance": "Context tree pattern for hierarchical retrieval across heterogeneous sources. MCP server with search tools. Local-first GGUF models. TypeScript.",
     "cluster": "E",
