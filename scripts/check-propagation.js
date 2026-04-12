@@ -284,14 +284,18 @@ function parseDiff(diffOutput) {
 // Regex sets for extractModifiedFunctions, lifted out of the function body so
 // each call to extractModifiedFunctions reuses the same compiled literals and
 // the function itself stays below the cognitive-complexity ceiling.
+// NOTE: comments here deliberately avoid writing out the literal
+// `function <name>(` form, because this file is parsed by its own
+// extractModifiedFunctions during pre-push, and prose examples would
+// otherwise be matched as spurious added/removed function declarations.
 const ADD_FUNCTION_PATTERNS = [
-  // function declarations: function loadJsonl(
+  // Added-line function declarations
   /^\+.*\bfunction\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
-  // const/let/var assignments: const loadJsonl = function/arrow
+  // Added-line const/let/var assignments to a function or arrow
   /^\+.*\b(?:const|let|var)\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*(?:function|\(|async\s)/gm,
-  // Method definitions in objects/classes: loadJsonl(args) { or loadJsonl: function
+  // Added-line method definitions in objects/classes
   /^\+\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*\{/gm,
-  // Export function: export function loadJsonl(
+  // Added-line export function declarations (default or named)
   /^\+.*\bexport\s+(?:default\s+)?function\s+([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\(/gm,
 ];
 

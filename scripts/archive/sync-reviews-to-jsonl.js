@@ -300,8 +300,8 @@ function parseReviewHeader(line) {
   const id = Number.parseInt(headerMatch[1], 10);
   // Guard against Infinity from pathologically long digit strings AND against
   // values beyond Number.MAX_SAFE_INTEGER which would silently lose precision
-  // during dedupe/sort. isSafeInteger covers both cases plus NaN; the > 0
-  // check normalizes on the domain invariant (review IDs are positive).
+  // during dedupe/sort. isSafeInteger covers both cases plus Number.NaN; the
+  // > 0 check normalizes on the domain invariant (review IDs are positive).
   if (!Number.isSafeInteger(id) || id <= 0) return null;
   const titleAndDate = headerMatch[2].trim();
   const dateMatch = titleAndDate.match(/\((\d{4}-\d{2}-\d{2})\)\s*$/);
@@ -902,8 +902,8 @@ function dedupeAndSortRetros(retros) {
     seen.add(key);
     out.push(r);
   }
-  // Use a finite-number-safe comparator so malformed pr values (NaN, Infinity)
-  // don't produce unstable sort order.
+  // Use a finite-number-safe comparator so malformed pr values (Number.NaN,
+  // Infinity) don't produce unstable sort order.
   out.sort((a, b) => {
     const aPr = typeof a.pr === "number" && Number.isFinite(a.pr) ? a.pr : Number.POSITIVE_INFINITY;
     const bPr = typeof b.pr === "number" && Number.isFinite(b.pr) ? b.pr : Number.POSITIVE_INFINITY;
@@ -918,10 +918,10 @@ function logRepairCoverage(dedupedReviews, dedupedRetros) {
   const firstId = dedupedReviews[0]?.id ?? "?";
   const lastId = dedupedReviews.at(-1)?.id ?? "?";
   log(`     Reviews: ${dedupedReviews.length} (IDs: #${firstId}-#${lastId})`);
-  // Filter out malformed PR numbers (non-finite NaN/Infinity are tolerated by
-  // dedupeAndSortRetros via the finite-number comparator, but must not appear
-  // in the human-readable summary as "#NaN"). Report the invalid count
-  // separately so the total still adds up.
+  // Filter out malformed PR numbers (non-finite Number.NaN / Infinity are
+  // tolerated by dedupeAndSortRetros via the finite-number comparator, but
+  // must not appear in the human-readable summary as a literal "#" + Number.NaN
+  // token). Report the invalid count separately so the total still adds up.
   const validPrs = dedupedRetros
     .map((r) => r.pr)
     .filter((pr) => typeof pr === "number" && Number.isFinite(pr));
