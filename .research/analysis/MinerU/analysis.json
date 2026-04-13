@@ -96,7 +96,7 @@
       "tags": ["anti-pattern", "claims-vs-reality", "documentation"]
     }
   ],
-  "last_synthesized_at": null,
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "opendatalab/MinerU",
@@ -117,16 +117,40 @@
     "fork": false
   },
   "summaryBands": {
-    "security": { "band": "C", "score": 68 },
-    "reliability": { "band": "A", "score": 94 },
-    "maintainability": { "band": "B", "score": 78 },
-    "documentation": { "band": "B", "score": 70 },
-    "process": { "band": "A", "score": 85 },
-    "velocity": { "band": "A", "score": 95 }
+    "security": {
+      "band": "C",
+      "score": 68
+    },
+    "reliability": {
+      "band": "A",
+      "score": 94
+    },
+    "maintainability": {
+      "band": "B",
+      "score": 78
+    },
+    "documentation": {
+      "band": "B",
+      "score": 70
+    },
+    "process": {
+      "band": "A",
+      "score": 85
+    },
+    "velocity": {
+      "band": "A",
+      "score": 95
+    }
   },
   "dimensionBands": {
-    "architecture": { "band": "A", "score": 88 },
-    "tests": { "band": "F", "score": 18 }
+    "architecture": {
+      "band": "A",
+      "score": 88
+    },
+    "tests": {
+      "band": "F",
+      "score": 18
+    }
   },
   "scoringLenses": {
     "adoption": {

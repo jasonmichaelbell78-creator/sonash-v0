@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-04-08T12:11:38.986Z",
+  "timestamp": "2026-04-13T12:40:05.164Z",
   "healthScore": {
     "grade": "A",
-    "score": 95,
-    "measuredPct": 95,
+    "score": 94,
+    "measuredPct": 86,
     "breakdown": {
       "code": {
         "score": 100,
@@ -11,7 +11,7 @@
         "measured": true
       },
       "security": {
-        "score": 100,
+        "score": 90,
         "weight": 0.15,
         "measured": true
       },
@@ -21,9 +21,9 @@
         "measured": true
       },
       "test-results": {
-        "score": 80,
+        "score": null,
         "weight": 0.1,
-        "measured": true
+        "measured": false
       },
       "learning": {
         "score": 100,
@@ -31,7 +31,7 @@
         "measured": true
       },
       "skip-abuse": {
-        "score": 40,
+        "score": 50,
         "weight": 0.02,
         "measured": true
       },
@@ -46,12 +46,12 @@
         "measured": true
       },
       "hook-health": {
-        "score": 60,
+        "score": 50,
         "weight": 0.03,
         "measured": true
       },
       "hook-completeness": {
-        "score": 90,
+        "score": 80,
         "weight": 0.02,
         "measured": true
       },
@@ -141,7 +141,7 @@
         "measured": true
       },
       "review-archive": {
-        "score": 90,
+        "score": 100,
         "weight": 0.01,
         "measured": true
       },
@@ -151,7 +151,7 @@
         "measured": true
       },
       "hook-warnings": {
-        "score": 10,
+        "score": 30,
         "weight": 0.01,
         "measured": true
       },
@@ -188,9 +188,9 @@
     }
   },
   "summary": {
-    "errors": 4,
-    "warnings": 125,
-    "info": 6
+    "errors": 2,
+    "warnings": 568,
+    "info": 118
   },
   "categoryScores": {
     "code": {
@@ -200,7 +200,7 @@
     },
     "security": {
       "errors": 0,
-      "warnings": 0,
+      "warnings": 1,
       "info": 0
     },
     "session": {
@@ -224,28 +224,28 @@
       "info": 0
     },
     "hook-warnings": {
-      "errors": 1,
-      "warnings": 6,
-      "info": 0
+      "errors": 0,
+      "warnings": 7,
+      "info": 1
     },
     "skip-abuse": {
-      "errors": 2,
-      "warnings": 0,
+      "errors": 1,
+      "warnings": 2,
       "info": 0
     },
     "test-results": {
       "errors": 0,
-      "warnings": 2,
-      "info": 1
+      "warnings": 0,
+      "info": 0
     },
     "hook-health": {
       "errors": 1,
-      "warnings": 1,
+      "warnings": 2,
       "info": 0
     },
     "hook-completeness": {
       "errors": 0,
-      "warnings": 1,
+      "warnings": 2,
       "info": 0
     },
     "session-state": {
@@ -270,7 +270,7 @@
     },
     "review-archive": {
       "errors": 0,
-      "warnings": 1,
+      "warnings": 0,
       "info": 0
     },
     "crossdoc": {
@@ -390,12 +390,12 @@
     },
     "enforcement-verification": {
       "errors": 0,
-      "warnings": 1,
+      "warnings": 0,
       "info": 0
     },
     "pending-refinements": {
       "errors": 0,
-      "warnings": 112,
+      "warnings": 553,
       "info": 0
     }
   }

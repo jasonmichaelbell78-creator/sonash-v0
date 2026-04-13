@@ -30,6 +30,49 @@ const { safeParseLine } = require("../lib/parse-jsonl-line");
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const JOURNAL_PATH = path.join(PROJECT_ROOT, ".research", "extraction-journal.jsonl");
+const EXTRACTIONS_MD_PATH = path.join(PROJECT_ROOT, ".research", "EXTRACTIONS.md");
+
+// Step 10.5 extended checks: filename/ID patterns cited from Creator View
+// that count as "specific citations" per AUDIT_SPEC check 5a.
+const CITATION_ARTIFACT_NAMES = [
+  "deep-read.md",
+  "content-eval.jsonl",
+  "coverage-audit.jsonl",
+  "findings.jsonl",
+  "value-map.json",
+  "summary.md",
+  "transcript.md",
+];
+const CITATION_FINDING_RE = /\bF-?\d+\b/; // F-001, F001, F-42
+const CITATION_EVAL_ID_RE = /\b[K-P]-?\d+\b/; // K1, K-1 style IDs used in gist eval entries
+// Path-file extensions treated as citation markers when mentioned in prose.
+const CITATION_FILE_EXTS = new Set([
+  "py",
+  "md",
+  "mdx",
+  "js",
+  "jsx",
+  "ts",
+  "tsx",
+  "json",
+  "jsonl",
+  "yaml",
+  "yml",
+  "sh",
+  "rs",
+  "go",
+  "rb",
+  "php",
+  "html",
+  "css",
+  "scss",
+  "txt",
+  "rst",
+  "sql",
+  "toml",
+  "cfg",
+  "ini",
+]);
 
 // CONVENTIONS Section 13.1: MUST artifacts
 // analysis.json = all depths. value-map + creator-view = Standard/Deep only.
@@ -322,6 +365,372 @@ function checkBehavioral(dir, slug, sourceType) {
   return results;
 }
 
+// ---------------------------------------------------------------------------
+// Step 10.5 extended checks (folded into self-audit per T29 Session #277).
+// Checks 5a, 5c, 6a, 6b, 6c, 7b, 7c, 8 from AUDIT_SPEC.md. Skipped: 5b (prose
+// style — heuristics too noisy), 7a (research-index depth match — retired per
+// Cat B3: research-index.jsonl is deep-research topic index, not CAS).
+// ---------------------------------------------------------------------------
+
+function countValueMapCandidates(vmData) {
+  // Dedupe by lowercase name so value-maps with the same candidate classified
+  // under two split-keys (e.g., both knowledgeCandidates and
+  // antiPatternCandidates) count as one for 6a journal-count parity.
+  const seen = new Set();
+  const addAll = (arr) => {
+    if (!Array.isArray(arr)) return;
+    for (const c of arr) {
+      const name = (c.name || c.title || "").toString().trim().toLowerCase();
+      if (name) seen.add(name);
+    }
+  };
+  if (Array.isArray(vmData.candidates)) {
+    addAll(vmData.candidates);
+  } else {
+    addAll(vmData.patternCandidates);
+    addAll(vmData.knowledgeCandidates);
+    addAll(vmData.contentCandidates);
+    addAll(vmData.antiPatternCandidates);
+  }
+  return seen.size;
+}
+
+function collectJournalEntries(source) {
+  const entries = [];
+  let raw;
+  try {
+    raw = safeReadText(JOURNAL_PATH);
+  } catch {
+    return entries;
+  }
+  for (const line of raw.split("\n")) {
+    if (!line.trim()) continue;
+    const entry = safeParseLine(line);
+    if (!entry) continue;
+    if (matchesSource(entry.source, source)) entries.push(entry);
+  }
+  return entries;
+}
+
+function countCitations(creatorViewText) {
+  if (!creatorViewText) return 0;
+  let hits = 0;
+  for (const name of CITATION_ARTIFACT_NAMES) {
+    if (creatorViewText.includes(name)) hits++;
+  }
+  const findingMatches = creatorViewText.match(new RegExp(CITATION_FINDING_RE.source, "g"));
+  if (findingMatches) hits += findingMatches.length;
+  const evalMatches = creatorViewText.match(new RegExp(CITATION_EVAL_ID_RE.source, "g"));
+  if (evalMatches) hits += evalMatches.length;
+  // Count file-path tokens that look like specific artifact references.
+  // Two patterns: backtick-wrapped paths AND bare file references with a
+  // recognized extension (e.g., "benchmarks/overall/registry.py" in prose).
+  const seen = new Set();
+  const addIfFilepath = (token) => {
+    if (!token) return;
+    if (token.includes(" ")) return;
+    if (token.startsWith("http://") || token.startsWith("https://")) return;
+    if (token.includes("<") || token.includes(">")) return; // skip <placeholders>
+    if (token.includes("/") || /\.[a-zA-Z0-9]{2,5}$/.test(token)) {
+      if (!seen.has(token)) {
+        seen.add(token);
+        hits++;
+      }
+    }
+  };
+  const backtickRe = /`([^`\n]{3,120})`/g;
+  collectBacktickTokens(backtickRe, creatorViewText, addIfFilepath);
+  // Bare file refs: word boundaries around path-like tokens. Extension filter
+  // is applied programmatically to keep the regex simple (no large alternation).
+  const tokenRe = /(?<![A-Za-z0-9_/.-])([A-Za-z0-9_.-][A-Za-z0-9_./-]{2,119})(?![A-Za-z0-9_/.-])/g;
+  collectExtensionTokens(tokenRe, creatorViewText, addIfFilepath);
+  return hits;
+}
+
+function collectBacktickTokens(re, text, visit) {
+  for (const match of text.matchAll(re)) visit(match[1]);
+}
+
+function collectExtensionTokens(re, text, visit) {
+  for (const match of text.matchAll(re)) {
+    const token = match[1];
+    const dot = token.lastIndexOf(".");
+    if (dot < 1 || dot === token.length - 1) continue;
+    if (CITATION_FILE_EXTS.has(token.slice(dot + 1).toLowerCase())) visit(token);
+  }
+}
+
+function check5aSpecificCitations(dir, results) {
+  const creatorViewPath = path.join(dir, "creator-view.md");
+  let text;
+  try {
+    text = safeReadText(creatorViewPath);
+  } catch {
+    return; // creator-view missing — already covered by MUST check
+  }
+  const count = countCitations(text);
+  if (count >= 2) {
+    results.pass.push(`Creator View cites >=2 specific items (${count} refs found)`);
+  } else {
+    results.fail.push(
+      `Creator View has only ${count} specific citation(s) to deep-read/content-eval/findings — Step 10.5 check 5a requires >=2`
+    );
+  }
+}
+
+// Prefixes/filenames that unambiguously identify SoNash home-repo paths.
+// Source-repo paths from analyzed repos (e.g., docling's docs/concepts/*)
+// are intentionally excluded to avoid false positives.
+const HOME_REPO_PREFIXES = [
+  ".claude/",
+  ".research/",
+  "scripts/cas/",
+  "scripts/lib/",
+  "scripts/reviews/",
+  "scripts/debt/",
+  "scripts/docs/",
+  "docs/agent_docs/",
+  "functions/src/",
+  "functions/lib/",
+];
+const HOME_REPO_FILES = new Set([
+  "CLAUDE.md",
+  "ROADMAP.md",
+  "AI_WORKFLOW.md",
+  "SESSION_CONTEXT.md",
+  "firebase.json",
+  "firestore.rules",
+  "package.json",
+  "tsconfig.json",
+]);
+
+function isHomeRepoRef(token) {
+  if (HOME_REPO_FILES.has(token)) return true;
+  for (const prefix of HOME_REPO_PREFIXES) {
+    if (token.startsWith(prefix)) return true;
+  }
+  return false;
+}
+
+function isSkippableBacktickToken(token) {
+  if (token.includes(" ")) return true;
+  if (token.startsWith("http://") || token.startsWith("https://")) return true;
+  if (token.includes("<") || token.includes(">")) return true; // skip <slug>, <N> placeholders
+  if (token.includes("*")) return true; // skip glob patterns like docs/agent_docs/*
+  return false;
+}
+
+function collectHomeRepoCandidates(text) {
+  const candidates = new Set();
+  const re = /`([^`\n]{3,120})`/g;
+  for (const match of text.matchAll(re)) {
+    const token = match[1];
+    if (isSkippableBacktickToken(token)) continue;
+    if (isHomeRepoRef(token)) candidates.add(token);
+  }
+  return candidates;
+}
+
+function findBrokenHomeRefs(candidatePaths) {
+  const broken = [];
+  for (const rel of candidatePaths) {
+    const clean = rel
+      .replace(/[.,:;]$/, "")
+      .split("#")[0]
+      .split("?")[0];
+    try {
+      validatePathInDir(PROJECT_ROOT, clean);
+    } catch {
+      continue;
+    }
+    const abs = path.join(PROJECT_ROOT, clean);
+    if (!fs.existsSync(abs)) broken.push(clean);
+  }
+  return broken;
+}
+
+function check5cHomeRepoRefs(dir, results) {
+  const creatorViewPath = path.join(dir, "creator-view.md");
+  let text;
+  try {
+    text = safeReadText(creatorViewPath);
+  } catch {
+    return;
+  }
+  const candidatePaths = collectHomeRepoCandidates(text);
+  if (candidatePaths.size === 0) {
+    // No home-repo refs is acceptable — most source-focused Creator Views
+    // cite source-repo artifacts, not SoNash paths.
+    return;
+  }
+  const broken = findBrokenHomeRefs(candidatePaths);
+  if (broken.length === 0) {
+    results.pass.push(
+      `Creator View home-repo refs verified (${candidatePaths.size} checked) — Step 10.5 check 5c`
+    );
+    return;
+  }
+  // WARN rather than FAIL: the regex can't distinguish broken citations
+  // ("per CONVENTIONS.md line 42") from proposals ("create CONVENTIONS.md").
+  // User inspection resolves intent.
+  const preview = broken.slice(0, 3).join(", ");
+  const moreSuffix = broken.length > 3 ? ` +${broken.length - 3} more` : "";
+  results.warn.push(
+    `Creator View cites ${broken.length} home-repo path(s) that do not currently exist: ${preview}${moreSuffix} — may be extraction proposals OR broken refs (Step 10.5 check 5c)`
+  );
+}
+
+function check6aJournalCount(dir, source, results) {
+  const vmPath = path.join(dir, "value-map.json");
+  let vm;
+  try {
+    vm = safeReadJson(vmPath);
+  } catch {
+    return; // value-map missing — already covered by MUST check
+  }
+  const vmCount = countValueMapCandidates(vm);
+  const journalCount = collectJournalEntries(source).length;
+  if (vmCount === 0) return; // nothing to compare
+  if (journalCount >= vmCount) {
+    results.pass.push(`journal >= value-map (${journalCount} >= ${vmCount}) — Step 10.5 check 6a`);
+  } else {
+    results.fail.push(
+      `journal (${journalCount}) < value-map candidates (${vmCount}) — ${vmCount - journalCount} missing extraction entries (Step 10.5 check 6a)`
+    );
+  }
+}
+
+function check6bExtractionsMdSection(slug, source, results) {
+  let text;
+  try {
+    text = safeReadText(EXTRACTIONS_MD_PATH);
+  } catch {
+    results.warn.push("EXTRACTIONS.md not found (Step 10.5 check 6b)");
+    return;
+  }
+  // Heuristic: section exists if a markdown heading contains slug or source
+  const needles = [slug, source, slugify(source)];
+  const found = needles.some((n) => {
+    if (!n) return false;
+    const escaped = n.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    const re = new RegExp(String.raw`^#+\s.*` + escaped, "im");
+    return re.test(text);
+  });
+  if (found) {
+    results.pass.push("EXTRACTIONS.md section exists for source (Step 10.5 check 6b)");
+  } else {
+    results.fail.push(
+      `EXTRACTIONS.md has no section matching "${slug}" or source — run generate-extractions-md.js (Step 10.5 check 6b)`
+    );
+  }
+}
+
+function check6cPerCandidateSchema(source, results) {
+  const entries = collectJournalEntries(source);
+  if (entries.length === 0) return; // covered by checkExtractions
+  let validate;
+  try {
+    ({ validate } = require("../lib/analysis-schema.js"));
+  } catch {
+    return;
+  }
+  const sample = entries.slice(0, 3);
+  const fails = [];
+  for (const entry of sample) {
+    const r = validate(entry, "extraction");
+    if (!r.success) fails.push(`"${entry.candidate || "(noname)"}": ${r.error}`);
+  }
+  if (fails.length === 0) {
+    results.pass.push(
+      `Per-candidate schema: ${sample.length}/${sample.length} sampled entries valid (Step 10.5 check 6c)`
+    );
+  } else {
+    const moreSuffix = fails.length > 1 ? ` (+${fails.length - 1} more)` : "";
+    results.fail.push(
+      `Per-candidate schema failures (${fails.length}/${sample.length}): ${fails[0]}${moreSuffix} (Step 10.5 check 6c)`
+    );
+  }
+}
+
+function check7bTagConsistency(dir, source, results) {
+  const analysisPath = path.join(dir, "analysis.json");
+  let analysis;
+  try {
+    analysis = safeReadJson(analysisPath);
+  } catch {
+    return;
+  }
+  const analysisTags = new Set(Array.isArray(analysis.tags) ? analysis.tags : []);
+  if (analysisTags.size === 0) return;
+  const entries = collectJournalEntries(source);
+  const journalTags = new Set();
+  for (const e of entries) {
+    if (Array.isArray(e.tags)) for (const t of e.tags) journalTags.add(t);
+  }
+  if (journalTags.size === 0) {
+    // Already covered by checkExtractions untagged warn
+    return;
+  }
+  const common = [...analysisTags].filter((t) => journalTags.has(t));
+  // WARN if no overlap at all (divergence)
+  if (common.length === 0) {
+    results.warn.push(
+      `Tag sets between analysis.json (${analysisTags.size} tags) and journal entries (${journalTags.size} tags) have zero overlap (Step 10.5 check 7b)`
+    );
+  }
+}
+
+function check7cLastSynthesizedAt(dir, results) {
+  const analysisPath = path.join(dir, "analysis.json");
+  let data;
+  try {
+    data = safeReadJson(analysisPath);
+  } catch {
+    return;
+  }
+  const v = data.last_synthesized_at;
+  if (v === null || v === undefined) {
+    results.pass.push("last_synthesized_at: null (not synthesized yet) — Step 10.5 check 7c");
+    return;
+  }
+  if (typeof v === "string" && !Number.isNaN(Date.parse(v))) {
+    results.pass.push(`last_synthesized_at: valid ISO date — Step 10.5 check 7c`);
+  } else {
+    results.fail.push(`last_synthesized_at invalid: ${JSON.stringify(v)} (Step 10.5 check 7c)`);
+  }
+}
+
+function check8ReanalysisSignal(dir, results) {
+  const trendsPath = path.join(dir, "trends.jsonl");
+  if (fs.existsSync(trendsPath)) {
+    const stat = safeFileStat(trendsPath);
+    if (stat && stat.size > 0) {
+      results.pass.push(
+        `trends.jsonl present (${stat.size} bytes) — prior re-analysis history (Step 10.5 check 8)`
+      );
+    }
+  }
+  // Absence is not a fail — most sources have no trends.jsonl yet.
+}
+
+function checkStep10Extended(dir, slug, source) {
+  const results = { pass: [], fail: [], warn: [] };
+  const depth = getDepth(dir);
+  const isStandardOrDeep = depth === "standard" || depth === "deep";
+  if (!isStandardOrDeep) return results;
+
+  check5aSpecificCitations(dir, results);
+  check5cHomeRepoRefs(dir, results);
+  check6aJournalCount(dir, source, results);
+  check6bExtractionsMdSection(slug, source, results);
+  check6cPerCandidateSchema(source, results);
+  check7bTagConsistency(dir, source, results);
+  check7cLastSynthesizedAt(dir, results);
+  check8ReanalysisSignal(dir, results);
+
+  return results;
+}
+
 function main() {
   const slug = parseArgs(process.argv);
   if (!slug) {
@@ -358,10 +767,23 @@ function main() {
   const schema = checkSchema(dir, slug);
   const extractions = checkExtractions(slug, source);
   const behavioral = checkBehavioral(dir, slug, sourceType);
+  const extended = checkStep10Extended(dir, slug, source);
 
-  const allPass = [...artifacts.pass, ...schema.pass, ...extractions.pass, ...behavioral.pass];
-  const allFail = [...artifacts.fail, ...schema.fail, ...extractions.fail, ...behavioral.fail];
-  const allWarn = [...artifacts.warn, ...extractions.warn, ...behavioral.warn];
+  const allPass = [
+    ...artifacts.pass,
+    ...schema.pass,
+    ...extractions.pass,
+    ...behavioral.pass,
+    ...extended.pass,
+  ];
+  const allFail = [
+    ...artifacts.fail,
+    ...schema.fail,
+    ...extractions.fail,
+    ...behavioral.fail,
+    ...extended.fail,
+  ];
+  const allWarn = [...artifacts.warn, ...extractions.warn, ...behavioral.warn, ...extended.warn];
 
   if (allPass.length > 0) {
     console.log(`\nPASS (${allPass.length}):`);

@@ -1,0 +1,83 @@
+{
+  "slug": "teng-lin_notebooklm-py",
+  "source": "teng-lin/notebooklm-py",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (6240 bytes)",
+        "value-map.json (5005 bytes)",
+        "creator-view.md (5608 bytes)",
+        "findings.jsonl (2336 bytes)",
+        "summary.md (2522 bytes)",
+        "deep-read.md (4831 bytes)",
+        "content-eval.jsonl (3528 bytes)",
+        "coverage-audit.jsonl (1509 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "13 candidates in analysis.json",
+        "13 extraction journal entries for teng-lin/notebooklm-py"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": [
+        "repomix-output.txt SHOULD exist for repo source_type — not present in analysis dir"
+      ]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts: SKILL.md lines 94-128, skill.py, rpc-health.yml, CLAUDE.md, AGENTS.md, npx skills add. At least 6 specific citations across sections.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Conversational analyst voice with connective flow across sections. Not bullet-compliance-report tone. Builds narrative from understanding -> relevance -> differences -> challenge -> candidates -> avoid.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Home refs: add-debt, pr-review, session-end, audit-* skills (all exist in .claude/skills/), CLAUDE.md (exists), cross_locale_config (active project), /pr-review (skill exists). All resolve."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 13,
+      "6a_value_map_count": 13,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "WARN",
+      "7a_index_depth_match": "WARN",
+      "7a_notes": "No entry for teng-lin/notebooklm-py in research-index.jsonl (15 entries scanned). Cannot compare depth. Not a silent-drift failure, but an index-backfill gap.",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags=[repo,library,teng,notebooklm,python]; value-map candidates tags=[repo,library]; journal entries use richer semantic tags (skill-distribution, autonomy-rules, jason-os-relevant, sonash-relevant). Divergence is signal-rich, not harmful.",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "metadata_patch: backfill research-index.jsonl entry for teng-lin/notebooklm-py (slug, depth=standard, output_dir=.research/analysis/teng-lin_notebooklm-py)",
+    "missing_artifacts: optional — add repomix-output.txt for repo handler completeness (SHOULD artifact per §13.3)"
+  ]
+}

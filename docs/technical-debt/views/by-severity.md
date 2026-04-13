@@ -1419,7 +1419,7 @@
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...  | doc-header                                                                                                                                         | 0    | process                  | E2        |
 | DEBT-45647 | CAS family: parent-chain symlink guards missing on reads      | scripts/cas/backfill-tags.js                                                                                                                       | 45   | security                 | E1        |
 
-## S2 - Medium (3457)
+## S2 - Medium (3459)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4880,6 +4880,8 @@
 | DEBT-45646 | CI pattern compliance exits 1 on test-file WARN-only output       | .github/workflows                                                                                                                                                           | 0         | process                  | E2        |
 | DEBT-45648 | CAS scripts: 6 cyclomatic CC violations baselined (PR #505)       | scripts/cas/migrate-schemas.js                                                                                                                                              | 84        | code-quality             | E2        |
 | DEBT-45649 | Hook gate gap: cyclomatic CC runs at pre-push only, not p...      | .husky/pre-push                                                                                                                                                             | 1         | engineering-productivity | E1        |
+| DEBT-45651 | Learning-system refinement queue is broken (702 items, 0 ...      | .claude/state/pending-refinements.jsonl                                                                                                                                     | 0         | process                  | E2        |
+| DEBT-45652 | release-please workflow stale (last failed run 2026-04-03...      | .github/workflows/release-please.yml                                                                                                                                        | 0         | process                  | E1        |
 
 ## S3 - Low (3643)
 

@@ -72,6 +72,14 @@
       "reason": "S0 App Check items tracked in ROADMAP Operational Visibility track — not a session-begin concern",
       "suppressedAt": "2026-04-05T14:40:00.000Z",
       "expiresAt": "2026-06-04T14:40:00.000Z"
+    },
+    {
+      "id": "suppress-2026-04-13-pending-refinements",
+      "category": "pending-refinements",
+      "messagePattern": "S1 DEBT candidate",
+      "reason": "Tracked under DEBT-45651 — learning-system refinement queue is broken (702 items, 0 graduation path, claude-md-annotation route extracts CLAUDE.md heading fragments as behavioral patterns with no automation possible). 665/686 alerts noise. Suppress until DEBT-45651 work begins (disable claude-md-annotation route + bulk-graduate active entries).",
+      "suppressedAt": "2026-04-13T12:52:35.452Z",
+      "expiresAt": null
     }
   ]
 }

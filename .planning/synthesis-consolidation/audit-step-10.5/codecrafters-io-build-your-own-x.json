@@ -1,0 +1,82 @@
+{
+  "slug": "codecrafters-io-build-your-own-x",
+  "source": "codecrafters-io/build-your-own-x",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (9615 bytes)",
+        "value-map.json (5077 bytes)",
+        "creator-view.md (8740 bytes)",
+        "findings.jsonl (2307 bytes)",
+        "summary.md (4022 bytes)",
+        "deep-read.md (2243 bytes)",
+        "content-eval.jsonl (5636 bytes)",
+        "coverage-audit.jsonl (806 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "12 candidates in analysis.json",
+        "12 extraction journal entries for codecrafters-io/build-your-own-x"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": [
+        "source_type=repo — repomix-output.txt SHOULD exist but is absent (non-fatal; repo was analyzed via README/link-mining approach typical for curated-list classification)"
+      ]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts with URLs and names: Pomber Build Your Own React, Didact, Brennan's Write a Shell in C, Russ Cox regex paper, wyag.thber.com, ugit, mfrachet frontend framework — 6+ specific references across Sections 2 and 5.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Sections 1-4 are prose-driven with analyst voice and connective flow ('The Feynman quote at the top isn't decorative...', 'Here's the one thing worth sitting with...'). Only Section 5 uses a table (appropriate for Knowledge Candidates summary). No PASS/FAIL banners or compliance-report scaffolding.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references: check-pattern-compliance.js (exists at scripts/check-pattern-compliance.js), .claude/skills/ directory (exists, 81 entries), SoNash React 19 stack (correct), statusline as Go CLI (correct), JASON-OS Domain 01 (planning concept). Minor drift: says '72 skills' but actual count is 81 — acceptable staleness, not a broken reference."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 12,
+      "6a_value_map_count": 12,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": true
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "handler_specific: Optionally generate repomix-output.txt for completeness, though curated-list repos are primarily README-driven and the absence is non-fatal.",
+    "cross_file (7b): analysis.json semantic_tags include generic tokens ('build','your','markdown','free') from topic-split; value-map and journal tags are cleaner ('curated-list','knowledge-management','mental-model','sonash-relevant'). Consider tag normalization pass, but not a blocker.",
+    "content_quality: Update Creator View skill count from '72' to current registry count during next refresh (minor metadata drift, not a broken reference)."
+  ]
+}

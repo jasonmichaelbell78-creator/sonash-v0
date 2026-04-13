@@ -1,1 +1,12 @@
-{"category":"note","item":"Retroactive placeholder","status":"not-evaluated","note":"Re-analyze source for full coverage audit."}
+{"category":"internal-page","item":"/docs/quickstart","status":"not-read-this-pass","note":"5-minute install+auth+first-tool walkthrough. Prior site-mode pass (2026-04-07) likely covered this; re-analysis is page-mode only."}
+{"category":"internal-page","item":"/docs/how-composio-works","status":"not-read-this-pass","note":"Under-the-hood authentication and tool execution flow. Would confirm meta-tool architecture specifics. Prior pass referenced it."}
+{"category":"internal-page","item":"/docs/cli","status":"not-read-this-pass","note":"CLI reference. Linked from landing; not fetched in page-mode re-analysis."}
+{"category":"internal-page","item":"/toolkits","status":"not-read","note":"1000+ toolkit browser. Catalog surface; not useful for knowledge extraction (each toolkit is a per-service integration)."}
+{"category":"internal-page","item":"/docs/providers/*","status":"not-read-this-pass","note":"11+ per-provider docs (Claude, OpenAI, LangChain, etc.). Parity matrix on landing captures the taxonomy; per-provider details skipped."}
+{"category":"internal-page","item":"/docs/auth/*","status":"not-read","note":"Auth configuration, OAuth flows, white-label setup. Absence pattern identified: no flow diagrams; only prose descriptions referenced from links."}
+{"category":"internal-page","item":"/docs/triggers","status":"not-read","note":"Event triggers feature — flagged LOW relevance for SoNash in content-eval. Not extracted."}
+{"category":"internal-page","item":"/docs/workbench","status":"not-read","note":"Sandboxed execution feature — flagged LOW relevance for SoNash in content-eval. Not extracted."}
+{"category":"external-spec","item":"https://llmstxt.org","status":"not-fetched","note":"llms.txt spec reference (Jeremy Howard, 2024-09). Would confirm standard details if implementing a generator."}
+{"category":"external-nav","item":"https://discord.gg/composio","status":"skipped","note":"Community Discord. Not a knowledge source for extraction purposes."}
+{"category":"policy-note","item":"Pricing / tiers / limits","status":"not-present","note":"ABSENCE: no pricing or usage-quota information on docs landing. Would require fetch of main marketing site (composio.dev) to evaluate adoption cost."}
+{"category":"policy-note","item":"SLA / uptime / support","status":"not-present","note":"ABSENCE: production-readiness signal missing from public docs. Enterprise adopters would need to inquire directly."}

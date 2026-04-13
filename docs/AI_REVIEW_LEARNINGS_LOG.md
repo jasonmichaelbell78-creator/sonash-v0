@@ -366,6 +366,33 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#76)</summary>
+
+- **Date:** 2026-04-13
+- **Reviews consolidated:** #85-#rev-86
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#75)</summary>
+
+- **Date:** 2026-04-13
+- **Reviews consolidated:** #85-#86
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#74)</summary>
+
+- **Date:** 2026-04-13
+- **Reviews consolidated:** #85-#86
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#73)</summary>
 
 - **Date:** 2026-04-13
@@ -1766,6 +1793,140 @@ deduplicated, non-overlapping ranges):
 - isSafeInteger-for-id-keys-not-isFinite
 - cross-round-dedup-saves-30min-per-repeat
 - security-auditor-accepts-settled-trust-model-quickly
+
+---
+
+### Review rev-85: PR #508 R1 (Mixed: Qodo + Gemini + SonarCloud + CI): T40 CAS retag CLI + vocabulary hardening (2026-04-12)
+
+**Date:** 2026-04-12 | **PR:** #508 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 30    | 28    | 0        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 10    | 16    | 0       |
+
+**Patterns:**
+
+- cc-helper-extraction
+- existssync-direct-read
+- atomic-write-propagation
+- nested-withlock-multi-file
+- spawnsync-execpath-s4036
+- toc-anchor-determinism-explicit-id
+- multi-source-convergence-auto-elevate
+- cli-module-exports-require-main-guard
+- synonym-key-singular-conventions-14-5
+- vocab-shape-guard
+- unbounded-json-read-readtextwithsizeguard
+- warn-on-non-enoent-not-silent-null
+- optional-chain-folded-in-cc-refactor
+- replaceall-over-replace-g
+- negated-condition-flip
+- at-minus-1-over-length-index
+- nullish-over-or-on-numeric
+- cli-batch-file-arg-validation
+
+**Learnings:**
+
+- multi-source-convergence-should-auto-elevate
+- cc-refactor-absorbs-minor-findings
+- existssync-then-read-propagation-via-grep
+- fold-toc-anchor-into-helper-for-sync
+- export-plus-require-main-from-day-one
+- gh-pr-view-files-clips-verify-with-git-diff
+
+---
+
+### Review 85: PR #508 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 30    | 0     | 0        | 0        |
+
+---
+
+### Review 86: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (2026-04-13)
+
+**Date:** 2026-04-13 | **PR:** #508 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 29    | 21    | 0        | 8        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 12    | 7     | 1       |
+
+**Patterns:**
+
+- cross-round-dedup
+- markdown-injection-escape
+- spawn-error-reporting
+- vocab-shape-guard
+- optional-chain-rewrite
+- test-helper-hoist
+- s4036-process-execpath-propagation
+
+**Learnings:**
+
+- cross-round dedup auto-rejects compounding R2 unrated re-flags
+- gh pr view --json files clipping confirmed two-round pattern
+- test files inherit production fix patterns via propagation sweep
+- same-line multi-source folds detectable on Step 2 triage
+
+---
+
+### Review 86-pr509: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (unknown)
+
+**Date:** unknown | **PR:** #509 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 29    | 0     | 0        | 0        |
+
+---
+
+### Review rev-86: PR #510 R1 (SonarCloud) (2026-04-13)
+
+**Date:** 2026-04-13 | **PR:** #510 | **Source:** sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 57    | 57    | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 6        | 11    | 40    | 0       |
+
+**Patterns:**
+
+- regex-redos-indexof-rewrite
+- string-raw-regex-escape
+- cognitive-complexity-helper-extraction
+- regex-complexity-set-lookup-filter
+- nested-template-literal-hoist
+- nested-ternary-helper-extract
+- consecutive-array-push-section-builders
+- bare-isnan-to-number-isnan-propagation
+- cc-baseline-update-acknowledgment
+
+**Learnings:**
+
+- S5852 indexOf-based rewrite is strictly clearer than verifying regex safety
+- String.raw eliminates double-escape audit burden in regex escapes
+- pre-existing CC on modified files requires baseline update or refactor commit
+- 42-of-57 items in 2 NEW files = individual triage still cheap when clustered
 
 ## Key Patterns
 
@@ -4996,3 +5157,161 @@ CAS CLIs.
   rewrites + vocab-stats categories fallback)
 - 07b2200f (Commit D — MINOR newline-termination + 16-callsite test helper
   hoist + 4× empty-object spread cleanup + S4036 test propagation)
+
+### Review #87 — PR #510 R1 (SonarCloud)
+
+**Scope:** 57 items from SonarCloud on PR #510 (T29 Wave 5 + Step 10.5 audit).
+All items concentrated in 3 scripts: `scripts/cas/self-audit.js` (pre-existing,
+heavily modified +351 lines), `scripts/check-slopsquat.js` (NEW), and
+`scripts/docs/generate-llms-txt.js` (NEW). All 57 treated as this-PR per user
+direction.
+
+**Breakdown:**
+
+- 6 CRITICAL: 2× S5852 ReDoS hotspots (generate-llms-txt regex backtracking); 4×
+  Cognitive Complexity (self-audit:476, check-slopsquat:113,
+  generate-llms-txt:27, generate-llms-txt:94).
+- 11 MAJOR: regex complexity (self-audit:419), nested ternaries
+  (check-slopsquat:93, 146), nested template literals (self-audit:523, 594;
+  check-slopsquat:149), optional chains (generate-llms-txt:97, 128).
+- 40 MINOR: String#replaceAll (5×), Number.isNaN (1×), String.raw (2×),
+  character-class trivial (1×), 24× consecutive Array#push in
+  generate-llms-txt.js.
+
+**Key fixes:**
+
+- **S5852 ReDoS hotspots (generate-llms-txt.js):** Replaced two unbounded regex
+  matches (`/^---\r?\n([\s\S]*?)\r?\n---/` and `/^#\s+(.+)$/m`) with
+  `indexOf`-based delimiter scanning and line-by-line iteration via
+  `split(/\r?\n/)`. Eliminates backtracking exposure entirely rather than
+  relying on "regex looks safe" review.
+- **Cognitive Complexity (4×):** Extracted helpers — `collectPurposeLines`,
+  `firstFallbackParagraph`, `readFoldedScalar`, `splitFmKeyValue`,
+  `findSkillFallbackDescription`, `findFirstH1Body` (generate-llms-txt);
+  `collectBacktickTokens`, `collectExtensionTokens`, `isSkippableBacktickToken`,
+  `collectHomeRepoCandidates`, `findBrokenHomeRefs` (self-audit);
+  `classifyVerdict`, `verdictTag`, `printFlaggedReport` (check-slopsquat).
+- **Regex complexity (self-audit:419):** Replaced 25-alternation extension match
+  with a simple token regex + programmatic `CITATION_FILE_EXTS` Set lookup.
+  Drops SonarCloud regex-complexity score below threshold.
+- **String.raw (self-audit:560-561):** Rewrote `n.replace(..., "\\$&")` and
+  `new RegExp(\`^#+\\\\s.\*${escaped}\`)`to use`String.raw` tagged template
+  literals, eliminating double-escaped backslash noise.
+- **Nested ternaries + template literals:** Hoisted into named helpers or
+  pre-computed string parts (`moreSuffix`, `errPart`, `preview`).
+- **24× Array#push consolidation (generate-llms-txt):** Replaced sequential
+  `lines.push(...)` calls with section builders (`buildHeaderLines`,
+  `buildCoreDocsLines`, `buildSkillsLines`, `buildResearchLines`,
+  `buildScriptsLines`, `buildSourceLines`) concatenated via spread — reads as a
+  single declarative structure instead of imperative appends.
+
+**Propagation sweep:**
+
+- Swept `bare isNaN(` across `scripts/` and `.claude/hooks/` (excluding
+  node_modules). Only 1 in-PR instance (self-audit:640) and 2 propagation
+  targets in `.claude/hooks/lib/rotate-state.js` (lines 175, 220). All fixed in
+  this commit.
+- Other patterns (`replace` → `replaceAll`, nested template literals,
+  consecutive `Array#push`) were scoped to the 3 flagged files per user
+  direction — full-repo sweep would blow up scope without clear win.
+
+**Pre-existing known debt (out of R1 scope):**
+
+- `scripts/cas/self-audit.js` had 4 CC violations pre-dating this PR that
+  `check-cc --staged` would flag once the file is modified: `checkArtifacts` (CC
+  25), `checkSchema` (CC 22), `checkExtractions` (CC 17), `main` (CC 16). None
+  appeared in SonarCloud R1 (all outside the `new code` window). Per user
+  direction, added file to `known-debt-baseline.json` at CC=25 via
+  `node scripts/check-cc.js --update-baseline`. Baseline entry acknowledges the
+  debt; future regressions above CC=25 will still fail.
+
+**R1 process learnings:**
+
+- `String.raw` is materially easier to audit than `"\\$&"` and `"\\\\s"`-style
+  double escapes. Worth adopting as a default in any new regex-escape /
+  new-RegExp call site.
+- SonarCloud's S5852 (regex DoS) flag was technically a false positive for these
+  specific patterns (both matched against single lines with no
+  alternation/nested quantifier), but the `indexOf`-based rewrite is strictly
+  clearer and eliminates the class of bug. Worth preferring even when the regex
+  IS safe.
+- Large PRs with many NEW files generate high first-scan SonarCloud volume
+  concentrated in a few hot spots. Individual triage is still cheap when items
+  cluster (42 of 57 in one file).
+
+**Commits:**
+
+- 44c49ea2 (single-commit batch — all 57 items per user direction: one commit
+  covering CRITICAL ReDoS + CC, MAJOR regex/ternaries/templates, MINOR
+  replaceAll/isNaN/Array.push consolidation, plus Number.isNaN propagation into
+  .claude/hooks/lib/rotate-state.js and CC baseline entry for
+  scripts/cas/self-audit.js).
+
+### Review #88 — PR #510 R2 (Mixed: SonarCloud + CI + Qodo Compliance + Qodo Suggestions)
+
+**Scope:** 8 items across 4 sources after R1 commit 44c49ea2. All 8 this-PR (no
+DAS needed).
+
+- 1 SonarCloud MINOR: character-class-to-string in replaceAll (this-PR, R1
+  rewrite area).
+- 2 CI coverage gaps: scripts/check-slopsquat.js and
+  scripts/docs/generate-llms-txt.js flagged by test:coverage-completeness as new
+  untested scripts.
+- 1 CI lint fail: .research/analysis/synthesis/synthesis.md prettier format.
+- 1 Qodo Compliance 🔴 MAJOR: silent error swallowing in
+  check-slopsquat.js:extractDeps.
+- 2 Qodo Compliance ⚪: dependency-name disclosure + no allowlist toggle on npm
+  registry requests → user picked Option B (add --private-ok opt-in flag +
+  warning).
+- 1 Qodo Suggestion MINOR: TYPE_MAP fallback in build-synthesis-json.js.
+
+**Key fixes:**
+
+- **SonarCloud L194 char class (generate-llms-txt.js):** Replaced
+  `.replaceAll(/\\/g, "/")` with `.replaceAll("\\", "/")`. `String#replaceAll`
+  accepts a string pattern and replaces all occurrences — simpler than a
+  single-character regex.
+- **Coverage gap for 2 new scripts:** Wrote
+  `tests/scripts/check-slopsquat.test.ts` (22 tests) and
+  `tests/scripts/docs/generate-llms-txt.test.ts` (24 tests). Both scripts
+  retrofitted with `module.exports` + `require.main === module` guard so pure
+  functions are testable without triggering `main()` on require — same pattern
+  as retag.js from PR #508 R1.
+- **Silent error swallow in extractDeps:** Rewrote the blanket
+  `try { ... } catch { return new Set(); }` into two narrower blocks — one for
+  `fs.readFileSync`, one for `JSON.parse` — each logging a sanitized-error
+  `console.warn` before returning. Consumers (getAllDeps, main) now see _why_ a
+  package.json was skipped instead of getting a silent empty Set.
+- **Qodo ⚪ disclosure + no-toggle (Option B):** Added `--private-ok` opt-in
+  flag. Without it, the script refuses to run with exit 2 and prints
+  `PRIVATE_OK_MESSAGE` explaining that every dep name would be transmitted to
+  `registry.npmjs.org`. With the flag, behavior is the same as before plus a
+  "transmitting dep names to npm registry" banner on the normal run path. Exit
+  codes documented in the file header.
+- **TYPE_MAP fallback (build-synthesis-json.js:26):** Added `|| "repo"` to match
+  the existing fallback pattern on line 43 of the same file.
+- **Prettier synthesis.md:** One `npx prettier --write` on
+  `.research/analysis/synthesis/synthesis.md`. The file is Wave 5 synthesis
+  output; prettier reformatting of generated content is expected.
+
+**R2 process learnings:**
+
+- `module.exports` + `require.main === module` retrofit should be the default
+  for any new script that contains >= 1 pure helper. Without it, tests can only
+  do CLI smoke via spawnSync — which is ~3× slower and misses edge cases the
+  caller can hit directly.
+- The `extractDeps` pattern (blanket `catch { return new Set() }`) is a common
+  accessibility-vs-observability trade-off. The right answer is almost always
+  "narrow the try blocks and log in each catch" — one `console.warn` per failure
+  path is ~5 lines and saves hours of "why-is-this-empty" debugging later.
+- Opt-in flags for network egress (like `--private-ok` here) are a cheap
+  hardening pattern for any tool that transmits project data to external
+  services, even during prototype phases. Adding the flag _before_ wiring into
+  pre-commit / CI avoids retrofits later.
+
+**Commits:**
+
+- 076f9431 (single-commit batch — all 8 R2 items per user direction: coverage
+  tests for 2 new scripts, prettier synthesis.md, silent-swallow narrow-catch
+  rewrite, --private-ok opt-in flag, TYPE_MAP fallback, L194 char-class-to-
+  string replaceAll; hook state drift folded in).

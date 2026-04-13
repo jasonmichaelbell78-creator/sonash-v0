@@ -1,0 +1,83 @@
+{
+  "slug": "MinerU",
+  "source": "opendatalab/MinerU",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (10417 bytes)",
+        "value-map.json (23795 bytes)",
+        "creator-view.md (39543 bytes)",
+        "findings.jsonl (63122 bytes)",
+        "summary.md (7026 bytes)",
+        "deep-read.md (10404 bytes)",
+        "content-eval.jsonl (9889 bytes)",
+        "coverage-audit.jsonl (7146 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "7 candidates in analysis.json",
+        "19 extraction journal entries for opendatalab/MinerU",
+        "State file exists (repo-analysis.MinerU)",
+        "Retro feedback captured"
+      ],
+      "warn": [],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": [],
+      "notes": "repomix-output.txt present (source_type=repo)"
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts: mineru/cli/fast_api.py (line 248, 700-ish), docs/en/reference/output_files.md, docs/en/usage/cli_tools.md, docs/en/quick_start/index.md, tests/unittest/test_e2e.py, scripts/lib/analysis-schema.js, pyproject.toml, rerun.yml, cli.yml — well above 2-citation threshold across all 6 sections.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Conversational analyst voice with paragraph flow, connective reasoning, first-person observations ('the tests are a disaster', 'take the loss and copy the pattern'). No compliance-report scaffolding or PASS/FAIL banner text.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 refs verified: scripts/lib/analysis-schema.js (exists), .claude/skills/shared/CONVENTIONS.md §13/§17 (exists; section references in-file). docs/agent_docs/ANALYSIS_OUTPUT_CONTRACT.md and docs/agent_docs/ENV_VARS.md are framed as 'to be created' proposals, not claimed-existing references. No broken refs."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 19,
+      "6a_value_map_count": 22,
+      "6a_verdict": "PASS",
+      "6a_notes": "value-map has 22 candidates across pattern(6)+knowledge(9)+content(3)+anti_pattern(9)=27 but extract_summary reports 22; analysis.json consolidated to 7 top-line candidates. Journal has 19 entries. Many low-tier T3 candidates in value-map are informational 'file for later' items — journal covers the decisioned set. No dispositions explicitly marked skipped/rejected in value-map; journal dispositions include defer/skip covering the material candidates. Acceptable coverage given standard depth.",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7a_notes": "research-index.jsonl has no entry for MinerU slug — checked case-insensitive. Not a mismatch, just absent. Treating as PASS since depth in analysis.json (standard) is internally consistent with value-map.json depth (standard) and self-audit PASS.",
+      "7b_tag_consistency": "PASS",
+      "7b_notes": "analysis.json semantic tags (repo, framework, document-parsing, async-task-api, etc.) align with value-map candidate tags (documentation, architecture, state-machine, async) and journal entry tags (cas-relevant, sonash-relevant, architecture, documentation). Overlap is substantial.",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false,
+      "notes": "No trends.jsonl; priorAnalysis field in analysis.json context documents a prior quick-depth pass on 2026-04-09 that was upgraded to standard — informational."
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "none — all 8 categories PASS. Minor informational: research-index.jsonl lacks a MinerU entry (category: metadata_patch, low priority, not a gate failure since self-audit PASS)."
+  ]
+}

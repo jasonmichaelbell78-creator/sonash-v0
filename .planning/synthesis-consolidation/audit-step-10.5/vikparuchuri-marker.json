@@ -1,0 +1,88 @@
+{
+  "slug": "vikparuchuri-marker",
+  "source": "VikParuchuri/marker",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (6953 bytes)",
+        "value-map.json (4705 bytes)",
+        "creator-view.md (7744 bytes)",
+        "findings.jsonl (3313 bytes)",
+        "summary.md (1313 bytes)",
+        "deep-read.md (4087 bytes)",
+        "content-eval.jsonl (2788 bytes)",
+        "coverage-audit.jsonl (1609 bytes)",
+        "schema_version: 3.0",
+        "5 candidates in analysis.json",
+        "5 extraction journal entries for VikParuchuri/marker"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": [
+        "Zod schema validation: id is not a valid UUID (got 'vikparuchuri-marker-2026-04-12'); candidates[0..4].description fields missing (schema requires string, received undefined)"
+      ]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": ["repomix-output.txt absent (SHOULD for repo handler, not blocking)"]
+    },
+    "5_content_quality": {
+      "verdict": "FAIL",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts: benchmarks/overall/registry.py, marker/config/parser.py, benchmarks/overall/overall.py, chunk_convert.py, server.py, file_to_s3.py. 6+ specific citations across sections.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Paragraphs with analyst voice, connective flow, first-person observations. No PASS/FAIL banners or auto-generated scaffolding.",
+      "5c_home_repo_refs": "FAIL",
+      "5c_notes": "Section 3 references CONVENTIONS.md as part of SoNash contributor infrastructure, but no CONVENTIONS.md file exists in repo (grep/find return empty). CLAUDE.md, /analyze, /repo-analysis, SKILL.md files do resolve. One broken reference is enough to fail per spec."
+    },
+    "6_extractions": {
+      "verdict": "FAIL",
+      "6a_journal_count": 5,
+      "6a_value_map_count": 8,
+      "6a_verdict": "FAIL",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": [
+    "schema_drift",
+    "metadata_patch",
+    "missing_journal_entries",
+    "content_deficiency"
+  ],
+  "proposed_fixes": [
+    "schema_drift: Update analysis.json — replace non-UUID id field with valid UUID v4 and add `description` field to each of 5 candidates to satisfy Zod v3.0 schema.",
+    "metadata_patch: Add research-index.jsonl entry for vikparuchuri-marker with depth='standard' matching analysis.json to fix silent-drift bug (Session #273 pattern).",
+    "missing_journal_entries: Backfill 3 missing extraction-journal entries from value-map.json candidates — Session-scoped test fixtures, GPU-enforced CI, CONTRIBUTOR_HOSTILE_GOVERNANCE.",
+    "content_deficiency: Fix creator-view.md Section 3 broken reference to CONVENTIONS.md — either remove the reference or replace with an existing file (CLAUDE.md already mentioned; possibly docs/agent_docs/CODE_PATTERNS.md is what was intended).",
+    "missing_artifacts: Optionally add repomix-output.txt (SHOULD for repo handler) to complete the standard-depth repo artifact set."
+  ]
+}

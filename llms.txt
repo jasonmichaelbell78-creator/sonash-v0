@@ -1,0 +1,114 @@
+# SoNash
+
+> Sober Nashville — a privacy-first, evidence-based recovery notebook for the sobriety community. Built on Next.js 16, React 19, Firebase 12, with a comprehensive AI-agent development framework (CLAUDE.md + skill system) that doubles as meta-tooling research for JASON-OS (a portable Claude Code OS).
+
+This repository combines a production web application with a meta-tooling platform (JASON-OS research) for Claude Code skills, agents, and hooks. The content below is optimized for AI-agent discovery per the llms.txt standard (Jeremy Howard, 2024-09).
+
+## Core documentation
+
+- [CLAUDE.md](CLAUDE.md): behavioral guardrails, stack versions, anti-patterns, and agent/skill triggers — loaded on every AI turn
+- [ROADMAP.md](ROADMAP.md): canonical product roadmap for SoNash
+- [SESSION_CONTEXT.md](SESSION_CONTEXT.md): current sprint + recent session context
+- [AI_WORKFLOW.md](AI_WORKFLOW.md): session startup and navigation patterns
+- [.claude/skills/shared/CONVENTIONS.md](.claude/skills/shared/CONVENTIONS.md): shared skill conventions (handler output contract, tagging, pipeline tail)
+
+## Skills (77)
+
+Each skill is a self-contained command invokable via `/skill-name`. SKILL.md defines the contract; REFERENCE.md (where present) expands specification.
+
+- [/add-debt](.claude/skills/add-debt/SKILL.md): Add technical debt items to MASTER_DEBT.jsonl. Supports two workflows: PR-context deferred debt (with PR number) and manual ad-hoc debt discovery. Detects which workflow to use based on whether a PR number is provided.
+- [/alerts](.claude/skills/alerts/SKILL.md): Lightweight health signal with scoring, benchmarks, trends, and interactive alert-by-alert workflow. Default mode (--limited) checks 18 categories. Use --full for comprehensive reporting with all 42 categories.
+- [/analyze](.claude/skills/analyze/SKILL.md): Content Analysis System router. Feed it anything — repo URL, website, YouTube link, PDF, gist, or no input for synthesis. Auto-detects source type and dispatches to the right handler skill. Part of T28 CAS.
+- [/artifacts-builder](.claude/skills/artifacts-builder/SKILL.md): To build powerful frontend claude.ai artifacts, follow these steps:
+- [/audit-agent-quality](.claude/skills/audit-agent-quality/SKILL.md): Hybrid agent audit — automated structural checks + interactive behavioral review with audit-team (reviewer + fixer) for all agent definitions in .claude/agents/. Convergence-loop verified at every stage.
+- [/audit-aggregator](.claude/skills/audit-aggregator/SKILL.md): Aggregate and deduplicate findings from multiple audit reports
+- [/audit-ai-optimization](.claude/skills/audit-ai-optimization/SKILL.md): Run a single-session AI optimization audit on the codebase
+- [/audit-code](.claude/skills/audit-code/SKILL.md): Run a single-session code review audit on the codebase
+- [/audit-comprehensive](.claude/skills/audit-comprehensive/SKILL.md): Run all 9 domain audits in staged waves and aggregate results
+- [/audit-documentation](.claude/skills/audit-documentation/SKILL.md)
+- [/audit-engineering-productivity](.claude/skills/audit-engineering-productivity/SKILL.md): Run a single-session engineering productivity audit on the codebase
+- [/audit-enhancements](.claude/skills/audit-enhancements/SKILL.md)
+- [/audit-health](.claude/skills/audit-health/SKILL.md)
+- [/audit-performance](.claude/skills/audit-performance/SKILL.md): Run a single-session performance audit on the codebase
+- [/audit-process](.claude/skills/audit-process/SKILL.md): This audit covers **16 automation types** across **12 audit categories** using a
+- [/audit-refactoring](.claude/skills/audit-refactoring/SKILL.md): Run a single-session refactoring audit on the codebase
+- [/audit-security](.claude/skills/audit-security/SKILL.md): Run a single-session security audit on the codebase
+- [/brainstorm](.claude/skills/brainstorm/SKILL.md): Creative discovery phase for exploring ideas, directions, and design space before implementation planning or research. Uses Socratic dialogue, research-grade agents, and contrarian challenge to move from seed ideas to chosen directions with
+- [/checkpoint](.claude/skills/checkpoint/SKILL.md): Save session state for recovery after compaction or failures. Default: save to local files (.claude/state/). With --mcp: also save to MCP memory for cross-session persistence.
+- [/code-reviewer](.claude/skills/code-reviewer/SKILL.md): Code review toolkit tailored for the SoNash codebase.
+- [/comprehensive-ecosystem-audit](.claude/skills/comprehensive-ecosystem-audit/SKILL.md): Orchestrates all 8 ecosystem audits in staged waves with 4-concurrent-agent limit, aggregates results into a unified health report with cross-audit insights, domain heat maps, and priority-ranked findings.
+- [/content-research-writer](.claude/skills/content-research-writer/SKILL.md): This skill acts as your writing partner, helping you research, outline, draft,
+- [/convergence-loop](.claude/skills/convergence-loop/SKILL.md): Verify claims about reality through multi-pass agent loops with composable
+- [/create-audit](.claude/skills/create-audit/SKILL.md): Interactive wizard for creating any type of audit — code, process, infrastructure, ecosystem, or custom. Uses extensive multi-agent discovery and deep-plan Q&A to produce audit skills, multi-AI templates, and TDMS-ready output through a str
+- [/data-effectiveness-audit](.claude/skills/data-effectiveness-audit/SKILL.md): Comprehensive audit of data system effectiveness — lifecycle scoring across Capture, Storage, Recall, and Action dimensions for all data systems in the project.
+- [/debt-runner](.claude/skills/debt-runner/SKILL.md): Interactive TDMS orchestrator with 7 modes — verify, sync, plan, health, dedup, validate, cleanup. Convergence-loop verified at every stage. Owns remediation plan artifacts. Never writes MASTER_DEBT.jsonl directly — all mutations go through
+- [/decrypt-secrets](.claude/skills/decrypt-secrets/SKILL.md): Decrypt MCP tokens for remote sessions
+- [/deep-plan](.claude/skills/deep-plan/SKILL.md): Structured discovery-first planning for complex tasks. Ask exhaustive categorized questions, build a standalone decision record, then produce a step-by-step implementation plan with audit checkpoints and convergence-loop verification of dia
+- [/deep-research](.claude/skills/deep-research/SKILL.md): Multi-agent research engine that decomposes questions, dispatches parallel searcher agents, synthesizes findings with citations and confidence levels, runs mandatory contrarian/OTB challenges, gap-pursuit verification, and cross-model verif
+- [/developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md): This skill provides personalized feedback on your recent coding work by
+- [/doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the documentation ecosystem — 16 categories across 5 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Covers index sync, link integrity, co
+- [/doc-optimizer](.claude/skills/doc-optimizer/SKILL.md): waves with 13 agents **Output:** `.claude/state/doc-optimizer/`
+- [/docs-maintain](.claude/skills/docs-maintain/SKILL.md): Check documentation sync and auto-update doc artifacts. Combines sync checking (template-instance validation) with update automation (index regeneration, cross-doc dependencies, archive verification).
+- [/document-analysis](.claude/skills/document-analysis/SKILL.md): Content analysis for documents — PDFs, gists, articles, markdown, arxiv papers, code snippets, meeting notes. Dual-lens (Creator View + Engineer View) three-tier (Quick/Standard/Deep). Part of the Content Analysis System (T28). Outputs to .
+- [/ecosystem-health](.claude/skills/ecosystem-health/SKILL.md): Interactive health dashboard with 8-category composite scoring, 13-dimension drill-down, trend tracking, and fix-on-the-spot triage. Runs 10 health checkers, persists scores to JSONL, and guides interactive remediation through deep-plan Q&A
+- [/excel-analysis](.claude/skills/excel-analysis/SKILL.md)
+- [/find-skills](.claude/skills/find-skills/SKILL.md): This skill helps you discover and install skills and plugins from both the
+- [/frontend-design](.claude/skills/frontend-design/SKILL.md)
+- [/gh-fix-ci](.claude/skills/gh-fix-ci/SKILL.md)
+- [/github-health](.claude/skills/github-health/SKILL.md): GitHub platform health assessment with 7 phases, per-finding triage (Fix/Defer/Skip/Suppress), scoped single-phase mode, session-begin quick check, and inline fix execution. Covers security alerts, CI/CD, dependencies, config, releases, ins
+- [/health-ecosystem-audit](.claude/skills/health-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the health monitoring ecosystem — 26 categories across 6 domains with composite health scoring, trend tracking, live test execution, patch suggestions, and interactive finding-by-finding walkthrough.
+- [/hook-ecosystem-audit](.claude/skills/hook-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the hook ecosystem — 20 categories across 6 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Covers Claude Code hooks, pre-commit pipeline,
+- [/market-research-reports](.claude/skills/market-research-reports/SKILL.md)
+- [/mcp-builder](.claude/skills/mcp-builder/SKILL.md)
+- [/media-analysis](.claude/skills/media-analysis/SKILL.md): Content analysis for video and audio — YouTube, TikTok, podcasts, audio files. Transcription-first pipeline (captions API, user transcript, or Whisper opt-in). Dual-lens (Creator View + Engineer View) three-tier (Quick/Standard/Deep). Part 
+- [/multi-ai-audit](.claude/skills/multi-ai-audit/SKILL.md)
+- [/pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the PR review ecosystem — 18 categories across 5 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Triggers: "pr ecosystem audit", "audit pr
+- [/pr-retro](.claude/skills/pr-retro/SKILL.md): PR Review Retrospective -- actionable analysis of a PR's review cycle with convergence-loop deliverable verification, interactive findings walkthrough, and dashboard for missing retros
+- [/pr-review](.claude/skills/pr-review/SKILL.md): Process external PR code review feedback (CodeRabbit, Qodo, SonarCloud, Gemini) through a structured 8-step protocol. Parses all items, categorizes by severity and origin, fixes in priority order, tracks deferred items to TDMS, and captures
+- [/pre-commit-fixer](.claude/skills/pre-commit-fixer/SKILL.md): Diagnose and fix pre-commit hook failures with user confirmation at each step. Reads .git/hook-output.log, classifies failures by category, spawns targeted subagents for complex fixes, and presents a structured report before re-committing. 
+- [/quick-fix](.claude/skills/quick-fix/SKILL.md): Auto-suggest fixes for common pre-commit and pattern compliance issues.
+- [/recall](.claude/skills/recall/SKILL.md): Query the Content Analysis System knowledge base. Search extraction candidates, filter by tags/type/source, find specific ideas across all analyzed sources. Part of T28 CAS.
+- [/repo-analysis](.claude/skills/repo-analysis/SKILL.md): Dual-lens repo analysis: Creator View (knowledge, insights, home-repo comparison) + Engineer View (health, security, process). Three tiers (Quick/Standard/Deep). Link mining for curated lists. Fit separation via dual scoring lenses. Outputs
+- [/repo-synthesis](.claude/skills/repo-synthesis/SKILL.md): This skill has been consolidated into [`/synthesize`](../synthesize/SKILL.md).
+- [/script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the script infrastructure — 18 categories across 5 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Covers all .js files under scripts/ and
+- [/session-begin](.claude/skills/session-begin/SKILL.md): Pre-flight checklist for work sessions — loads context, runs health scripts, surfaces warnings, and gates on acknowledgment before work begins.
+- [/session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the Session Ecosystem — 17 categories across 5 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Covers session lifecycle hooks, state persi
+- [/session-end](.claude/skills/session-end/SKILL.md): Structured closure workflow that preserves session context for the next session,
+- [/skill-audit](.claude/skills/skill-audit/SKILL.md): Interactive behavioral quality audit for individual skills. Evaluates against 12 quality categories (including T25 convergence loop and completion verification) to surface attention management issues and produce actionable decisions. Includ
+- [/skill-creator](.claude/skills/skill-creator/SKILL.md): Structured workflow for creating or updating skills — from discovery through validation and audit. Produces structurally correct, behaviorally effective skill packages (SKILL.md + companions) using deep-plan-style discovery with skill-speci
+- [/skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the skill ecosystem — 21 categories across 5 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Covers all skills, cross-references, bloat de
+- [/sonarcloud](.claude/skills/sonarcloud/SKILL.md): Unified SonarCloud integration skill for fetching, syncing, reporting, and resolving code quality issues. This skill should be used when working with SonarCloud data: syncing new issues to TDMS, generating reports with code snippets, markin
+- [/sonash-context](.claude/skills/sonash-context/SKILL.md): SoNash project context injected into agent definitions via skills: field
+- [/synthesize](.claude/skills/synthesize/SKILL.md)
+- [/system-test](.claude/skills/system-test/SKILL.md): recommended (can run as single long session) **Output:** Per-domain JSONL +
+- [/systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)
+- [/task-next](.claude/skills/task-next/SKILL.md): Show dependency-resolved next tasks from ROADMAP.md active sprint
+- [/tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the Technical Debt Management System — 16 categories across 5 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Covers all 37 TDMS scripts, 
+- [/test-suite](.claude/skills/test-suite/SKILL.md)
+- [/todo](.claude/skills/todo/SKILL.md): Cross-session todo management with interactive menu, JSONL-backed persistence, and AI-powered context capture. Manages ideas, tasks, and insights that emerge during sessions so they survive across sessions. Independent of GSD.
+- [/ui-design-system](.claude/skills/ui-design-system/SKILL.md): Professional toolkit for creating and maintaining scalable design systems.
+- [/using-superpowers](.claude/skills/using-superpowers/SKILL.md)
+- [/ux-researcher-designer](.claude/skills/ux-researcher-designer/SKILL.md): Comprehensive toolkit for user-centered research and experience design.
+- [/validate-claude-folder](.claude/skills/validate-claude-folder/SKILL.md): Validate .claude folder configuration consistency
+- [/webapp-testing](.claude/skills/webapp-testing/SKILL.md): To test local web applications, write native Python Playwright scripts.
+- [/website-analysis](.claude/skills/website-analysis/SKILL.md): Creator-first website analysis skill. Dual-lens (Creator View + Engineer View) three-tier (Quick/Standard/Deep) analysis of arbitrary websites with superpowers-chrome extraction, compliance gates, and multi-mode operation (Page/Site/Expedit
+- [/website-synthesis](.claude/skills/website-synthesis/SKILL.md): This skill has been consolidated into [`/synthesize`](../synthesize/SKILL.md).
+
+## Research & analysis artifacts
+
+- [.research/EXTRACTIONS.md](.research/EXTRACTIONS.md): auto-generated candidate index across all analyzed sources
+- [.research/analysis/synthesis/synthesis.md](.research/analysis/synthesis/synthesis.md): cross-source synthesis (themes, gaps, reading chain, opportunity matrix)
+- [.research/extraction-journal.jsonl](.research/extraction-journal.jsonl): per-candidate decisions (defer/extract/skip/investigate)
+- [.research/research-index.jsonl](.research/research-index.jsonl): deep-research topic index
+
+## Scripts entry points
+
+- [scripts/cas/](scripts/cas/): Content Analysis System tooling (self-audit, rebuild-index, recall, etc.)
+- [scripts/lib/](scripts/lib/): shared safety helpers (sanitize-error, path-traversal guards, JSONL parsing)
+- [scripts/reviews/](scripts/reviews/): PR review lifecycle + learning system
+- [scripts/debt/](scripts/debt/): Tech Debt Management System (TDMS)
+
+## Source
+
+- Auto-generated by [scripts/docs/generate-llms-txt.js](scripts/docs/generate-llms-txt.js) on 2026-04-13
+- Regenerate: `node scripts/docs/generate-llms-txt.js`

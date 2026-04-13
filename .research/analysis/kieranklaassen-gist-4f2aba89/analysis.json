@@ -28,8 +28,59 @@
   },
   "summary": "TeammateTool enables persistent multi-agent teams with inbox messaging Three spawn backends (in-process, tmux, iterm2) serve different visibility needs",
   "creator_view": "TeammateTool enables persistent multi-agent teams with inbox messaging Three spawn backends (in-process, tmux, iterm2) serve different visibility needs",
-  "candidates": [],
-  "last_synthesized_at": null,
+  "candidates": [
+    {
+      "name": "6-pattern orchestration taxonomy for AGENT_ORCHESTRATION.md",
+      "type": "architecture-pattern",
+      "description": "Parallel Specialists, Pipeline, Swarm, Research+Implementation, Plan Approval, Coordinated Refactoring. Compare against existing patterns in AGENT_ORCHESTRATION.md and identify which patterns your skills use implicitly but haven't named.\n\nExtraction action: Map each pattern to existing skill usage: deep-research=Research+Impl, skill-audit=Plan Approval, code-reviewer=Parallel Specialists. Identify unnamed patterns.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F2"]
+    },
+    {
+      "name": "Spawn backend comparison for T5 worktree management",
+      "type": "pattern",
+      "description": "in-process (hidden, fastest), tmux (visible, persistent), iterm2 (macOS split). Auto-detection logic. Directly relevant to T5 worktree management and parallel CC instance strategies.\n\nExtraction action: Update T5 worktree management todo with backend comparison. Test tmux backend for visible parallel agent execution.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F3"]
+    },
+    {
+      "name": "TeammateTool 13-operation reference for agent team definitions",
+      "type": "pattern",
+      "description": "Full operation lifecycle for persistent teams. Compare against your .claude/teams/ definitions — are you using all available operations? Are your teams missing shutdown/cleanup protocols?\n\nExtraction action: Audit .claude/teams/ against the 13 operations. Check if audit-review-team and research-plan-team use requestShutdown/cleanup.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F1"]
+    },
+    {
+      "name": "Task dependency auto-unblock for skill pipeline design",
+      "type": "workflow-pattern",
+      "description": "Declarative task dependencies via blockedBy arrays. Auto-unblock on completion. Could replace manual orchestration in multi-phase skills like deep-research and repo-synthesis.\n\nExtraction action: Evaluate whether deep-research phases (searcher -> synthesizer -> verifier) could use TaskCreate with blockedBy instead of manual sequential dispatch.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F4"]
+    },
+    {
+      "name": "Subagent vs teammate decision framework",
+      "type": "design-principle",
+      "description": "Short-lived focused work = subagent (Task tool alone). Persistent coordination with messaging = teammate (Task + team). Clear decision criteria for when to use which.\n\nExtraction action: Add to AGENT_ORCHESTRATION.md as a decision framework. Currently your skills use subagents exclusively — evaluate whether any workflows benefit from persistent teammates.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": [],
+      "finding_refs": ["F6"]
+    }
+  ],
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "meta": {
     "url": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
     "domain": "gist.github.com",
@@ -93,5 +144,6 @@
     "Write is preferable to broadcast for team communication",
     "Six patterns cover most multi-agent coordination needs"
   ],
-  "source_tier": "T2"
+  "source_tier": "T2",
+  "deep_read_skipped": true
 }

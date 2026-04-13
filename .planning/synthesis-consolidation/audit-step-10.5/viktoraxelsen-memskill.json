@@ -1,0 +1,83 @@
+{
+  "slug": "viktoraxelsen-memskill",
+  "source": "ViktorAxelsen/MemSkill",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (5462 bytes)",
+        "value-map.json (4538 bytes)",
+        "creator-view.md (5060 bytes)",
+        "findings.jsonl (4898 bytes)",
+        "summary.md (1289 bytes)",
+        "deep-read.md (3193 bytes)",
+        "content-eval.jsonl (2973 bytes)",
+        "coverage-audit.jsonl (1303 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "12 candidates in analysis.json",
+        "12 extraction journal entries for ViktorAxelsen/MemSkill",
+        "State file exists (repo-analysis.viktoraxelsen-memskill)"
+      ],
+      "warn": [
+        "State file exists but process_feedback is empty — retro may have been skipped (CONVENTIONS 16.2)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": [
+        "repomix-output.txt SHOULD exist for repo source — not present (likely cleaned up post-analysis)"
+      ]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Cites specific files: capture_activity_details.md, insert.md, arXiv 2602.02474, skills/ directory, 42KB main.py monolith — well above 2-citation threshold",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Conversational paragraphs with analyst voice (Ahead/Different/Behind framing in Section 3); no compliance-report scaffolding; insights build across sections",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 refs are conceptual (auto-memory, SKILL.md, MEMORY.md, T4/T16 task IDs). MEMORY.md exists at .claude/canonical-memory/MEMORY.md; SKILL.md is a recurring filename across .claude/skills/; T4/T16 are JASON-OS task identifiers, not paths. No broken file path claims."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 12,
+      "6a_value_map_count": 12,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": true
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "4_handler: optional — restore repomix-output.txt or document why it was removed post-analysis",
+    "1_schema/retro: backfill process_feedback in state file (repo-analysis.viktoraxelsen-memskill) to satisfy CONVENTIONS 16.2",
+    "7b: minor — semantic_tags in analysis.json (repo, research-tool, viktoraxelsen, memskill, python) differ from journal tags (agent-memory, knowledge-management, skill-architecture, jason-os-relevant, etc.); consider tag normalization pass"
+  ]
+}

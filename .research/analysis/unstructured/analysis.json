@@ -27,8 +27,138 @@
   },
   "summary": "This repo understands the fundamental challenge of turning unstructured documents into structured, LLM-ready data.  It demonstrates multi-format partitioning (PDF, HTML, Word, images, email) via a unified partition() API, connector-based ingestion, and element-typed output — the exact architectural pattern T28 needs for its extraction layer.",
   "creator_view": "This repo understands the fundamental challenge of turning unstructured documents into structured, LLM-ready data. It demonstrates multi-format partitioning (PDF, HTML, Word, images, email) via a unified partition() API, connector-based ingestion, and element-typed output — the exact architectural pattern T28 needs for its extraction layer.",
-  "candidates": [],
-  "last_synthesized_at": null,
+  "candidates": [
+    {
+      "name": "Auto-routing via type detection",
+      "type": "pattern",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "partition() auto-detects file type via libmagic and routes to type-specific partitioner. T28 needs equivalent: detect source type (URL, repo, file) and route to right extractor",
+      "sourceFile": "unstructured/partition/auto.py"
+    },
+    {
+      "name": "Self-describing FileType registry",
+      "type": "pattern",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "Enum where each member declares partitioner path, deps, extras, MIME types, extensions. Adding a format = adding one enum member. T28 source type registration pattern",
+      "sourceFile": "unstructured/file_utils/model.py"
+    },
+    {
+      "name": "Strategy fallback chain",
+      "type": "pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "AUTO→HI_RES→OCR_ONLY→FAST with dependency checking. Maps to T28 Quick/Standard/Deep with graceful degradation when tools unavailable",
+      "sourceFile": "unstructured/partition/strategies.py"
+    },
+    {
+      "name": "Graceful dependency checking",
+      "type": "pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "dependency_exists() checks at runtime, logs warning, falls back. T28 needs this for optional deps (Whisper, Chrome, gh CLI)",
+      "sourceFile": "unstructured/utils.py"
+    },
+    {
+      "name": "Golden-file snapshot testing",
+      "type": "pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "description": "40+ connector types tested via expected markdown output comparison. Model for T28 extraction regression testing",
+      "sourceFile": "test_unstructured_ingest/expected-structured-output-markdown/"
+    },
+    {
+      "name": "Element type hierarchy with metadata",
+      "type": "knowledge",
+      "tier": 2,
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Dataclass elements with coordinates, data source provenance, permissions. Informs T28 extraction output schema design",
+      "sourceFile": "unstructured/documents/elements.py"
+    },
+    {
+      "name": "Chunking with table isolation",
+      "type": "knowledge",
+      "tier": 2,
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Tables never merge with adjacent text during chunking. Title-based semantic boundaries. Relevant for T28 analysis layer",
+      "sourceFile": "unstructured/chunking/base.py"
+    },
+    {
+      "name": "Text cleaning pipeline",
+      "type": "knowledge",
+      "tier": 2,
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Bullet normalization, ligature replacement, whitespace cleanup. Reminder that extraction output needs post-processing normalization",
+      "sourceFile": "unstructured/cleaners/core.py"
+    },
+    {
+      "name": "S3-backed performance benchmarking",
+      "type": "knowledge",
+      "tier": 2,
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "low",
+      "description": "Benchmark results tagged with architecture/instance/git hash. Production-grade perf tracking model",
+      "sourceFile": "scripts/performance/"
+    },
+    {
+      "name": "unstructured-ingest connector ecosystem",
+      "type": "content",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "40+ source connectors (Salesforce, Notion, Confluence, Jira, Slack, Discord, S3, etc.). T28 connector layer reference",
+      "url": "https://github.com/Unstructured-IO/unstructured-ingest"
+    },
+    {
+      "name": "Don't replicate ontology V2 over-engineering",
+      "type": "anti-pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Pydantic HTML intermediate representation adds complexity without value. Team acknowledges it. T28 should go extraction→typed output directly",
+      "sourceFile": "unstructured/documents/ontology.py"
+    },
+    {
+      "name": "Don't build per-format parsers in TypeScript",
+      "type": "anti-pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "30+ partitioners represent years of edge cases. T28 should delegate parsing to existing tools and focus on orchestration",
+      "sourceFile": "unstructured/partition/"
+    },
+    {
+      "name": "Don't fragment extraction and analysis across repos",
+      "type": "anti-pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Embedding moved to unstructured-ingest, fragmenting DX. Keep T28 extraction→analysis→synthesis as single coherent system"
+    }
+  ],
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "unstructured-io/unstructured",

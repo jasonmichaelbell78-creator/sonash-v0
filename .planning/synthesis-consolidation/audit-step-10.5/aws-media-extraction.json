@@ -1,0 +1,80 @@
+{
+  "slug": "aws-media-extraction",
+  "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+  "source_type": "repo",
+  "depth": "quick",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (2460 bytes)",
+        "findings.jsonl (2779 bytes)",
+        "summary.md (1231 bytes)",
+        "deep-read.md (3604 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "0 candidates in analysis.json",
+        "8 extraction journal entries for source"
+      ],
+      "warn": [],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": [],
+      "notes": "analysis.json present and non-empty. Depth=quick, so value-map.json and creator-view.md are not strictly required, but both are present and non-empty. Journal has 8 entries for this source."
+    },
+    "3_should_artifacts": {
+      "verdict": "N/A",
+      "missing": ["content-eval.jsonl", "coverage-audit.jsonl"],
+      "empty": [],
+      "notes": "Depth=quick; SHOULD artifacts apply to Standard/Deep only. findings.jsonl, summary.md, deep-read.md present anyway."
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": ["repomix-output.txt not present (SHOULD for repo type)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific files: extr-srv-sample-video.py, extr-srv-sample-video-dedup.py, extr-srv-sample-video-dedup-faiss.py, extr-srv-image-extraction.py, extr-srv-transcription-s3-trigger.py, shot-analysis.py, scene-analysis.py. 7+ specific artifact citations across sections.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Sections 1-4 and 6 read as analyst prose with connective flow. Section 5 is a candidate table (acceptable scaffolding). No PASS/FAIL banners or compliance-report tone.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "References T27 initiative and skills /website-analysis and /repo-analysis. Verified: .claude/skills/website-analysis and .claude/skills/repo-analysis both exist."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 8,
+      "6a_value_map_count": 8,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": [],
+      "notes": "Journal count (8) matches value-map candidate count (8). EXTRACTIONS.md section present at line 67. Sampled 3 journal entries — all required fields (schema_version, source_type, source, candidate, type, decision, decision_date, novelty, effort, relevance, tags) present."
+    },
+    "7_cross_file": {
+      "verdict": "WARN",
+      "7a_index_depth_match": "N/A",
+      "7a_notes": "research-index.jsonl tracks deep-research topics, not individual analysis sources. No entry for this slug is expected; no depth mismatch possible.",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags=[repo, media, extraction, repository, analysis]; journal entries use domain-specific tags (media-extraction, vector-similarity, cas-relevant, etc.). Differ significantly but complementary, not contradictory.",
+      "7c_last_synthesized_at": "PASS",
+      "7c_notes": "last_synthesized_at=null (not yet synthesized)"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "metadata_patch: Creator View header states 'Scan: Standard' but analysis.json depth='quick' — minor drift, consider normalizing depth label or upgrading analysis.json depth if Standard-grade artifacts (value-map, creator-view, findings, deep-read) warrant it.",
+    "missing_artifacts: Optional — generate repomix-output.txt for the repo handler (SHOULD per §13.3).",
+    "metadata_patch: Optional — align analysis.json top-level tags with journal/value-map domain tags for tighter 7b consistency."
+  ]
+}

@@ -1,1 +1,1 @@
-{"category":"note","name":"Retroactive placeholder","url":"","relevance":"unknown","applicability":"Re-analyze source for full content evaluation.","home_connection":""}
+{"category":"policy","name":"Deep Read skipped (short-form source)","url":"","relevance":"n/a","applicability":"Source is a single-file gist; Deep Read pass adds no value beyond creator-view + value-map. See analysis.json.deep_read_skipped=true.","home_connection":""}

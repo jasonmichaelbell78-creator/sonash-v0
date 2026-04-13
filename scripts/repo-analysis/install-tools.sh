@@ -295,6 +295,9 @@ install_jscpd() {
 
   if $HAS_NPM; then
     echo "    Trying npm install -g..."
+    # Scorecard PinnedDependenciesID dismissed (alert 5468) — `pkg@X.Y.Z` is
+    # the canonical pinning form for npm global installs; SHA pinning has no
+    # `install -g` syntax.
     if npm install -g jscpd@4.0.8 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" jscpd --version 2>/dev/null; then mark_installed "$name"; return 0; fi
@@ -402,6 +405,9 @@ install_repomix() {
 
   if $HAS_NPM; then
     echo "    Trying npm install -g..."
+    # Scorecard PinnedDependenciesID dismissed (alert 5469) — `pkg@X.Y.Z` is
+    # the canonical pinning form for npm global installs; SHA pinning has no
+    # `install -g` syntax.
     if npm install -g repomix@1.13.1 2>&1 | tail -3; then
       hash -r 2>/dev/null || true
       if check_tool "$name" repomix --version 2>/dev/null; then mark_installed "$name"; return 0; fi

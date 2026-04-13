@@ -1,5 +1,5 @@
 {
-  "id": "vikparuchuri-marker-2026-04-12",
+  "id": "13a34856-f841-4224-8c35-d2dcf721b799",
   "schema_version": "3.0",
   "source_type": "repo",
   "source": "VikParuchuri/marker",
@@ -34,7 +34,8 @@
       "novelty": "high",
       "effort": "E1",
       "relevance": "high",
-      "tags": ["benchmarking", "registry", "methodology"]
+      "tags": ["benchmarking", "registry", "methodology"],
+      "description": "Pluggable registry for comparing implementations against same dataset with independent scoring approaches. METHOD_REGISTRY + SCORE_REGISTRY + published dataset."
     },
     {
       "name": "3-stage pipeline architecture",
@@ -42,7 +43,8 @@
       "novelty": "high",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["architecture", "pipeline"]
+      "tags": ["architecture", "pipeline"],
+      "description": "Clean separation: extract -> transform -> render. Each stage independently extensible with 6 extension points."
     },
     {
       "name": "ConfigParser introspection",
@@ -50,7 +52,8 @@
       "novelty": "medium",
       "effort": "E0",
       "relevance": "medium",
-      "tags": ["architecture", "discovery"]
+      "tags": ["architecture", "discovery"],
+      "description": "Auto-discovers available builders, processors, converters by inspecting module structure."
     },
     {
       "name": "GPL_LICENSE_TRAP",
@@ -58,7 +61,8 @@
       "novelty": "medium",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["licensing", "anti-pattern"]
+      "tags": ["licensing", "anti-pattern"],
+      "description": "GPL-3.0 copyleft blocks adoption as dependency. Must extract patterns only, never import code."
     },
     {
       "name": "SECURITY_AS_AFTERTHOUGHT",
@@ -66,10 +70,11 @@
       "novelty": "low",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["security", "anti-pattern"]
+      "tags": ["security", "anti-pattern"],
+      "description": "Shell injection, path traversal, credential exposure in a tool processing untrusted PDFs."
     }
   ],
-  "last_synthesized_at": null,
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "metadata": {
     "url": "https://github.com/VikParuchuri/marker",
     "scan_version": "4.5",

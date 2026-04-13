@@ -1,0 +1,84 @@
+{
+  "slug": "zedeus-nitter",
+  "source": "zedeus/nitter",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (6741 bytes)",
+        "value-map.json (2778 bytes)",
+        "creator-view.md (6492 bytes)",
+        "findings.jsonl (2914 bytes)",
+        "summary.md (1635 bytes)",
+        "deep-read.md (3427 bytes)",
+        "content-eval.jsonl (2031 bytes)",
+        "coverage-audit.jsonl (931 bytes)",
+        "schema_version: 3.0",
+        "5 candidates in analysis.json",
+        "6 extraction journal entries for zedeus/nitter"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": [
+        "Zod schema validation: FAIL — id: Invalid UUID; candidates.0-4.description: expected string, received undefined"
+      ]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": ["repomix-output.txt SHOULD exist for repo type — not present"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts: Dockerfile, docker-compose.yml, src/auth.nim, src/experimental/, src/views/tweet.nim, Karax verbatim keyword, UID 998, HMAC default 'secretkey'",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Paragraphs with analyst voice, connective flow, first-person observations. Sections 1-4 are prose; Section 5 uses tables (acceptable — candidate tables are standard format).",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 refs: CLAUDE.md Security Rule #3 (sonner toasts), Firebase deployment, JASON-OS. firebase.json and CLAUDE.md verified present at repo root. JASON-OS is a project concept, not a file."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 6,
+      "6a_value_map_count": 6,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7a_notes": "No entry for zedeus-nitter or zedeus/nitter in .research/research-index.jsonl — cannot verify depth match",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags include 'agpl','legacy','twitter','anti-pattern' which are absent from journal tag sets (which use 'jason-os-relevant','sonash-relevant','best-practices'). Divergence is informational signal.",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["schema_drift", "metadata_patch"],
+  "proposed_fixes": [
+    "schema_drift: Add `description` field to each candidate in analysis.json (currently only in value-map.json) OR migrate schema validator to treat description as optional / source it from value-map",
+    "schema_drift: Fix analysis.json `id` field — current 'zedeus-nitter-2026-04-12' is not a valid UUID per Zod schema",
+    "metadata_patch: Add research-index.jsonl entry for zedeus-nitter with depth=standard to match analysis.json",
+    "missing_artifacts: Consider adding repomix-output.txt (SHOULD for repo type) or document rationale for omission"
+  ]
+}

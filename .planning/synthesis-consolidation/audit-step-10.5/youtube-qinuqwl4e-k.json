@@ -1,0 +1,82 @@
+{
+  "slug": "youtube-qinuqwl4e-k",
+  "source": "https://www.youtube.com/watch?v=qINuQwL4E-k",
+  "source_type": "media",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (2342 bytes)",
+        "value-map.json (900 bytes)",
+        "creator-view.md (2975 bytes)",
+        "findings.jsonl (709 bytes)",
+        "summary.md (1072 bytes)",
+        "deep-read.md (1165 bytes)",
+        "content-eval.jsonl (261 bytes)",
+        "coverage-audit.jsonl (288 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "2 candidates in analysis.json",
+        "transcript_source: captions",
+        "transcript.md (14080 bytes)",
+        "2 extraction journal entries matched"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": []
+    },
+    "5_content_quality": {
+      "verdict": "FAIL",
+      "5a_specific_citations": "FAIL",
+      "5a_notes": "Creator View cites SoNash artifacts (analysis.json, extraction-journal.jsonl, /recall) but makes no specific citations back to its own deep-read.md segments or content-eval.jsonl eval entries. Section 5 lists candidate names only — no references to 'Obsidian attachment settings (4 modes)' eval or the deep-read timestamp segments. Fewer than 2 specific source-artifact citations across 6 sections.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Prose sections (1, 2, 4, 6) flow conversationally with analyst voice. Section 3 is a comparison table, Section 5 is candidate table — acceptable scaffolding. No PASS/FAIL banners or auto-generated tone.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references resolve: analysis.json (.research/analysis/*/), extraction-journal.jsonl (.research/extraction-journal.jsonl), /recall (scripts/cas/recall.js), SQLite FTS (.research/content-analysis.db). All verified on filesystem."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 2,
+      "6a_value_map_count": 2,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["content_deficiency", "metadata_patch"],
+  "proposed_fixes": [
+    "content_deficiency: Revise creator-view.md to add specific citations to deep-read.md segments (e.g., '6:00-11:00 core insight segment') and content-eval.jsonl entries (e.g., 'Obsidian attachment settings (4 modes)' eval). Need ≥2 specific artifact references.",
+    "metadata_patch: Add missing research-index.jsonl entry for slug=youtube-qinuqwl4e-k with depth=standard (7a FAIL — no index entry exists; silent-drift bug per Session #273).",
+    "metadata_patch: Reconcile tag sets between analysis.json semantic_tags (media, youtube, obsidian, attachments, knowledge-management, file-organization, metadata), value-map candidate tags (knowledge-management, retrieval, metadata / obsidian, file-organization), and journal tags (adds personal-wiki, cas-relevant) — 7b tag drift WARN."
+  ]
+}

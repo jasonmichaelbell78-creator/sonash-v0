@@ -172,7 +172,7 @@ function expireByAge(filePath, maxDays) {
       const val = data[key];
       // Try parsing as ISO timestamp
       const ts = typeof val === "string" ? new Date(val).getTime() : 0;
-      if (ts > cutoff || isNaN(ts)) {
+      if (ts > cutoff || Number.isNaN(ts)) {
         kept[key] = val;
       }
     }
@@ -217,7 +217,7 @@ function expireJsonlByAge(filePath, maxDays, timestampField) {
       const entry = safeParseLine(line);
       if (!entry) return true; // Keep unparseable/blank lines
       const ts = new Date(entry[field]).getTime();
-      return isNaN(ts) || ts > cutoff;
+      return Number.isNaN(ts) || ts > cutoff;
     });
 
     const after = kept.length;

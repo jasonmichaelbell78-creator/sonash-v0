@@ -27,8 +27,135 @@
   },
   "summary": "Docling understands document intelligence beyond extraction — it combines ML-based layout understanding (Heron model, GraniteDocling VLM), multi-format parsing (PDF+DOCX+PPTX+audio+images+LaTeX), structured information extraction, and gen AI ecosystem integration (LangChain, LlamaIndex, MCP server) into a unified DoclingDocument representation.  The arXiv paper (2408.",
   "creator_view": "Docling understands document intelligence beyond extraction — it combines ML-based layout understanding (Heron model, GraniteDocling VLM), multi-format parsing (PDF+DOCX+PPTX+audio+images+LaTeX), structured information extraction, and gen AI ecosystem integration (LangChain, LlamaIndex, MCP server) into a unified DoclingDocument representation. The arXiv paper (2408.09869) and IBM Research backing signal deep academic rigor behind the engineering.",
-  "candidates": [],
-  "last_synthesized_at": null,
+  "candidates": [
+    {
+      "name": "DoclingDocument tree structure",
+      "type": "knowledge",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Pydantic tree-structured unified document representation. Body/furniture separation, reading order via tree, JSON pointer cross-refs. T28 output schema design reference",
+      "sourceFile": "docs/concepts/docling_document.md"
+    },
+    {
+      "name": "Backend + Pipeline separation pattern",
+      "type": "pattern",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Backends handle format-specific parsing, pipelines orchestrate processing stages. T28 should separate source extraction from analysis orchestration",
+      "sourceFile": "docs/concepts/architecture.md"
+    },
+    {
+      "name": "Plugin system via pluggy",
+      "type": "pattern",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "Third-party extensibility via setuptools entrypoints. OCR, layout, table models. Only needed when T28 has external consumers",
+      "sourceFile": "docs/concepts/plugins.md"
+    },
+    {
+      "name": "docling-mcp as extraction backend",
+      "type": "content",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "MCP server wrapping docling conversion. T28 could use as document extraction backend instead of building one",
+      "url": "https://github.com/docling-project/docling-mcp"
+    },
+    {
+      "name": "ASR pipeline → unified output",
+      "type": "knowledge",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Whisper Turbo → DoclingDocument. Same output as PDF/DOCX. Proves the unified extraction output thesis T28 is pursuing",
+      "sourceFile": "docling/pipeline/asr_pipeline.py"
+    },
+    {
+      "name": "Use docling instead of building document extractors",
+      "type": "knowledge",
+      "tier": 1,
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Docling already solves PDF, DOCX, PPTX, HTML, audio, images, LaTeX. Delegate via docling-mcp, build only what docling doesn't cover"
+    },
+    {
+      "name": "Serializer hierarchy pattern",
+      "type": "pattern",
+      "tier": 2,
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "BaseDocSerializer → per-format serializers. Per-component serializers (text, table, picture). T28 export layer reference",
+      "sourceFile": "docs/concepts/serialization.md"
+    },
+    {
+      "name": "Enrichment pipeline (toggleable)",
+      "type": "pattern",
+      "tier": 2,
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Optional post-processing steps: code understanding, formula parsing, picture classification. Pattern for T28 analysis depth options",
+      "sourceFile": "docs/usage/enrichments.md"
+    },
+    {
+      "name": "Thread-safe pipeline design",
+      "type": "knowledge",
+      "tier": 2,
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "Per-run isolation, bounded queues, back-pressure, deterministic shutdown. Production engineering reference",
+      "sourceFile": "docling/pipeline/standard_pdf_pipeline.py"
+    },
+    {
+      "name": "InputFormat enum (17 types)",
+      "type": "knowledge",
+      "tier": 2,
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Compare with unstructured's FileType enum. Docling's is simpler (just string enum) but paired with FormatOption mapping",
+      "sourceFile": "docling/datamodel/base_models.py"
+    },
+    {
+      "name": "Don't replicate multi-package split prematurely",
+      "type": "anti-pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "5 packages makes sense for a library ecosystem with 57K stars. T28 has one user — start monolithic"
+    },
+    {
+      "name": "Don't build plugin system before you have plugins",
+      "type": "anti-pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "pluggy exists because docling has real third-party contributors. Build hardcoded extractors first, plugins later"
+    },
+    {
+      "name": "Don't adopt DoclingDocument wholesale",
+      "type": "anti-pattern",
+      "tier": 1,
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "DoclingDocument is optimized for single-document representation. T28 needs cross-source analysis schema. Study the tree pattern, design your own"
+    }
+  ],
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "DS4SD/docling",

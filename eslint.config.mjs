@@ -140,6 +140,8 @@ export default [
       "scripts/reviews/migrate-ecosystem-v2.js",
       "scripts/cas/**/*.js",
       "scripts/lib/analysis-schema.js",
+      "scripts/check-slopsquat.js",
+      "scripts/docs/**/*.js",
     ],
     languageOptions: {
       sourceType: "commonjs",

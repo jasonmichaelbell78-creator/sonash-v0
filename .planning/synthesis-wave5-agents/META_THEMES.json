@@ -1,0 +1,2146 @@
+{
+  "generated_at": "2026-04-13T18:00:13.291Z",
+  "source_count": 32,
+  "meta_themes": [
+    {
+      "id": "extraction-pipelines",
+      "name": "Multi-stage extraction pipelines (fallback-based)",
+      "source_count": 16,
+      "source_slugs": [
+        "aws-media-extraction",
+        "bedrock-summarize-audio-video-text",
+        "bulk-transcribe-youtube-playlist",
+        "codecrafters-io-build-your-own-x",
+        "crawl4ai",
+        "docling",
+        "farzaa-gist-c35ac0cf",
+        "firecrawl",
+        "jina-ai-reader",
+        "lux-video-downloader",
+        "public-apis_public-apis",
+        "safishamsi-graphify",
+        "unstructured",
+        "vikparuchuri-marker",
+        "viktoraxelsen-memskill",
+        "youtube-transcript-api"
+      ],
+      "source_types": ["repo", "website"],
+      "confidence": "strong",
+      "member_theme_count": 29,
+      "sample_themes": [
+        {
+          "name": "Extraction and analysis as separate systems",
+          "description": "Most pipelines couple them; this repo extracts ALL metadata once then runs arbitrary LLM prompts on extracted data."
+        },
+        {
+          "name": "Toggleable per-frame ML feature extraction",
+          "description": "Each ML feature (labels, text, celebrity, moderation, captioning) is independently enabled — extensibility via config."
+        },
+        {
+          "name": "LLM-friendly extraction as first principle",
+          "description": "Every design flows from the insight that LLMs need structured clean content; 55+ extraction strategies because content types differ."
+        },
+        {
+          "name": "Tiered fetch fallback chain as failure-mode knowledge graph",
+          "description": "Firestore cache → curl-impersonate → proxy retry → Puppeteer (with sideLoad hint) → stale-cache fallback; each layer maps to a specific web-fetch failure."
+        },
+        {
+          "name": "Caption-first as primary extraction layer",
+          "description": "~80% of YouTube videos already have captions — fetching them is instant, free, timestamped. Whisper/Transcribe are fallbacks, not defaults."
+        },
+        {
+          "name": "Adopt-don't-rebuild conclusion",
+          "description": "8 years + 399 commits of YouTube-API maintenance burden argue against replicating; first explicit 'install the package, don't extract patterns' recommendation in the series."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "aws-media-extraction",
+          "quote": "extraction and analysis are separate problems that should be separate systems. Most video processing pipelines couple them"
+        },
+        {
+          "slug": "aws-media-extraction",
+          "quote": "Per-frame ML feature extraction (extr-srv-image-extraction.py): Each Rekognition API call (labels, text, celebrity, moderation) is independently toggleable"
+        },
+        {
+          "slug": "crawl4ai",
+          "quote": "the web crawling problem has bifurcated. There are crawlers built for humans (Scrapy, Beautiful Soup) and crawlers built for machines (crawl4ai)"
+        },
+        {
+          "slug": "jina-ai-reader",
+          "quote": "fetch a URL is not one problem — it's a chain of failure modes. CrawlerHost.cachedScrap() in src/api/crawler.ts:1374 lines runs a layered strategy"
+        }
+      ]
+    },
+    {
+      "id": "plugin-hook-governance",
+      "name": "Plugin systems & hook/lifecycle governance",
+      "source_count": 14,
+      "source_slugs": [
+        "archivebox-archivebox",
+        "bedrock-summarize-audio-video-text",
+        "crawl4ai",
+        "docling",
+        "docs-composio-dev",
+        "hkuds-cli-anything",
+        "kieranklaassen-gist-4f2aba89",
+        "lux-video-downloader",
+        "outline",
+        "public-apis_public-apis",
+        "qmd",
+        "sidbharath-com-blog-claude-code-the-complete-guide",
+        "unstructured",
+        "vikparuchuri-marker"
+      ],
+      "source_types": ["repo", "website"],
+      "confidence": "strong",
+      "member_theme_count": 18,
+      "sample_themes": [
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "description": "Browser pool with warmth tiers and janitor lifecycle — claims 10x memory reduction. Pattern portable beyond browsers."
+        },
+        {
+          "name": "Hook lifecycle with 8 ordered hooks and security model",
+          "description": "8 hooks with explicit sequence and per-hook guidance; CVE fixes tightened restricted builtins, URL schemes, deserialization allowlists."
+        },
+        {
+          "name": "PluginManager hook-type registry",
+          "description": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.) with priority ordering, auto-discovery, plugin.json manifests."
+        },
+        {
+          "name": "YouTube → audio → transcript lifecycle",
+          "description": "pytubefix download + moviepy audio extract + Transcribe/Whisper async lifecycle in ~30 lines per handler."
+        },
+        {
+          "name": "Plugin system via pluggy (setuptools entrypoints)",
+          "description": "Third-party OCR/layout/table model registration without forking. Most sophisticated extension mechanism in the space."
+        },
+        {
+          "name": "Validation without maintenance still stagnates",
+          "description": "Automation ensures format integrity but not content freshness or link liveness; lifecycle mgmt missing."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "crawl4ai",
+          "quote": "The 3-tier browser pool (PERMANENT/HOT/COLD) in the Docker server is production infrastructure thinking. PERMANENT browsers stay warm for frequent clients"
+        },
+        {
+          "slug": "crawl4ai",
+          "quote": "Hook lifecycle ordering (docs/md_v2/advanced/hooks-auth.md) -- 8 hooks with clear sequence and explicit guidance on which hook for which purpose"
+        },
+        {
+          "slug": "outline",
+          "quote": "The 10 hook types in server/utils/PluginManager.ts (API, AuthProvider, EmailTemplate, Processor, Task, etc.) with priority-based ordering and auto-discovery is a clean extensibility model"
+        },
+        {
+          "slug": "bedrock-summarize-audio-video-text",
+          "quote": "Uses `pytubefix` for download + `moviepy` for audio extraction to MP3. This is the exact YouTube content pipeline T27 needs."
+        }
+      ]
+    },
+    {
+      "id": "testing-coverage",
+      "name": "Testing, coverage, and verification approaches",
+      "source_count": 14,
+      "source_slugs": [
+        "MinerU",
+        "archivebox-archivebox",
+        "aws-media-extraction",
+        "farzaa-gist-c35ac0cf",
+        "firecrawl",
+        "hkuds-cli-anything",
+        "jina-ai-reader",
+        "outline",
+        "public-apis_public-apis",
+        "qmd",
+        "safishamsi-graphify",
+        "sidbharath-com-blog-claude-code-the-complete-guide",
+        "unstructured",
+        "viktoraxelsen-memskill"
+      ],
+      "source_types": ["repo", "website"],
+      "confidence": "strong",
+      "member_theme_count": 19,
+      "sample_themes": [
+        {
+          "name": "Testing absence as reference-architecture habit",
+          "description": "52 Python files, 1 test file — AWS reference samples routinely skip tests."
+        },
+        {
+          "name": "Zero tests compensated by traffic-volume observability",
+          "description": "Production 10k-star service ships no tests — quality floor is TypeScript strict + lint + Cloud Logging. Works for originator, fails for adopters."
+        },
+        {
+          "name": "Integration tests through real transport",
+          "description": "TestServer starts a real Koa HTTP server on an ephemeral port; tests exercise actual middleware, routing, serialization — not mocks."
+        },
+        {
+          "name": "Structural validation prevents format decay",
+          "description": "format.py + links.py + tests + three CI workflows enforce `API|Description|Auth|HTTPS|CORS` schema."
+        },
+        {
+          "name": "Validation without maintenance still stagnates",
+          "description": "Automation ensures format integrity but not content freshness or link liveness; lifecycle mgmt missing."
+        },
+        {
+          "name": "Golden-file snapshot testing for extraction",
+          "description": "40+ connector types tested via expected markdown comparison — regression model for T28."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "aws-media-extraction",
+          "quote": "No tests. The tests/ directory has 1 file. Don't follow this pattern."
+        },
+        {
+          "slug": "jina-ai-reader",
+          "quote": "Zero automated tests. No .test.ts, no .spec.ts, no describe(), nothing. firebase-functions-test sits in devDependencies but is never imported"
+        },
+        {
+          "slug": "outline",
+          "quote": "TestServer Pattern -- MEDIUM. server/test/TestServer.ts creates a real Koa HTTP server on an ephemeral port for integration tests. SoNash tests mock httpsCallable -- the Outline approach tests the actual transport"
+        },
+        {
+          "slug": "public-apis_public-apis",
+          "quote": "This is a curated list that invested in structural integrity tooling"
+        }
+      ]
+    },
+    {
+      "id": "claude-code-tooling",
+      "name": "Claude Code as a platform (skills, plugins, commands, CLAUDE.md)",
+      "source_count": 13,
+      "source_slugs": [
+        "archivebox-archivebox",
+        "farzaa-gist-c35ac0cf",
+        "firecrawl",
+        "hkuds-cli-anything",
+        "karpathy-autoresearch",
+        "kieranklaassen-gist-4f2aba89",
+        "outline",
+        "public-apis_public-apis",
+        "qmd",
+        "sidbharath-com-blog-claude-code-the-complete-guide",
+        "teng-lin_notebooklm-py",
+        "viktoraxelsen-memskill",
+        "youtube-oszdfnqmgrw"
+      ],
+      "source_types": ["repo", "media", "website"],
+      "confidence": "strong",
+      "member_theme_count": 23,
+      "sample_themes": [
+        {
+          "name": "PluginManager hook-type registry",
+          "description": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.) with priority ordering, auto-discovery, plugin.json manifests."
+        },
+        {
+          "name": "Package as agent-native skill distribution",
+          "description": "Python API + CLI + SKILL.md + skill install command + CI monitoring the external API — one package is also one skill."
+        },
+        {
+          "name": "Skill install + version stamping mechanism",
+          "description": "skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/ and ~/.agents/skills/. skill status detects drift."
+        },
+        {
+          "name": "Autonomy rules as structured SKILL.md section",
+          "description": "22 auto-run + 7 ask-first commands, each with a one-line reason — structured encoding of guardrails at the per-command level."
+        },
+        {
+          "name": "Embedded Task() subagent patterns in SKILL.md",
+          "description": "Literal Task(prompt=..., subagent_type=...) invocations in workflow examples — reduces cognitive load for invoking agents."
+        },
+        {
+          "name": "Markdown + CLAUDE.md as lightweight RAG alternative",
+          "description": "File structure + CLAUDE.md navigation replaces vector DB/embeddings for solo/small-team scale."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "outline",
+          "quote": "The 10 hook types in server/utils/PluginManager.ts (API, AuthProvider, EmailTemplate, Processor, Task, etc.) with priority-based ordering and auto-discovery is a clean extensibility model"
+        },
+        {
+          "slug": "teng-lin_notebooklm-py",
+          "quote": "It's not just a Python wrapper for Google NotebookLM -- it's a complete agent-native package: Python API + CLI + SKILL.md + skill install command + multi-agent support + CI"
+        },
+        {
+          "slug": "teng-lin_notebooklm-py",
+          "quote": "skill.py install mechanism solves a real problem: how do you distribute a SKILL.md to the right location? Read from package data, stamp version, write to ~/.claude/skills/"
+        },
+        {
+          "slug": "teng-lin_notebooklm-py",
+          "quote": "SKILL.md Autonomy Rules (lines 94-128). 22 commands \"Run automatically\" + 7 \"Ask before running,\" each with a one-line reason"
+        }
+      ]
+    },
+    {
+      "id": "agent-orchestration",
+      "name": "Agent orchestration / multi-agent patterns",
+      "source_count": 10,
+      "source_slugs": [
+        "MinerU",
+        "docling",
+        "docs-composio-dev",
+        "hkuds-cli-anything",
+        "jina-ai-reader",
+        "karpathy-autoresearch",
+        "kieranklaassen-gist-4f2aba89",
+        "safishamsi-graphify",
+        "sidbharath-com-blog-claude-code-the-complete-guide",
+        "teng-lin_notebooklm-py"
+      ],
+      "source_types": ["repo", "website"],
+      "confidence": "strong",
+      "member_theme_count": 23,
+      "sample_themes": [
+        {
+          "name": "x-* header protocol as runtime configuration surface",
+          "description": "11 runtime-control headers (x-target-selector, x-timeout, x-cache-tolerance, x-engine, x-return-format) — cleaner than flags when exposing to agents/MCP."
+        },
+        {
+          "name": "Package as agent-native skill distribution",
+          "description": "Python API + CLI + SKILL.md + skill install command + CI monitoring the external API — one package is also one skill."
+        },
+        {
+          "name": "Skill install + version stamping mechanism",
+          "description": "skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/ and ~/.agents/skills/. skill status detects drift."
+        },
+        {
+          "name": "Embedded Task() subagent patterns in SKILL.md",
+          "description": "Literal Task(prompt=..., subagent_type=...) invocations in workflow examples — reduces cognitive load for invoking agents."
+        },
+        {
+          "name": "Backend + Pipeline + DoclingDocument three-layer separation",
+          "description": "Parsing → processing → output cleanly separated; one backend per format, pipelines orchestrate, DoclingDocument unified."
+        },
+        {
+          "name": "Premature multi-package split risk",
+          "description": "5 packages makes sense for an ecosystem with real consumers; not for a single-user orchestration system."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "jina-ai-reader",
+          "quote": "Eleven runtime-control headers (x-target-selector, x-wait-for-selector, x-timeout, x-cache-tolerance, x-no-cache, x-respond-with, x-proxy-url, x-set-cookie, x-with-generated-alt, x-engine, x-return-format)"
+        },
+        {
+          "slug": "teng-lin_notebooklm-py",
+          "quote": "It's not just a Python wrapper for Google NotebookLM -- it's a complete agent-native package: Python API + CLI + SKILL.md + skill install command + multi-agent support + CI"
+        },
+        {
+          "slug": "teng-lin_notebooklm-py",
+          "quote": "skill.py install mechanism solves a real problem: how do you distribute a SKILL.md to the right location? Read from package data, stamp version, write to ~/.claude/skills/"
+        },
+        {
+          "slug": "teng-lin_notebooklm-py",
+          "quote": "Embedded Task() subagent patterns. Literal Task(prompt=..., subagent_type=...) in SKILL.md workflows. Reduces agent cognitive load"
+        }
+      ]
+    },
+    {
+      "id": "memory-knowledge",
+      "name": "Memory / knowledge-graph / note-taking systems",
+      "source_count": 10,
+      "source_slugs": [
+        "MinerU",
+        "bulk-transcribe-youtube-playlist",
+        "codecrafters-io-build-your-own-x",
+        "crawl4ai",
+        "jina-ai-reader",
+        "public-apis_public-apis",
+        "safishamsi-graphify",
+        "sidbharath-com-blog-claude-code-the-complete-guide",
+        "viktoraxelsen-memskill",
+        "youtube-oszdfnqmgrw"
+      ],
+      "source_types": ["repo", "media", "website"],
+      "confidence": "strong",
+      "member_theme_count": 15,
+      "sample_themes": [
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "description": "Browser pool with warmth tiers and janitor lifecycle — claims 10x memory reduction. Pattern portable beyond browsers."
+        },
+        {
+          "name": "Tiered fetch fallback chain as failure-mode knowledge graph",
+          "description": "Firestore cache → curl-impersonate → proxy retry → Puppeteer (with sideLoad hint) → stale-cache fallback; each layer maps to a specific web-fetch failure."
+        },
+        {
+          "name": "Simplicity gap vs CAS infrastructure",
+          "description": "5-min Obsidian setup vs CAS session-long ramp — suggests a quick-start mode for /analyze."
+        },
+        {
+          "name": "Link rot as silent documentation killer",
+          "description": "Daily cron + on-push link checking is a small, transferable win for docs/SKILL_INDEX/EXTRACTIONS/MEMORY.md."
+        },
+        {
+          "name": "SoNash-relevant API candidates surfaced",
+          "description": "Google Calendar (OAuth via Firebase), Open-Meteo (no auth, CORS), GCP Natural Language for sentiment — recovery notebook leverage."
+        },
+        {
+          "name": "faster-whisper over openai-whisper for batch",
+          "description": "CTranslate2 impl is 4x faster with lower memory; correct choice for batch local transcription."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "crawl4ai",
+          "quote": "The 3-tier browser pool (PERMANENT/HOT/COLD) in the Docker server is production infrastructure thinking. PERMANENT browsers stay warm for frequent clients"
+        },
+        {
+          "slug": "jina-ai-reader",
+          "quote": "fetch a URL is not one problem — it's a chain of failure modes. CrawlerHost.cachedScrap() in src/api/crawler.ts:1374 lines runs a layered strategy"
+        },
+        {
+          "slug": "youtube-oszdfnqmgrw",
+          "quote": "A new user could set up the Obsidian system in 5 minutes. Our CAS took an entire session to build"
+        },
+        {
+          "slug": "public-apis_public-apis",
+          "quote": "A scheduled or on-push link checker would catch rotting references before they mislead."
+        }
+      ]
+    },
+    {
+      "id": "mcp-surface",
+      "name": "MCP as a first-class integration surface",
+      "source_count": 7,
+      "source_slugs": [
+        "archivebox-archivebox",
+        "docling",
+        "docs-composio-dev",
+        "jina-ai-reader",
+        "outline",
+        "qmd",
+        "safishamsi-graphify"
+      ],
+      "source_types": ["repo", "website"],
+      "confidence": "strong",
+      "member_theme_count": 9,
+      "sample_themes": [
+        {
+          "name": "x-* header protocol as runtime configuration surface",
+          "description": "11 runtime-control headers (x-target-selector, x-timeout, x-cache-tolerance, x-engine, x-return-format) — cleaner than flags when exposing to agents/MCP."
+        },
+        {
+          "name": "Transport-agnostic command pattern",
+          "description": "~20 command files encapsulate business logic; both HTTP API and MCP tools delegate to the same commands. Adding a new surface is cheap."
+        },
+        {
+          "name": "Production MCP server with OAuth scope filtering",
+          "description": "Tools only visible if token has matching scope; Zod validation, tracing wrapper, presenters. Most mature MCP reference analyzed."
+        },
+        {
+          "name": "MCP-first delegation over building extractors",
+          "description": "docling-mcp exposes conversion as MCP tool — T28 should delegate rather than reimplement."
+        },
+        {
+          "name": "Claude Code plugin packaging as shippable unit",
+          "description": "marketplace.json bundles MCP server + skills + metadata into installable plugin."
+        },
+        {
+          "name": "MCP server as CLI subcommand with daemon mode",
+          "description": "Three transports (stdio/http/daemon) let one tool serve multiple MCP client models."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "jina-ai-reader",
+          "quote": "Eleven runtime-control headers (x-target-selector, x-wait-for-selector, x-timeout, x-cache-tolerance, x-no-cache, x-respond-with, x-proxy-url, x-set-cookie, x-with-generated-alt, x-engine, x-return-format)"
+        },
+        {
+          "slug": "outline",
+          "quote": "The command pattern (server/commands/) is where Outline's real architectural sophistication lives. Commands like documentCreator, documentMover, and documentUpdater encapsulate multi-model business logic"
+        },
+        {
+          "slug": "outline",
+          "quote": "Production MCP Server (server/tools/) -- HIGH. ... Filters tool registration by OAuth scopes (AuthenticationHelper.canAccess()) ... Bridges MCP context to existing API infrastructure (buildAPIContext())"
+        },
+        {
+          "slug": "docling",
+          "quote": "Use docling as T28's document extraction backend instead of building one."
+        }
+      ]
+    },
+    {
+      "id": "media-pipeline",
+      "name": "Media/audio/video extraction pipelines",
+      "source_count": 7,
+      "source_slugs": [
+        "aws-media-extraction",
+        "bedrock-summarize-audio-video-text",
+        "bulk-transcribe-youtube-playlist",
+        "docling",
+        "firecrawl",
+        "youtube-transcript-api",
+        "zedeus-nitter"
+      ],
+      "source_types": ["repo"],
+      "confidence": "strong",
+      "member_theme_count": 18,
+      "sample_themes": [
+        {
+          "name": "Multi-granularity temporal hierarchy",
+          "description": "Frames → Shots (camera continuity) → Scenes (LLM narrative segmentation) — each level has summaries, timestamps, metadata."
+        },
+        {
+          "name": "Smart frame deduplication via embeddings",
+          "description": "FAISS (local) and OpenSearch (cloud) variants for cosine similarity dedup; ~50% frame reduction = 50% cost reduction."
+        },
+        {
+          "name": "Toggleable per-frame ML feature extraction",
+          "description": "Each ML feature (labels, text, celebrity, moderation, captioning) is independently enabled — extensibility via config."
+        },
+        {
+          "name": "Cloud-local portability",
+          "description": "FAISS + moviepy + Whisper make the architecture portable from AWS to local without changing the pattern."
+        },
+        {
+          "name": "Caption-first as primary extraction layer",
+          "description": "~80% of YouTube videos already have captions — fetching them is instant, free, timestamped. Whisper/Transcribe are fallbacks, not defaults."
+        },
+        {
+          "name": "Innertube API reverse-engineering for caption access",
+          "description": "Undocumented /youtubei/v1/player with ANDROID client context returns caption metadata without an API key; 8 years of maintenance compatibility."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "aws-media-extraction",
+          "quote": "Multi-granularity hierarchy (shot-analysis.py + scene-analysis.py): Frames -> Shots (camera continuity via similarity threshold) -> Scenes (LLM narrative segmentation)"
+        },
+        {
+          "slug": "aws-media-extraction",
+          "quote": "Smart deduplication (extr-srv-sample-video-dedup.py + extr-srv-sample-video-dedup-faiss.py): Two approaches -- OpenSearch vector similarity (cloud) and FAISS cosine similarity (local)"
+        },
+        {
+          "slug": "aws-media-extraction",
+          "quote": "Per-frame ML feature extraction (extr-srv-image-extraction.py): Each Rekognition API call (labels, text, celebrity, moderation) is independently toggleable"
+        },
+        {
+          "slug": "aws-media-extraction",
+          "quote": "The FAISS version is directly portable. Claims 50% frame reduction = 50% cost reduction"
+        }
+      ]
+    },
+    {
+      "id": "cli-ergonomics",
+      "name": "CLI ergonomics and build-your-own patterns",
+      "source_count": 6,
+      "source_slugs": [
+        "archivebox-archivebox",
+        "bulk-transcribe-youtube-playlist",
+        "codecrafters-io-build-your-own-x",
+        "hkuds-cli-anything",
+        "qmd",
+        "teng-lin_notebooklm-py"
+      ],
+      "source_types": ["repo"],
+      "confidence": "strong",
+      "member_theme_count": 9,
+      "sample_themes": [
+        {
+          "name": "Package as agent-native skill distribution",
+          "description": "Python API + CLI + SKILL.md + skill install command + CI monitoring the external API — one package is also one skill."
+        },
+        {
+          "name": "Hard-coded config anti-pattern",
+          "description": "Module-level vars including API keys; no CLI/env/config layer."
+        },
+        {
+          "name": "MCP server as CLI subcommand with daemon mode",
+          "description": "Three transports (stdio/http/daemon) let one tool serve multiple MCP client models."
+        },
+        {
+          "name": "Zero-schema MCP from CLI introspection",
+          "description": "Auto-generate MCP tool definitions by introspecting existing Click CLI metadata; eliminates manual schema duplication. ~200 LOC."
+        },
+        {
+          "name": "Feynman 'build to understand' framing",
+          "description": "Build-your-own-X teaches via from-scratch implementation. Reframes JASON-OS Domain 01 (Internal Archaeology) from inventory to narrative."
+        },
+        {
+          "name": "Agent-native CLI wrapping methodology (HARNESS.md)",
+          "description": "7-phase SOP for wrapping arbitrary GUI apps as agent-invokable CLIs. Language-agnostic in principle, Python in implementation."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "teng-lin_notebooklm-py",
+          "quote": "It's not just a Python wrapper for Google NotebookLM -- it's a complete agent-native package: Python API + CLI + SKILL.md + skill install command + multi-agent support + CI"
+        },
+        {
+          "slug": "bulk-transcribe-youtube-playlist",
+          "quote": "Module-level variables like `convert_single_video = 1` and `openai_api_key = 'REPLACE_WITH_YOUR_API_KEY'` are the opposite of twelve-factor app configuration"
+        },
+        {
+          "slug": "qmd",
+          "quote": "qmd ships its MCP server as a CLI subcommand (qmd mcp). Three transports shown: Stdio (default, per-client subprocess) HTTP foreground HTTP daemon with PID file management"
+        },
+        {
+          "slug": "archivebox-archivebox",
+          "quote": "Zero manual schema definitions -- they introspect Click CLI metadata and generate MCP tools dynamically. ~200 lines. Cleanest MCP implementation in the T29 corpus."
+        }
+      ]
+    },
+    {
+      "id": "doc-code-drift",
+      "name": "Documentation-code drift and stale-docs anti-pattern",
+      "source_count": 5,
+      "source_slugs": [
+        "crawl4ai",
+        "firecrawl",
+        "jina-ai-reader",
+        "kieranklaassen-gist-4f2aba89",
+        "outline"
+      ],
+      "source_types": ["repo", "website"],
+      "confidence": "strong",
+      "member_theme_count": 4,
+      "sample_themes": [
+        {
+          "name": "DeepWiki-as-architecture-docs anti-pattern",
+          "description": "10.5k-star repo's \"How it works\" section is a DeepWiki image badge — zero first-party exposition."
+        },
+        {
+          "name": "Documentation-promises vs code-gaps drift",
+          "description": "Docs describe features code only partially implements (on_state_change callback does not exist). Verify code before recommending."
+        },
+        {
+          "name": "Documentation externalized to external site",
+          "description": "Thin 68-line ARCHITECTURE.md, missing CONTRIBUTING.md, all contributor docs at docs.getoutline.com — anti-pattern for adopter experience."
+        },
+        {
+          "name": "Reference documentation without verification layer",
+          "description": "82 code blocks document HOW but never WHEN or WHETHER — home convergence loops fill that gap."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "jina-ai-reader",
+          "quote": "the README.md section titled \"How it works\" is literally an image link to deepwiki.com/jina-ai/reader — a third-party auto-generated wiki. There is zero first-party architecture exposition"
+        },
+        {
+          "slug": "firecrawl",
+          "quote": "1162 files and one mermaid diagram. A new contributor learns the architecture by reading controllers, services, and CLAUDE.md"
+        },
+        {
+          "slug": "crawl4ai",
+          "quote": "DOCUMENTATION_PROMISES_CODE_GAPS -- Docs describe features code implements partially. on_state_change callback does not exist."
+        },
+        {
+          "slug": "outline",
+          "quote": "Outline's README delegates all setup, deployment, and API docs to docs.getoutline.com. For an open-source project wanting contributors, this creates friction"
+        }
+      ]
+    },
+    {
+      "id": "scraping-adversarial",
+      "name": "Scraping / adversarial-API patterns",
+      "source_count": 4,
+      "source_slugs": ["MinerU", "hkuds-cli-anything", "youtube-transcript-api", "zedeus-nitter"],
+      "source_types": ["repo"],
+      "confidence": "medium",
+      "member_theme_count": 6,
+      "sample_themes": [
+        {
+          "name": "IP blocking as central operational challenge",
+          "description": "The most sophisticated code isn't caption fetching — it's proxy rotation (Webshare, GenericProxyConfig, retry-on-429, connection-close for IP rotation)."
+        },
+        {
+          "name": "Adversarial infrastructure design",
+          "description": "Every design decision assumes the upstream (Twitter) will try to block you; session pooling, rate limit tracking, parser versioning."
+        },
+        {
+          "name": "Per-endpoint preemptive rate limiting",
+          "description": "Track rate limits per endpoint with preemptive backoff — more sophisticated than post-429 handling."
+        },
+        {
+          "name": "Adversarial dependency as existential risk",
+          "description": "12.8K stars but effectively dead — Twitter killed nitter by changing APIs. Never build on a hostile foundation."
+        },
+        {
+          "name": "Adversarial-input security posture for AI agents",
+          "description": "SECURITY.md explicitly names the threat: agents autonomously constructing commands from untrusted input. Codec allowlists + never-shell=True."
+        },
+        {
+          "name": "HTTP service without default hardening",
+          "description": "mineru-api has no auth, no rate limit, no upload cap, no CORS/TrustedHost, FastAPI docs enabled. Anti-pattern SoNash security-auditor exists to prevent."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "youtube-transcript-api",
+          "quote": "IP blocking is the real engineering problem. The most sophisticated code in this library isn't the transcript fetching -- it's the proxy infrastructure"
+        },
+        {
+          "slug": "zedeus-nitter",
+          "quote": "Nitter understands adversarial infrastructure -- how to build a service that works against the interests of its data source."
+        },
+        {
+          "slug": "zedeus-nitter",
+          "quote": "limiting before hitting 429, not after"
+        },
+        {
+          "slug": "zedeus-nitter",
+          "quote": "Twitter killed nitter by changing APIs. The project has 12.8K stars but is effectively dead."
+        }
+      ]
+    },
+    {
+      "id": "docs-as-ai-readable",
+      "name": "AI-readable documentation standards (llms.txt, CLAUDE.md, SKILL.md)",
+      "source_count": 3,
+      "source_slugs": [
+        "archivebox-archivebox",
+        "docs-composio-dev",
+        "errors-and-vulnerabilities-in-ai-generated-code"
+      ],
+      "source_types": ["document", "website", "repo"],
+      "confidence": "medium",
+      "member_theme_count": 3,
+      "sample_themes": [
+        {
+          "name": "Hallucinated dependencies (slopsquatting) as AI-native supply-chain risk",
+          "description": "AI suggests non-existent packages that attackers register — a risk class specific to AI code generation that traditional security checklists miss."
+        },
+        {
+          "name": "llms.txt as AI-readable docs standard",
+          "description": "Publish /llms.txt and /llms-full.txt indexes so other LLM systems can consume your docs."
+        },
+        {
+          "name": "CLAUDE.md as philosophy document",
+          "description": "498-line CLAUDE.md encodes philosophy (grep-friendly naming, minimize-unique-names, NO MOCKS) beyond pure setup instructions."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "quote": "hallucinated dependencies (slopsquatting) category is particularly valuable — it's a risk class specific to AI code generation that traditional security checklists miss entirely"
+        },
+        {
+          "slug": "docs-composio-dev",
+          "quote": "Composio publishes AI-readable site indexes at `/llms.txt` and `/llms-full.txt`"
+        },
+        {
+          "slug": "archivebox-archivebox",
+          "quote": "The CLAUDE.md is quietly one of the best developer onboarding documents in the Python open-source ecosystem. It encodes philosophy, not just setup."
+        }
+      ]
+    },
+    {
+      "id": "ai-code-risks",
+      "name": "AI-generated code risks and anti-patterns",
+      "source_count": 3,
+      "source_slugs": [
+        "bulk-transcribe-youtube-playlist",
+        "errors-and-vulnerabilities-in-ai-generated-code",
+        "jina-ai-reader"
+      ],
+      "source_types": ["document", "repo"],
+      "confidence": "medium",
+      "member_theme_count": 6,
+      "sample_themes": [
+        {
+          "name": "AI-specific failure taxonomy",
+          "description": "18 structured categories of AI code errors spanning architecture, security, ops, process, compliance — a practitioner lookup table not a thesis."
+        },
+        {
+          "name": "Hallucinated dependencies (slopsquatting) as AI-native supply-chain risk",
+          "description": "AI suggests non-existent packages that attackers register — a risk class specific to AI code generation that traditional security checklists miss."
+        },
+        {
+          "name": "Context momentum as AI-specific anti-pattern",
+          "description": "Early AI misinterpretations steer projects wrong; periodic context clearing is a mitigation."
+        },
+        {
+          "name": "Severity ranking blindspot",
+          "description": "All 18 categories presented as equal; hard-coded secrets and injection deserve higher urgency than naming inconsistency."
+        },
+        {
+          "name": "Tiered fetch fallback chain as failure-mode knowledge graph",
+          "description": "Firestore cache → curl-impersonate → proxy retry → Puppeteer (with sideLoad hint) → stale-cache fallback; each layer maps to a specific web-fetch failure."
+        },
+        {
+          "name": "Tuned Whisper params beat defaults",
+          "description": "beam_size=10 + vad_filter=True prevents hallucination-on-silence; operational knowledge not in docs."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "quote": "a dense 6-page reference table that catalogs 18 distinct error categories in AI-generated code. Each category gets a row with description, concrete examples, impact/risks, mitigation strategy"
+        },
+        {
+          "slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "quote": "hallucinated dependencies (slopsquatting) category is particularly valuable — it's a risk class specific to AI code generation that traditional security checklists miss entirely"
+        },
+        {
+          "slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "quote": "the document identifies \"context momentum\" (early AI misinterpretations steering projects wrong) and suggests \"clear AI context periodically\""
+        },
+        {
+          "slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "quote": "No severity ranking. All 18 categories are presented as equal. In practice, hard-coded secrets and injection/XSS cause more damage faster than naming inconsistency"
+        }
+      ]
+    },
+    {
+      "id": "docker-security",
+      "name": "Container / deployment security hardening",
+      "source_count": 3,
+      "source_slugs": ["jina-ai-reader", "outline", "zedeus-nitter"],
+      "source_types": ["repo"],
+      "confidence": "medium",
+      "member_theme_count": 4,
+      "sample_themes": [
+        {
+          "name": "Deployment topology as feature (one image, six services)",
+          "description": "Single Docker image deployed 6× to Cloud Run by varying --args; tsyringe DI resolves the correct API host class at boot."
+        },
+        {
+          "name": "CSP permissive as long-lived debt",
+          "description": "connect-src: * justified by Safari WebSocket bug fixed in Safari 15 — temporary debt that became permanent."
+        },
+        {
+          "name": "Docker hardening as security boundary",
+          "description": "Read-only fs, CAP_DROP ALL, non-root UID 998, health checks — best Docker hardening in the corpus."
+        },
+        {
+          "name": "XSS + missing security headers in content renderer",
+          "description": "Karax verbatim bypasses escaping; no CSP, no X-Frame-Options, no HSTS; plaintext credentials."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "jina-ai-reader",
+          "quote": "One Docker image deploys six times to Cloud Run -- crawl, search, serp × us-central1, europe-west1, asia-east2 -- by varying --args"
+        },
+        {
+          "slug": "outline",
+          "quote": "CSP is permissive. connect-src: * in the Content Security Policy is justified by a Safari WebSocket bug that was fixed in Safari 15. This is security debt that hasn't been cleaned up"
+        },
+        {
+          "slug": "zedeus-nitter",
+          "quote": "Most projects treat Docker as a packaging format; nitter treats it as a security boundary."
+        },
+        {
+          "slug": "zedeus-nitter",
+          "quote": "The XSS vulnerability (unescaped tweet content via Karax verbatim) is a critical flaw"
+        }
+      ]
+    },
+    {
+      "id": "architectural-separation",
+      "name": "Architectural separation (backend/pipeline, command pattern, presenter)",
+      "source_count": 3,
+      "source_slugs": ["MinerU", "docling", "outline"],
+      "source_types": ["repo"],
+      "confidence": "medium",
+      "member_theme_count": 3,
+      "sample_themes": [
+        {
+          "name": "Transport-agnostic command pattern",
+          "description": "~20 command files encapsulate business logic; both HTTP API and MCP tools delegate to the same commands. Adding a new surface is cheap."
+        },
+        {
+          "name": "Backend + Pipeline + DoclingDocument three-layer separation",
+          "description": "Parsing → processing → output cleanly separated; one backend per format, pipelines orchestrate, DoclingDocument unified."
+        },
+        {
+          "name": "Document parsing as orchestration problem",
+          "description": "Three backends (pipeline/VLM/vLLM) + router + string-dispatched factory with deferred imports. Match inference runtime to model size."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "outline",
+          "quote": "The command pattern (server/commands/) is where Outline's real architectural sophistication lives. Commands like documentCreator, documentMover, and documentUpdater encapsulate multi-model business logic"
+        },
+        {
+          "slug": "docling",
+          "quote": "This three-layer separation (parsing → processing → output) is exactly the kind of clean architecture that survives scaling."
+        },
+        {
+          "slug": "MinerU",
+          "quote": "MinerU understands that **document parsing is an orchestration problem, not a model problem**."
+        }
+      ]
+    },
+    {
+      "id": "governance-solo",
+      "name": "Solo-maintainer / adoption-hostile governance",
+      "source_count": 3,
+      "source_slugs": [
+        "archivebox-archivebox",
+        "codecrafters-io-build-your-own-x",
+        "vikparuchuri-marker"
+      ],
+      "source_types": ["repo"],
+      "confidence": "medium",
+      "member_theme_count": 3,
+      "sample_themes": [
+        {
+          "name": "Contributor-hostile governance despite star count",
+          "description": "33.7K stars + 403 issues + 27 contributors + no CONTRIBUTING/CODE_OF_CONDUCT."
+        },
+        {
+          "name": "Governance gap behind healthy community signal",
+          "description": "27K stars, 0/29 changesets reviewed. 100% community health masks solo-maintainer architecture and permissive security defaults."
+        },
+        {
+          "name": "Inline-license-without-LICENSE-file trap",
+          "description": "CC0 in README footer but no LICENSE file means GitHub API reports 'no license'; automated tools misflag."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "vikparuchuri-marker",
+          "quote": "33.7K stars, 403 open issues, 27 contributors, no CONTRIBUTING.md, no CODE_OF_CONDUCT. Optimized for users, not for building a contributor community"
+        },
+        {
+          "slug": "archivebox-archivebox",
+          "quote": "27K stars, 0/29 changesets reviewed. If JASON-OS scales, enforce review from day one."
+        },
+        {
+          "slug": "codecrafters-io-build-your-own-x",
+          "quote": "The README claims CC0 but there's no LICENSE file. GitHub's API reports 'no license.' This means automated tools (including yours) will flag it incorrectly."
+        }
+      ]
+    },
+    {
+      "id": "meta-tools",
+      "name": "Meta-tool / dynamic tool discovery over static tool registries",
+      "source_count": 2,
+      "source_slugs": ["docs-composio-dev", "sidbharath-com-blog-claude-code-the-complete-guide"],
+      "source_types": ["website"],
+      "confidence": "weak",
+      "member_theme_count": 2,
+      "sample_themes": [
+        {
+          "name": "Meta-tool pattern for dynamic discovery",
+          "description": "Agent uses 6 meta-tools (search/get-schema/execute/…) to discover tools at runtime, not load all 1000+."
+        },
+        {
+          "name": "Meta-tooling layer absent from public discourse",
+          "description": "No mention of tools that audit your tools — skill audits, hook ecosystem audits, pattern compliance. The article treats Claude Code as product to configure, not platform to build on."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "docs-composio-dev",
+          "quote": "Composio provides 6 meta tools — search, get-schema, auth, execute, workbench, bash. The agent discovers tools at runtime and loads only what's needed"
+        },
+        {
+          "slug": "sidbharath-com-blog-claude-code-the-complete-guide",
+          "quote": "No mention of tools that audit your tools — skill audits, hook ecosystem audits, pattern compliance checking, learning effectiveness analysis. The article treats Claude Code as a product to configure, not a platform to build on."
+        }
+      ]
+    },
+    {
+      "id": "convention-over-configuration",
+      "name": "Convention over configuration (filename, grep-friendly, unique-names)",
+      "source_count": 2,
+      "source_slugs": ["MinerU", "archivebox-archivebox"],
+      "source_types": ["repo"],
+      "confidence": "weak",
+      "member_theme_count": 2,
+      "sample_themes": [
+        {
+          "name": "CLAUDE.md as philosophy document",
+          "description": "498-line CLAUDE.md encodes philosophy (grep-friendly naming, minimize-unique-names, NO MOCKS) beyond pure setup instructions."
+        },
+        {
+          "name": "Structured output as product surface",
+          "description": "output_files.md: typed fields, 4-level block hierarchy, enumerated block types, bbox convention, explicit breaking-change callouts. Schema as first-class docs."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "archivebox-archivebox",
+          "quote": "The CLAUDE.md is quietly one of the best developer onboarding documents in the Python open-source ecosystem. It encodes philosophy, not just setup."
+        },
+        {
+          "slug": "MinerU",
+          "quote": "Most ML projects treat their output schema as an implementation detail. MinerU treats it as a product surface."
+        }
+      ]
+    },
+    {
+      "id": "zod-schema-validation",
+      "name": "Schema-first validation (Zod, type safety, runtime contracts)",
+      "source_count": 1,
+      "source_slugs": ["outline"],
+      "source_types": ["repo"],
+      "confidence": "weak",
+      "member_theme_count": 1,
+      "sample_themes": [
+        {
+          "name": "Production MCP server with OAuth scope filtering",
+          "description": "Tools only visible if token has matching scope; Zod validation, tracing wrapper, presenters. Most mature MCP reference analyzed."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "outline",
+          "quote": "Production MCP Server (server/tools/) -- HIGH. ... Filters tool registration by OAuth scopes (AuthenticationHelper.canAccess()) ... Bridges MCP context to existing API infrastructure (buildAPIContext())"
+        }
+      ]
+    },
+    {
+      "id": "error-safety-patterns",
+      "name": "Error handling, sanitization, and safety patterns",
+      "source_count": 1,
+      "source_slugs": ["vikparuchuri-marker"],
+      "source_types": ["repo"],
+      "confidence": "weak",
+      "member_theme_count": 1,
+      "sample_themes": [
+        {
+          "name": "Security-as-afterthought for untrusted input",
+          "description": "Shell injection + path traversal + credential exposure in a PDF processing tool."
+        }
+      ],
+      "sample_evidence": [
+        {
+          "slug": "vikparuchuri-marker",
+          "quote": "Shell injection in chunk_convert.py (shell=True with user input), path traversal in file upload, AWS credentials as CLI defaults"
+        }
+      ]
+    }
+  ],
+  "candidate_buckets": [
+    {
+      "id": "extraction-pipelines",
+      "name": "Multi-stage extraction pipelines (fallback-based)",
+      "count": 44,
+      "unique_sources": 17,
+      "top_candidates": [
+        {
+          "name": "scrapeURL engine-fallback chain",
+          "type": "architecture-pattern",
+          "description": "Pluggable extraction engines coordinated by a fallback-list builder. buildFallbackList → scrapeURLWithEngine → try next or NoEnginesLeftError. Named failure mode, documented order, engine-level telemetry.",
+          "source_count": 1,
+          "weighted": 2,
+          "sources": ["firecrawl", "firecrawl"]
+        },
+        {
+          "name": "Frame sampling + smart dedup pipeline",
+          "type": "architecture-pattern",
+          "description": "moviepy frame extraction with configurable FPS + FAISS/OpenSearch similarity dedup. Portable pattern for local video processing.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Toggleable per-frame ML feature extraction",
+          "type": "pattern",
+          "description": "Each ML feature independently enabled. Config-driven feature selection. Extensibility pattern for adding new capabilities.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Evaluation Service prompt template system",
+          "type": "pattern",
+          "description": "Templates for moderation, summarization, IAB classification. Run arbitrary LLM prompts against extracted metadata.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Tiered fetch fallback chain with sideLoad body hint",
+          "type": "architecture-pattern",
+          "description": "Firestore cache -> curl -> proxy retry -> Puppeteer with sideLoad hint -> Readability -> Turndown -> stale cache fallback. Reference for /website-analysis pipeline evolution beyond superpowers-chrome.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "Readability + Turndown + Puppeteer extraction pipeline",
+          "type": "architecture-pattern",
+          "description": "Industry-standard HTML->markdown stack. All stages swappable via DI. If /website-analysis needs non-Chrome fallback, HTML + @mozilla/readability covers happy path with small dep footprint.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "Over-engineered install mechanism",
+          "type": "anti-pattern",
+          "description": "280 lines for 'copy a file and stamp a version.' Extract the pattern, not the complexity.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "youtube-transcript-api as T27 primary extraction layer",
+          "type": "tool",
+          "description": "pip install youtube-transcript-api. One-line caption fetch with language selection, translation, SRT/WebVTT output. 7K stars, MIT, 100% coverage, 2 deps. First adoption recommendation in analysis series.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        }
+      ]
+    },
+    {
+      "id": "agent-orchestration",
+      "name": "Agent orchestration / multi-agent patterns",
+      "count": 37,
+      "unique_sources": 15,
+      "top_candidates": [
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "type": "pattern",
+          "description": "Browser pool with tiered warmth and janitor lifecycle. 10x memory claim. Resource pooling for JASON-OS agent pools / MCP connections.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "x-* request header protocol",
+          "type": "pattern",
+          "description": "Runtime config surface via headers (11+ headers). Cleaner than query-string pollution. Applicable when CAS exposes /website-analysis over MCP or as agent-facing tool surface.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "Embedded Task() Subagent Patterns",
+          "type": "pattern",
+          "description": "SKILL.md includes literal Task() invocations for agent copy-paste. Reduces cognitive load for invoking subagents.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "AGENTS.md separation pattern",
+          "type": "knowledge",
+          "description": "Separate file for Codex/parallel agent guidance instead of embedding in CLAUDE.md. Consider if CLAUDE.md grows further.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "CLAUDE.md Agent Guidance Pattern",
+          "type": "content",
+          "description": "CLAUDE.md structure comparison + ambient PR workflow.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "Blocking poll anti-pattern",
+          "type": "anti-pattern",
+          "description": "Transcribe handler polls with time.sleep(30) in a blocking while loop. Acceptable for CLI, but must not be copied into agent pipelines. Use async callbacks or event-driven patterns instead.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["bedrock-summarize-audio-video-text"]
+        },
+        {
+          "name": "Backend + Pipeline separation pattern",
+          "type": "pattern",
+          "description": "Backends handle format-specific parsing, pipelines orchestrate processing stages. T28 should separate source extraction from analysis orchestration.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["docling"]
+        },
+        {
+          "name": "program.md Agent Instruction Pattern",
+          "type": "pattern",
+          "description": "114-line autonomous research protocol: setup, experiment loop, keep/discard, crash recovery, NEVER STOP, simplicity criterion, TSV logging. Compare against SKILL.md.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["karpathy-autoresearch"]
+        }
+      ]
+    },
+    {
+      "id": "media-pipeline",
+      "name": "Media/audio/video extraction pipelines",
+      "count": 36,
+      "unique_sources": 14,
+      "top_candidates": [
+        {
+          "name": "Frame sampling + smart dedup pipeline",
+          "type": "architecture-pattern",
+          "description": "moviepy frame extraction with configurable FPS + FAISS/OpenSearch similarity dedup. Portable pattern for local video processing.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Multi-granularity hierarchy (frame → shot → scene)",
+          "type": "architecture-pattern",
+          "description": "Three-level temporal decomposition. Each level has summaries, timestamps, metadata. Structures how video content is analyzed.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Toggleable per-frame ML feature extraction",
+          "type": "pattern",
+          "description": "Each ML feature independently enabled. Config-driven feature selection. Extensibility pattern for adding new capabilities.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Subtitle-to-frame timestamp alignment",
+          "type": "pattern",
+          "description": "Map Transcribe subtitle segments to frame timestamps. Non-obvious engineering for multimodal analysis.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "OpenSearch dependency for similarity (anti-pattern)",
+          "type": "anti-pattern",
+          "description": "FAISS alternative exists in same repo. Don't add search cluster for video dedup.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Multi-provider fallback generator (iterProviders)",
+          "type": "pattern",
+          "description": "Generator yields provider clients in preference order; for/of catches per-provider errors and advances. Small port (~40 lines). Reuse across deep-research, multi-SERP, transcript providers, embedding providers.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "youtube-transcript-api as T27 primary extraction layer",
+          "type": "tool",
+          "description": "pip install youtube-transcript-api. One-line caption fetch with language selection, translation, SRT/WebVTT output. 7K stars, MIT, 100% coverage, 2 deps. First adoption recommendation in analysis series.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        },
+        {
+          "name": "Innertube API reverse-engineering approach",
+          "type": "knowledge",
+          "description": "YouTube captions fetched via undocumented /youtubei/v1/player API with ANDROID client context. No API key needed. Fragile but library maintains compatibility across 8 years.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        }
+      ]
+    },
+    {
+      "id": "testing-coverage",
+      "name": "Testing, coverage, and verification approaches",
+      "count": 31,
+      "unique_sources": 15,
+      "top_candidates": [
+        {
+          "name": "Validation without maintenance trap",
+          "type": "knowledge",
+          "description": "Format validation scripts ensure structural integrity of new entries, but don't ensure entries are current, links are live, or categories are relevant. Missing piece: lifecycle management.",
+          "source_count": 1,
+          "weighted": 2,
+          "sources": ["public-apis_public-apis", "public-apis_public-apis"]
+        },
+        {
+          "name": "No tests (anti-pattern)",
+          "type": "anti-pattern",
+          "description": "52 Python files, 1 test. AWS reference architectures often skip tests. Don't follow this pattern.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Commercial OSS without tests as an architectural stance",
+          "type": "knowledge",
+          "description": "Reader runs at scale with zero tests. Quality floor = TypeScript + lint + observability + traffic volume. Defensible for originator, does not transfer to adopters.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "Zero tests in a 10k-star production service",
+          "type": "anti-pattern",
+          "description": "Reader has no test suite. Quality = TypeScript strict + lint + traffic. Works for originator (observability), fails for adopters. 'No tests' requires compensating monitoring, not the other way around.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "TestServer ephemeral-port integration testing",
+          "type": "pattern",
+          "description": "Custom test utility that starts a real Koa HTTP server on port 0 for integration tests. Tests exercise middleware, routing, and serialization through the actual transport.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "youtube-transcript-api as T27 primary extraction layer",
+          "type": "tool",
+          "description": "pip install youtube-transcript-api. One-line caption fetch with language selection, translation, SRT/WebVTT output. 7K stars, MIT, 100% coverage, 2 deps. First adoption recommendation in analysis series.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        },
+        {
+          "name": "IP ban workaround operational guide",
+          "type": "content",
+          "description": "Production-tested guide to handling YouTube IP blocks: generic proxies, Webshare rotating residential IPs, retry strategies.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        },
+        {
+          "name": "100% coverage + 2-dep library packaging",
+          "type": "pattern",
+          "description": "Poetry with lock file, py.typed marker, --fail-under=100, only requests + defusedxml runtime deps. Reference for well-packaged Python library.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        }
+      ]
+    },
+    {
+      "id": "claude-code-tooling",
+      "name": "Claude Code as a platform (skills, plugins, commands, CLAUDE.md)",
+      "count": 29,
+      "unique_sources": 12,
+      "top_candidates": [
+        {
+          "name": "Autonomy Rules Section in SKILL.md",
+          "type": "pattern",
+          "description": "22 auto-run + 7 ask-first with per-command reasons. Structured encoding of autonomy guardrails. Retrofit candidate for add-debt, pr-review, session-end, audit-* skills.",
+          "source_count": 1,
+          "weighted": 2,
+          "sources": ["teng-lin_notebooklm-py", "teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "Claude Code plugin manifest (marketplace.json)",
+          "type": "pattern",
+          "description": "Plugin manifest bundling MCP server + skills + metadata for 'claude plugin marketplace add' installation. Single source of truth for Claude Code plugin discovery.",
+          "source_count": 2,
+          "weighted": 2,
+          "sources": ["qmd", "hkuds-cli-anything"]
+        },
+        {
+          "name": "PluginManager hook type registry",
+          "type": "pattern",
+          "description": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.). Priority-based ordering. Auto-discovery via glob. plugin.json manifests. Structural client/server/shared split per plugin.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "Skill Install + Version Stamping",
+          "type": "pattern",
+          "description": "skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/. Directly retires cross_locale_config problem. Needs Node port.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "Ambient CLAUDE.md PR Workflow",
+          "type": "pattern",
+          "description": "4-step embedded PR workflow (monitor CI, check reviews, fix + reply with SHA, verify mergeStateStatus CLEAN). Alternative to invoked /pr-review.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "Embedded Task() Subagent Patterns",
+          "type": "pattern",
+          "description": "SKILL.md includes literal Task() invocations for agent copy-paste. Reduces cognitive load for invoking subagents.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "AGENTS.md separation pattern",
+          "type": "knowledge",
+          "description": "Separate file for Codex/parallel agent guidance instead of embedding in CLAUDE.md. Consider if CLAUDE.md grows further.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "CLAUDE.md Agent Guidance Pattern",
+          "type": "content",
+          "description": "CLAUDE.md structure comparison + ambient PR workflow.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        }
+      ]
+    },
+    {
+      "id": "plugin-hook-governance",
+      "name": "Plugin systems & hook/lifecycle governance",
+      "count": 25,
+      "unique_sources": 18,
+      "top_candidates": [
+        {
+          "name": "Validation without maintenance trap",
+          "type": "knowledge",
+          "description": "Format validation scripts ensure structural integrity of new entries, but don't ensure entries are current, links are live, or categories are relevant. Missing piece: lifecycle management.",
+          "source_count": 1,
+          "weighted": 2,
+          "sources": ["public-apis_public-apis", "public-apis_public-apis"]
+        },
+        {
+          "name": "Claude Code plugin manifest (marketplace.json)",
+          "type": "pattern",
+          "description": "Plugin manifest bundling MCP server + skills + metadata for 'claude plugin marketplace add' installation. Single source of truth for Claude Code plugin discovery.",
+          "source_count": 2,
+          "weighted": 2,
+          "sources": ["qmd", "hkuds-cli-anything"]
+        },
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "type": "pattern",
+          "description": "Browser pool with tiered warmth and janitor lifecycle. 10x memory claim. Resource pooling for JASON-OS agent pools / MCP connections.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "Hook lifecycle with 8 ordered hooks",
+          "type": "pattern",
+          "description": "8 lifecycle hooks with clear sequence and security model. Combine with ArchiveBox governance for JASON-OS hook ecosystem.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "PluginManager hook type registry",
+          "type": "pattern",
+          "description": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.). Priority-based ordering. Auto-discovery via glob. plugin.json manifests. Structural client/server/shared split per plugin.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "Open Skills Ecosystem Investigation",
+          "type": "knowledge",
+          "description": "npx skills add teng-lin/notebooklm-py. Unverified. Could be a real skill registry relevant to JASON-OS distribution.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "YouTube audio extraction pipeline",
+          "type": "pattern",
+          "description": "pytubefix download + moviepy audio extraction to MP3. Full lifecycle in ~30 lines. Reference for T27 YouTube content extraction.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["bedrock-summarize-audio-video-text"]
+        },
+        {
+          "name": "Amazon Transcribe async job lifecycle",
+          "type": "knowledge",
+          "description": "Start transcription job -> poll -> fetch transcript from S3 -> cleanup. Shows speaker labels, language config, S3 output routing.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["bedrock-summarize-audio-video-text"]
+        }
+      ]
+    },
+    {
+      "id": "cli-ergonomics",
+      "name": "CLI ergonomics and build-your-own patterns",
+      "count": 20,
+      "unique_sources": 10,
+      "top_candidates": [
+        {
+          "name": "Don't build your own transcript fetcher (anti-pattern)",
+          "type": "anti-pattern",
+          "description": "8 years and 399 commits maintaining compatibility with YouTube's changing API. Use the library, don't replicate the maintenance burden.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        },
+        {
+          "name": "Blocking poll anti-pattern",
+          "type": "anti-pattern",
+          "description": "Transcribe handler polls with time.sleep(30) in a blocking while loop. Acceptable for CLI, but must not be copied into agent pipelines. Use async callbacks or event-driven patterns instead.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["bedrock-summarize-audio-video-text"]
+        },
+        {
+          "name": "Graceful dependency checking",
+          "type": "pattern",
+          "description": "dependency_exists() checks at runtime, logs warning, falls back. T28 needs this for optional deps (Whisper, Chrome, gh CLI).",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["unstructured"]
+        },
+        {
+          "name": "Monolithic single-file tool anti-pattern",
+          "type": "anti-pattern",
+          "description": "280 lines, no CLI, no config file, hard-coded vars. Works for personal use, impossible to integrate.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["bulk-transcribe-youtube-playlist"]
+        },
+        {
+          "name": "Hard-coded source config anti-pattern",
+          "type": "anti-pattern",
+          "description": "Module-level variables for config including API keys. No CLI args, no env vars. Anti-twelve-factor.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["bulk-transcribe-youtube-playlist"]
+        },
+        {
+          "name": "MCP server as CLI subcommand (3 transports)",
+          "type": "pattern",
+          "description": "MCP server accessed via 'qmd mcp' subcommand. Stdio + HTTP foreground + HTTP daemon with PID file. Daemon avoids expensive model reload.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["qmd"]
+        },
+        {
+          "name": "Fixture-based eval harness with difficulty tiers",
+          "type": "pattern",
+          "description": "Test queries categorized easy/medium/hard with expected docs. Precision@k, recall, MRR, F1 across 4 backends. 'qmd bench' CLI for reproducible quality measurement.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["qmd"]
+        },
+        {
+          "name": "MCP auto-discovery from CLI metadata",
+          "type": "pattern",
+          "description": "Zero-schema MCP server that introspects Click CLI commands and auto-generates MCP tool definitions. ~200 lines. Uses CliRunner for execution. Eliminates manual schema duplication.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        }
+      ]
+    },
+    {
+      "id": "mcp-surface",
+      "name": "MCP as a first-class integration surface",
+      "count": 17,
+      "unique_sources": 11,
+      "top_candidates": [
+        {
+          "name": "Claude Code plugin manifest (marketplace.json)",
+          "type": "pattern",
+          "description": "Plugin manifest bundling MCP server + skills + metadata for 'claude plugin marketplace add' installation. Single source of truth for Claude Code plugin discovery.",
+          "source_count": 2,
+          "weighted": 2,
+          "sources": ["qmd", "hkuds-cli-anything"]
+        },
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "type": "pattern",
+          "description": "Browser pool with tiered warmth and janitor lifecycle. 10x memory claim. Resource pooling for JASON-OS agent pools / MCP connections.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "x-* request header protocol",
+          "type": "pattern",
+          "description": "Runtime config surface via headers (11+ headers). Cleaner than query-string pollution. Applicable when CAS exposes /website-analysis over MCP or as agent-facing tool surface.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "MCP OAuth scope-filtered tool registration",
+          "type": "pattern",
+          "description": "Production MCP server that filters tool registration based on OAuth scopes. Tools only visible if token has matching scope. Uses @modelcontextprotocol/sdk with Zod validation.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "Command pattern (transport-agnostic business logic)",
+          "type": "knowledge",
+          "description": "Business logic in transport-agnostic command files (~20 commands). Both HTTP API routes and MCP tools delegate to same commands. Enables adding new surfaces without duplicating logic.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "buildAPIContext() MCP-to-API bridge",
+          "type": "pattern",
+          "description": "Bridge function that constructs a Koa-style APIContext from MCP request context. Enables MCP tools to reuse existing API middleware and command infrastructure without duplication.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "Presenter response formatting layer",
+          "type": "pattern",
+          "description": "JSON response formatting layer between models and API/MCP consumers. Each model has a presenter controlling exposed fields and formatting.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "docling-mcp as extraction backend",
+          "type": "content",
+          "description": "MCP server wrapping docling conversion. T28 could use as document extraction backend instead of building one.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["docling"]
+        }
+      ]
+    },
+    {
+      "id": "memory-knowledge",
+      "name": "Memory / knowledge-graph / note-taking systems",
+      "count": 17,
+      "unique_sources": 10,
+      "top_candidates": [
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "type": "pattern",
+          "description": "Browser pool with tiered warmth and janitor lifecycle. 10x memory claim. Resource pooling for JASON-OS agent pools / MCP connections.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "Colab notebook: full-site crawling methodology",
+          "type": "content",
+          "description": "The only practical multi-URL example using r.jina.ai. Useful IF /website-analysis adds a bulk mode later.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "Open Skills Ecosystem Investigation",
+          "type": "knowledge",
+          "description": "npx skills add teng-lin/notebooklm-py. Unverified. Could be a real skill registry relevant to JASON-OS distribution.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["teng-lin_notebooklm-py"]
+        },
+        {
+          "name": "Results TSV Logging Convention",
+          "type": "pattern",
+          "description": "commit/val_bpb/memory_gb/status/description. Already have JSONL equivalent.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["karpathy-autoresearch"]
+        },
+        {
+          "name": "Single-file-everything pattern",
+          "type": "anti-pattern",
+          "description": "390 links in one README.md. Works at small scale, unmaintainable at large scale. Watch for same impulse in EXTRACTIONS.md, MEMORY.md, SKILL_INDEX.md.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["codecrafters-io-build-your-own-x"]
+        },
+        {
+          "name": "Async task state machine with TTL cleanup",
+          "type": "pattern",
+          "description": "In-memory task dict with four states (pending/processing/completed/failed), asyncio.Queue work channel, asyncio.Semaphore concurrency cap, background sweep for TTL cleanup, FS-backed output artifacts keyed by task ID. Ephemeral state. Answers T28 Gap Agent A Q5 (progressive extraction).",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["MinerU"]
+        },
+        {
+          "name": "Sliding window for long-input memory bounding",
+          "type": "pattern",
+          "description": "get_processing_window_size(default=64) applied identically across all three backends. Pages loaded, inferred, freed in window-sized batches. Peak memory strictly bounded.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["MinerU"]
+        },
+        {
+          "name": "Graph-only persistence without versioning",
+          "type": "anti-pattern",
+          "description": "graph.json has no schema_version, no migration path. Format changes break old graphs silently. SoNash analysis.json schema_version is the right approach.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["safishamsi-graphify"]
+        }
+      ]
+    },
+    {
+      "id": "scraping-adversarial",
+      "name": "Scraping / adversarial-API patterns",
+      "count": 12,
+      "unique_sources": 5,
+      "top_candidates": [
+        {
+          "name": "scrapeURL engine-fallback chain",
+          "type": "architecture-pattern",
+          "description": "Pluggable extraction engines coordinated by a fallback-list builder. buildFallbackList → scrapeURLWithEngine → try next or NoEnginesLeftError. Named failure mode, documented order, engine-level telemetry.",
+          "source_count": 1,
+          "weighted": 2,
+          "sources": ["firecrawl", "firecrawl"]
+        },
+        {
+          "name": "curl-impersonate + TLS fingerprint concept",
+          "type": "knowledge",
+          "description": "Understanding that anti-bot defenses fingerprint the full TLS/TCP stack explains why firecrawl/crawl4ai leak through some sites.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "curl-impersonate as Docker LD_PRELOAD base layer",
+          "type": "pattern",
+          "description": "Two-stage Docker build: FROM lwthiker/curl-impersonate -> FROM node:22. Copy .so + LD_PRELOAD. Template for any future self-hosted fetcher that needs to defeat anti-bot TLS fingerprinting.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "Proxy rotation infrastructure (Webshare)",
+          "type": "pattern",
+          "description": "ProxyConfig ABC -> GenericProxyConfig, WebshareProxyConfig. Rotating residential IPs, retry-on-429, connection-close for forced rotation.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["youtube-transcript-api"]
+        },
+        {
+          "name": "Session pool with per-endpoint rate limiting",
+          "type": "knowledge",
+          "description": "Multiple sessions rotate on rate limits. Per-session per-endpoint tracking with preemptive backoff.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["zedeus-nitter"]
+        },
+        {
+          "name": "ADVERSARIAL_DEPENDENCY",
+          "type": "anti-pattern",
+          "description": "Building product on scraping hostile platform. Twitter killed nitter by changing APIs. 12.8K stars, effectively dead.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["zedeus-nitter"]
+        },
+        {
+          "name": "Multi-agent orchestration via openai_swarm",
+          "type": "knowledge",
+          "description": "Reference implementation of multi-agent coordination around a single scraping task. Worth reading to inform SoNash agent teams and JASON-OS agent boundary design.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["firecrawl"]
+        },
+        {
+          "name": "Deep Research API usage pattern",
+          "type": "knowledge",
+          "description": "How firecrawl's Deep Research API is invoked in practice (apartment-finder). Interactive preference gathering → research call → LLM analysis → structured JSON.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["firecrawl"]
+        }
+      ]
+    },
+    {
+      "id": "ai-code-risks",
+      "name": "AI-generated code risks and anti-patterns",
+      "count": 7,
+      "unique_sources": 5,
+      "top_candidates": [
+        {
+          "name": "Whisper tuned params (beam_size=10, vad_filter)",
+          "type": "knowledge",
+          "description": "beam_size=10 (vs default 5) for accuracy. vad_filter=True to skip silence and prevent Whisper hallucination-on-silence issue.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["bulk-transcribe-youtube-playlist"]
+        },
+        {
+          "name": "58-example cookbook pattern",
+          "type": "content",
+          "description": "The examples/ directory as product-marketing-in-code. 58 self-contained apps, each pairing firecrawl with a specific LLM or framework.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["firecrawl"]
+        },
+        {
+          "name": "init()-based plugin registry with domain routing",
+          "type": "pattern",
+          "description": "Single-method Extractor interface + global map + init() auto-registration + blank imports + universal fallback. 46 extractors, zero boilerplate. Go-specific but principle universal.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["lux-video-downloader"]
+        },
+        {
+          "name": "Hallucinated dependencies (slopsquatting)",
+          "type": "knowledge",
+          "description": "AI suggests non-existent packages. Verify against registries, use SBOM, use Dep-Hallucinator tool.",
+          "source_count": 1,
+          "weighted": 0.8,
+          "sources": ["errors-and-vulnerabilities-in-ai-generated-code"]
+        },
+        {
+          "name": "Context momentum / hallucinated logic",
+          "type": "knowledge",
+          "description": "Early AI misinterpretations steer wrong. Clear context periodically, use separate threads per phase.",
+          "source_count": 1,
+          "weighted": 0.8,
+          "sources": ["errors-and-vulnerabilities-in-ai-generated-code"]
+        },
+        {
+          "name": "Structural entropy (code bloat)",
+          "type": "anti-pattern",
+          "description": "AI generates verbose, redundant code. Act as ruthless editor. Use git diffs, static analysis.",
+          "source_count": 1,
+          "weighted": 0.8,
+          "sources": ["errors-and-vulnerabilities-in-ai-generated-code"]
+        },
+        {
+          "name": "15-entry checkpoint cycle pattern",
+          "type": "pattern",
+          "description": "Periodic maintenance rhythm during long operations. Every N items: rebuild indexes, audit quality, check for anti-patterns. Mid-session companion to session-end.",
+          "source_count": 1,
+          "weighted": 0.8,
+          "sources": ["farzaa-gist-c35ac0cf"]
+        }
+      ]
+    },
+    {
+      "id": "governance-solo",
+      "name": "Solo-maintainer / adoption-hostile governance",
+      "count": 6,
+      "unique_sources": 4,
+      "top_candidates": [
+        {
+          "name": "Hook lifecycle with 8 ordered hooks",
+          "type": "pattern",
+          "description": "8 lifecycle hooks with clear sequence and security model. Combine with ArchiveBox governance for JASON-OS hook ecosystem.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "No-license-on-purpose trap",
+          "type": "anti-pattern",
+          "description": "Karpathy can get away with no license because he's Karpathy. 9,611 forks in legal ambiguity. Don't follow this example for JASON-OS.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["karpathy-autoresearch"]
+        },
+        {
+          "name": "GPL_LICENSE_TRAP",
+          "type": "anti-pattern",
+          "description": "GPL-3.0 copyleft blocks adoption as dependency. Must extract patterns only, never import code.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["vikparuchuri-marker"]
+        },
+        {
+          "name": "CONTRIBUTOR_HOSTILE_GOVERNANCE",
+          "type": "anti-pattern",
+          "description": "33.7K stars, 403 issues, no CONTRIBUTING, no CODE_OF_CONDUCT. Users optimized, contributors not.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["vikparuchuri-marker"]
+        },
+        {
+          "name": "SOLO_MAINTAINER_GOVERNANCE",
+          "type": "anti-pattern",
+          "description": "27K stars but 0/29 changesets with code review. Architectural decisions in prose docs, not enforced contracts. 100% community health score masks governance gap.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        },
+        {
+          "name": "PERMISSIVE_DEFAULTS_FOR_SELF_HOSTED",
+          "type": "anti-pattern",
+          "description": "ALLOWED_HOSTS='*', SESSION_COOKIE_SECURE=False, no HTTPS enforcement. Security-by-configuration rather than security-by-default.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        }
+      ]
+    },
+    {
+      "id": "architectural-separation",
+      "name": "Architectural separation (backend/pipeline, command pattern, presenter)",
+      "count": 5,
+      "unique_sources": 4,
+      "top_candidates": [
+        {
+          "name": "Multi-granularity hierarchy (frame → shot → scene)",
+          "type": "architecture-pattern",
+          "description": "Three-level temporal decomposition. Each level has summaries, timestamps, metadata. Structures how video content is analyzed.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["aws-media-extraction"]
+        },
+        {
+          "name": "Strategy ABC with 55+ implementations",
+          "type": "knowledge",
+          "description": "Clean abstract hierarchy with runtime composition. Skill composition reference.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "Command pattern (transport-agnostic business logic)",
+          "type": "knowledge",
+          "description": "Business logic in transport-agnostic command files (~20 commands). Both HTTP API routes and MCP tools delegate to same commands. Enables adding new surfaces without duplicating logic.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "Abstract generic Store<T> with request deduplication",
+          "type": "pattern",
+          "description": "MobX base Store with generic typing, observable data Map, standardized RPC actions, and request dedup via Symbol-keyed promise tracking. Prevents N+1 fetch patterns.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "Backend + Pipeline separation pattern",
+          "type": "pattern",
+          "description": "Backends handle format-specific parsing, pipelines orchestrate processing stages. T28 should separate source extraction from analysis orchestration.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["docling"]
+        }
+      ]
+    },
+    {
+      "id": "doc-code-drift",
+      "name": "Documentation-code drift and stale-docs anti-pattern",
+      "count": 5,
+      "unique_sources": 5,
+      "top_candidates": [
+        {
+          "name": "DOCUMENTATION_PROMISES_CODE_GAPS",
+          "type": "anti-pattern",
+          "description": "Docs ahead of code reality. on_state_change does not exist. Verify code matches docs before recommending.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "DeepWiki-as-architecture-docs",
+          "type": "anti-pattern",
+          "description": "README 'How it works' is a DeepWiki image badge. No first-party architecture exposition. Directly anti-example for SoNash docs philosophy.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "Zero architecture prose docs",
+          "type": "anti-pattern",
+          "description": "1162 files, one mermaid diagram, no docs/ directory. New contributors pay the ramp-up tax. File as evidence in 'do we need this ADR?' conversations.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["firecrawl"]
+        },
+        {
+          "name": "DOCUMENTATION_ABSENT_FOR_CONTRIBUTORS",
+          "type": "anti-pattern",
+          "description": "46 extractors, 30 contributors, 23-line CONTRIBUTING.md, zero architecture docs. Growth without onboarding = bus-factor risk.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["lux-video-downloader"]
+        },
+        {
+          "name": "SOLO_MAINTAINER_GOVERNANCE",
+          "type": "anti-pattern",
+          "description": "27K stars but 0/29 changesets with code review. Architectural decisions in prose docs, not enforced contracts. 100% community health score masks governance gap.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        }
+      ]
+    },
+    {
+      "id": "convention-over-configuration",
+      "name": "Convention over configuration (filename, grep-friendly, unique-names)",
+      "count": 5,
+      "unique_sources": 3,
+      "top_candidates": [
+        {
+          "name": "Results TSV Logging Convention",
+          "type": "pattern",
+          "description": "commit/val_bpb/memory_gb/status/description. Already have JSONL equivalent.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["karpathy-autoresearch"]
+        },
+        {
+          "name": "Hook execution model with ordering and bg/fg lifecycle",
+          "type": "pattern",
+          "description": "Production-grade hook system: event-family naming convention, 2-digit ordering prefix, foreground/background distinction, SIGTERM finalization for background hooks, JSONL stdout contract.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        },
+        {
+          "name": "CLAUDE.md as structured developer philosophy document",
+          "type": "pattern",
+          "description": "498-line CLAUDE.md encoding not just setup instructions but development philosophy: grep-friendly naming, minimize-unique-names, NO MOCKS testing standard, coverage-as-dead-code methodology.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        },
+        {
+          "name": "Strict assertion testing convention",
+          "type": "knowledge",
+          "description": "Use exact counts (==) not loose bounds (>=) in test assertions. Forces tests to catch regressions rather than just pass.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        },
+        {
+          "name": "Structured output contract as first-class document",
+          "type": "knowledge",
+          "description": "Human-readable specification of middle.json IR: typed fields, 4-level block hierarchy, enumerated block types, bbox convention, explicit breaking-change callouts between pipeline and VLM backends.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["MinerU"]
+        }
+      ]
+    },
+    {
+      "id": "docker-security",
+      "name": "Container / deployment security hardening",
+      "count": 4,
+      "unique_sources": 3,
+      "top_candidates": [
+        {
+          "name": "curl-impersonate as Docker LD_PRELOAD base layer",
+          "type": "pattern",
+          "description": "Two-stage Docker build: FROM lwthiker/curl-impersonate -> FROM node:22. Copy .so + LD_PRELOAD. Template for any future self-hosted fetcher that needs to defeat anti-bot TLS fingerprinting.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["jina-ai-reader"]
+        },
+        {
+          "name": "CSP wildcard security debt",
+          "type": "anti-pattern",
+          "description": "connect-src: * justified by Safari WebSocket bug fixed in Safari 15. Temporary workaround that became permanent debt.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        },
+        {
+          "name": "Docker container hardening (RO fs + CAP_DROP ALL)",
+          "type": "knowledge",
+          "description": "Read-only filesystem, CAP_DROP ALL, non-root uid 998, alpine minimal, health checks. Best Docker hardening in T29 corpus.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["zedeus-nitter"]
+        },
+        {
+          "name": "SECURITY_HEADERS_ABSENT",
+          "type": "anti-pattern",
+          "description": "No CSP, X-Frame-Options, HSTS in web application. Zero defense-in-depth.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["zedeus-nitter"]
+        }
+      ]
+    },
+    {
+      "id": "docs-as-ai-readable",
+      "name": "AI-readable documentation standards (llms.txt, CLAUDE.md, SKILL.md)",
+      "count": 3,
+      "unique_sources": 3,
+      "top_candidates": [
+        {
+          "name": "CLAUDE.md as structured developer philosophy document",
+          "type": "pattern",
+          "description": "498-line CLAUDE.md encoding not just setup instructions but development philosophy: grep-friendly naming, minimize-unique-names, NO MOCKS testing standard, coverage-as-dead-code methodology.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        },
+        {
+          "name": "18-category AI error taxonomy",
+          "type": "knowledge",
+          "description": "Structured reference table of AI code generation failure modes with examples, impact, and mitigations. Cross-reference against CODE_PATTERNS.md.",
+          "source_count": 1,
+          "weighted": 0.8,
+          "sources": ["errors-and-vulnerabilities-in-ai-generated-code"]
+        },
+        {
+          "name": "llms.txt standard for AI-readable documentation",
+          "type": "pattern",
+          "description": "Standardized llms.txt and llms-full.txt at site root for LLM consumption. Makes docs AI-discoverable.",
+          "source_count": 1,
+          "weighted": 0.8,
+          "sources": ["docs-composio-dev"]
+        }
+      ]
+    },
+    {
+      "id": "error-safety-patterns",
+      "name": "Error handling, sanitization, and safety patterns",
+      "count": 3,
+      "unique_sources": 3,
+      "top_candidates": [
+        {
+          "name": "Safe expression eval via AST",
+          "type": "knowledge",
+          "description": "User expressions validated: blocks imports, dunders, dangerous builtins. Security for user expressions.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["crawl4ai"]
+        },
+        {
+          "name": "SECURITY_AS_AFTERTHOUGHT",
+          "type": "anti-pattern",
+          "description": "Shell injection, path traversal, credential exposure in a tool processing untrusted PDFs.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["vikparuchuri-marker"]
+        },
+        {
+          "name": "Silent retry workflow converts flake into green",
+          "type": "anti-pattern",
+          "description": "Automatic retry of failed CI runs up to 3x without surfacing the flake rate. Opposite of silent-failure-hunter discipline.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["MinerU"]
+        }
+      ]
+    },
+    {
+      "id": "meta-tools",
+      "name": "Meta-tool / dynamic tool discovery over static tool registries",
+      "count": 2,
+      "unique_sources": 2,
+      "top_candidates": [
+        {
+          "name": "MCP auto-discovery from CLI metadata",
+          "type": "pattern",
+          "description": "Zero-schema MCP server that introspects Click CLI commands and auto-generates MCP tool definitions. ~200 lines. Uses CliRunner for execution. Eliminates manual schema duplication.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["archivebox-archivebox"]
+        },
+        {
+          "name": "Meta-tool pattern for dynamic tool discovery",
+          "type": "architecture-pattern",
+          "description": "Instead of loading all tool definitions, provide a small set of meta tools (search, get-schema, execute). Agent discovers at runtime. Solves context window bloat. Applicable to JASON-OS at 100+ skills.",
+          "source_count": 1,
+          "weighted": 0.8,
+          "sources": ["docs-composio-dev"]
+        }
+      ]
+    },
+    {
+      "id": "zod-schema-validation",
+      "name": "Schema-first validation (Zod, type safety, runtime contracts)",
+      "count": 1,
+      "unique_sources": 1,
+      "top_candidates": [
+        {
+          "name": "MCP OAuth scope-filtered tool registration",
+          "type": "pattern",
+          "description": "Production MCP server that filters tool registration based on OAuth scopes. Tools only visible if token has matching scope. Uses @modelcontextprotocol/sdk with Zod validation.",
+          "source_count": 1,
+          "weighted": 1,
+          "sources": ["outline"]
+        }
+      ]
+    }
+  ],
+  "unmatched_themes": 59,
+  "unbucketed_candidates": 104
+}

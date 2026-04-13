@@ -1,0 +1,1362 @@
+{
+  "slice_index": 1,
+  "slugs": [
+    "errors-and-vulnerabilities-in-ai-generated-code",
+    "aws-media-extraction",
+    "crawl4ai",
+    "jina-ai-reader",
+    "outline",
+    "teng-lin_notebooklm-py",
+    "youtube-transcript-api",
+    "karpathy-gist-442a6bf"
+  ],
+  "generated_at": "2026-04-13T00:00:00Z",
+  "per_source": {
+    "errors-and-vulnerabilities-in-ai-generated-code": {
+      "raw_themes": [
+        {
+          "name": "AI-specific failure taxonomy",
+          "short_desc": "18 structured categories of AI code errors spanning architecture, security, ops, process, compliance — a practitioner lookup table not a thesis.",
+          "evidence_quote": "a dense 6-page reference table that catalogs 18 distinct error categories in AI-generated code. Each category gets a row with description, concrete examples, impact/risks, mitigation strategy",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Hallucinated dependencies (slopsquatting) as AI-native supply-chain risk",
+          "short_desc": "AI suggests non-existent packages that attackers register — a risk class specific to AI code generation that traditional security checklists miss.",
+          "evidence_quote": "hallucinated dependencies (slopsquatting) category is particularly valuable — it's a risk class specific to AI code generation that traditional security checklists miss entirely",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Intentional vs unintentional debt classification",
+          "short_desc": "AI creates a new class of unintentional debt from training gaps distinct from the human shortcuts TDMS currently tracks.",
+          "evidence_quote": "AI creates a new class of unintentional debt from training data gaps that looks different from the shortcuts humans take knowingly",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Context momentum as AI-specific anti-pattern",
+          "short_desc": "Early AI misinterpretations steer projects wrong; periodic context clearing is a mitigation.",
+          "evidence_quote": "the document identifies \"context momentum\" (early AI misinterpretations steering projects wrong) and suggests \"clear AI context periodically\"",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Enforcement gap between guidance and gates",
+          "short_desc": "Document's mitigations are aspirational (\"use static analysis\"); SoNash's patterns:check already gates equivalent categories at pre-commit.",
+          "evidence_quote": "We're ahead in enforcement. The document says \"use instruction files\" and \"enforce coding standards\" — we have 450 patterns in CODE_PATTERNS.md with automated checking",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Severity ranking blindspot",
+          "short_desc": "All 18 categories presented as equal; hard-coded secrets and injection deserve higher urgency than naming inconsistency.",
+          "evidence_quote": "No severity ranking. All 18 categories are presented as equal. In practice, hard-coded secrets and injection/XSS cause more damage faster than naming inconsistency",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "18-category AI error taxonomy",
+          "type": "knowledge",
+          "description": "Structured reference table of AI code generation failure modes with examples, impact, and mitigations. Cross-reference against CODE_PATTERNS.md.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["taxonomy", "ai-code-quality", "reference"],
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code"
+        },
+        {
+          "name": "Hallucinated dependencies (slopsquatting)",
+          "type": "knowledge",
+          "description": "AI suggests non-existent packages. Verify against registries, use SBOM, use Dep-Hallucinator tool.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["security", "supply-chain", "npm"],
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code"
+        },
+        {
+          "name": "Intentional vs unintentional debt classification",
+          "type": "knowledge",
+          "description": "AI creates unintentional debt from training gaps. Distinct from human intentional shortcuts. TDMS could classify by origin.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["technical-debt", "classification"],
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code"
+        },
+        {
+          "name": "Context momentum / hallucinated logic",
+          "type": "knowledge",
+          "description": "Early AI misinterpretations steer wrong. Clear context periodically, use separate threads per phase.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["context", "hallucination", "workflow"],
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code"
+        },
+        {
+          "name": "Structural entropy (code bloat)",
+          "type": "anti-pattern",
+          "description": "AI generates verbose, redundant code. Act as ruthless editor. Use git diffs, static analysis.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "code-bloat"],
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code"
+        },
+        {
+          "name": "Deployment fragility (happy path only)",
+          "type": "anti-pattern",
+          "description": "AI code works locally but lacks production robustness. Enforce reproducible builds, observability.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "deployment"],
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code"
+        }
+      ],
+      "relevance_to_home": "Directly relevant to SoNash's existing anti-pattern guardrails in CLAUDE.md §5 — confirms most categories are already gated by patterns:check while surfacing two genuine gaps (hallucinated-dependency detection and license-compliance scanning). Also gives JASON-OS a severity-ranked taxonomy vocabulary for AI code-review skills."
+    },
+    "aws-media-extraction": {
+      "raw_themes": [
+        {
+          "name": "Extraction and analysis as separate systems",
+          "short_desc": "Most pipelines couple them; this repo extracts ALL metadata once then runs arbitrary LLM prompts on extracted data.",
+          "evidence_quote": "extraction and analysis are separate problems that should be separate systems. Most video processing pipelines couple them",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Multi-granularity temporal hierarchy",
+          "short_desc": "Frames → Shots (camera continuity) → Scenes (LLM narrative segmentation) — each level has summaries, timestamps, metadata.",
+          "evidence_quote": "Multi-granularity hierarchy (shot-analysis.py + scene-analysis.py): Frames -> Shots (camera continuity via similarity threshold) -> Scenes (LLM narrative segmentation)",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Smart frame deduplication via embeddings",
+          "short_desc": "FAISS (local) and OpenSearch (cloud) variants for cosine similarity dedup; ~50% frame reduction = 50% cost reduction.",
+          "evidence_quote": "Smart deduplication (extr-srv-sample-video-dedup.py + extr-srv-sample-video-dedup-faiss.py): Two approaches -- OpenSearch vector similarity (cloud) and FAISS cosine similarity (local)",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Toggleable per-frame ML feature extraction",
+          "short_desc": "Each ML feature (labels, text, celebrity, moderation, captioning) is independently enabled — extensibility via config.",
+          "evidence_quote": "Per-frame ML feature extraction (extr-srv-image-extraction.py): Each Rekognition API call (labels, text, celebrity, moderation) is independently toggleable",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Cloud-local portability",
+          "short_desc": "FAISS + moviepy + Whisper make the architecture portable from AWS to local without changing the pattern.",
+          "evidence_quote": "The FAISS version is directly portable. Claims 50% frame reduction = 50% cost reduction",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Testing absence as reference-architecture habit",
+          "short_desc": "52 Python files, 1 test file — AWS reference samples routinely skip tests.",
+          "evidence_quote": "No tests. The tests/ directory has 1 file. Don't follow this pattern.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Frame sampling + smart dedup pipeline",
+          "type": "architecture-pattern",
+          "description": "moviepy frame extraction with configurable FPS + FAISS/OpenSearch similarity dedup. Portable pattern for local video processing.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["media", "extraction", "embeddings"],
+          "source_slug": "aws-media-extraction"
+        },
+        {
+          "name": "Multi-granularity hierarchy (frame → shot → scene)",
+          "type": "architecture-pattern",
+          "description": "Three-level temporal decomposition. Each level has summaries, timestamps, metadata. Structures how video content is analyzed.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["media", "hierarchy", "segmentation"],
+          "source_slug": "aws-media-extraction"
+        },
+        {
+          "name": "Toggleable per-frame ML feature extraction",
+          "type": "pattern",
+          "description": "Each ML feature independently enabled. Config-driven feature selection. Extensibility pattern for adding new capabilities.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["extensibility", "config-driven"],
+          "source_slug": "aws-media-extraction"
+        },
+        {
+          "name": "FAISS local dedup (no cloud dependency)",
+          "type": "pattern",
+          "description": "Local vector similarity using FAISS instead of OpenSearch. Same dedup quality, no cloud dependency. Direct port candidate.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["local-first", "embeddings"],
+          "source_slug": "aws-media-extraction"
+        },
+        {
+          "name": "Subtitle-to-frame timestamp alignment",
+          "type": "pattern",
+          "description": "Map Transcribe subtitle segments to frame timestamps. Non-obvious engineering for multimodal analysis.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["multimodal", "timestamps"],
+          "source_slug": "aws-media-extraction"
+        },
+        {
+          "name": "Evaluation Service prompt template system",
+          "type": "pattern",
+          "description": "Templates for moderation, summarization, IAB classification. Run arbitrary LLM prompts against extracted metadata.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["prompt-templates"],
+          "source_slug": "aws-media-extraction"
+        },
+        {
+          "name": "OpenSearch dependency for similarity (anti-pattern)",
+          "type": "anti-pattern",
+          "description": "FAISS alternative exists in same repo. Don't add search cluster for video dedup.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "over-engineering"],
+          "source_slug": "aws-media-extraction"
+        },
+        {
+          "name": "No tests (anti-pattern)",
+          "type": "anti-pattern",
+          "description": "52 Python files, 1 test. AWS reference architectures often skip tests. Don't follow this pattern.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "testing"],
+          "source_slug": "aws-media-extraction"
+        }
+      ],
+      "relevance_to_home": "T27 media-analysis reference architecture. Patterns are portable to a local /media-analysis pipeline via moviepy + FAISS + Whisper + Claude vision. Direct input for the media-analysis handler under T28 CAS. Not relevant to SoNash product itself."
+    },
+    "crawl4ai": {
+      "raw_themes": [
+        {
+          "name": "LLM-friendly extraction as first principle",
+          "short_desc": "Every design flows from the insight that LLMs need structured clean content; 55+ extraction strategies because content types differ.",
+          "evidence_quote": "the web crawling problem has bifurcated. There are crawlers built for humans (Scrapy, Beautiful Soup) and crawlers built for machines (crawl4ai)",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "FilterChain + Scorer composition for content gating",
+          "short_desc": "Composable URLPatternFilter, SEOFilter, KeywordRelevanceScorer, DomainAuthorityScorer; BestFirst prioritizes by score not BFS.",
+          "evidence_quote": "FilterChain that composes URLPatternFilter, SEOFilter, KeywordRelevanceScorer, and DomainAuthorityScorer. The BestFirst strategy prioritizes URLs by a scoring function",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "short_desc": "Browser pool with warmth tiers and janitor lifecycle — claims 10x memory reduction. Pattern portable beyond browsers.",
+          "evidence_quote": "The 3-tier browser pool (PERMANENT/HOT/COLD) in the Docker server is production infrastructure thinking. PERMANENT browsers stay warm for frequent clients",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Hook lifecycle with 8 ordered hooks and security model",
+          "short_desc": "8 hooks with explicit sequence and per-hook guidance; CVE fixes tightened restricted builtins, URL schemes, deserialization allowlists.",
+          "evidence_quote": "Hook lifecycle ordering (docs/md_v2/advanced/hooks-auth.md) -- 8 hooks with clear sequence and explicit guidance on which hook for which purpose",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Crash-recoverable long-running tasks",
+          "short_desc": "CrawlState save/load enables long crawls to resume after failure. No change-notification callback exists despite docs suggesting otherwise.",
+          "evidence_quote": "the crash recovery system (CrawlState with save/load) means long-running crawls can resume after failure",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Documentation-promises vs code-gaps drift",
+          "short_desc": "Docs describe features code only partially implements (on_state_change callback does not exist). Verify code before recommending.",
+          "evidence_quote": "DOCUMENTATION_PROMISES_CODE_GAPS -- Docs describe features code implements partially. on_state_change callback does not exist.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "FilterChain + Scorer composition",
+          "type": "pattern",
+          "description": "Composable filter/scorer pipeline for content gating. Principle portable to /analyze pipeline for relevance gating before full analysis.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["composition", "scoring", "pipeline"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+          "type": "pattern",
+          "description": "Browser pool with tiered warmth and janitor lifecycle. 10x memory claim. Resource pooling for JASON-OS agent pools / MCP connections.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["resource-pool", "lifecycle", "infrastructure"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "Hook lifecycle with 8 ordered hooks",
+          "type": "pattern",
+          "description": "8 lifecycle hooks with clear sequence and security model. Combine with ArchiveBox governance for JASON-OS hook ecosystem.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["hooks", "lifecycle", "security"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "CrawlState save/load resume",
+          "type": "pattern",
+          "description": "Persistent state for long-running tasks. No on_state_change callback despite docs. Long-running task resilience.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["state-persistence", "resilience"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "Strategy ABC with 55+ implementations",
+          "type": "knowledge",
+          "description": "Clean abstract hierarchy with runtime composition. Skill composition reference.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["abstraction", "composition"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "Safe expression eval via AST",
+          "type": "knowledge",
+          "description": "User expressions validated: blocks imports, dunders, dangerous builtins. Security for user expressions.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["security", "sandboxing"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "DOCUMENTATION_PROMISES_CODE_GAPS",
+          "type": "anti-pattern",
+          "description": "Docs ahead of code reality. on_state_change does not exist. Verify code matches docs before recommending.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "docs-drift"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "MONOLITHIC_UTILS",
+          "type": "anti-pattern",
+          "description": "utils.py at 3,778 lines. Functions belonging in domain modules dumped in one file.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "organization"],
+          "source_slug": "crawl4ai"
+        },
+        {
+          "name": "DUPLICATE_FILES_IN_REPO",
+          "type": "anti-pattern",
+          "description": "Backup copies (adaptive_crawler copy.py, .back.py) checked into VCS. Use git branches.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["anti-pattern", "vcs-hygiene"],
+          "source_slug": "crawl4ai"
+        }
+      ],
+      "relevance_to_home": "High for JASON-OS — FilterChain/Scorer and 3-tier resource pool both generalize to skill composition and agent/MCP pooling. High for CAS — the FilterChain is a direct retrofit candidate for /analyze relevance gating. Hook lifecycle model is a direct comparison target for SoNash's ungoverned-order hook system."
+    },
+    "jina-ai-reader": {
+      "raw_themes": [
+        {
+          "name": "Tiered fetch fallback chain as failure-mode knowledge graph",
+          "short_desc": "Firestore cache → curl-impersonate → proxy retry → Puppeteer (with sideLoad hint) → stale-cache fallback; each layer maps to a specific web-fetch failure.",
+          "evidence_quote": "fetch a URL is not one problem — it's a chain of failure modes. CrawlerHost.cachedScrap() in src/api/crawler.ts:1374 lines runs a layered strategy",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "curl-impersonate TLS fingerprint as moat",
+          "short_desc": "LD_PRELOAD libcurl with Chrome 116 TLS fingerprint means most requests never boot Chrome — economic model behind the free tier.",
+          "evidence_quote": "browser rendering is the tax, not the tool. Most URL to markdown services default to headless Chrome and charge for it. Reader defaults to curl-impersonate",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Multi-provider fallback via generator pattern",
+          "short_desc": "iterProviders generator yields provider clients in preference order; for-of advances on per-provider errors. Small, reusable (~40 lines).",
+          "evidence_quote": "The iterProviders() generator-plus-for-of pattern is a clean template for anywhere you have multiple providers with a preference order and failover",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "x-* header protocol as runtime configuration surface",
+          "short_desc": "11 runtime-control headers (x-target-selector, x-timeout, x-cache-tolerance, x-engine, x-return-format) — cleaner than flags when exposing to agents/MCP.",
+          "evidence_quote": "Eleven runtime-control headers (x-target-selector, x-wait-for-selector, x-timeout, x-cache-tolerance, x-no-cache, x-respond-with, x-proxy-url, x-set-cookie, x-with-generated-alt, x-engine, x-return-format)",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Deployment topology as feature (one image, six services)",
+          "short_desc": "Single Docker image deployed 6× to Cloud Run by varying --args; tsyringe DI resolves the correct API host class at boot.",
+          "evidence_quote": "One Docker image deploys six times to Cloud Run -- crawl, search, serp \u00d7 us-central1, europe-west1, asia-east2 -- by varying --args",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "DeepWiki-as-architecture-docs anti-pattern",
+          "short_desc": "10.5k-star repo's \"How it works\" section is a DeepWiki image badge — zero first-party exposition.",
+          "evidence_quote": "the README.md section titled \"How it works\" is literally an image link to deepwiki.com/jina-ai/reader — a third-party auto-generated wiki. There is zero first-party architecture exposition",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Public repo + private submodule makes OSS non-runnable",
+          "short_desc": "thinapps-shared is SSH-only private; repo does not compile without it. \"Open source\" in license only.",
+          "evidence_quote": "The public repo is technically non-compilable without access. \"Open source\" but \"non-runnable without permission.\"",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Zero tests compensated by traffic-volume observability",
+          "short_desc": "Production 10k-star service ships no tests — quality floor is TypeScript strict + lint + Cloud Logging. Works for originator, fails for adopters.",
+          "evidence_quote": "Zero automated tests. No .test.ts, no .spec.ts, no describe(), nothing. firebase-functions-test sits in devDependencies but is never imported",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Multi-provider fallback generator (iterProviders)",
+          "type": "pattern",
+          "description": "Generator yields provider clients in preference order; for/of catches per-provider errors and advances. Small port (~40 lines). Reuse across deep-research, multi-SERP, transcript providers, embedding providers.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["fallback", "provider-abstraction", "generator"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "x-* request header protocol",
+          "type": "pattern",
+          "description": "Runtime config surface via headers (11+ headers). Cleaner than query-string pollution. Applicable when CAS exposes /website-analysis over MCP or as agent-facing tool surface.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["protocol", "mcp-surface", "headers"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "r.jina.ai hosted service as fetch backend",
+          "type": "knowledge",
+          "description": "DECISION candidate: adopt as /website-analysis fallback fetch backend? Pro: free tier, TLS fingerprint evasion, SPA handling. Con: vendor lock-in on core CAS primitive, 11-month staleness, Privacy-First tension.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["fetch-backend", "decision", "vendor-lock-in"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Tiered fetch fallback chain with sideLoad body hint",
+          "type": "architecture-pattern",
+          "description": "Firestore cache -> curl -> proxy retry -> Puppeteer with sideLoad hint -> Readability -> Turndown -> stale cache fallback. Reference for /website-analysis pipeline evolution beyond superpowers-chrome.",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["fetch-pipeline", "fallback-chain"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Readability + Turndown + Puppeteer extraction pipeline",
+          "type": "architecture-pattern",
+          "description": "Industry-standard HTML->markdown stack. All stages swappable via DI. If /website-analysis needs non-Chrome fallback, HTML + @mozilla/readability covers happy path with small dep footprint.",
+          "novelty": "low",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["html-to-markdown", "extraction-stack"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "curl-impersonate + TLS fingerprint concept",
+          "type": "knowledge",
+          "description": "Understanding that anti-bot defenses fingerprint the full TLS/TCP stack explains why firecrawl/crawl4ai leak through some sites.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-bot", "tls-fingerprint"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "curl-impersonate as Docker LD_PRELOAD base layer",
+          "type": "pattern",
+          "description": "Two-stage Docker build: FROM lwthiker/curl-impersonate -> FROM node:22. Copy .so + LD_PRELOAD. Template for any future self-hosted fetcher that needs to defeat anti-bot TLS fingerprinting.",
+          "novelty": "high",
+          "effort": "E3",
+          "relevance": "medium",
+          "tags": ["docker", "tls-fingerprint", "self-host"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Multi-target deployment via --args override",
+          "type": "architecture-pattern",
+          "description": "One image deployed 6 times to Cloud Run by varying --args. DI resolves correct class at container boot.",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "low",
+          "tags": ["deployment", "di"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Commercial OSS without tests as an architectural stance",
+          "type": "knowledge",
+          "description": "Reader runs at scale with zero tests. Quality floor = TypeScript + lint + observability + traffic volume. Defensible for originator, does not transfer to adopters.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["testing-philosophy", "observability"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Blog: Reader for search-grounding to improve factuality of LLMs",
+          "type": "content",
+          "description": "Explains s.jina.ai's thesis — search-then-read for LLM grounding. Aligned with SoNash deep-research philosophy.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["content", "search-grounding"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Colab notebook: full-site crawling methodology",
+          "type": "content",
+          "description": "The only practical multi-URL example using r.jina.ai. Useful IF /website-analysis adds a bulk mode later.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["content", "bulk-crawl"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "DeepWiki-as-architecture-docs",
+          "type": "anti-pattern",
+          "description": "README 'How it works' is a DeepWiki image badge. No first-party architecture exposition. Directly anti-example for SoNash docs philosophy.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "documentation"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Public repo + private submodule requirement",
+          "type": "anti-pattern",
+          "description": "Public repo doesn't compile without SSH-only thinapps-shared. If shipping OSS, make it actually runnable from source. If closed, ship closed. Middle ground erodes trust.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "oss-hygiene"],
+          "source_slug": "jina-ai-reader"
+        },
+        {
+          "name": "Zero tests in a 10k-star production service",
+          "type": "anti-pattern",
+          "description": "Reader has no test suite. Quality = TypeScript strict + lint + traffic. Works for originator (observability), fails for adopters. 'No tests' requires compensating monitoring, not the other way around.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "testing"],
+          "source_slug": "jina-ai-reader"
+        }
+      ],
+      "relevance_to_home": "High for CAS /website-analysis — concrete decision candidate (adopt r.jina.ai as a fetch backend) plus portable iterProviders fallback pattern. Strong anti-pattern library (DeepWiki-docs, public+private submodule, zero-tests) that directly validates SoNash's in-repo documentation and testing commitments."
+    },
+    "outline": {
+      "raw_themes": [
+        {
+          "name": "Transport-agnostic command pattern",
+          "short_desc": "~20 command files encapsulate business logic; both HTTP API and MCP tools delegate to the same commands. Adding a new surface is cheap.",
+          "evidence_quote": "The command pattern (server/commands/) is where Outline's real architectural sophistication lives. Commands like documentCreator, documentMover, and documentUpdater encapsulate multi-model business logic",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Production MCP server with OAuth scope filtering",
+          "short_desc": "Tools only visible if token has matching scope; Zod validation, tracing wrapper, presenters. Most mature MCP reference analyzed.",
+          "evidence_quote": "Production MCP Server (server/tools/) -- HIGH. ... Filters tool registration by OAuth scopes (AuthenticationHelper.canAccess()) ... Bridges MCP context to existing API infrastructure (buildAPIContext())",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "PluginManager hook-type registry",
+          "short_desc": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.) with priority ordering, auto-discovery, plugin.json manifests.",
+          "evidence_quote": "The 10 hook types in server/utils/PluginManager.ts (API, AuthProvider, EmailTemplate, Processor, Task, etc.) with priority-based ordering and auto-discovery is a clean extensibility model",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Field-level encryption via model decorator",
+          "short_desc": "@Encrypted Sequelize decorator encrypts specific fields transparently at the model layer using sequelize-encrypted.",
+          "evidence_quote": "Field-level encryption at the model layer via server/models/decorators/Encrypted.ts using sequelize-encrypted",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Integration tests through real transport",
+          "short_desc": "TestServer starts a real Koa HTTP server on an ephemeral port; tests exercise actual middleware, routing, serialization — not mocks.",
+          "evidence_quote": "TestServer Pattern -- MEDIUM. server/test/TestServer.ts creates a real Koa HTTP server on an ephemeral port for integration tests. SoNash tests mock httpsCallable -- the Outline approach tests the actual transport",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Documentation externalized to external site",
+          "short_desc": "Thin 68-line ARCHITECTURE.md, missing CONTRIBUTING.md, all contributor docs at docs.getoutline.com — anti-pattern for adopter experience.",
+          "evidence_quote": "Outline's README delegates all setup, deployment, and API docs to docs.getoutline.com. For an open-source project wanting contributors, this creates friction",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "CSP permissive as long-lived debt",
+          "short_desc": "connect-src: * justified by Safari WebSocket bug fixed in Safari 15 — temporary debt that became permanent.",
+          "evidence_quote": "CSP is permissive. connect-src: * in the Content Security Policy is justified by a Safari WebSocket bug that was fixed in Safari 15. This is security debt that hasn't been cleaned up",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "MCP OAuth scope-filtered tool registration",
+          "type": "pattern",
+          "description": "Production MCP server that filters tool registration based on OAuth scopes. Tools only visible if token has matching scope. Uses @modelcontextprotocol/sdk with Zod validation.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["mcp", "oauth", "authorization"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "Command pattern (transport-agnostic business logic)",
+          "type": "knowledge",
+          "description": "Business logic in transport-agnostic command files (~20 commands). Both HTTP API routes and MCP tools delegate to same commands. Enables adding new surfaces without duplicating logic.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["architecture", "command-pattern", "transport-agnostic"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "PluginManager hook type registry",
+          "type": "pattern",
+          "description": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.). Priority-based ordering. Auto-discovery via glob. plugin.json manifests. Structural client/server/shared split per plugin.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["plugin-system", "registry", "hooks"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "buildAPIContext() MCP-to-API bridge",
+          "type": "pattern",
+          "description": "Bridge function that constructs a Koa-style APIContext from MCP request context. Enables MCP tools to reuse existing API middleware and command infrastructure without duplication.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["mcp", "bridge", "context"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "@Encrypted field-level decorator pattern",
+          "type": "pattern",
+          "description": "Sequelize model decorator that transparently encrypts/decrypts specific fields using AES via SECRET_KEY. Applied at the model layer, not the application layer.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["encryption", "decorator", "privacy"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "TestServer ephemeral-port integration testing",
+          "type": "pattern",
+          "description": "Custom test utility that starts a real Koa HTTP server on port 0 for integration tests. Tests exercise middleware, routing, and serialization through the actual transport.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["testing", "integration", "real-transport"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "Abstract generic Store<T> with request deduplication",
+          "type": "pattern",
+          "description": "MobX base Store with generic typing, observable data Map, standardized RPC actions, and request dedup via Symbol-keyed promise tracking. Prevents N+1 fetch patterns.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["state-management", "deduplication"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "PersistenceExtension race condition prevention",
+          "type": "knowledge",
+          "description": "HocusPocus persistence extension uses SELECT FOR UPDATE to prevent race conditions during first-write of collaborative documents.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["concurrency", "race-conditions"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "Content-as-code onboarding templates",
+          "type": "pattern",
+          "description": "4 markdown templates in server/onboarding/ injected into new team workspaces. User-facing content stored as code, versioned with the app.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["content-as-code", "onboarding"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "Presenter response formatting layer",
+          "type": "pattern",
+          "description": "JSON response formatting layer between models and API/MCP consumers. Each model has a presenter controlling exposed fields and formatting.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "low",
+          "tags": ["serialization", "api-layer"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "Bull queue processor BaseProcessor pattern",
+          "type": "pattern",
+          "description": "Base class for async job processors with ~20 specialized implementations. Event-driven architecture for background work.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "low",
+          "tags": ["async", "queue"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "RPC-over-POST API pattern",
+          "type": "anti-pattern",
+          "description": "POST for everything including reads. Abandons HTTP caching, idempotency, content negotiation. Simpler client code but worse HTTP semantics.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "http-semantics"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "Fat route files",
+          "type": "anti-pattern",
+          "description": "documents.ts handles ~30 endpoints. Even with command delegation, routing layer becomes discovery burden.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "organization"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "Externalized documentation",
+          "type": "anti-pattern",
+          "description": "README delegates all docs to docs.getoutline.com. Creates contributor friction. No CONTRIBUTING.md, no .env.example, no API docs in repo.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "documentation"],
+          "source_slug": "outline"
+        },
+        {
+          "name": "CSP wildcard security debt",
+          "type": "anti-pattern",
+          "description": "connect-src: * justified by Safari WebSocket bug fixed in Safari 15. Temporary workaround that became permanent debt.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "security", "debt"],
+          "source_slug": "outline"
+        }
+      ],
+      "relevance_to_home": "Highest JASON-OS Domain 02a relevance in this slice — Outline is the most mature production MCP reference, with OAuth-scoped tool registration, transport-agnostic commands, and a PluginManager that directly maps to skill/agent/hook registration. Anti-pattern set (externalized docs, wildcard CSP) directly validates SoNash's opposite choices."
+    },
+    "teng-lin_notebooklm-py": {
+      "raw_themes": [
+        {
+          "name": "Package as agent-native skill distribution",
+          "short_desc": "Python API + CLI + SKILL.md + skill install command + CI monitoring the external API — one package is also one skill.",
+          "evidence_quote": "It's not just a Python wrapper for Google NotebookLM -- it's a complete agent-native package: Python API + CLI + SKILL.md + skill install command + multi-agent support + CI",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Skill install + version stamping mechanism",
+          "short_desc": "skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/ and ~/.agents/skills/. skill status detects drift.",
+          "evidence_quote": "skill.py install mechanism solves a real problem: how do you distribute a SKILL.md to the right location? Read from package data, stamp version, write to ~/.claude/skills/",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Autonomy rules as structured SKILL.md section",
+          "short_desc": "22 auto-run + 7 ask-first commands, each with a one-line reason — structured encoding of guardrails at the per-command level.",
+          "evidence_quote": "SKILL.md Autonomy Rules (lines 94-128). 22 commands \"Run automatically\" + 7 \"Ask before running,\" each with a one-line reason",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "External contract health monitoring",
+          "short_desc": "rpc-health.yml runs daily cron with 3 exit codes and auto-creates labeled GitHub issues on failure. Pattern for any wrapped external API.",
+          "evidence_quote": "rpc-health.yml -- External Contract Monitoring. Daily cron, 3 exit codes, auto-creates labeled GitHub issues",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Embedded Task() subagent patterns in SKILL.md",
+          "short_desc": "Literal Task(prompt=..., subagent_type=...) invocations in workflow examples — reduces cognitive load for invoking agents.",
+          "evidence_quote": "Embedded Task() subagent patterns. Literal Task(prompt=..., subagent_type=...) in SKILL.md workflows. Reduces agent cognitive load",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Undocumented-API dependency as risk",
+          "short_desc": "Wraps Google's obfuscated batchexecute RPC. Health monitoring mitigates but doesn't solve the fundamental fragility.",
+          "evidence_quote": "Depending on undocumented APIs. The entire project wraps Google's internal batchexecute RPC protocol with obfuscated method IDs",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Skill Install + Version Stamping",
+          "type": "pattern",
+          "description": "skill.py reads SKILL.md from package data, stamps version, writes to ~/.claude/skills/. Directly retires cross_locale_config problem. Needs Node port.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["skill-distribution", "install", "versioning"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "Autonomy Rules Section in SKILL.md",
+          "type": "pattern",
+          "description": "22 auto-run + 7 ask-first with per-command reasons. Structured encoding of autonomy guardrails. Retrofit candidate for add-debt, pr-review, session-end, audit-* skills.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["skill", "autonomy", "guardrails"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "Nightly RPC Health Check",
+          "type": "pattern",
+          "description": "rpc-health.yml: daily cron, 3 exit codes, auto-creates GitHub issues on failure. Pattern for external contract monitoring.",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["ci", "health-monitoring", "external-api"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "Ambient CLAUDE.md PR Workflow",
+          "type": "pattern",
+          "description": "4-step embedded PR workflow (monitor CI, check reviews, fix + reply with SHA, verify mergeStateStatus CLEAN). Alternative to invoked /pr-review.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["pr-workflow", "claude-md"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "Embedded Task() Subagent Patterns",
+          "type": "pattern",
+          "description": "SKILL.md includes literal Task() invocations for agent copy-paste. Reduces cognitive load for invoking subagents.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["skill", "task-invocation", "agent-coordination"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "Open Skills Ecosystem Investigation",
+          "type": "knowledge",
+          "description": "npx skills add teng-lin/notebooklm-py. Unverified. Could be a real skill registry relevant to JASON-OS distribution.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["skill-registry", "distribution", "jason-os"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "AGENTS.md separation pattern",
+          "type": "knowledge",
+          "description": "Separate file for Codex/parallel agent guidance instead of embedding in CLAUDE.md. Consider if CLAUDE.md grows further.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["agent-config", "organization"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "SKILL.md Autonomy Rules Section",
+          "type": "content",
+          "description": "Direct template for adding autonomy rules to SoNash skills.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["skill", "content"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "skill.py Install Mechanism",
+          "type": "content",
+          "description": "Reference implementation for skill distribution. Port pattern to Node.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["skill-install", "reference"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "rpc-health.yml Workflow",
+          "type": "content",
+          "description": "Complete external contract monitoring workflow. Directly transferable.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["ci", "health"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "CLAUDE.md Agent Guidance Pattern",
+          "type": "content",
+          "description": "CLAUDE.md structure comparison + ambient PR workflow.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["claude-md", "reference"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "Undocumented API dependency",
+          "type": "anti-pattern",
+          "description": "Entire project wraps Google's obfuscated RPC endpoints. Prefer documented APIs for critical features.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "fragility"],
+          "source_slug": "teng-lin_notebooklm-py"
+        },
+        {
+          "name": "Over-engineered install mechanism",
+          "type": "anti-pattern",
+          "description": "280 lines for 'copy a file and stamp a version.' Extract the pattern, not the complexity.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "over-engineering"],
+          "source_slug": "teng-lin_notebooklm-py"
+        }
+      ],
+      "relevance_to_home": "Extremely high for JASON-OS and SoNash skill ecosystem. The skill install/version-stamping mechanism directly addresses cross-locale config drift; the Autonomy Rules pattern retrofits guardrail #2 from CLAUDE.md into per-skill structured encoding; rpc-health monitors any external contract SoNash wraps."
+    },
+    "youtube-transcript-api": {
+      "raw_themes": [
+        {
+          "name": "Caption-first as primary extraction layer",
+          "short_desc": "~80% of YouTube videos already have captions — fetching them is instant, free, timestamped. Whisper/Transcribe are fallbacks, not defaults.",
+          "evidence_quote": "most YouTube videos already have transcripts, and you should just ask for them. ... The bulk-transcribe repo loads a 3GB Whisper model onto a GPU. This repo makes an HTTP request and gets the text back in milliseconds",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Innertube API reverse-engineering for caption access",
+          "short_desc": "Undocumented /youtubei/v1/player with ANDROID client context returns caption metadata without an API key; 8 years of maintenance compatibility.",
+          "evidence_quote": "YouTube's innertube API is the mechanism. The library reverse-engineers YouTube's internal player API (ANDROID client context), which returns caption metadata without requiring a YouTube Data API key",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Context-aware error hierarchy",
+          "short_desc": "15+ typed exceptions with CAUSE_MESSAGE templates; RequestBlocked.cause adapts its guidance based on proxy config. Each error explains why AND what to do.",
+          "evidence_quote": "15+ specific error types with cause messages. ... The RequestBlocked.cause property adapts its guidance based on proxy config -- context-aware errors",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "IP blocking as central operational challenge",
+          "short_desc": "The most sophisticated code isn't caption fetching — it's proxy rotation (Webshare, GenericProxyConfig, retry-on-429, connection-close for IP rotation).",
+          "evidence_quote": "IP blocking is the real engineering problem. The most sophisticated code in this library isn't the transcript fetching -- it's the proxy infrastructure",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Manual-vs-auto transcript quality hierarchy",
+          "short_desc": "Library prioritizes manually-created transcripts over auto-generated; quality decision baked into architecture, not left as a config option.",
+          "evidence_quote": "Manual vs auto-generated transcripts are different quality tiers, and the library prioritizes manual over auto-generated by default. This is a quality decision baked into the architecture",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Adopt-don't-rebuild conclusion",
+          "short_desc": "8 years + 399 commits of YouTube-API maintenance burden argue against replicating; first explicit 'install the package, don't extract patterns' recommendation in the series.",
+          "evidence_quote": "Adopt this library as T27's primary extraction layer. Not extract patterns from it -- actually pip install youtube-transcript-api and use it",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "youtube-transcript-api as T27 primary extraction layer",
+          "type": "tool",
+          "description": "pip install youtube-transcript-api. One-line caption fetch with language selection, translation, SRT/WebVTT output. 7K stars, MIT, 100% coverage, 2 deps. First adoption recommendation in analysis series.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["tool", "youtube", "transcripts"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "Innertube API reverse-engineering approach",
+          "type": "knowledge",
+          "description": "YouTube captions fetched via undocumented /youtubei/v1/player API with ANDROID client context. No API key needed. Fragile but library maintains compatibility across 8 years.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["youtube", "reverse-engineering", "knowledge"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "Context-aware error hierarchy pattern",
+          "type": "pattern",
+          "description": "15+ specific exception types with CAUSE_MESSAGE templates. RequestBlocked.cause adapts message based on proxy config type. Each error explains why it happened AND what to do.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["error-handling", "ux", "pattern"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "IP ban workaround operational guide",
+          "type": "content",
+          "description": "Production-tested guide to handling YouTube IP blocks: generic proxies, Webshare rotating residential IPs, retry strategies.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["operations", "youtube", "proxies"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "Three-layer T27 extraction architecture",
+          "type": "knowledge",
+          "description": "Layer 1 = youtube-transcript-api (instant, free, ~80%). Layer 2 = pytubefix captions (backup). Layer 3 = faster-whisper (local GPU, uncaptioned only). First time 3 analyzed repos compose into a clear architecture.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["architecture", "media", "layered-fallback"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "Proxy rotation infrastructure (Webshare)",
+          "type": "pattern",
+          "description": "ProxyConfig ABC -> GenericProxyConfig, WebshareProxyConfig. Rotating residential IPs, retry-on-429, connection-close for forced rotation.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["proxies", "rotation"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "SRT/WebVTT timestamp formatting",
+          "type": "pattern",
+          "description": "Clean timestamp conversion with SRT (comma separator) vs WebVTT (dot separator) formatting.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["timestamps", "subtitles"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "Manual vs auto-generated transcript priority",
+          "type": "knowledge",
+          "description": "find_transcript() checks manually_created first, then generated. Quality hierarchy baked into architecture.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["quality", "hierarchy"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "100% coverage + 2-dep library packaging",
+          "type": "pattern",
+          "description": "Poetry with lock file, py.typed marker, --fail-under=100, only requests + defusedxml runtime deps. Reference for well-packaged Python library.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["packaging", "quality"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "Don't build your own transcript fetcher (anti-pattern)",
+          "type": "anti-pattern",
+          "description": "8 years and 399 commits maintaining compatibility with YouTube's changing API. Use the library, don't replicate the maintenance burden.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "build-vs-buy"],
+          "source_slug": "youtube-transcript-api"
+        },
+        {
+          "name": "Ignore IP blocking for bulk extraction (anti-pattern)",
+          "type": "anti-pattern",
+          "description": "YouTube blocks bulk requests. Plan for it from the start.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "operations"],
+          "source_slug": "youtube-transcript-api"
+        }
+      ],
+      "relevance_to_home": "Directly relevant to T27 media-analysis under T28 CAS — adopt-don't-rebuild recommendation for YouTube caption extraction and the context-aware error hierarchy pattern is portable across SoNash's content-extraction skills. Not relevant to SoNash product directly."
+    },
+    "karpathy-gist-442a6bf": {
+      "raw_themes": [
+        {
+          "name": "Three-layer architecture: sources / wiki / schema",
+          "short_desc": "Immutable raw sources, LLM-maintained wiki layer, co-evolved schema. Clean separation where human curates and LLM maintains.",
+          "evidence_quote": "His three-layer architecture (sources / wiki / schema) maps to your .research/ (sources), docs/ + MEMORY.md + indexes (wiki), and CLAUDE.md + skills (schema)",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Bookkeeping-not-thinking as knowledge-base bottleneck",
+          "short_desc": "Humans abandon wikis because maintenance cost grows faster than value; LLMs collapse that cost to near-zero.",
+          "evidence_quote": "the bottleneck in personal knowledge management is bookkeeping, not thinking. Humans abandon wikis not because they stop caring, but because the maintenance cost ... grows faster than the value. LLMs collapse that cost to near-zero",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Ingest-Query-Lint operational triad",
+          "short_desc": "Three operations keep a knowledge base healthy: ingest new sources, query with compounding answers, lint for contradictions/orphans/staleness.",
+          "evidence_quote": "His \"ingest\" operation is what /repo-analysis and /website-analysis do. His \"query\" is what /repo-synthesis and /website-synthesis do. His \"lint\" maps to your orphan detection, /alerts, and health scripts",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Answers-compound-into-wiki principle",
+          "short_desc": "Good query answers should be filed back as wiki pages — the gap in SoNash is that research outputs archive but don't integrate back into the active knowledge layer.",
+          "evidence_quote": "filing good answers back into the wiki as new pages. Your /deep-research outputs go to .research/ and stay there. ... These are archived but rarely integrated back into the active knowledge layer",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Anti-RAG stance — persistent wiki over retrieve-and-generate",
+          "short_desc": "Positions the persistent wiki as fundamentally superior to RAG by explaining why rather than attacking alternatives.",
+          "evidence_quote": "The editorial stance is anti-RAG: he positions the persistent wiki as fundamentally superior to retrieve-and-generate approaches",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Index + Log dual navigation",
+          "short_desc": "Content-oriented index (catalog with summaries) + chronological log (append-only, parseable) — works without embeddings at moderate scale.",
+          "evidence_quote": "Content-oriented index (catalog with summaries) + chronological log (append-only, parseable). Works without embedding infrastructure at moderate scale",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Three-layer architecture pattern for LLM knowledge bases",
+          "type": "architecture-pattern",
+          "description": "Raw sources (immutable) -> Wiki (LLM-owned) -> Schema (co-evolved config). Clean separation where human curates and LLM maintains.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["architecture", "knowledge-base", "three-layer"],
+          "source_slug": "karpathy-gist-442a6bf"
+        },
+        {
+          "name": "Ingest-Query-Lint operational triad",
+          "type": "workflow-pattern",
+          "description": "Three operations that keep a knowledge base healthy: ingest new sources, query with compounding answers, lint for contradictions/orphans/staleness.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["workflow", "knowledge-base", "operations"],
+          "source_slug": "karpathy-gist-442a6bf"
+        },
+        {
+          "name": "Answers-compound-into-wiki principle",
+          "type": "design-principle",
+          "description": "Good query answers should be filed back as wiki pages. Explorations compound alongside ingested sources. Prevents knowledge loss to chat history.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["design-principle", "knowledge-compounding"],
+          "source_slug": "karpathy-gist-442a6bf"
+        },
+        {
+          "name": "Index + Log dual navigation system",
+          "type": "implementation-pattern",
+          "description": "Content-oriented index (catalog with summaries) + chronological log (append-only, parseable). Works without embedding infrastructure at moderate scale.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["navigation", "index", "log"],
+          "source_slug": "karpathy-gist-442a6bf"
+        },
+        {
+          "name": "qmd local markdown search (MCP + CLI)",
+          "type": "tool",
+          "description": "BM25/vector hybrid search for markdown files with LLM re-ranking. Both CLI and MCP server. github.com/tobi/qmd.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["tool", "search", "mcp"],
+          "source_slug": "karpathy-gist-442a6bf"
+        }
+      ],
+      "relevance_to_home": "Extremely high framing relevance for JASON-OS and T24 synthesis adoption — Karpathy's triad maps almost exactly to SoNash's existing CAS, research, and hook-based lint, crystallizing the why of the existing architecture and surfacing the concrete gap where query answers never re-enter the wiki."
+    }
+  },
+  "initial_clusters": [
+    {
+      "cluster_name": "MCP / multi-surface architecture",
+      "member_themes": [
+        { "source_slug": "outline", "theme_name": "Transport-agnostic command pattern" },
+        {
+          "source_slug": "outline",
+          "theme_name": "Production MCP server with OAuth scope filtering"
+        },
+        {
+          "source_slug": "jina-ai-reader",
+          "theme_name": "x-* header protocol as runtime configuration surface"
+        },
+        {
+          "source_slug": "teng-lin_notebooklm-py",
+          "theme_name": "Package as agent-native skill distribution"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Multiple sources converge on the idea that business logic and tool surfaces should be transport-agnostic — Outline's command pattern + MCP OAuth, Reader's x-* headers as agent-facing protocol, and notebooklm-py packaging the same functionality as both Python API and SKILL.md."
+    },
+    {
+      "cluster_name": "Layered fallback / provider composition",
+      "member_themes": [
+        {
+          "source_slug": "jina-ai-reader",
+          "theme_name": "Tiered fetch fallback chain as failure-mode knowledge graph"
+        },
+        {
+          "source_slug": "jina-ai-reader",
+          "theme_name": "Multi-provider fallback via generator pattern"
+        },
+        {
+          "source_slug": "crawl4ai",
+          "theme_name": "FilterChain + Scorer composition for content gating"
+        },
+        {
+          "source_slug": "youtube-transcript-api",
+          "theme_name": "Caption-first as primary extraction layer"
+        },
+        { "source_slug": "aws-media-extraction", "theme_name": "Cloud-local portability" }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Five sources converge on composed/tiered extraction: Reader's failure-mode fallback chain, crawl4ai's FilterChain+Scorer, YouTube Transcript API's caption-first three-layer, and AWS media extraction's portable FAISS/cloud variants. Each treats extraction as a chain of layers, not a single call."
+    },
+    {
+      "cluster_name": "Hook / plugin / lifecycle ordering",
+      "member_themes": [
+        {
+          "source_slug": "crawl4ai",
+          "theme_name": "Hook lifecycle with 8 ordered hooks and security model"
+        },
+        { "source_slug": "outline", "theme_name": "PluginManager hook-type registry" },
+        {
+          "source_slug": "teng-lin_notebooklm-py",
+          "theme_name": "Autonomy rules as structured SKILL.md section"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "Three sources articulate how extensibility and autonomy should be structured: crawl4ai's 8 ordered hooks, Outline's 10-hook PluginManager with priority, and notebooklm-py's autonomy rules as per-command structured guardrails. All three position hooks/plugins/autonomy as first-class registered entities with ordering semantics."
+    },
+    {
+      "cluster_name": "Documentation and testing as adopter infrastructure",
+      "member_themes": [
+        {
+          "source_slug": "jina-ai-reader",
+          "theme_name": "DeepWiki-as-architecture-docs anti-pattern"
+        },
+        {
+          "source_slug": "jina-ai-reader",
+          "theme_name": "Public repo + private submodule makes OSS non-runnable"
+        },
+        {
+          "source_slug": "jina-ai-reader",
+          "theme_name": "Zero tests compensated by traffic-volume observability"
+        },
+        { "source_slug": "outline", "theme_name": "Documentation externalized to external site" },
+        {
+          "source_slug": "aws-media-extraction",
+          "theme_name": "Testing absence as reference-architecture habit"
+        },
+        { "source_slug": "crawl4ai", "theme_name": "Documentation-promises vs code-gaps drift" }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Six themes across four sources share a single anti-pattern signal: treating docs and tests as producer-optional when they are actually adopter infrastructure. Reader (0 tests, DeepWiki, private submodule), Outline (externalized docs, thin ARCHITECTURE.md), AWS media (1 test file), crawl4ai (docs ahead of code)."
+    },
+    {
+      "cluster_name": "Knowledge-base mental model",
+      "member_themes": [
+        {
+          "source_slug": "karpathy-gist-442a6bf",
+          "theme_name": "Three-layer architecture: sources / wiki / schema"
+        },
+        {
+          "source_slug": "karpathy-gist-442a6bf",
+          "theme_name": "Ingest-Query-Lint operational triad"
+        },
+        {
+          "source_slug": "karpathy-gist-442a6bf",
+          "theme_name": "Answers-compound-into-wiki principle"
+        },
+        {
+          "source_slug": "teng-lin_notebooklm-py",
+          "theme_name": "Skill install + version stamping mechanism"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "Karpathy's gist supplies the model (sources/wiki/schema, ingest/query/lint, compounding answers); notebooklm-py supplies a concrete distribution mechanism (skill install + version stamp) that fits inside the schema layer. Together they sketch a mental model for JASON-OS knowledge + skill distribution."
+    },
+    {
+      "cluster_name": "AI code-quality / skill autonomy guardrails",
+      "member_themes": [
+        {
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "theme_name": "AI-specific failure taxonomy"
+        },
+        {
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "theme_name": "Hallucinated dependencies (slopsquatting) as AI-native supply-chain risk"
+        },
+        {
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "theme_name": "Context momentum as AI-specific anti-pattern"
+        },
+        {
+          "source_slug": "teng-lin_notebooklm-py",
+          "theme_name": "Autonomy rules as structured SKILL.md section"
+        },
+        {
+          "source_slug": "errors-and-vulnerabilities-in-ai-generated-code",
+          "theme_name": "Enforcement gap between guidance and gates"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "Errors-and-vulnerabilities supplies the taxonomy of AI code failure modes (including hallucinated deps and context momentum). notebooklm-py supplies a structured encoding pattern (per-command autonomy rules) that could operationalize the taxonomy. Both push toward gate-level enforcement over guidance."
+    }
+  ],
+  "absence_signals": [
+    {
+      "domain": "Recovery-community UX / sober-living product patterns",
+      "expected_because": "SoNash is explicitly a recovery-notebook app for the Nashville sobriety community. No source in this slice discusses domain UX for recovery or peer-support workflows.",
+      "suggestion": "Either accept that CAS corpus is tech-infrastructure-biased and source domain knowledge elsewhere, or queue sources like sober-living community platforms, 12-step digital tools, harm-reduction research for next analysis wave."
+    },
+    {
+      "domain": "Firebase-specific architecture (App Check, Firestore rules, Cloud Functions patterns)",
+      "expected_because": "SoNash's stack is Firebase 12.10 with App Check, Firestore, Cloud Functions, Auth. Slice covers Sequelize (Outline), Firestore-as-cache (Reader), Firebase Functions test (Reader unused) — but no Firebase-native architecture reference.",
+      "suggestion": "Add a high-quality Firebase production app repo (e.g., a known Firebase OSS reference) to future analysis waves to fill the stack-specific gap."
+    },
+    {
+      "domain": "Hallucinated-dependency detection tooling in practice",
+      "expected_because": "errors-and-vulnerabilities flags slopsquatting as an AI-native risk SoNash does not currently gate. Slice has no source showing a production detection implementation.",
+      "suggestion": "Analyze Dep-Hallucinator or equivalent (mentioned but not analyzed) to close the gap between knowing about slopsquatting and actually checking for it at pre-commit / pre-push."
+    },
+    {
+      "domain": "License-compliance / SBOM tooling",
+      "expected_because": "errors-and-vulnerabilities identifies license compliance as a gap; slice has no license-scanning reference.",
+      "suggestion": "Pick an SBOM/license-compliance tool for deep analysis (e.g., cyclonedx, license-checker) to provide a concrete integration option."
+    },
+    {
+      "domain": "Privacy-first fetch / on-device extraction",
+      "expected_because": "SoNash vision is Privacy-First; slice's best extraction references all send content to third parties (r.jina.ai, Google innertube, AWS Rekognition, Webshare proxies).",
+      "suggestion": "Queue privacy-preserving local-first fetch/extraction references (e.g., monolith, SingleFile, readable-cli) to balance the cloud-centric bias of the slice."
+    }
+  ],
+  "notes": [
+    "All 8 sources in slice processed successfully; no empty/unreadable artifacts. No sources required failure recording.",
+    "Heavy cluster overlap between crawl4ai, jina-ai-reader, and aws-media-extraction on layered extraction — parent will likely see even stronger convergence once docling/marker/unstructured from other slices are merged.",
+    "Outline is the single strongest JASON-OS Domain 02a MCP reference in this slice. Parent should prioritize cross-checking its command-pattern + OAuth-scoped-tools claims against other MCP sources (archivebox, docs-composio-dev if in other slices).",
+    "karpathy-gist-442a6bf is a framing/mental-model source rather than an implementation source. Its value at synthesis time is primarily rhetorical — it supplies the vocabulary (ingest/query/lint, sources/wiki/schema, answers-compound) that the parent can use to organize candidates from denser technical sources.",
+    "youtube-transcript-api is the first explicit 'adopt the library, don't extract the pattern' recommendation in the CAS series — worth flagging as a distinct class of candidate (adopt-as-dependency) that the parent opportunity matrix may need to route differently from extractable patterns.",
+    "jina-ai-reader candidate set includes an unusually rich anti-pattern triad (DeepWiki docs / private submodule / zero tests) that directly validates SoNash's existing in-repo docs + test-runner posture. Parent may want to fold these into a single 'OSS adopter-safety' gap/validation note.",
+    "teng-lin_notebooklm-py's 'Open Skills Ecosystem Investigation' (npx skills add) is marked unverified — parent should either keep the verification recommendation or downgrade if unverifiable, not silently promote.",
+    "Scoring cross-check: five of eight sources are classified 'active-sprint' in SOURCES.json (errors-and-vulnerabilities, crawl4ai, jina-ai-reader, teng-lin_notebooklm-py, karpathy-gist-442a6bf) — high convergence of sprint-relevant sources in this slice."
+  ]
+}

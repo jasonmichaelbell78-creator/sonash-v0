@@ -1,0 +1,83 @@
+{
+  "slug": "public-apis_public-apis",
+  "source": "public-apis/public-apis",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (8902 bytes)",
+        "value-map.json (5074 bytes)",
+        "creator-view.md (8587 bytes)",
+        "findings.jsonl (2796 bytes)",
+        "summary.md (5021 bytes)",
+        "deep-read.md (3776 bytes)",
+        "content-eval.jsonl (4089 bytes)",
+        "coverage-audit.jsonl (1247 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "10 candidates in analysis.json",
+        "10 extraction journal entries (self-audit count)"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": [
+        "repomix-output.txt SHOULD exist for repo source_type; not found (non-fatal — SHOULD not MUST)"
+      ]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts: validate_links.yml, links.py (273 lines), format.py (277 lines), CONTRIBUTING.md, Google Calendar API, Open-Meteo, Google Cloud NL API — well beyond the 2-citation threshold",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Flowing analyst prose with connective reasoning; paragraphs link blindspots → commercial capture → stagnation. No compliance-report banners",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references patterns:check (package.json:41), docs/, .research/EXTRACTIONS.md, .claude/skills/SKILL_INDEX.md, .claude/canonical-memory/MEMORY.md, ROADMAP.md — all resolve"
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 11,
+      "6a_value_map_count": 11,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7a_notes": "research-index.jsonl is for deep-research topics (L1/L2); no per-source analysis entry exists for this slug — no drift possible",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "Journal tags richer (ci-cd, documentation, jason-os-relevant) than value-map tags (mostly ['repo','curated-list']); analysis.json top-level tags differ again (python, api, dataset). Signal only.",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "4_handler_specific: consider generating repomix-output.txt for completeness (SHOULD, not MUST)",
+    "7b_tag_consistency: optionally align tag vocabulary across analysis.json / value-map.json / journal entries for this slug"
+  ]
+}

@@ -1,0 +1,1167 @@
+{
+  "slice_index": 3,
+  "slugs": [
+    "youtube-qinuqwl4e-k",
+    "bulk-transcribe-youtube-playlist",
+    "firecrawl",
+    "lux-video-downloader",
+    "qmd",
+    "vikparuchuri-marker",
+    "docs-composio-dev",
+    "maharshi-pandya-gist-4aeccbe1"
+  ],
+  "generated_at": "2026-04-13T00:00:00Z",
+  "per_source": {
+    "youtube-qinuqwl4e-k": {
+      "raw_themes": [
+        {
+          "name": "Context-over-filename retrieval",
+          "short_desc": "Make files findable by surrounding metadata/links, not filename or folder.",
+          "evidence_quote": "finding files by how you think about them, not by what they're named",
+          "strength_signal": "weak"
+        },
+        {
+          "name": "Manual metadata doesn't scale",
+          "short_desc": "Hand-authored metadata as primary retrieval breaks past ~200 items.",
+          "evidence_quote": "Works for 20 files, breaks at 200. Automate metadata extraction instead.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Capture why-at-ingestion",
+          "short_desc": "Record why a source matters at ingestion time, not just what it is.",
+          "evidence_quote": "writing _why_ a file matters at the point of ingestion is something our handler skills could do better",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Context-over-filename retrieval principle",
+          "type": "knowledge",
+          "description": "Make files findable by surrounding metadata and linked context rather than filename or folder path.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["knowledge-management", "retrieval", "metadata"],
+          "source_slug": "youtube-qinuqwl4e-k"
+        },
+        {
+          "name": "Subfolder-per-project attachment pattern",
+          "type": "pattern",
+          "description": "Auto-create attachments/ subfolder per project folder. Keeps assets co-located.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["obsidian", "file-organization"],
+          "source_slug": "youtube-qinuqwl4e-k"
+        }
+      ],
+      "relevance_to_home": "Low direct relevance. SoNash's CAS already implements richer retrieval (SQLite FTS + structured tags + extraction-journal) than this Obsidian UI tutorial. The one transferable idea is capturing 'why analyzed' at ingestion time in analysis.json."
+    },
+    "bulk-transcribe-youtube-playlist": {
+      "raw_themes": [
+        {
+          "name": "Caption-first, Whisper-fallback media extraction",
+          "short_desc": "Check captions before running transcription; most YouTube videos already have them.",
+          "evidence_quote": "Both bedrock and this repo skip captions and go straight to transcription. pytubefix has yt.captions",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "faster-whisper over openai-whisper for batch",
+          "short_desc": "CTranslate2 impl is 4x faster with lower memory; correct choice for batch local transcription.",
+          "evidence_quote": "`faster_whisper` over `openai-whisper`: The author chose the CTranslate2 implementation, which is 4x faster with lower memory",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Async download + sync GPU transcription",
+          "short_desc": "Parallelize network I/O with asyncio semaphore; serialize GPU compute.",
+          "evidence_quote": "Downloads use asyncio with a semaphore (max 4 concurrent), but transcription runs sequentially per video. This is correct",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Tuned Whisper params beat defaults",
+          "short_desc": "beam_size=10 + vad_filter=True prevents hallucination-on-silence; operational knowledge not in docs.",
+          "evidence_quote": "beam_size=10 (vs default 5) for accuracy. vad_filter=True to skip silence and prevent Whisper hallucination-on-silence",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Modular handlers over monolithic scripts",
+          "short_desc": "Single-file tools work for personal use but block composition; T27 pipeline needs modular handlers.",
+          "evidence_quote": "Don't build monolithic single-file tools. This repo puts everything \u2014 config, download, transcription, NLP, output \u2014 in one 280-line file",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Cost-as-first-class for cloud-vs-local decisions",
+          "short_desc": "Explicit $/min estimation makes local-vs-API tradeoff concrete.",
+          "evidence_quote": "OpenAI Whisper API: $0.006/min, less accurate. Local faster-whisper: free, more accurate, requires GPU. 1-hour video = $0.36 API vs $0 local.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Hard-coded config anti-pattern",
+          "short_desc": "Module-level vars including API keys; no CLI/env/config layer.",
+          "evidence_quote": "Module-level variables like `convert_single_video = 1` and `openai_api_key = 'REPLACE_WITH_YOUR_API_KEY'` are the opposite of twelve-factor app configuration",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "faster-whisper local transcription pipeline",
+          "type": "pattern",
+          "description": "Complete local Whisper lifecycle: CUDA detection, large-v3 model, beam_size=10, vad_filter=True, segment iteration with tqdm, metadata capture. ~50 lines covering all operational edge cases.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["media-extraction", "whisper", "transcription", "t27"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "Whisper tuned params (beam_size=10, vad_filter)",
+          "type": "knowledge",
+          "description": "beam_size=10 (vs default 5) for accuracy. vad_filter=True to skip silence and prevent Whisper hallucination-on-silence issue.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["whisper", "tuning", "operational-knowledge"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "Caption-first + Whisper-fallback architecture",
+          "type": "knowledge",
+          "description": "Cross-repo insight: check captions first (pytubefix yt.captions), only fallback to Whisper for the ~20% without captions. Dramatically cheaper and faster.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["media-extraction", "architecture", "cost-optimization", "t27"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "Async download + sync GPU transcription pattern",
+          "type": "pattern",
+          "description": "asyncio.Semaphore(4) for concurrent downloads, sequential GPU transcription. Network I/O parallelizes, GPU compute doesn't.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["concurrency", "architecture", "gpu"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "faster-whisper library reference",
+          "type": "content",
+          "description": "CTranslate2 Whisper implementation. 4x faster than OpenAI whisper. The local transcription engine candidate for T27.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["library", "whisper", "reference"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "CUDA/GPU detection + CPU fallback pattern",
+          "type": "pattern",
+          "description": "numba.cuda.is_available() check, Anaconda toolkit path detection, float16 vs auto compute type selection.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["gpu", "portability"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "SpaCy + compromise.js two-stage NLP",
+          "type": "pattern",
+          "description": "Server-side SpaCy for sentence splitting during transcription, client-side compromise.js for paragraph restructuring in reader.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["nlp", "architecture"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "API vs local cost tradeoff ($0.006/min)",
+          "type": "knowledge",
+          "description": "Concrete $/min data for Whisper API vs local. 1-hour video = $0.36 API vs $0 local (but GPU required).",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["cost", "decision-framework"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "compromise.js client-side NLP",
+          "type": "content",
+          "description": "75KB client-side NLP library. Sentence/paragraph detection in browser. Potential for SoNash frontend text processing.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["library", "nlp", "frontend"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "Monolithic single-file tool anti-pattern",
+          "type": "anti-pattern",
+          "description": "280 lines, no CLI, no config file, hard-coded vars. Works for personal use, impossible to integrate.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "architecture", "composition"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "Skip-captions-always anti-pattern",
+          "type": "anti-pattern",
+          "description": "Both bedrock and this repo transcribe every video from scratch despite pytubefix having caption extraction.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "media-extraction"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        },
+        {
+          "name": "Hard-coded source config anti-pattern",
+          "type": "anti-pattern",
+          "description": "Module-level variables for config including API keys. No CLI args, no env vars. Anti-twelve-factor.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "twelve-factor", "config"],
+          "source_slug": "bulk-transcribe-youtube-playlist"
+        }
+      ],
+      "relevance_to_home": "High relevance to T27 (Media Extraction Deep-Research) and JASON-OS portable-tool vision. Provides the local-first Whisper reference implementation, plus the caption-first+fallback insight that reframes the entire media-extraction pipeline architecture for /media-analysis."
+    },
+    "firecrawl": {
+      "raw_themes": [
+        {
+          "name": "Engine-fallback as the extraction product",
+          "short_desc": "Pluggable extraction engines with named NoEnginesLeftError and documented retry order.",
+          "evidence_quote": "eight engines (fetch, fire-engine, playwright, pdf, document, wikipedia, index, utils) coordinated by a fallback-list builder and a retry tracker",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "LLM-ready markdown as first-class output",
+          "short_desc": "Convert sources straight to markdown rather than plaintext-then-remarkdown.",
+          "evidence_quote": "the old code 'converted to just plaintext' and the new code 'converts straight to markdown'",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Capability-gated testing (not CI-fenced)",
+          "short_desc": "Gate tests by runtime capability env vars so same file runs in all envs.",
+          "evidence_quote": "Every test file can run in every environment; the gate decides whether assertions actually execute",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Examples-as-documentation",
+          "short_desc": "58 self-contained example apps as product-marketing-in-code; each pairs framework+LLM.",
+          "evidence_quote": "58 example apps are a product-marketing-in-code pattern worth stealing",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Minimal CLAUDE.md beats verbose",
+          "short_desc": "19-line CLAUDE.md with capability-gating + harness usage outperforms 200-line variants.",
+          "evidence_quote": "19-line CLAUDE.md that beats most 200-line variants",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Docs-absence as anti-pattern",
+          "short_desc": "1162 files + one mermaid diagram + no docs/ concentrates knowledge in founding engineers.",
+          "evidence_quote": "1162 files and one mermaid diagram. A new contributor learns the architecture by reading controllers, services, and CLAUDE.md",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Polyglot SDK maintenance tax",
+          "short_desc": "Seven hand-rolled SDKs enforce parity via OpenAPI+test-suite rather than codegen.",
+          "evidence_quote": "Seven SDKs (JS, Python, Rust, Go, Java, Elixir, + a TS playwright service) re-implement the wire contract each time",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "scrapeURL engine-fallback chain",
+          "type": "architecture-pattern",
+          "description": "Pluggable extraction engines coordinated by a fallback-list builder. buildFallbackList \u2192 scrapeURLWithEngine \u2192 try next or NoEnginesLeftError. Named failure mode, documented order, engine-level telemetry.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["architecture", "extraction", "fallback", "engine-pluggable"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Capability-gated test pattern",
+          "type": "pattern",
+          "description": "Gate tests by runtime capability (env vars) not by CI fence. Same test file runs in all environments; gate decides whether assertions execute.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["testing", "ci", "capability-detection"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Harness-as-boot-orchestrator",
+          "type": "pattern",
+          "description": "Single harness.ts script owns service boot order (API + workers + emulator) before test runner. CLAUDE.md mandates it; no ad-hoc pnpm start.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["testing", "devex", "boot-order"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Version-parallel controller trees",
+          "type": "architecture-pattern",
+          "description": "Parallel v0/v1/v2 controller directories with their own test fixtures. Three OpenAPI specs frozen at repo root.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "low",
+          "tags": ["api-versioning", "backward-compat"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Redlock distributed cache serialization",
+          "type": "pattern",
+          "description": "redlock.using([key], ttlMs, ...) to serialise cache updates across multiple pods. Prevents race conditions on shared cache slots.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "low",
+          "tags": ["distributed-systems", "caching", "redis"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Multi-agent orchestration via openai_swarm",
+          "type": "knowledge",
+          "description": "Reference implementation of multi-agent coordination around a single scraping task. Worth reading to inform SoNash agent teams and JASON-OS agent boundary design.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["agents", "multi-agent", "swarm", "teams"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Deep Research API usage pattern",
+          "type": "knowledge",
+          "description": "How firecrawl's Deep Research API is invoked in practice (apartment-finder). Interactive preference gathering \u2192 research call \u2192 LLM analysis \u2192 structured JSON.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["deep-research", "api-patterns", "llm-integration"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "GitHub repo analysis via firecrawl Map API",
+          "type": "knowledge",
+          "description": "examples/gemini-github-analyzer uses firecrawl's Map API to walk a GitHub repo. Direct domain overlap with SoNash /repo-analysis.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["repo-analysis", "github", "comparison-point"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Docs-to-OpenAPI extraction",
+          "type": "knowledge",
+          "description": "examples/turning_docs_into_api_specs \u2014 convert a documentation site into an OpenAPI spec via scraping. Informs SoNash document-analysis handler.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["document-analysis", "openapi", "extraction"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Commercial-OSS feature tiering via .env",
+          "type": "knowledge",
+          "description": "Fire-engine is hosted-only; self-hosted users get documented limited CAPTCHA handling. Pattern: tier features by backing service availability, document the split.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["commercial-oss", "feature-tiering"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "scrapeURL engine-fallback README",
+          "type": "content",
+          "description": "Mermaid signal flow diagram for the engine fallback chain. The whole extraction thesis in four nodes.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["architecture-doc", "extraction", "mermaid"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "58-example cookbook pattern",
+          "type": "content",
+          "description": "The examples/ directory as product-marketing-in-code. 58 self-contained apps, each pairing firecrawl with a specific LLM or framework.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["documentation-pattern", "cookbook", "examples"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "CLAUDE.md minimal-actionable exemplar",
+          "type": "content",
+          "description": "19-line CLAUDE.md that beats most 200-line variants. Test-first, E2E preferred, capability-gating, harness usage.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["claude-md", "ai-instructions", "exemplar"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Zero architecture prose docs",
+          "type": "anti-pattern",
+          "description": "1162 files, one mermaid diagram, no docs/ directory. New contributors pay the ramp-up tax. File as evidence in 'do we need this ADR?' conversations.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["docs-absence", "knowledge-concentration", "anti-pattern"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Two queue systems coexisting without migration plan",
+          "type": "anti-pattern",
+          "description": "BullMQ and nuq-postgres both active in services/. Rationale undocumented. Suggests in-progress migration with no exit criteria.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["queue-migration", "technical-debt", "anti-pattern"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Hand-rolled polyglot SDK parity",
+          "type": "anti-pattern",
+          "description": "Seven SDKs re-implement the wire contract manually. Adding an endpoint is a 7-file change. Prefer codegen-from-OpenAPI.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["polyglot", "sdk-duplication", "anti-pattern"],
+          "source_slug": "firecrawl"
+        },
+        {
+          "name": "Hidden feature flags via env vars",
+          "type": "anti-pattern",
+          "description": "Branches behaviour through SELF_HOST.md env vars with no documented feature-flag layer. Breaks down as team grows.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["feature-flags", "env-branching", "anti-pattern"],
+          "source_slug": "firecrawl"
+        }
+      ],
+      "relevance_to_home": "High relevance to SoNash's website-analysis + document-analysis handlers and JASON-OS testing infrastructure. The engine-fallback pattern maps directly onto expanding SoNash website-analysis beyond superpowers-chrome; capability-gated testing is a direct win for Firebase Functions integration tests; the 58-example cookbook pattern and minimal CLAUDE.md are re-usable templates."
+    },
+    "lux-video-downloader": {
+      "raw_themes": [
+        {
+          "name": "Plugin registry via side-effect registration",
+          "short_desc": "Single-method extractor interface + init() auto-registration + blank imports + universal fallback.",
+          "evidence_quote": "a new site extractor is 4 steps: create file, implement interface, call Register in init(), add blank import",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Per-site CI isolation for arms-race code",
+          "short_desc": "Each extractor gets its own workflow + badge; independent failure signals.",
+          "evidence_quote": "When YouTube breaks (and it will), the badge goes red and only youtube needs fixing",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Meta-CI: generate workflows from template",
+          "short_desc": "Node script programmatically generates 45 GitHub Actions workflows from one template.",
+          "evidence_quote": "a Node script that generates 45 GitHub Actions workflows from a single template",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Security-as-afterthought in popular tools",
+          "short_desc": "InsecureSkipVerify+hardcoded credentials despite 46-extractor scale and 26-platform distribution.",
+          "evidence_quote": "TLS certificate verification is globally disabled (InsecureSkipVerify: true)",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Documentation absent for contributors",
+          "short_desc": "46 extractors, 30 contributors, 23-line CONTRIBUTING.md; code grew without contributor onboarding.",
+          "evidence_quote": "46 extractors, 30 contributors, 23-line CONTRIBUTING.md, zero architecture docs",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "init()-based plugin registry with domain routing",
+          "type": "pattern",
+          "description": "Single-method Extractor interface + global map + init() auto-registration + blank imports + universal fallback. 46 extractors, zero boilerplate. Go-specific but principle universal.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["architecture", "plugin-registry", "routing", "go"],
+          "source_slug": "lux-video-downloader"
+        },
+        {
+          "name": "CI workflow generation from template",
+          "type": "knowledge",
+          "description": "Node script generates 45 GitHub Actions workflows from a single template. Per-extractor CI isolation. Meta-CI.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["ci", "meta-ci", "github-actions"],
+          "source_slug": "lux-video-downloader"
+        },
+        {
+          "name": "Per-site CI isolation pattern",
+          "type": "knowledge",
+          "description": "Each of 46 extractors has own CI workflow and README badge. Independent failure signals per target.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["ci", "testing-strategy"],
+          "source_slug": "lux-video-downloader"
+        },
+        {
+          "name": "HARDCODED_CREDENTIALS_IN_SOURCE",
+          "type": "anti-pattern",
+          "description": "Twitter bearer token and Weibo session cookie checked into git. Normalizes credential exposure.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["security", "anti-pattern", "secrets"],
+          "source_slug": "lux-video-downloader"
+        },
+        {
+          "name": "DISABLED_TLS_VERIFICATION",
+          "type": "anti-pattern",
+          "description": "InsecureSkipVerify: true on all HTTPS connections. Global MITM vulnerability.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["security", "anti-pattern", "tls"],
+          "source_slug": "lux-video-downloader"
+        },
+        {
+          "name": "DOCUMENTATION_ABSENT_FOR_CONTRIBUTORS",
+          "type": "anti-pattern",
+          "description": "46 extractors, 30 contributors, 23-line CONTRIBUTING.md, zero architecture docs. Growth without onboarding = bus-factor risk.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "docs-absence", "governance"],
+          "source_slug": "lux-video-downloader"
+        }
+      ],
+      "relevance_to_home": "Medium relevance. The CI workflow generation + per-target CI isolation patterns inform JASON-OS CI/CD design, and the plugin registry is an architecture reference point for SoNash skill routing (which uses directory-listing discovery). The security anti-patterns confirm SoNash's existing guardrails (no direct secrets, TLS verification enforced)."
+    },
+    "qmd": {
+      "raw_themes": [
+        {
+          "name": "Claude Code plugin packaging as shippable unit",
+          "short_desc": "marketplace.json bundles MCP server + skills + metadata into installable plugin.",
+          "evidence_quote": ".claude-plugin/marketplace.json bundles MCP server + skills into a single installable unit",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Frontmatter-level skill invocation gates",
+          "short_desc": "allowed-tools and disable-model-invocation enforce behavior via manifest, not prose.",
+          "evidence_quote": "allowed-tools: Bash(qmd:*), mcp__qmd__* ... disable-model-invocation: true to prevent accidental auto-triggers on risky operations",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "MCP server as CLI subcommand with daemon mode",
+          "short_desc": "Three transports (stdio/http/daemon) let one tool serve multiple MCP client models.",
+          "evidence_quote": "qmd ships its MCP server as a CLI subcommand (qmd mcp). Three transports shown: Stdio (default, per-client subprocess) HTTP foreground HTTP daemon with PID file management",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Hybrid retrieval: BM25 + vector + LLM rerank + query expansion",
+          "short_desc": "Formal fusion algorithm (RRF + position-aware blending) beats ad-hoc flag filtering.",
+          "evidence_quote": "it knows that a knowledge base search engine needs BM25 AND vector search AND reranking \u2014 not one of them",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Formal query DSL with intent disambiguation",
+          "short_desc": "EBNF grammar with typed sub-queries (lex:, vec:, hyde:) and intent: line.",
+          "evidence_quote": "it's a formal EBNF grammar with typed sub-queries (`lex:`, `vec:`, `hyde:`), an `intent:` disambiguation line, and parsing constraints",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Structure-aware markdown chunking",
+          "short_desc": "Scored break points (H1=100, code fence=80, paragraph=20) + squared distance decay.",
+          "evidence_quote": "Scored break points + AST for code ... qmd respects structure",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Fixture-based eval harness for skills",
+          "short_desc": "Difficulty-tiered queries + precision@k/recall/MRR/F1 across 4 backends.",
+          "evidence_quote": "Test queries categorized easy/medium/hard with expected docs. Precision@k, recall, MRR, F1 across 4 backends",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Privacy-first local inference via node-llama-cpp",
+          "short_desc": "GGUF + createRankingContext() lets a Node/TS app do cross-encoder reranking without API keys.",
+          "evidence_quote": "node-llama-cpp for privacy-first local inference ... SoNash's privacy-first vision could use node-llama-cpp for local AI without API keys",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Claude Code plugin manifest (marketplace.json)",
+          "type": "pattern",
+          "description": "Plugin manifest bundling MCP server + skills + metadata for 'claude plugin marketplace add' installation. Single source of truth for Claude Code plugin discovery.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["claude-code-plugin", "packaging", "jason-os"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Skill frontmatter: allowed-tools + disable-model-invocation",
+          "type": "pattern",
+          "description": "Frontmatter declarations that restrict tool access and prevent auto-invocation. Enforces behavior via manifest, not prose.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["skill-governance", "frontmatter", "safety"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "MCP server as CLI subcommand (3 transports)",
+          "type": "pattern",
+          "description": "MCP server accessed via 'qmd mcp' subcommand. Stdio + HTTP foreground + HTTP daemon with PID file. Daemon avoids expensive model reload.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["mcp", "cli", "jason-os-02a"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Query DSL with typed sub-queries (EBNF grammar)",
+          "type": "pattern",
+          "description": "Formal EBNF grammar for search queries. Typed sub-queries (lex/vec/hyde), optional intent disambiguation, parsing constraints.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["query-dsl", "grammar", "retrieval"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Scored markdown chunking algorithm",
+          "type": "pattern",
+          "description": "Break point scoring (H1=100, H2=90, code fence=80, paragraph=20, line=1) with squared distance decay. 900 tokens/chunk + 15% overlap.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["chunking", "retrieval", "markdown"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "RRF + position-aware blending",
+          "type": "knowledge",
+          "description": "Reciprocal Rank Fusion (k=60) with original-query 2x weight, top-rank bonus, then position-aware blend after rerank (75/60/40% RRF weight for ranks 1-3/4-10/11+).",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["retrieval", "fusion", "ranking"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Fixture-based eval harness with difficulty tiers",
+          "type": "pattern",
+          "description": "Test queries categorized easy/medium/hard with expected docs. Precision@k, recall, MRR, F1 across 4 backends. 'qmd bench' CLI for reproducible quality measurement.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["evaluation", "benchmarking", "quality-gates"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Release skill with disabled auto-invocation",
+          "type": "pattern",
+          "description": "Release workflow: gather context via script, commit outstanding, write changelog, cut release, watch CI, push on confirmation. Enforces exact dep pinning. disable-model-invocation: true.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["release", "workflow", "safety"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "node-llama-cpp for privacy-first local inference",
+          "type": "knowledge",
+          "description": "Node.js wrapper for llama.cpp. Runs GGUF models locally with Metal/CUDA/Vulkan. createRankingContext() + rankAndSort() for cross-encoder reranking.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["local-llm", "privacy", "reranking"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "AST-aware code chunking via tree-sitter",
+          "type": "pattern",
+          "description": "tree-sitter parsing for TS/JS/Python/Go/Rust. Chunks at function/class/import boundaries. Optional via --chunk-strategy auto.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["chunking", "tree-sitter", "code"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Daemon mode with PID file management",
+          "type": "pattern",
+          "description": "HTTP server with --daemon flag. PID at ~/.cache/qmd/mcp.pid. 'qmd mcp stop' reads PID and terminates. Idle context disposal after 5 min.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["daemon", "process-management"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "LoRA SFT on small LLMs for domain tasks",
+          "type": "knowledge",
+          "description": "LoRA rank 16, alpha 32. ~2290 examples, 5 epochs, 2e-4 LR cosine. Qwen3-1.7B base. 92% eval score. $1.50 per run.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["fine-tuning", "lora", "future-reference"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "HuggingFace Jobs for cheap cloud training",
+          "type": "knowledge",
+          "description": "hf jobs uv run --flavor a10g-large executes SFT in cloud for ~$1.50. Self-contained scripts.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["huggingface", "training", "future-reference"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Rule-based reward function for RL",
+          "type": "knowledge",
+          "description": "5-dimension scoring (Format 30, Diversity 30, HyDE 20, Quality 20, Entity -45 to +20). No LLM judge \u2014 deterministic and fast.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["rl", "reward-function", "eval"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Nix flake with home-manager module",
+          "type": "pattern",
+          "description": "flake.nix with homeModules.default providing programs.qmd.enable option. Reproducible install.",
+          "novelty": "low",
+          "effort": "E2",
+          "relevance": "low",
+          "tags": ["nix", "packaging"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Fine-tuning before exhausting prompt engineering",
+          "type": "anti-pattern",
+          "description": "Fine-tuning is expensive and inflexible. qmd tried GEPA prompt optimization first before SFT. Exhaust prompting before fine-tuning.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "fine-tuning", "prompting"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Single-runtime CI when cross-runtime is claimed",
+          "type": "anti-pattern",
+          "description": "If you claim cross-runtime support (Node+Bun) without matrix testing, you're shipping bugs.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["anti-pattern", "ci", "runtime"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Caret ranges in reproducible-install packages",
+          "type": "anti-pattern",
+          "description": "qmd pins all deps to exact versions \u2014 critical for tools shipping platform-specific binaries. Caret ranges break transitive deps.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "dependency-pinning"],
+          "source_slug": "qmd"
+        },
+        {
+          "name": "Skill without invocation gate on destructive ops",
+          "type": "anti-pattern",
+          "description": "Release/deploy/destructive skills that Claude can auto-invoke create risk. Should declare disable-model-invocation.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "skill-governance", "safety"],
+          "source_slug": "qmd"
+        }
+      ],
+      "relevance_to_home": "Extremely high relevance \u2014 arguably the most JASON-OS-relevant source in the corpus. qmd is a near-ideal reference for how Claude Code plugins should be packaged (marketplace.json), how skill invocation should be gated (disable-model-invocation), and how MCP should ship as a CLI subcommand. The retrieval stack (hybrid BM25+vector+rerank, EBNF query DSL, scored chunking, eval harness) is directly applicable to SoNash's recall/synthesize skills over the 277-candidate extraction-journal."
+    },
+    "vikparuchuri-marker": {
+      "raw_themes": [
+        {
+          "name": "Benchmark registry as intellectual honesty",
+          "short_desc": "7 methods compared via 2 independent scorers on published dataset; anyone can add a converter.",
+          "evidence_quote": "Seven methods compared (marker, llamaparse, mathpix, docling, olmocr, mistral, ground-truth) with two independent scoring approaches",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "3-stage pipeline (provider/processor/renderer)",
+          "short_desc": "Clean separation with 6 documented extension points lets users swap any stage.",
+          "evidence_quote": "extract with Surya models, transform with 25+ processors, render to Markdown/JSON/HTML",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "DI via constructor introspection",
+          "short_desc": "resolve_dependencies() inspects __init__ signatures \u2014 no registration ceremony.",
+          "evidence_quote": "The dependency injection via resolve_dependencies() (which inspects **init** signatures) is clever \u2014 no registration ceremony, just match constructor parameters",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Security-as-afterthought for untrusted input",
+          "short_desc": "Shell injection + path traversal + credential exposure in a PDF processing tool.",
+          "evidence_quote": "Shell injection in chunk_convert.py (shell=True with user input), path traversal in file upload, AWS credentials as CLI defaults",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "GPL license blocks adoption",
+          "short_desc": "GPL-3.0 means any derivative must be GPL; extract patterns only, never import code.",
+          "evidence_quote": "GPL-3.0 copyleft blocks adoption as dependency. Must extract patterns only, never import code.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Contributor-hostile governance despite star count",
+          "short_desc": "33.7K stars + 403 issues + 27 contributors + no CONTRIBUTING/CODE_OF_CONDUCT.",
+          "evidence_quote": "33.7K stars, 403 open issues, 27 contributors, no CONTRIBUTING.md, no CODE_OF_CONDUCT. Optimized for users, not for building a contributor community",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Benchmark registry (7 methods, 2 scorers)",
+          "type": "pattern",
+          "description": "Pluggable registry for comparing implementations against same dataset with independent scoring. METHOD_REGISTRY + SCORE_REGISTRY + published dataset.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["benchmarking", "registry", "quality-measurement", "t28"],
+          "source_slug": "vikparuchuri-marker"
+        },
+        {
+          "name": "3-stage pipeline (provider/processor/renderer)",
+          "type": "knowledge",
+          "description": "Clean separation: extract \u2192 transform \u2192 render. Each stage independently extensible with 6 extension points.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["architecture", "pipeline", "extensibility"],
+          "source_slug": "vikparuchuri-marker"
+        },
+        {
+          "name": "ConfigParser introspection for component discovery",
+          "type": "knowledge",
+          "description": "Auto-discovers available builders, processors, converters by inspecting module structure.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["introspection", "auto-discovery"],
+          "source_slug": "vikparuchuri-marker"
+        },
+        {
+          "name": "Session-scoped test fixtures for ML models",
+          "type": "knowledge",
+          "description": "Load expensive models once per session. Custom pytest markers for parameterization.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["testing", "fixtures", "performance"],
+          "source_slug": "vikparuchuri-marker"
+        },
+        {
+          "name": "GPU-enforced CI as quality gate",
+          "type": "knowledge",
+          "description": "Tests run on t4_gpu runners. Expensive = strict enforcement of production-like testing.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["ci", "gpu", "quality-gate"],
+          "source_slug": "vikparuchuri-marker"
+        },
+        {
+          "name": "GPL_LICENSE_TRAP",
+          "type": "anti-pattern",
+          "description": "GPL-3.0 copyleft blocks adoption as dependency. Must extract patterns only, never import code.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "license", "adoption"],
+          "source_slug": "vikparuchuri-marker"
+        },
+        {
+          "name": "SECURITY_AS_AFTERTHOUGHT",
+          "type": "anti-pattern",
+          "description": "Shell injection, path traversal, credential exposure in a tool processing untrusted PDFs.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "security"],
+          "source_slug": "vikparuchuri-marker"
+        },
+        {
+          "name": "CONTRIBUTOR_HOSTILE_GOVERNANCE",
+          "type": "anti-pattern",
+          "description": "33.7K stars, 403 issues, no CONTRIBUTING, no CODE_OF_CONDUCT. Users optimized, contributors not.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "governance", "docs-absence"],
+          "source_slug": "vikparuchuri-marker"
+        }
+      ],
+      "relevance_to_home": "Medium-high relevance. The benchmark registry pattern is directly applicable to T28 skill quality measurement (compare repo-analysis v4.3 vs v4.5 against a fixture set). The 3-stage pipeline architecture is an architecture reference for decomposing /analyze into composable stages. Security + governance anti-patterns reinforce SoNash's existing guardrails."
+    },
+    "docs-composio-dev": {
+      "raw_themes": [
+        {
+          "name": "Meta-tool pattern for dynamic discovery",
+          "short_desc": "Agent uses 6 meta-tools (search/get-schema/execute/\u2026) to discover tools at runtime, not load all 1000+.",
+          "evidence_quote": "Composio provides 6 meta tools \u2014 search, get-schema, auth, execute, workbench, bash. The agent discovers tools at runtime and loads only what's needed",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Native vs MCP tradeoff with token numbers",
+          "short_desc": "5-server MCP setup costs ~55K tokens pre-conversation; native gives control+interception.",
+          "evidence_quote": "a 5-server MCP setup consumes ~55K tokens before conversation starts",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "llms.txt as AI-readable docs standard",
+          "short_desc": "Publish /llms.txt and /llms-full.txt indexes so other LLM systems can consume your docs.",
+          "evidence_quote": "Composio publishes AI-readable site indexes at `/llms.txt` and `/llms-full.txt`",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Event trigger dual model (webhook+polling)",
+          "short_desc": "Use webhooks where supported, polling elsewhere; makes agents event-driven rather than invocation-driven.",
+          "evidence_quote": "Webhook for real-time capable services, polling for those without. User-scoped, account-bound.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Integration tax as a platform business",
+          "short_desc": "OAuth flows + token refresh + scoping + multi-tenant is a massive surface every agent builder hits.",
+          "evidence_quote": "Composio understands the integration tax \u2014 the cost of connecting AI agents to real services",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Meta-tool pattern for dynamic tool discovery",
+          "type": "architecture-pattern",
+          "description": "Instead of loading all tool definitions, provide a small set of meta tools (search, get-schema, execute). Agent discovers at runtime. Solves context window bloat. Applicable to JASON-OS at 100+ skills.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["meta-tool", "discovery", "context-economy", "jason-os"],
+          "source_slug": "docs-composio-dev"
+        },
+        {
+          "name": "Native vs MCP tradeoff framework with token cost data",
+          "type": "design-principle",
+          "description": "Native: context control + interception. MCP: simplicity + client-agnostic. 55K token overhead for 5 MCP servers. Decision framework for when to use which.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["mcp", "decision-framework", "token-economy"],
+          "source_slug": "docs-composio-dev"
+        },
+        {
+          "name": "llms.txt standard for AI-readable documentation",
+          "type": "pattern",
+          "description": "Standardized llms.txt and llms-full.txt at site root for LLM consumption. Makes docs AI-discoverable.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["docs", "llms-txt", "discoverability"],
+          "source_slug": "docs-composio-dev"
+        },
+        {
+          "name": "Event trigger dual model (webhook + polling) for agent reactivity",
+          "type": "pattern",
+          "description": "Webhook for real-time capable services, polling for those without. User-scoped, account-bound. Pattern for event-driven agents.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["events", "webhooks", "polling", "agents"],
+          "source_slug": "docs-composio-dev"
+        }
+      ],
+      "relevance_to_home": "High relevance for JASON-OS Domain 02a (MCP infrastructure). The meta-tool discovery pattern directly addresses the context-bloat problem of 72+ SoNash skills; the native-vs-MCP framework with concrete 55K-token data is a decision input for how JASON-OS exposes capabilities. The hosted-service dependency conflicts with local-first vision, so patterns transfer, product does not."
+    },
+    "maharshi-pandya-gist-4aeccbe1": {
+      "raw_themes": [
+        {
+          "name": "Exploration-over-conclusion as reasoning principle",
+          "short_desc": "Force the model not to answer until it has explored exhaustively.",
+          "evidence_quote": "forcing conclusions kills exploration ... making the LLM's job to _not_ answer until it has explored exhaustively",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "System-prompt thinking superseded by native reasoning",
+          "short_desc": "Extended thinking is now built into Claude/o-series/Gemini; prompt-level hacks are historical.",
+          "evidence_quote": "Claude's extended thinking, OpenAI's o-series reasoning models, and Gemini's thinking mode all implement 'think before answering' natively and more effectively than a system prompt can",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Minimum-exploration threshold before convergence",
+          "short_desc": "Convergence loops might benefit from a mandatory pre-converge exploration pass.",
+          "evidence_quote": "convergence loops converge as soon as the tally passes. There might be cases where delaying convergence ... produces better results",
+          "strength_signal": "weak"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Exploration-over-conclusion as skill design principle",
+          "type": "design-principle",
+          "description": "Reasoning should explore until conclusions emerge naturally. Validates brainstorm skill Phase 1 philosophy and could inform convergence-loop termination criteria.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["reasoning", "brainstorm", "convergence"],
+          "source_slug": "maharshi-pandya-gist-4aeccbe1"
+        },
+        {
+          "name": "Contemplator tag pattern as skill thinking block",
+          "type": "pattern",
+          "description": "<contemplator>/<final_answer> prompt-level structured reasoning. Historical reference \u2014 Claude's native <thinking> supersedes.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["prompt-engineering", "historical", "reasoning"],
+          "source_slug": "maharshi-pandya-gist-4aeccbe1"
+        }
+      ],
+      "relevance_to_home": "Low direct relevance. SoNash's brainstorm + deep-plan + convergence-loop skills already implement structured reasoning more effectively than a single system prompt. The one transferable idea is adding a 'minimum exploration' pre-converge gate before convergence-loop termination."
+    }
+  },
+  "initial_clusters": [
+    {
+      "cluster_name": "Media extraction pipeline architecture (captions-first, engine-fallback, pluggable stages)",
+      "member_themes": [
+        {
+          "source_slug": "bulk-transcribe-youtube-playlist",
+          "theme_name": "Caption-first, Whisper-fallback media extraction"
+        },
+        { "source_slug": "firecrawl", "theme_name": "Engine-fallback as the extraction product" },
+        {
+          "source_slug": "vikparuchuri-marker",
+          "theme_name": "3-stage pipeline (provider/processor/renderer)"
+        },
+        {
+          "source_slug": "lux-video-downloader",
+          "theme_name": "Plugin registry via side-effect registration"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Multiple sources converge on pluggable/stageable extraction: firecrawl's 8-engine fallback, marker's 3-stage pipeline with 6 extension points, bulk-transcribe's caption-first+whisper-fallback insight, and lux's init()-registered extractor interface. The shared architecture pattern: named stages, documented fallback/error modes, per-target isolation."
+    },
+    {
+      "cluster_name": "Claude Code plugin / skill governance via frontmatter",
+      "member_themes": [
+        { "source_slug": "qmd", "theme_name": "Claude Code plugin packaging as shippable unit" },
+        { "source_slug": "qmd", "theme_name": "Frontmatter-level skill invocation gates" },
+        {
+          "source_slug": "docs-composio-dev",
+          "theme_name": "Meta-tool pattern for dynamic discovery"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "qmd and composio converge on the same problem from different angles: at scale (81 SoNash skills, 1000+ Composio toolkits), you need either (a) packaging + frontmatter-declared invocation gates or (b) meta-tool discovery. Both are alternatives to 'load all skill definitions'."
+    },
+    {
+      "cluster_name": "Quality measurement via benchmark/eval registries",
+      "member_themes": [
+        {
+          "source_slug": "vikparuchuri-marker",
+          "theme_name": "Benchmark registry as intellectual honesty"
+        },
+        { "source_slug": "qmd", "theme_name": "Fixture-based eval harness for skills" },
+        { "source_slug": "firecrawl", "theme_name": "Capability-gated testing (not CI-fenced)" }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Three independent sources show that sustainable quality gates require formal measurement infrastructure: marker's 7-method/2-scorer registry with published dataset, qmd's difficulty-tiered fixtures with precision@k/recall/MRR, firecrawl's capability-gated tests. SoNash has informal self-audit but no comparative benchmarking."
+    },
+    {
+      "cluster_name": "Security-as-afterthought in popular repos",
+      "member_themes": [
+        {
+          "source_slug": "lux-video-downloader",
+          "theme_name": "Security-as-afterthought in popular tools"
+        },
+        {
+          "source_slug": "vikparuchuri-marker",
+          "theme_name": "Security-as-afterthought for untrusted input"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "Both tools at 30K+ stars ship with hardcoded credentials (lux) or shell injection + path traversal + credential exposure (marker). Confirms SoNash CLAUDE.md \u00a75 anti-pattern guardrails (sanitizeError, path-traversal regex, no hardcoded secrets) are in the right place; real-world OSS routinely violates them."
+    },
+    {
+      "cluster_name": "Docs-absent / contributor-hostile governance at scale",
+      "member_themes": [
+        { "source_slug": "firecrawl", "theme_name": "Docs-absence as anti-pattern" },
+        {
+          "source_slug": "lux-video-downloader",
+          "theme_name": "Documentation absent for contributors"
+        },
+        {
+          "source_slug": "vikparuchuri-marker",
+          "theme_name": "Contributor-hostile governance despite star count"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Three popular repos (106K/30K/33K stars) all grew code without growing contributor onboarding: 1162-file firecrawl with one mermaid diagram, lux's 23-line CONTRIBUTING.md, marker's missing CONTRIBUTING/CODE_OF_CONDUCT. Validates SoNash's investment in CLAUDE.md + 72+ SKILL.md + CONVENTIONS.md."
+    },
+    {
+      "cluster_name": "Cost/tradeoff transparency as signal of engineering maturity",
+      "member_themes": [
+        {
+          "source_slug": "bulk-transcribe-youtube-playlist",
+          "theme_name": "Cost-as-first-class for cloud-vs-local decisions"
+        },
+        {
+          "source_slug": "docs-composio-dev",
+          "theme_name": "Native vs MCP tradeoff with token numbers"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "Two sources stand out by quantifying tradeoffs with concrete numbers: bulk-transcribe's $0.006/min API vs $0 local, composio's 55K-token overhead for 5 MCP servers. Pattern: publish real numbers for local-vs-cloud and native-vs-MCP decisions. JASON-OS should measure its own MCP overhead."
+    }
+  ],
+  "absence_signals": [
+    {
+      "domain": "Recovery-community UX patterns",
+      "expected_because": "SoNash is Sober Nashville \u2014 a recovery notebook for the sobriety community. One would expect at least some sources on trauma-informed UX, harm-reduction content patterns, or community moderation.",
+      "suggestion": "Slice has zero recovery-domain sources. If synthesis surfaces this gap overall, queue a targeted /website-analysis of recovery-focused products (Sober Grid, InTheRooms, I Am Sober app)."
+    },
+    {
+      "domain": "Firebase-specific architecture patterns",
+      "expected_because": "SoNash is Firebase-native (Firestore + Auth + App Check + Functions). Expected to see Firebase-specific patterns for App Check, security rules, or Cloud Functions architecture.",
+      "suggestion": "None of the 8 sources in this slice use Firebase. For SoNash-direct applicability, corpus needs Firebase-native references \u2014 e.g., a Next.js+Firebase SaaS starter or Firebase Extensions patterns."
+    },
+    {
+      "domain": "Privacy-first personal data handling",
+      "expected_because": "SoNash handles journal entries + daily logs + recovery data \u2014 the privacy-first posture is core. Expected guidance on client-side encryption, zero-knowledge storage, or PII handling.",
+      "suggestion": "qmd approaches privacy-first via local inference (node-llama-cpp) but doesn't address cloud-persisted personal data. Consider sourcing an analyzed reference on Signal-protocol-style client-side encryption or PII redaction libraries."
+    },
+    {
+      "domain": "Pre-commit hook / TDMS-style governance pipelines",
+      "expected_because": "SoNash has 14 pre-commit checks + TDMS tech-debt pipeline + health checkers. Expected to find cross-source validation of these patterns.",
+      "suggestion": "Firecrawl's CLAUDE.md capability-gating is close but narrower. No source in this slice covers a full pre-commit governance pipeline comparable to SoNash's. A targeted source search for 'repo-level governance as code' would fill this."
+    },
+    {
+      "domain": "Sobriety/community content moderation",
+      "expected_because": "A recovery notebook that ever adds social features will need content moderation tuned for sensitive populations.",
+      "suggestion": "Zero slice coverage. Defer until SoNash actually plans social features."
+    }
+  ],
+  "notes": [
+    "youtube-qinuqwl4e-k is a deliberately low-signal source (creator-view classifies it 'park-for-later' with Applicability=Not transferable). Including its 2 candidates for completeness; parent should likely deprioritize in merged ranking.",
+    "maharshi-pandya-gist-4aeccbe1 is also a low-signal source (score Needs Work 45). The creator-view explicitly states its technique is superseded by native extended-thinking. Surfacing for completeness; most value is absence-style (confirms SoNash's structured reasoning is ahead).",
+    "qmd stands out as the highest-density JASON-OS-relevant source in the slice with 19 candidates and multiple strong themes across packaging, MCP, retrieval, and eval. Parent may want to weight it heavily in cross-slice clustering.",
+    "firecrawl, qmd, and marker all contain cross-source connections referenced in their value-map.json (firecrawl \u2194 marker, qmd \u2194 firecrawl, qmd \u2194 HKUDS/CLI-Anything, marker \u2194 MinerU). The engine-fallback \u2194 3-stage-pipeline \u2194 plugin-registry connection is the strongest architectural cluster across the slice.",
+    "Security/governance anti-patterns appear in 2 of 8 sources (lux, marker) with nearly identical severity. This validates CLAUDE.md \u00a75's explicit anti-pattern guardrails (sanitizeError, path-traversal regex, test mocking). Suggest parent consider whether these merit a 'field-validated anti-patterns' synthesis section.",
+    "llms.txt standard (composio) and marketplace.json (qmd) are both discoverability surfaces but at different layers \u2014 one for humans-reading-with-AI, one for Claude Code itself. Parent may want to cluster these with any cross-slice discoverability themes.",
+    "Cost transparency (bulk-transcribe $0.006/min, composio 55K tokens) is a minor but notable cross-source pattern. JASON-OS currently has no documented MCP token overhead for its 3 servers \u2014 potential measurement task.",
+    "All 8 sources were readable; no empty or unreadable artifacts encountered."
+  ]
+}

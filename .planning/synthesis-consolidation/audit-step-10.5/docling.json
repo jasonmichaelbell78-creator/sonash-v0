@@ -1,0 +1,83 @@
+{
+  "slug": "docling",
+  "source": "DS4SD/docling",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (6485 bytes)",
+        "value-map.json (6473 bytes)",
+        "creator-view.md (12212 bytes)",
+        "findings.jsonl (4448 bytes)",
+        "summary.md (3475 bytes)",
+        "deep-read.md (8407 bytes)",
+        "content-eval.jsonl (4304 bytes)",
+        "coverage-audit.jsonl (1639 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "13 extraction journal entries for DS4SD/docling"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": [
+        "Standard/Deep analysis has 0 candidates — value-map likely empty too (FALSE POSITIVE: self-audit reads analysis.json.candidates which is [], but value-map.json.candidates has 13 entries)"
+      ]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": ["repomix-output.txt not present (SHOULD for source_type=repo)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites many specific artifacts: docs/concepts/docling_document.md, docs/concepts/architecture.md, docs/concepts/plugins.md, docs/usage/mcp.md, docs/usage/processing_audio_media.md, docs/usage/enrichments.md, docs/concepts/serialization.md, standard_pdf_pipeline.py, document_extractor.py",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Strong narrative prose — thematic paragraphs, analyst voice ('IBM Research discipline', 'forward-looking'), connective flow across sections. Not a compliance report.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 refs: extraction-journal.jsonl (exists), repo-analysis and website-analysis skills (both exist at .claude/skills/). T28 framing consistent throughout."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 13,
+      "6a_value_map_count": 13,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7a_notes": "No entry for slug=docling (or repo=DS4SD/docling) in .research/research-index.jsonl — missing registry entry",
+      "7b_tag_consistency": "PASS",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["metadata_patch", "schema_drift"],
+  "proposed_fixes": [
+    "metadata_patch: Add research-index.jsonl entry for docling with {repo:'DS4SD/docling', slug:'docling', depth:'standard', output_dir:'.research/analysis/docling', skill:'repo-analysis'} to resolve cross-file mismatch (§7a)",
+    "schema_drift: Sync analysis.json.candidates (currently []) with value-map.json.candidates (13 entries) OR fix self-audit to read value-map.json for candidate count — root cause of FAIL in category 1",
+    "missing_artifacts: Optionally generate repomix-output.txt for this repo (SHOULD-level per §13.3)",
+    "metadata_patch: Add state file to pipeline tail per CONVENTIONS 16"
+  ]
+}

@@ -28,8 +28,69 @@
   },
   "summary": "Writer identity produces better knowledge synthesis than filing clerk identity Anti-cramming and anti-thinning balance produces optimal wiki density",
   "creator_view": "Writer identity produces better knowledge synthesis than filing clerk identity Anti-cramming and anti-thinning balance produces optimal wiki density",
-  "candidates": [],
-  "last_synthesized_at": null,
+  "candidates": [
+    {
+      "name": "Anti-cramming / anti-thinning balance for knowledge skills",
+      "type": "design-principle",
+      "description": "When to split vs enrich. If adding third paragraph about sub-topic, split. If stub exists with 4 entries mentioning it, enrich. Directly applicable to how /repo-synthesis and /website-synthesis decide granularity of output.\n\nExtraction action: Evaluate EXTRACTIONS.md entries — are any cramming (too many candidates in one source) or thinning (stubs without depth)?",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F2"]
+    },
+    {
+      "name": "15-entry checkpoint cycle pattern",
+      "type": "workflow-pattern",
+      "description": "Periodic maintenance rhythm during long operations. Every N items: rebuild indexes, audit quality, check for anti-patterns. Maps to session-end but could be applied mid-session during batch operations.\n\nExtraction action: Compare to convergence loop checkpoints. Could /deep-research benefit from a mid-pipeline quality gate every N findings?",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F3"]
+    },
+    {
+      "name": "Parallel subagent cleanup workflow (5-batch audit)",
+      "type": "workflow-pattern",
+      "description": "Spawn batches of 5 agents, each audits one article across 6 dimensions (structure, length, tone, quotes, coherence, links). Deduplicate findings, then execute fixes. Directly comparable to our code-reviewer + skill-audit patterns.\n\nExtraction action: Compare agent batch size (5) against our parallelization patterns. Could /skill-audit or /doc-optimizer use this batched audit pattern?",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F4"]
+    },
+    {
+      "name": "Writer-not-filing-clerk identity framing",
+      "type": "design-principle",
+      "description": "Identity statement shapes every operation: 'what does this mean and how does it connect' vs 'where do I file this'. Applicable to how analysis/synthesis skills should frame their output — synthesis not filing.\n\nExtraction action: Evaluate: do our skills produce synthesis or filing? Does /repo-analysis create understanding or categorization?",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": [],
+      "finding_refs": ["F6"]
+    },
+    {
+      "name": "Concurrency safety rules for LLM file ops",
+      "type": "pattern",
+      "description": "Re-read before editing, never delete without reading, rebuild indices only at command end. Practical wisdom already partially captured in CLAUDE.md guardrails but more specific to wiki-style operations.\n\nExtraction action: Compare against CLAUDE.md guardrail #12 (verify file state against filesystem). Any gaps?",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": [],
+      "finding_refs": ["F8"]
+    },
+    {
+      "name": "7-command skill architecture as T24 reference design",
+      "type": "architecture-pattern",
+      "description": "The ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize command set is a concrete instantiation of Karpathy's ingest-query-lint triad, with more granularity. Direct reference for T24 synthesis adoption skill design.\n\nExtraction action: Map these 7 commands to T24 synthesis adoption skill commands. Which map directly, which need adaptation, which are missing?",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F1"]
+    }
+  ],
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "meta": {
     "url": "https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d",
     "domain": "gist.github.com",
@@ -93,5 +154,6 @@
     "Concept articles (patterns/themes) are the most valuable wiki pages",
     "Diary-driven structure is the most common quality problem"
   ],
-  "source_tier": "T2"
+  "source_tier": "T2",
+  "deep_read_skipped": true
 }

@@ -1,0 +1,78 @@
+{
+  "slug": "sidbharath-com-blog-claude-code-the-complete-guide",
+  "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
+  "source_type": "website",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (3304 bytes)",
+        "value-map.json (3063 bytes)",
+        "creator-view.md (9098 bytes)",
+        "findings.jsonl (1771 bytes)",
+        "summary.md (1380 bytes)",
+        "deep-read.md (254 bytes)",
+        "content-eval.jsonl (2113 bytes)",
+        "coverage-audit.jsonl (1305 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "6 candidates in analysis.json",
+        "6 extraction journal entries for source URL"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": []
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View names specific home-repo artifacts (hook-ecosystem-audit, skill-creator, skill-audit, SKILL_STANDARDS.md, SESSION_CONTEXT.md) and specific article features (cloud teleportation & prefix, 36-plugin marketplace, 5 hook types, 20 sections). Citations are external-specific and home-specific, not category-level.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Conversational analyst voice. Section 1 uses paragraphs with bulleted sub-points referring to specific article content. Section 4 uses a comparison table (Ahead/Behind/Different) that reads as editorial judgment. No PASS/FAIL banners or auto-generated scaffolding.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "All Section 2 home-repo refs verified: CLAUDE.md (exists), SESSION_CONTEXT.md (exists), .claude/agents/ (58 present; article's 34 figure is historical but artifact class is valid), .claude/skills/ (81 present), .claude/skills/_shared/SKILL_STANDARDS.md, .claude/skills/checkpoint, .claude/skills/hook-ecosystem-audit, .claude/skills/skill-creator, .claude/skills/skill-audit all resolve."
+    },
+    "6_extractions": {
+      "verdict": "FAIL",
+      "6a_journal_count": 6,
+      "6a_value_map_count": 7,
+      "6a_verdict": "FAIL",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["missing_journal_entries"],
+  "proposed_fixes": [
+    "missing_journal_entries: Backfill extraction-journal.jsonl with the 1 value-map candidate absent from the journal. value-map has 7 candidates (incl. 'Feature-breadth coverage as completeness benchmark'); analysis.json and journal both have only 6. Either append the missing 'Feature-breadth coverage as completeness benchmark' entry to extraction-journal.jsonl (schema_version 2.0, decision=defer, tags aligned with sibling entries) OR reconcile by removing it from value-map.json if it was intentionally dropped during analysis. Note that analysis.json candidates (6) align with the journal (6), so the drift is value-map.json vs the other two — supports the 'backfill journal OR prune value-map' fix framing."
+  ]
+}

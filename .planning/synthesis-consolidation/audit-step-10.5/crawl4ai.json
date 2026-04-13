@@ -1,0 +1,85 @@
+{
+  "slug": "crawl4ai",
+  "source": "unclecode/crawl4ai",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (5391 bytes)",
+        "value-map.json (4906 bytes)",
+        "creator-view.md (6255 bytes)",
+        "findings.jsonl (3253 bytes)",
+        "summary.md (1009 bytes)",
+        "deep-read.md (3296 bytes)",
+        "content-eval.jsonl (3129 bytes)",
+        "coverage-audit.jsonl (1852 bytes)",
+        "schema_version: 3.0",
+        "7 candidates in analysis.json",
+        "7 extraction journal entries for unclecode/crawl4ai"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": [
+        "Zod schema validation: id not a UUID ('crawl4ai-2026-04-12'); all 7 candidates missing required 'description' field"
+      ]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": ["repomix-output.txt absent (SHOULD for repo type; not MUST) — informational"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Cites specific paths (docs/md_v2/core/deep-crawling.md, deploy/docker/ARCHITECTURE.md, docs/md_v2/advanced/hooks-auth.md, crawl4ai/utils.py at 3778 lines) and specific candidates (FilterChain+Scorer, 3-tier pool, 8 hooks, on_state_change gap). Well beyond the 2-citation threshold.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Sections 1-4 are flowing paragraphs with analyst voice and connective reasoning. Section 5 uses compact T1/T2 tables (acceptable per standard). No PASS/FAIL banner scaffolding or auto-generated tone.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "SoNash refs: settings.json hooks, EXTRACTIONS.md, extraction journal, routing, /analyze pipeline, skill architecture. All verified against filesystem (.claude/settings.json, .research/EXTRACTIONS.md, .research/extraction-journal.jsonl present)."
+    },
+    "6_extractions": {
+      "verdict": "FAIL",
+      "6a_journal_count": 7,
+      "6a_value_map_count": 9,
+      "6a_verdict": "FAIL",
+      "6a_notes": "value-map has 9 total candidates (3 pattern + 3 knowledge + 3 antiPattern); journal has 7. Missing from journal: 'Safe expression eval via AST' (knowledge) and 'DUPLICATE_FILES_IN_REPO' (antiPattern). Neither is marked skipped/rejected in value-map.",
+      "6b_extractions_md_section": "PASS",
+      "6b_notes": "Section anchor 'unclecode-crawl4ai-repo' at line 415; row in index at line 35.",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7a_notes": "research-index.jsonl does not track per-source analyses (only deep-research topics); no entry expected for crawl4ai slug. No drift detectable — treated as PASS.",
+      "7b_tag_consistency": "PASS",
+      "7b_notes": "analysis.json semantic_tags (repo, library, web-crawling, architecture, hooks, filtering, python, anti-pattern) align with per-candidate tags in value-map and journal (filtering, architecture, hooks, infrastructure, security). No significant divergence.",
+      "7c_last_synthesized_at": "PASS",
+      "7c_notes": "last_synthesized_at is null in analysis.json — not yet synthesized, valid."
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["schema_drift", "missing_journal_entries"],
+  "proposed_fixes": [
+    "schema_drift: Migrate analysis.json id from 'crawl4ai-2026-04-12' to a UUID, or relax Zod schema to accept slug-date ids; backfill 'description' on all 7 candidates in analysis.json (copy from value-map descriptions).",
+    "missing_journal_entries: Backfill 2 journal entries for value-map candidates not in extraction-journal.jsonl — 'Safe expression eval via AST' (knowledge) and 'DUPLICATE_FILES_IN_REPO' (anti-pattern). Use scripts/debt/intake-manual.js-style append, preserving schema_version/source/tags."
+  ]
+}

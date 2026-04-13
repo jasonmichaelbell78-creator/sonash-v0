@@ -28,8 +28,49 @@
   },
   "summary": "Meta-tool architecture avoids loading 1000+ definitions into context 5-server MCP setup consumes ~55K tokens before conversation starts",
   "creator_view": "Meta-tool architecture avoids loading 1000+ definitions into context 5-server MCP setup consumes ~55K tokens before conversation starts",
-  "candidates": [],
-  "last_synthesized_at": null,
+  "candidates": [
+    {
+      "name": "Meta-tool pattern for dynamic tool discovery",
+      "type": "architecture-pattern",
+      "description": "Instead of loading all tool definitions, provide a small set of meta tools (search, get-schema, execute). Agent discovers at runtime. Solves context window bloat. Applicable to JASON-OS: if the OS has 72+ skills, a meta-skill for discovery would be more efficient than loading all skill definitions.\n\nExtraction action: Evaluate: could JASON-OS use a meta-skill pattern? Currently all skills load via SKILL.md reading. At 100+ skills, a search-first approach avoids context bloat.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F1"]
+    },
+    {
+      "name": "Native vs MCP tradeoff framework with token cost data",
+      "type": "design-principle",
+      "description": "Native: context control + interception. MCP: simplicity + client-agnostic. 55K token overhead for 5 MCP servers. Decision framework for when to use which.\n\nExtraction action: Measure current MCP token overhead (3 servers). Add to AGENT_ORCHESTRATION.md or MCP reference doc as decision criteria.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": [],
+      "finding_refs": ["F2", "F6"]
+    },
+    {
+      "name": "llms.txt standard for AI-readable documentation",
+      "type": "pattern",
+      "description": "Standardized llms.txt and llms-full.txt at site root for LLM consumption. If JASON-OS publishes documentation, this format makes it AI-discoverable.\n\nExtraction action: Park for JASON-OS documentation strategy. Evaluate llms.txt format for skill/agent docs.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": [],
+      "finding_refs": ["F8"]
+    },
+    {
+      "name": "Event trigger dual model (webhook + polling) for agent reactivity",
+      "type": "pattern",
+      "description": "Webhook for real-time capable services, polling for those without. User-scoped, account-bound. Pattern for making agents event-driven rather than invocation-driven.\n\nExtraction action: Park for later. Relevant if SoNash adds event-driven features (meeting reminders, journal prompts) or JASON-OS needs external event reactions.",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": [],
+      "finding_refs": ["F4"]
+    }
+  ],
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "meta": {
     "url": "https://docs.composio.dev/docs",
     "domain": "docs.composio.dev",

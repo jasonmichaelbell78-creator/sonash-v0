@@ -1,0 +1,82 @@
+{
+  "slug": "hkuds-cli-anything",
+  "source": "HKUDS/CLI-Anything",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (10903 bytes)",
+        "value-map.json (7038 bytes)",
+        "creator-view.md (10733 bytes)",
+        "findings.jsonl (6349 bytes)",
+        "summary.md (4857 bytes)",
+        "deep-read.md (4493 bytes)",
+        "content-eval.jsonl (4720 bytes)",
+        "coverage-audit.jsonl (1461 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "17 candidates in analysis.json",
+        "17 extraction journal entries for HKUDS/CLI-Anything",
+        "State file exists (repo-analysis.hkuds-cli-anything)"
+      ],
+      "warn": [
+        "State file exists but process_feedback is empty — retro may have been skipped (CONVENTIONS 16.2)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": [
+        "repomix-output.txt not present (SHOULD for repo; not MUST — not treated as failure)"
+      ]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Cites specific artifacts: guides/mcp-backend.md, guides/skill-generation.md, guides/session-locking.md, repl_skin.py, skill_generator.py, cli-hub-meta-skill/SKILL.md, marketplace.json, registry.json, mermaid/drawio SKILL.md line counts, commands/*.md",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Paragraph-driven analyst voice. Sections build on one another (Section 1 understanding → Section 2 relevance → Section 3 differences → Section 4 challenge). Only Section 5 uses a table (candidate tier summary — appropriate). No PASS/FAIL banners or auto-gen tone.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references verified: /deep-research skill (.claude/skills/deep-research/), /skill-creator (.claude/skills/skill-creator/), SKILL_INDEX.md (.claude/skills/SKILL_INDEX.md), 3 MCP servers (CLAUDE.md canonical), reviews.jsonl (.claude/state/reviews.jsonl), hook-warnings-log.jsonl (.claude/state/hook-warnings-log.jsonl), MASTER_DEBT.jsonl (docs/technical-debt/MASTER_DEBT.jsonl), .claude-plugin/ structure. All resolve."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 17,
+      "6a_value_map_count": 17,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": true
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "tag_consistency (WARN only): analysis.json tags are coarse (repo/framework/hkuds/anything/python) while journal entries use richer semantic tags (agent-native-interface, jason-os-relevant, skill-architecture). Consider backfilling analysis.json.tags from journal tag union on next re-analysis — no immediate action required.",
+    "process_feedback (WARN from self-audit): state file has empty process_feedback. If retro was skipped, run a short retro pass; otherwise backfill the field with 'skipped' note. Non-blocking."
+  ]
+}
