@@ -319,9 +319,24 @@ function main() {
   }
 }
 
-try {
-  main();
-} catch (err) {
-  console.error(`fatal: ${sanitizeError(err)}`);
-  process.exit(2);
+if (require.main === module) {
+  try {
+    main();
+  } catch (err) {
+    console.error(`fatal: ${sanitizeError(err)}`);
+    process.exit(2);
+  }
 }
+
+module.exports = {
+  parseCliArgs,
+  loadVocabulary,
+  loadJournal,
+  rewriteRawLines,
+  serializeRawLines,
+  cmdApply,
+  cmdValidate,
+  // Paths exported for test fixtures
+  JOURNAL_PATH,
+  VOCAB_PATH,
+};
