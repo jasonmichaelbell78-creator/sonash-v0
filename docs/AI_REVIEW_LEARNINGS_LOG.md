@@ -5311,4 +5311,7 @@ DAS needed).
 
 **Commits:**
 
-- [populated at Step 8]
+- 076f9431 (single-commit batch — all 8 R2 items per user direction: coverage
+  tests for 2 new scripts, prettier synthesis.md, silent-swallow narrow-catch
+  rewrite, --private-ok opt-in flag, TYPE_MAP fallback, L194 char-class-to-
+  string replaceAll; hook state drift folded in).

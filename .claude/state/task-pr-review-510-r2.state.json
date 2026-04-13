@@ -2,14 +2,29 @@
   "pr": 510,
   "round": 2,
   "review_number": 88,
+  "review_id_jsonl": "rev-87",
   "source": "mixed",
   "total": 8,
-  "fixed": 0,
+  "fixed": 8,
   "deferred": 0,
   "rejected": 0,
   "severity": { "critical": 0, "major": 4, "minor": 4, "trivial": 0 },
-  "completed_steps": [1, 2],
-  "status": "in_progress",
-  "commit_sha": null,
-  "completed_at": null
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": "076f9431",
+  "completed_at": "2026-04-13T00:00:00Z",
+  "notes": {
+    "tests_added": "46 total (22 check-slopsquat + 24 generate-llms-txt)",
+    "coverage_gate": "0 NEW gaps after R2 (was 2)",
+    "option_chosen_6_7": "B (--private-ok opt-in flag + refusal exit 2)",
+    "files_modified": [
+      "scripts/check-slopsquat.js",
+      "scripts/docs/generate-llms-txt.js",
+      ".planning/synthesis-wave5-agents/build-synthesis-json.js",
+      ".research/analysis/synthesis/synthesis.md",
+      "tests/scripts/check-slopsquat.test.ts",
+      "tests/scripts/docs/generate-llms-txt.test.ts",
+      "docs/AI_REVIEW_LEARNINGS_LOG.md"
+    ]
+  }
 }
