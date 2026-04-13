@@ -345,18 +345,26 @@ function checkBehavioral(dir, slug, sourceType) {
 // ---------------------------------------------------------------------------
 
 function countValueMapCandidates(vmData) {
-  if (Array.isArray(vmData.candidates)) return vmData.candidates.length;
-  const splitKeys = [
-    "patternCandidates",
-    "knowledgeCandidates",
-    "contentCandidates",
-    "antiPatternCandidates",
-  ];
-  let total = 0;
-  for (const k of splitKeys) {
-    if (Array.isArray(vmData[k])) total += vmData[k].length;
+  // Dedupe by lowercase name so value-maps with the same candidate classified
+  // under two split-keys (e.g., both knowledgeCandidates and
+  // antiPatternCandidates) count as one for 6a journal-count parity.
+  const seen = new Set();
+  const addAll = (arr) => {
+    if (!Array.isArray(arr)) return;
+    for (const c of arr) {
+      const name = (c.name || c.title || "").toString().trim().toLowerCase();
+      if (name) seen.add(name);
+    }
+  };
+  if (Array.isArray(vmData.candidates)) {
+    addAll(vmData.candidates);
+  } else {
+    addAll(vmData.patternCandidates);
+    addAll(vmData.knowledgeCandidates);
+    addAll(vmData.contentCandidates);
+    addAll(vmData.antiPatternCandidates);
   }
-  return total;
+  return seen.size;
 }
 
 function collectJournalEntries(source) {

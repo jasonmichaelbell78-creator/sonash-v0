@@ -30,6 +30,9 @@ const SOURCES = [
   "sidbharath-com-blog-claude-code-the-complete-guide",
   "vikparuchuri-marker",
   "youtube-transcript-api",
+  // E-extend (surfaced by expanded self-audit check 6a, Session #277):
+  "archivebox-archivebox",
+  "public-apis_public-apis",
 ];
 
 const TYPE_REMAP = {
