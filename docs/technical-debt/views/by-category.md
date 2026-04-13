@@ -6404,7 +6404,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (735)
+## process (736)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6783,6 +6783,7 @@
 | DEBT-45645 | Archive log not in rotation policy                            | S2       | config/rotation-policy.json                                             | 8    |
 | DEBT-45646 | CI pattern compliance exits 1 on test-file WARN-only output   | S2       | .github/workflows                                                       | 0    |
 | DEBT-45651 | Learning-system refinement queue is broken (702 items, 0 ...  | S2       | .claude/state/pending-refinements.jsonl                                 | 0    |
+| DEBT-45652 | release-please workflow stale (last failed run 2026-04-03...  | S2       | .github/workflows/release-please.yml                                    | 0    |
 | DEBT-0811  | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812  | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813  | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |
