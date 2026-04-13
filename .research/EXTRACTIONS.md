@@ -4,7 +4,7 @@ Auto-generated from `extraction-journal.jsonl` by
 `scripts/cas/generate-extractions-md.js`. Do not edit directly — run
 `node scripts/cas/generate-extractions-md.js` to rebuild.
 
-**Total:** 295 candidates across 31 sources | **By decision:** defer: 271,
+**Total:** 309 candidates across 32 sources | **By decision:** defer: 285,
 investigate: 2, extract: 20, skip: 2
 
 ---
@@ -22,6 +22,7 @@ investigate: 2, extract: 20, skip: 2
 | [HKUDS/CLI-Anything](#hkuds-cli-anything-repo)                                                                                                                                                                           | repo     | 17    | 7       | 3         | 3            | 4       |
 | [iawia002/lux](#iawia002-lux-repo)                                                                                                                                                                                       | repo     | 5     | 1       | 1         | 3            | 0       |
 | [jdepoix/youtube-transcript-api](#jdepoix-youtube-transcript-api-repo)                                                                                                                                                   | repo     | 10    | 4       | 3         | 2            | 1       |
+| [jina-ai/reader](#jina-ai-reader-repo)                                                                                                                                                                                   | repo     | 14    | 6       | 3         | 3            | 2       |
 | [karpathy/autoresearch](#karpathy-autoresearch-repo)                                                                                                                                                                     | repo     | 12    | 5       | 3         | 2            | 2       |
 | [ksharlandjiev/bedrock-summarize-audio-video-text](#ksharlandjiev-bedrock-summarize-audio-video-text-repo)                                                                                                               | repo     | 10    | 5       | 1         | 2            | 2       |
 | [mendableai/firecrawl](#mendableai-firecrawl-repo)                                                                                                                                                                       | repo     | 21    | 5       | 5         | 4            | 7       |
@@ -181,6 +182,25 @@ investigate: 2, extract: 20, skip: 2
 | SRT/WebVTT timestamp formatting                        | pattern      | defer    | 2026-04-07 | low     | E0     | medium    | -            | Clean subtitle format generation. SRT (comma) vs WebVTT (dot) separator.                                                 |
 | Don't build own transcript fetcher (anti-pattern)      | anti-pattern | defer    | 2026-04-07 | high    | E0     | high      | -            | 399 commits over 8 years maintaining YouTube API compatibility. Use the library.                                         |
 | Ignore IP blocking for bulk (anti-pattern)             | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | YouTube blocks bulk requests. Plan proxy infrastructure from the start.                                                  |
+
+## jina-ai/reader (repo)
+
+| Candidate                                                       | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
+| --------------------------------------------------------------- | -------------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Multi-provider fallback generator (iterProviders)               | pattern              | defer    | 2026-04-12 | medium  | E1     | high      | -            | Generator yields provider clients in preference order (Jina internal -> Serper Google -> Serper Bing). for...of loop cat  |
+| x-\* request header protocol                                    | pattern              | defer    | 2026-04-12 | medium  | E1     | medium    | -            | 11+ x-\* headers control runtime fetch behavior (x-target-selector, x-wait-for-selector, x-timeout, x-cache-tolerance, x- |
+| Tiered fetch fallback chain with sideLoad body hint             | architecture-pattern | defer    | 2026-04-12 | medium  | E2     | medium    | -            | cachedScrap() executes: Firestore cache -> curl-impersonate fetch -> (if thin <42 tokens or non-200) proxy retry -> Pupp  |
+| curl-impersonate as Docker LD_PRELOAD base layer                | pattern              | defer    | 2026-04-12 | high    | E3     | medium    | -            | Two-stage Dockerfile: FROM lwthiker/curl-impersonate:0.6-chrome-slim-bullseye -> FROM node:22. Copy libcurl-impersonate.  |
+| Multi-target deployment via --args override                     | architecture-pattern | defer    | 2026-04-12 | medium  | E2     | low       | -            | One Docker image deployed 6 times to Cloud Run by varying --args build/stand-alone/<entry>.js at deploy time. Inside con  |
+| Readability + Turndown + Puppeteer extraction pipeline          | architecture-pattern | defer    | 2026-04-12 | low     | E2     | medium    | -            | Reference stack: Puppeteer renders -> linkedom parses -> @mozilla/readability narrows to article body -> Turndown (with   |
+| r.jina.ai hosted service as fetch backend                       | knowledge            | defer    | 2026-04-12 | high    | E0     | high      | -            | The running hosted service at https://r.jina.ai/<url> handles SPA, PDFs, JS-rendered pages, cookies, proxies. Free tier   |
+| curl-impersonate + TLS fingerprint concept                      | knowledge            | defer    | 2026-04-12 | high    | E0     | medium    | -            | Anti-bot defenses fingerprint the full TLS/TCP stack, not just User-Agent. Real Chrome vs headless Chrome differ at the   |
+| Commercial OSS without tests as an architectural stance         | knowledge            | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Reader runs at commercial scale with zero automated tests. Quality floor is TypeScript strict + lint + live observabilit  |
+| Blog: Reader for search-grounding to improve factuality of LLMs | content              | defer    | 2026-04-12 | low     | E0     | medium    | -            | Jina blog post explaining the rationale for s.jina.ai: LLMs hallucinate less when grounded on actual fetched web content  |
+| Colab notebook: full-site crawling methodology                  | content              | defer    | 2026-04-12 | low     | E0     | medium    | -            | The only practical multi-URL example using r.jina.ai. Demonstrates URL enumeration, rate limiting, result merging. Usefu  |
+| DeepWiki-as-architecture-docs                                   | anti-pattern         | defer    | 2026-04-12 | medium  | E0     | high      | -            | README 'How it works' section is literally an image badge linking to deepwiki.com. Zero first-party architecture exposit  |
+| Public repo + private submodule requirement                     | anti-pattern         | defer    | 2026-04-12 | medium  | E0     | high      | -            | Public repo imports from SSH-only private thinapps-shared submodule containing rate-limit, secrets, DAOs, decorators. RE  |
+| Zero tests in a 10k-star production service                     | anti-pattern         | defer    | 2026-04-12 | low     | E0     | high      | -            | No .test.ts, no .spec.ts, no describe(). firebase-functions-test is devDep but never imported. CI is deploy-only behind   |
 
 ## karpathy/autoresearch (repo)
 

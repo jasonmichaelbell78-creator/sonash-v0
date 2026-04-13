@@ -1,0 +1,240 @@
+{
+  "id": "7e5ceea3-ffcb-4124-9351-3f3bd0c30142",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "jina-ai/reader",
+  "slug": "jina-ai-reader",
+  "title": "jina-ai/reader — URL to LLM-friendly markdown (r.jina.ai)",
+  "analyzed_at": "2026-04-12",
+  "depth": "standard",
+  "source_tier": "T1",
+  "tags": [
+    "web-scraping",
+    "llm-integration",
+    "application",
+    "commercial-oss",
+    "production-grade",
+    "vendor-lock-in",
+    "engine-fallback",
+    "cas-relevant",
+    "sonash-relevant",
+    "puppeteer",
+    "html-to-markdown",
+    "tls-fingerprinting",
+    "cloud-run",
+    "multi-provider-fallback"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 72,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 65,
+    "classification": "active-sprint"
+  },
+  "summary": "Production TypeScript codebase behind r.jina.ai — converts any URL to LLM-friendly markdown via curl-impersonate + Puppeteer + Readability + Turndown, deployed as 6 Cloud Run services from one Docker image. Strong patterns (tiered fallback chain, multi-provider SERP generator, LD_PRELOAD TLS fingerprint) undermined by 3 S0 security issues, zero automated tests, and a private submodule that blocks self-hosting. Best treated as a hosted service to call, not a codebase to adopt.",
+  "creator_view": "See creator-view.md. Key insight: this repo's knowledge is not the stack — it's curl-impersonate as the default fetcher with Puppeteer as escape hatch, plus one-image-six-services Cloud Run deployment via --args. For SoNash, the highest-leverage move is to decide whether r.jina.ai becomes a fetch backend for /website-analysis (instrument superpowers-chrome gaps first, then decide). Port patterns selectively; avoid adopting the codebase.",
+  "candidates": [
+    {
+      "name": "Multi-provider fallback generator (iterProviders)",
+      "type": "pattern",
+      "description": "Generator yields provider clients in preference order (Jina internal -> Serper Google -> Serper Bing). for...of loop catches per-provider errors and advances. First success wins. Query-shortening fallback strips last N/4 terms up to 4 iterations, RTL-aware.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["multi-provider-fallback", "engine-fallback", "strategy-pattern", "cas-relevant"],
+      "url": "https://github.com/jina-ai/reader/tree/main/src/services/serp",
+      "finding_refs": []
+    },
+    {
+      "name": "x-* request header protocol",
+      "type": "pattern",
+      "description": "11+ x-* headers control runtime fetch behavior (x-target-selector, x-wait-for-selector, x-timeout, x-cache-tolerance, x-no-cache, x-respond-with, x-proxy-url, x-set-cookie, x-with-generated-alt, x-engine, x-return-format). Clean separation of URL identity from fetch configuration.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["api-versioning", "config-reference", "web-scraping", "cas-relevant"],
+      "url": "https://github.com/jina-ai/reader/blob/main/README.md",
+      "finding_refs": []
+    },
+    {
+      "name": "Tiered fetch fallback chain with sideLoad body hint",
+      "type": "architecture-pattern",
+      "description": "cachedScrap() executes: Firestore cache -> curl-impersonate fetch -> (if thin <42 tokens or non-200) proxy retry -> Puppeteer with body passed as sideLoad hint to avoid double-fetch -> jsdom narrowing via Readability -> Turndown format -> stale cache fallback on any throw.",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["engine-fallback", "graceful-degradation", "caching", "web-scraping"],
+      "url": "https://github.com/jina-ai/reader/blob/main/src/api/crawler.ts",
+      "finding_refs": []
+    },
+    {
+      "name": "curl-impersonate as Docker LD_PRELOAD base layer",
+      "type": "pattern",
+      "description": "Two-stage Dockerfile: FROM lwthiker/curl-impersonate:0.6-chrome-slim-bullseye -> FROM node:22. Copy libcurl-impersonate.so from stage 1, set LD_PRELOAD + CURL_IMPERSONATE=chrome116. Every outbound libcurl hop impersonates Chrome 116 TLS fingerprint.",
+      "novelty": "high",
+      "effort": "E3",
+      "relevance": "medium",
+      "tags": ["tls-fingerprinting", "docker", "web-scraping", "production-grade"],
+      "url": "https://github.com/jina-ai/reader/blob/main/Dockerfile",
+      "finding_refs": []
+    },
+    {
+      "name": "Multi-target deployment via --args override",
+      "type": "architecture-pattern",
+      "description": "One Docker image deployed 6 times to Cloud Run by varying --args build/stand-alone/<entry>.js at deploy time. Inside container, tsyringe DI resolves the correct API host class (CrawlerHost / SearcherHost / SerpHost) into the same Koa shell. Zero code duplication.",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "low",
+      "tags": ["deployment", "docker", "cloud-run", "dependency-injection"],
+      "url": "https://github.com/jina-ai/reader/blob/main/.github/workflows/cd.yml",
+      "finding_refs": []
+    },
+    {
+      "name": "Readability + Turndown + Puppeteer extraction pipeline",
+      "type": "architecture-pattern",
+      "description": "Reference stack: Puppeteer renders -> linkedom parses -> @mozilla/readability narrows to article body -> Turndown (with GFM plugin) emits markdown. All stages swappable via DI. Optional VLM alt-text via OpenAI.",
+      "novelty": "low",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["puppeteer", "html-to-markdown", "pipeline", "web-scraping"],
+      "url": "https://github.com/jina-ai/reader/tree/main/src/services",
+      "finding_refs": []
+    },
+    {
+      "name": "r.jina.ai hosted service as fetch backend",
+      "type": "knowledge",
+      "description": "The running hosted service at https://r.jina.ai/<url> handles SPA, PDFs, JS-rendered pages, cookies, proxies. Free tier + paid. Viable as a fallback fetch backend for /website-analysis in CAS. Adoption cost: one HTTP call. Trade-off: vendor lock-in on a core CAS primitive.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["vendor-lock-in", "commercial-oss", "cas-relevant", "web-scraping"],
+      "url": "https://r.jina.ai/",
+      "finding_refs": []
+    },
+    {
+      "name": "curl-impersonate + TLS fingerprint concept",
+      "type": "knowledge",
+      "description": "Anti-bot defenses fingerprint the full TLS/TCP stack, not just User-Agent. Real Chrome vs headless Chrome differ at the cipher suite level. curl-impersonate rewrites libcurl to emit Chrome 116's exact fingerprint. Understanding this explains why firecrawl/crawl4ai leak through some sites.",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["tls-fingerprinting", "web-scraping", "proxy-rotation", "cas-relevant"],
+      "url": "https://github.com/lwthiker/curl-impersonate",
+      "finding_refs": []
+    },
+    {
+      "name": "Commercial OSS without tests as an architectural stance",
+      "type": "knowledge",
+      "description": "Reader runs at commercial scale with zero automated tests. Quality floor is TypeScript strict + lint + live observability + traffic volume. Works for the originator (Jina has Cloud Logging + dashboards + traffic); transfers poorly to adopters. File as a cautionary stance, not an emulation target.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["commercial-oss", "testing", "claims-vs-reality", "production-grade"],
+      "url": null,
+      "finding_refs": ["F009"]
+    },
+    {
+      "name": "Blog: Reader for search-grounding to improve factuality of LLMs",
+      "type": "content",
+      "description": "Jina blog post explaining the rationale for s.jina.ai: LLMs hallucinate less when grounded on actual fetched web content. Search-then-read pattern vs search-only. Thesis alignment with SoNash's deep-research evidence-gathering philosophy.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["llm-integration", "rag-alternative", "deep-research", "cas-relevant"],
+      "url": "https://jina.ai/news/jina-reader-for-search-grounding-to-improve-factuality-of-llms",
+      "finding_refs": []
+    },
+    {
+      "name": "Colab notebook: full-site crawling methodology",
+      "type": "content",
+      "description": "The only practical multi-URL example using r.jina.ai. Demonstrates URL enumeration, rate limiting, result merging. Useful reference IF SoNash adds a bulk analyze mode to /website-analysis.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["web-scraping", "tutorial", "cas-relevant"],
+      "url": "https://colab.research.google.com/drive/1uoBy6_7BhxqpFQ45vuhgDDDGwstaCt4P",
+      "finding_refs": []
+    },
+    {
+      "name": "DeepWiki-as-architecture-docs",
+      "type": "anti-pattern",
+      "description": "README 'How it works' section is literally an image badge linking to deepwiki.com. Zero first-party architecture exposition in a 10.5k-star OSS repo. Do not emulate — own the architecture story in the repo, don't outsource to auto-wiki.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["docs-absence", "claims-vs-reality", "documentation-contract"],
+      "url": "https://github.com/jina-ai/reader/blob/main/README.md",
+      "finding_refs": ["F012"]
+    },
+    {
+      "name": "Public repo + private submodule requirement",
+      "type": "anti-pattern",
+      "description": "Public repo imports from SSH-only private thinapps-shared submodule containing rate-limit, secrets, DAOs, decorators. README dismisses it as 'not integral' but the code does not compile without it. 'Open source' in license only, not in self-host sense. Erodes adopter trust.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["commercial-oss", "vendor-lock-in", "licensing", "distribution-model"],
+      "url": "https://github.com/jina-ai/reader/blob/main/.gitmodules",
+      "finding_refs": ["F018"]
+    },
+    {
+      "name": "Zero tests in a 10k-star production service",
+      "type": "anti-pattern",
+      "description": "No .test.ts, no .spec.ts, no describe(). firebase-functions-test is devDep but never imported. CI is deploy-only behind L4 health check. The stance requires compensating observability that adopters don't inherit. Cautionary: 'no tests' works for originators, not forks.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["testing", "commercial-oss", "claims-vs-reality"],
+      "url": "https://github.com/jina-ai/reader",
+      "finding_refs": ["F009"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "stars": 10540,
+    "language": "TypeScript",
+    "license": "Apache-2.0",
+    "last_push": "2025-05-08T07:21:34Z",
+    "archived": false,
+    "fork": false,
+    "topics": ["llm", "proxy"]
+  },
+  "dimensions": {
+    "security": {
+      "band": "Needs Work",
+      "score": 48
+    },
+    "reliability": {
+      "band": "Healthy",
+      "score": 70
+    },
+    "maintainability": {
+      "band": "Needs Work",
+      "score": 55
+    },
+    "documentation": {
+      "band": "Needs Work",
+      "score": 52
+    },
+    "process": {
+      "band": "Critical",
+      "score": 35
+    },
+    "velocity": {
+      "band": "Needs Work",
+      "score": 50
+    }
+  },
+  "absence_patterns": [
+    "no-tests",
+    "no-ci-workflow",
+    "no-contributing-md",
+    "no-security-md",
+    "no-changelog",
+    "no-preview-env",
+    "no-adrs",
+    "no-self-host-docs",
+    "no-issue-templates"
+  ],
+  "adoption_verdict": "Self-host: AVOID (3 S0s + private submodule blocks compile + zero tests). Hosted service use: TRIAL (instrument current /website-analysis fetch gaps before committing). Creator lens: EXTRACT selected patterns (iterProviders generator, x-* headers, TLS fingerprint Docker layer)."
+}

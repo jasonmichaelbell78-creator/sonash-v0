@@ -163,48 +163,63 @@ freshness.
      Step 10.5 audit)
 - [x] 2. MinerU ✅ Session #274 (commit `34e647fd`, full skill compliance,
      self-audit 14/0/0)
-- [ ] 3. crawl4ai ← **NEXT per Session #274 handoff**
-- [ ] 4. marker
-- [ ] 5. surya
-- [ ] 6. reader
+- [x] 3. crawl4ai ✅ Session #276 (Apr 12)
+- [x] 4. marker ✅ Session #276 (Apr 12, slug `vikparuchuri-marker`)
+- [~] 5. surya **SKIP BY DECISION** Session #276 — remain quick
+- [x] 6. reader ✅ Session #276 (Apr 12, slug `jina-ai-reader`)
 
 ### Bucket B — Foundational
 
-- [ ] 7. tesseract
+- [~] 7. tesseract **SKIP BY DECISION** Session #276 — remain quick
 
 ### Bucket C — Knowledge / archival / collaborative
 
-- [ ] 8. ArchiveBox
-- [ ] 9. outline
+- [x] 8. ArchiveBox ✅ Session #276 (Apr 12, slug `archivebox-archivebox`)
+- [x] 9. outline ✅ Session #276 (Apr 12)
 
 ### Bucket D — Specialized / niche
 
-- [ ] 10. qmd
-- [ ] 11. nitter
-- [ ] 12. lux-video-downloader
+- [x] 10. qmd ✅ Session #276 (Apr 12, slug `qmd` with source `tobi/qmd` —
+      replaces the earlier `nicholasgasior/qmd` quick at that slug;
+      analysis.json rebuilt in Session #276 closeout after audit found it still
+      coded as quick/nicholasgasior despite all Standard artifacts being
+      present)
+- [x] 11. nitter ✅ Session #276 (Apr 12, slug `zedeus-nitter`)
+- [x] 12. lux-video-downloader ✅ Session #276 (Apr 12)
+
+**Wave 4 Step 10 closure = 10/12 upgraded + 2 skipped by decision (surya,
+tesseract).** The two skipped quicks stay at `.research/analysis/surya/` and
+`.research/analysis/tesseract/` and are preview-only per CONVENTIONS.md §17.6
+(do not contribute to `/synthesize`). `.research/analysis/reader/` and
+`.research/analysis/nitter/` still contain the original quicks under the old
+slugs — their Standard replacements live at the new slugs listed above; the
+quick duplicates can be deleted as orphan cleanup when convenient.
 
 ---
 
 ## Post-Batch Actions
 
-- [ ] Run `node scripts/cas/rebuild-index.js`
-- [ ] Run `node scripts/cas/generate-extractions-md.js`
-- [ ] Run self-audit sweep across all 12 (loop)
-- [ ] Verify `source_tier` populated for all 12 (should remain T1 unless user
+- [x] Run `node scripts/cas/generate-extractions-md.js` (Session #276 close)
+- [ ] Run `node scripts/cas/rebuild-index.js` (pending Session #276 close)
+- [ ] Run self-audit sweep across all 10 Standards (loop, pending)
+- [ ] Verify `source_tier` populated for all 10 (should remain T1 unless user
       reassigns)
-- [ ] Stars field populated via Standard metadata fetch
+- [ ] Stars field populated via Standard metadata fetch (pending for qmd rebuild
+      verification — set to 21,126 during rebuild)
 - [ ] Commit with message:
-      `feat(T29): Wave 4 Step 10 — batch upgrade 12 quick-scan repos to Standard`
-- [ ] Proceed to Wave 5 (E2E testing + `/synthesize` run)
+      `feat(T29): Wave 4 Step 10 — 10 of 12 upgraded, 2 (surya, tesseract) skipped by decision`
+- [ ] Proceed to Wave 5 (E2E testing + `/synthesize` run) — corpus is 30
+      Standard sources (well above §17.6's 3-source minimum)
 
 ---
 
 ## Session Log
 
-| Session | Date       | Action                                                                                                                                       |
-| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| #272    | 2026-04-10 | Checklist v2.0 created (22 repos — later corrected)                                                                                          |
-| #273    | 2026-04-10 | v3.0 — scope corrected to 12 TRUE quicks after Step 8.5 executed, actual quality/stars populated, priority re-ranked qualitative + tie-break |
-| #273    | 2026-04-10 | **Wave 4 #1 firecrawl ✅** — Standard artifacts built manually (bypass-skill); Step 10.5 audit for firecrawl completed                       |
-| #274    | 2026-04-10 | **Wave 4 #2 MinerU ✅** — full skill compliance (Tag + Retro + Routing all executed), self-audit PASS 14/0/0; set the deliverable bar        |
-| #275    | 2026-04-12 | Handoff — PR #507 R3 merged + branch cleanup; user will invoke /analyze for each remaining Wave 4 repo separately (discipline decision)      |
+| Session | Date       | Action                                                                                                                                                                                                                                                                                                                    |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| #272    | 2026-04-10 | Checklist v2.0 created (22 repos — later corrected)                                                                                                                                                                                                                                                                       |
+| #273    | 2026-04-10 | v3.0 — scope corrected to 12 TRUE quicks after Step 8.5 executed, actual quality/stars populated, priority re-ranked qualitative + tie-break                                                                                                                                                                              |
+| #273    | 2026-04-10 | **Wave 4 #1 firecrawl ✅** — Standard artifacts built manually (bypass-skill); Step 10.5 audit for firecrawl completed                                                                                                                                                                                                    |
+| #274    | 2026-04-10 | **Wave 4 #2 MinerU ✅** — full skill compliance (Tag + Retro + Routing all executed), self-audit PASS 14/0/0; set the deliverable bar                                                                                                                                                                                     |
+| #275    | 2026-04-12 | Handoff — PR #507 R3 merged + branch cleanup; user will invoke /analyze for each remaining Wave 4 repo separately (discipline decision)                                                                                                                                                                                   |
+| #276    | 2026-04-12 | **Wave 4 Step 10 closeout ✅** — 10/12 upgraded (crawl4ai, marker, reader, ArchiveBox, outline, qmd, nitter, lux). Surya + tesseract **SKIP BY DECISION** (remain quick). qmd analysis.json rebuilt (Standard/tobi/qmd — was mixed quick/nicholasgasior state). EXTRACTIONS.md regenerated → 309 candidates / 32 sources. |
