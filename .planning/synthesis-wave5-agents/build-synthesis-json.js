@@ -23,7 +23,7 @@ const TYPE_MAP = { repo: "repo", website: "website", media: "media", document: "
 const sourcesIncluded = sources.map((s) => ({
   slug: s.slug,
   source: s.source,
-  source_type: TYPE_MAP[s.source_type],
+  source_type: TYPE_MAP[s.source_type] || "repo",
   source_tier: s.source_tier || "T2",
   depth: s.depth,
 }));

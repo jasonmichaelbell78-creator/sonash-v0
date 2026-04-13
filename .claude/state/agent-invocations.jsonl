@@ -105,3 +105,6 @@
 {"agent":"general-purpose","description":"Synth slice 3 (8 sources)","outcome":"invoked","timestamp":"2026-04-13T17:55:51.197Z"}
 {"agent":"general-purpose","description":"Synth slice 1 (8 sources)","outcome":"invoked","timestamp":"2026-04-13T17:56:58.468Z"}
 {"agent":"general-purpose","description":"Synth slice 4 (8 sources)","outcome":"invoked","timestamp":"2026-04-13T17:57:31.779Z"}
+{"agent":"code-reviewer","description":"Code review R1 fixes","outcome":"invoked","timestamp":"2026-04-13T22:53:22.307Z"}
+{"agent":"code-reviewer","description":"Review script changes","outcome":"invoked","timestamp":"2026-04-13T22:53:39.998Z"}
+{"agent":"Explore","description":"Search codebase","outcome":"invoked","timestamp":"2026-04-13T22:53:40.067Z"}

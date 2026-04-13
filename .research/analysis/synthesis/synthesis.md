@@ -201,10 +201,10 @@ dep-hallucinator-style detection) is a concrete pre-commit extension
 opportunity.
 
 **Container / deployment security hardening — 3 sources · medium** zedeus/nitter
-(best-in-corpus Docker hardening: CAP_DROP ALL + RO fs + non-root uid), outline
+(best-in-corpus Docker hardening: CAP*DROP ALL + RO fs + non-root uid), outline
 (COOP/COEP headers), karpathy-autoresearch (sandboxed exec). Cluster is small
 but the nitter hardening playbook is the single most extract-worthy deployment
-pattern in the corpus. _Implication:_ If SoNash ever ships a Docker image,
+pattern in the corpus. \_Implication:* If SoNash ever ships a Docker image,
 nitter's hardening template is the reference. For SoNash's current Firebase
 Hosting deployment, the COOP/COEP patterns are already in use.
 
@@ -637,9 +637,9 @@ Interactive numbered menu. Each opportunity carries route suggestion
 
 5. **Add bidirectional doc-feature validator to SoNash pre-commit** →
    `/deep-plan` · E2 · impact: medium · evidence: crawl4ai + jina-ai- reader
-   DOCUMENTATION_PROMISES_CODE_GAPS _Inward check (cross-doc-deps) already
+   DOCUMENTATION*PROMISES_CODE_GAPS \_Inward check (cross-doc-deps) already
    exists. Outward check (code feature has doc reference) closes the drift
-   loop._
+   loop.*
 
 6. **Prototype zero-schema MCP server from SoNash `scripts/` CLI introspection**
    → `/brainstorm` · E2 · impact: high · evidence: archivebox _SoNash has 100+

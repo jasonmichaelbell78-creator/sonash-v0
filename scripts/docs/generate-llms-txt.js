@@ -191,7 +191,7 @@ function listSkills() {
         dir: e.name,
         name: getSkillName(e.name, text),
         description: extractSkillDescription(text),
-        path: path.relative(ROOT, skillMdPath).replaceAll(/\\/g, "/"),
+        path: path.relative(ROOT, skillMdPath).replaceAll("\\", "/"),
       });
     } catch {
       // skip unreadable
@@ -296,4 +296,15 @@ function main() {
   );
 }
 
-main();
+module.exports = {
+  extractSummary,
+  extractFrontmatter,
+  extractSkillDescription,
+  getSkillName,
+  cleanDesc,
+  listSkills,
+};
+
+if (require.main === module) {
+  main();
+}

@@ -11,13 +11,20 @@
  * Reference: errors-and-vulnerabilities-in-ai-generated-code (T29 CAS corpus).
  *
  * Usage:
- *   node scripts/check-slopsquat.js              # check ALL deps in package.json + functions/package.json
- *   node scripts/check-slopsquat.js --json       # machine-readable output
+ *   node scripts/check-slopsquat.js --private-ok         # check ALL deps in package.json + functions/package.json
+ *   node scripts/check-slopsquat.js --private-ok --json  # machine-readable output
+ *
+ * Opt-in requirement:
+ *   Every run transmits every dependency name to https://registry.npmjs.org/.
+ *   For repositories that may contain private/internal package names, this
+ *   leaks those names to a public service. The --private-ok flag is an
+ *   explicit acknowledgment that the caller has reviewed the dep list and
+ *   accepts this disclosure. Without it the script refuses to run (exit 2).
  *
  * Exit codes:
  *   0 = no suspicious packages
  *   1 = one or more packages flagged (soft-warn mode; caller decides to block)
- *   2 = tool failure (e.g., network error)
+ *   2 = tool failure OR --private-ok not provided
  *
  * Prototype scope: always scans all deps. A future iteration can add
  * staged-diff detection for pre-commit use; for now the prototype is
@@ -42,33 +49,55 @@ const REGISTRY_BASE = "https://registry.npmjs.org/";
 const REQUEST_TIMEOUT_MS = 5000;
 const CHECK_CONCURRENCY = 6;
 
+const PRIVATE_OK_MESSAGE =
+  "Refusing to run: every dependency name in package.json files would be sent " +
+  "to https://registry.npmjs.org/ (public service). Re-run with --private-ok " +
+  "to acknowledge that disclosure, or skip this check if the dep list contains " +
+  "private/internal package names you do not want published.";
+
 function parseArgs(argv) {
-  const flags = { json: false };
+  const flags = { json: false, privateOk: false };
   for (const a of argv.slice(2)) {
     if (a === "--json") flags.json = true;
+    else if (a === "--private-ok") flags.privateOk = true;
   }
   return flags;
 }
 
 function extractDeps(pkgPath) {
+  let raw;
   try {
-    const raw = fs.readFileSync(pkgPath, "utf8");
-    const pkg = JSON.parse(raw);
-    const names = new Set();
-    for (const key of [
-      "dependencies",
-      "devDependencies",
-      "peerDependencies",
-      "optionalDependencies",
-    ]) {
-      if (pkg[key] && typeof pkg[key] === "object") {
-        for (const name of Object.keys(pkg[key])) names.add(name);
-      }
-    }
-    return names;
-  } catch {
+    raw = fs.readFileSync(pkgPath, "utf8");
+  } catch (err) {
+    // Read failure (permission, transient I/O). Report and return empty — the
+    // alternative is terminating the whole check when one of several
+    // package.json files is unreadable, which is too blunt.
+    console.warn(
+      `  Warning: could not read ${path.basename(pkgPath)}: ${sanitizeError(err).slice(0, 160)}`
+    );
     return new Set();
   }
+  let pkg;
+  try {
+    pkg = JSON.parse(raw);
+  } catch (err) {
+    console.warn(
+      `  Warning: could not parse ${path.basename(pkgPath)} as JSON: ${sanitizeError(err).slice(0, 160)}`
+    );
+    return new Set();
+  }
+  const names = new Set();
+  for (const key of [
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+  ]) {
+    if (pkg[key] && typeof pkg[key] === "object") {
+      for (const name of Object.keys(pkg[key])) names.add(name);
+    }
+  }
+  return names;
 }
 
 function getAllDeps() {
@@ -140,6 +169,24 @@ function printFlaggedReport(flagged, total) {
 
 async function main() {
   const flags = parseArgs(process.argv);
+
+  if (!flags.privateOk) {
+    if (flags.json) {
+      console.log(
+        JSON.stringify({
+          mode: "all",
+          checked: 0,
+          flagged: [],
+          error: "private-ok-required",
+          message: PRIVATE_OK_MESSAGE,
+        })
+      );
+    } else {
+      console.error(`  ${PRIVATE_OK_MESSAGE}\n`);
+    }
+    return 2;
+  }
+
   const names = getAllDeps();
 
   if (names.size === 0) {
@@ -152,7 +199,9 @@ async function main() {
   }
 
   if (!flags.json) {
-    console.log(`Slopsquat check (all deps): ${names.size} package(s)`);
+    console.log(
+      `Slopsquat check (all deps): ${names.size} package(s) — transmitting dep names to npm registry`
+    );
   }
 
   const results = await checkAll(names);
@@ -166,9 +215,21 @@ async function main() {
   return flagged.length > 0 ? 1 : 0;
 }
 
-main()
-  .then((code) => process.exit(code))
-  .catch((err) => {
-    console.error("Fatal:", sanitizeError(err));
-    process.exit(2);
-  });
+module.exports = {
+  parseArgs,
+  extractDeps,
+  getAllDeps,
+  classifyVerdict,
+  verdictTag,
+  printFlaggedReport,
+  PRIVATE_OK_MESSAGE,
+};
+
+if (require.main === module) {
+  main()
+    .then((code) => process.exit(code))
+    .catch((err) => {
+      console.error("Fatal:", sanitizeError(err));
+      process.exit(2);
+    });
+}

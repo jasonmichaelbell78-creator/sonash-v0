@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#76)</summary>
+
+- **Date:** 2026-04-13
+- **Reviews consolidated:** #85-#rev-86
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#75)</summary>
 
 - **Date:** 2026-04-13
@@ -1883,6 +1892,41 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 29    | 0     | 0        | 0        |
+
+---
+
+### Review rev-86: PR #510 R1 (SonarCloud) (2026-04-13)
+
+**Date:** 2026-04-13 | **PR:** #510 | **Source:** sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 57    | 57    | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 6        | 11    | 40    | 0       |
+
+**Patterns:**
+
+- regex-redos-indexof-rewrite
+- string-raw-regex-escape
+- cognitive-complexity-helper-extraction
+- regex-complexity-set-lookup-filter
+- nested-template-literal-hoist
+- nested-ternary-helper-extract
+- consecutive-array-push-section-builders
+- bare-isnan-to-number-isnan-propagation
+- cc-baseline-update-acknowledgment
+
+**Learnings:**
+
+- S5852 indexOf-based rewrite is strictly clearer than verifying regex safety
+- String.raw eliminates double-escape audit burden in regex escapes
+- pre-existing CC on modified files requires baseline update or refactor commit
+- 42-of-57 items in 2 NEW files = individual triage still cheap when clustered
 
 ## Key Patterns
 
@@ -5202,3 +5246,69 @@ direction.
   replaceAll/isNaN/Array.push consolidation, plus Number.isNaN propagation into
   .claude/hooks/lib/rotate-state.js and CC baseline entry for
   scripts/cas/self-audit.js).
+
+### Review #88 — PR #510 R2 (Mixed: SonarCloud + CI + Qodo Compliance + Qodo Suggestions)
+
+**Scope:** 8 items across 4 sources after R1 commit 44c49ea2. All 8 this-PR (no
+DAS needed).
+
+- 1 SonarCloud MINOR: character-class-to-string in replaceAll (this-PR, R1
+  rewrite area).
+- 2 CI coverage gaps: scripts/check-slopsquat.js and
+  scripts/docs/generate-llms-txt.js flagged by test:coverage-completeness as new
+  untested scripts.
+- 1 CI lint fail: .research/analysis/synthesis/synthesis.md prettier format.
+- 1 Qodo Compliance 🔴 MAJOR: silent error swallowing in
+  check-slopsquat.js:extractDeps.
+- 2 Qodo Compliance ⚪: dependency-name disclosure + no allowlist toggle on npm
+  registry requests → user picked Option B (add --private-ok opt-in flag +
+  warning).
+- 1 Qodo Suggestion MINOR: TYPE_MAP fallback in build-synthesis-json.js.
+
+**Key fixes:**
+
+- **SonarCloud L194 char class (generate-llms-txt.js):** Replaced
+  `.replaceAll(/\\/g, "/")` with `.replaceAll("\\", "/")`. `String#replaceAll`
+  accepts a string pattern and replaces all occurrences — simpler than a
+  single-character regex.
+- **Coverage gap for 2 new scripts:** Wrote
+  `tests/scripts/check-slopsquat.test.ts` (22 tests) and
+  `tests/scripts/docs/generate-llms-txt.test.ts` (24 tests). Both scripts
+  retrofitted with `module.exports` + `require.main === module` guard so pure
+  functions are testable without triggering `main()` on require — same pattern
+  as retag.js from PR #508 R1.
+- **Silent error swallow in extractDeps:** Rewrote the blanket
+  `try { ... } catch { return new Set(); }` into two narrower blocks — one for
+  `fs.readFileSync`, one for `JSON.parse` — each logging a sanitized-error
+  `console.warn` before returning. Consumers (getAllDeps, main) now see _why_ a
+  package.json was skipped instead of getting a silent empty Set.
+- **Qodo ⚪ disclosure + no-toggle (Option B):** Added `--private-ok` opt-in
+  flag. Without it, the script refuses to run with exit 2 and prints
+  `PRIVATE_OK_MESSAGE` explaining that every dep name would be transmitted to
+  `registry.npmjs.org`. With the flag, behavior is the same as before plus a
+  "transmitting dep names to npm registry" banner on the normal run path. Exit
+  codes documented in the file header.
+- **TYPE_MAP fallback (build-synthesis-json.js:26):** Added `|| "repo"` to match
+  the existing fallback pattern on line 43 of the same file.
+- **Prettier synthesis.md:** One `npx prettier --write` on
+  `.research/analysis/synthesis/synthesis.md`. The file is Wave 5 synthesis
+  output; prettier reformatting of generated content is expected.
+
+**R2 process learnings:**
+
+- `module.exports` + `require.main === module` retrofit should be the default
+  for any new script that contains >= 1 pure helper. Without it, tests can only
+  do CLI smoke via spawnSync — which is ~3× slower and misses edge cases the
+  caller can hit directly.
+- The `extractDeps` pattern (blanket `catch { return new Set() }`) is a common
+  accessibility-vs-observability trade-off. The right answer is almost always
+  "narrow the try blocks and log in each catch" — one `console.warn` per failure
+  path is ~5 lines and saves hours of "why-is-this-empty" debugging later.
+- Opt-in flags for network egress (like `--private-ok` here) are a cheap
+  hardening pattern for any tool that transmits project data to external
+  services, even during prototype phases. Adding the flag _before_ wiring into
+  pre-commit / CI avoids retrofits later.
+
+**Commits:**
+
+- [populated at Step 8]
