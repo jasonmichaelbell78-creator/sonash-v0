@@ -35,7 +35,7 @@
       "effort": "E0",
       "relevance": "medium",
       "tags": ["rate-limiting", "architecture"],
-      "description": ""
+      "description": "Multiple sessions rotate on rate limits. Per-session per-endpoint tracking with preemptive backoff."
     },
     {
       "name": "ADVERSARIAL_DEPENDENCY",
