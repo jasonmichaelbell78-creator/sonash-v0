@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.29 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.30 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-12 (Session #276 — T40 CAS tag quality COMPLETE end-to-end)
+2026-04-12 (Session #276 — T40 COMPLETE + Wave 4 Step 10 CLOSED)
 
 ## Purpose
 
@@ -29,11 +29,13 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-12 (Session #276 — T40 CAS tag quality COMPLETE)
-**Branch**: `planning-41226` **Working On**: T40 **DONE end-to-end**. All 4
-parts landed plus the full retroactive retag across 295 journal entries.
+**Last Checkpoint**: 2026-04-12 (Session #276 — T40 COMPLETE + Wave 4 Step 10
+CLOSED) **Branch**: `planning-41226` **Working On**: Both T40 (CAS tag quality)
+and T29 Wave 4 Step 10 (Standard-upgrade batch) **closed** this session.
 
 **This session's work (summary)**:
+
+**Phase A — T40 CAS tag quality (6 commits, already landed):**
 
 1. Two Standard repo-analyses (pre-/clear): `outline/outline` + `tobi/qmd`.
    EXTRACTIONS.md: 277 → 295 candidates across 31 sources.
@@ -64,18 +66,68 @@ parts landed plus the full retroactive retag across 295 journal entries.
    - Top domain/tech/concept: architecture (58), knowledge-management (44),
      claude-code (44), extraction (38), orchestration (33).
 
-**6 new commits** landed this session (f300e3fb, 7975f77b, ac2fc999, b2f22b37,
-d5ed65b3, 24ec6eae). Working tree is clean. Not pushed.
+**Phase B — T29 Wave 4 Step 10 closeout (post-T40, this session):**
+
+1. **`/repo-analysis` on `jina-ai/reader` Standard** — full skill-compliant run,
+   14 candidates (3 patterns, 3 anti-patterns, 2 architecture-patterns, 3
+   knowledge, 2 content, 1 knowledge doubled as anti-pattern). Creator lens 72,
+   adoption lens 42. 3 S0s surfaced (unvalidated `x-proxy-url`,
+   `injectFrameScript` raw `fetch` with `setBypassCSP(true)`, global
+   `SSL_VERIFYPEER=false`), zero tests, private `thinapps-shared` submodule
+   blocks self-host. Security agent stalled mid-investigation; resumed via
+   `SendMessage` to write the dimension file. 5 new vocab proposed + accepted:
+   `puppeteer`, `cloud-run`, `html-to-markdown`, `tls-fingerprinting`,
+   `multi-provider-fallback`. Vocabulary 175 → 180.
+2. **Wave 4 Step 10 status audit** — counted remaining quicks. Found 3 (surya,
+   tesseract, qmd) but user said "last two". Caught the discrepancy: qmd
+   analysis.json was in a mixed-state bug — top-level fields said
+   `nicholasgasior/qmd` / `quick` while the 8 Standard artifacts on disk and 18
+   journal entries said `tobi/qmd`. `source` field and journal were out of §14.8
+   sync. Would have made qmd invisible to `/synthesize` pre-flight.
+3. **qmd analysis.json rebuild** — new UUID
+   `6b81e586-6cbe-4652-858c-4ccd995f983a`, source `tobi/qmd`, depth `standard`,
+   18 candidates rebuilt from journal, 16 semantic tags (all from approved
+   vocab), metadata from summary.md (21,126 stars, MIT, Tobi Lütke/Shopify).
+   Schema validates. 18 journal entries updated with `source_analysis_id`
+   linking to new UUID.
+4. **Wave 4 Step 10 closure** = 10/12 upgraded + 2 skipped by decision (surya,
+   tesseract remain quick as preview-only per §17.6). Not-done items: surya,
+   tesseract deliberately held back.
+5. **Orphan cleanup** — deleted 4 quick dirs superseded by Standard twins:
+   `.research/analysis/{reader,nitter,marker,ArchiveBox}/`. All had 0 journal
+   entries linked to their UUIDs. Safe.
+6. **Index rebuilt** — `rebuild-index.js`: 38 → 34 sources, 309 extractions, 270
+   unique tags (was 276 — 6 tags fell to zero count after orphan deletion,
+   retained in vocab). EXTRACTIONS.md regenerated: 309 candidates / 32 sources.
+7. **Checklist + todos updated** — `_quick-scan-upgrade.md` checklist reflects
+   true state (10 ✅, 2 `[~] SKIP BY DECISION`, Session #276 close log row).
+   `.planning/todos.jsonl` T29 progress updated. Branch context corrected
+   (`planning-4826` → `planning-41226`).
+
+**Final Phase B state**:
+
+- Synthesis corpus: **31 Standard sources** (well above §17.6 3-source minimum)
+- Wave 4 Step 10: **CLOSED** (10 upgraded, 2 skipped by decision)
+- Step 10.5 full-corpus audit: still partial (firecrawl only, 33+ sources
+  pending)
+- Wave 5 (`/synthesize` E2E run): gated on Step 10.5
+
+**Commits**: 6 from Phase A already landed (`f300e3fb` through `24ec6eae`).
+Phase B commit pending session-end pipeline.
 
 **Next Step**:
 
 1. Push `planning-41226` → create PR → `/pr-review` cycle.
-2. After merge, resume **T29 Wave 4 Step 10** (remaining Standard upgrades).
-3. New memory saved: `feedback_no_blanket_count_labels.md` (don't use
+2. After merge, **T29 Step 10.5** full-corpus audit across 31 Standard sources
+   (only firecrawl audited so far; 30 pending).
+3. After Step 10.5, **Wave 5** — `/synthesize` full run + E2E testing.
+4. New memory saved: `feedback_no_blanket_count_labels.md` (don't use
    frequency-based terms like "singleton" as category labels — describe
    substance, not count).
 
-**Uncommitted Work**: None.
+**Uncommitted Work**: Phase B artifacts (jina-ai-reader analysis, qmd rebuild,
+orphan deletions, todos + checklist updates, vocabulary additions). Will be
+committed by session-end pipeline.
 
 **Smtasks worktree**: Still exists at
 `C:/Users/jason/Workspace/dev-projects/sonash-v0/.claude/worktrees/smtasks`. All
@@ -91,13 +143,21 @@ d5ed65b3, 24ec6eae). Working tree is clean. Not pushed.
 
 **Current Session Count**: 276 (since Jan 1, 2026)
 
-> **Session #276 handoff (post-T40-complete, 2026-04-12):** Executed
-> `.planning/cas-tag-quality/PLAN.md` fully. All 4 parts (A/B/C + full retag
-> migration) landed in 6 commits. 295 journal entries retagged automatically via
-> 31 parallel source-scoped agents + semantic dedupe of 89 proposed new vocab
-> tags → 78 kept. Vocabulary: 97 → 175 tags. `validate --strict` clean. **Next
-> session priority: push `planning-41226` + open PR + `/pr-review` cycle; then
-> resume T29 Wave 4 Step 10.** Branch: `planning-41226`.
+> **Session #276 handoff (T40 COMPLETE + Wave 4 Step 10 CLOSED, 2026-04-12):**
+> **Phase A (T40):** Executed `.planning/cas-tag-quality/PLAN.md` fully. All 4
+> parts (A/B/C + full retag migration) landed in 6 commits. 295 journal entries
+> retagged via 31 parallel source-scoped agents + semantic dedupe of 89 proposed
+> new vocab tags → 78 kept. Vocabulary: 97 → 175 tags. `validate --strict`
+> clean. **Phase B (T29 Wave 4 Step 10 close):** `/repo-analysis` on
+> `jina-ai/reader` Standard (14 candidates + 5 new vocab → 180 total). Audit
+> caught qmd/analysis.json in mixed nicholasgasior-quick/tobi-standard state;
+> rebuilt properly (new UUID, 18 candidates, §14.8 source consistency). 4 orphan
+> quick dirs deleted (reader, nitter, marker, ArchiveBox — superseded by
+> Standard twins). Wave 4 Step 10 **CLOSED** = 10/12 upgraded + 2 skipped by
+> decision (surya, tesseract). Synthesis corpus = **31 Standard sources**.
+> **Next session priority: push `planning-41226` + PR + `/pr-review` cycle; then
+> T29 Step 10.5 full-corpus audit (30 sources pending); then Wave 5
+> `/synthesize` E2E.** Branch: `planning-41226`.
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -107,12 +167,12 @@ d5ed65b3, 24ec6eae). Working tree is clean. Not pushed.
 
 ## Recent Session Summaries
 
-**Session #276** (T40 CAS TAG QUALITY — COMPLETE END-TO-END):
+**Session #276** (T40 COMPLETE + T29 WAVE 4 STEP 10 CLOSED):
 
 - **Branch**: `planning-41226`
-- **Commits (6)**: `f300e3fb` (Part A), `7975f77b` (chore), `ac2fc999` (Part
-  B1-B3), `b2f22b37` (Part C + B fix), `d5ed65b3` (retag migration), `24ec6eae`
-  (chore).
+- **Commits — Phase A (6, already landed)**: `f300e3fb` (Part A), `7975f77b`
+  (chore), `ac2fc999` (Part B1-B3), `b2f22b37` (Part C + B fix), `d5ed65b3`
+  (retag migration), `24ec6eae` (chore). **Phase B commit pending session-end.**
 - **Session arc**: Continued from pre-/clear checkpoint. Goal was to execute the
   approved CAS tag quality plan. User pushed for full automation mid- session
   when the scope of manual retag became clear ("find a way to automate this").
@@ -166,8 +226,35 @@ d5ed65b3, 24ec6eae). Working tree is clean. Not pushed.
     this".
 - **Audit trail**: `.planning/cas-tag-quality/batches/proposal-*.json` (31
   files) + `aggregated-new-vocab.json` preserved for retro.
+- **Phase B — T29 Wave 4 Step 10 CLOSEOUT** (continued after T40):
+  - `/repo-analysis https://github.com/jina-ai/reader` Standard run. 14
+    candidates (3 patterns, 3 anti-patterns, 2 architecture-patterns, 3
+    knowledge, 2 content, 1 knowledge/anti-pattern duplicate). Creator lens 72
+    Healthy, adoption lens 42 Needs Work. Surfaced 3 S0 security findings
+    (unvalidated `x-proxy-url`, `injectFrameScript` raw `fetch` with
+    `setBypassCSP(true)`, global `SSL_VERIFYPEER=false`), zero tests, private
+    submodule lock. 5 new vocab proposed + accepted (`puppeteer`, `cloud-run`,
+    `html-to-markdown`, `tls-fingerprinting`, `multi-provider-fallback`).
+    Vocabulary 175 → 180. Security dimension agent stalled mid-investigation;
+    resumed via `SendMessage` per prior memory guidance.
+  - Wave 4 Step 10 audit caught qmd/analysis.json in mixed
+    nicholasgasior-quick/tobi-standard state (top-level fields stale, 18 journal
+    entries + 8 Standard artifacts correct). §14.8 source-consistency violation
+    would have made qmd invisible to `/synthesize` pre-flight. Rebuilt: new UUID
+    `6b81e586-6cbe-4652-858c-4ccd995f983a`, source `tobi/qmd`, depth `standard`,
+    18 candidates, 16 semantic tags. Journal entries linked to new UUID.
+  - User decision: **surya + tesseract remain quick by decision** (preview-only
+    per §17.6). Wave 4 Step 10 **CLOSED** = 10/12 upgraded + 2 skipped.
+  - Orphan cleanup: deleted 4 quick dirs superseded by Standard twins (reader,
+    nitter, marker, ArchiveBox). All had 0 linked journal entries.
+  - `rebuild-index.js` → 34 sources / 309 extractions / 270 unique tags.
+    `generate-extractions-md.js` → 309 candidates / 32 sources.
+  - Synthesis corpus = **31 Standard sources**.
+  - `_quick-scan-upgrade.md` checklist and `.planning/todos.jsonl` T29 progress
+    both updated.
 - **WHERE TO RESUME**: Push `planning-41226` → create PR → `/pr-review` cycle.
-  After merge, resume T29 Wave 4 Step 10 remaining repos.
+  After merge, **T29 Step 10.5** full-corpus audit (30 Standard sources pending;
+  only firecrawl audited so far). Then **Wave 5** `/synthesize` E2E run.
 
 **Session #275** (T39 COMPLETE — HOOK DRIFT LOOP + PATTERN-COMPLIANCE FULL
 CLEAN + CC REFACTOR):
