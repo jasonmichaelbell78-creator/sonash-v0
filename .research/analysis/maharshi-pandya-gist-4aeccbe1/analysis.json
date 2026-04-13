@@ -27,7 +27,30 @@
   },
   "summary": "Stream-of-consciousness reasoning produces better outcomes than default Minimum 10,000 characters of contemplation leads to natural convergence",
   "creator_view": "Stream-of-consciousness reasoning produces better outcomes than default Minimum 10,000 characters of contemplation leads to natural convergence",
-  "candidates": [],
+  "candidates": [
+    {
+      "id": "K1",
+      "title": "Exploration-over-conclusion as skill design principle",
+      "type": "design-principle",
+      "description": "The principle that reasoning should explore until conclusions emerge naturally, not be forced toward predetermined outcomes. Validates the brainstorm skill's philosophy and could inform how convergence loops decide when to stop.",
+      "confidence": "MEDIUM",
+      "effort": "E0",
+      "personal_fit": 55,
+      "extraction_action": "Compare against brainstorm skill Phase 1 (divergent exploration) and convergence-loop termination criteria. Is there a case where unstructured exploration outperforms structured phases?",
+      "finding_refs": ["F2"]
+    },
+    {
+      "id": "K2",
+      "title": "Contemplator tag pattern as skill thinking block",
+      "type": "pattern",
+      "description": "The <contemplator>/<final_answer> tag structure as a prompt-level implementation of structured reasoning. Less relevant now that Claude has native extended thinking, but the explicit separation of reasoning from output is a transferable concept.",
+      "confidence": "LOW",
+      "effort": "E0",
+      "personal_fit": 30,
+      "extraction_action": "Historical reference only. Claude's native <thinking> blocks supersede this. No action needed.",
+      "finding_refs": ["F1"]
+    }
+  ],
   "last_synthesized_at": null,
   "meta": {
     "url": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",

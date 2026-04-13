@@ -20,24 +20,142 @@
   "scoring": {
     "quality_band": "Excellent",
     "quality_score": 78,
-    "personal_fit_band": "Good",
+    "personal_fit_band": "Healthy",
     "personal_fit_score": 75,
-    "classification": "extract"
+    "classification": "park-for-later"
   },
   "summary": "Outline is a mature TypeScript knowledge base with a production MCP server, clean command pattern, and plugin architecture. Primary value as a pattern source for JASON-OS (MCP infrastructure, extensibility) rather than adoption target.",
   "creator_view": "Outline understands that team knowledge needs hierarchy, real-time collaboration, and AI-agent access. Its MCP server, command pattern, and plugin system are the highest-value extraction targets. Challenge: SoNash Cloud Functions need a transport-agnostic command layer before MCP becomes cheap.",
   "candidates": [
-    "MCP OAuth scope-filtered tool registration",
-    "Command pattern (transport-agnostic business logic)",
-    "PluginManager hook type registry",
-    "buildAPIContext() MCP-to-API bridge",
-    "@Encrypted field-level decorator",
-    "TestServer ephemeral-port integration testing",
-    "Abstract generic Store<T> with request dedup",
-    "PersistenceExtension race condition prevention",
-    "Content-as-code onboarding templates",
-    "Presenter response formatting layer",
-    "Bull queue processor BaseProcessor"
+    {
+      "name": "MCP OAuth scope-filtered tool registration",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "Production MCP server that filters tool registration based on OAuth scopes. Tools only visible if token has matching scope. Uses @modelcontextprotocol/sdk with Zod validation.",
+      "source_files": [
+        "server/tools/documents.ts",
+        "server/tools/collections.ts",
+        "server/tools/util.ts"
+      ],
+      "home_connection": "JASON-OS Domain 02a MCP infrastructure"
+    },
+    {
+      "name": "Command pattern (transport-agnostic business logic)",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Business logic in transport-agnostic command files (~8700 lines, ~20 commands). Both HTTP API routes and MCP tools delegate to same commands. Enables adding new surfaces without duplicating logic.",
+      "source_files": [
+        "server/commands/documentCreator.ts",
+        "server/commands/documentUpdater.ts",
+        "server/commands/documentMover.ts"
+      ],
+      "home_connection": "SoNash Cloud Functions could adopt this to enable future MCP surface"
+    },
+    {
+      "name": "PluginManager hook type registry",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.). Priority-based ordering. Auto-discovery via glob. plugin.json manifests. Structural client/server/shared split per plugin.",
+      "source_files": ["server/utils/PluginManager.ts"],
+      "home_connection": "JASON-OS skill/agent registration and discovery system"
+    },
+    {
+      "name": "buildAPIContext() MCP-to-API bridge",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Bridge function that constructs a Koa-style APIContext from MCP request context. Enables MCP tools to reuse existing API middleware and command infrastructure without duplication.",
+      "source_files": ["server/tools/util.ts"],
+      "home_connection": "Pattern for bridging MCP context to existing SoNash Cloud Function infrastructure"
+    },
+    {
+      "name": "@Encrypted field-level decorator pattern",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Sequelize model decorator that transparently encrypts/decrypts specific fields using AES via SECRET_KEY. Applied at the model layer, not the application layer.",
+      "source_files": ["server/models/decorators/Encrypted.ts", "server/storage/vaults.ts"],
+      "home_connection": "SoNash M4.5 Security & Privacy milestone"
+    },
+    {
+      "name": "TestServer ephemeral-port integration testing",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Custom test utility that starts a real Koa HTTP server on port 0 for integration tests. Tests exercise middleware, routing, and serialization through the actual transport.",
+      "source_files": ["server/test/TestServer.ts", "server/test/support.ts"],
+      "home_connection": "Alternative to SoNash httpsCallable mocking approach"
+    },
+    {
+      "name": "Abstract generic Store<T> with request deduplication",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "MobX base Store with generic typing, observable data Map, standardized RPC actions, and request dedup via Symbol-keyed promise tracking. Prevents N+1 fetch patterns.",
+      "source_files": ["app/stores/base/Store.ts", "app/stores/RootStore.ts"],
+      "home_connection": "Pattern for SoNash state management if complexity grows beyond React hooks"
+    },
+    {
+      "name": "PersistenceExtension race condition prevention",
+      "type": "knowledge",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "HocusPocus persistence extension uses SELECT FOR UPDATE to prevent race conditions during first-write of collaborative documents. Checks for existing Y.js state before initialization.",
+      "source_files": ["server/collaboration/PersistenceExtension.ts"],
+      "home_connection": "General lesson in concurrent write handling applicable to any multi-user feature"
+    },
+    {
+      "name": "Content-as-code onboarding templates",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "4 markdown templates in server/onboarding/ injected into new team workspaces. User-facing content stored as code, versioned with the app.",
+      "source_files": ["server/onboarding/"],
+      "home_connection": "SoNash M7.3 Nashville & Knowledge milestone"
+    },
+    {
+      "name": "Presenter response formatting layer",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "description": "JSON response formatting layer between models and API/MCP consumers. Each model has a presenter controlling exposed fields and formatting.",
+      "source_files": ["server/presenters/"],
+      "home_connection": "Pattern if SoNash adds formal API surface"
+    },
+    {
+      "name": "Bull queue processor BaseProcessor pattern",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "description": "Base class for async job processors with ~20 specialized implementations. Event-driven architecture for background work.",
+      "source_files": ["server/queues/processors/BaseProcessor.ts"],
+      "home_connection": "Pattern if SoNash needs complex async processing beyond Cloud Functions"
+    }
   ],
   "last_synthesized_at": null,
   "schemaVersion": "4.5",
@@ -69,18 +187,42 @@
     "sourceFiles": 1688
   },
   "summaryBands": {
-    "security": { "band": "B+", "score": 78 },
-    "reliability": { "band": "A-", "score": 84 },
-    "maintainability": { "band": "B+", "score": 80 },
-    "documentation": { "band": "C+", "score": 52 },
-    "process": { "band": "A-", "score": 83 },
-    "velocity": { "band": "A", "score": 90 }
+    "security": {
+      "band": "B+",
+      "score": 78
+    },
+    "reliability": {
+      "band": "A-",
+      "score": 84
+    },
+    "maintainability": {
+      "band": "B+",
+      "score": 80
+    },
+    "documentation": {
+      "band": "C+",
+      "score": 52
+    },
+    "process": {
+      "band": "A-",
+      "score": 83
+    },
+    "velocity": {
+      "band": "A",
+      "score": 90
+    }
   },
   "creatorLens": "Outline understands that team knowledge needs hierarchy, real-time collaboration, and AI-agent access. Its MCP server routes through the same command layer as HTTP — AI access gets the same auth and audit trail. The plugin system with 10 hook types and structural client/server split is the cleanest extensibility pattern analyzed. Challenge: transport-agnostic commands enabled MCP for free.",
   "adoptionAssessment": "Extract",
   "dualScoring": {
-    "adoption": { "score": 69, "verdict": "Trial" },
-    "creator": { "score": 85, "verdict": "Extract" }
+    "adoption": {
+      "score": 69,
+      "verdict": "Trial"
+    },
+    "creator": {
+      "score": 85,
+      "verdict": "Extract"
+    }
   },
   "context": {
     "primaryConnection": "JASON-OS Domain 02a (MCP infrastructure)",

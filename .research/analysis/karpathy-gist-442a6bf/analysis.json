@@ -28,7 +28,63 @@
   },
   "summary": "LLM-maintained wiki compounds knowledge; RAG re-derives it every query Three-layer architecture: raw sources, wiki, schema",
   "creator_view": "LLM-maintained wiki compounds knowledge; RAG re-derives it every query Three-layer architecture: raw sources, wiki, schema",
-  "candidates": [],
+  "candidates": [
+    {
+      "id": "K1",
+      "title": "Three-layer architecture pattern for LLM knowledge bases",
+      "type": "architecture-pattern",
+      "description": "Raw sources (immutable) -> Wiki (LLM-owned) -> Schema (co-evolved config). Clean separation where human curates and LLM maintains.",
+      "confidence": "HIGH",
+      "effort": "low",
+      "personal_fit": 92,
+      "extraction_action": "Compare against SoNash's current architecture (.research/ = raw sources, docs/ + MEMORY.md = wiki layer, CLAUDE.md = schema). Identify gaps.",
+      "finding_refs": ["F1", "F6"]
+    },
+    {
+      "id": "K2",
+      "title": "Ingest-Query-Lint operational triad",
+      "type": "workflow-pattern",
+      "description": "Three operations that keep a knowledge base healthy: ingest new sources, query with compounding answers, lint for contradictions/orphans/staleness.",
+      "confidence": "HIGH",
+      "effort": "medium",
+      "personal_fit": 90,
+      "extraction_action": "Map to existing skills: /repo-analysis + /website-analysis = ingest, /deep-research = query, orphan detection + /alerts = lint. Identify missing lint operations.",
+      "finding_refs": ["F3", "F7"]
+    },
+    {
+      "id": "K3",
+      "title": "Answers-compound-into-wiki principle",
+      "type": "design-principle",
+      "description": "Good query answers should be filed back as wiki pages. Explorations compound alongside ingested sources. Prevents knowledge loss to chat history.",
+      "confidence": "HIGH",
+      "effort": "low",
+      "personal_fit": 88,
+      "extraction_action": "Evaluate: do /deep-research outputs, /brainstorm sessions, and /deep-plan decisions persist as reusable knowledge? Or do they die in .research/ archives?",
+      "finding_refs": ["F7"]
+    },
+    {
+      "id": "K4",
+      "title": "Index + Log dual navigation system",
+      "type": "implementation-pattern",
+      "description": "Content-oriented index (catalog with summaries) + chronological log (append-only, parseable). Works without embedding infrastructure at moderate scale.",
+      "confidence": "HIGH",
+      "effort": "low",
+      "personal_fit": 85,
+      "extraction_action": "Compare: DOCUMENTATION_INDEX.md = index, SESSION_HISTORY.md + commit-log.jsonl = log, research-index.jsonl = research index. What's missing?",
+      "finding_refs": ["F4"]
+    },
+    {
+      "id": "K5",
+      "title": "qmd local markdown search (MCP + CLI)",
+      "type": "tool",
+      "description": "BM25/vector hybrid search for markdown files with LLM re-ranking. Both CLI and MCP server. github.com/tobi/qmd.",
+      "confidence": "MEDIUM",
+      "effort": "low",
+      "personal_fit": 70,
+      "extraction_action": "Evaluate for JASON-OS search layer. Currently using Grep + DOCUMENTATION_INDEX.md. At 1000+ docs, may need proper search.",
+      "finding_refs": ["F5"]
+    }
+  ],
   "last_synthesized_at": null,
   "meta": {
     "url": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
