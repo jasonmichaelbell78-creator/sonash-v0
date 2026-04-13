@@ -96,7 +96,9 @@ function rewriteRawLines(rawLines, entryUpdatesByKey) {
 }
 
 function serializeRawLines(rawLines) {
-  return rawLines.map((x) => x.raw).join("\n");
+  const out = rawLines.map((x) => x.raw).join("\n");
+  if (out.length === 0) return out;
+  return out.endsWith("\n") ? out : out + "\n";
 }
 
 function readBatchFile(batchFilePath) {

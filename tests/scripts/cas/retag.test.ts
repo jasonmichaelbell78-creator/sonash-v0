@@ -23,6 +23,16 @@ const PROJECT_ROOT = fs.existsSync(path.resolve(__dirname, "../../../package.jso
   : path.resolve(__dirname, "../../../..");
 
 const scriptPath = path.resolve(PROJECT_ROOT, "scripts/cas/retag.js");
+
+// Module-scope helper so SonarCloud doesn't flag re-creation per-test (S2424)
+// and uses process.execPath instead of "node" to avoid PATH lookup (S4036).
+function runRetag(argv: string[], cwd?: string) {
+  return spawnSync(process.execPath, [scriptPath, ...argv], {
+    cwd: cwd ?? PROJECT_ROOT,
+    encoding: "utf8",
+    timeout: 15000,
+  });
+}
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const mod = require(scriptPath) as {
   parseCliArgs: (argv: string[]) => {
@@ -184,14 +194,6 @@ describe("exported paths", () => {
 });
 
 describe("CLI smoke tests", () => {
-  function runRetag(argv: string[], cwd?: string) {
-    return spawnSync("node", [scriptPath, ...argv], {
-      cwd: cwd ?? PROJECT_ROOT,
-      encoding: "utf8",
-      timeout: 15000,
-    });
-  }
-
   test("exits 1 with usage when no subcommand provided", () => {
     const res = runRetag([]);
     assert.equal(res.status, 1);

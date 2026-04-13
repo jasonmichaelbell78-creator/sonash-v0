@@ -93,17 +93,29 @@ function makeVocab(overrides: Partial<VocabShape> = {}): VocabShape {
       architecture: { category: "domain", count: 0 },
       plugin: { category: "pattern", count: 0 },
       repo: { category: "taxonomic", count: 0 },
-      ...(overrides.tags || {}),
+      ...overrides.tags,
     },
-    synonyms: { plugins: "plugin", ...(overrides.synonyms || {}) },
-    forbidden: { deprecated: ["todo", "wip"], ...(overrides.forbidden || {}) },
+    synonyms: { plugins: "plugin", ...overrides.synonyms },
+    forbidden: { deprecated: ["todo", "wip"], ...overrides.forbidden },
     categories: {
       domain: {},
       pattern: {},
       taxonomic: {},
-      ...(overrides.categories || {}),
+      ...overrides.categories,
     },
   };
+}
+
+// Module-scope test helpers (SonarCloud S6479 — avoid per-describe re-creation).
+function applyBatchJournal(): Array<Record<string, unknown>> {
+  return [
+    { source: "s1", candidate: "c1", type: "pattern", tags: ["oldtag"] },
+    { source: "s2", candidate: "c2", type: "pattern", tags: ["oldtag"] },
+  ];
+}
+
+function regressionLine(key: { source: string; candidate: string; type: string } | null) {
+  return { entry: key };
 }
 
 describe("entryKey", () => {
@@ -356,13 +368,6 @@ describe("semanticCount", () => {
 });
 
 describe("applyBatch", () => {
-  function journal(): Array<Record<string, unknown>> {
-    return [
-      { source: "s1", candidate: "c1", type: "pattern", tags: ["oldtag"] },
-      { source: "s2", candidate: "c2", type: "pattern", tags: ["oldtag"] },
-    ];
-  }
-
   test("retags matched entries with canonical tags", () => {
     const vocab = makeVocab();
     const batch: BatchShape = {
@@ -371,7 +376,7 @@ describe("applyBatch", () => {
         { source: "s1", candidate: "c1", type: "pattern", tags: ["architecture", "plugin"] },
       ],
     };
-    const res = applyBatch(journal(), batch, vocab);
+    const res = applyBatch(applyBatchJournal(), batch, vocab);
     assert.deepEqual(res.retagged, ["s1|c1|pattern"]);
     assert.deepEqual(res.unmatched, []);
     const updated = res.journalEntries.find((e) => e.source === "s1");
@@ -386,7 +391,7 @@ describe("applyBatch", () => {
         { source: "missing", candidate: "missing", type: "pattern", tags: ["architecture"] },
       ],
     };
-    const res = applyBatch(journal(), batch, vocab);
+    const res = applyBatch(applyBatchJournal(), batch, vocab);
     assert.deepEqual(res.retagged, []);
     assert.deepEqual(res.unmatched, ["missing|missing|pattern"]);
   });
@@ -397,7 +402,7 @@ describe("applyBatch", () => {
       batch_id: "b1",
       entries: [{ source: "s1", candidate: "c1", type: "pattern", tags: ["architecture"] }],
     };
-    const res = applyBatch(journal(), batch, vocab);
+    const res = applyBatch(applyBatchJournal(), batch, vocab);
     const s2 = res.journalEntries.find((e) => e.source === "s2");
     assert.deepEqual(s2!.tags, ["oldtag"]);
   });
@@ -408,7 +413,7 @@ describe("applyBatch", () => {
       batch_id: "b1",
       entries: [{ source: "s1", candidate: "c1", type: "pattern", tags: ["plugins"] }],
     };
-    const res = applyBatch(journal(), batch, vocab);
+    const res = applyBatch(applyBatchJournal(), batch, vocab);
     const updated = res.journalEntries.find((e) => e.source === "s1");
     assert.deepEqual(updated!.tags, ["plugin"]);
   });
@@ -465,16 +470,15 @@ describe("recomputeCounts", () => {
 });
 
 describe("assertRegression", () => {
-  function mkLine(key: { source: string; candidate: string; type: string } | null) {
-    return { entry: key };
-  }
-
   test("passes when line count is same and all keys preserved", () => {
     const before = [
-      mkLine({ source: "s1", candidate: "c1", type: "pattern" }),
-      mkLine(null), // blank line
+      regressionLine({ source: "s1", candidate: "c1", type: "pattern" }),
+      regressionLine(null), // blank line
     ];
-    const after = [mkLine({ source: "s1", candidate: "c1", type: "pattern" }), mkLine(null)];
+    const after = [
+      regressionLine({ source: "s1", candidate: "c1", type: "pattern" }),
+      regressionLine(null),
+    ];
     const applyRes = { retagged: [] };
     assert.doesNotThrow(() =>
       assertRegression(before, after, { batch_id: "b", entries: [] }, applyRes)
@@ -482,10 +486,10 @@ describe("assertRegression", () => {
   });
 
   test("throws when line count changed", () => {
-    const before = [mkLine({ source: "s1", candidate: "c1", type: "pattern" })];
+    const before = [regressionLine({ source: "s1", candidate: "c1", type: "pattern" })];
     const after = [
-      mkLine({ source: "s1", candidate: "c1", type: "pattern" }),
-      mkLine({ source: "s2", candidate: "c2", type: "pattern" }),
+      regressionLine({ source: "s1", candidate: "c1", type: "pattern" }),
+      regressionLine({ source: "s2", candidate: "c2", type: "pattern" }),
     ];
     assert.throws(
       () => assertRegression(before, after, { batch_id: "b", entries: [] }, { retagged: [] }),
@@ -495,12 +499,12 @@ describe("assertRegression", () => {
 
   test("throws when an existing entry key is lost", () => {
     const before = [
-      mkLine({ source: "s1", candidate: "c1", type: "pattern" }),
-      mkLine({ source: "s2", candidate: "c2", type: "pattern" }),
+      regressionLine({ source: "s1", candidate: "c1", type: "pattern" }),
+      regressionLine({ source: "s2", candidate: "c2", type: "pattern" }),
     ];
     const after = [
-      mkLine({ source: "s1", candidate: "c1", type: "pattern" }),
-      mkLine({ source: "s-NEW", candidate: "c2", type: "pattern" }),
+      regressionLine({ source: "s1", candidate: "c1", type: "pattern" }),
+      regressionLine({ source: "s-NEW", candidate: "c2", type: "pattern" }),
     ];
     assert.throws(
       () => assertRegression(before, after, { batch_id: "b", entries: [] }, { retagged: [] }),
@@ -509,8 +513,8 @@ describe("assertRegression", () => {
   });
 
   test("throws when retagged key is not present post-apply", () => {
-    const before = [mkLine({ source: "s1", candidate: "c1", type: "pattern" })];
-    const after = [mkLine({ source: "s1", candidate: "c1", type: "pattern" })];
+    const before = [regressionLine({ source: "s1", candidate: "c1", type: "pattern" })];
+    const after = [regressionLine({ source: "s1", candidate: "c1", type: "pattern" })];
     assert.throws(
       () =>
         assertRegression(
