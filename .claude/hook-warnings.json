@@ -1,26 +1,6 @@
 {
   "warnings": [
     {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "Branch has >=20 commits  PR strongly recommended",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-13T01:16:02.831Z",
-      "occurrences": 6,
-      "occurrences_since_ack": 2
-    },
-    {
-      "hook": "pre-commit",
-      "type": "jsonl-sync",
-      "severity": "warning",
-      "message": "Planning JSONL changed without MD regeneration",
-      "action": "Run generation scripts",
-      "timestamp": "2026-04-13T01:15:13.379Z",
-      "occurrences": 1,
-      "occurrences_since_ack": 1
-    },
-    {
       "hook": "session-start",
       "type": "tdms-s0",
       "severity": "warning",
@@ -79,17 +59,6 @@
       "timestamp": "2026-04-11T20:27:35.069Z",
       "occurrences": 2,
       "occurrences_since_ack": 2
-    },
-    {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "Branch has >=25 commits — review PR scope",
-      "action": "Check whether branch should be split or merged: gh pr view",
-      "timestamp": "2026-04-13T02:05:15.832Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 3,
-      "count": "25"
     }
   ]
 }

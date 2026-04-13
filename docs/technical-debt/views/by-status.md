@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2149)
+## NEW (2150)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -745,6 +745,7 @@
 | DEBT-45646 | CI pattern compliance exits 1 on test-file WARN-only output     | S2       | process                  |
 | DEBT-45648 | CAS scripts: 6 cyclomatic CC violations baselined (PR #505)     | S2       | code-quality             |
 | DEBT-45649 | Hook gate gap: cyclomatic CC runs at pre-push only, not p...    | S2       | engineering-productivity |
+| DEBT-45651 | Learning-system refinement queue is broken (702 items, 0 ...    | S2       | process                  |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

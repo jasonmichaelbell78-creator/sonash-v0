@@ -1,19 +1,21 @@
 {
   "acknowledged": {
-    "pr-creep": "2026-04-12T03:38:56.187Z",
-    "propagation-staged": "2026-04-12T18:57:54.456Z",
+    "pr-creep": "2026-04-13T13:00:54.473Z",
+    "propagation-staged": "2026-04-13T12:06:13.592Z",
     "trigger": "2026-04-13T01:36:18.545Z",
     "session-end-missing": "2026-04-13T01:15:15.001Z",
-    "review-lifecycle": "2026-04-11T19:22:50.000Z",
-    "tdms-s0": "2026-04-11T19:22:50.000Z",
-    "mcp-secrets": "2026-04-11T19:22:50.000Z",
+    "review-lifecycle": "2026-04-13T13:00:54.473Z",
+    "tdms-s0": "2026-04-13T13:00:54.473Z",
+    "mcp-secrets": "2026-04-13T13:00:54.473Z",
     "pipeline-ratchet-baselines": "2026-04-11T19:22:50.000Z",
     "reviewer": "2026-04-11T19:22:50.000Z",
-    "agent": "2026-04-11T19:22:50.000Z",
+    "agent": "2026-04-13T13:00:54.473Z",
     "audit": "2026-04-11T19:22:50.000Z",
     "patterns": "2026-04-11T19:22:50.000Z",
     "install-Installing root dependencies": "2026-04-11T19:22:50.000Z",
-    "network-error": "2026-04-11T19:22:50.000Z"
+    "network-error": "2026-04-13T13:00:54.473Z",
+    "syntax-check": "2026-04-13T13:00:54.473Z",
+    "jsonl-sync": "2026-04-13T13:00:54.473Z"
   },
-  "lastCleared": "2026-04-11T19:23:06.497Z"
+  "lastCleared": "2026-04-13T13:00:54.473Z"
 }

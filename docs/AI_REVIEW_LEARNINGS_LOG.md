@@ -1767,6 +1767,105 @@ deduplicated, non-overlapping ranges):
 - cross-round-dedup-saves-30min-per-repeat
 - security-auditor-accepts-settled-trust-model-quickly
 
+---
+
+### Review rev-85: PR #508 R1 (Mixed: Qodo + Gemini + SonarCloud + CI): T40 CAS retag CLI + vocabulary hardening (2026-04-12)
+
+**Date:** 2026-04-12 | **PR:** #508 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 30    | 28    | 0        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 10    | 16    | 0       |
+
+**Patterns:**
+
+- cc-helper-extraction
+- existssync-direct-read
+- atomic-write-propagation
+- nested-withlock-multi-file
+- spawnsync-execpath-s4036
+- toc-anchor-determinism-explicit-id
+- multi-source-convergence-auto-elevate
+- cli-module-exports-require-main-guard
+- synonym-key-singular-conventions-14-5
+- vocab-shape-guard
+- unbounded-json-read-readtextwithsizeguard
+- warn-on-non-enoent-not-silent-null
+- optional-chain-folded-in-cc-refactor
+- replaceall-over-replace-g
+- negated-condition-flip
+- at-minus-1-over-length-index
+- nullish-over-or-on-numeric
+- cli-batch-file-arg-validation
+
+**Learnings:**
+
+- multi-source-convergence-should-auto-elevate
+- cc-refactor-absorbs-minor-findings
+- existssync-then-read-propagation-via-grep
+- fold-toc-anchor-into-helper-for-sync
+- export-plus-require-main-from-day-one
+- gh-pr-view-files-clips-verify-with-git-diff
+
+---
+
+### Review 85: PR #508 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 30    | 0     | 0        | 0        |
+
+---
+
+### Review 86: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (2026-04-13)
+
+**Date:** 2026-04-13 | **PR:** #508 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 29    | 21    | 0        | 8        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 2        | 12    | 7     | 1       |
+
+**Patterns:**
+
+- cross-round-dedup
+- markdown-injection-escape
+- spawn-error-reporting
+- vocab-shape-guard
+- optional-chain-rewrite
+- test-helper-hoist
+- s4036-process-execpath-propagation
+
+**Learnings:**
+
+- cross-round dedup auto-rejects compounding R2 unrated re-flags
+- gh pr view --json files clipping confirmed two-round pattern
+- test files inherit production fix patterns via propagation sweep
+- same-line multi-source folds detectable on Step 2 triage
+
+---
+
+### Review 86-pr509: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (unknown)
+
+**Date:** unknown | **PR:** #509 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 29    | 0     | 0        | 0        |
+
 ## Key Patterns
 
 - **AI hallucination in planning docs:** DIAGNOSIS.md claimed
