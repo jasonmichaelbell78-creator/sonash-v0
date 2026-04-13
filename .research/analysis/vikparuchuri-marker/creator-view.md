@@ -76,8 +76,8 @@ extractable pattern.
 ## 3. Where Your Approach Differs
 
 **Ahead:** SoNash contributor infrastructure (CLAUDE.md, CONTRIBUTING implied by
-CLAUDE.md, 72+ SKILL.md files, CONVENTIONS.md) vastly exceeds marker (no
-CONTRIBUTING, CLA only, 50% community health).
+CLAUDE.md, 72+ SKILL.md files, `.claude/skills/shared/CONVENTIONS.md`) vastly
+exceeds marker (no CONTRIBUTING, CLA only, 50% community health).
 
 **Ahead:** SoNash security posture (Firebase rules, App Check, pattern
 compliance) vs marker (shell injection, path traversal, credential exposure).

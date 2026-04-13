@@ -2292,7 +2292,7 @@ _Uncategorized_
 
 | Document                                                                                                                                 | Description | References | Last Modified |
 | ---------------------------------------------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Creator View — Obsidian Attachments: The MOST USEFUL Feature](.research/analysis/youtube-qinuqwl4e-k/creator-view.md)                   | -           | ↓0 ↑0      | 2026-04-10    |
+| [Creator View — Obsidian Attachments: The MOST USEFUL Feature](.research/analysis/youtube-qinuqwl4e-k/creator-view.md)                   | -           | ↓0 ↑0      | 2026-04-13    |
 | [Deep Read — Obsidian Attachments Tutorial](.research/analysis/youtube-qinuqwl4e-k/deep-read.md)                                         | -           | ↓0 ↑0      | 2026-04-10    |
 | [Obsidian Attachments Tutorial — Summary](.research/analysis/youtube-qinuqwl4e-k/summary.md)                                             | -           | ↓0 ↑0      | 2026-04-10    |
 | [Transcript: How To Use Obsidian: The MOST USEFUL Feature You Are Not Using Right](.research/analysis/youtube-qinuqwl4e-k/transcript.md) | -           | ↓0 ↑0      | 2026-04-10    |

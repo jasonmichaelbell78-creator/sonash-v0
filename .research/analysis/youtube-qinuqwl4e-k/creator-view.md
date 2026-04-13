@@ -18,6 +18,11 @@ surrounding metadata.
 knowledge system pattern. No discussion of programmatic access, search indexing,
 or how this scales beyond personal use. The "I don't remember filenames" problem
 is real but the solution here is manual metadata authoring, which doesn't scale.
+See `content-eval.jsonl` entry "Obsidian attachment settings (4 modes)":
+applicability is flagged "Not transferable" — matches this blindspot. The
+13:00-end promotional segment (see `deep-read.md` Key Segments table) further
+dilutes the teaching signal; finding `F-003` captures this as a content-quality
+issue.
 
 ## 2. What's Relevant To Your Work
 
@@ -30,7 +35,10 @@ Obsidian's manual linking when we have `/recall`.
 The one transferable observation: the speaker's approach of writing _why_ a file
 matters at the point of ingestion is something our handler skills could do
 better. Right now the `summary` field in analysis.json captures what the source
-IS, but not always why it was analyzed or what prompted the analysis.
+IS, but not always why it was analyzed or what prompted the analysis. The
+6:00-11:00 segment (see `deep-read.md` Key Segments) is the only substantive
+part of the tutorial — finding `F-002` captures it as a "valid core insight
+buried in tutorial."
 
 ## 3. Where Your Approach Differs
 
