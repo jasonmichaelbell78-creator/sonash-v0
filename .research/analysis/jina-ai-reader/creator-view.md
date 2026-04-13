@@ -159,11 +159,11 @@ web content extraction" reading.
   collaborate with his future self on, docs are non-negotiable; for Reader,
   users don't need them.
 - **Security posture — DIFFERENT, partially BEHIND.** You have `patterns:check`,
-  `scripts/lib/sanitize-error.js`, SECURITY_CHECKLIST.md, security-auditor
+  `scripts/lib/sanitize-error.js`, SECURITY*CHECKLIST.md, security-auditor
   agent, hook gates. Reader has a real SSRF validator and is non-root in Docker
   — that's ahead of average — but then ships three S0s (unvalidated
   `x-proxy-url` to libcurl, `injectFrameScript` raw fetch,
-  `SSL_VERIFYPEER=false`). Your _process_ is ahead; Reader's _implementation of
+  `SSL_VERIFYPEER=false`). Your \_process* is ahead; Reader's _implementation of
   what it has_ is uneven. You would catch these in pre-commit or code review.
 - **Deployment topology — BEHIND.** Reader's one-image, six-services `--args`
   trick is a real pattern you don't have. SoNash is Firebase-only — Cloud

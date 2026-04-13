@@ -306,7 +306,10 @@ describe("classifyTags", () => {
   test("deduplicates canonical tags", () => {
     const vocab = makeVocab();
     const res = classifyTags(["architecture", "architecture", "plugins", "plugin"], vocab);
-    assert.deepEqual(res.canonicalTags.sort(), ["architecture", "plugin"]);
+    assert.deepEqual(
+      res.canonicalTags.toSorted((a, b) => a.localeCompare(b)),
+      ["architecture", "plugin"]
+    );
   });
 
   test("skips empty and whitespace-only strings", () => {
