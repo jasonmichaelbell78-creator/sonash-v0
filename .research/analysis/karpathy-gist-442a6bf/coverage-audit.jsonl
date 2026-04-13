@@ -1,1 +1,1 @@
-{"category":"note","item":"Retroactive placeholder","status":"not-evaluated","note":"Re-analyze source for full coverage audit."}
+{"category":"policy","item":"Deep Read skipped (short-form source)","status":"skipped-by-policy","note":"T29 Step 10.5 Cat F4: single-file gists do not receive Deep Read pass. Candidates + tags + scoring are complete in analysis.json and value-map.json."}

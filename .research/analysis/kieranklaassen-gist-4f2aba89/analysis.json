@@ -144,5 +144,6 @@
     "Write is preferable to broadcast for team communication",
     "Six patterns cover most multi-agent coordination needs"
   ],
-  "source_tier": "T2"
+  "source_tier": "T2",
+  "deep_read_skipped": true
 }

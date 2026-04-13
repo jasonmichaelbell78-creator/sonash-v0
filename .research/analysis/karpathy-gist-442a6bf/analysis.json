@@ -146,5 +146,6 @@
     "Schema (CLAUDE.md) is the key configuration that makes the LLM disciplined",
     "Good answers should be filed back into wiki as new pages"
   ],
-  "source_tier": "T2"
+  "source_tier": "T2",
+  "deep_read_skipped": true
 }
