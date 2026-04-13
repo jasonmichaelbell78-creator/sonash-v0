@@ -18,13 +18,12 @@
  *   2 = fatal (I/O error, regression guard tripped, lock failure)
  */
 
-const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
 const { sanitizeError } = require("../lib/security-helpers.js");
 const {
-  safeWriteFileSync,
+  safeAtomicWriteSync,
   isSafeToWrite,
   withLock,
   readTextWithSizeGuard,
@@ -45,8 +44,14 @@ function parseCliArgs(argv) {
     if (a === "--dry-run") args.dryRun = true;
     else if (a === "--strict") args.strict = true;
     else if (a === "--verbose") args.verbose = true;
-    else if (a === "--batch-file") args.batchFile = argv[++i];
-    else if (a.startsWith("--")) throw new Error(`unknown flag: ${a}`);
+    else if (a === "--batch-file") {
+      const next = argv[i + 1];
+      if (next === undefined || next.startsWith("--")) {
+        throw new Error("missing value for --batch-file");
+      }
+      args.batchFile = next;
+      i++;
+    } else if (a.startsWith("--")) throw new Error(`unknown flag: ${a}`);
     else args._.push(a);
   }
   return args;
@@ -100,16 +105,16 @@ function cmdApply(args) {
     process.exit(1);
   }
   const batchPath = path.resolve(args.batchFile);
-  if (!fs.existsSync(batchPath)) {
-    console.error(`error: batch file not found: ${batchPath}`);
-    process.exit(1);
-  }
 
   let batch;
   try {
     batch = JSON.parse(readTextWithSizeGuard(batchPath));
   } catch (err) {
-    console.error(`error: batch file is not valid JSON: ${sanitizeError(err)}`);
+    if (err?.code === "ENOENT") {
+      console.error(`error: batch file not found: ${batchPath}`);
+    } else {
+      console.error(`error: batch file is not valid JSON: ${sanitizeError(err)}`);
+    }
     process.exit(1);
   }
 
@@ -212,17 +217,26 @@ function cmdApply(args) {
     throw new Error(`refusing to write — vocabulary path is a symlink`);
   }
 
+  // Nested withLock holds both file locks across the pair of atomic rewrites
+  // so journal+vocab remain consistent for concurrent readers. Each rewrite
+  // is itself crash-safe (tmp file + rename via safeAtomicWriteSync), so a
+  // process interrupt during the critical section leaves the pre-existing
+  // files intact rather than truncated.
   withLock(JOURNAL_PATH, () => {
-    safeWriteFileSync(JOURNAL_PATH, serializeRawLines(newRawLines), "utf8");
-  });
-  withLock(VOCAB_PATH, () => {
-    safeWriteFileSync(VOCAB_PATH, JSON.stringify(countedVocab, null, 2) + "\n", "utf8");
+    withLock(VOCAB_PATH, () => {
+      safeAtomicWriteSync(JOURNAL_PATH, serializeRawLines(newRawLines), "utf8");
+      safeAtomicWriteSync(VOCAB_PATH, JSON.stringify(countedVocab, null, 2) + "\n", "utf8");
+    });
   });
 
   console.log("Journal and vocabulary written.");
 
   console.log("Rebuilding SQLite index...");
-  const res = spawnSync("node", [REBUILD_INDEX_SCRIPT], { stdio: "inherit" });
+  // Use process.execPath (absolute path to the current node binary) instead
+  // of the literal string "node". The latter triggers a PATH lookup, which
+  // SonarCloud flags (S4036) when PATH may include writable directories.
+  // process.execPath is fixed and unwriteable at spawn time.
+  const res = spawnSync(process.execPath, [REBUILD_INDEX_SCRIPT], { stdio: "inherit" });
   if (res.status !== 0) {
     console.error(
       "warning: rebuild-index returned non-zero. Run `node scripts/cas/rebuild-index.js` manually."

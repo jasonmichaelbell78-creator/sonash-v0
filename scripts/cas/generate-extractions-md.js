@@ -15,7 +15,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError } = require("../lib/security-helpers.js");
-const { safeWriteFileSync, isSafeToWrite } = require("../lib/safe-fs");
+const { safeAtomicWriteSync, isSafeToWrite } = require("../lib/safe-fs");
 const readJsonl = require("../lib/read-jsonl.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
@@ -165,8 +165,12 @@ function main() {
     process.exit(1);
   }
 
+  // Atomic rewrite: tmp file + rename. Propagation of the Qodo "Retag
+  // rewrites non-atomic" finding from retag.js — EXTRACTIONS.md is the same
+  // full-file rewrite shape (drop the whole file and re-emit), so the same
+  // crash-safety argument applies.
   try {
-    safeWriteFileSync(OUTPUT_PATH, content, "utf8");
+    safeAtomicWriteSync(OUTPUT_PATH, content, "utf8");
     console.log(
       `Generated EXTRACTIONS.md: ${entries.length} candidates across ${bySource.size} sources.`
     );

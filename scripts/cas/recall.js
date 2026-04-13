@@ -27,6 +27,7 @@ const {
   validatePathInDir,
   refuseSymlinkWithParents,
 } = require("../lib/security-helpers.js");
+const { readTextWithSizeGuard } = require("../lib/safe-fs");
 // propagation: isSafeToWrite() compliance — read-only query module (refuse-symlink)
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
@@ -34,10 +35,25 @@ const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
 const VOCAB_PATH = path.join(PROJECT_ROOT, ".research", "tag-vocabulary.json");
 
 function loadVocabulary() {
-  if (!fs.existsSync(VOCAB_PATH)) return null;
+  // Direct-read pattern (no existsSync precheck) per CODE_PATTERNS.md —
+  // avoids the TOCTOU between existsSync and read. readTextWithSizeGuard
+  // also imposes a size ceiling to prevent local DoS from an oversized
+  // vocabulary file.
+  let text;
   try {
-    return JSON.parse(fs.readFileSync(VOCAB_PATH, "utf8"));
-  } catch {
+    text = readTextWithSizeGuard(VOCAB_PATH);
+  } catch (err) {
+    if (err?.code === "ENOENT") return null;
+    // Surface non-ENOENT failures (size limit, EACCES, etc.) rather than
+    // swallowing silently — missing diagnostics have historically masked
+    // real vocabulary corruption.
+    console.warn(`warning: failed to read tag vocabulary: ${sanitizeError(err)}`);
+    return null;
+  }
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn(`warning: tag vocabulary is not valid JSON: ${sanitizeError(err)}`);
     return null;
   }
 }
@@ -50,7 +66,12 @@ function classifyTagsForDisplay(tags, vocab) {
   const semantic = {};
   const taxonomic = [];
   const orphan = [];
-  if (!vocab) return { semantic, taxonomic, orphan };
+  // Guard against null, partial, or malformed vocab — loadVocabulary may
+  // return null (missing/invalid), and even a valid vocab may be missing
+  // .tags if the file was written by an old migration.
+  if (!vocab || !vocab.tags || typeof vocab.tags !== "object") {
+    return { semantic, taxonomic, orphan };
+  }
   const forbiddenFlat = new Set();
   if (vocab.forbidden) {
     for (const arr of Object.values(vocab.forbidden)) {
@@ -184,9 +205,11 @@ function showStats(db, vocab) {
     top_tags: topTags,
   };
 
-  if (vocab) {
+  if (vocab && vocab.tags && typeof vocab.tags === "object") {
+    const categories =
+      vocab.categories && typeof vocab.categories === "object" ? vocab.categories : {};
     const byCategory = {};
-    for (const cat of Object.keys(vocab.categories)) byCategory[cat] = 0;
+    for (const cat of Object.keys(categories)) byCategory[cat] = 0;
     for (const info of Object.values(vocab.tags)) {
       byCategory[info.category] = (byCategory[info.category] || 0) + 1;
     }
@@ -196,7 +219,7 @@ function showStats(db, vocab) {
     };
 
     const topTagsByCategory = {};
-    for (const cat of Object.keys(vocab.categories)) {
+    for (const cat of Object.keys(categories)) {
       const tagsInCat = Object.entries(vocab.tags)
         .filter(([, info]) => info.category === cat)
         .map(([name, info]) => ({ name, count: info.count || 0 }))
