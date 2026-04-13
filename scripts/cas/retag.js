@@ -99,64 +99,54 @@ function serializeRawLines(rawLines) {
   return rawLines.map((x) => x.raw).join("\n");
 }
 
-function cmdApply(args) {
-  if (!args.batchFile) {
-    console.error("error: --batch-file <path> required for apply");
-    process.exit(1);
-  }
-  const batchPath = path.resolve(args.batchFile);
-
-  let batch;
+function readBatchFile(batchFilePath) {
   try {
-    batch = JSON.parse(readTextWithSizeGuard(batchPath));
+    return JSON.parse(readTextWithSizeGuard(batchFilePath));
   } catch (err) {
     if (err?.code === "ENOENT") {
-      console.error(`error: batch file not found: ${batchPath}`);
+      console.error(`error: batch file not found: ${batchFilePath}`);
     } else {
       console.error(`error: batch file is not valid JSON: ${sanitizeError(err)}`);
     }
     process.exit(1);
   }
+}
 
-  const shapeCheck = mutations.validateBatchShape(batch);
-  if (!shapeCheck.valid) {
-    console.error("error: batch file shape invalid:");
-    for (const e of shapeCheck.errors) console.error("  - " + e);
+function applyNewVocabularyOrExit(originalVocab, batch) {
+  if (!Array.isArray(batch.new_vocabulary) || batch.new_vocabulary.length === 0) {
+    return originalVocab;
+  }
+  const addRes = mutations.addNewVocabulary(originalVocab, batch.new_vocabulary);
+  if (addRes.errors.length > 0) {
+    console.error("error: new_vocabulary additions rejected:");
+    for (const e of addRes.errors) console.error("  - " + e);
     process.exit(1);
   }
+  return addRes.vocab;
+}
 
-  const originalVocab = loadVocabulary();
-  const { entries: journalEntries, rawLines } = loadJournal();
-
-  let vocab = originalVocab;
-  if (Array.isArray(batch.new_vocabulary) && batch.new_vocabulary.length > 0) {
-    const addRes = mutations.addNewVocabulary(originalVocab, batch.new_vocabulary);
-    if (addRes.errors.length > 0) {
-      console.error("error: new_vocabulary additions rejected:");
-      for (const e of addRes.errors) console.error("  - " + e);
-      process.exit(1);
-    }
-    vocab = addRes.vocab;
+function collectEntryIssues(classified, semCount) {
+  const issues = [];
+  if (classified.forbidden.length > 0) {
+    issues.push("forbidden tags: " + classified.forbidden.map((f) => f.tag).join(", "));
   }
+  if (classified.invalid.length > 0) {
+    issues.push("unknown tags: " + classified.invalid.map((f) => f.tag).join(", "));
+  }
+  if (semCount < 3) {
+    issues.push(`only ${semCount} semantic tags — §14.1 requires at least 3`);
+  }
+  return issues;
+}
 
+function classifyBatchEntries(batch, vocab) {
   const perEntryReports = [];
   let anyIssues = false;
   for (const be of batch.entries) {
     const classified = mutations.classifyTags(be.tags, vocab);
     const semCount = mutations.semanticCount(classified.canonicalTags, vocab);
-    const issues = [];
-    if (classified.forbidden.length > 0) {
-      issues.push("forbidden tags: " + classified.forbidden.map((f) => f.tag).join(", "));
-      anyIssues = true;
-    }
-    if (classified.invalid.length > 0) {
-      issues.push("unknown tags: " + classified.invalid.map((f) => f.tag).join(", "));
-      anyIssues = true;
-    }
-    if (semCount < 3) {
-      issues.push(`only ${semCount} semantic tags — §14.1 requires at least 3`);
-      anyIssues = true;
-    }
+    const issues = collectEntryIssues(classified, semCount);
+    if (issues.length > 0) anyIssues = true;
     perEntryReports.push({
       key: `${be.source}|${be.candidate}|${be.type}`,
       originalTags: be.tags,
@@ -165,19 +155,10 @@ function cmdApply(args) {
       issues,
     });
   }
+  return { perEntryReports, anyIssues };
+}
 
-  if (anyIssues) {
-    console.error("error: batch has validation failures:");
-    for (const r of perEntryReports) {
-      if (r.issues.length === 0) continue;
-      console.error(`  ${r.key}`);
-      for (const i of r.issues) console.error(`    - ${i}`);
-    }
-    process.exit(1);
-  }
-
-  const applyRes = mutations.applyBatch(journalEntries, batch, vocab);
-
+function printApplySummary(batch, applyRes, perEntryReports) {
   console.log(`Batch ${batch.batch_id}:`);
   console.log(`  entries retagged:  ${applyRes.retagged.length}`);
   console.log(`  entries unmatched: ${applyRes.unmatched.length}`);
@@ -192,13 +173,85 @@ function cmdApply(args) {
     for (const u of applyRes.unmatched) console.warn("  - " + u);
   }
   for (const r of perEntryReports) {
-    if (Object.keys(r.synonymsApplied).length > 0) {
-      console.log(`  synonyms applied on ${r.key}:`);
-      for (const [from, to] of Object.entries(r.synonymsApplied)) {
-        console.log(`    ${from} -> ${to}`);
-      }
+    const synonymEntries = Object.entries(r.synonymsApplied);
+    if (synonymEntries.length === 0) continue;
+    console.log(`  synonyms applied on ${r.key}:`);
+    for (const [from, to] of synonymEntries) {
+      console.log(`    ${from} -> ${to}`);
     }
   }
+}
+
+/**
+ * Write journal + vocabulary atomically. Nested withLock holds both locks
+ * across the pair of atomic rewrites so journal+vocab remain consistent for
+ * concurrent readers. Each rewrite is itself crash-safe (tmp file + rename
+ * via safeAtomicWriteSync), so a process interrupt during the critical
+ * section leaves the pre-existing files intact rather than truncated.
+ */
+function writeJournalAndVocab(newRawLines, countedVocab) {
+  if (!isSafeToWrite(JOURNAL_PATH)) {
+    throw new Error(`refusing to write — journal path is a symlink`);
+  }
+  if (!isSafeToWrite(VOCAB_PATH)) {
+    throw new Error(`refusing to write — vocabulary path is a symlink`);
+  }
+  withLock(JOURNAL_PATH, () => {
+    withLock(VOCAB_PATH, () => {
+      safeAtomicWriteSync(JOURNAL_PATH, serializeRawLines(newRawLines), "utf8");
+      safeAtomicWriteSync(VOCAB_PATH, JSON.stringify(countedVocab, null, 2) + "\n", "utf8");
+    });
+  });
+}
+
+/**
+ * Rebuild the SQLite index after a successful retag apply. Uses
+ * process.execPath (absolute, fixed, unwriteable) rather than the literal
+ * "node" so the spawn does not perform a PATH lookup (SonarCloud S4036).
+ */
+function runRebuildIndex() {
+  console.log("Rebuilding SQLite index...");
+  const res = spawnSync(process.execPath, [REBUILD_INDEX_SCRIPT], { stdio: "inherit" });
+  if (res.status !== 0) {
+    console.error(
+      "warning: rebuild-index returned non-zero. Run `node scripts/cas/rebuild-index.js` manually."
+    );
+    process.exit(2);
+  }
+}
+
+function cmdApply(args) {
+  if (!args.batchFile) {
+    console.error("error: --batch-file <path> required for apply");
+    process.exit(1);
+  }
+  const batchPath = path.resolve(args.batchFile);
+  const batch = readBatchFile(batchPath);
+
+  const shapeCheck = mutations.validateBatchShape(batch);
+  if (!shapeCheck.valid) {
+    console.error("error: batch file shape invalid:");
+    for (const e of shapeCheck.errors) console.error("  - " + e);
+    process.exit(1);
+  }
+
+  const originalVocab = loadVocabulary();
+  const { entries: journalEntries, rawLines } = loadJournal();
+  const vocab = applyNewVocabularyOrExit(originalVocab, batch);
+
+  const { perEntryReports, anyIssues } = classifyBatchEntries(batch, vocab);
+  if (anyIssues) {
+    console.error("error: batch has validation failures:");
+    for (const r of perEntryReports) {
+      if (r.issues.length === 0) continue;
+      console.error(`  ${r.key}`);
+      for (const i of r.issues) console.error(`    - ${i}`);
+    }
+    process.exit(1);
+  }
+
+  const applyRes = mutations.applyBatch(journalEntries, batch, vocab);
+  printApplySummary(batch, applyRes, perEntryReports);
 
   if (args.dryRun) {
     console.log("(dry run — nothing written)");
@@ -207,44 +260,41 @@ function cmdApply(args) {
 
   const newRawLines = rewriteRawLines(rawLines, applyRes.entryUpdates);
   mutations.assertRegression(rawLines, newRawLines, batch, applyRes);
-
   const countedVocab = mutations.recomputeCounts(vocab, applyRes.journalEntries);
 
-  if (!isSafeToWrite(JOURNAL_PATH)) {
-    throw new Error(`refusing to write — journal path is a symlink`);
-  }
-  if (!isSafeToWrite(VOCAB_PATH)) {
-    throw new Error(`refusing to write — vocabulary path is a symlink`);
-  }
-
-  // Nested withLock holds both file locks across the pair of atomic rewrites
-  // so journal+vocab remain consistent for concurrent readers. Each rewrite
-  // is itself crash-safe (tmp file + rename via safeAtomicWriteSync), so a
-  // process interrupt during the critical section leaves the pre-existing
-  // files intact rather than truncated.
-  withLock(JOURNAL_PATH, () => {
-    withLock(VOCAB_PATH, () => {
-      safeAtomicWriteSync(JOURNAL_PATH, serializeRawLines(newRawLines), "utf8");
-      safeAtomicWriteSync(VOCAB_PATH, JSON.stringify(countedVocab, null, 2) + "\n", "utf8");
-    });
-  });
-
+  writeJournalAndVocab(newRawLines, countedVocab);
   console.log("Journal and vocabulary written.");
 
-  console.log("Rebuilding SQLite index...");
-  // Use process.execPath (absolute path to the current node binary) instead
-  // of the literal string "node". The latter triggers a PATH lookup, which
-  // SonarCloud flags (S4036) when PATH may include writable directories.
-  // process.execPath is fixed and unwriteable at spawn time.
-  const res = spawnSync(process.execPath, [REBUILD_INDEX_SCRIPT], { stdio: "inherit" });
-  if (res.status !== 0) {
-    console.error(
-      "warning: rebuild-index returned non-zero. Run `node scripts/cas/rebuild-index.js` manually."
-    );
-    process.exit(2);
-  }
-
+  runRebuildIndex();
   console.log("Done.");
+}
+
+function classifyEntryForValidation(entry, vocab, report) {
+  const key = mutations.entryKey(entry);
+  const tags = entry.tags || [];
+  if (tags.length === 0) {
+    report.with_zero_tags++;
+    report.details.push({ key, issues: ["no tags"] });
+    return;
+  }
+  const classified = mutations.classifyTags(tags, vocab);
+  const semCount = mutations.semanticCount(classified.canonicalTags, vocab);
+  const issues = [];
+  if (classified.forbidden.length > 0) {
+    issues.push("forbidden: " + classified.forbidden.map((f) => f.tag).join(", "));
+    report.with_forbidden++;
+  }
+  if (classified.invalid.length > 0) {
+    issues.push("unknown: " + classified.invalid.map((f) => f.tag).join(", "));
+    report.with_unknown++;
+  }
+  if (semCount < 3) {
+    issues.push(`only ${semCount} semantic (§14.1 requires ≥3)`);
+    report.with_few_semantic++;
+  }
+  if (issues.length > 0) {
+    report.details.push({ key, issues });
+  }
 }
 
 function cmdValidate(args) {
@@ -261,31 +311,7 @@ function cmdValidate(args) {
   };
 
   for (const entry of entries) {
-    const key = mutations.entryKey(entry);
-    const tags = entry.tags || [];
-    if (tags.length === 0) {
-      report.with_zero_tags++;
-      report.details.push({ key, issues: ["no tags"] });
-      continue;
-    }
-    const classified = mutations.classifyTags(tags, vocab);
-    const semCount = mutations.semanticCount(classified.canonicalTags, vocab);
-    const issues = [];
-    if (classified.forbidden.length > 0) {
-      issues.push("forbidden: " + classified.forbidden.map((f) => f.tag).join(", "));
-      report.with_forbidden++;
-    }
-    if (classified.invalid.length > 0) {
-      issues.push("unknown: " + classified.invalid.map((f) => f.tag).join(", "));
-      report.with_unknown++;
-    }
-    if (semCount < 3) {
-      issues.push(`only ${semCount} semantic (§14.1 requires ≥3)`);
-      report.with_few_semantic++;
-    }
-    if (issues.length > 0) {
-      report.details.push({ key, issues });
-    }
+    classifyEntryForValidation(entry, vocab, report);
   }
 
   console.log("Validate report:");

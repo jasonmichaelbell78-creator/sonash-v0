@@ -48,6 +48,8 @@ investigate: 2, extract: 20, skip: 2
 
 ---
 
+<a id="archivebox-archivebox-repo"></a>
+
 ## ArchiveBox/ArchiveBox (repo)
 
 | Candidate                                         | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -59,6 +61,8 @@ investigate: 2, extract: 20, skip: 2
 | Claude Code CI integration                        | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | claude.yml GitHub Actions workflow. AI-in-CI pattern for JASON-OS CI/CD domain.                                          |
 | SOLO_MAINTAINER_GOVERNANCE                        | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | 27K stars, 0/29 changesets reviewed. Architectural docs in prose not contracts. Bus-factor warning.                      |
 | CONFIGURED_NOT_ENFORCED_TYPING                    | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | Pyright configured, 48% coverage, heavy Any/cast. Type checker as decoration not gate.                                   |
+
+<a id="aws-solutions-library-samples-guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws-repo"></a>
 
 ## aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws (repo)
 
@@ -72,6 +76,8 @@ investigate: 2, extract: 20, skip: 2
 | Evaluation Service prompt template system           | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Templates for moderation, summarization, IAB classification against extracted metadata.                                  |
 | OpenSearch dependency for similarity (anti-pattern) | anti-pattern         | extract  | 2026-04-07 | medium  | E0     | medium    | -            | FAISS alternative exists in same repo. Don't add search cluster for video dedup when local works.                        |
 | No tests (anti-pattern)                             | anti-pattern         | extract  | 2026-04-07 | low     | E0     | medium    | -            | 52 Python files, 1 test. AWS reference architectures skip tests. Don't follow this pattern.                              |
+
+<a id="codecrafters-io-build-your-own-x-repo"></a>
 
 ## codecrafters-io/build-your-own-x (repo)
 
@@ -90,6 +96,8 @@ investigate: 2, extract: 20, skip: 2
 | Single-File-Everything Anti-Pattern              | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 390 links in one README.md. Watch for same impulse in EXTRACTIONS.md, MEMORY.md, SKILL_INDEX.md — when a single file bec |
 | Inline License Without LICENSE File              | anti-pattern | defer    | 2026-04-06 | low     | E0     | medium    | -            | CC0 in README but no LICENSE file. GitHub API can't detect it. Always include machine-readable LICENSE if publishing.    |
 
+<a id="dicklesworthstone-bulk-transcribe-youtube-videos-from-playlist-repo"></a>
+
 ## Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist (repo)
 
 | Candidate                                       | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -106,6 +114,8 @@ investigate: 2, extract: 20, skip: 2
 | Monolithic single-file tool anti-pattern        | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 280 lines, no CLI, no config file. Works for personal use, impossible to integrate. T27 must be modular.                 |
 | Skip-captions-always anti-pattern               | anti-pattern | defer    | 2026-04-07 | high    | E0     | high      | -            | Both bedrock and this repo transcribe every video from scratch. Check captions first (~80% have them).                   |
 | Hard-coded source config anti-pattern           | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | Module-level variables including API keys. No CLI args, no env vars.                                                     |
+
+<a id="ds4sd-docling-repo"></a>
 
 ## DS4SD/docling (repo)
 
@@ -125,6 +135,8 @@ investigate: 2, extract: 20, skip: 2
 | Don't build plugin system before you have plugins   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | pluggy exists because of real third-party contributors. Build hardcoded extractors first.                                |
 | Don't adopt DoclingDocument wholesale               | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Optimized for single-doc repr. T28 needs cross-source analysis schema. Study pattern, design own.                        |
 
+<a id="errors-and-vulnerabilities-in-ai-generated-code-pdf-document"></a>
+
 ## Errors and Vulnerabilities in AI-Generated Code.pdf (document)
 
 | Candidate                                        | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -135,6 +147,8 @@ investigate: 2, extract: 20, skip: 2
 | Context momentum / hallucinated logic            | knowledge    | defer    | 2026-04-09 | medium  | E0     | high      | -            | Early AI misinterpretations steer project wrong. We mitigate with /clear and SESSION_CONTEXT.md but no explicit detectio |
 | Structural entropy (code bloat)                  | anti-pattern | defer    | 2026-04-09 | low     | E0     | high      | -            | AI generates verbose, redundant code. CLAUDE.md guardrail covers this but pattern check doesn't gate it.                 |
 | Deployment fragility (happy path only)           | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | AI code works locally, fails in production. Enforce reproducible builds, observability.                                  |
+
+<a id="hkuds-cli-anything-repo"></a>
 
 ## HKUDS/CLI-Anything (repo)
 
@@ -158,6 +172,8 @@ investigate: 2, extract: 20, skip: 2
 | Monorepo Without Shared Testing          | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 35 packages, 0 conftest.py, no shared runner. Plan shared testing if JASON-OS distributes skills as packages.            |
 | Growing Faster Than Quality Gates        | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 28K stars/29d with no automated enforcement. Same trajectory as celebrity stagnation, faster.                            |
 
+<a id="iawia002-lux-repo"></a>
+
 ## iawia002/lux (repo)
 
 | Candidate                                        | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                        |
@@ -167,6 +183,8 @@ investigate: 2, extract: 20, skip: 2
 | HARDCODED_CREDENTIALS_IN_SOURCE                  | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Twitter bearer token + Weibo cookie in git. Never do this.                                   |
 | DISABLED_TLS_VERIFICATION                        | anti-pattern | defer    | 2026-04-12 | low     | E0     | high      | -            | InsecureSkipVerify: true globally. MITM vulnerability.                                       |
 | DOCUMENTATION_ABSENT_FOR_CONTRIBUTORS            | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | 46 extractors, 23-line CONTRIBUTING, no arch docs.                                           |
+
+<a id="jdepoix-youtube-transcript-api-repo"></a>
 
 ## jdepoix/youtube-transcript-api (repo)
 
@@ -182,6 +200,8 @@ investigate: 2, extract: 20, skip: 2
 | SRT/WebVTT timestamp formatting                        | pattern      | defer    | 2026-04-07 | low     | E0     | medium    | -            | Clean subtitle format generation. SRT (comma) vs WebVTT (dot) separator.                                                 |
 | Don't build own transcript fetcher (anti-pattern)      | anti-pattern | defer    | 2026-04-07 | high    | E0     | high      | -            | 399 commits over 8 years maintaining YouTube API compatibility. Use the library.                                         |
 | Ignore IP blocking for bulk (anti-pattern)             | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | YouTube blocks bulk requests. Plan proxy infrastructure from the start.                                                  |
+
+<a id="jina-ai-reader-repo"></a>
 
 ## jina-ai/reader (repo)
 
@@ -202,6 +222,8 @@ investigate: 2, extract: 20, skip: 2
 | Public repo + private submodule requirement                     | anti-pattern         | defer    | 2026-04-12 | medium  | E0     | high      | -            | Public repo imports from SSH-only private thinapps-shared submodule containing rate-limit, secrets, DAOs, decorators. RE  |
 | Zero tests in a 10k-star production service                     | anti-pattern         | defer    | 2026-04-12 | low     | E0     | high      | -            | No .test.ts, no .spec.ts, no describe(). firebase-functions-test is devDep but never imported. CI is deploy-only behind   |
 
+<a id="karpathy-autoresearch-repo"></a>
+
 ## karpathy/autoresearch (repo)
 
 | Candidate                                             | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -219,6 +241,8 @@ investigate: 2, extract: 20, skip: 2
 | No-License-on-Purpose Trap                            | anti-pattern | defer    | 2026-04-06 | low     | E0     | medium    | -            | Karpathy can get away with no license. You can't. Always include LICENSE if publishing JASON-OS.                         |
 | Single-Metric Optimization Trap                       | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | val_bpb works because the problem has one metric. Don't flatten multi-objective problems into one number.                |
 
+<a id="ksharlandjiev-bedrock-summarize-audio-video-text-repo"></a>
+
 ## ksharlandjiev/bedrock-summarize-audio-video-text (repo)
 
 | Candidate                                             | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -233,6 +257,8 @@ investigate: 2, extract: 20, skip: 2
 | Amazon Transcribe API reference                       | content      | defer    | 2026-04-07 | medium  | E0     | high      | -            | Handler demonstrates full async Transcribe lifecycle with speaker diarization.                                           |
 | AWS-coupled extraction anti-pattern                   | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 5+ AWS service deps create vendor lock-in. Prefer local-first (Whisper, Tesseract, spaCy). Repo itself has commented-out |
 | Blocking poll anti-pattern                            | anti-pattern | defer    | 2026-04-07 | low     | E0     | medium    | -            | time.sleep(30) polling loop for Transcribe. Fine for CLI, must not copy into agent pipelines.                            |
+
+<a id="mendableai-firecrawl-repo"></a>
 
 ## mendableai/firecrawl (repo)
 
@@ -260,6 +286,8 @@ investigate: 2, extract: 20, skip: 2
 | Hand-rolled polyglot SDK parity                     | anti-pattern         | defer    | 2026-04-10 | low     | E0     | low       | -            | Seven SDKs (JS, Python, Rust, Go, Java, Elixir, playwright-service) re-implement the wire contract manually. Parity enfo  |
 | Hidden feature flags via env vars                   | anti-pattern         | defer    | 2026-04-10 | low     | E0     | medium    | -            | Firecrawl branches behaviour through SELF*HOST.md env vars (USE_DB_AUTHENTICATION, PROXY_SERVER, SEARXNG*\*) with no docu |
 
+<a id="opendatalab-mineru-repo"></a>
+
 ## opendatalab/MinerU (repo)
 
 | Candidate                                             | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
@@ -284,6 +312,8 @@ investigate: 2, extract: 20, skip: 2
 | MinerU 1.x technical report                           | content      | skip     | 2026-04-10 | low     | E0     | low       | -            | arxiv 2409.18839 - 18 authors, PDF-Extract-Kit + pre/post-processing rules. Background reading only. Low direct relevanc  |
 | MinerU 2.5 technical report                           | content      | defer    | 2026-04-10 | medium  | E0     | medium    | -            | arxiv 2509.22186 - 61 authors, 1.2B VLM, coarse-to-fine two-stage parsing. Low direct relevance but the two-stage framin  |
 
+<a id="outline-outline-repo"></a>
+
 ## outline/outline (repo)
 
 | Candidate                                           | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -304,6 +334,8 @@ investigate: 2, extract: 20, skip: 2
 | CSP wildcard security debt                          | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | connect-src: \* from Safari WebSocket bug fixed in Safari 15. Temporary workaround became permanent.                     |
 | Fat route files                                     | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | documents.ts handles ~30 endpoints. Command pattern keeps logic clean but routing layer is discovery burden.             |
 
+<a id="public-apis-public-apis-repo"></a>
+
 ## public-apis/public-apis (repo)
 
 | Candidate                                | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                  |
@@ -319,6 +351,8 @@ investigate: 2, extract: 20, skip: 2
 | Validation Without Maintenance Trap      | anti-pattern | defer    | 2026-04-06 | medium  | E0     | high      | -            | Format validation ensures structural integrity but not content freshness. Applies to patterns:check.                   |
 | Sponsor-First README Anti-Pattern        | anti-pattern | defer    | 2026-04-06 | medium  | E0     | medium    | -            | 10 promoted APIs before community content. Erodes trust. Keep sponsors separate from content if JASON-OS has partners. |
 
+<a id="safishamsi-graphify-repo"></a>
+
 ## safishamsi/graphify (repo)
 
 | Candidate                                 | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                 |
@@ -332,6 +366,8 @@ investigate: 2, extract: 20, skip: 2
 | Graph-only persistence without versioning | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | No schema_version or migration path. Our analysis.json schema_version is correct.                                     |
 | Oversized skill files                     | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | 15K+ tokens per variant with duplication. Cautionary for SoNash skill growth.                                         |
 | Ship fast skip review                     | anti-pattern | defer    | 2026-04-09 | low     | E0     | low       | -            | Zero external review despite 15K stars. Security self-assessed only.                                                  |
+
+<a id="teng-lin-notebooklm-py-repo"></a>
 
 ## teng-lin/notebooklm-py (repo)
 
@@ -350,6 +386,8 @@ investigate: 2, extract: 20, skip: 2
 | AGENTS.md Separation                | knowledge    | defer       | 2026-04-06 | low     | E0     | medium    | -            | Separate file for multi-agent guidance. Consider if CLAUDE.md Section 7 grows.                                            |
 | Undocumented API Dependency         | anti-pattern | defer       | 2026-04-06 | medium  | E0     | medium    | -            | Entire project wraps obfuscated Google RPC endpoints. Prefer documented APIs.                                             |
 | Over-Engineered Install Mechanism   | anti-pattern | defer       | 2026-04-06 | low     | E0     | medium    | -            | 280 lines for copy file + stamp version. Extract pattern, not complexity.                                                 |
+
+<a id="tobi-qmd-repo"></a>
 
 ## tobi/qmd (repo)
 
@@ -374,6 +412,8 @@ investigate: 2, extract: 20, skip: 2
 | Caret ranges in reproducible-install packages               | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | Exact pins required for platform-binary shipping packages. SoNash uses carets.                                           |
 | Skill without invocation gate on destructive ops            | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Destructive skills should declare disable-model-invocation. SoNash skills rely on prose guardrails.                      |
 
+<a id="unclecode-crawl4ai-repo"></a>
+
 ## unclecode/crawl4ai (repo)
 
 | Candidate                                 | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                     |
@@ -385,6 +425,8 @@ investigate: 2, extract: 20, skip: 2
 | Strategy ABC (55+ implementations)        | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Clean abstract hierarchy with runtime composition via FilterChain.                                        |
 | DOCUMENTATION_PROMISES_CODE_GAPS          | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Docs describe features code implements partially. Verify before recommending.                             |
 | MONOLITHIC_UTILS                          | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | utils.py at 3,778 lines. Domain functions in one file.                                                    |
+
+<a id="unstructured-io-unstructured-repo"></a>
 
 ## unstructured-io/unstructured (repo)
 
@@ -404,6 +446,8 @@ investigate: 2, extract: 20, skip: 2
 | Don't build per-format parsers in TypeScript    | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | 30+ partitioners = years of edge cases. Delegate parsing to existing tools, focus on orchestration.                      |
 | Don't fragment extraction+analysis across repos | anti-pattern | defer    | 2026-04-07 | medium  | E0     | high      | -            | Embedding moved to unstructured-ingest, fragmenting DX. Keep T28 as single coherent system.                              |
 
+<a id="vikparuchuri-marker-repo"></a>
+
 ## VikParuchuri/marker (repo)
 
 | Candidate                                      | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -413,6 +457,8 @@ investigate: 2, extract: 20, skip: 2
 | ConfigParser introspection                     | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Auto-discovers components by inspecting module structure. Self-documenting config.                                       |
 | GPL_LICENSE_TRAP                               | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | GPL-3.0 blocks adoption. Extract patterns only, never import code.                                                       |
 | SECURITY_AS_AFTERTHOUGHT                       | anti-pattern | defer    | 2026-04-12 | low     | E0     | high      | -            | Shell injection + path traversal + credential exposure in tool processing untrusted PDFs.                                |
+
+<a id="viktoraxelsen-memskill-repo"></a>
 
 ## ViktorAxelsen/MemSkill (repo)
 
@@ -431,6 +477,8 @@ investigate: 2, extract: 20, skip: 2
 | Academic Code Quality              | anti-pattern | defer       | 2026-04-06 | medium  | E0     | medium    | -            | 42KB monolith, zero tests, no version pins. Extract concepts, not code.                             |
 | Research Artifact as Dependency    | anti-pattern | defer       | 2026-04-06 | low     | E0     | medium    | -            | Paper companion code. Won't be maintained. Extract knowledge, don't depend.                         |
 
+<a id="zedeus-nitter-repo"></a>
+
 ## zedeus/nitter (repo)
 
 | Candidate                                         | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                     |
@@ -442,6 +490,8 @@ investigate: 2, extract: 20, skip: 2
 | Parser versioning for unstable APIs               | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Experimental module for parallel parser development. Isolates blast radius of upstream API changes.       |
 | SECURITY_HEADERS_ABSENT                           | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | No CSP, X-Frame-Options, HSTS in web application. Zero defense-in-depth.                                  |
 
+<a id="https-docs-composio-dev-docs-website"></a>
+
 ## https://docs.composio.dev/docs (website)
 
 | Candidate                                             | Type                 | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -450,6 +500,8 @@ investigate: 2, extract: 20, skip: 2
 | Native vs MCP tradeoff framework with token cost data | design-principle     | extract  | 2026-04-07 | high    | E0     | high      | -            | Native: context control + interception. MCP: simplicity. 55K tokens for 5 MCP servers. Measure current 3-server overhead |
 | llms.txt standard for AI-readable documentation       | pattern              | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Standardized llms.txt at site root for LLM consumption. Park for JASON-OS documentation strategy.                        |
 | Event trigger dual model (webhook + polling)          | pattern              | defer    | 2026-04-07 | medium  | E2     | medium    | -            | Webhook for real-time capable services, polling for those without. Park for event-driven agent features.                 |
+
+<a id="https-gist-github-com-farzaa-c35ac0cfbeb957788650e36aabea836d-website"></a>
 
 ## https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d (website)
 
@@ -462,6 +514,8 @@ investigate: 2, extract: 20, skip: 2
 | Concurrency safety rules for LLM file ops                  | pattern              | defer    | 2026-04-07 | low     | E0     | medium    | -            | Re-read before edit, never delete without reading, rebuild indices at end. Partially covered by CLAUDE.md #12.           |
 | 7-command skill architecture as T24 reference design       | architecture-pattern | extract  | 2026-04-07 | high    | E1     | high      | -            | ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize. Direct reference for T24 command set. Absorb + breakdown |
 
+<a id="https-gist-github-com-karpathy-442a6bf555914893e9891c11519de94f-website"></a>
+
 ## https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f (website)
 
 | Candidate                                                | Type                   | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -471,6 +525,8 @@ investigate: 2, extract: 20, skip: 2
 | Answers-compound-into-wiki principle                     | design-principle       | extract  | 2026-04-07 | high    | E0     | high      | -            | Key gap: /deep-research and /brainstorm outputs archive to .research/ but don't feed back into active knowledge layer. T |
 | Index + Log dual navigation system                       | implementation-pattern | extract  | 2026-04-07 | low     | E0     | high      | -            | Already have: DOCUMENTATION_INDEX.md=index, SESSION_HISTORY.md+commit-log.jsonl=log, research-index.jsonl=research index |
 | qmd local markdown search (MCP + CLI)                    | tool                   | extract  | 2026-04-07 | high    | E1     | medium    | -            | Evaluate for JASON-OS search layer. Currently Grep+index-based. At 1000+ docs may need hybrid BM25/vector search.        |
+
+<a id="https-gist-github-com-kieranklaassen-4f2aba89594a4aea4ad64d753984b2ea-website"></a>
 
 ## https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea (website)
 
@@ -482,12 +538,16 @@ investigate: 2, extract: 20, skip: 2
 | Task dependency auto-unblock for skill pipeline design      | workflow-pattern     | defer    | 2026-04-07 | high    | E1     | high      | -            | blockedBy arrays with auto-unblock on completion. Evaluate for deep-research phase sequencing — could replace manual dis |
 | Subagent vs teammate decision framework                     | design-principle     | extract  | 2026-04-07 | medium  | E0     | high      | -            | Short-lived focused = subagent. Persistent coordination with messaging = teammate. Add to AGENT_ORCHESTRATION.md as deci |
 
+<a id="https-gist-github-com-maharshi-pandya-4aeccbe1dbaa7f89c182bd65d2764203-website"></a>
+
 ## https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203 (website)
 
 | Candidate                                             | Type             | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
 | ----------------------------------------------------- | ---------------- | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Exploration-over-conclusion as skill design principle | design-principle | defer    | 2026-04-07 | medium  | E0     | medium    | -            | Validates brainstorm Phase 1 philosophy. Potential: add minimum-exploration threshold to convergence loops before allowi |
 | Contemplator tag pattern (historical reference)       | pattern          | skip     | 2026-04-07 | low     | E0     | low       | -            | Claude native <thinking> blocks supersede this. Historical reference only — no action needed.                            |
+
+<a id="https-sidbharath-com-blog-claude-code-the-complete-guide-website"></a>
 
 ## https://sidbharath.com/blog/claude-code-the-complete-guide/ (website)
 
@@ -500,6 +560,8 @@ investigate: 2, extract: 20, skip: 2
 | Features without enforcement              | anti-pattern | defer    | 2026-04-09 | low     | E0     | high      | -            | Hooks as automation not gates. CLAUDE.md as memory not rules. Misses reliability layer.                      |
 | No compaction discussion                  | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | Treating context as unlimited. No state loss or checkpoint strategies.                                       |
 
+<a id="https-www-youtube-com-watch-v-oszdfnqmgrw-media"></a>
+
 ## https://www.youtube.com/watch?v=OSZdFnQmgRw (media)
 
 | Candidate                                   | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
@@ -509,6 +571,8 @@ investigate: 2, extract: 20, skip: 2
 | Obsidian Web Clipper                        | content      | defer    | 2026-04-09 | low     | E0     | medium    | -            | Chrome extension for web→markdown. Alternative ingestion for /analyze pipeline.                                          |
 | Scale threshold decision framework          | knowledge    | defer    | 2026-04-09 | low     | E0     | medium    | -            | Solo <thousands = markdown. Millions = RAG. Start simple.                                                                |
 | Overcomplicating knowledge retrieval        | anti-pattern | defer    | 2026-04-09 | low     | E0     | high      | -            | Jumping to vector DBs before validating structured markdown works at your scale.                                         |
+
+<a id="https-www-youtube-com-watch-v-qinuqwl4e-k-media"></a>
 
 ## https://www.youtube.com/watch?v=qINuQwL4E-k (media)
 

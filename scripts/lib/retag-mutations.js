@@ -28,6 +28,51 @@ function entryKey(e) {
 }
 
 /**
+ * Validate a single batch entry. Returns an array of error messages
+ * (empty when valid). Extracted from validateBatchShape to keep the
+ * top-level function within the cognitive-complexity budget.
+ */
+function validateBatchEntry(entry, index) {
+  if (!entry || typeof entry !== "object") {
+    return [`entries[${index}]: must be an object`];
+  }
+  const errors = [];
+  if (typeof entry.source !== "string" || !entry.source) {
+    errors.push(`entries[${index}]: source must be non-empty string`);
+  }
+  if (typeof entry.candidate !== "string" || !entry.candidate) {
+    errors.push(`entries[${index}]: candidate must be non-empty string`);
+  }
+  if (typeof entry.type !== "string" || !entry.type) {
+    errors.push(`entries[${index}]: type must be non-empty string`);
+  }
+  if (!Array.isArray(entry.tags)) {
+    errors.push(`entries[${index}]: tags must be an array`);
+  }
+  return errors;
+}
+
+/**
+ * Validate a single new_vocabulary item. Returns an array of error messages.
+ */
+function validateNewVocabItem(nv, index) {
+  if (!nv || typeof nv !== "object") {
+    return [`new_vocabulary[${index}]: must be an object`];
+  }
+  const errors = [];
+  if (typeof nv.tag !== "string" || !nv.tag) {
+    errors.push(`new_vocabulary[${index}]: tag must be non-empty string`);
+  }
+  if (typeof nv.category !== "string" || !VALID_CATEGORIES.includes(nv.category)) {
+    errors.push(`new_vocabulary[${index}]: category must be one of ${VALID_CATEGORIES.join("/")}`);
+  }
+  if (typeof nv.definition !== "string" || nv.definition.trim().length < 10) {
+    errors.push(`new_vocabulary[${index}]: definition must be a string of at least 10 characters`);
+  }
+  return errors;
+}
+
+/**
  * Validate a batch file's top-level shape.
  * @param {object} batch
  * @returns {{valid: boolean, errors: string[]}}
@@ -41,56 +86,47 @@ function validateBatchShape(batch) {
   if (typeof batch.batch_id !== "string" || batch.batch_id.trim() === "") {
     errors.push("batch_id must be a non-empty string");
   }
-  if (!Array.isArray(batch.entries)) {
-    errors.push("entries must be an array");
-  } else {
+  if (Array.isArray(batch.entries)) {
     for (let i = 0; i < batch.entries.length; i++) {
-      const e = batch.entries[i];
-      if (!e || typeof e !== "object") {
-        errors.push(`entries[${i}]: must be an object`);
-        continue;
-      }
-      if (typeof e.source !== "string" || !e.source) {
-        errors.push(`entries[${i}]: source must be non-empty string`);
-      }
-      if (typeof e.candidate !== "string" || !e.candidate) {
-        errors.push(`entries[${i}]: candidate must be non-empty string`);
-      }
-      if (typeof e.type !== "string" || !e.type) {
-        errors.push(`entries[${i}]: type must be non-empty string`);
-      }
-      if (!Array.isArray(e.tags)) {
-        errors.push(`entries[${i}]: tags must be an array`);
-      }
+      errors.push(...validateBatchEntry(batch.entries[i], i));
     }
+  } else {
+    errors.push("entries must be an array");
   }
   if (batch.new_vocabulary !== undefined) {
-    if (!Array.isArray(batch.new_vocabulary)) {
-      errors.push("new_vocabulary must be an array when present");
-    } else {
+    if (Array.isArray(batch.new_vocabulary)) {
       for (let i = 0; i < batch.new_vocabulary.length; i++) {
-        const nv = batch.new_vocabulary[i];
-        if (!nv || typeof nv !== "object") {
-          errors.push(`new_vocabulary[${i}]: must be an object`);
-          continue;
-        }
-        if (typeof nv.tag !== "string" || !nv.tag) {
-          errors.push(`new_vocabulary[${i}]: tag must be non-empty string`);
-        }
-        if (typeof nv.category !== "string" || !VALID_CATEGORIES.includes(nv.category)) {
-          errors.push(
-            `new_vocabulary[${i}]: category must be one of ${VALID_CATEGORIES.join("/")}`
-          );
-        }
-        if (typeof nv.definition !== "string" || nv.definition.trim().length < 10) {
-          errors.push(
-            `new_vocabulary[${i}]: definition must be a string of at least 10 characters`
-          );
-        }
+        errors.push(...validateNewVocabItem(batch.new_vocabulary[i], i));
       }
+    } else {
+      errors.push("new_vocabulary must be an array when present");
     }
   }
   return { valid: errors.length === 0, errors };
+}
+
+/**
+ * Find the reason a new vocabulary tag cannot be added, if any.
+ * Returns a human-readable suffix (e.g. "already exists (category: X)") or
+ * null when the tag is safe to add. Keeps addNewVocabulary's control flow
+ * flat and lets it skip the brittle "inspect last error" heuristic.
+ */
+function findVocabularyAdditionConflict(vocab, tag) {
+  if (vocab.tags[tag]) {
+    return `already exists (category: ${vocab.tags[tag].category})`;
+  }
+  const synonym = vocab.synonyms?.[tag];
+  if (synonym) {
+    return `is already a synonym for "${synonym}"`;
+  }
+  if (vocab.forbidden) {
+    for (const arr of Object.values(vocab.forbidden)) {
+      if (Array.isArray(arr) && arr.includes(tag)) {
+        return "is in the forbidden list";
+      }
+    }
+  }
+  return null;
 }
 
 /**
@@ -101,25 +137,11 @@ function addNewVocabulary(vocab, newVocabList) {
   const out = structuredClone(vocab);
   for (const nv of newVocabList) {
     const { tag, category, definition } = nv;
-    if (out.tags[tag]) {
-      errors.push(
-        `new_vocabulary: tag "${tag}" already exists (category: ${out.tags[tag].category})`
-      );
+    const conflict = findVocabularyAdditionConflict(out, tag);
+    if (conflict) {
+      errors.push(`new_vocabulary: tag "${tag}" ${conflict}`);
       continue;
     }
-    if (out.synonyms && out.synonyms[tag]) {
-      errors.push(`new_vocabulary: tag "${tag}" is already a synonym for "${out.synonyms[tag]}"`);
-      continue;
-    }
-    if (out.forbidden) {
-      for (const arr of Object.values(out.forbidden)) {
-        if (Array.isArray(arr) && arr.includes(tag)) {
-          errors.push(`new_vocabulary: tag "${tag}" is in the forbidden list`);
-          break;
-        }
-      }
-    }
-    if (errors.length > 0 && errors[errors.length - 1].includes(`"${tag}"`)) continue;
     out.tags[tag] = {
       category,
       definition: definition.trim(),
@@ -128,6 +150,21 @@ function addNewVocabulary(vocab, newVocabList) {
     };
   }
   return { vocab: out, errors };
+}
+
+/**
+ * Flatten vocab.forbidden (an object of category -> string[]) into a Set
+ * for O(1) membership checks during classification. Returns an empty Set
+ * when vocab.forbidden is missing or not an object.
+ */
+function buildForbiddenFlatSet(vocab) {
+  const set = new Set();
+  if (vocab.forbidden) {
+    for (const arr of Object.values(vocab.forbidden)) {
+      if (Array.isArray(arr)) for (const t of arr) set.add(t);
+    }
+  }
+  return set;
 }
 
 /**
@@ -143,22 +180,18 @@ function classifyTags(tags, vocab) {
   const canonicalTags = [];
   const invalid = [];
   const forbidden = [];
-  const forbiddenFlat = [];
-  if (vocab.forbidden) {
-    for (const arr of Object.values(vocab.forbidden)) {
-      if (Array.isArray(arr)) forbiddenFlat.push(...arr);
-    }
-  }
+  const forbiddenFlat = buildForbiddenFlatSet(vocab);
   for (const raw of tags) {
     const trimmed = String(raw).trim();
     if (!trimmed) continue;
-    if (forbiddenFlat.includes(trimmed)) {
+    if (forbiddenFlat.has(trimmed)) {
       forbidden.push({ tag: trimmed });
       continue;
     }
+    const synonym = vocab.synonyms?.[trimmed];
     let canonical = trimmed;
-    if (vocab.synonyms && vocab.synonyms[trimmed]) {
-      canonical = vocab.synonyms[trimmed];
+    if (synonym) {
+      canonical = synonym;
       synonymsApplied[trimmed] = canonical;
     }
     if (!vocab.tags[canonical]) {
