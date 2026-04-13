@@ -21,7 +21,7 @@
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
-const { sanitizeError } = require("../lib/security-helpers.js");
+const { sanitizeError, validatePathInDir } = require("../lib/security-helpers.js");
 const {
   safeAtomicWriteSync,
   isSafeToWrite,
@@ -247,7 +247,17 @@ function cmdApply(args) {
     console.error("error: --batch-file <path> required for apply");
     process.exit(1);
   }
-  const batchPath = path.resolve(args.batchFile);
+  // Path containment — reject --batch-file values that resolve outside
+  // PROJECT_ROOT (path traversal / symlink-redirect / arbitrary-file-read
+  // defense). Recurring pattern across PRs #374/#388/#389/#448.
+  let batchPath;
+  try {
+    const rel = validatePathInDir(PROJECT_ROOT, args.batchFile);
+    batchPath = path.resolve(PROJECT_ROOT, rel);
+  } catch (err) {
+    console.error(`error: --batch-file ${sanitizeError(err)}`);
+    process.exit(1);
+  }
   const batch = readBatchFile(batchPath);
 
   const shapeCheck = mutations.validateBatchShape(batch);
