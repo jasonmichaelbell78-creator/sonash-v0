@@ -97,6 +97,8 @@ function rewriteRawLines(rawLines, entryUpdatesByKey) {
 
 function serializeRawLines(rawLines) {
   const out = rawLines.map((x) => x.raw).join("\n");
+  // Empty rawLines must not produce a lone "\n" — that would corrupt an empty
+  // journal file. Trailing newline is added only when there is content.
   if (out.length === 0) return out;
   return out.endsWith("\n") ? out : out + "\n";
 }
@@ -224,8 +226,11 @@ function runRebuildIndex() {
     process.exit(2);
   }
   if (res.signal) {
+    // spawnSync sets signal=SIGTERM when the timeout option fires; distinguish
+    // that from an external kill so the operator log is unambiguous.
+    const timedOut = res.status === null && !res.error;
     console.error(
-      `warning: rebuild-index terminated by signal ${res.signal}. Run \`node scripts/cas/rebuild-index.js\` manually.`
+      `warning: rebuild-index ${timedOut ? "timed out (120s) and was " : ""}terminated by signal ${res.signal}. Run \`node scripts/cas/rebuild-index.js\` manually.`
     );
     process.exit(2);
   }
