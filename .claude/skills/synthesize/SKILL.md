@@ -175,7 +175,15 @@ acknowledged or fixed. Generate audit summary appended to `synthesis.md`.
    `.research/analysis/synthesis/` (D#4, D#5).
 3. Update `last_synthesized_at` on every processed source's `analysis.json`.
 4. Run `node scripts/cas/rebuild-index.js` to sync SQLite.
-5. Present `synthesis.md` inline to the user.
+5. **Update opportunities-ledger.jsonl** — for each entry in
+   `opportunity_matrix`, normalize `title_key` (lowercase + alnum-only + `_` for
+   spaces). Read existing ledger. If `title_key` already present: update
+   `last_seen_in_run` and increment `runs_seen`. If new: append row with
+   `status: "pending"`, `first_seen_in_run` and `last_seen_in_run` both set to
+   this run's date. Never mutate `status`, `adopted_at`, `adopted_to`,
+   `commit_sha`, `notes` on existing rows — those fields are controlled by
+   manual adoption updates, not by synthesis re-runs. Write atomically.
+6. Present `synthesis.md` inline to the user.
 
 ### PHASE 6: Opportunity Matrix
 
@@ -280,8 +288,80 @@ runs are not supported.
 - `/website-synthesis` (deprecated, redirect)
 - `/analyze` cross-type synthesis stub (rewritten to redirect)
 
+## Opportunities Ledger
+
+**File:** `.research/analysis/synthesis/opportunities-ledger.jsonl` (append or
+update in place; never truncated).
+
+The `opportunity_matrix` inside `synthesis.json` is a snapshot — it regenerates
+every run. The ledger is the **durable** record that tracks lifecycle status of
+every opportunity ever surfaced, across all synthesis runs.
+Extraction-journal.jsonl does the same job for per-source candidates; this
+ledger does it for cross-source opportunities.
+
+### Schema (per JSONL line)
+
+```json
+{
+  "title_key": "normalized_stable_key",
+  "rank": 1,
+  "title": "Human-readable opportunity title",
+  "first_seen_in_run": "YYYY-MM-DD",
+  "last_seen_in_run": "YYYY-MM-DD",
+  "runs_seen": 1,
+  "status": "pending",
+  "effort": "E0|E1|E2|E3",
+  "impact": "low|medium|high",
+  "suggested_route": "/brainstorm|/deep-plan|/deep-research|/analyze",
+  "evidence_sources": ["slug1", "slug2", "absence-signal:..."],
+  "adopted_at": null,
+  "adopted_to": null,
+  "commit_sha": null,
+  "deferred_to": null,
+  "notes": null
+}
+```
+
+### Status enum
+
+- `pending` — opportunity surfaced by synthesis, not yet acted upon
+- `adopted` — implemented; `adopted_at`, `adopted_to`, `commit_sha` filled
+- `skipped` — explicitly decided not to pursue; `notes` should explain
+- `deferred` — pushed to a todo or future milestone; `deferred_to` filled with
+  `{type: "todo"|"roadmap"|"milestone", id, file?}`
+- `stale` — auto-assigned to `pending` rows whose `last_seen_in_run` is 3+
+  synthesis runs old (optional future refinement)
+
+### `title_key` normalization
+
+Lowercase, strip all non-alphanumeric, spaces become underscores. Used as the
+dedup primary key across synthesis runs. Example:
+`"Publish SoNash /llms.txt from CLAUDE.md + SKILL.md corpus"` →
+`"publish_sonash_llms_txt_from_claude_md_skill_md_corpus"`. When this skill
+writes a key longer than 60 chars, truncate to first 60 chars.
+
+### Write path (during synthesis)
+
+See Phase 5 step 5. Summary: for each opportunity produced this run, upsert by
+`title_key`. New keys → insert with `status: "pending"`. Existing keys → update
+`last_seen_in_run` and `runs_seen` only.
+
+### Update path (adoption or deferral)
+
+Manual (or via a future helper script). Find the row by `title_key` or
+`rank+first_seen_in_run`, update `status` + the status-specific fields, atomic
+rewrite of the file. This skill does NOT mutate adopted/skipped/ deferred rows
+on re-synthesis.
+
+### Cross-references
+
+Synthesis runs with prior ledger data should suppress or annotate already-
+`adopted`/`skipped` opportunities in the interactive Opportunity Matrix menu.
+(Implementation deferred — first such run will add this.)
+
 ## Version History
 
-| Version | Date       | Changes                                           |
-| ------- | ---------- | ------------------------------------------------- |
-| 1.0     | 2026-04-09 | T29 Wave 2 — initial unified skill (Session #271) |
+| Version | Date       | Changes                                                                                  |
+| ------- | ---------- | ---------------------------------------------------------------------------------------- |
+| 1.1     | 2026-04-13 | Opportunities ledger (T29 Wave 5 Session #277). Phase 5 step 5 added; ledger schema doc. |
+| 1.0     | 2026-04-09 | T29 Wave 2 — initial unified skill (Session #271)                                        |
