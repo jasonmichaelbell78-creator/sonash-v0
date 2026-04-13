@@ -1,0 +1,86 @@
+{
+  "slug": "youtube-oszdfnqmgrw",
+  "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
+  "source_type": "media",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (3635 bytes)",
+        "value-map.json (2300 bytes)",
+        "creator-view.md (6093 bytes)",
+        "findings.jsonl (1211 bytes)",
+        "summary.md (1260 bytes)",
+        "deep-read.md (2546 bytes)",
+        "content-eval.jsonl (1187 bytes)",
+        "coverage-audit.jsonl (747 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "5 candidates in analysis.json",
+        "transcript_source: captions",
+        "transcript.md (15754 bytes)",
+        "5 extraction journal entries"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": [],
+      "notes": "media type: transcript.md present (15754 bytes), transcript_source=captions present in analysis.json"
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts across sections: analysis.json with Zod validation, extraction-journal.jsonl, EXTRACTIONS.md, /recall, /analyze router, CLAUDE.md Section 7 (Agent/Skill Triggers), SQLite FTS5 index. Well over 2 specific citations.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Flowing prose with analyst voice ('honestly refreshing', 'The simplicity gap is real'). Section 1 is paragraph-driven; Sections 2-4 connect logically. Only Sections 5-6 use tables/bullets, appropriate for candidate/avoid summaries.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 refs all verified: .research/analysis/<slug>/ exists, /recall skill (.claude/skills/recall/), /analyze skill (.claude/skills/analyze/), CLAUDE.md Section 7 Agent/Skill Triggers present, extraction-journal.jsonl exists, SQLite index at .research/content-analysis.db exists."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 5,
+      "6a_value_map_count": 5,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": [],
+      "notes": "Sampled 3 entries; all have schema_version, source_type, source, candidate, type, decision, decision_date, novelty, effort, relevance, tags. EXTRACTIONS.md has section at anchor https-www-youtube-com-watch-v-oszdfnqmgrw-media."
+    },
+    "7_cross_file": {
+      "verdict": "WARN",
+      "7a_index_depth_match": "WARN",
+      "7a_notes": "No entry for this slug/URL in .research/research-index.jsonl (15 entries, none match). Cannot compare depth. Likely because media handler does not register to research-index (which is repo-focused based on 'repo' field in entries).",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags (media/youtube/obsidian/rag/claude-code/knowledge-base/karpathy/file-structure) differ substantially from journal tags (obsidian/claude-code/llm-wiki/rag-alternative/knowledge-management/pipeline/cas-relevant/jason-os-relevant). Overlap on obsidian/claude-code. Signal only, not FAIL.",
+      "7c_last_synthesized_at": "PASS",
+      "7c_notes": "null — not yet synthesized"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "metadata_patch: Consider registering media sources into research-index.jsonl (currently repo-only) OR document that media uses EXTRACTIONS.md as canonical index and exempt from 7a.",
+    "metadata_patch: Optional tag alignment — reconcile analysis.json top-level tags with journal tag taxonomy; journal tags are richer (cas-relevant, jason-os-relevant) and could propagate up."
+  ]
+}

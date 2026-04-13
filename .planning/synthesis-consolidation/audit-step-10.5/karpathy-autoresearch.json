@@ -1,0 +1,83 @@
+{
+  "slug": "karpathy-autoresearch",
+  "source": "karpathy/autoresearch",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (9282 bytes)",
+        "value-map.json (5994 bytes)",
+        "creator-view.md (9552 bytes)",
+        "findings.jsonl (2945 bytes)",
+        "summary.md (4942 bytes)",
+        "deep-read.md (4667 bytes)",
+        "content-eval.jsonl (2753 bytes)",
+        "coverage-audit.jsonl (1564 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "12 candidates in analysis.json",
+        "12 extraction journal entries for karpathy/autoresearch"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": ["repomix-output.txt absent (SHOULD per §13.3 repo handler; non-blocking WARN)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Cites specific artifacts: program.md, prepare.py, train.py, analysis.ipynb, .gitignore (worktrees/, queue/, CLAUDE.md, AGENTS.md), results.tsv, TIME_BUDGET=300, val_bpb, miolini/autoresearch-macos fork. Well above 2-citation threshold.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Flowing analyst-voice paragraphs with connective reasoning. No compliance-report banners. Section 4 ('The Challenge') is a genuine essayistic argument, not scaffolded bullets.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 refs all resolve: review-metrics.jsonl and learning-routes.jsonl exist at .claude/state/; SKILL.md format exists (.claude/skills/*/SKILL.md); worktrees usage + 72-skill, 38-agent ecosystem are accurate project-state claims."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 12,
+      "6a_value_map_count": 12,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS",
+      "7b_notes": "analysis.json tags=[repo,research-tool,karpathy,autoresearch,python]; value-map candidates tagged [repo,research-tool]; journal entries use richer tag sets (ai-instructions, jason-os-relevant, skill-architecture, etc.). Three layers have three different tag vocabularies — informational drift, not a failure.",
+      "7a_notes": "research-index.jsonl depth=standard == analysis.json depth=standard.",
+      "7c_notes": "last_synthesized_at=null (not synthesized yet), valid."
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": true,
+      "notes": "trends.jsonl present in source dir — prior analysis exists (informational)."
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "optional: generate repomix-output.txt for repo handler completeness (SHOULD-level, non-blocking)",
+    "optional: reconcile tag vocabularies across analysis.json / value-map / journal to reduce 7b drift signal"
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "slug": "farzaa-gist-c35ac0cf",
+  "source": "https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d",
+  "source_type": "website",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (3290 bytes)",
+        "value-map.json (3860 bytes)",
+        "creator-view.md (10100 bytes)",
+        "findings.jsonl (4805 bytes)",
+        "summary.md (507 bytes)",
+        "deep-read.md (184 bytes)",
+        "content-eval.jsonl (171 bytes)",
+        "coverage-audit.jsonl (131 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "6 extraction journal entries for source URL"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": [
+        "Standard/Deep analysis has 0 candidates in analysis.json.candidates — value-map likely empty too (but value-map.json actually has 6 candidates; drift between analysis.json and value-map.json)"
+      ]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": []
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific K1-K6 candidates by name, references gaps (/wiki absorb, /wiki breakdown), maps 7 commands to concrete SoNash skills (/repo-analysis, /deep-research, /alerts), and references EXTRACTIONS.md entry counts (81 candidates, HKUDS 17 entries). Well over 2 specific citations.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Reads as analyst prose with connective flow, first-person observations ('This is the most directly useful gist...', 'farzaa understands...'), builds insights across sections. Not a compliance banner.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references /repo-analysis (.claude/skills/repo-analysis/), /repo-synthesis (deprecated but present), SESSION_CONTEXT.md (root, exists), MEMORY.md (.claude/canonical-memory/MEMORY.md, exists), SESSION_HISTORY.md (docs/SESSION_HISTORY.md, exists). All resolve."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 6,
+      "6a_value_map_count": 6,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "WARN",
+      "7a_index_depth_match": "WARN",
+      "7a_notes": "No entry for slug farzaa-gist-c35ac0cf in .research/research-index.jsonl. research-index.jsonl contains research topic entries (topicSlug/domain schema), not per-analysis-source entries, so absence is expected for analysis slugs. No depth mismatch to report.",
+      "7b_tag_consistency": "PASS",
+      "7b_notes": "analysis.json tags (claude-code, skill, personal-wiki, knowledge-management, llm-wiki, obsidian, subagents) align with journal tags (superset including cas-relevant, jason-os-relevant). No significant divergence.",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["metadata_patch"],
+  "proposed_fixes": [
+    "metadata_patch: Sync analysis.json.candidates with value-map.json.candidates (copy the 6 K1-K6 entries) OR update self-audit to read candidates from value-map.json as source of truth. Root cause: schema drift — two stores of the same data disagree.",
+    "metadata_patch: Address retroactive deep-read.md / content-eval.jsonl placeholders ('Re-analyze source for full Deep Read') OR mark analysis as complete-with-known-gaps to stop self-audit WARN cascade."
+  ]
+}

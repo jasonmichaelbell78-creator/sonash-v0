@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.30 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.31 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-12 (Session #276 — T40 COMPLETE + Wave 4 Step 10 CLOSED)
+2026-04-13 (Session #277 — T29 Step 10.5 CLOSED + Wave 5 synthesis SHIPPED)
 
 ## Purpose
 
@@ -141,23 +141,25 @@ committed by session-end pipeline.
 
 ## Session Tracking
 
-**Current Session Count**: 276 (since Jan 1, 2026)
+**Current Session Count**: 277 (since Jan 1, 2026)
 
-> **Session #276 handoff (T40 COMPLETE + Wave 4 Step 10 CLOSED, 2026-04-12):**
-> **Phase A (T40):** Executed `.planning/cas-tag-quality/PLAN.md` fully. All 4
-> parts (A/B/C + full retag migration) landed in 6 commits. 295 journal entries
-> retagged via 31 parallel source-scoped agents + semantic dedupe of 89 proposed
-> new vocab tags → 78 kept. Vocabulary: 97 → 175 tags. `validate --strict`
-> clean. **Phase B (T29 Wave 4 Step 10 close):** `/repo-analysis` on
-> `jina-ai/reader` Standard (14 candidates + 5 new vocab → 180 total). Audit
-> caught qmd/analysis.json in mixed nicholasgasior-quick/tobi-standard state;
-> rebuilt properly (new UUID, 18 candidates, §14.8 source consistency). 4 orphan
-> quick dirs deleted (reader, nitter, marker, ArchiveBox — superseded by
-> Standard twins). Wave 4 Step 10 **CLOSED** = 10/12 upgraded + 2 skipped by
-> decision (surya, tesseract). Synthesis corpus = **31 Standard sources**.
-> **Next session priority: push `planning-41226` + PR + `/pr-review` cycle; then
-> T29 Step 10.5 full-corpus audit (30 sources pending); then Wave 5
-> `/synthesize` E2E.** Branch: `planning-41226`.
+> **Session #277 handoff (T29 Step 10.5 CLOSED + Wave 5 synthesis SHIPPED,
+> 2026-04-13):** Session #277 executed the full T29 Step 10.5 remediation sprint
+> (11 commits A+D+G, C, J+K+L, E, F4-gists, H, B3, F4-composio, self-audit
+> expansion, E-extend, one-shot cleanup, description fill, aws-media promote)
+> taking corpus to **31/31 PASS** on expanded self-audit. Then ran Wave 5
+> `/synthesize` on the full 32-source corpus (4 parallel agents × 8 slices, 196
+> raw themes + 313 raw candidates, 20 meta-theme clusters, 16 absence signals).
+> Synthesis shipped to `.research/analysis/synthesis/synthesis.md` +
+> `synthesis.json` (Zod-validated). Adopted opportunities 1+2: scripts/docs/
+> generate-llms-txt.js + llms.txt (77 skills indexed),
+> scripts/check-slopsquat.js (soft-warn npm-registry verification). Created todo
+> T47 (Wave 6 source seed — 10 gap-fill sources). Initialized
+> `.research/analysis/synthesis/opportunities- ledger.jsonl` (mirrors
+> extraction-journal.jsonl pattern). `/synthesize` SKILL.md bumped to v1.1
+> documenting the ledger. **Next session priority: push `planning-41326` + PR;
+> then start on rank-3, 5, 6, 7, or 8 opportunities OR pull T47 Wave 6 into
+> active work.** Branch: `planning-41326`.
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -166,6 +168,54 @@ committed by session-end pipeline.
 ---
 
 ## Recent Session Summaries
+
+**Session #277** (T29 STEP 10.5 CLOSED + WAVE 5 SYNTHESIS SHIPPED):
+
+- **Branch**: `planning-41326` (15 commits this session on top of main)
+- **Commits**: `2b63c79d` (Cat A+D+G), `84c34324` (Cat C), `f97f4a06` (Cat
+  J+K+L), `c1dcd170` (Cat E), `803dc343` (Cat F4-gists), `6886d05b` (Cat H),
+  `8c9599cd` (Cat B3), `db6a04b8` (Cat F4-composio re-analysis), `bfb2a6c6`
+  (self-audit expansion), `f515acb3` (Cat E-extend + dedupe), `577667ab`
+  (one-shot scripts cleanup), `1271adea` (3 description fills), `d1a2e30d`
+  (aws-media promote quick→standard), `3936c5f1` (Wave 5 synthesis), `1dbeb891`
+  (opportunities 1+2 + T47 + ledger + SKILL.md v1.1).
+- **Step 10.5 remediation sprint (10 commits)**: Resolved 8 audit categories
+  (A+D+G, C, E, F4 gists+composio, H, B3, I3 deferrals) + 3 unenumerated drifts
+  surfaced during remediation (J absence_patterns, K gist candidate shape, L
+  description backfill) + Cat E-extend (archivebox + public-apis surfaced by new
+  strict check). Full-corpus self-audit: **31/31 PASS** with 8 new Step 10.5
+  checks folded into `scripts/cas/self-audit.js` (5a, 5c, 6a, 6b, 6c, 7b, 7c, 8;
+  skipped 5b heuristic; retired 7a per B3). Schema relaxed: `absence_patterns`
+  now accepts string OR object form.
+- **Wave 5 `/synthesize` full run**: 32-source corpus (excluded surya,
+  tesseract). 4 parallel agents × 8 slices → 196 raw themes, 313 raw candidates.
+  Merge + keyword-topic clustering: **20 meta-theme clusters** (10 strong 5+, 6
+  medium 3-4, 4 weak 1-2) + 16 absence signals. Top convergence: extraction
+  pipelines (16), plugin/hook governance (14), testing/coverage (14), Claude
+  Code platform (13), agent orchestration (10 multi-directional), memory systems
+  (10), MCP surface (7). Biggest gap: recovery-community UX (3-agent
+  confirmation — entire corpus is tech- infrastructure biased; SoNash's product
+  domain unaddressed). Wrote synthesis.md (prose, 8 sections) + synthesis.json
+  (Zod-validated), updated `last_synthesized_at` on all 32 sources, rebuilt
+  SQLite index (273 tags, 0 FK violations). 12-entry opportunity matrix ranked
+  with routes.
+- **Opportunities adopted**: Rank 1 — `scripts/docs/generate-llms-txt.js` +
+  `llms.txt` (77 skills, 17 KB, Jeremy Howard 2024-09 spec). Rank 2 —
+  `scripts/check-slopsquat.js` prototype (HEAD-checks npm registry for all deps;
+  soft-warn only, NOT yet pre-commit). Rank 4 — deferred to todo T47 (Wave 6 CAS
+  source seed: Sober Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase
+  reference, TS MCP SDK, whisper.cpp, monolith, readable-cli, SBOM).
+- **New tracking infrastructure**:
+  `.research/analysis/synthesis/ opportunities-ledger.jsonl` (mirrors
+  extraction-journal.jsonl pattern). Keyed by normalized `title_key`, status
+  enum (pending/adopted/skipped/ deferred/stale). Persists across synthesis
+  re-runs. Seeded with all 12 Wave 5 opportunities (2 adopted, 1 deferred to
+  T47, 9 pending). SKILL.md `synthesize` v1.1 documents the schema, status
+  lifecycle, write-path rules. eslint.config.mjs extended to allowlist new CJS
+  scripts.
+- **Retro**: (1) "Good overall. Many repos chosen specifically for CAS research,
+  so low immediate adoption expected — synthesis is useful for consolidation
+  even without new surprises." (2) "Looks good for now. Only time will tell."
 
 **Session #276** (T40 COMPLETE + T29 WAVE 4 STEP 10 CLOSED):
 
@@ -449,9 +499,10 @@ CAUGHT):
 | ---------------------------------- | ------------- | ------------------------------------------------------------------------------------------ |
 | **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                      |
 | **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                     |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded.            |
-| **T28 Content Analysis System**    | E2E DONE      | 31 sources, 295 candidates in journal (+outline, +qmd in #276 cont.).                      |
-| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10 in progress; exact count in `.research/analysis/` + `git log`.              |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | Wave 4 Step 10 CLOSED. 10/12 upgraded + 2 skipped by decision (surya, tesseract).          |
+| **T28 Content Analysis System**    | E2E DONE      | 32 Standard sources, ~309 unique candidates. aws-media promoted quick→standard (#277).     |
+| **T29 Synthesis Consolidation**    | W1-W5 DONE    | Step 10.5 CLOSED (31/31 PASS expanded self-audit). Wave 5 `/synthesize` SHIPPED (#277).    |
+| **Wave 5 Opportunity Ledger**      | INITIALIZED   | 12 entries. Ranks 1+2 adopted (llms.txt, slopsquat). Rank 4 deferred to T47. 9 pending.    |
 | **T40 CAS tag quality**            | COMPLETE      | All 4 parts + full retag landed Session #276. 295/295 retagged. `validate --strict` clean. |
 | **T39 Hook Drift Loop**            | CLOSED        | Drift loop + pattern-compliance 0/0 + Option D CC refactor. 316→0. Needs new PR.           |
 | **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                                    |
@@ -461,11 +512,12 @@ CAUGHT):
 | **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                     |
 | **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                     |
 
-**Current Branch**: `planning-41226`
+**Current Branch**: `planning-41326`
 
-**Test Status**: 3720 pass, 0 fail, 1 skip (post-T39 continuation)
+**Test Status**: 3720 pass, 0 fail, 1 skip (last verified Session #275)
 
-**Todos**: 16 active (7 P1), 13 completed — run `/todo` to manage
+**Todos**: 46 total; 12 pending — run `/todo` to manage. T47 added Session #277
+(Wave 6 source seed — synthesis opportunity rank 4).
 
 **Active ROADMAP Tracks** (see
 [ROADMAP.md §5](./ROADMAP.md#5--active-sprint-operational-visibility-p0)): Track
@@ -480,55 +532,54 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-0. **Push T40 + open PR** — `planning-41226` has 6 unpushed commits from Session
-   #276 completing the CAS tag quality plan. Push, create PR, run `/pr-review`
-   cycle. Once merged, T40 is fully retired.
+0. **Push `planning-41326` + open PR** — 15 unpushed commits from Session #277
+   (T29 Step 10.5 + Wave 5). After push, create PR, run `/pr-review` cycle.
+   Merging retires T29 Steps 10.5 + Wave 5 completely.
 
-1. **T39 continuation PR review + merge** — Review the T39 PR (branch was
-   `planning-4826`). Process any feedback via `/pr-review`. Once merged, T39 is
-   fully retired.
-2. **T39 follow-ups filed as TDMS** — File the non-blocking items surfaced by
-   the T3/T4 code-reviewer agents: (a) `streamLinesSync` UTF-8 multi-byte
-   boundary risk — swap to `StringDecoder` when a non-ASCII JSONL consumer
-   appears; (b) Per-skill `safe-fs.js` copies silently fall through to inline
-   fallback because the `symlink-guard` require path doesn't resolve from
-   `.claude/skills/<skill>/scripts/lib/` — functional but misleading comment,
-   consider upward-walk path resolution; (c) `parse-jsonl-line.js` header drift
-   between canonical and 8 skill copies — function bodies identical, only doc
-   block differs; decide parity contract; (d) ~54 callers still inline
-   `JSON.parse(line)` + try/catch instead of using `safeParseLine` — pass
-   detector but T39 migration intent unrealized.
-3. **60 pre-existing CC violations** (baselined in this session) — long-term
-   refactor target for the ecosystem audit checkers +
-   scripts/review-lifecycle.js
-   - scripts/archive/\*. Not urgent; baseline prevents regression.
-4. **T29 Wave 4 Step 10 continuation** — Resume the Standard upgrade batch at
-   **#3 of 12 = crawl4ai** (`unclecode/crawl4ai`). Apache-2.0. Standard depth is
-   now the default per SKILL.md v4.3 — no `--depth` flag needed. Remaining after
-   crawl4ai: marker, surya, reader, tesseract, ArchiveBox, outline, qmd, nitter,
-   lux-video-downloader. **Per CLAUDE.md guardrail #16, every phase must
-   complete in full or be explicitly skipped by user decision.**
-5. **T29 Wave 4 Step 10.5** — Full-corpus audit gate (every .research/analysis/
-   source). Runs AFTER Step 10 completes, BEFORE Wave 5.
-6. **T29 Wave 5** — E2E testing of `/synthesize` + 10-dim self-audit +
-   code-reviewer pass. Depends on Wave 4 completion.
-7. **Test `/recall`** — SQLite FTS5 query interface never tested with live data.
-8. **T31 — hook state file tracking redesign** — Category A telemetry vs
-   Category B learning, cross-locale sync destroys Cat B signal daily.
-   Investigate gitignore / per-locale subdirs / merge-friendly formats /
-   session-end reliability.
-9. **T33 — PreToolUse hook node PATH fix** — `node: command not found` on every
-   Write/Edit (non-blocking stderr noise). Needs fnm/nvm PATH fix.
-10. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
-11. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-12. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-13. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
-14. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
-15. **DEBT-45635 investigation** — `scripts/check-cc.js` exit 2 + trigger
-    detector scope (blocks clean push without SKIP_CC). May now be superseded by
-    the T39 CC baseline snapshot — verify.
-16. **DEBT-45646 investigation** — CI `patterns:check --all` exits 1 on test-
-    file WARNs (fails main CI).
+1. **Wave 5 opportunity matrix follow-through** — Ledger persists 12 entries at
+   `.research/analysis/synthesis/opportunities-ledger.jsonl`. 2 adopted (ranks
+   1, 2), 1 deferred to T47 (rank 4), 9 pending. Pick from:
+   - **Rank 3 (E1, medium):** `.claude-plugin/marketplace.json` distribution
+   - **Rank 5 (E2, medium):** Bidirectional doc-feature validator in pre-commit
+   - **Rank 6 (E2, high):** Prototype zero-schema MCP from SoNash scripts/ CLI
+   - **Rank 7 (E2, high):** `/deep-research` OAuth-scope-filtered MCP
+   - **Rank 8 (E2, high):** Meta-tool for SoNash skill/agent discovery
+   - **Rank 9 (E2, high):** SoNash Firebase-native reference doc
+   - **Rank 10 (E3, high):** `/deep-research` privacy-first on-device extraction
+   - **Rank 11 (E3, high):** `/deep-research` 42 CFR Part 2 / HIPAA architecture
+   - **Rank 12 (E2, medium):** Skill retirement workflow spec
+
+2. **T47 — Wave 6 CAS source seed** (created Session #277, see todos.jsonl) —
+   Queue 10 gap-fill sources from synthesis §2: Sober Grid, I Am Sober,
+   InTheRooms, 42 CFR Part 2 docs, Firebase reference, TS MCP SDK, whisper.cpp,
+   monolith, readable-cli, SBOM tool. After each round of `/analyze`, run
+   `/synthesize` again to diff against Wave 5.
+
+3. **Test `/recall`** — SQLite FTS5 query interface updated with Wave 5 sync but
+   never tested with live queries.
+
+4. **T45 — Hook-based skill compliance enforcement** — 5 highest-risk skills
+   (session-end, brainstorm, pr-review, skill-creator, repo-analysis). Hooks are
+   high-reliability vs checklists' medium-reliability.
+
+5. **T46 — Cross-locale memory sync STRATEGY** (research only) — Follow-up to
+   T43 one-shot merge. Needs `/deep-research` when prioritized.
+
+6. **T42 — Nous Research Hermes model series research** (P3).
+
+7. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
+
+8. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+
+9. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
+
+10. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
+
+11. **JASON-OS Domain 02a (T16)** — Brainstorm complete. Synthesis now provides
+    concrete starting patterns: outline's OAuth-scope-filtered MCP, archivebox's
+    zero-schema MCP, composio's meta-tool discovery pattern.
+
+12. **DEBT-45635 / DEBT-45646 investigations** (carried over).
 
 ### After Debt-Runner
 

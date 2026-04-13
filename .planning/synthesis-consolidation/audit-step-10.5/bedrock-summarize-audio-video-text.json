@@ -1,0 +1,81 @@
+{
+  "slug": "bedrock-summarize-audio-video-text",
+  "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (10871 bytes)",
+        "value-map.json (5842 bytes)",
+        "creator-view.md (10860 bytes)",
+        "findings.jsonl (3746 bytes)",
+        "summary.md (6055 bytes)",
+        "deep-read.md (2350 bytes)",
+        "content-eval.jsonl (3931 bytes)",
+        "coverage-audit.jsonl (1777 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "10 candidates in analysis.json",
+        "10 extraction journal entries"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": ["repomix-output.txt absent (SHOULD for repo source_type, not MUST)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific handler files: YouTubeReaderHandler, AmazonTranscriptionHandler, HTTPHandler, AmazonComprehendPIITokenizeHandler/UntokenizeHandler, HandlerFactory, AnonymizeHandler, .env.default, bedrock.py, OpenAIWhisperTranscriptionHandler. Far exceeds 2-citation threshold.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Sections 1, 2, 4, 6 are paragraphs with connective flow and analyst voice. Tables only in 3 and 5 where comparison/catalog is appropriate. No PASS/FAIL banners or compliance-report tone.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references SoNash privacy-first, JASON-OS skill architecture, .claude/skills/ discovery, website-analysis, repo-analysis, T27 scope. Concrete path .claude/skills/ resolves. All references are conceptual/architectural, not broken file paths."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 10,
+      "6a_value_map_count": 10,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "N/A",
+      "7a_notes": "research-index.jsonl tracks deep-research topics, not analysis slugs. No entry expected for this source.",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags/semantic_tags are generic (repo, tool-demo, bedrock, summarize...); journal tags are more specific (media-extraction, pipeline, privacy-preserving, cas-relevant, jason-os-relevant). Signal only — not a hard gate.",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "optional: add repomix-output.txt for completeness (SHOULD artifact)",
+    "optional: align analysis.json semantic_tags with journal tag vocabulary for cross-source recall consistency"
+  ]
+}

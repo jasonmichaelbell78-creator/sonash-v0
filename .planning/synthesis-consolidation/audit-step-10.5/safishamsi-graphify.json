@@ -1,0 +1,80 @@
+{
+  "slug": "safishamsi-graphify",
+  "source": "safishamsi/graphify",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (6424 bytes)",
+        "value-map.json (5009 bytes)",
+        "creator-view.md (10030 bytes)",
+        "findings.jsonl (1912 bytes)",
+        "summary.md (2380 bytes)",
+        "deep-read.md (5709 bytes)",
+        "content-eval.jsonl (4964 bytes)",
+        "coverage-audit.jsonl (990 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "9 candidates in analysis.json",
+        "9 extraction journal entries for safishamsi/graphify"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": []
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts: skill.md, skill-windows.md, SECURITY.md, serve.py, extract.py, ARCHITECTURE.md, graph.json — well over the 2-citation threshold across 6 sections.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Paragraphs with connective flow and analyst voice (e.g., 'The dual-pass extraction model is the core insight.'). Tables appear only in the Comparison and Candidates sections where structure is appropriate.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references resolve: docs/agent_docs/SECURITY_CHECKLIST.md, .claude/skills/repo-analysis/SKILL.md, .claude/skills/website-analysis/SKILL.md, .claude/skills/recall/SKILL.md, analysis.json schema_version (verified in analysis.json)."
+    },
+    "6_extractions": {
+      "verdict": "FAIL",
+      "6a_journal_count": 9,
+      "6a_value_map_count": 10,
+      "6a_verdict": "FAIL",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "PASS",
+      "7a_index_depth_match": "PASS",
+      "7b_tag_consistency": "WARN",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["missing_journal_entries"],
+  "proposed_fixes": [
+    "missing_journal_entries: Backfill extraction-journal.jsonl entry for 'ARCHITECTURE.md single-page format' candidate (present in value-map.json and creator-view.md Section 5 T1 table, but missing from journal and analysis.json candidates). Use schema_version 2.0 matching existing 9 entries, decision 'defer', source 'safishamsi/graphify', type 'knowledge', novelty 'medium', effort 'E0', relevance 'medium'.",
+    "metadata_patch: Consider whether analysis.json candidates array (9 entries) should also include ARCHITECTURE.md single-page format to match value-map.json (10 entries). Silent drift between these two artifacts.",
+    "tag_consistency: Journal tags include CAS-relevant/jason-os-relevant enrichment tags absent from analysis.json semantic_tags and value-map tags. Not a gate, but signals post-analysis tag enrichment that was not propagated upstream."
+  ]
+}

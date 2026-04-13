@@ -1,0 +1,87 @@
+{
+  "slug": "lux-video-downloader",
+  "source": "iawia002/lux",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (7195 bytes)",
+        "value-map.json (3633 bytes)",
+        "creator-view.md (6030 bytes)",
+        "findings.jsonl (3505 bytes)",
+        "summary.md (1220 bytes)",
+        "deep-read.md (3246 bytes)",
+        "content-eval.jsonl (1953 bytes)",
+        "coverage-audit.jsonl (1094 bytes)",
+        "schema_version: 3.0",
+        "5 candidates in analysis.json",
+        "5 extraction journal entries for iawia002/lux"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": ["Zod schema validation: FAIL — id: Invalid UUID; : Invalid input"]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": ["repomix-output.txt not present (SHOULD for source_type=repo)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Cites specific files: script/generate_github_action_template.js, extractors/extractors.go, app/register.go, CONTRIBUTING.md (23-line), Twitter+Weibo credential files — well beyond 2 specific citations across sections",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Flowing paragraphs with analyst voice; tables only in Section 5 (knowledge candidates); no compliance scaffolding; reads conversationally",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2/3 references verified: CLAUDE.md exists, 72+ SKILL.md (verified), CONVENTIONS.md at .claude/skills/shared/CONVENTIONS.md, REFERENCE.md per skill exists, .env.local present, .github/workflows/ has 17 workflows (matches '17+'), Firebase/App Check infrastructure exists"
+    },
+    "6_extractions": {
+      "verdict": "FAIL",
+      "6a_journal_count": 5,
+      "6a_value_map_count": 6,
+      "6a_verdict": "FAIL",
+      "6a_notes": "value-map.json uses split arrays (1 pattern + 2 knowledge + 3 antiPattern = 6); journal has 5. Missing: 'Per-site CI isolation pattern' (low/low). No explicit skipped/rejected disposition in value-map to exclude it. Note: analysis.json candidates array also = 5, so drift is value-map↔analysis.json, not necessarily journal gap.",
+      "6b_extractions_md_section": "PASS",
+      "6b_notes": ".research/EXTRACTIONS.md line 175-177 has anchor iawia002-lux-repo with ## iawia002/lux (repo) heading; TOC row at line 23 shows 5/1/1/3/0",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7a_notes": "No entry for lux-video-downloader (or iawia002/lux) in .research/research-index.jsonl — missing index entry entirely (silent-drift Session #273 class)",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags include 'video-downloader' (domain); value-map per-candidate tags use ['architecture','plugin','go']; journal tags include 'jason-os-relevant','sonash-relevant' routing tags absent from analysis.json. Sets overlap but are not harmonized.",
+      "7c_last_synthesized_at": "PASS",
+      "7c_notes": "last_synthesized_at: null (not yet synthesized)"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["schema_drift", "metadata_patch", "missing_journal_entries"],
+  "proposed_fixes": [
+    "schema_drift: Fix Zod schema FAIL — 'id: Invalid UUID' (current id 'lux-video-downloader-2026-04-12' is not UUID format); either relax schema or migrate id to UUID",
+    "metadata_patch: Add research-index.jsonl entry for lux-video-downloader with depth=standard, source_type=repo, output_dir=.research/analysis/lux-video-downloader",
+    "missing_journal_entries: Decide disposition for 'Per-site CI isolation pattern' — either backfill journal entry (defer/skip) OR mark as rejected in value-map; reconcile value-map (6) with analysis.json candidates (5)",
+    "metadata_patch: Create state file per CONVENTIONS 16 (pipeline tail tags/retro/routing)",
+    "missing_artifacts: Optionally generate repomix-output.txt (SHOULD for repo source_type)",
+    "metadata_patch: Harmonize tags across analysis.json ↔ value-map ↔ journal (add jason-os-relevant/sonash-relevant routing tags to analysis.json semantic_tags)"
+  ]
+}

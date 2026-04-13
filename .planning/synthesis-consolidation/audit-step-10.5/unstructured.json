@@ -1,0 +1,84 @@
+{
+  "slug": "unstructured",
+  "source": "unstructured-io/unstructured",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (6447 bytes)",
+        "value-map.json (6906 bytes)",
+        "creator-view.md (12876 bytes)",
+        "findings.jsonl (4527 bytes)",
+        "summary.md (4996 bytes)",
+        "deep-read.md (8773 bytes)",
+        "content-eval.jsonl (4530 bytes)",
+        "coverage-audit.jsonl (1894 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "13 extraction journal entries for unstructured-io/unstructured"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": [
+        "Standard/Deep analysis has 0 candidates — value-map likely empty too (FALSE-POSITIVE: self-audit reads analysis.json.candidates=[] but value-map.json has 13 candidates; metadata drift between analysis.json and value-map.json)"
+      ]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": ["source_type=repo but no repomix-output.txt present (SHOULD per §13.3)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Cites specific files: unstructured/partition/auto.py, file_utils/model.py, documents/elements.py, chunking/base.py, ontology.py, test_unstructured_ingest/, cleaners/core.py. Well beyond 2-citation threshold.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Reads as analyst prose: paragraphs with connective flow, first-person assessment (\"This is the single most architecturally relevant repo\"), insights build across sections. Table in Section 3 is comparison scaffolding, not compliance banner.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references 4 skills (repo-analysis, website-analysis, repo-synthesis, website-synthesis) — all exist under .claude/skills/. Also references extraction-journal.jsonl and value-map.json — both exist. No broken refs."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 13,
+      "6a_value_map_count": 13,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7a_notes": "No entry for unstructured-io/unstructured (or slug 'unstructured') in .research/research-index.jsonl. Silent-drift bug per Session #273 — source was analyzed but never registered in index.",
+      "7b_tag_consistency": "PASS",
+      "7b_notes": "semantic_tags in analysis.json (repo, framework, python, data-pipelines, document-parser, etc.) align with candidate tags in value-map and journal (document-extraction, extraction, pipeline, cas-relevant).",
+      "7c_last_synthesized_at": "PASS",
+      "7c_notes": "analysis.json last_synthesized_at=null (valid — not synthesized yet)"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["metadata_patch", "schema_drift"],
+  "proposed_fixes": [
+    "metadata_patch: Append research-index.jsonl entry for unstructured slug ({repo, url, scan_date: 2026-04-07, depth: standard, output_dir: .research/analysis/unstructured, skill: repo-analysis}) to eliminate silent-drift gap",
+    "schema_drift: Sync analysis.json.candidates with value-map.json.candidates (currently [] vs 13 entries). Either populate analysis.json candidates from value-map or update self-audit.js to read candidate count from value-map.json for Standard/Deep depth",
+    "missing_artifacts: (optional) Generate repomix-output.txt for repo source type per §13.3 SHOULD, or document why absent (e.g., large 236MB repo made repomix impractical)"
+  ]
+}

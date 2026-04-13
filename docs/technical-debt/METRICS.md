@@ -30,8 +30,8 @@ distribution.
 
 | Metric          | Value |
 | --------------- | ----- |
-| Total Items     | 8500  |
-| Open Items      | 7299  |
+| Total Items     | 8502  |
+| Open Items      | 7301  |
 | Resolved        | 1127  |
 | False Positives | 74    |
 | Resolution Rate | 13%   |
@@ -42,7 +42,7 @@ distribution.
 
 | Status         | Count |
 | -------------- | ----- |
-| NEW            | 2149  |
+| NEW            | 2151  |
 | VERIFIED       | 5150  |
 | IN_PROGRESS    | 0     |
 | RESOLVED       | 1127  |
@@ -56,7 +56,7 @@ distribution.
 | ------------- | ----- | ---------- |
 | S0 (Critical) | 26    | 0%         |
 | S1 (High)     | 1374  | 16%        |
-| S2 (Medium)   | 3457  | 41%        |
+| S2 (Medium)   | 3459  | 41%        |
 | S3 (Low)      | 3643  | 43%        |
 
 ---
@@ -67,7 +67,7 @@ distribution.
 | ------------------------ | ----- |
 | code-quality             | 4723  |
 | documentation            | 982   |
-| process                  | 734   |
+| process                  | 736   |
 | security                 | 731   |
 | refactoring              | 670   |
 | ai-optimization          | 254   |
@@ -120,7 +120,7 @@ _...and 1259 more S1 items_
 
 | Metric               | Value      |
 | -------------------- | ---------- |
-| Verification Queue   | 2149 items |
+| Verification Queue   | 2151 items |
 | Avg Age (Open Items) | 59 days    |
 | Oldest Item Age      | 73 days    |
 | Oldest Item          | DEBT-0002  |
@@ -139,7 +139,7 @@ _...and 1259 more S1 items_
 | sonarcloud-paste             | 286   |
 | context                      | 252   |
 | roadmap                      | 172   |
-| manual                       | 100   |
+| manual                       | 102   |
 | intake                       | 64    |
 | pr-deferred                  | 43    |
 | pr-review                    | 16    |

@@ -1,0 +1,82 @@
+{
+  "slug": "maharshi-pandya-gist-4aeccbe1",
+  "source": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
+  "source_type": "website",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (3180 bytes)",
+        "value-map.json (1414 bytes)",
+        "creator-view.md (8597 bytes)",
+        "findings.jsonl (2645 bytes)",
+        "summary.md (534 bytes)",
+        "deep-read.md (202 bytes)",
+        "content-eval.jsonl (171 bytes)",
+        "coverage-audit.jsonl (131 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "2 extraction journal entries"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": [
+        "Standard/Deep analysis has 0 candidates — value-map likely empty too (false-positive: analysis.json.candidates=[] but value-map.json has 2 candidates — analysis.json candidates[] array was not populated from value-map)"
+      ]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": []
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites K1/K2 in Section 6, names brainstorm Phase 1, convergence loops, /deep-plan, /deep-research, T4 Multi-layer memory — multiple specific citations across sections",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Conversational paragraph-driven prose with analyst voice; insights build across sections (e.g., 'single breath vs respiratory system' metaphor); no PASS/FAIL banner scaffolding",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Verified .claude/skills/brainstorm, convergence-loop, deep-plan, deep-research all exist; .claude/agents/code-reviewer.md exists — all home-repo references resolve"
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 2,
+      "6a_value_map_count": 2,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "WARN",
+      "7a_index_depth_match": "N/A",
+      "7a_notes": "No entry for this slug in .research/research-index.jsonl (file tracks deep-research topics, not /analyze sources — expected N/A)",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags include 'gpt-4o','claude','system-prompt' not all present in journal entry tags; journal entries add 'cas-relevant','jason-os-relevant','mental-model' not in analysis.json — drift is informational",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["metadata_patch"],
+  "proposed_fixes": [
+    "metadata_patch: Populate analysis.json.candidates[] from value-map.json candidates (K1, K2) so self-audit candidate-count check stops failing. Current analysis.json has candidates=[] while value-map has 2 entries — self-audit reports 'Standard/Deep analysis has 0 candidates' as FAIL. Under-the-hood metadata sync, not a re-analysis.",
+    "metadata_patch (optional): Reconcile tag drift between analysis.json.tags and journal entry tags arrays (7b WARN)."
+  ]
+}

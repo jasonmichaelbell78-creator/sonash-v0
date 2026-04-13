@@ -1,0 +1,85 @@
+{
+  "slug": "youtube-transcript-api",
+  "source": "jdepoix/youtube-transcript-api",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (8031 bytes)",
+        "value-map.json (6544 bytes)",
+        "creator-view.md (9989 bytes)",
+        "findings.jsonl (3247 bytes)",
+        "summary.md (3399 bytes)",
+        "deep-read.md (3353 bytes)",
+        "content-eval.jsonl (2356 bytes)",
+        "coverage-audit.jsonl (1308 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "10 candidates in analysis.json",
+        "10 extraction journal entries for jdepoix/youtube-transcript-api"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": ["repomix-output.txt absent (SHOULD, not MUST for repo handler)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites _transcripts.py TranscriptList.build(), _errors.py (RequestBlocked.cause, CAUSE_MESSAGE), formatters.py (_seconds_to_timestamp), proxies.py (WebshareProxyConfig, GenericProxyConfig), and README IP ban section across sections 1, 2, and 6. Well over the 2-citation bar.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Conversational analyst voice (e.g., 'It's the difference between OCR-ing a printed page and just reading it.'). Paragraph flow with connective prose; Section 3 uses a comparison table appropriately, not as compliance scaffolding.",
+      "5c_home_repo_refs": "WARN",
+      "5c_notes": "Section 2 references home projects (T27, JASON-OS) and generic stack descriptors (npm workspace, TypeScript strict) but names no specific SoNash files/scripts/features to verify. Acceptable for external-library analysis, recorded as WARN per spec."
+    },
+    "6_extractions": {
+      "verdict": "FAIL",
+      "6a_journal_count": 10,
+      "6a_value_map_count": 11,
+      "6a_verdict": "FAIL",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": [],
+      "notes": "value-map.json lists 11 candidates but analysis.json.candidates and extraction-journal.jsonl both contain only 10. Missing candidate: '100% coverage + 2-dep library packaging' (T2 pattern) — present in value-map.json and creator-view.md Section 5 T2 table, absent from analysis.json and journal. No explicit 'skipped/rejected' disposition recorded."
+    },
+    "7_cross_file": {
+      "verdict": "WARN",
+      "7a_index_depth_match": "WARN",
+      "7a_notes": "research-index.jsonl contains research-topic entries only (15 rows, all L1/L2/L3 research topics); no per-analysis slug entries exist for any source. Cannot verify depth match — not a silent-drift failure for this source.",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json semantic_tags=[repo,library,youtube,transcript,repository]. value-map and journal candidate tags are uniformly [repo,library] — much narrower than analysis-level tags. Signal of under-tagged candidates, not a hard gate.",
+      "7c_last_synthesized_at": "PASS",
+      "7c_notes": "last_synthesized_at: null (not yet synthesized — valid)."
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["missing_journal_entries"],
+  "proposed_fixes": [
+    "missing_journal_entries: backfill analysis.json.candidates and extraction-journal.jsonl with the missing '100% coverage + 2-dep library packaging' candidate (T2 pattern, novelty=medium, effort=E1, relevance=medium, source_file=pyproject.toml) to match value-map.json candidate count (10 → 11). If intentionally dropped, record explicit 'skipped' disposition in value-map.json.",
+    "metadata_patch: consider propagating analysis.json.tags (youtube, transcript) down to candidate-level tags in value-map.json and journal entries so /recall filters hit this source on topic-specific queries.",
+    "missing_artifacts: optional — generate repomix-output.txt to complete repo-handler SHOULD artifacts.",
+    "metadata_patch: add state file capturing pipeline-tail completion (tags/retro/routing) per CONVENTIONS 16 warning."
+  ]
+}

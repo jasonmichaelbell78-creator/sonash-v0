@@ -1,0 +1,83 @@
+{
+  "slug": "qmd",
+  "source": "tobi/qmd",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "PASS",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (11566 bytes)",
+        "value-map.json (12315 bytes)",
+        "creator-view.md (17803 bytes)",
+        "findings.jsonl (2273 bytes)",
+        "summary.md (9705 bytes)",
+        "deep-read.md (7169 bytes)",
+        "content-eval.jsonl (8453 bytes)",
+        "coverage-audit.jsonl (3976 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "18 candidates in analysis.json",
+        "18 extraction journal entries for tobi/qmd"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": [
+        "repo handler: repomix-output.txt SHOULD exist but is absent in .research/analysis/qmd/"
+      ]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites 8+ specific artifacts: .claude-plugin/marketplace.json, docs/SYNTAX.md, src/mcp/server.ts, test/eval-harness.ts, src/bench/, skills/release/SKILL.md, finetune/, experiments/gepa/best_prompt_glm.txt",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Strong analyst voice with paragraph-driven sections (1, 2, 4). Connective flow between observations. Section 3 uses table where appropriate. No PASS/FAIL banner scaffolding.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references verified: .claude/skills/ (81 skills confirmed), recall skill (.claude/skills/recall/), synthesize skill (.claude/skills/synthesize/), extraction-journal.jsonl (exists), dependency-manager agent (.claude/agents/dependency-manager.md), CLAUDE.md (exists). All resolve."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 18,
+      "6a_value_map_count": 18,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "WARN",
+      "7a_index_depth_match": "N/A",
+      "7a_notes": "research-index.jsonl tracks deep-research topics (15 entries, all topicSlug-keyed), not CAS analysis sources. No entry for slug=qmd exists; this index does not catalog analysis sources, so depth comparison is not applicable.",
+      "7b_tag_consistency": "PASS",
+      "7b_notes": "Tags consistent across analysis.json semantic_tags, value-map candidates, and journal entries (claude-code, mcp, skill-architecture, jason-os-relevant, sonash-relevant recur).",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["none"],
+  "proposed_fixes": [
+    "missing_artifacts (low priority): generate repomix-output.txt for tobi/qmd to satisfy §13.3 SHOULD for repo handler",
+    "metadata_patch (low priority): add state file noting pipeline tail completion (CONVENTIONS 16) or document why it was skipped"
+  ]
+}

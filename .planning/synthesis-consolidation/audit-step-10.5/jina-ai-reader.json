@@ -1,0 +1,81 @@
+{
+  "slug": "jina-ai-reader",
+  "source": "jina-ai/reader",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 0,
+  "checks": {
+    "1_schema": {
+      "verdict": "PASS",
+      "pass": [
+        "analysis.json (12232 bytes)",
+        "value-map.json (11545 bytes)",
+        "creator-view.md (16915 bytes)",
+        "findings.jsonl (6701 bytes)",
+        "summary.md (2537 bytes)",
+        "deep-read.md (8959 bytes)",
+        "content-eval.jsonl (9503 bytes)",
+        "coverage-audit.jsonl (5830 bytes)",
+        "schema_version: 3.0",
+        "Zod schema validation: PASS",
+        "14 candidates in analysis.json",
+        "14 extraction journal entries for jina-ai/reader"
+      ],
+      "warn": [
+        "No state file - pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": []
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "PASS",
+      "issues": ["repomix-output.txt absent (SHOULD for repo handler - not a hard FAIL)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites src/api/crawler.ts, src/services/serp/, src/services/snapshot-formatter.ts, src/cloud-functions/adaptive-crawler.ts, README.md x-* catalog, dimension-architecture.md - well over 2 specific artifact references across sections",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Flowing paragraphs with analyst voice, first-person framing ('You are three weeks out of Session #276'), connective reasoning between sections. No PASS/FAIL banners, no bullet-scaffolding per section.",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Section 2 references superpowers-chrome (skill, exists), /website-analysis (skill, exists), scripts/lib/ (exists), CLAUDE.md (exists), docs/agent_docs/* (exists). All resolve."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 14,
+      "6a_value_map_count": 14,
+      "6a_verdict": "PASS",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7a_notes": "research-index.jsonl has NO entry for slug jina-ai-reader (only one entry in entire index: repo-analysis-skill). Cannot verify depth consistency - entry is missing.",
+      "7b_tag_consistency": "PASS",
+      "7c_last_synthesized_at": "PASS"
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["metadata_patch"],
+  "proposed_fixes": [
+    "metadata_patch: Add research-index.jsonl entry for slug=jina-ai-reader with depth=standard, source=jina-ai/reader, source_type=repo, analyzed_at=2026-04-12 (systemic issue - index appears broadly incomplete, only 1 of 15 expected entries present)",
+    "missing_artifacts (low-priority): Generate repomix-output.txt for repo handler completeness (SHOULD, not MUST)",
+    "missing_artifacts (low-priority): Create state file to record pipeline-tail completion status per CONVENTIONS 16"
+  ]
+}

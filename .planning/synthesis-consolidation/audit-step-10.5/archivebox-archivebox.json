@@ -1,0 +1,84 @@
+{
+  "slug": "archivebox-archivebox",
+  "source": "ArchiveBox/ArchiveBox",
+  "source_type": "repo",
+  "depth": "standard",
+  "audit_date": "2026-04-13",
+  "overall": "FAIL",
+  "self_audit_exit_code": 1,
+  "checks": {
+    "1_schema": {
+      "verdict": "FAIL",
+      "pass": [
+        "analysis.json (8303 bytes)",
+        "value-map.json (7714 bytes)",
+        "creator-view.md (5615 bytes)",
+        "findings.jsonl (4757 bytes)",
+        "summary.md (1487 bytes)",
+        "deep-read.md (5826 bytes)",
+        "content-eval.jsonl (4057 bytes)",
+        "coverage-audit.jsonl (1798 bytes)",
+        "schema_version: 3.0",
+        "7 candidates in analysis.json",
+        "7 extraction journal entries"
+      ],
+      "warn": [
+        "No state file — pipeline tail (tags, retro, routing) may have been skipped (CONVENTIONS 16)"
+      ],
+      "fail": ["Zod schema validation: FAIL — id: Invalid UUID; : Invalid input"]
+    },
+    "2_must_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "3_should_artifacts": {
+      "verdict": "PASS",
+      "missing": [],
+      "empty": []
+    },
+    "4_handler_specific": {
+      "verdict": "WARN",
+      "issues": ["repomix-output.txt missing (SHOULD for repo source_type)"]
+    },
+    "5_content_quality": {
+      "verdict": "PASS",
+      "5a_specific_citations": "PASS",
+      "5a_notes": "Creator View cites specific artifacts: archivebox/mcp/README.md, server.py, archivebox/hooks.py, .github/workflows/claude.yml, and CLAUDE.md. 5+ specific citations across sections 1-3.",
+      "5b_prose_style": "PASS",
+      "5b_notes": "Paragraph-driven analyst voice with connective flow; bullet usage limited to Section 2 enumeration and the standard Knowledge Candidates tables (expected template).",
+      "5c_home_repo_refs": "PASS",
+      "5c_notes": "Home-repo refs verified: .claude/settings.json exists; scripts/ has 3826 files (matches '100+ files' claim); T21 orphan detection referenced conceptually. No broken paths."
+    },
+    "6_extractions": {
+      "verdict": "PASS",
+      "6a_journal_count": 7,
+      "6a_value_map_count": 10,
+      "6a_verdict": "PASS",
+      "6a_notes": "analysis.json canonical candidates array = 7; journal = 7 (self-audit PASS). value-map.json has 10 total (3 pattern + 4 knowledge + 3 antiPattern); 3 value-map candidates (Plugin isolation, PERMISSIVE_DEFAULTS_FOR_SELF_HOSTED, Strict assertion) not promoted to analysis.json nor journal — informational drift, not a gating failure per self-audit.",
+      "6b_extractions_md_section": "PASS",
+      "6c_per_candidate_schema": "PASS",
+      "6c_missing_fields": []
+    },
+    "7_cross_file": {
+      "verdict": "FAIL",
+      "7a_index_depth_match": "FAIL",
+      "7a_notes": "No entry for archivebox-archivebox (or ArchiveBox/ArchiveBox) in .research/research-index.jsonl; 15 entries scanned, none match. Cannot verify depth parity — missing index entry is silent drift.",
+      "7b_tag_consistency": "WARN",
+      "7b_notes": "analysis.json tags focus on source classification (repo, application, mcp, hooks, claude-md, python, web-archiving, anti-pattern); journal entries use richer per-candidate tags (jason-os-relevant, sonash-relevant, best-practices, orchestration, devex) not reflected in value-map candidates which have no tags field. Divergence expected but worth noting.",
+      "7c_last_synthesized_at": "PASS",
+      "7c_notes": "last_synthesized_at: null (not synthesized yet) — valid."
+    },
+    "8_reanalysis": {
+      "verdict": "NOTE",
+      "trends_jsonl_present": false
+    }
+  },
+  "failure_classes": ["schema_drift", "metadata_patch"],
+  "proposed_fixes": [
+    "schema_drift: Fix Zod validation failure on analysis.json — id field 'archivebox-archivebox-2026-04-12' is not a valid UUID per schema v3.0; either relax schema to accept slug-date IDs or regenerate id as UUID.",
+    "metadata_patch: Add research-index.jsonl entry for archivebox-archivebox with depth=standard, source=ArchiveBox/ArchiveBox, output_dir=.research/analysis/archivebox-archivebox to close silent-drift gap.",
+    "missing_artifacts: Optional — add repomix-output.txt (SHOULD for repo type) or accept absence if repo was not mirrored locally.",
+    "metadata_patch: Reconcile value-map.json → analysis.json candidate promotion: 3 value-map candidates (Plugin isolation, PERMISSIVE_DEFAULTS_FOR_SELF_HOSTED, Strict assertion) not surfaced in analysis.json candidates[]; either promote or mark dispositions explicitly."
+  ]
+}
