@@ -80,6 +80,12 @@ function getAllDeps() {
   return all;
 }
 
+function classifyVerdict(status) {
+  if (status === 200) return "ok";
+  if (status === 404) return "not-found";
+  return `http-${status}`;
+}
+
 async function checkOne(name) {
   const encoded = encodeURIComponent(name).replace(/^%40/, "@"); // keep scoped-package @ prefix
   const url = REGISTRY_BASE + encoded;
@@ -87,11 +93,7 @@ async function checkOne(name) {
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
     const res = await fetch(url, { method: "HEAD", signal: controller.signal });
-    return {
-      name,
-      status: res.status,
-      verdict: res.status === 200 ? "ok" : res.status === 404 ? "not-found" : `http-${res.status}`,
-    };
+    return { name, status: res.status, verdict: classifyVerdict(res.status) };
   } catch (err) {
     return { name, status: null, verdict: "error", error: sanitizeError(err).slice(0, 120) };
   } finally {
@@ -108,6 +110,32 @@ async function checkAll(names) {
     results.push(...batchResults);
   }
   return results;
+}
+
+function verdictTag(verdict) {
+  if (verdict === "not-found") return "NOT FOUND";
+  if (verdict === "error") return "NETWORK ERROR";
+  return verdict.toUpperCase();
+}
+
+function printFlaggedReport(flagged, total) {
+  const ok = total - flagged.length;
+  console.log(`  ${ok}/${total} verified against npm registry.`);
+  if (flagged.length === 0) {
+    console.log("  No suspicious packages. PASS.");
+    return;
+  }
+  console.log(`\n  ⚠ ${flagged.length} flagged package(s):`);
+  for (const f of flagged) {
+    const tag = verdictTag(f.verdict);
+    const errPart = f.error ? ` — ${f.error}` : "";
+    console.log(`    ${tag}  ${f.name}${errPart}`);
+  }
+  console.log(
+    `\n  Soft-warn only — this check is not wired into pre-commit.` +
+      ` 'NOT FOUND' is the signal worth attention (possible hallucinated package name).` +
+      ` 'NETWORK ERROR' = inconclusive, re-run when online.`
+  );
 }
 
 async function main() {
@@ -133,27 +161,7 @@ async function main() {
   if (flags.json) {
     console.log(JSON.stringify({ mode: "all", checked: results.length, flagged }, null, 2));
   } else {
-    const ok = results.filter((r) => r.verdict === "ok").length;
-    console.log(`  ${ok}/${results.length} verified against npm registry.`);
-    if (flagged.length === 0) {
-      console.log("  No suspicious packages. PASS.");
-    } else {
-      console.log(`\n  ⚠ ${flagged.length} flagged package(s):`);
-      for (const f of flagged) {
-        const tag =
-          f.verdict === "not-found"
-            ? "NOT FOUND"
-            : f.verdict === "error"
-              ? "NETWORK ERROR"
-              : f.verdict.toUpperCase();
-        console.log(`    ${tag}  ${f.name}${f.error ? ` — ${f.error}` : ""}`);
-      }
-      console.log(
-        `\n  Soft-warn only — this check is not wired into pre-commit.` +
-          ` 'NOT FOUND' is the signal worth attention (possible hallucinated package name).` +
-          ` 'NETWORK ERROR' = inconclusive, re-run when online.`
-      );
-    }
+    printFlaggedReport(flagged, results.length);
   }
   return flagged.length > 0 ? 1 : 0;
 }

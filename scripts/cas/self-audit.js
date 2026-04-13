@@ -44,7 +44,35 @@ const CITATION_ARTIFACT_NAMES = [
   "transcript.md",
 ];
 const CITATION_FINDING_RE = /\bF-?\d+\b/; // F-001, F001, F-42
-const CITATION_EVAL_ID_RE = /\b[K-P][-]?\d+\b/; // K1, K-1 style IDs used in gist eval entries
+const CITATION_EVAL_ID_RE = /\b[K-P]-?\d+\b/; // K1, K-1 style IDs used in gist eval entries
+// Path-file extensions treated as citation markers when mentioned in prose.
+const CITATION_FILE_EXTS = new Set([
+  "py",
+  "md",
+  "mdx",
+  "js",
+  "jsx",
+  "ts",
+  "tsx",
+  "json",
+  "jsonl",
+  "yaml",
+  "yml",
+  "sh",
+  "rs",
+  "go",
+  "rb",
+  "php",
+  "html",
+  "css",
+  "scss",
+  "txt",
+  "rst",
+  "sql",
+  "toml",
+  "cfg",
+  "ini",
+]);
 
 // CONVENTIONS Section 13.1: MUST artifacts
 // analysis.json = all depths. value-map + creator-view = Standard/Deep only.
@@ -411,14 +439,25 @@ function countCitations(creatorViewText) {
     }
   };
   const backtickRe = /`([^`\n]{3,120})`/g;
-  let m;
-  while ((m = backtickRe.exec(creatorViewText)) !== null) addIfFilepath(m[1]);
-  // Bare file refs: word boundaries around path-like tokens ending in a
-  // recognized extension. Parenthesized paths count ("(foo/bar.py)").
-  const extRe =
-    /(?<![A-Za-z0-9_/.-])([A-Za-z0-9_.-][A-Za-z0-9_./-]{2,119}\.(?:py|md|mdx|js|jsx|ts|tsx|json|jsonl|yaml|yml|sh|rs|go|rb|php|html|css|scss|txt|rst|sql|toml|cfg|ini))(?![A-Za-z0-9_/.-])/g;
-  while ((m = extRe.exec(creatorViewText)) !== null) addIfFilepath(m[1]);
+  collectBacktickTokens(backtickRe, creatorViewText, addIfFilepath);
+  // Bare file refs: word boundaries around path-like tokens. Extension filter
+  // is applied programmatically to keep the regex simple (no large alternation).
+  const tokenRe = /(?<![A-Za-z0-9_/.-])([A-Za-z0-9_.-][A-Za-z0-9_./-]{2,119})(?![A-Za-z0-9_/.-])/g;
+  collectExtensionTokens(tokenRe, creatorViewText, addIfFilepath);
   return hits;
+}
+
+function collectBacktickTokens(re, text, visit) {
+  for (const match of text.matchAll(re)) visit(match[1]);
+}
+
+function collectExtensionTokens(re, text, visit) {
+  for (const match of text.matchAll(re)) {
+    const token = match[1];
+    const dot = token.lastIndexOf(".");
+    if (dot < 1 || dot === token.length - 1) continue;
+    if (CITATION_FILE_EXTS.has(token.slice(dot + 1).toLowerCase())) visit(token);
+  }
 }
 
 function check5aSpecificCitations(dir, results) {
@@ -473,30 +512,26 @@ function isHomeRepoRef(token) {
   return false;
 }
 
-function check5cHomeRepoRefs(dir, results) {
-  const creatorViewPath = path.join(dir, "creator-view.md");
-  let text;
-  try {
-    text = safeReadText(creatorViewPath);
-  } catch {
-    return;
-  }
-  const candidatePaths = new Set();
+function isSkippableBacktickToken(token) {
+  if (token.includes(" ")) return true;
+  if (token.startsWith("http://") || token.startsWith("https://")) return true;
+  if (token.includes("<") || token.includes(">")) return true; // skip <slug>, <N> placeholders
+  if (token.includes("*")) return true; // skip glob patterns like docs/agent_docs/*
+  return false;
+}
+
+function collectHomeRepoCandidates(text) {
+  const candidates = new Set();
   const re = /`([^`\n]{3,120})`/g;
-  let m;
-  while ((m = re.exec(text)) !== null) {
-    const token = m[1];
-    if (token.includes(" ")) continue;
-    if (token.startsWith("http://") || token.startsWith("https://")) continue;
-    if (token.includes("<") || token.includes(">")) continue; // skip <slug>, <N> placeholders
-    if (token.includes("*")) continue; // skip glob patterns like docs/agent_docs/*
-    if (isHomeRepoRef(token)) candidatePaths.add(token);
+  for (const match of text.matchAll(re)) {
+    const token = match[1];
+    if (isSkippableBacktickToken(token)) continue;
+    if (isHomeRepoRef(token)) candidates.add(token);
   }
-  if (candidatePaths.size === 0) {
-    // No home-repo refs is acceptable — most source-focused Creator Views
-    // cite source-repo artifacts, not SoNash paths.
-    return;
-  }
+  return candidates;
+}
+
+function findBrokenHomeRefs(candidatePaths) {
   const broken = [];
   for (const rel of candidatePaths) {
     const clean = rel
@@ -511,18 +546,38 @@ function check5cHomeRepoRefs(dir, results) {
     const abs = path.join(PROJECT_ROOT, clean);
     if (!fs.existsSync(abs)) broken.push(clean);
   }
+  return broken;
+}
+
+function check5cHomeRepoRefs(dir, results) {
+  const creatorViewPath = path.join(dir, "creator-view.md");
+  let text;
+  try {
+    text = safeReadText(creatorViewPath);
+  } catch {
+    return;
+  }
+  const candidatePaths = collectHomeRepoCandidates(text);
+  if (candidatePaths.size === 0) {
+    // No home-repo refs is acceptable — most source-focused Creator Views
+    // cite source-repo artifacts, not SoNash paths.
+    return;
+  }
+  const broken = findBrokenHomeRefs(candidatePaths);
   if (broken.length === 0) {
     results.pass.push(
       `Creator View home-repo refs verified (${candidatePaths.size} checked) — Step 10.5 check 5c`
     );
-  } else {
-    // WARN rather than FAIL: the regex can't distinguish broken citations
-    // ("per CONVENTIONS.md line 42") from proposals ("create CONVENTIONS.md").
-    // User inspection resolves intent.
-    results.warn.push(
-      `Creator View cites ${broken.length} home-repo path(s) that do not currently exist: ${broken.slice(0, 3).join(", ")}${broken.length > 3 ? ` +${broken.length - 3} more` : ""} — may be extraction proposals OR broken refs (Step 10.5 check 5c)`
-    );
+    return;
   }
+  // WARN rather than FAIL: the regex can't distinguish broken citations
+  // ("per CONVENTIONS.md line 42") from proposals ("create CONVENTIONS.md").
+  // User inspection resolves intent.
+  const preview = broken.slice(0, 3).join(", ");
+  const moreSuffix = broken.length > 3 ? ` +${broken.length - 3} more` : "";
+  results.warn.push(
+    `Creator View cites ${broken.length} home-repo path(s) that do not currently exist: ${preview}${moreSuffix} — may be extraction proposals OR broken refs (Step 10.5 check 5c)`
+  );
 }
 
 function check6aJournalCount(dir, source, results) {
@@ -557,8 +612,8 @@ function check6bExtractionsMdSection(slug, source, results) {
   const needles = [slug, source, slugify(source)];
   const found = needles.some((n) => {
     if (!n) return false;
-    const escaped = n.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    const re = new RegExp(`^#+\\s.*${escaped}`, "im");
+    const escaped = n.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    const re = new RegExp(String.raw`^#+\s.*` + escaped, "im");
     return re.test(text);
   });
   if (found) {
@@ -590,8 +645,9 @@ function check6cPerCandidateSchema(source, results) {
       `Per-candidate schema: ${sample.length}/${sample.length} sampled entries valid (Step 10.5 check 6c)`
     );
   } else {
+    const moreSuffix = fails.length > 1 ? ` (+${fails.length - 1} more)` : "";
     results.fail.push(
-      `Per-candidate schema failures (${fails.length}/${sample.length}): ${fails[0]}${fails.length > 1 ? ` (+${fails.length - 1} more)` : ""} (Step 10.5 check 6c)`
+      `Per-candidate schema failures (${fails.length}/${sample.length}): ${fails[0]}${moreSuffix} (Step 10.5 check 6c)`
     );
   }
 }
@@ -637,7 +693,7 @@ function check7cLastSynthesizedAt(dir, results) {
     results.pass.push("last_synthesized_at: null (not synthesized yet) — Step 10.5 check 7c");
     return;
   }
-  if (typeof v === "string" && !isNaN(Date.parse(v))) {
+  if (typeof v === "string" && !Number.isNaN(Date.parse(v))) {
     results.pass.push(`last_synthesized_at: valid ISO date — Step 10.5 check 7c`);
   } else {
     results.fail.push(`last_synthesized_at invalid: ${JSON.stringify(v)} (Step 10.5 check 7c)`);

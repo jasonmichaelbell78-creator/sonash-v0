@@ -5113,3 +5113,88 @@ CAS CLIs.
   rewrites + vocab-stats categories fallback)
 - 07b2200f (Commit D — MINOR newline-termination + 16-callsite test helper
   hoist + 4× empty-object spread cleanup + S4036 test propagation)
+
+### Review #87 — PR #510 R1 (SonarCloud)
+
+**Scope:** 57 items from SonarCloud on PR #510 (T29 Wave 5 + Step 10.5 audit).
+All items concentrated in 3 scripts: `scripts/cas/self-audit.js` (pre-existing,
+heavily modified +351 lines), `scripts/check-slopsquat.js` (NEW), and
+`scripts/docs/generate-llms-txt.js` (NEW). All 57 treated as this-PR per user
+direction.
+
+**Breakdown:**
+
+- 6 CRITICAL: 2× S5852 ReDoS hotspots (generate-llms-txt regex backtracking); 4×
+  Cognitive Complexity (self-audit:476, check-slopsquat:113,
+  generate-llms-txt:27, generate-llms-txt:94).
+- 11 MAJOR: regex complexity (self-audit:419), nested ternaries
+  (check-slopsquat:93, 146), nested template literals (self-audit:523, 594;
+  check-slopsquat:149), optional chains (generate-llms-txt:97, 128).
+- 40 MINOR: String#replaceAll (5×), Number.isNaN (1×), String.raw (2×),
+  character-class trivial (1×), 24× consecutive Array#push in
+  generate-llms-txt.js.
+
+**Key fixes:**
+
+- **S5852 ReDoS hotspots (generate-llms-txt.js):** Replaced two unbounded regex
+  matches (`/^---\r?\n([\s\S]*?)\r?\n---/` and `/^#\s+(.+)$/m`) with
+  `indexOf`-based delimiter scanning and line-by-line iteration via
+  `split(/\r?\n/)`. Eliminates backtracking exposure entirely rather than
+  relying on "regex looks safe" review.
+- **Cognitive Complexity (4×):** Extracted helpers — `collectPurposeLines`,
+  `firstFallbackParagraph`, `readFoldedScalar`, `splitFmKeyValue`,
+  `findSkillFallbackDescription`, `findFirstH1Body` (generate-llms-txt);
+  `collectBacktickTokens`, `collectExtensionTokens`, `isSkippableBacktickToken`,
+  `collectHomeRepoCandidates`, `findBrokenHomeRefs` (self-audit);
+  `classifyVerdict`, `verdictTag`, `printFlaggedReport` (check-slopsquat).
+- **Regex complexity (self-audit:419):** Replaced 25-alternation extension match
+  with a simple token regex + programmatic `CITATION_FILE_EXTS` Set lookup.
+  Drops SonarCloud regex-complexity score below threshold.
+- **String.raw (self-audit:560-561):** Rewrote `n.replace(..., "\\$&")` and
+  `new RegExp(\`^#+\\\\s.\*${escaped}\`)`to use`String.raw` tagged template
+  literals, eliminating double-escaped backslash noise.
+- **Nested ternaries + template literals:** Hoisted into named helpers or
+  pre-computed string parts (`moreSuffix`, `errPart`, `preview`).
+- **24× Array#push consolidation (generate-llms-txt):** Replaced sequential
+  `lines.push(...)` calls with section builders (`buildHeaderLines`,
+  `buildCoreDocsLines`, `buildSkillsLines`, `buildResearchLines`,
+  `buildScriptsLines`, `buildSourceLines`) concatenated via spread — reads as a
+  single declarative structure instead of imperative appends.
+
+**Propagation sweep:**
+
+- Swept `bare isNaN(` across `scripts/` and `.claude/hooks/` (excluding
+  node_modules). Only 1 in-PR instance (self-audit:640) and 2 propagation
+  targets in `.claude/hooks/lib/rotate-state.js` (lines 175, 220). All fixed in
+  this commit.
+- Other patterns (`replace` → `replaceAll`, nested template literals,
+  consecutive `Array#push`) were scoped to the 3 flagged files per user
+  direction — full-repo sweep would blow up scope without clear win.
+
+**Pre-existing known debt (out of R1 scope):**
+
+- `scripts/cas/self-audit.js` had 4 CC violations pre-dating this PR that
+  `check-cc --staged` would flag once the file is modified: `checkArtifacts` (CC
+  25), `checkSchema` (CC 22), `checkExtractions` (CC 17), `main` (CC 16). None
+  appeared in SonarCloud R1 (all outside the `new code` window). Per user
+  direction, added file to `known-debt-baseline.json` at CC=25 via
+  `node scripts/check-cc.js --update-baseline`. Baseline entry acknowledges the
+  debt; future regressions above CC=25 will still fail.
+
+**R1 process learnings:**
+
+- `String.raw` is materially easier to audit than `"\\$&"` and `"\\\\s"`-style
+  double escapes. Worth adopting as a default in any new regex-escape /
+  new-RegExp call site.
+- SonarCloud's S5852 (regex DoS) flag was technically a false positive for these
+  specific patterns (both matched against single lines with no
+  alternation/nested quantifier), but the `indexOf`-based rewrite is strictly
+  clearer and eliminates the class of bug. Worth preferring even when the regex
+  IS safe.
+- Large PRs with many NEW files generate high first-scan SonarCloud volume
+  concentrated in a few hot spots. Individual triage is still cheap when items
+  cluster (42 of 57 in one file).
+
+**Commits:**
+
+- [populated at Step 8]
