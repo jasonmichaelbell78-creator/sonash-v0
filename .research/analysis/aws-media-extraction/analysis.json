@@ -6,7 +6,7 @@
   "slug": "aws-media-extraction",
   "title": "Demonstrates how to accelerate content analysis workflows by automating video me",
   "analyzed_at": "2026-04-07",
-  "depth": "quick",
+  "depth": "standard",
   "tags": ["repo", "media", "extraction", "repository", "analysis"],
   "scoring": {
     "quality_band": "Needs Work",
@@ -17,7 +17,80 @@
   },
   "summary": "Demonstrates how to accelerate content analysis workflows by automating video metadata extraction, intelligence gathering, and content moderation",
   "creator_view": "Demonstrates how to accelerate content analysis workflows by automating video metadata extraction, intelligence gathering, and content moderation",
-  "candidates": [],
+  "candidates": [
+    {
+      "name": "Frame sampling + smart dedup pipeline",
+      "type": "architecture-pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "moviepy frame extraction with configurable FPS + FAISS/OpenSearch similarity dedup. Portable pattern for local video processing."
+    },
+    {
+      "name": "Multi-granularity hierarchy (frame → shot → scene)",
+      "type": "architecture-pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Three-level temporal decomposition. Each level has summaries, timestamps, metadata. Structures how video content is analyzed."
+    },
+    {
+      "name": "Toggleable per-frame ML feature extraction",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Each ML feature independently enabled. Config-driven feature selection. Extensibility pattern for adding new capabilities."
+    },
+    {
+      "name": "FAISS local dedup (no cloud dependency)",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Local vector similarity using FAISS instead of OpenSearch. Same dedup quality, no cloud dependency. Direct port candidate."
+    },
+    {
+      "name": "Subtitle-to-frame timestamp alignment",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Map Transcribe subtitle segments to frame timestamps. Non-obvious engineering for multimodal analysis."
+    },
+    {
+      "name": "Evaluation Service prompt template system",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Templates for moderation, summarization, IAB classification. Run arbitrary LLM prompts against extracted metadata."
+    },
+    {
+      "name": "OpenSearch dependency for similarity (anti-pattern)",
+      "type": "anti-pattern",
+      "tier": "T3",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "FAISS alternative exists in same repo. Don't add search cluster for video dedup."
+    },
+    {
+      "name": "No tests (anti-pattern)",
+      "type": "anti-pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "52 Python files, 1 test. AWS reference architectures often skip tests. Don't follow this pattern."
+    }
+  ],
   "last_synthesized_at": null,
   "meta": {
     "repo": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
