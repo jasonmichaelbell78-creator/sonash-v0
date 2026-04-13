@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#73)</summary>
+
+- **Date:** 2026-04-13
+- **Reviews consolidated:** #review-pr493-r1-#rev-84
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#72)</summary>
 
 - **Date:** 2026-04-13
@@ -4703,3 +4712,150 @@ before commit.
   stream fallback + malformed PR filter)
 - f9559fb5 (Commit C — SonarCloud cleanup: check-propagation CC refactor +
   resolve-hook-warnings optional chain)
+
+### Review #85 — PR #508 R1 (Mixed: Qodo + Gemini + SonarCloud + CI)
+
+**Sources:** Qodo formal review (4 bugs), Qodo Compliance guide (4
+observations), Qodo PR Suggestions (5), Gemini (2, one multi-source with Qodo),
+SonarCloud (15 code smells + 1 security hotspot S4036), CI (test coverage gap).
+Total: 30 unique items after multi-source dedup.
+
+**Disposition:** 28 fixed, 0 deferred, 2 rejected.
+
+**Multi-source convergence:** Qodo #2 (write hook loses tool context) and Gemini
+high-severity finding identified the same `.claude/settings.json` hunk in the
+same round. Auto-elevated to CRITICAL per skill rule and shipped first in its
+own commit.
+
+**Rejected (explicit user-approved dispositions):**
+
+- **#29 Qodo Compliance "Missing audit logging"** (retag.js) — REJECTED: SoNash
+  is a single-user local CLI tool. `scripts/cas/retag.js` runs only on the
+  developer's local machine with no user identity system, no multi-user access,
+  and no compliance regime covering this code. Git commits already provide the
+  audit trail of what changed, when, and by whom. Adding structured audit log
+  emission would be ceremony with zero operational value. This is the first time
+  this specific rule has been applied to a CAS CLI; should be considered a
+  standing rejection for single-user local tools.
+- **#30 Qodo Compliance "Potential sensitive output"** (retag.js CLI logs) —
+  REJECTED: The logged `source|candidate|type` composite keys and originalTags
+  are public data by construction — source names are public repo identifiers
+  ("archivebox-archivebox", "crawl4ai"), candidate values are public package
+  names, and tags are open-vocabulary strings drawn from `tag-vocabulary.json`
+  (itself committed to the repo). No PII, credentials, PHI, or cardholder data
+  can appear in this path. Per prior PR retros and rejection pattern precedent,
+  local dev CLIs that operate on public data do not redact output.
+
+**Fixed highlights:**
+
+- **Commit A (CRITICAL)** — `.claude/settings.json`: restore CLAUDE_TOOL env var
+  by splitting the consolidated `^(?i)(write|edit|multiedit)$` matcher back into
+  three per-tool matchers, each exporting `CLAUDE_TOOL={write,edit,multiedit}`
+  to `post-write-validator.js`. The validator uses
+  `process.env.CLAUDE_TOOL || "edit"` to gate write-only audits (`auditS0S1`);
+  without the env var, every edit/multiedit would have silently bypassed those
+  audits.
+- **Commit B (CI blocker)** — 61 new tests across `retag-mutations.js` (42 unit
+  tests on nine exported pure helpers) and `retag.js` (19 tests — parseCliArgs
+  flag parsing, rewriteRawLines per-key updates
+  - blank-line preservation, serializeRawLines joining, exported path shape,
+    four CLI smoke tests via spawnSync). Added `module.exports` +
+    `require.main === module` guard to retag.js so it follows the same
+    testability pattern as backfill-candidates.js.
+- **Commit C (MAJOR)** — retag.js: direct-read with `err.code === "ENOENT"`
+  check instead of `fs.existsSync` precheck (CODE_PATTERNS anti-pattern);
+  `safeAtomicWriteSync` instead of `safeWriteFileSync` for both journal and
+  vocab (crash-safe tmp+rename); nested
+  `withLock(JOURNAL_PATH) → withLock(VOCAB_PATH)` so the pair stays consistent
+  under concurrent readers; `spawnSync(process.execPath, …)` instead of
+  `spawnSync("node", …)` to kill SonarCloud S4036 PATH-lookup hotspot;
+  `--batch-file` value validation now throws on missing-value or
+  next-flag-consumed instead of silently swallowing. recall.js propagation: same
+  existsSync-to-direct-read rewrite on `loadVocabulary`, plus
+  `readTextWithSizeGuard` for DoS ceiling (Qodo Compliance unbounded JSON read),
+  plus warn-on-non-ENOENT-error rather than silent null return (Qodo Compliance
+  swallowed parse errors). Added `vocab.tags` and `vocab.categories` shape
+  guards in both `classifyTagsForDisplay` and `showStats`.
+  generate-extractions-md.js also switched to `safeAtomicWriteSync` via pattern
+  propagation.
+- **Commit D (CC refactors)** — All seven SonarCloud CC-over-15 findings
+  resolved: retag.js cmdApply 48→14 (7 helpers extracted), cmdValidate 18→7;
+  retag-mutations.js validateBatchShape 54→15 (validateBatchEntry
+  - validateNewVocabItem), addNewVocabulary 19→3
+    (findVocabularyAdditionConflict), classifyTags 18→11 (buildForbiddenFlatSet
+    with array→Set O(1) lookups); recall.js classifyTagsForDisplay 41→13
+    (buildForbiddenFlatSet + placeClassifiedTag), showStats 27→~3
+    (fetchBasicStats + computeVocabularyByCategory + computeTopTagsByCategory +
+    computeOrphanAndLegacyTags + attachVocabStats); generate-extractions-md.js
+    main 38→4 (11 helpers extracted). Fold-in wins — the refactor eliminated the
+    code that triggered these findings: optional-chain L64/L110/L160,
+    negated-condition L44/L68, `.at(-1)` over `[length-1]` L122, `replaceAll`
+    over `replace(/...g/)` L89/L90, `??` over `||` on numeric count field L225.
+    TOC anchor determinism fix (Qodo #3) also folded in via
+    `buildSectionAnchorId` helper emitting explicit `<a id="..."></a>` anchors
+    before each `##` heading.
+- **Commit E (MINOR)** — `.research/tag-vocabulary.json`: synonym key "agents" →
+  "agent" per CONVENTIONS.md §14.5 (singular keys). Zero journal entries
+  affected (verified via grep of quoted tag strings).
+
+**Key learnings:**
+
+- **Multi-source convergence is load-bearing for CRITICAL elevation.** Qodo and
+  Gemini both flagged the CLAUDE_TOOL env var loss independently in the same
+  round. If only one reviewer had caught it, it might have slipped past as a
+  MAJOR bug. The cross-reviewer agreement was the strongest signal, not the
+  individual severity ratings. Multi-source should always auto-elevate.
+- **CC refactors are a MINOR-finding vacuum.** When extracting helpers to reduce
+  cognitive complexity, the act of writing a single-purpose helper routinely
+  eliminates the exact code patterns that trigger optional-chain,
+  negated-condition, `.at(-1)`, and `||→??` findings. In this round, 13 MINOR
+  Sonar findings dissolved as side effects of the 7 CC extractions. Plan MINOR
+  sweeps AFTER CC refactors to avoid double-editing the same lines.
+- **existsSync-then-read propagation is load-bearing.** The Qodo flag on
+  retag.js:103 would have been tempting to fix in isolation, but recall.js:37
+  had the same anti-pattern added in the same PR. Qodo did not flag recall.js
+  because the pattern isn't in its compliance rule set directly — only the
+  codebase's own CODE_PATTERNS.md catches both. Propagation sweep via Grep is
+  mandatory, not optional.
+- **Fold TOC anchor determinism into helper extraction.** The Qodo TOC-anchor
+  finding (#3) asked for `<a id>` emission. Doing this in an extracted
+  `appendSourceSection` helper that also takes the same `buildSectionAnchorId`
+  used for the TOC row guarantees the two stay in sync. The original
+  implementation had the anchor slug logic inlined in two separate places —
+  adding a third (the `<a id>` tag) without helper extraction would have been a
+  maintenance trap.
+- **Generate explicit exports + require.main guard on NEW CLI scripts from day
+  one.** retag.js was written without `module.exports` and with an unconditional
+  `main()` call. The resulting CI test-coverage blocker forced the export
+  refactor in the same round as the bug fixes. Prior CAS scripts
+  (backfill-candidates.js) set the template; following it from the start would
+  have saved a commit.
+
+**Process improvements:**
+
+- Retag-related state: `retag.js` + `retag-mutations.js` now have 61 covering
+  tests. Future CAS CLI scripts (there will be more as the tag-quality plan
+  advances) should follow the test-alongside-code convention from the first
+  commit, not be added to `.test-baseline.json`.
+- SonarCloud S4036 spawn hotspot: `process.execPath` is the canonical fix for
+  every `spawnSync("node", …)` in the codebase. Worth a standalone propagation
+  sweep in a follow-up commit to kill any other instances.
+- The gh `pr view --json files` clipping behaviour (returned 100 files while
+  `git diff origin/main...HEAD` showed 162) nearly caused the entire review to
+  miss the new `scripts/cas/*.js` code. Step 0 should always cross-check gh's
+  file list against `git diff` before assuming the scope.
+
+**Commits:**
+
+- 15377923 (Commit A — CRITICAL: CLAUDE_TOOL env var restoration across three
+  per-tool matchers)
+- 655bed92 (Commit B — CI: 61 tests + module.exports + require.main guard on
+  retag.js)
+- f6a78d9c (Commit C — MAJOR: existsSync→direct-read, safeAtomicWriteSync
+  - nested withLock, process.execPath, --batch-file validation, recall vocab
+    guards + unbounded read + swallowed errors, EXTRACTIONS.md atomic write)
+- 56f03efe (Commit D — CC refactors + TOC anchor determinism + 13 MINOR Sonar
+  items folded in: optional chain x3, negated condition x2, .at(), replaceAll
+  x2, ??-over-||)
+- e3ed9642 (Commit E — tag-vocabulary.json synonym key "agents" → "agent" per
+  CONVENTIONS.md §14.5)
