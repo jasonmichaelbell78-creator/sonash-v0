@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-04-13 **Active Documents:** 1408 **Archived Documents:** 132
+**Generated:** 2026-04-13 **Active Documents:** 1409 **Archived Documents:** 132
 
 ---
 
@@ -33,7 +33,7 @@ orphaned documents.
 
 | Tier   | Count | Description       |
 | ------ | ----- | ----------------- |
-| Tier 1 | 10    | Canonical Living  |
+| Tier 1 | 11    | Canonical Living  |
 | Tier 2 | 16    | Foundation        |
 | Tier 3 | 206   | Planning & Active |
 | Tier 4 | 1176  | Reference         |
@@ -59,12 +59,12 @@ orphaned documents.
 | .research > github-health > findings                                            | 20    |
 | .research > archive > repo-analysis-value-extraction > findings                 | 19    |
 | .research > archive > plan-orchestration > findings                             | 18    |
+| Root Documents                                                                  | 15    |
 | analysis                                                                        | 15    |
 | .planning > archive > phases-v1.0 > 04-enforcement-expansion                    | 14    |
 | .planning > archive > phases-v1.0 > 07-integration-cutover                      | 14    |
 | .research > research-discovery-standard > findings                              | 14    |
 | .research > research-discovery-standard-v2 > findings                           | 14    |
-| Root Documents                                                                  | 14    |
 | .research > archive > codex-claude-code-plugin > findings                       | 13    |
 | .research > archive > repo-cleanup > findings                                   | 13    |
 | .research > debt-runner-expansion > findings-v1                                 | 13    |
@@ -282,6 +282,7 @@ _Essential project-level documentation_
 | [Changelog](CHANGELOG.md)                               | - generate-views.js no longer overwrites MASTER_DEBT.jsonl.      | ↓0 ↑0      | 2026-03-22    |
 | [Code of Conduct](CODE_OF_CONDUCT.md)                   | This document establishes the standards of behavior expected...  | ↓1 ↑0      | 2026-03-20    |
 | [Contributing to SoNash](CONTRIBUTING.md)               | Guidelines for contributing to SoNash. We welcome bug report...  | ↓0 ↑8      | 2026-03-19    |
+| [Meta-Roadmap](META_ROADMAP.md)                         | Guidebook for navigating all active plans, research, todos, ...  | ↓0 ↑0      | 2026-04-13    |
 | [release notes](release-notes.md)                       | -                                                                | ↓0 ↑0      | 2026-03-22    |
 | [Security Policy](SECURITY.md)                          | Security policy for SoNash — vulnerability reporting, suppor...  | ↓1 ↑0      | 2026-04-13    |
 | [SoNash - Sober Nashville Recovery Notebook](README.md) | \_A privacy-first digital recovery journal for the recovery c... | ↓0 ↑15     | 2026-03-22    |
@@ -3340,7 +3341,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**1228 orphaned documents:**
+**1229 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -4530,6 +4531,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Brainstorm: Worktree Management + Parallel Claude Code Instances](.research/worktree-management/BRAINSTORM.md)
 - [Changelog](CHANGELOG.md)
 - [Contributing to SoNash](CONTRIBUTING.md)
+- [Meta-Roadmap](META_ROADMAP.md)
 - [SoNash - Sober Nashville Recovery Notebook](README.md)
 - [ROADMAP Full Analysis Summary](analysis/FULL_ANALYSIS_SUMMARY.md)
 - [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)
@@ -5975,19 +5977,20 @@ Documents with no inbound links (not referenced by any other document):
 | 1393 | [docs/templates/TEMPLATE.md](docs/templates/TEMPLATE.md)                                                                                                                                                                   | ADR-NNN: \[Short Title\]                                                                                                                 | 3    | Proposed \| Accepted \| Deprecated \| Superseded by \[ADR-XXX\]          |
 | 1394 | [docs/TESTING_CHECKLIST.md](docs/TESTING_CHECKLIST.md)                                                                                                                                                                     | Testing Plan                                                                                                                             | 3    | Active **Last Updated:** 2026-01-20                                      |
 | 1395 | [docs/TRIGGERS.md](docs/TRIGGERS.md)                                                                                                                                                                                       | TRIGGERS.md - Automation &amp; Enforcement Reference                                                                                     | 4    | DRAFT \| ACTIVE \| DEPRECATED                                            |
-| 1396 | [README.md](README.md)                                                                                                                                                                                                     | SoNash - Sober Nashville Recovery Notebook                                                                                               | 1    | ACTIVE **Last Updated:** 2026-02-23                                      |
-| 1397 | [release-notes.md](release-notes.md)                                                                                                                                                                                       | release notes                                                                                                                            | 1    | -                                                                        |
-| 1398 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                                                                                     | SoNash Future Roadmap                                                                                                                    | 1    | ACTIVE                                                                   |
-| 1399 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                                                                                           | SoNash Roadmap Log                                                                                                                       | 1    | ACTIVE \(append-only archive\) \*\*Last                                  |
-| 1400 | [ROADMAP.md](ROADMAP.md)                                                                                                                                                                                                   | SoNash Product Roadmap                                                                                                                   | 1    | ACTIVE                                                                   |
-| 1401 | [scripts/archive/README.md](scripts/archive/README.md)                                                                                                                                                                     | scripts/archive/                                                                                                                         | 4    | -                                                                        |
-| 1402 | [scripts/README.md](scripts/README.md)                                                                                                                                                                                     | Scripts Reference                                                                                                                        | 4    | -                                                                        |
-| 1403 | [SECURITY.md](SECURITY.md)                                                                                                                                                                                                 | Security Policy                                                                                                                          | 1    | ACTIVE                                                                   |
-| 1404 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                                                                                   | Session Context                                                                                                                          | 4    | -                                                                        |
-| 1405 | [src/dataconnect-generated/.guides/setup.md](src/dataconnect-generated/.guides/setup.md)                                                                                                                                   | Setup                                                                                                                                    | 4    | -                                                                        |
-| 1406 | [src/dataconnect-generated/.guides/usage.md](src/dataconnect-generated/.guides/usage.md)                                                                                                                                   | Basic Usage                                                                                                                              | 4    | -                                                                        |
-| 1407 | [src/dataconnect-generated/react/README.md](src/dataconnect-generated/react/README.md)                                                                                                                                     | Generated React README                                                                                                                   | 4    | -                                                                        |
-| 1408 | [src/dataconnect-generated/README.md](src/dataconnect-generated/README.md)                                                                                                                                                 | Generated TypeScript README                                                                                                              | 4    | -                                                                        |
+| 1396 | [META_ROADMAP.md](META_ROADMAP.md)                                                                                                                                                                                         | Meta-Roadmap                                                                                                                             | 1    | ACTIVE                                                                   |
+| 1397 | [README.md](README.md)                                                                                                                                                                                                     | SoNash - Sober Nashville Recovery Notebook                                                                                               | 1    | ACTIVE **Last Updated:** 2026-02-23                                      |
+| 1398 | [release-notes.md](release-notes.md)                                                                                                                                                                                       | release notes                                                                                                                            | 1    | -                                                                        |
+| 1399 | [ROADMAP_FUTURE.md](ROADMAP_FUTURE.md)                                                                                                                                                                                     | SoNash Future Roadmap                                                                                                                    | 1    | ACTIVE                                                                   |
+| 1400 | [ROADMAP_LOG.md](ROADMAP_LOG.md)                                                                                                                                                                                           | SoNash Roadmap Log                                                                                                                       | 1    | ACTIVE \(append-only archive\) \*\*Last                                  |
+| 1401 | [ROADMAP.md](ROADMAP.md)                                                                                                                                                                                                   | SoNash Product Roadmap                                                                                                                   | 1    | ACTIVE                                                                   |
+| 1402 | [scripts/archive/README.md](scripts/archive/README.md)                                                                                                                                                                     | scripts/archive/                                                                                                                         | 4    | -                                                                        |
+| 1403 | [scripts/README.md](scripts/README.md)                                                                                                                                                                                     | Scripts Reference                                                                                                                        | 4    | -                                                                        |
+| 1404 | [SECURITY.md](SECURITY.md)                                                                                                                                                                                                 | Security Policy                                                                                                                          | 1    | ACTIVE                                                                   |
+| 1405 | [SESSION_CONTEXT.md](SESSION_CONTEXT.md)                                                                                                                                                                                   | Session Context                                                                                                                          | 4    | -                                                                        |
+| 1406 | [src/dataconnect-generated/.guides/setup.md](src/dataconnect-generated/.guides/setup.md)                                                                                                                                   | Setup                                                                                                                                    | 4    | -                                                                        |
+| 1407 | [src/dataconnect-generated/.guides/usage.md](src/dataconnect-generated/.guides/usage.md)                                                                                                                                   | Basic Usage                                                                                                                              | 4    | -                                                                        |
+| 1408 | [src/dataconnect-generated/react/README.md](src/dataconnect-generated/react/README.md)                                                                                                                                     | Generated React README                                                                                                                   | 4    | -                                                                        |
+| 1409 | [src/dataconnect-generated/README.md](src/dataconnect-generated/README.md)                                                                                                                                                 | Generated TypeScript README                                                                                                              | 4    | -                                                                        |
 
 </details>
 
