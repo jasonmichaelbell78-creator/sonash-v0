@@ -112,8 +112,12 @@ function validateBatchShape(batch) {
  * flat and lets it skip the brittle "inspect last error" heuristic.
  */
 function findVocabularyAdditionConflict(vocab, tag) {
-  if (vocab.tags[tag]) {
-    return `already exists (category: ${vocab.tags[tag].category})`;
+  const tags = vocab?.tags && typeof vocab.tags === "object" ? vocab.tags : null;
+  if (!tags) {
+    return "cannot be added because vocabulary.tags is missing or invalid";
+  }
+  if (tags[tag]) {
+    return `already exists (category: ${tags[tag].category})`;
   }
   const synonym = vocab.synonyms?.[tag];
   if (synonym) {
@@ -135,6 +139,10 @@ function findVocabularyAdditionConflict(vocab, tag) {
 function addNewVocabulary(vocab, newVocabList) {
   const errors = [];
   const out = structuredClone(vocab);
+  if (!out?.tags || typeof out.tags !== "object") {
+    errors.push("new_vocabulary: vocabulary.tags is missing or invalid");
+    return { vocab: out, errors };
+  }
   for (const nv of newVocabList) {
     const { tag, category, definition } = nv;
     const conflict = findVocabularyAdditionConflict(out, tag);
@@ -184,7 +192,7 @@ function classifyTags(tags, vocab) {
   // Makes the function safe to call with null or {} in unit tests and
   // documents the "no vocab → everything is unknown" contract without
   // throwing a TypeError on property access.
-  if (!vocab || !vocab.tags || typeof vocab.tags !== "object") {
+  if (!vocab?.tags || typeof vocab.tags !== "object") {
     return { canonicalTags, invalid, forbidden, synonymsApplied };
   }
   const forbiddenFlat = buildForbiddenFlatSet(vocab);

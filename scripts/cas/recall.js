@@ -97,7 +97,7 @@ function classifyTagsForDisplay(tags, vocab) {
   // Guard against null, partial, or malformed vocab — loadVocabulary may
   // return null (missing/invalid), and even a valid vocab may be missing
   // .tags if the file was written by an old migration.
-  if (!vocab || !vocab.tags || typeof vocab.tags !== "object") {
+  if (!vocab?.tags || typeof vocab.tags !== "object") {
     return { semantic, taxonomic, orphan };
   }
   const forbiddenFlat = buildForbiddenFlatSet(vocab);
@@ -235,9 +235,22 @@ function computeOrphanAndLegacyTags(allTagsWithCounts, vocab) {
 }
 
 function attachVocabStats(output, vocab, allTagsWithCounts) {
-  if (!vocab || !vocab.tags || typeof vocab.tags !== "object") return;
-  const categories =
-    vocab.categories && typeof vocab.categories === "object" ? vocab.categories : {};
+  if (!vocab?.tags || typeof vocab.tags !== "object") return;
+  const hasCategories =
+    vocab.categories &&
+    typeof vocab.categories === "object" &&
+    Object.keys(vocab.categories).length > 0;
+  const categories = hasCategories
+    ? vocab.categories
+    : Object.fromEntries(
+        Array.from(
+          new Set(
+            Object.values(vocab.tags)
+              .map((info) => info?.category)
+              .filter(Boolean)
+          )
+        ).map((c) => [c, {}])
+      );
   output.vocabulary = {
     total_size: Object.keys(vocab.tags).length,
     by_category: computeVocabularyByCategory(vocab, categories),

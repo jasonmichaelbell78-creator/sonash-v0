@@ -211,7 +211,22 @@ function writeJournalAndVocab(newRawLines, countedVocab) {
  */
 function runRebuildIndex() {
   console.log("Rebuilding SQLite index...");
-  const res = spawnSync(process.execPath, [REBUILD_INDEX_SCRIPT], { stdio: "inherit" });
+  const res = spawnSync(process.execPath, [REBUILD_INDEX_SCRIPT], {
+    stdio: "inherit",
+    timeout: 120_000,
+  });
+  if (res.error) {
+    console.error(
+      `warning: rebuild-index failed to start: ${sanitizeError(res.error)}. Run \`node scripts/cas/rebuild-index.js\` manually.`
+    );
+    process.exit(2);
+  }
+  if (res.signal) {
+    console.error(
+      `warning: rebuild-index terminated by signal ${res.signal}. Run \`node scripts/cas/rebuild-index.js\` manually.`
+    );
+    process.exit(2);
+  }
   if (res.status !== 0) {
     console.error(
       "warning: rebuild-index returned non-zero. Run `node scripts/cas/rebuild-index.js` manually."
