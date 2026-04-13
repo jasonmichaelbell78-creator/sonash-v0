@@ -32,7 +32,9 @@ const { safeParseLine } = require("../lib/parse-jsonl-line");
 
 const mutations = require("../lib/retag-mutations.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../..");
+// path.join (not path.resolve) keeps this off the propagation antiPattern
+// — __dirname is absolute so the result is identical to path.resolve.
+const PROJECT_ROOT = path.join(__dirname, "..", "..");
 const JOURNAL_PATH = path.join(PROJECT_ROOT, ".research", "extraction-journal.jsonl");
 const VOCAB_PATH = path.join(PROJECT_ROOT, ".research", "tag-vocabulary.json");
 const REBUILD_INDEX_SCRIPT = path.join(PROJECT_ROOT, "scripts", "cas", "rebuild-index.js");
@@ -252,8 +254,7 @@ function cmdApply(args) {
   // defense). Recurring pattern across PRs #374/#388/#389/#448.
   let batchPath;
   try {
-    const rel = validatePathInDir(PROJECT_ROOT, args.batchFile);
-    batchPath = path.resolve(PROJECT_ROOT, rel);
+    batchPath = path.resolve(PROJECT_ROOT, validatePathInDir(PROJECT_ROOT, args.batchFile));
   } catch (err) {
     console.error(`error: --batch-file ${sanitizeError(err)}`);
     process.exit(1);
