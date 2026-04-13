@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-04-12 **Active Documents:** 1393 **Archived Documents:** 132
+**Generated:** 2026-04-13 **Active Documents:** 1393 **Archived Documents:** 132
 
 ---
 
@@ -510,7 +510,7 @@ _Claude Code skills_
 | [Pressure Test 3: Authority + Social Pressure](.claude/skills/systematic-debugging/test-pressure-3.md)                              | -                                                                 | ↓0 ↑0      | 2026-01-12    |
 | [Python MCP Server Implementation Guide](.claude/skills/mcp-builder/reference/python_mcp_server.md)                                 | This document provides Python-specific best practices and ex...   | ↓1 ↑0      | 2026-01-12    |
 | [quick-fix](.claude/skills/quick-fix/SKILL.md)                                                                                      | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-24    |
-| [recall](.claude/skills/recall/SKILL.md)                                                                                            | Search and query your extracted knowledge. Everything analyz...   | ↓0 ↑0      | 2026-04-08    |
+| [recall](.claude/skills/recall/SKILL.md)                                                                                            | Search and query your extracted knowledge. Everything analyz...   | ↓0 ↑0      | 2026-04-12    |
 | [Recall Reference](.claude/skills/recall/REFERENCE.md)                                                                              | Query mode specifications, output formatting rules, follow-u...   | ↓0 ↑0      | 2026-04-08    |
 | [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓1 ↑0      | 2026-04-10    |
 | [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓0 ↑1      | 2026-04-12    |
@@ -3166,7 +3166,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-12    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-13    |
 
 ### scripts (Tier 4)
 
@@ -6059,7 +6059,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-04-12 | Auto-generated from codebase scan |
+| Auto    | 2026-04-13 | Auto-generated from codebase scan |
 
 ---
 

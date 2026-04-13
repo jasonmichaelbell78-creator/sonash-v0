@@ -1,9 +1,8 @@
 # Session Context
 
-**Document Version**: 8.28 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.29 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-12 (Session #276 continuation — pre-`/clear` checkpoint for CAS tag
-quality plan execution)
+2026-04-12 (Session #276 — T40 CAS tag quality COMPLETE end-to-end)
 
 ## Purpose
 
@@ -30,53 +29,61 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-12 (Session #276 continuation — pre-`/clear`)
-**Branch**: `planning-41226` **Working On**: Ready to execute the **CAS tag
-quality plan** (`.planning/cas-tag-quality/PLAN.md`).
+**Last Checkpoint**: 2026-04-12 (Session #276 — T40 CAS tag quality COMPLETE)
+**Branch**: `planning-41226` **Working On**: T40 **DONE end-to-end**. All 4
+parts landed plus the full retroactive retag across 295 journal entries.
 
 **This session's work (summary)**:
 
-1. Two Standard repo-analyses: `outline/outline` (Extract verdict, 15
-   candidates) and `tobi/qmd` (Adopt-and-Extract verdict, 18 candidates — rare
-   dual-lens score). EXTRACTIONS.md regenerated: 277 → 295 candidates across 30
-   → 31 sources.
-2. Cherry-picked 3 commits from `worktree-smtasks` into `planning-41226`:
-   - `8a75b375` — CLAUDE.md v6.0 (40% reduction) + settings cleanup (from
-     smtasks `872bffdb`)
-   - `9a22e2ee` — add T45 (hook-based skill compliance) (from `86a5f82e`)
-   - `88612a1c` — **the CAS tag quality plan itself** (from `43a33574`)
-3. Conflict resolution strategy: append-only JSONL files = **union both sides**;
-   counter/timestamp JSON + auto-generated docs = **HEAD** (newer wins);
-   `TODOS.md` = **custom merge** (HEAD base + 4 smtasks-only todos + T45
-   inserted, summary now "29 active"); `CLAUDE.md` auto-merged cleanly.
-4. Cleanup: removed 79MB of stray files from `scripts/reviews/.claude/` and
-   `scripts/reviews/.research/` (leaked from `cwd` confusion earlier).
+1. Two Standard repo-analyses (pre-/clear): `outline/outline` + `tobi/qmd`.
+   EXTRACTIONS.md: 277 → 295 candidates across 31 sources.
+2. Cherry-picked 3 commits from `worktree-smtasks` (pre-/clear).
+3. **Executed `.planning/cas-tag-quality/PLAN.md` in full** — T40 complete:
+   - **Part A**: Rewrote CONVENTIONS.md §14 (taxonomic vs semantic, 8
+     categories, minimum 3 semantic tags no upper cap, expanded forbidden list).
+     Updated Tag Suggestion sections in 4 handler SKILL.md files. Scaffolded
+     `.research/tag-vocabulary.json`. (`f300e3fb`)
+   - **Part B1-B3**: Built `scripts/cas/retag.js` +
+     `scripts/lib/retag-mutations.js` (locked CLI, regression guards,
+     `--dry-run`). Seeded vocabulary with 97 tags + 10 synonyms + 13 forbidden.
+     (`ac2fc999`)
+   - **Part C**: Category-aware display in `/recall` + vocabulary breakdown in
+     `--stats` + orphan/legacy tag visibility. Pattern-compliance fix folded in
+     (structuredClone + rename). (`b2f22b37`)
+   - **Full retag migration**: 31 source-scoped parallel agents in 6 waves
+     proposed per-source retagging. Aggregated 89 new vocab → 78 post- dedupe
+     (10 semantic merges became synonyms, 1 drop, 2 category conflicts
+     resolved). Applied via `retag.js apply` across all 31 batches. Two
+     entry-level agent errors caught + manually patched. (`d5ed65b3`)
+4. **Final T40 state** (`retag.js validate --strict` → exit 0):
+   - 295/295 entries retagged. 0 forbidden / 0 unknown / 0 <3-semantic / 0
+     zero-tag violations.
+   - Vocabulary: 97 → **175 tags**. Synonyms: 10 → 20.
+   - Top applicability signals: `jason-os-relevant` (133), `cas-relevant` (95),
+     `sonash-relevant` (65).
+   - Top domain/tech/concept: architecture (58), knowledge-management (44),
+     claude-code (44), extraction (38), orchestration (33).
 
-**7 new commits** ahead of any remote. Working tree is clean. Tests not yet
-re-run post-cherry-pick (do this before any PR).
+**6 new commits** landed this session (f300e3fb, 7975f77b, ac2fc999, b2f22b37,
+d5ed65b3, 24ec6eae). Working tree is clean. Not pushed.
 
-**Next Step**: Execute `.planning/cas-tag-quality/PLAN.md`. Plan is APPROVED
-(user confirmed decisions 2026-04-12). Three parts:
+**Next Step**:
 
-- **Part A**: Fix at source — rewrite CONVENTIONS.md §14 (taxonomic vs semantic
-  tags), cap taxonomic at 1-2 per entry, require 3-5 semantic, forbid
-  `repo`/`website`/`document`/`media` tags (redundant with `type` field). Create
-  `.research/tag-vocabulary.json`.
-- **Part B**: Retag all 236 existing entries (now 295 after this session's
-  additions) in **batches of 5-10** for user approval.
-- **Part C**: (read `PLAN.md` for full detail beyond line 60 — not read this
-  session)
-
-**Plan file location**: `.planning/cas-tag-quality/PLAN.md` (landed in commit
-`88612a1c`).
+1. Push `planning-41226` → create PR → `/pr-review` cycle.
+2. After merge, resume **T29 Wave 4 Step 10** (remaining Standard upgrades).
+3. New memory saved: `feedback_no_blanket_count_labels.md` (don't use
+   frequency-based terms like "singleton" as category labels — describe
+   substance, not count).
 
 **Uncommitted Work**: None.
 
 **Smtasks worktree**: Still exists at
-`C:/Users/jason/Workspace/dev-projects/sonash-v0/.claude/worktrees/smtasks` on
-branch `worktree-smtasks` at `43a33574`. All 3 commits are now replicated on
-`planning-41226` via cherry-pick — if user wants to remove the worktree,
+`C:/Users/jason/Workspace/dev-projects/sonash-v0/.claude/worktrees/smtasks`. All
+3 cherry-picked commits now on `planning-41226` — can be removed with
 `git worktree remove .claude/worktrees/smtasks`.
+
+**Audit trail preserved**: `.planning/cas-tag-quality/batches/proposal-*.json`
+(31 agent output files) + `aggregated-new-vocab.json` for retro analysis.
 
 ---
 
@@ -84,13 +91,13 @@ branch `worktree-smtasks` at `43a33574`. All 3 commits are now replicated on
 
 **Current Session Count**: 276 (since Jan 1, 2026)
 
-> **Session #276 handoff (continuation, pre-`/clear` 2026-04-12):** Added 2
-> Standard analyses this continuation — `outline/outline` + `tobi/qmd`.
-> EXTRACTIONS.md now 295 candidates / 31 sources. Cherry-picked 3 commits from
-> `worktree-smtasks` onto `planning-41226`: CLAUDE.md v6.0, T45 todo, and the
-> CAS tag quality PLAN.md. **Next session priority: execute
-> `.planning/cas-tag-quality/PLAN.md`.** For exact Wave 4 Step 10 progress,
-> check `.research/analysis/` + `git log`. Branch: `planning-41226`.
+> **Session #276 handoff (post-T40-complete, 2026-04-12):** Executed
+> `.planning/cas-tag-quality/PLAN.md` fully. All 4 parts (A/B/C + full retag
+> migration) landed in 6 commits. 295 journal entries retagged automatically via
+> 31 parallel source-scoped agents + semantic dedupe of 89 proposed new vocab
+> tags → 78 kept. Vocabulary: 97 → 175 tags. `validate --strict` clean. **Next
+> session priority: push `planning-41226` + open PR + `/pr-review` cycle; then
+> resume T29 Wave 4 Step 10.** Branch: `planning-41226`.
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -99,6 +106,68 @@ branch `worktree-smtasks` at `43a33574`. All 3 commits are now replicated on
 ---
 
 ## Recent Session Summaries
+
+**Session #276** (T40 CAS TAG QUALITY — COMPLETE END-TO-END):
+
+- **Branch**: `planning-41226`
+- **Commits (6)**: `f300e3fb` (Part A), `7975f77b` (chore), `ac2fc999` (Part
+  B1-B3), `b2f22b37` (Part C + B fix), `d5ed65b3` (retag migration), `24ec6eae`
+  (chore).
+- **Session arc**: Continued from pre-/clear checkpoint. Goal was to execute the
+  approved CAS tag quality plan. User pushed for full automation mid- session
+  when the scope of manual retag became clear ("find a way to automate this").
+  Design pivoted to agent-dispatched parallel retag with strict vocabulary
+  discipline. User attention minimized to design approval and post-dedupe vocab
+  decision approval.
+- **Part A — source-fix**: CONVENTIONS.md §14 rewritten (taxonomic vs semantic,
+  minimum 3 semantic tags with no upper cap, expanded forbidden list, 8-category
+  vocabulary
+  `domain/technology/concept/technique/pattern/ applicability/quality/taxonomic`,
+  vocabulary-first growth rules). Tag Suggestion sections in 4 handler SKILL.md
+  files aligned. `tag- vocabulary.json` scaffolded.
+- **Part B — retag CLI + seed vocab**: `scripts/cas/retag.js` with
+  `apply --batch-file` / `validate` subcommands, `--dry-run` flag. Pure
+  mutations extracted to `scripts/lib/retag-mutations.js`. Locked writes
+  (pattern from `todos-cli.js`), atomic per-batch, regression guards, SQLite
+  index rebuild. 97-tag seed vocabulary + 10 synonyms + 13 forbidden entries.
+- **Part C — /recall category-aware display**: Results enriched with
+  `semantic_tags` (grouped by category), `taxonomic_tags`, `orphan_tags`.
+  `--stats` gained vocabulary breakdown + top tags per category + orphan /
+  legacy counts. Synonym auto-resolution during display. Pattern- compliance fix
+  folded in (structuredClone replacing JSON deep-clone, `n` → `count` rename).
+- **Retag migration (automated)**:
+  - Phase 1: 31 source-scoped agents in 6 waves. Each read creator- view.md +
+    journal entries for its source. Each produced a batch JSON with discipline
+    rules enforced.
+  - Phase 2: Aggregated 89 proposed new vocab across sources. Semantic dedupe:
+    10 merges became synonyms (speech-to-text→transcription, audio-
+    video-extraction→media-extraction, pdf-processing→document-extraction,
+    dependency-pinning→version-pinning, async-polling→async-task-api,
+    queue-systems→background-jobs, self-describing-registry→registry,
+    dynamic-discovery→auto-discovery, plus 2 more). 1 drop (marketplace). 2
+    category conflict resolutions (transcription=domain, api-versioning=
+    pattern). 78 new vocab tags landed.
+  - Phase 3: 31 batches applied via `retag.js apply`. Two entry-level agent
+    errors caught by `<3 semantic` guard (compromise.js NLP + MinerU technical
+    report) — manually patched. Second pass clean.
+- **Final state** (`retag.js validate --strict` → exit 0): 295/295 retagged. 0
+  forbidden / 0 unknown / 0 <3-semantic / 0 zero-tag violations. Top
+  applicability: jason-os-relevant=133, cas-relevant=95, sonash-relevant=65.
+- **Memory saved**: `feedback_no_blanket_count_labels.md` — don't use
+  frequency-based terms like "singleton" as category labels; describe substance,
+  not count.
+- **Design decisions (in-session)**:
+  - Option B (three-way subject split) chosen for §14.3 categories.
+  - Minimum tag rules: ≥3 semantic, no upper cap (user rejected "1 per batch"
+    contrived limit).
+  - Forbidden list expanded beyond plan's literal source-type to include
+    entry-type values + `tool`.
+  - Automation via agent dispatch after user direction: "find a way to automate
+    this".
+- **Audit trail**: `.planning/cas-tag-quality/batches/proposal-*.json` (31
+  files) + `aggregated-new-vocab.json` preserved for retro.
+- **WHERE TO RESUME**: Push `planning-41226` → create PR → `/pr-review` cycle.
+  After merge, resume T29 Wave 4 Step 10 remaining repos.
 
 **Session #275** (T39 COMPLETE — HOOK DRIFT LOOP + PATTERN-COMPLIANCE FULL
 CLEAN + CC REFACTOR):
@@ -289,21 +358,21 @@ CAUGHT):
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                                         |
-| ---------------------------------- | ------------- | -------------------------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                            |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                           |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded.  |
-| **T28 Content Analysis System**    | E2E DONE      | 31 sources, 295 candidates in journal (+outline, +qmd in #276 cont.).            |
-| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10 in progress; exact count in `.research/analysis/` + `git log`.    |
-| **T40 CAS tag quality**            | PLAN APPROVED | `.planning/cas-tag-quality/PLAN.md` ready for execution. Top priority next.      |
-| **T39 Hook Drift Loop**            | CLOSED        | Drift loop + pattern-compliance 0/0 + Option D CC refactor. 316→0. Needs new PR. |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                          |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                  |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                             |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                           |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                           |
+| Item                               | Status        | Progress                                                                                   |
+| ---------------------------------- | ------------- | ------------------------------------------------------------------------------------------ |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                      |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                     |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded.            |
+| **T28 Content Analysis System**    | E2E DONE      | 31 sources, 295 candidates in journal (+outline, +qmd in #276 cont.).                      |
+| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10 in progress; exact count in `.research/analysis/` + `git log`.              |
+| **T40 CAS tag quality**            | COMPLETE      | All 4 parts + full retag landed Session #276. 295/295 retagged. `validate --strict` clean. |
+| **T39 Hook Drift Loop**            | CLOSED        | Drift loop + pattern-compliance 0/0 + Option D CC refactor. 316→0. Needs new PR.           |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                                    |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                          |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                            |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                       |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                     |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                     |
 
 **Current Branch**: `planning-41226`
 
@@ -324,15 +393,13 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-0. **CAS tag quality plan execution (T40)** — NEW TOP PRIORITY. Plan lives at
-   `.planning/cas-tag-quality/PLAN.md` (landed commit `88612a1c`). APPROVED,
-   ready for implementation. Part A: rewrite CONVENTIONS.md §14
-   - create `.research/tag-vocabulary.json`. Part B: retag 295 existing entries
-     in batches of 5-10 for user approval. Read PLAN.md fully before starting.
+0. **Push T40 + open PR** — `planning-41226` has 6 unpushed commits from Session
+   #276 completing the CAS tag quality plan. Push, create PR, run `/pr-review`
+   cycle. Once merged, T40 is fully retired.
 
-1. **T39 continuation PR review + merge** — Review the new T39 PR created after
-   this session's commit (PR #506 was closed while paused; new PR number TBD).
-   Process any feedback via `/pr-review`. Once merged, T39 is fully retired.
+1. **T39 continuation PR review + merge** — Review the T39 PR (branch was
+   `planning-4826`). Process any feedback via `/pr-review`. Once merged, T39 is
+   fully retired.
 2. **T39 follow-ups filed as TDMS** — File the non-blocking items surfaced by
    the T3/T4 code-reviewer agents: (a) `streamLinesSync` UTF-8 multi-byte
    boundary risk — swap to `StringDecoder` when a non-ASCII JSONL consumer
