@@ -320,6 +320,19 @@ describe("classifyTags", () => {
     const res = classifyTags(["  architecture  "], vocab);
     assert.deepEqual(res.canonicalTags, ["architecture"]);
   });
+
+  test("returns empty result when vocab is null", () => {
+    const res = classifyTags(["architecture", "plugin"], null as unknown as VocabShape);
+    assert.deepEqual(res.canonicalTags, []);
+    assert.deepEqual(res.invalid, []);
+    assert.deepEqual(res.forbidden, []);
+    assert.deepEqual(res.synonymsApplied, {});
+  });
+
+  test("returns empty result when vocab.tags is missing", () => {
+    const res = classifyTags(["architecture"], {} as unknown as VocabShape);
+    assert.deepEqual(res.canonicalTags, []);
+  });
 });
 
 describe("semanticCount", () => {

@@ -180,6 +180,13 @@ function classifyTags(tags, vocab) {
   const canonicalTags = [];
   const invalid = [];
   const forbidden = [];
+  // Null/partial vocab guard — mirrors recall.classifyTagsForDisplay.
+  // Makes the function safe to call with null or {} in unit tests and
+  // documents the "no vocab → everything is unknown" contract without
+  // throwing a TypeError on property access.
+  if (!vocab || !vocab.tags || typeof vocab.tags !== "object") {
+    return { canonicalTags, invalid, forbidden, synonymsApplied };
+  }
   const forbiddenFlat = buildForbiddenFlatSet(vocab);
   for (const raw of tags) {
     const trimmed = String(raw).trim();
