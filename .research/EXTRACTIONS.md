@@ -4,7 +4,7 @@ Auto-generated from `extraction-journal.jsonl` by
 `scripts/cas/generate-extractions-md.js`. Do not edit directly — run
 `node scripts/cas/generate-extractions-md.js` to rebuild.
 
-**Total:** 309 candidates across 32 sources | **By decision:** defer: 285,
+**Total:** 318 candidates across 32 sources | **By decision:** defer: 294,
 investigate: 2, extract: 20, skip: 2
 
 ---
@@ -20,8 +20,8 @@ investigate: 2, extract: 20, skip: 2
 | [DS4SD/docling](#ds4sd-docling-repo)                                                                                                                                                                                     | repo     | 13    | 4       | 5         | 3            | 1       |
 | [Errors and Vulnerabilities in AI-Generated Code.pdf](#errors-and-vulnerabilities-in-ai-generated-code-pdf-document)                                                                                                     | document | 6     | 0       | 4         | 2            | 0       |
 | [HKUDS/CLI-Anything](#hkuds-cli-anything-repo)                                                                                                                                                                           | repo     | 17    | 7       | 3         | 3            | 4       |
-| [iawia002/lux](#iawia002-lux-repo)                                                                                                                                                                                       | repo     | 5     | 1       | 1         | 3            | 0       |
-| [jdepoix/youtube-transcript-api](#jdepoix-youtube-transcript-api-repo)                                                                                                                                                   | repo     | 10    | 4       | 3         | 2            | 1       |
+| [iawia002/lux](#iawia002-lux-repo)                                                                                                                                                                                       | repo     | 6     | 1       | 2         | 3            | 0       |
+| [jdepoix/youtube-transcript-api](#jdepoix-youtube-transcript-api-repo)                                                                                                                                                   | repo     | 11    | 5       | 3         | 2            | 1       |
 | [jina-ai/reader](#jina-ai-reader-repo)                                                                                                                                                                                   | repo     | 14    | 6       | 3         | 3            | 2       |
 | [karpathy/autoresearch](#karpathy-autoresearch-repo)                                                                                                                                                                     | repo     | 12    | 5       | 3         | 2            | 2       |
 | [ksharlandjiev/bedrock-summarize-audio-video-text](#ksharlandjiev-bedrock-summarize-audio-video-text-repo)                                                                                                               | repo     | 10    | 5       | 1         | 2            | 2       |
@@ -29,12 +29,12 @@ investigate: 2, extract: 20, skip: 2
 | [opendatalab/MinerU](#opendatalab-mineru-repo)                                                                                                                                                                           | repo     | 19    | 3       | 7         | 7            | 2       |
 | [outline/outline](#outline-outline-repo)                                                                                                                                                                                 | repo     | 15    | 9       | 2         | 4            | 0       |
 | [public-apis/public-apis](#public-apis-public-apis-repo)                                                                                                                                                                 | repo     | 10    | 3       | 1         | 2            | 4       |
-| [safishamsi/graphify](#safishamsi-graphify-repo)                                                                                                                                                                         | repo     | 9     | 3       | 3         | 3            | 0       |
+| [safishamsi/graphify](#safishamsi-graphify-repo)                                                                                                                                                                         | repo     | 10    | 3       | 4         | 3            | 0       |
 | [teng-lin/notebooklm-py](#teng-lin-notebooklm-py-repo)                                                                                                                                                                   | repo     | 13    | 6       | 1         | 2            | 4       |
 | [tobi/qmd](#tobi-qmd-repo)                                                                                                                                                                                               | repo     | 18    | 10      | 5         | 3            | 0       |
-| [unclecode/crawl4ai](#unclecode-crawl4ai-repo)                                                                                                                                                                           | repo     | 7     | 3       | 2         | 2            | 0       |
+| [unclecode/crawl4ai](#unclecode-crawl4ai-repo)                                                                                                                                                                           | repo     | 9     | 3       | 3         | 3            | 0       |
 | [unstructured-io/unstructured](#unstructured-io-unstructured-repo)                                                                                                                                                       | repo     | 13    | 5       | 4         | 3            | 1       |
-| [VikParuchuri/marker](#vikparuchuri-marker-repo)                                                                                                                                                                         | repo     | 5     | 1       | 2         | 2            | 0       |
+| [VikParuchuri/marker](#vikparuchuri-marker-repo)                                                                                                                                                                         | repo     | 8     | 1       | 4         | 3            | 0       |
 | [ViktorAxelsen/MemSkill](#viktoraxelsen-memskill-repo)                                                                                                                                                                   | repo     | 12    | 6       | 0         | 2            | 4       |
 | [zedeus/nitter](#zedeus-nitter-repo)                                                                                                                                                                                     | repo     | 6     | 0       | 3         | 3            | 0       |
 | [https://docs.composio.dev/docs](#https-docs-composio-dev-docs-website)                                                                                                                                                  | website  | 4     | 4       | 0         | 0            | 0       |
@@ -42,7 +42,7 @@ investigate: 2, extract: 20, skip: 2
 | [https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f](#https-gist-github-com-karpathy-442a6bf555914893e9891c11519de94f-website)                                                                            | website  | 5     | 5       | 0         | 0            | 0       |
 | [https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea](#https-gist-github-com-kieranklaassen-4f2aba89594a4aea4ad64d753984b2ea-website)                                                                | website  | 5     | 5       | 0         | 0            | 0       |
 | [https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203](#https-gist-github-com-maharshi-pandya-4aeccbe1dbaa7f89c182bd65d2764203-website)                                                              | website  | 2     | 2       | 0         | 0            | 0       |
-| [https://sidbharath.com/blog/claude-code-the-complete-guide/](#https-sidbharath-com-blog-claude-code-the-complete-guide-website)                                                                                         | website  | 6     | 1       | 3         | 2            | 0       |
+| [https://sidbharath.com/blog/claude-code-the-complete-guide/](#https-sidbharath-com-blog-claude-code-the-complete-guide-website)                                                                                         | website  | 7     | 1       | 4         | 2            | 0       |
 | [https://www.youtube.com/watch?v=OSZdFnQmgRw](#https-www-youtube-com-watch-v-oszdfnqmgrw-media)                                                                                                                          | media    | 5     | 1       | 2         | 1            | 1       |
 | [https://www.youtube.com/watch?v=qINuQwL4E-k](#https-www-youtube-com-watch-v-qinuqwl4e-k-media)                                                                                                                          | media    | 2     | 1       | 1         | 0            | 0       |
 
@@ -176,13 +176,14 @@ investigate: 2, extract: 20, skip: 2
 
 ## iawia002/lux (repo)
 
-| Candidate                                        | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                        |
-| ------------------------------------------------ | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | -------------------------------------------------------------------------------------------- |
-| init()-based plugin registry with domain routing | pattern      | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Go init() + global map + blank imports. 46 extractors, zero boilerplate. Principle portable. |
-| CI workflow generation from template             | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Node script generates 45 workflows from template. Meta-CI pattern for JASON-OS.              |
-| HARDCODED_CREDENTIALS_IN_SOURCE                  | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Twitter bearer token + Weibo cookie in git. Never do this.                                   |
-| DISABLED_TLS_VERIFICATION                        | anti-pattern | defer    | 2026-04-12 | low     | E0     | high      | -            | InsecureSkipVerify: true globally. MITM vulnerability.                                       |
-| DOCUMENTATION_ABSENT_FOR_CONTRIBUTORS            | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | 46 extractors, 23-line CONTRIBUTING, no arch docs.                                           |
+| Candidate                                        | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ------------------------------------------------ | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Per-site CI isolation pattern                    | knowledge    | defer    | 2026-04-13 | low     | E0     | low       | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Each of 46 extractors has own CI workflow and README badge. Indepen |
+| init()-based plugin registry with domain routing | pattern      | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Go init() + global map + blank imports. 46 extractors, zero boilerplate. Principle portable.                             |
+| CI workflow generation from template             | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Node script generates 45 workflows from template. Meta-CI pattern for JASON-OS.                                          |
+| HARDCODED_CREDENTIALS_IN_SOURCE                  | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Twitter bearer token + Weibo cookie in git. Never do this.                                                               |
+| DISABLED_TLS_VERIFICATION                        | anti-pattern | defer    | 2026-04-12 | low     | E0     | high      | -            | InsecureSkipVerify: true globally. MITM vulnerability.                                                                   |
+| DOCUMENTATION_ABSENT_FOR_CONTRIBUTORS            | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | 46 extractors, 23-line CONTRIBUTING, no arch docs.                                                                       |
 
 <a id="jdepoix-youtube-transcript-api-repo"></a>
 
@@ -190,6 +191,7 @@ investigate: 2, extract: 20, skip: 2
 
 | Candidate                                              | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
 | ------------------------------------------------------ | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| 100% coverage + 2-dep library packaging                | pattern      | defer    | 2026-04-13 | medium  | E1     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer).                                                                     |
 | youtube-transcript-api as T27 primary extraction layer | tool         | defer    | 2026-04-07 | high    | E0     | high      | -            | pip install. One-line caption fetch. 7K stars, MIT, 100% coverage. First adoption recommendation in series.              |
 | Innertube API reverse-engineering approach             | knowledge    | defer    | 2026-04-07 | high    | E0     | high      | -            | Undocumented /youtubei/v1/player API with ANDROID client context. No API key. 8 years maintained.                        |
 | Context-aware error hierarchy pattern                  | pattern      | defer    | 2026-04-07 | high    | E1     | high      | -            | 15+ exception types with CAUSE_MESSAGE. RequestBlocked.cause adapts based on proxy config. Gold standard error handling. |
@@ -355,17 +357,18 @@ investigate: 2, extract: 20, skip: 2
 
 ## safishamsi/graphify (repo)
 
-| Candidate                                 | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                 |
-| ----------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------------------------------------- |
-| Skill orchestration pipeline              | knowledge    | defer    | 2026-04-09 | high    | E1     | high      | -            | 10-step pipeline with parallel agent dispatch, cache checking, chunk sizing. Reference for SoNash skill architecture. |
-| Confidence tagging taxonomy               | knowledge    | defer    | 2026-04-09 | high    | E1     | high      | -            | EXTRACTED/INFERRED/AMBIGUOUS three-tier confidence for CAS findings and recall results.                               |
-| MCP server pattern                        | pattern      | defer    | 2026-04-09 | medium  | E1     | high      | -            | 320-line MCP stdio server with 7 tools and token budget. Reference for JASON-OS MCP design.                           |
-| LanguageConfig dataclass                  | pattern      | defer    | 2026-04-09 | medium  | E1     | medium    | -            | Generic walker + per-type config pattern. 20 languages with zero code duplication.                                    |
-| Threat-vector security model              | knowledge    | defer    | 2026-04-09 | medium  | E0     | high      | -            | Attack-vector-organized security model. More readable than checklist-based formats.                                   |
-| Platform-specific skill variants          | pattern      | defer    | 2026-04-09 | high    | E2     | medium    | -            | 7 platform skill files with shared core. Reference for JASON-OS portability.                                          |
-| Graph-only persistence without versioning | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | No schema_version or migration path. Our analysis.json schema_version is correct.                                     |
-| Oversized skill files                     | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | 15K+ tokens per variant with duplication. Cautionary for SoNash skill growth.                                         |
-| Ship fast skip review                     | anti-pattern | defer    | 2026-04-09 | low     | E0     | low       | -            | Zero external review despite 15K stars. Security self-assessed only.                                                  |
+| Candidate                                 | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| ARCHITECTURE.md single-page format        | knowledge    | defer    | 2026-04-13 | medium  | E0     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Pipeline, module table, extraction schema, confidence labels, how-t |
+| Skill orchestration pipeline              | knowledge    | defer    | 2026-04-09 | high    | E1     | high      | -            | 10-step pipeline with parallel agent dispatch, cache checking, chunk sizing. Reference for SoNash skill architecture.    |
+| Confidence tagging taxonomy               | knowledge    | defer    | 2026-04-09 | high    | E1     | high      | -            | EXTRACTED/INFERRED/AMBIGUOUS three-tier confidence for CAS findings and recall results.                                  |
+| MCP server pattern                        | pattern      | defer    | 2026-04-09 | medium  | E1     | high      | -            | 320-line MCP stdio server with 7 tools and token budget. Reference for JASON-OS MCP design.                              |
+| LanguageConfig dataclass                  | pattern      | defer    | 2026-04-09 | medium  | E1     | medium    | -            | Generic walker + per-type config pattern. 20 languages with zero code duplication.                                       |
+| Threat-vector security model              | knowledge    | defer    | 2026-04-09 | medium  | E0     | high      | -            | Attack-vector-organized security model. More readable than checklist-based formats.                                      |
+| Platform-specific skill variants          | pattern      | defer    | 2026-04-09 | high    | E2     | medium    | -            | 7 platform skill files with shared core. Reference for JASON-OS portability.                                             |
+| Graph-only persistence without versioning | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | No schema_version or migration path. Our analysis.json schema_version is correct.                                        |
+| Oversized skill files                     | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | 15K+ tokens per variant with duplication. Cautionary for SoNash skill growth.                                            |
+| Ship fast skip review                     | anti-pattern | defer    | 2026-04-09 | low     | E0     | low       | -            | Zero external review despite 15K stars. Security self-assessed only.                                                     |
 
 <a id="teng-lin-notebooklm-py-repo"></a>
 
@@ -416,15 +419,17 @@ investigate: 2, extract: 20, skip: 2
 
 ## unclecode/crawl4ai (repo)
 
-| Candidate                                 | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                     |
-| ----------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | --------------------------------------------------------------------------------------------------------- |
-| FilterChain + Scorer composition          | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Composable filter/scorer pipeline for content gating. Applicable to /analyze pipeline.                    |
-| 3-tier resource pool (PERMANENT/HOT/COLD) | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Browser pool with tiered warmth and janitor lifecycle. 10x memory reduction. JASON-OS infrastructure.     |
-| Hook lifecycle with 8 ordered hooks       | pattern      | defer    | 2026-04-12 | high    | E0     | high      | -            | 8 lifecycle hooks with clear sequence, auth guidance, security model. Combine with ArchiveBox governance. |
-| CrawlState save/load resume               | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Persistent state for long-running tasks. NOTE: on_state_change does NOT exist.                            |
-| Strategy ABC (55+ implementations)        | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Clean abstract hierarchy with runtime composition via FilterChain.                                        |
-| DOCUMENTATION_PROMISES_CODE_GAPS          | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Docs describe features code implements partially. Verify before recommending.                             |
-| MONOLITHIC_UTILS                          | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | utils.py at 3,778 lines. Domain functions in one file.                                                    |
+| Candidate                                 | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ----------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Safe expression eval via AST              | knowledge    | defer    | 2026-04-13 | medium  | E0     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). User expressions validated: blocks imports, dunders, dangerous buil |
+| DUPLICATE_FILES_IN_REPO                   | anti-pattern | defer    | 2026-04-13 | low     | E0     | low       | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Backup copies checked into VCS.                                     |
+| FilterChain + Scorer composition          | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Composable filter/scorer pipeline for content gating. Applicable to /analyze pipeline.                                   |
+| 3-tier resource pool (PERMANENT/HOT/COLD) | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Browser pool with tiered warmth and janitor lifecycle. 10x memory reduction. JASON-OS infrastructure.                    |
+| Hook lifecycle with 8 ordered hooks       | pattern      | defer    | 2026-04-12 | high    | E0     | high      | -            | 8 lifecycle hooks with clear sequence, auth guidance, security model. Combine with ArchiveBox governance.                |
+| CrawlState save/load resume               | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | Persistent state for long-running tasks. NOTE: on_state_change does NOT exist.                                           |
+| Strategy ABC (55+ implementations)        | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Clean abstract hierarchy with runtime composition via FilterChain.                                                       |
+| DOCUMENTATION_PROMISES_CODE_GAPS          | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | Docs describe features code implements partially. Verify before recommending.                                            |
+| MONOLITHIC_UTILS                          | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | utils.py at 3,778 lines. Domain functions in one file.                                                                   |
 
 <a id="unstructured-io-unstructured-repo"></a>
 
@@ -452,6 +457,9 @@ investigate: 2, extract: 20, skip: 2
 
 | Candidate                                      | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
 | ---------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Session-scoped test fixtures for ML models     | knowledge    | defer    | 2026-04-13 | medium  | E0     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Load expensive models once per session. Custom pytest markers for p |
+| GPU-enforced CI as quality gate                | knowledge    | defer    | 2026-04-13 | low     | E0     | low       | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Tests run on t4_gpu runners. Expensive = strict enforcement of prod |
+| CONTRIBUTOR_HOSTILE_GOVERNANCE                 | anti-pattern | defer    | 2026-04-13 | low     | E0     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). 33.7K stars, 403 issues, no CONTRIBUTING, no CODE_OF_CONDUCT. Users |
 | Benchmark registry (7 methods, 2 scorers)      | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Pluggable registry for comparing implementations. METHOD_REGISTRY + SCORE_REGISTRY + published dataset. GPL code but pat |
 | 3-stage pipeline (provider/processor/renderer) | knowledge    | defer    | 2026-04-12 | high    | E0     | high      | -            | Clean extract->transform->render separation with 6 extension points and dependency injection.                            |
 | ConfigParser introspection                     | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | Auto-discovers components by inspecting module structure. Self-documenting config.                                       |
@@ -551,14 +559,15 @@ investigate: 2, extract: 20, skip: 2
 
 ## https://sidbharath.com/blog/claude-code-the-complete-guide/ (website)
 
-| Candidate                                 | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                        |
-| ----------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------ |
-| Cloud teleportation pattern               | knowledge    | defer    | 2026-04-09 | high    | E0     | high      | -            | & prefix sends tasks to Claude Code Web, --teleport pulls back. Could solve terminal-blocking agent problem. |
-| Plugin marketplace ecosystem              | knowledge    | defer    | 2026-04-09 | medium  | E0     | medium    | -            | Anthropic marketplace (36 plugins). Community marketplaces emerging. Track maturity.                         |
-| Junior engineer framing                   | knowledge    | defer    | 2026-04-09 | low     | E0     | high      | -            | External validation of treating Claude Code as junior engineer, not autopilot.                               |
-| Tutorial structure as onboarding template | pattern      | defer    | 2026-04-09 | medium  | E1     | medium    | -            | Setup→Daily→Advanced→Production. 20 sections. Could template a SoNash onboarding guide.                      |
-| Features without enforcement              | anti-pattern | defer    | 2026-04-09 | low     | E0     | high      | -            | Hooks as automation not gates. CLAUDE.md as memory not rules. Misses reliability layer.                      |
-| No compaction discussion                  | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | Treating context as unlimited. No state loss or checkpoint strategies.                                       |
+| Candidate                                          | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| -------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Feature-breadth coverage as completeness benchmark | knowledge    | defer    | 2026-04-13 | low     | E0     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Checklist of Claude Code features an external expert considers impo |
+| Cloud teleportation pattern                        | knowledge    | defer    | 2026-04-09 | high    | E0     | high      | -            | & prefix sends tasks to Claude Code Web, --teleport pulls back. Could solve terminal-blocking agent problem.             |
+| Plugin marketplace ecosystem                       | knowledge    | defer    | 2026-04-09 | medium  | E0     | medium    | -            | Anthropic marketplace (36 plugins). Community marketplaces emerging. Track maturity.                                     |
+| Junior engineer framing                            | knowledge    | defer    | 2026-04-09 | low     | E0     | high      | -            | External validation of treating Claude Code as junior engineer, not autopilot.                                           |
+| Tutorial structure as onboarding template          | pattern      | defer    | 2026-04-09 | medium  | E1     | medium    | -            | Setup→Daily→Advanced→Production. 20 sections. Could template a SoNash onboarding guide.                                  |
+| Features without enforcement                       | anti-pattern | defer    | 2026-04-09 | low     | E0     | high      | -            | Hooks as automation not gates. CLAUDE.md as memory not rules. Misses reliability layer.                                  |
+| No compaction discussion                           | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | Treating context as unlimited. No state loss or checkpoint strategies.                                                   |
 
 <a id="https-www-youtube-com-watch-v-oszdfnqmgrw-media"></a>
 

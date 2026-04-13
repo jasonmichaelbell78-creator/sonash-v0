@@ -1844,7 +1844,7 @@ _Uncategorized_
 | ----------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
 | [Composio — AI Agent Tool Integration Platform](.research/analysis/docs-composio-dev/creator-view.md) | -           | ↓0 ↑0      | 2026-04-10    |
 | [Composio Documentation — Summary](.research/analysis/docs-composio-dev/summary.md)                   | -           | ↓0 ↑0      | 2026-04-10    |
-| [Deep Read — Composio Documentation](.research/analysis/docs-composio-dev/deep-read.md)               | -           | ↓0 ↑0      | 2026-04-10    |
+| [Deep Read — Composio Documentation](.research/analysis/docs-composio-dev/deep-read.md)               | -           | ↓0 ↑0      | 2026-04-13    |
 
 ### .research > analysis > errors-and-vulnerabilities-in-ai-generated-code (Tier 4)
 
