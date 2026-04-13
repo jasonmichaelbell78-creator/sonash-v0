@@ -1,0 +1,39 @@
+{
+  "pr": 508,
+  "round": 2,
+  "review_number": 86,
+  "source": "sonarcloud+qodo",
+  "total": 29,
+  "fixed": 21,
+  "deferred": 0,
+  "rejected": 8,
+  "severity": {
+    "critical": 2,
+    "major": 12,
+    "minor": 7,
+    "trivial": 1
+  },
+  "completed_steps": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_shas": {
+    "commit_a_critical_prettier_sort": "0ede7197",
+    "commit_b_major_security_markdown_injection": "1cadb5ac",
+    "commit_c_major_vocab_spawn_safety_optional_chain": "e533745c",
+    "commit_d_minor_test_refactors_s4036_propagation": "07b2200f"
+  },
+  "completed_at": "2026-04-13T18:00:00Z",
+  "rejections": {
+    "cross_round_dedup": [
+      "Qodo Compliance: Comprehensive Audit Trails (DUP of R1 #29 — single-user CLI, no compliance regime)",
+      "Qodo Compliance: Secure Logging Practices (DUP of R1 #30 — public composite keys, no PII)"
+    ],
+    "low_impact": [
+      "Qodo lock-order deadlocks (importance 2 — Qodo self-rated overkill for 2 statically-known paths)",
+      "Qodo backward-compat default param (importance 1 — type=undefined behaves identically to type='')"
+    ],
+    "batch_acknowledged": [
+      "SonarCloud S5443 ×4 (publicly writable dirs in retag.test.ts — string-literal fixture paths, never written)"
+    ]
+  },
+  "notes": "29 items: 1 Markdown injection security fix, 4 Qodo importance-7 vocab/spawn safety fixes, 7 SC code-smell rewrites (3× optional chain + 3× outer-scope hoist + toSorted), 4× empty-object-spread cleanup, 1 CI Prettier unblock, 1 Critical Bug fold (sort/localeCompare), S4036 PATH propagation to test surface. Cross-round dedup caught 2 ⚪ Qodo Compliance re-flags from R1 — auto-rejected with R1 user-approved justification. gh pr view --json files clip bug reproduced (gh:100 vs git diff:166) — Step 0 cross-check now load-bearing."
+}

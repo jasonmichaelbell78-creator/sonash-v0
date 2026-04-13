@@ -4859,3 +4859,140 @@ own commit.
   x2, ??-over-||)
 - e3ed9642 (Commit E — tag-vocabulary.json synonym key "agents" → "agent" per
   CONVENTIONS.md §14.5)
+
+### Review #86 — PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI)
+
+**Sources:** Qodo Compliance (3 — 1 Markdown injection + 2 ⚪ unrated), Qodo
+Suggestions (8 — importance 1-7), CI Lint & Format (1 — Prettier on
+`creator-view.md`), SonarCloud Hotspots (5 — 4× S5443 + 1× S4036), SonarCloud
+Issues (12 — 1 Critical Bug + 11 Code Smells, after deduping the L309
+localeCompare cross-section).
+
+Total: 29 unique items.
+
+**Disposition:** 21 fixed, 0 deferred, 8 rejected.
+
+**Cross-round dedup (auto-rejected, 2):**
+
+- **Qodo Compliance "Comprehensive Audit Trails"** — DUP of R1 #29 (single-user
+  local CLI, no compliance regime; git log is the audit trail).
+- **Qodo Compliance "Secure Logging Practices"** — DUP of R1 #30 (logged
+  composite keys are public source/candidate/tag identifiers; no PII).
+
+Both reuse R1's user-approved justification. Same-round R2 dedup is the first in
+this PR's history; documents the standing rejection precedent for single-user
+CAS CLIs.
+
+**Other rejections (4 — explicit user-approved post-triage):**
+
+- **Qodo "Avoid lock-order deadlocks" (importance 2)** — REJECTED. Qodo's own
+  importance score flagged this as overkill for two statically-known paths
+  (JOURNAL_PATH, VOCAB_PATH) that are always locked in the same hardcoded order.
+  Dynamic sort + recursive lockAndWrite would add recursion + array churn to
+  defend against an impossible deadlock.
+- **Qodo "Preserve backward-compatible function signature" (importance 1)** —
+  REJECTED. `escalateSeverity(severity, occurrences, type)` with omitted `type`
+  evaluates `type === "pr-creep"` → false safely. `type = ""` default would
+  change no behavior at any caller. Importance 1 = noise.
+- **SonarCloud S5443 ×4 (publicly writable directory in retag.test.ts)** —
+  BATCH-ACK. The flagged sites are `/tmp/b.json` and `/tmp/x.json` string
+  literals passed as fixture arg-array values to parseCliArgs unit tests. No
+  file is created, opened, or written at these paths by the test code. Known
+  false-positive pattern matching `.qodo/pr-agent.toml` test-fixture category.
+  Recorded as batch-acknowledged (no NOSONAR annotations added — test files are
+  already excluded from the production hotspot review cadence).
+
+**Fixed highlights:**
+
+- **Commit A (CRITICAL — CI unblock)** — `prettier --write` on
+  `.research/analysis/jina-ai-reader/creator-view.md` (single file failing the
+  Lint & Format job). Same commit folds the SonarCloud Critical Bug
+  - Major Code Smell on `tests/scripts/lib/retag-mutations.test.ts:309` by
+    replacing in-assertion `.sort()` with
+    `.toSorted((a, b) => a.localeCompare(b))` — provides the reliable
+    string-comparator (S2871) AND eliminates the in-place sort side effect
+    (S4043) in one edit.
+- **Commit B (MAJOR — security)** — `escapeHeading()` helper introduced to
+  escape backslash, collapse CR/LF, HTML-encode `<>`, length-cap at 200; applied
+  to `## ${source} (${sourceType})` heading in `appendSourceSection`.
+  `escapeCell` hardened to also escape `[` and `]` since it is consumed inside
+  markdown link text in TOC rows. `buildSectionAnchorId` empty-slug fallback
+  (Qodo #16) and sourceType slug-normalisation. `.research/EXTRACTIONS.md`
+  regenerated — output unchanged for current sources (all alphanumeric).
+- **Commit C (MAJOR — vocab/spawn safety + optional-chain sweep)** —
+  `runRebuildIndex`: `timeout: 120_000` + explicit `res.error` and `res.signal`
+  branches with `sanitizeError`. `findVocabularyAdditionConflict`
+  - `addNewVocabulary`: vocab.tags shape guards return structured errors instead
+    of crashing on undefined property access. `attachVocabStats`: derive
+    categories from `vocab.tags` as fallback when `vocab.categories` is missing
+    OR empty (without this fallback, `computeTopTagsByCategory` silently
+    iterates an empty object). Three `!vocab || !vocab.tags` guards rewritten to
+    `!vocab?.tags` (S6582) in retag-mutations.js + recall.js (×2).
+- **Commit D (MINOR + test refactors + S4036 propagation)** —
+  `serializeRawLines`: append trailing newline unless content is empty.
+  `runRetag` test helper hoisted to module scope (S6479) and switched to
+  `process.execPath` (S4036 propagation from R1's production fix to the test
+  surface). `applyBatchJournal` and `regressionLine` test helpers hoisted from
+  inside `describe` blocks to module scope (S6479, 16 callsites updated).
+  `makeVocab` `|| {}` fallbacks dropped (S6557 ×4 — spreading `undefined` is a
+  no-op).
+
+**Key learnings:**
+
+- **Cross-round dedup pays compounding interest in late-stage PRs.** Two of
+  three Qodo Compliance items in R2 were exact ⚪ re-flags of R1 rejections
+  (Audit Trails, Secure Logging). Without the cross-round-dedup gate the skill
+  mandates, these would have either been re-investigated (token waste) or
+  silently re-rejected without documentation. The skill's auto-reject +
+  state-file mechanism surfaced both immediately on Step 2.
+- **`gh pr view --json files` clipping is now a confirmed two-round pattern.**
+  R1 retro flagged it; R2 reproduced it (gh returned 100 files;
+  `git diff origin/main...origin/planning-41226 --name-only` returned 166). All
+  R2-flagged files lived in the clipped tail. Step 0 cross-checking gh against
+  `git diff` is now load-bearing — promote to MUST in skill v4.7.
+- **Folding test-file SonarCloud findings into one commit per file is
+  high-yield.** Items #18-#21 (4× empty object useless on `makeVocab`) collapsed
+  into a single 4-line edit. Items #11/#13/#14 (3× outer-scope helpers)
+  collapsed into 3 hoist + rename + replace_all sequences. The test-file lint
+  sweep finished in one commit because the findings were spatially clustered.
+- **Same-line multi-source folds are detectable on Step 2.** L309 in
+  retag-mutations.test.ts was flagged independently as a Critical Bug (S2871 —
+  provide compare fn) AND a Major Code Smell (S4043 — in-place sort). The triage
+  table caught the duplicate file:line and merged them into one fix; the commit
+  message documents the fold so a future reader does not look for two separate
+  edits.
+- **Test files inherit production-fix patterns via propagation sweep.** R1 fixed
+  S4036 in production (`scripts/cas/retag.js`) by switching to
+  `process.execPath`. R2 surfaced the same pattern in the test file
+  (`spawnSync("node", ...)` in `runRetag`). The propagation sweep protocol
+  applies to test code too — same fix, same reasoning, no separate triage
+  needed.
+
+**Process improvements:**
+
+- The cas-tag-quality plan introduces reusable test fixture patterns
+  (`/tmp/*.json` literals as parseCliArgs args). S5443 will fire on these every
+  PR until either (a) `.qodo/pr-agent.toml` adds a test-fixture suppression
+  rule, or (b) the test refactors to `path.join(os.tmpdir(), …)` even for
+  never-written paths. Option (a) is one config edit; option (b) is 4+ test
+  rewrites. Defer to a follow-up TDMS item if S5443 re-fires in PR #509+.
+- `generate-extractions-md.js` still auto-runs on `require()` (no
+  `require.main === module` guard). R1 process improvements noted that retag.js
+  was retrofitted with this guard for testability; the same retrofit is owed to
+  generate-extractions-md.js. Surfaced when a smoke
+  `node -e "require('./scripts/cas/generate-extractions-md.js')"` unexpectedly
+  regenerated EXTRACTIONS.md in this round.
+- The pre-commit Prettier check IS catching newly-generated research artifacts
+  (jina-ai-reader/creator-view.md was new in this PR), but the analyze workflow
+  that produces them is not running prettier on output. Add a post-write
+  prettier hook to `analyze` or document the manual step.
+
+**Commits:**
+
+- 0ede7197 (Commit A — CRITICAL: Prettier unblock + sort/localeCompare)
+- 1cadb5ac (Commit B — MAJOR security: escapeHeading + escapeCell `[]`
+  hardening + buildSectionAnchorId empty-slug fallback)
+- e533745c (Commit C — MAJOR: vocab/spawn safety + 3× optional-chain guard
+  rewrites + vocab-stats categories fallback)
+- 07b2200f (Commit D — MINOR newline-termination + 16-callsite test helper
+  hoist + 4× empty-object spread cleanup + S4036 test propagation)
