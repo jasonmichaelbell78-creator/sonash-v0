@@ -158,7 +158,7 @@
       "description": "Embedding moved to unstructured-ingest, fragmenting DX. Keep T28 extraction→analysis→synthesis as single coherent system"
     }
   ],
-  "last_synthesized_at": null,
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "unstructured-io/unstructured",

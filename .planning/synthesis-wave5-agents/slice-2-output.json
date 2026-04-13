@@ -1,0 +1,1264 @@
+{
+  "slice_index": 2,
+  "slugs": [
+    "youtube-oszdfnqmgrw",
+    "bedrock-summarize-audio-video-text",
+    "docling",
+    "karpathy-autoresearch",
+    "public-apis_public-apis",
+    "unstructured",
+    "zedeus-nitter",
+    "kieranklaassen-gist-4f2aba89"
+  ],
+  "generated_at": "2026-04-13T00:00:00Z",
+  "per_source": {
+    "youtube-oszdfnqmgrw": {
+      "raw_themes": [
+        {
+          "name": "Markdown + CLAUDE.md as lightweight RAG alternative",
+          "short_desc": "File structure + CLAUDE.md navigation replaces vector DB/embeddings for solo/small-team scale.",
+          "evidence_quote": "you don't need vector databases, embeddings, or graph RAG if your scale is \"one person or a small team.\"",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Scale threshold drives retrieval strategy",
+          "short_desc": "Hundreds of docs = markdown + LLM context; thousands = need real retrieval infrastructure.",
+          "evidence_quote": "when you hit thousands of documents, you need real retrieval. Below that, file structure is enough.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "CLAUDE.md-as-controller validates SoNash approach",
+          "short_desc": "Teaching the LLM to traverse the file system is a generalizable pattern, not a Karpathy hack.",
+          "evidence_quote": "The CLAUDE.md-as-controller pattern validates our approach.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Start-simple philosophy / graduate when needed",
+          "short_desc": "Incremental evolution from markdown → validated schema → SQLite index is the correct path.",
+          "evidence_quote": "The \"start simple\" philosophy is exactly right.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Simplicity gap vs CAS infrastructure",
+          "short_desc": "5-min Obsidian setup vs CAS session-long ramp — suggests a quick-start mode for /analyze.",
+          "evidence_quote": "A new user could set up the Obsidian system in 5 minutes. Our CAS took an entire session to build",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Obsidian raw→wiki pipeline pattern",
+          "type": "pattern",
+          "description": "Raw folder staging → LLM-generated wiki → master index. Lightweight alternative to vector RAG.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["knowledge-base", "obsidian", "pipeline"],
+          "source_slug": "youtube-oszdfnqmgrw"
+        },
+        {
+          "name": "CLAUDE.md as knowledge traversal controller",
+          "type": "knowledge",
+          "description": "CLAUDE.md instructs LLM how to navigate file structure, replacing vector retrieval with path-based lookup.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["claude-md", "navigation", "context"],
+          "source_slug": "youtube-oszdfnqmgrw"
+        },
+        {
+          "name": "Obsidian Web Clipper as ingestion tool",
+          "type": "content",
+          "description": "Chrome extension for web→markdown ingestion directly to raw folder.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["obsidian", "ingestion", "chrome-extension"],
+          "source_slug": "youtube-oszdfnqmgrw"
+        },
+        {
+          "name": "Scale threshold decision framework",
+          "type": "knowledge",
+          "description": "Solo/small team <thousands docs = structured markdown sufficient. Millions = proper RAG. Start simple.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["rag", "scale", "decision-framework"],
+          "source_slug": "youtube-oszdfnqmgrw"
+        },
+        {
+          "name": "Overcomplicating knowledge retrieval",
+          "type": "anti-pattern",
+          "description": "Jumping to vector DBs and embeddings before validating that structured markdown + LLM context works at your scale.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "rag", "premature-optimization"],
+          "source_slug": "youtube-oszdfnqmgrw"
+        }
+      ],
+      "relevance_to_home": "Directly validates SoNash's existing .research/ pipeline and CLAUDE.md-as-controller pattern used for JASON-OS skill routing. The CAS is the 'mature version' of this approach; the main home-relevant takeaway is a potential quick-start mode for /analyze to close the onboarding gap."
+    },
+    "bedrock-summarize-audio-video-text": {
+      "raw_themes": [
+        {
+          "name": "Multi-format composable extraction pipeline",
+          "short_desc": "Chain-of-Responsibility with reader/processor/writer handlers normalizes messy inputs to a shared flow.",
+          "evidence_quote": "readers normalize inputs, processors transform content, writers push results somewhere. Chain of Responsibility means you snap handlers together like Lego bricks.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "AST-based zero-config handler auto-discovery",
+          "short_desc": "Factory walks handler tree, parses Python ASTs, registers AbstractHandler subclasses by class name.",
+          "evidence_quote": "The factory pattern with AST-based auto-discovery is the most genuinely clever thing here.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "PII tokenize/untokenize round-trip for LLM privacy",
+          "short_desc": "Replace PII with T1/T2/T3 tokens before LLM, instruct model to use tokens as names, untokenize after.",
+          "evidence_quote": "Tokenize PII before sending to the LLM (T1, T2, T3), instruct the model to use tokens as names, untokenize after.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Local-first extraction over AWS-coupled stacks",
+          "short_desc": "Whisper/Tesseract/spaCy local alternatives vs Transcribe/Textract/Comprehend vendor lock-in and billing complexity.",
+          "evidence_quote": "For JASON-OS's portable-tools vision, extraction should use local-first alternatives where possible: Whisper instead of Transcribe",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "YouTube → audio → transcript lifecycle",
+          "short_desc": "pytubefix download + moviepy audio extract + Transcribe/Whisper async lifecycle in ~30 lines per handler.",
+          "evidence_quote": "Uses `pytubefix` for download + `moviepy` for audio extraction to MP3. This is the exact YouTube content pipeline T27 needs.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Model-agnostic invocation via JSONPath",
+          "short_desc": "Env-driven JSONPath request/response mapping lets same code invoke Claude, Titan, or any Bedrock model.",
+          "evidence_quote": "Same invocation code works for Claude, Titan, or any Bedrock model.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "YouTube audio extraction pipeline",
+          "type": "pattern",
+          "description": "pytubefix download + moviepy audio extraction to MP3. Full lifecycle in ~30 lines. Reference for T27 YouTube content extraction.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["youtube", "audio", "extraction"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "Amazon Transcribe async job lifecycle",
+          "type": "knowledge",
+          "description": "Start transcription job -> poll -> fetch transcript from S3 -> cleanup. Shows speaker labels, language config, S3 output routing.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["aws", "transcribe", "speech-to-text"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "PII tokenize/untokenize round-trip pattern",
+          "type": "pattern",
+          "description": "Comprehend PII detection -> token replacement (T1/T2/T3) -> token map persistence -> LLM processing with tokens -> untokenization. Preserves context while anonymizing.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["privacy", "pii", "llm"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "Chain of Responsibility + Factory handler composition",
+          "type": "pattern",
+          "description": "Reader/processor/writer handler taxonomy with set_next() chaining. Factory with lazy import and caching. Clean pipeline composition model.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["architecture", "pipeline", "handlers"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "AST-based handler auto-discovery",
+          "type": "pattern",
+          "description": "HandlerFactory.discover_handlers walks handler tree, parses Python ASTs to find AbstractHandler subclasses, registers for lazy import. Zero-config extension model.",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["ast", "plugins", "auto-discovery"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "JSONPath model-agnostic invocation config",
+          "type": "pattern",
+          "description": "Environment-driven model request/response mapping via JSONPath expressions. Same code invokes Claude v2, Claude 3, or Titan by changing env vars.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["jsonpath", "model-adapter", "config"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "pytubefix YouTube download + caption library",
+          "type": "content",
+          "description": "1.5K stars, MIT, actively maintained. Built-in caption/SRT extraction may skip Whisper for captioned videos; audio-only download; playlist/channel enumeration; AsyncYouTube; OAuth.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["youtube", "library", "captions"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "AWS-coupled extraction anti-pattern",
+          "type": "anti-pattern",
+          "description": "5+ AWS service dependencies (Transcribe, Textract, Comprehend, Bedrock, S3, Rekognition) create vendor lock-in, billing complexity, and failure surface. Prefer local-first alternatives (Whisper, Tesseract, spaCy) for portable tools.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "vendor-lockin", "portability"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        },
+        {
+          "name": "Blocking poll anti-pattern",
+          "type": "anti-pattern",
+          "description": "Transcribe handler polls with time.sleep(30) in a blocking while loop. Acceptable for CLI, but must not be copied into agent pipelines. Use async callbacks or event-driven patterns instead.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "async", "polling"],
+          "source_slug": "bedrock-summarize-audio-video-text"
+        }
+      ],
+      "relevance_to_home": "High relevance via two axes: (1) PII tokenize/untokenize pattern is directly applicable to SoNash journal entries (sobriety-community data is extremely sensitive — names, substances, sponsors, meetings); (2) handler taxonomy + AST auto-discovery is a meta-tooling reference for JASON-OS Domain 02a (MCP/skill registration)."
+    },
+    "docling": {
+      "raw_themes": [
+        {
+          "name": "Output representation matters as much as parsing",
+          "short_desc": "DoclingDocument tree (body/furniture, hierarchical sections, JSON pointers) vs flat Element lists.",
+          "evidence_quote": "the output representation matters as much as the parsing",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Backend + Pipeline + DoclingDocument three-layer separation",
+          "short_desc": "Parsing → processing → output cleanly separated; one backend per format, pipelines orchestrate, DoclingDocument unified.",
+          "evidence_quote": "This three-layer separation (parsing → processing → output) is exactly the kind of clean architecture that survives scaling.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Plugin system via pluggy (setuptools entrypoints)",
+          "short_desc": "Third-party OCR/layout/table model registration without forking. Most sophisticated extension mechanism in the space.",
+          "evidence_quote": "The plugin system via pluggy is the most sophisticated extension mechanism in the document processing space.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Unified output across source types (VLM + ASR + docs)",
+          "short_desc": "GraniteDocling VLM, Whisper ASR, and classical PDF pipelines all converge to DoclingDocument.",
+          "evidence_quote": "Every source type, same output format. This is the unified extraction vision T28 is chasing.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "MCP-first delegation over building extractors",
+          "short_desc": "docling-mcp exposes conversion as MCP tool — T28 should delegate rather than reimplement.",
+          "evidence_quote": "Use docling as T28's document extraction backend instead of building one.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Thread-safe pipeline with per-run isolation",
+          "short_desc": "Per-run identifiers, bounded queues with back-pressure, minimal shared state — production engineering.",
+          "evidence_quote": "per-run isolation, deterministic run identifiers, bounded queues with back-pressure, and minimal shared state.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Premature multi-package split risk",
+          "short_desc": "5 packages makes sense for an ecosystem with real consumers; not for a single-user orchestration system.",
+          "evidence_quote": "Start monolithic, split only when you have external consumers",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "DoclingDocument tree structure",
+          "type": "knowledge",
+          "description": "Pydantic tree-structured unified document representation. Body/furniture separation, reading order via tree, JSON pointer cross-refs. T28 output schema design reference.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["schema", "document-model", "tree"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Backend + Pipeline separation pattern",
+          "type": "pattern",
+          "description": "Backends handle format-specific parsing, pipelines orchestrate processing stages. T28 should separate source extraction from analysis orchestration.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["architecture", "separation-of-concerns"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Plugin system via pluggy",
+          "type": "pattern",
+          "description": "Third-party extensibility via setuptools entrypoints. OCR, layout, table models. Only needed when T28 has external consumers.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["plugins", "extensibility", "pluggy"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "docling-mcp as extraction backend",
+          "type": "content",
+          "description": "MCP server wrapping docling conversion. T28 could use as document extraction backend instead of building one.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["mcp", "extraction", "delegation"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "ASR pipeline → unified output",
+          "type": "knowledge",
+          "description": "Whisper Turbo → DoclingDocument. Same output as PDF/DOCX. Proves the unified extraction output thesis T28 is pursuing.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["asr", "whisper", "unified-output"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Use docling instead of building document extractors",
+          "type": "knowledge",
+          "description": "Docling already solves PDF, DOCX, PPTX, HTML, audio, images, LaTeX. Delegate via docling-mcp, build only what docling doesn't cover.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["delegation", "mcp", "build-vs-buy"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Serializer hierarchy pattern",
+          "type": "pattern",
+          "description": "BaseDocSerializer → per-format serializers. Per-component serializers (text, table, picture). T28 export layer reference.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["serialization", "export"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Enrichment pipeline (toggleable)",
+          "type": "pattern",
+          "description": "Optional post-processing steps: code understanding, formula parsing, picture classification. Pattern for T28 analysis depth options.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["pipeline", "enrichment", "optional-stages"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Thread-safe pipeline design",
+          "type": "knowledge",
+          "description": "Per-run isolation, bounded queues, back-pressure, deterministic shutdown. Production engineering reference.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["concurrency", "thread-safety"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "InputFormat enum (17 types)",
+          "type": "knowledge",
+          "description": "Compare with unstructured's FileType enum. Docling's is simpler (just string enum) but paired with FormatOption mapping.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["enum", "format-registry"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Don't replicate multi-package split prematurely",
+          "type": "anti-pattern",
+          "description": "5 packages makes sense for a library ecosystem with 57K stars. T28 has one user — start monolithic.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "premature-modularization"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Don't build plugin system before you have plugins",
+          "type": "anti-pattern",
+          "description": "pluggy exists because docling has real third-party contributors. Build hardcoded extractors first, plugins later.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "premature-abstraction"],
+          "source_slug": "docling"
+        },
+        {
+          "name": "Don't adopt DoclingDocument wholesale",
+          "type": "anti-pattern",
+          "description": "DoclingDocument is optimized for single-document representation. T28 needs cross-source analysis schema. Study the tree pattern, design your own.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "schema-design"],
+          "source_slug": "docling"
+        }
+      ],
+      "relevance_to_home": "Very high for JASON-OS Domain 02a: docling-mcp is a canonical example of delegating heavy extraction to an MCP server rather than reimplementing, and docling's Backend+Pipeline separation is the cleanest architecture pattern seen for T28's extraction → analysis → synthesis vision."
+    },
+    "karpathy-autoresearch": {
+      "raw_themes": [
+        {
+          "name": "Tight loop with one file + one metric + no gates",
+          "short_desc": "Optimal agent workflow: 3 files, 1 metric, no permission gates. Everything else is noise.",
+          "evidence_quote": "the optimal agent workflow is a tight loop with one file, one metric, and no permission gates. Everything else is noise.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "3-file architecture: immutable + editable + instructions",
+          "short_desc": "prepare.py (immutable), train.py (agent-editable), program.md (instructions). Clean editable-zone contract.",
+          "evidence_quote": "prepare.py is immutable infrastructure. train.py is the agent-editable surface. program.md is the instruction set.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Fixed-budget experimentation",
+          "short_desc": "TIME_BUDGET=300 makes all experiments comparable. ~100 experiments per overnight run.",
+          "evidence_quote": "The fixed 5-minute time budget is the smartest constraint: it makes every experiment directly comparable",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Simplicity criterion as taste-encoded instruction",
+          "short_desc": "'Removing something and getting equal or better results is a great outcome.' Research taste as agent instruction.",
+          "evidence_quote": "A 0.001 val_bpb improvement that adds 20 lines of hacky code? Probably not worth it. A 0.001 val_bpb improvement from deleting code? Definitely keep.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Protocol vs workflow design space",
+          "short_desc": "program.md (protocol: one agent, one metric, loop) vs SKILL.md (workflow: multi-agent, multi-phase, convergence).",
+          "evidence_quote": "Different tools for different constraint spaces.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Hidden multi-agent architecture via .gitignore",
+          "short_desc": "worktrees/, queue/, generated CLAUDE.md/AGENTS.md tell a story of parallel-experiment infra not in public repo.",
+          "evidence_quote": "The public repo is the single-agent baseline; the multi-agent extension exists but isn't shared.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Simplicity discipline haunts sophisticated systems",
+          "short_desc": "The uncomfortable question for every piece of complexity: what does it buy that simpler wouldn't?",
+          "evidence_quote": "for each piece of complexity, can you articulate what it buys you that a simpler approach wouldn't?",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "program.md Agent Instruction Pattern",
+          "type": "pattern",
+          "description": "114-line autonomous research protocol: setup, experiment loop, keep/discard, crash recovery, NEVER STOP, simplicity criterion, TSV logging. Compare against SKILL.md.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["agent-instruction", "protocol", "skill-md"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Fixed-Budget Experimentation",
+          "type": "pattern",
+          "description": "Fixed 5-min time budget makes all experiments directly comparable. ~12/hour, ~100 overnight. Generalizable to any time-bounded agent work.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["time-budget", "experimentation", "comparability"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "3-File Architecture (Immutable/Editable/Instructions)",
+          "type": "pattern",
+          "description": "prepare.py (don't touch) + train.py (agent edits) + program.md (human edits). Clean editable-zone contract.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["architecture", "editable-zones"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Autonomous Crash Recovery Protocol",
+          "type": "pattern",
+          "description": "Read stack trace, attempt fix, revert if unfixable. Simpler than checkpoint+resume for low-cost tasks.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["error-handling", "autonomy"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Results TSV Logging Convention",
+          "type": "pattern",
+          "description": "commit/val_bpb/memory_gb/status/description. Already have JSONL equivalent.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["logging", "experiment-tracking"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Simplicity criterion for JASON-OS",
+          "type": "knowledge",
+          "description": "'Removing something and getting equal or better results is a great outcome.' Apply to every new skill, agent, or infrastructure addition. The uncomfortable question: for each piece of complexity, what does it buy?",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["simplicity", "jason-os", "growth-discipline"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Autonomy spectrum design",
+          "type": "knowledge",
+          "description": "NEVER STOP (autoresearch) vs explicit approval gates (CLAUDE.md Guardrail #2). JASON-OS needs to find the right point: autonomous within phases, gated between phases.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["autonomy", "gates", "agent-design"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Protocol vs workflow design space",
+          "type": "knowledge",
+          "description": "program.md (protocol: one agent, one metric, infinite loop) vs SKILL.md (workflow: multi-agent, multi-phase, convergence). Different tools for different constraint spaces.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["protocol-vs-workflow", "skill-design"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "analysis.ipynb — Experiment Results Methodology",
+          "type": "content",
+          "description": "Framework for analyzing agent experiment history. Load results.tsv, compute keep/discard/crash rates, plot val_bpb with running minimum, label kept experiments, rank improvements by delta magnitude.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["experiment-analysis", "visualization", "metrics"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Hidden Multi-Agent Architecture (.gitignore)",
+          "type": "content",
+          "description": "worktrees/ + queue/ + generated CLAUDE.md/AGENTS.md. Multi-agent experiment infrastructure not in public repo. Mirrors home worktree usage.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["multi-agent", "worktrees", "queue"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "No-license-on-purpose trap",
+          "type": "anti-pattern",
+          "description": "Karpathy can get away with no license because he's Karpathy. 9,611 forks in legal ambiguity. Don't follow this example for JASON-OS.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["license", "anti-pattern", "publishing"],
+          "source_slug": "karpathy-autoresearch"
+        },
+        {
+          "name": "Single-metric optimization trap",
+          "type": "anti-pattern",
+          "description": "val_bpb is clean because the problem has one unambiguous metric. Most real work has competing metrics. Don't flatten multi-objective problems into one number to look like autoresearch.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "metrics", "multi-objective"],
+          "source_slug": "karpathy-autoresearch"
+        }
+      ],
+      "relevance_to_home": "High meta-tooling relevance: program.md vs SKILL.md directly challenges JASON-OS skill-format assumptions, and the simplicity criterion is aimed at the home repo's 72-skill/38-agent/8,490-debt-item scale. The 3-file architecture maps cleanly to editable-zone design for future JASON-OS portability."
+    },
+    "public-apis_public-apis": {
+      "raw_themes": [
+        {
+          "name": "Structural validation prevents format decay",
+          "short_desc": "format.py + links.py + tests + three CI workflows enforce `API|Description|Auth|HTTPS|CORS` schema.",
+          "evidence_quote": "This is a curated list that invested in structural integrity tooling",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Validation without maintenance still stagnates",
+          "short_desc": "Automation ensures format integrity but not content freshness or link liveness; lifecycle mgmt missing.",
+          "evidence_quote": "format validation scripts don't prevent stagnation. The scripts ensure structural integrity of new entries, but they don't ensure entries are current",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Commercial capture as stagnation mechanism",
+          "short_desc": "Sponsor-first README (10 APILayer APIs before community content) erodes trust and signals monetization capture.",
+          "evidence_quote": "This is the \"commercial capture\" stage of celebrity stagnation",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Link rot as silent documentation killer",
+          "short_desc": "Daily cron + on-push link checking is a small, transferable win for docs/SKILL_INDEX/EXTRACTIONS/MEMORY.md.",
+          "evidence_quote": "A scheduled or on-push link checker would catch rotting references before they mislead.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "SoNash-relevant API candidates surfaced",
+          "short_desc": "Google Calendar (OAuth via Firebase), Open-Meteo (no auth, CORS), GCP Natural Language for sentiment — recovery notebook leverage.",
+          "evidence_quote": "For a future \"recovery resources\" feature, health/wellness APIs are the starting point.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Link Validation Workflow",
+          "type": "pattern",
+          "description": "validate_links.yml + scripts/validate/links.py (273 lines) + tests (172 lines). Scheduled + on-push URL liveness checking using Python requests.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["ci", "link-check", "docs"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Structured Catalog Format (enum columns)",
+          "type": "pattern",
+          "description": "API|Description|Auth|HTTPS|CORS table format with constrained enum values. Machine-parseable and human-readable.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["catalog", "format", "enum"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Format Validation Script Pattern",
+          "type": "pattern",
+          "description": "format.py (277 lines) with regex-based format enforcement, category structure validation, alphabetical ordering. Simpler version of patterns:check.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["validation", "format", "ci"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Celebrity stagnation with infrastructure (cross-repo)",
+          "type": "knowledge",
+          "description": "Same trajectory as codecrafters but WITH validation scripts, CI, tests. Proves automation alone doesn't prevent stagnation — active maintenance is the key differentiator.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["stagnation", "maintenance", "case-study"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Validation without maintenance trap",
+          "type": "knowledge",
+          "description": "Format validation scripts ensure structural integrity of new entries, but don't ensure entries are current, links are live, or categories are relevant. Missing piece: lifecycle management.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["lifecycle", "maintenance", "validation"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Google Calendar API",
+          "type": "content",
+          "description": "Direct SoNash integration candidate. OAuth via Firebase Auth. Milestones, meetings, check-ins.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["sonash", "calendar", "oauth"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Open-Meteo Weather API (no auth)",
+          "type": "content",
+          "description": "Zero-friction weather data for mood-weather correlation journaling. No API key, CORS enabled.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["sonash", "weather", "no-auth"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Google Cloud Natural Language API",
+          "type": "content",
+          "description": "Journal sentiment analysis. Same cloud ecosystem as Firebase.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["sonash", "nlp", "sentiment"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "validate_links.yml workflow",
+          "type": "content",
+          "description": "29-line daily link checker. Port to sonash for docs/SKILL_INDEX/EXTRACTIONS link integrity.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["workflow", "link-check", "extraction"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Sponsor-first README pattern",
+          "type": "anti-pattern",
+          "description": "10 APILayer promoted APIs before community content. Erodes trust. If JASON-OS has partners, keep them separate from the content index.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "readme", "commercial-capture"],
+          "source_slug": "public-apis_public-apis"
+        },
+        {
+          "name": "Validation without maintenance trap",
+          "type": "anti-pattern",
+          "description": "Format validation scripts ensure structural integrity but not content freshness. Missing piece: lifecycle management. patterns:check prevents format decay but not content decay.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "lifecycle", "validation"],
+          "source_slug": "public-apis_public-apis"
+        }
+      ],
+      "relevance_to_home": "Two concrete SoNash leverage points (Google Calendar OAuth via Firebase, GCP Natural Language for journal sentiment) plus the directly-portable validate_links.yml pattern for SKILL_INDEX/EXTRACTIONS/MEMORY link-rot detection. The 'validation without maintenance' trap is a direct warning to JASON-OS skill-audit automation."
+    },
+    "unstructured": {
+      "raw_themes": [
+        {
+          "name": "Unified abstraction over many formats",
+          "short_desc": "partition() hides 30+ parsers behind one call; libmagic auto-detect + typed Element output.",
+          "evidence_quote": "the problem isn't parsing any single format — it's building a unified abstraction that makes 30+ formats look identical to downstream consumers.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Self-describing FileType registry",
+          "short_desc": "Each enum member declares partitioner path, deps, extras, MIME types, extensions — add format = add enum member.",
+          "evidence_quote": "The FileType enum (file_utils/model.py) is a masterclass in self-describing registration.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Strategy fallback with graceful dependency checking",
+          "short_desc": "AUTO/FAST/OCR_ONLY/HI_RES cascade; falls back when optional ML deps absent. Maps to Quick/Standard/Deep tiers.",
+          "evidence_quote": "The strategy system (AUTO/FAST/OCR_ONLY/HI_RES) with graceful dependency fallback is a mature pattern",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Typed elements with provenance metadata",
+          "short_desc": "Elements carry coordinates, data source metadata, permissions data — extraction with spatial + trust awareness.",
+          "evidence_quote": "This isn't just \"text in, text out\" — it's document intelligence with spatial awareness.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Chunking is deep — not a utility",
+          "short_desc": "1800-line chunking/base.py handles table isolation, title semantics, token counting, cross-page chunks, header repetition.",
+          "evidence_quote": "These are deep problems that only surface at scale.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Golden-file snapshot testing for extraction",
+          "short_desc": "40+ connector types tested via expected markdown comparison — regression model for T28.",
+          "evidence_quote": "40+ connector types tested via expected markdown output comparison. Model for T28 extraction regression testing",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Over-engineered ontology is tech debt even authors admit",
+          "short_desc": "Pydantic HTML intermediate representation adds complexity without value — author TODO says so.",
+          "evidence_quote": "The TODO comment from \"Pluto\" in ontology.py explicitly says OntologyElement is the only needed class",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Auto-routing via type detection",
+          "type": "pattern",
+          "description": "partition() auto-detects file type via libmagic and routes to type-specific partitioner. T28 needs equivalent: detect source type (URL, repo, file) and route to right extractor.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["routing", "auto-detection", "t28"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Self-describing FileType registry",
+          "type": "pattern",
+          "description": "Enum where each member declares partitioner path, deps, extras, MIME types, extensions. Adding a format = adding one enum member. T28 source type registration pattern.",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["registry", "enum", "self-describing"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Strategy fallback chain",
+          "type": "pattern",
+          "description": "AUTO→HI_RES→OCR_ONLY→FAST with dependency checking. Maps to T28 Quick/Standard/Deep with graceful degradation when tools unavailable.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["strategy", "fallback", "depth-tiers"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Graceful dependency checking",
+          "type": "pattern",
+          "description": "dependency_exists() checks at runtime, logs warning, falls back. T28 needs this for optional deps (Whisper, Chrome, gh CLI).",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["dependencies", "graceful-degradation"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Golden-file snapshot testing",
+          "type": "pattern",
+          "description": "40+ connector types tested via expected markdown output comparison. Model for T28 extraction regression testing.",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["testing", "snapshot", "regression"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Element type hierarchy with metadata",
+          "type": "knowledge",
+          "description": "Dataclass elements with coordinates, data source provenance, permissions. Informs T28 extraction output schema design.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["schema", "typed-elements", "provenance"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Chunking with table isolation",
+          "type": "knowledge",
+          "description": "Tables never merge with adjacent text during chunking. Title-based semantic boundaries. Relevant for T28 analysis layer.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["chunking", "tables", "semantic"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Text cleaning pipeline",
+          "type": "knowledge",
+          "description": "Bullet normalization, ligature replacement, whitespace cleanup. Reminder that extraction output needs post-processing normalization.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["normalization", "cleaning"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "S3-backed performance benchmarking",
+          "type": "knowledge",
+          "description": "Benchmark results tagged with architecture/instance/git hash. Production-grade perf tracking model.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "low",
+          "tags": ["benchmarking", "performance"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "unstructured-ingest connector ecosystem",
+          "type": "content",
+          "description": "40+ source connectors (Salesforce, Notion, Confluence, Jira, Slack, Discord, S3, etc.). T28 connector layer reference.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["connectors", "ingestion", "catalog"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Don't replicate ontology V2 over-engineering",
+          "type": "anti-pattern",
+          "description": "Pydantic HTML intermediate representation adds complexity without value. Team acknowledges it. T28 should go extraction→typed output directly.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "over-engineering", "intermediate-repr"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Don't build per-format parsers in TypeScript",
+          "type": "anti-pattern",
+          "description": "30+ partitioners represent years of edge cases. T28 should delegate parsing to existing tools and focus on orchestration.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "delegation", "build-vs-buy"],
+          "source_slug": "unstructured"
+        },
+        {
+          "name": "Don't fragment extraction and analysis across repos",
+          "type": "anti-pattern",
+          "description": "Embedding moved to unstructured-ingest, fragmenting DX. Keep T28 extraction→analysis→synthesis as single coherent system.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "fragmentation", "dx"],
+          "source_slug": "unstructured"
+        }
+      ],
+      "relevance_to_home": "Single most architecturally relevant repo for T28 CAS. The FileType registry pattern and auto-routing via type detection map directly to /analyze router improvements. The strategy fallback chain generalizes Quick/Standard/Deep to handle missing optional deps gracefully — a concrete upgrade path for the CAS."
+    },
+    "zedeus-nitter": {
+      "raw_themes": [
+        {
+          "name": "Adversarial infrastructure design",
+          "short_desc": "Every design decision assumes the upstream (Twitter) will try to block you; session pooling, rate limit tracking, parser versioning.",
+          "evidence_quote": "Nitter understands adversarial infrastructure -- how to build a service that works against the interests of its data source.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Docker hardening as security boundary",
+          "short_desc": "Read-only fs, CAP_DROP ALL, non-root UID 998, health checks — best Docker hardening in the corpus.",
+          "evidence_quote": "Most projects treat Docker as a packaging format; nitter treats it as a security boundary.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Parser versioning isolates blast radius of upstream API changes",
+          "short_desc": "experimental/ directory lets new parsers develop alongside old ones — switch rather than patch.",
+          "evidence_quote": "When the upstream changes, you switch parsers rather than patching the existing one. This isolates blast radius.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Per-endpoint preemptive rate limiting",
+          "short_desc": "Track rate limits per endpoint with preemptive backoff — more sophisticated than post-429 handling.",
+          "evidence_quote": "limiting before hitting 429, not after",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Adversarial dependency as existential risk",
+          "short_desc": "12.8K stars but effectively dead — Twitter killed nitter by changing APIs. Never build on a hostile foundation.",
+          "evidence_quote": "Twitter killed nitter by changing APIs. The project has 12.8K stars but is effectively dead.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "XSS + missing security headers in content renderer",
+          "short_desc": "Karax verbatim bypasses escaping; no CSP, no X-Frame-Options, no HSTS; plaintext credentials.",
+          "evidence_quote": "The XSS vulnerability (unescaped tweet content via Karax verbatim) is a critical flaw",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Docker container hardening (RO fs + CAP_DROP ALL)",
+          "type": "knowledge",
+          "description": "Read-only filesystem, CAP_DROP ALL, non-root uid 998, alpine minimal, health checks. Best Docker hardening in T29 corpus.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["docker", "hardening", "security"],
+          "source_slug": "zedeus-nitter"
+        },
+        {
+          "name": "Session pool with per-endpoint rate limiting",
+          "type": "knowledge",
+          "description": "Multiple sessions rotate on rate limits. Per-session per-endpoint tracking with preemptive backoff.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["rate-limit", "session-pool", "backoff"],
+          "source_slug": "zedeus-nitter"
+        },
+        {
+          "name": "Parser versioning for unstable APIs",
+          "type": "knowledge",
+          "description": "Experimental module allows parallel parser development. Isolates blast radius of upstream API changes.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["versioning", "parsers", "blast-radius"],
+          "source_slug": "zedeus-nitter"
+        },
+        {
+          "name": "ADVERSARIAL_DEPENDENCY",
+          "type": "anti-pattern",
+          "description": "Building product on scraping hostile platform. Twitter killed nitter by changing APIs. 12.8K stars, effectively dead.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "dependency-risk", "adversarial"],
+          "source_slug": "zedeus-nitter"
+        },
+        {
+          "name": "XSS_IN_CONTENT_RENDERER",
+          "type": "anti-pattern",
+          "description": "Rendering untrusted content without HTML escaping. Karax verbatim bypasses escaping.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "xss", "security"],
+          "source_slug": "zedeus-nitter"
+        },
+        {
+          "name": "SECURITY_HEADERS_ABSENT",
+          "type": "anti-pattern",
+          "description": "No CSP, X-Frame-Options, HSTS in web application. Zero defense-in-depth.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "security-headers", "defense-in-depth"],
+          "source_slug": "zedeus-nitter"
+        }
+      ],
+      "relevance_to_home": "Low direct SoNash relevance (Firebase, not Docker) but the hardening reference is canonical for any future JASON-OS containerization. The adversarial-dependency anti-pattern reinforces the SoNash choice to build on Firebase (stable API) rather than scraped/unstable upstreams."
+    },
+    "kieranklaassen-gist-4f2aba89": {
+      "raw_themes": [
+        {
+          "name": "6-pattern orchestration taxonomy",
+          "short_desc": "Parallel Specialists, Pipeline, Swarm, Research+Implementation, Plan Approval, Coordinated Refactoring.",
+          "evidence_quote": "The 6 orchestration patterns are the most valuable synthesis",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Subagent vs teammate as design tradeoff",
+          "short_desc": "Subagents = fire-and-forget simplicity; teammates = persistent inbox messaging with lifecycle complexity.",
+          "evidence_quote": "Subagents are simpler but can't coordinate mid-task. Teammates can coordinate but add lifecycle complexity",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Spawn backend comparison (in-process/tmux/iterm2)",
+          "short_desc": "Visible-persistent vs fastest-hidden tradeoff; relevant to T5 worktree management strategy.",
+          "evidence_quote": "The spawn backend comparison (in-process vs tmux vs iterm2) is directly relevant.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Task dependency auto-unblock replaces manual sequencing",
+          "short_desc": "Declarative blockedBy arrays with auto-unblock could replace manual sequential dispatch in deep-research.",
+          "evidence_quote": "The task dependency auto-unblock feature could replace your manual sequential dispatch if you formalize it.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Reference documentation without verification layer",
+          "short_desc": "82 code blocks document HOW but never WHEN or WHETHER — home convergence loops fill that gap.",
+          "evidence_quote": "This gist's patterns dispatch agents and collect results but never verify quality.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "SKILL.md as context-loadable instruction set",
+          "short_desc": "Gist uses SKILL.md frontmatter to be loadable into Claude Code as an instruction set — same pattern as home skills.",
+          "evidence_quote": "The gist is structured as a SKILL.md file (it has the frontmatter format), which means it's designed to be loaded into Claude Code's context as an instruction set.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "6-pattern orchestration taxonomy for AGENT_ORCHESTRATION.md",
+          "type": "pattern",
+          "description": "Parallel Specialists, Pipeline, Swarm, Research+Implementation, Plan Approval, Coordinated Refactoring. Compare against existing patterns in AGENT_ORCHESTRATION.md and identify which patterns skills use implicitly but haven't named.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["orchestration", "taxonomy", "agents"],
+          "source_slug": "kieranklaassen-gist-4f2aba89"
+        },
+        {
+          "name": "Spawn backend comparison for T5 worktree management",
+          "type": "pattern",
+          "description": "in-process (hidden, fastest), tmux (visible, persistent), iterm2 (macOS split). Auto-detection logic. Directly relevant to T5 worktree management and parallel CC instance strategies.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["worktree", "spawn", "t5"],
+          "source_slug": "kieranklaassen-gist-4f2aba89"
+        },
+        {
+          "name": "TeammateTool 13-operation reference for agent team definitions",
+          "type": "pattern",
+          "description": "Full operation lifecycle for persistent teams. Compare against .claude/teams/ definitions — are teams using all available operations? Are teams missing shutdown/cleanup protocols?",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["teammate", "agent-teams", "lifecycle"],
+          "source_slug": "kieranklaassen-gist-4f2aba89"
+        },
+        {
+          "name": "Task dependency auto-unblock for skill pipeline design",
+          "type": "pattern",
+          "description": "Declarative task dependencies via blockedBy arrays. Auto-unblock on completion. Could replace manual orchestration in multi-phase skills like deep-research and repo-synthesis.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["dependencies", "pipeline", "auto-unblock"],
+          "source_slug": "kieranklaassen-gist-4f2aba89"
+        },
+        {
+          "name": "Subagent vs teammate decision framework",
+          "type": "pattern",
+          "description": "Short-lived focused work = subagent (Task tool alone). Persistent coordination with messaging = teammate (Task + team). Clear decision criteria for when to use which.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["subagent", "teammate", "decision-framework"],
+          "source_slug": "kieranklaassen-gist-4f2aba89"
+        }
+      ],
+      "relevance_to_home": "High relevance for JASON-OS meta-tooling: this is the most complete reference manual for Claude Code's multi-agent system and directly surfaces gaps in AGENT_ORCHESTRATION.md (missing named patterns, unused teammate operations, manual sequencing where auto-unblock would fit)."
+    }
+  },
+  "initial_clusters": [
+    {
+      "cluster_name": "Multi-format extraction with unified output schema",
+      "member_themes": [
+        {
+          "source_slug": "docling",
+          "theme_name": "Output representation matters as much as parsing"
+        },
+        {
+          "source_slug": "docling",
+          "theme_name": "Unified output across source types (VLM + ASR + docs)"
+        },
+        { "source_slug": "unstructured", "theme_name": "Unified abstraction over many formats" },
+        {
+          "source_slug": "bedrock-summarize-audio-video-text",
+          "theme_name": "Multi-format composable extraction pipeline"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Three repos independently converge on the thesis that value is in the unified output representation + routing, not in any single format parser."
+    },
+    {
+      "cluster_name": "Self-describing registries / auto-routing over explicit skill selection",
+      "member_themes": [
+        { "source_slug": "unstructured", "theme_name": "Self-describing FileType registry" },
+        {
+          "source_slug": "bedrock-summarize-audio-video-text",
+          "theme_name": "AST-based zero-config handler auto-discovery"
+        },
+        {
+          "source_slug": "docling",
+          "theme_name": "Backend + Pipeline + DoclingDocument three-layer separation"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Adding a format/handler should be a one-liner (enum member / file drop-in); the routing infrastructure should handle the rest. Directly applicable to /analyze router."
+    },
+    {
+      "cluster_name": "Simplicity-and-delegation over build-it-yourself",
+      "member_themes": [
+        {
+          "source_slug": "karpathy-autoresearch",
+          "theme_name": "Simplicity discipline haunts sophisticated systems"
+        },
+        {
+          "source_slug": "karpathy-autoresearch",
+          "theme_name": "Tight loop with one file + one metric + no gates"
+        },
+        {
+          "source_slug": "youtube-oszdfnqmgrw",
+          "theme_name": "Start-simple philosophy / graduate when needed"
+        },
+        { "source_slug": "docling", "theme_name": "MCP-first delegation over building extractors" },
+        { "source_slug": "docling", "theme_name": "Premature multi-package split risk" }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Repeated theme across multiple source types: start minimal, delegate to existing tools, resist premature abstraction. Hits JASON-OS growth discipline directly."
+    },
+    {
+      "cluster_name": "Agent orchestration patterns + knowledge navigation",
+      "member_themes": [
+        {
+          "source_slug": "kieranklaassen-gist-4f2aba89",
+          "theme_name": "6-pattern orchestration taxonomy"
+        },
+        {
+          "source_slug": "kieranklaassen-gist-4f2aba89",
+          "theme_name": "Subagent vs teammate as design tradeoff"
+        },
+        {
+          "source_slug": "karpathy-autoresearch",
+          "theme_name": "3-file architecture: immutable + editable + instructions"
+        },
+        {
+          "source_slug": "karpathy-autoresearch",
+          "theme_name": "Protocol vs workflow design space"
+        },
+        {
+          "source_slug": "youtube-oszdfnqmgrw",
+          "theme_name": "CLAUDE.md-as-controller validates SoNash approach"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Strong convergence on how agents are organized: instruction-file-as-controller (CLAUDE.md/program.md/SKILL.md), editable-zone contracts, and orchestration taxonomies. JASON-OS Domain 02a fuel."
+    },
+    {
+      "cluster_name": "Validation infrastructure alone does not prevent decay",
+      "member_themes": [
+        {
+          "source_slug": "public-apis_public-apis",
+          "theme_name": "Validation without maintenance still stagnates"
+        },
+        {
+          "source_slug": "unstructured",
+          "theme_name": "Over-engineered ontology is tech debt even authors admit"
+        },
+        {
+          "source_slug": "zedeus-nitter",
+          "theme_name": "Adversarial dependency as existential risk"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "Three angles on the same lesson: structural validation / sophisticated architecture / infrastructure hardening do not save a project from upstream or content decay. Lifecycle management is the missing layer."
+    },
+    {
+      "cluster_name": "Privacy + hardening as transferable patterns",
+      "member_themes": [
+        {
+          "source_slug": "bedrock-summarize-audio-video-text",
+          "theme_name": "PII tokenize/untokenize round-trip for LLM privacy"
+        },
+        { "source_slug": "zedeus-nitter", "theme_name": "Docker hardening as security boundary" },
+        {
+          "source_slug": "zedeus-nitter",
+          "theme_name": "XSS + missing security headers in content renderer"
+        }
+      ],
+      "convergence_within_slice": "medium",
+      "short_desc": "Privacy/security appears twice in very different forms: proactive (PII tokens before LLM, Docker hardening) and reactive (nitter's XSS + missing headers as a warning)."
+    }
+  ],
+  "absence_signals": [
+    {
+      "domain": "Recovery-community / sobriety UX patterns",
+      "expected_because": "SoNash is a recovery notebook for the sobriety community; one would expect at least one source covering journaling/recovery/meeting-reminder UX.",
+      "suggestion": "Future /analyze runs should seed a recovery-notebook candidate list (e.g., I Am Sober app, Sober Grid, Aa.org meeting finder API) — the public-apis catalog only surfaced generic Health APIs, mostly COVID-era."
+    },
+    {
+      "domain": "Firebase-specific architecture / App Check / Firestore repository patterns",
+      "expected_because": "SoNash is built on Firebase 12.10 with App Check enforced and a firestore-service.ts repository pattern; corpus includes no Firebase deep-dive.",
+      "suggestion": "Add a dedicated Firebase/App Check source (Firebase docs, Firebase Auth + COOP/COEP pattern examples) to Wave 6 corpus."
+    },
+    {
+      "domain": "Local-first voice/transcription stack (Whisper-as-tool)",
+      "expected_because": "Bedrock repo explicitly flags local-first as the right direction and references a commented-out Whisper handler; corpus has no Whisper-native repo in this slice.",
+      "suggestion": "If not covered in other slices, pursue a local-Whisper / whisper.cpp source to complement bedrock/docling ASR coverage."
+    },
+    {
+      "domain": "Hook/skill governance case studies",
+      "expected_because": "Home invests heavily in hook governance, pattern compliance, TDMS; corpus in this slice gives no direct external case study of hook ecosystems.",
+      "suggestion": "Wave 6 should include one deliberately-chosen source on pre-commit ecosystems (e.g., pre-commit/pre-commit, lefthook, husky ecosystems) to test home's hook posture against external practice."
+    },
+    {
+      "domain": "Recovery-specific privacy (HIPAA-adjacent / SUD confidentiality)",
+      "expected_because": "Sobriety data is HIPAA/42 CFR Part 2 adjacent; PII tokenization only covers the LLM boundary, not storage/auth.",
+      "suggestion": "Add a source on 42 CFR Part 2 / SUD data handling patterns or privacy-first journal app case studies."
+    }
+  ],
+  "notes": [
+    "Slice has extremely strong convergence on unified-extraction + registry + delegation themes (docling + unstructured + bedrock), which will likely be the single biggest theme when merged across all 4 slices given T28's focus. Parent should expect heavy dedup of 'self-describing registry' and 'MCP delegation' candidates.",
+    "karpathy-autoresearch and kieranklaassen-gist are both meta-tooling sources that challenge home's skill/agent architecture from opposite directions: autoresearch says 'your system is too complex', the gist says 'your system under-uses available capabilities'. Both should land in the parent synthesis as a tension, not an averaging.",
+    "The PII tokenize/untokenize pattern from bedrock is the single most SoNash-specific practical candidate in the slice — worth elevating above its tier rating because journal entries in a sobriety app are uniquely sensitive.",
+    "zedeus-nitter's adversarial-dependency anti-pattern is worth surfacing at the slice level even though the repo itself is dead: it is a strong 'don't build on hostile foundations' signal that validates SoNash's Firebase choice and JASON-OS's caution about external MCP server reliability.",
+    "public-apis surfaced Google Calendar / Open-Meteo / GCP Natural Language as concrete SoNash feature hooks — these are content candidates that parent should preserve as they are the only slice outputs that are product-level leverage rather than meta-tooling.",
+    "Candidate 'Validation without maintenance trap' appears both as knowledge and anti-pattern in value-map.json for public-apis; I preserved both as source-authored. Parent may want to dedupe into a single entry.",
+    "youtube-oszdfnqmgrw creator-view is unusually self-referential — nearly every theme validates something SoNash already does. This is low-novelty, high-confirmation signal and should be weighted accordingly in synthesis.",
+    "All 8 sources had complete, readable artifacts — no empties encountered."
+  ]
+}

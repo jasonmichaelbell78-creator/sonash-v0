@@ -65,7 +65,7 @@
       "description": "No CSP, X-Frame-Options, HSTS in web application. Zero defense-in-depth."
     }
   ],
-  "last_synthesized_at": null,
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "metadata": {
     "url": "https://github.com/zedeus/nitter",
     "scan_version": "4.5",

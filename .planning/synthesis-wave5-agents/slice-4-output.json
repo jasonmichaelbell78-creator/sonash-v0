@@ -1,0 +1,1446 @@
+{
+  "slice_index": 4,
+  "slugs": [
+    "archivebox-archivebox",
+    "codecrafters-io-build-your-own-x",
+    "hkuds-cli-anything",
+    "MinerU",
+    "safishamsi-graphify",
+    "viktoraxelsen-memskill",
+    "farzaa-gist-c35ac0cf",
+    "sidbharath-com-blog-claude-code-the-complete-guide"
+  ],
+  "generated_at": "2026-04-13T00:00:00Z",
+  "per_source": {
+    "archivebox-archivebox": {
+      "raw_themes": [
+        {
+          "name": "Zero-schema MCP from CLI introspection",
+          "short_desc": "Auto-generate MCP tool definitions by introspecting existing Click CLI metadata; eliminates manual schema duplication. ~200 LOC.",
+          "evidence_quote": "Zero manual schema definitions -- they introspect Click CLI metadata and generate MCP tools dynamically. ~200 lines. Cleanest MCP implementation in the T29 corpus.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Hook execution model with runtime semantics",
+          "short_desc": "Naming-encoded hook semantics: event family, 2-digit ordering, fg/bg distinction, SIGTERM finalization, JSONL stdout contract.",
+          "evidence_quote": "naming convention (on*{EventFamily}\\_\\_{order}*{name}[.bg].{ext}), 2-digit ordering, foreground/background with SIGTERM finalization, JSONL stdout contract.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "CLAUDE.md as philosophy document",
+          "short_desc": "498-line CLAUDE.md encodes philosophy (grep-friendly naming, minimize-unique-names, NO MOCKS) beyond pure setup instructions.",
+          "evidence_quote": "The CLAUDE.md is quietly one of the best developer onboarding documents in the Python open-source ecosystem. It encodes philosophy, not just setup.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Coverage-as-dead-code detector",
+          "short_desc": "Use pytest-cov JSON + jq to find 0% coverage files as dead-code candidates; passive collection during dev.",
+          "evidence_quote": "Coverage-as-dead-code-detector (JSON+jq for 0% files) relevant to T21 orphan detection.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "NO MOCKS testing standard",
+          "short_desc": "Real SQLite, real subprocess — no artificial seams. Strict equality assertions (== not >=) force regressions to surface.",
+          "evidence_quote": "The NO MOCKS testing standard forces the codebase to remain testable without artificial seams.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Governance gap behind healthy community signal",
+          "short_desc": "27K stars, 0/29 changesets reviewed. 100% community health masks solo-maintainer architecture and permissive security defaults.",
+          "evidence_quote": "27K stars, 0/29 changesets reviewed. If JASON-OS scales, enforce review from day one.",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "MCP auto-discovery from CLI metadata",
+          "type": "pattern",
+          "description": "Zero-schema MCP server that introspects Click CLI commands and auto-generates MCP tool definitions. ~200 lines. Uses CliRunner for execution. Eliminates manual schema duplication.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["mcp", "cli", "auto-discovery", "jason-os-domain-02a"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "Hook execution model with ordering and bg/fg lifecycle",
+          "type": "pattern",
+          "description": "Production-grade hook system: event-family naming convention, 2-digit ordering prefix, foreground/background distinction, SIGTERM finalization for background hooks, JSONL stdout contract.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["hooks", "runtime", "ordering", "lifecycle"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "CLAUDE.md as structured developer philosophy document",
+          "type": "pattern",
+          "description": "498-line CLAUDE.md encoding not just setup instructions but development philosophy: grep-friendly naming, minimize-unique-names, NO MOCKS testing standard, coverage-as-dead-code methodology.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["claude-md", "philosophy", "developer-docs"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "Coverage-as-dead-code-detector methodology",
+          "type": "knowledge",
+          "description": "Using pytest-cov JSON output + jq pipelines to find 0% coverage files as dead code candidates. Passive coverage collection during dev server usage for broader signal.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["coverage", "dead-code", "orphan-detection"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "Claude Code in CI (claude.yml workflow)",
+          "type": "knowledge",
+          "description": "Claude Code running as GitHub Actions workflow in CI pipeline. Pattern for AI-assisted development automation.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["ci", "github-actions", "claude-code"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "Strict assertion testing convention",
+          "type": "knowledge",
+          "description": "Use exact counts (==) not loose bounds (>=) in test assertions. Forces tests to catch regressions rather than just pass.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["testing", "assertions", "convention"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "SOLO_MAINTAINER_GOVERNANCE",
+          "type": "anti-pattern",
+          "description": "27K stars but 0/29 changesets with code review. Architectural decisions in prose docs, not enforced contracts. 100% community health score masks governance gap.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["governance", "review", "anti-pattern"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "PERMISSIVE_DEFAULTS_FOR_SELF_HOSTED",
+          "type": "anti-pattern",
+          "description": "ALLOWED_HOSTS='*', SESSION_COOKIE_SECURE=False, no HTTPS enforcement. Security-by-configuration rather than security-by-default.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["security", "defaults", "anti-pattern"],
+          "source_slug": "archivebox-archivebox"
+        },
+        {
+          "name": "CONFIGURED_NOT_ENFORCED_TYPING",
+          "type": "anti-pattern",
+          "description": "Pyright configured in pyproject.toml but 48% type coverage with heavy Any usage. Type checker as CI decoration rather than enforcement gate.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["typing", "enforcement", "anti-pattern"],
+          "source_slug": "archivebox-archivebox"
+        }
+      ],
+      "relevance_to_home": "Direct hit on JASON-OS Domain 02a: ArchiveBox's zero-schema MCP auto-discovery from Click CLI is the cleanest MCP implementation in the corpus and teaches SoNash a runtime hook model to complement its governance. The CLAUDE.md philosophy and coverage-as-dead-code methodology are near-drop-in patterns."
+    },
+    "codecrafters-io-build-your-own-x": {
+      "raw_themes": [
+        {
+          "name": "Curated-list celebrity stagnation",
+          "short_desc": "486K stars, 462 open issues, 1 commit in 90 days — growth outpaced the curator's attention. Cautionary model for the SoNash skill index.",
+          "evidence_quote": "486K stars, 462 open issues, 1 commit in 90 days. It grew through community enthusiasm, hit a maintenance bottleneck, and is now in celebrity stagnation.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Missing retirement process as catalog failure mode",
+          "short_desc": "Curated lists without retirement/archival process accumulate until unmaintainable. Skill-audit is defensive, but a retirement workflow is missing.",
+          "evidence_quote": "your skill index is becoming a curated list, and curated lists have a known failure mode.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Feynman 'build to understand' framing",
+          "short_desc": "Build-your-own-X teaches via from-scratch implementation. Reframes JASON-OS Domain 01 (Internal Archaeology) from inventory to narrative.",
+          "evidence_quote": "the fastest way to truly learn a technology is to build it yourself.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Single-file-everything anti-pattern",
+          "short_desc": "390 links in one README.md works at small scale, unmaintainable at large scale. Watch EXTRACTIONS.md / MEMORY.md for same impulse.",
+          "evidence_quote": "This repo puts 390 links in one README.md. It works at small scale and becomes unmaintainable at large scale.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Inline-license-without-LICENSE-file trap",
+          "short_desc": "CC0 in README footer but no LICENSE file means GitHub API reports 'no license'; automated tools misflag.",
+          "evidence_quote": "The README claims CC0 but there's no LICENSE file. GitHub's API reports 'no license.' This means automated tools (including yours) will flag it incorrectly.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Skill retirement process design",
+          "type": "knowledge",
+          "description": "Case study in what happens when a curated collection grows without a retirement/archival process. 486K stars, 462 open issues, 1 commit/90d. Apply this lesson to JASON-OS skill lifecycle.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["skills", "lifecycle", "retirement", "jason-os"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "'Build from scratch' framing for Domain 01",
+          "type": "knowledge",
+          "description": "Feynman principle applied to system understanding. Structure JASON-OS Internal Archaeology as 'how each system was built' narratives rather than 'what exists' inventories.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["jason-os", "domain-01", "narrative"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "Celebrity stagnation lifecycle",
+          "type": "knowledge",
+          "description": "Full lifecycle: community enthusiasm -> commercial acquisition -> maintenance bottleneck -> dormancy. Cautionary case study for any future community distribution model.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["governance", "community", "lifecycle"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "31-Category Tutorial Taxonomy",
+          "type": "pattern",
+          "description": "31 technology categories organized for 'build from scratch' learning. Useful as a reference for organizing skill categories or learning paths.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["taxonomy", "skill-organization"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "Build Your Own React (Pomber)",
+          "type": "content",
+          "description": "Canonical React-from-scratch tutorial: fiber architecture, reconciliation, hooks. Improves component design and re-render diagnosis for React 19 / SoNash work.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["react", "internals", "tutorial"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "Write Yourself a Git",
+          "type": "content",
+          "description": "Python from-scratch Git implementation. Understanding the object model helps design better hook infrastructure and worktree tooling.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["git", "internals", "tutorial"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "Regex Matching Can Be Simple and Fast",
+          "type": "content",
+          "description": "NFA/DFA theory from Russ Cox. Helps write more efficient regex in check-pattern-compliance.js and avoid the two-strikes regex anti-pattern.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["regex", "theory", "pattern-compliance"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "Single-file-everything pattern",
+          "type": "anti-pattern",
+          "description": "390 links in one README.md. Works at small scale, unmaintainable at large scale. Watch for same impulse in EXTRACTIONS.md, MEMORY.md, SKILL_INDEX.md.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "documentation", "scale"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        },
+        {
+          "name": "Inline license without LICENSE file",
+          "type": "anti-pattern",
+          "description": "CC0 in README footer but no LICENSE file. GitHub API reports 'no license'. Automated tools can't detect it. Always include a machine-readable LICENSE file.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "license", "distribution"],
+          "source_slug": "codecrafters-io-build-your-own-x"
+        }
+      ],
+      "relevance_to_home": "Not a code source but a canonical case study: SoNash has 72+ skills and JASON-OS will accumulate more. This source's celebrity-stagnation trajectory is the exact failure mode skill-audit can't prevent without a retirement process. Also surfaces single-file-everything anti-pattern relevant to EXTRACTIONS.md / MEMORY.md."
+    },
+    "hkuds-cli-anything": {
+      "raw_themes": [
+        {
+          "name": "Agent-native CLI wrapping methodology (HARNESS.md)",
+          "short_desc": "7-phase SOP for wrapping arbitrary GUI apps as agent-invokable CLIs. Language-agnostic in principle, Python in implementation.",
+          "evidence_quote": "The HARNESS.md is the intellectual heart. It's a 7-phase SOP that takes you from \"I have a GUI app\" to \"agents can operate it.\"",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Registry + Hub + meta-skill distribution",
+          "short_desc": "registry.json (35 entries) served via static CLI-Hub; meta-skill makes catalog agent-discoverable and pip-installable without human intervention.",
+          "evidence_quote": "The registry pattern (35 CLIs in `registry.json`, served via CLI-Hub static site) solves the discovery problem.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Adversarial-input security posture for AI agents",
+          "short_desc": "SECURITY.md explicitly names the threat: agents autonomously constructing commands from untrusted input. Codec allowlists + never-shell=True.",
+          "evidence_quote": "SECURITY.md names the actual threat: \"an AI agent may autonomously construct and execute commands based on untrusted input.\"",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Session file-locking for concurrent JSON ops",
+          "short_desc": "_locked_save_json: open r+, fcntl.flock exclusive, truncate+write inside lock. Graceful Windows degradation.",
+          "evidence_quote": "`_locked_save_json`: open `\"r+\"` (no truncation), `fcntl.flock` exclusive, then truncate+write inside the lock.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "SKILL.md as command-catalog vs workflow-definition",
+          "short_desc": "Two distinct SKILL.md formats: flat command reference (CLI-Anything, ~183 LOC) vs multi-phase workflow (SoNash, ~350 LOC). Different abstraction levels.",
+          "evidence_quote": "Their SKILL.md (mermaid: 183 lines, drawio: 213 lines) is: YAML frontmatter + Installation + Basic Commands + Command Groups + Examples. Your SKILL.md (repo-analysis: ~350 lines) is: YAML frontmatter + Critical Rules + When to Use + Process Overview + Phase definitions + Guard Rails.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": ".claude-plugin/marketplace.json format reference",
+          "short_desc": "First public Claude Code plugin format in the wild: marketplace.json + 5 slash command definitions in commands/.",
+          "evidence_quote": "`marketplace.json` + 5 slash command definitions in `commands/` (cli-anything.md, list.md, refine.md, test.md, validate.md). First public Claude Code plugin reference.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Growth-outpacing-quality-gates",
+          "short_desc": "28K stars in 29 days, 35 harnesses, zero CI test enforcement. Opposite lesson from build-your-own-x stagnation — same risk, compressed timeline.",
+          "evidence_quote": "28K stars in 29 days with 30+ contributors and no automated quality enforcement is a recipe for the same trajectory as build-your-own-x — just faster.",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "HARNESS.md 7-Phase SOP",
+          "type": "pattern",
+          "description": "Systematic methodology for wrapping GUI apps as agent-native CLIs. 7 phases: codebase analysis -> CLI architecture -> implementation -> backend integration -> export -> session -> REPL + SKILL.md generation.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["agent-native", "cli-wrapping", "jason-os-domain-02a"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "SKILL.md Command Catalog Format",
+          "type": "pattern",
+          "description": "37 SKILL.md files. Flat command references for agent discoverability. Different design than SoNash workflow-definition SKILL.md.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["skill-format", "command-catalog", "comparison"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": ".claude-plugin/marketplace.json",
+          "type": "pattern",
+          "description": "First public Claude Code plugin format reference. marketplace.json + plugin source dir.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["plugin", "distribution", "marketplace"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Registry + CLI-Hub Distribution",
+          "type": "pattern",
+          "description": "registry.json (35 entries) -> static hub -> pip install. Agent-discoverable catalog via meta-skill.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["registry", "distribution", "discovery"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "ReplSkin Terminal UI",
+          "type": "pattern",
+          "description": "Python prompt_toolkit branded REPL. Master copy in plugin, distributed to harnesses.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["repl", "terminal-ui", "python"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Codec Allowlist Pattern",
+          "type": "pattern",
+          "description": "frozenset-based subprocess arg validation. Similar to SoNash's existing security patterns.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["security", "subprocess", "allowlist"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Skill Generator (Jinja2)",
+          "type": "pattern",
+          "description": "Auto-generates SKILL.md from CLI introspection using Jinja2 templates. Pattern portable to Node/TS.",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["skill-generation", "introspection", "automation"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Agent-native software methodology",
+          "type": "knowledge",
+          "description": "Core insight: AI agents can't use GUI software, wrap it systematically. HARNESS.md is the how-to. Foundational for JASON-OS Domain 02a.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["agent-native", "methodology", "jason-os"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Build-vs-integrate decision for JASON-OS",
+          "type": "knowledge",
+          "description": "Should JASON-OS invoke CLI-Anything harnesses (Python) or generate Node/TS wrappers using same methodology? Critical JASON-OS architecture decision.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["jason-os", "architecture", "decision"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Quality treadmill case study",
+          "type": "knowledge",
+          "description": "28K stars in 29 days, 35 harnesses, 0 CI test enforcement. Growth outpacing quality gates. Opposite lesson from build-your-own-x stagnation.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["quality", "growth", "case-study"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "MCP Backend Pattern (guides/mcp-backend.md)",
+          "type": "content",
+          "description": "Wrapping MCP servers as CLI backends via mcp.ClientSession + stdio_client with sync wrappers. Directly applicable to JASON-OS exposing MCP services as CLI.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["mcp", "cli-backend", "jason-os-domain-02a"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Skill Auto-Generation (guides/skill-generation.md)",
+          "type": "content",
+          "description": "Auto-generate SKILL.md from CLI introspection. Could inform /skill-creator automation — first-draft SKILL.md from --help output.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["skill-creator", "automation", "introspection"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Mermaid Harness (lightest-weight example)",
+          "type": "content",
+          "description": "No local binary required (uses mermaid.ink cloud renderer). 183-line SKILL.md. Ready for agent-driven diagram generation.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["mermaid", "harness", "example"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Exa Harness (AI search alternative)",
+          "type": "content",
+          "description": "Structured content extraction via Exa API. Alternative/complement for /deep-research searcher agents currently using WebSearch.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["search", "exa", "deep-research"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "No CI for tests pattern",
+          "type": "anti-pattern",
+          "description": "74 test files, 1839+ tests, zero CI enforcement. Tests exist for documentation, not quality gates. Don't regress on pre-commit/CI enforcement.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "ci", "testing"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Monorepo without shared test infrastructure",
+          "type": "anti-pattern",
+          "description": "35 independent packages, 0 conftest.py, no shared runner. Change to repl_skin.py can't be verified against 35 consumers.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "monorepo", "testing"],
+          "source_slug": "hkuds-cli-anything"
+        },
+        {
+          "name": "Growing faster than quality gates",
+          "type": "anti-pattern",
+          "description": "28K stars in 29 days with 30+ contributors and no automated quality enforcement. Same trajectory as build-your-own-x stagnation, just faster.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "growth", "quality"],
+          "source_slug": "hkuds-cli-anything"
+        }
+      ],
+      "relevance_to_home": "Highest-density source for JASON-OS Domain 02a in the slice: HARNESS.md is a transferable methodology, the registry/hub is a distribution model SoNash lacks, and .claude-plugin/marketplace.json is the first concrete reference for Claude Code plugin distribution. Build-vs-integrate decision is a concrete architecture fork."
+    },
+    "MinerU": {
+      "raw_themes": [
+        {
+          "name": "Document parsing as orchestration problem",
+          "short_desc": "Three backends (pipeline/VLM/vLLM) + router + string-dispatched factory with deferred imports. Match inference runtime to model size.",
+          "evidence_quote": "MinerU understands that **document parsing is an orchestration problem, not a model problem**.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Structured output as product surface",
+          "short_desc": "output_files.md: typed fields, 4-level block hierarchy, enumerated block types, bbox convention, explicit breaking-change callouts. Schema as first-class docs.",
+          "evidence_quote": "Most ML projects treat their output schema as an implementation detail. MinerU treats it as a product surface.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Async task state machine with TTL cleanup",
+          "short_desc": "In-memory task dict, 4 states (pending/processing/completed/failed), asyncio.Queue work channel, semaphore concurrency, background TTL sweep, FS-backed artifacts.",
+          "evidence_quote": "MinerU's `POST /tasks` endpoint is exactly this pattern at a smaller scale. It's an in-memory dict of task state, an `asyncio.Queue` as the work channel, a semaphore capping concurrency, four states (`pending/processing/completed/failed`)",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Environment variable catalog as single document",
+          "short_desc": "Prose catalog of 15+ MINERU_* env vars with default/effect/scoping. Discipline beats content — SoNash has scattered SKIP_*/GSD_*/CAS_* with no central reference.",
+          "evidence_quote": "`docs/en/usage/cli_tools.md` has a prose catalog of 15+ `MINERU_*` env vars, each with default, effect, scoping rules, and cross-references.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Backend decision matrix before install",
+          "short_desc": "5-backend x 8-constraint matrix in quick_start/index.md lets user pick before installing. Pattern for /analyze routing across source types/depths.",
+          "evidence_quote": "5-column × 8-row decision matrix mapping backend to operational constraints (accuracy, OS support, CPU/GPU support, min VRAM, RAM, disk, Python version). User picks before installing.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Coarse-to-fine two-stage parsing",
+          "short_desc": "MinerU 2.5: stage 1 downsampled global layout, stage 2 native-resolution local crops. Analogue for SoNash /repo-analysis depth tiers.",
+          "evidence_quote": "MinerU 2.5 uses a two-stage strategy that decouples global layout analysis (stage 1, downsampled images, structural elements identified cheaply) from local content recognition (stage 2, native-resolution crops, fine detail preserved).",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "HTTP service without default hardening",
+          "short_desc": "mineru-api has no auth, no rate limit, no upload cap, no CORS/TrustedHost, FastAPI docs enabled. Anti-pattern SoNash security-auditor exists to prevent.",
+          "evidence_quote": "mineru-api has no authentication — not even an API key — no rate limiting, no upload size cap, no CORS middleware, no TrustedHost middleware, and FastAPI docs enabled by default.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "One-fuzzy-string-match test gated by 0.2% coverage",
+          "short_desc": "58K-star codebase held together by a single e2e test. Silent retry workflow converts flake to green. SoNash's test discipline is the correct counter-model.",
+          "evidence_quote": "A 58k-star codebase is held together by one fuzzy string match gated by a 0.2% coverage floor.",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Async task state machine with TTL cleanup",
+          "type": "pattern",
+          "description": "In-memory task dict with four states (pending/processing/completed/failed), asyncio.Queue work channel, asyncio.Semaphore concurrency cap, background sweep for TTL cleanup, FS-backed output artifacts keyed by task ID. Ephemeral state. Answers T28 Gap Agent A Q5 (progressive extraction).",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "high",
+          "tags": ["state-machine", "async", "progressive-extraction", "t28"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Scored multi-worker load balancer",
+          "type": "pattern",
+          "description": "Formula: score = (queued + processing + pending_assignments) / max_concurrent. Shuffle-then-stable-sort for jitter. Optimistic pending_assignments increment prevents thundering herd.",
+          "novelty": "medium",
+          "effort": "E3",
+          "relevance": "low",
+          "tags": ["load-balancer", "multi-worker", "reference"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Sliding window for long-input memory bounding",
+          "type": "pattern",
+          "description": "get_processing_window_size(default=64) applied identically across all three backends. Pages loaded, inferred, freed in window-sized batches. Peak memory strictly bounded.",
+          "novelty": "low",
+          "effort": "E2",
+          "relevance": "low",
+          "tags": ["memory", "streaming", "reference"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Wrap upstream CLI instead of reimplementing",
+          "type": "pattern",
+          "description": "vllm_server.py is ~70 lines that intercept sys.argv for existing vllm CLI, inject per-device args and custom logits processor, then hand off. Don't fork — wrap with project-specific defaults.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["cli-wrapping", "defaults", "no-fork"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Structured output contract as first-class document",
+          "type": "knowledge",
+          "description": "Human-readable specification of middle.json IR: typed fields, 4-level block hierarchy, enumerated block types, bbox convention, explicit breaking-change callouts between pipeline and VLM backends.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["output-contract", "schema-docs", "conventions"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Environment variable catalog as single document",
+          "type": "knowledge",
+          "description": "Prose catalog of 15+ MINERU_* env vars with default, effect, scoping rules. Discipline is what matters, not the content. Template for docs/agent_docs/ENV_VARS.md.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["env-vars", "docs", "catalog"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Backend decision matrix for multi-mode tools",
+          "type": "knowledge",
+          "description": "5-column x 8-row decision matrix mapping backend to operational constraints (accuracy, OS, CPU/GPU, VRAM, RAM, disk, Python). User picks before installing. Pattern for /analyze routing docs.",
+          "novelty": "low",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["decision-matrix", "routing", "analyze"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Coarse-to-fine two-stage parsing (MinerU 2.5 paper)",
+          "type": "knowledge",
+          "description": "Two-stage strategy: stage 1 downsampled global layout, stage 2 native-resolution local crops. Coarse-to-fine pattern generalizes to SoNash depth tiers.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["two-stage", "depth-tiers", "framing"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "POST /tasks API documentation",
+          "type": "content",
+          "description": "Async task API four-state machine + TTL cleanup + semaphore gating documented in prose. Read alongside fast_api.py for progressive extraction shape.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["async-api", "documentation", "progressive"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "output_files.md schema reference",
+          "type": "content",
+          "description": "Exemplary structured-output spec page. Template for SoNash's ANALYSIS_OUTPUT_CONTRACT.md.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["schema", "output-contract", "template"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Single-test fuzzy-match e2e with low coverage floor",
+          "type": "anti-pattern",
+          "description": "A 58k-star codebase is held together by one fuzzy string match gated by a 0.2% coverage floor. Shows up in MinerU's 160-issue backlog as parsing regressions.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "testing", "coverage"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Unarmored HTTP service with insecure defaults",
+          "type": "anti-pattern",
+          "description": "mineru-api ships with no auth, no rate limit, no upload size cap, no CORS, no TrustedHost, FastAPI docs enabled. Docs encourage --host 0.0.0.0 for multi-GPU.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "security", "http", "defaults"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Silent retry workflow converts flake into green",
+          "type": "anti-pattern",
+          "description": "Automatic retry of failed CI runs up to 3x without surfacing the flake rate. Opposite of silent-failure-hunter discipline.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "ci", "flake"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Broken i18n parity (Chinese-only chip guides)",
+          "type": "anti-pattern",
+          "description": "13 Chinese-only hardware guides with no English equivalents while README claims '10+ chip support'. Credibility gap.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["anti-pattern", "i18n", "docs"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "No PR test gating (push-only workflows)",
+          "type": "anti-pattern",
+          "description": "cli.yml runs tests only on pushes to master/dev, never on pull requests. Contributors can't see test results before merge. SoNash PR gating is the correct model.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "ci", "pr-gating"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "README integration claim unbacked by first-party code",
+          "type": "anti-pattern",
+          "description": "README lists 'MCP Server — Cursor · Claude Desktop · Windsurf' in integration matrix. Reality: opendatalab/mineru-mcp 404s. Community implementations only. Misleading.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "integration-claims", "mcp", "first-party"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Unpinned GitHub Action reference",
+          "type": "anti-pattern",
+          "description": "mkdocs.yml uses mhausenblas/mkdocs-deploy-gh-pages@master. Inconsistent with repo's other pinned action (@v2.6.1). Compromise of upstream = arbitrary doc-site publishing.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "supply-chain", "github-actions"],
+          "source_slug": "MinerU"
+        },
+        {
+          "name": "Floor-only version constraint on security-sensitive library",
+          "type": "anti-pattern",
+          "description": "pillow>=11.0.0 with no upper bound. CVE-2026-25990 affects 10.3.0 to <12.1.1. Resolver-picked version determines exposure. Fix: ranged constraint.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "deps", "cve", "version-pin"],
+          "source_slug": "MinerU"
+        }
+      ],
+      "relevance_to_home": "Two T1 lifts (output-contract page, env-vars catalog) are pure writing-discipline — half-day each and directly answer existing SoNash doc-drift tensions in CONVENTIONS.md §13 and §17. The async task state-machine shape informs T28 Gap Agent A Q5 (progressive extraction) even though the crawl4ai port is the recommended lift. 9 anti-patterns confirm or extend SoNash's existing §5 guardrails."
+    },
+    "safishamsi-graphify": {
+      "raw_themes": [
+        {
+          "name": "Confidence tagging (EXTRACTED/INFERRED/AMBIGUOUS)",
+          "short_desc": "Every edge tagged with provenance. Rare honesty about what was observed vs guessed. Applicable to all SoNash analysis findings and /recall results.",
+          "evidence_quote": "Every edge in the graph is tagged EXTRACTED, INFERRED, or AMBIGUOUS — you always know whether the tool found a relationship or guessed it. That honesty is rare.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Dual-pass extraction (AST deterministic + LLM semantic)",
+          "short_desc": "Pass 1 tree-sitter parses 20 languages, zero LLM cost. Pass 2 Claude subagents extract semantic relationships. Code-only corpuses are free.",
+          "evidence_quote": "The first pass is deterministic: tree-sitter parses ASTs for 20 languages, extracting classes, functions, imports, and call graphs with zero LLM cost. The second pass uses Claude subagents in parallel to extract semantic relationships",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "10-step skill orchestration pipeline",
+          "short_desc": "Most structured multi-step skill example in corpus: install+detect inline, parallel subagent dispatch with cache checking, 6 pipeline stages, platform variants.",
+          "evidence_quote": "The 10-step pipeline with parallel agent dispatch is the most mature example I've seen of a complex multi-step skill.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Stateless token-budgeted MCP server",
+          "short_desc": "320-line MCP stdio server loads graph once, exposes 7 tools with _subgraph_to_text token budgeting. Simpler than SoNash's MCP memory server.",
+          "evidence_quote": "A 320-line MCP server that loads a graph once and exposes 7 tools. Clean, stateless, no network listener.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Threat-vector-organized security model",
+          "short_desc": "SECURITY.md organized by attack vector with mitigation + 'what graphify does NOT do' sections. More readable than checklist-based formats.",
+          "evidence_quote": "Their threat model is organized by attack vector, not by module. Each vector has a mitigation and a \"what graphify does NOT do\" section.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "LanguageConfig dataclass + generic walker",
+          "short_desc": "One config per language with type-specific resolution. Generic walker extracts 20 languages with zero duplication. Pattern for SoNash analysis handlers.",
+          "evidence_quote": "One config object per language with type-specific node resolution, call detection, and import handling. A generic walker uses the config to extract all 20 languages with zero code duplication.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "ARCHITECTURE.md single-page discipline",
+          "short_desc": "One page: pipeline + module table + schema + confidence labels + how-to-extend + security + testing. No bloat.",
+          "evidence_quote": "A single page covering pipeline, module table, extraction schema, confidence labels, how to add a language, security model, and test instructions. No bloat.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Skill orchestration pipeline (10-step, parallel agents)",
+          "type": "knowledge",
+          "description": "10-step pipeline with parallel agent dispatch, cache checking, chunk sizing. Most structured multi-step skill example found. Directly comparable to SoNash skill architecture.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["skill-architecture", "agent-dispatch", "orchestration"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "Confidence tagging taxonomy (EXTRACTED/INFERRED/AMBIGUOUS)",
+          "type": "knowledge",
+          "description": "Three-tier confidence taxonomy for graph edges. EXTRACTED = directly observed, INFERRED = model-reasoned, AMBIGUOUS = uncertain. Applicable to analysis findings and recall results.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["confidence", "taxonomy", "honesty"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "MCP server pattern (stateless, token-budgeted)",
+          "type": "pattern",
+          "description": "320-line MCP stdio server. Load graph once, expose 7 tools. Token budget on subgraph rendering. No network listener.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["mcp", "server", "graph-query"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "LanguageConfig dataclass (generic walker + per-type config)",
+          "type": "pattern",
+          "description": "One config object per language with type-specific node resolution, call detection, import handling. Generic walker uses config to extract 20 languages with zero duplication.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["extraction", "dataclass", "generic-walker"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "Threat-vector security model format",
+          "type": "knowledge",
+          "description": "Security model organized by attack vector with mitigations table and 'does NOT do' section. More readable than checklist-based formats.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["security", "documentation", "threat-model"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "Platform-specific skill variants",
+          "type": "pattern",
+          "description": "7 platform-specific skill files with shared core and platform-specific adaptations (Agent vs Task tool, hook availability, sequential fallback).",
+          "novelty": "high",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["multi-platform", "skill-distribution", "portability"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "ARCHITECTURE.md single-page format",
+          "type": "knowledge",
+          "description": "Pipeline, module table, extraction schema, confidence labels, how-to-extend, security, testing — all on one page. No bloat.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["documentation", "architecture", "conciseness"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "Graph-only persistence without versioning",
+          "type": "anti-pattern",
+          "description": "graph.json has no schema_version, no migration path. Format changes break old graphs silently. SoNash analysis.json schema_version is the right approach.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "persistence", "schema-evolution"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "Oversized skill files (15K+ tokens per variant)",
+          "type": "anti-pattern",
+          "description": "7 skill files with significant content duplication. 15K+ tokens each. LLM context waste and maintenance burden.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "skill-bloat", "duplication"],
+          "source_slug": "safishamsi-graphify"
+        },
+        {
+          "name": "Ship fast skip review pattern",
+          "type": "anti-pattern",
+          "description": "20 releases in 6 days with zero merged external PRs. Security mitigations are self-assessed only. Impressive velocity but fragile.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "low",
+          "tags": ["anti-pattern", "process", "review"],
+          "source_slug": "safishamsi-graphify"
+        }
+      ],
+      "relevance_to_home": "Confidence tagging is a near-immediate upgrade for SoNash's analysis findings and /recall — the CAS currently has no provenance label per claim. The MCP stateless + token-budget pattern is a lighter alternative for any JASON-OS MCP work, and the 10-step skill orchestration gives a concrete reference for multi-step skill design."
+    },
+    "viktoraxelsen-memskill": {
+      "raw_themes": [
+        {
+          "name": "Meta-memory: skills about HOW to remember",
+          "short_desc": "Skills aren't memories; they're instructions for what kinds of memory to extract, how to remember, what to preserve or forget. Paradigm shift for auto-memory.",
+          "evidence_quote": "Skills are NOT experiential/procedural memory. Rather, they are a form of meta-memory that focuses on what kinds of memory to extract, how to remember and where to focus, and what to preserve or forget.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Skill evolution loop (failure-mined refinement)",
+          "short_desc": "Mine memory failures, analyze, refine skills, propose new ones, repeat. Self-improving. Applies beyond memory (skill-audit, pattern-compliance).",
+          "evidence_quote": "The skill evolution loop (mine failures, analyze, refine skills, propose new ones, repeat) is the mechanism. Skills start from data, not from human design.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "15 memory skill templates (5-section format)",
+          "short_desc": "Description/Purpose/When to Use/How to Apply/Constraints format. Near-interchangeable with SoNash SKILL.md but about memory ops instead of workflows.",
+          "evidence_quote": "Each is a 5-section Markdown (Description/Purpose/When to Use/How to Apply/Constraints) with Action type.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Dual-embedding memory bank",
+          "short_desc": "Content + context embeddings per memory item. Concept portable, code tied to FAISS+PyTorch.",
+          "evidence_quote": "Dual-Embedding Memory Bank... Content + context embeddings per memory item.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Academic code quality, strong ideas",
+          "short_desc": "42KB main.py monolith, zero tests, 18 unpinned deps, sys.path.append imports. Extract concepts, never depend.",
+          "evidence_quote": "393 stars, 1 contributor, no tests, no CI, no releases. Research artifact, not maintained library. The 42KB main.py monolith signals academic code quality.",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Meta-Memory Skills Framework",
+          "type": "pattern",
+          "description": "Skills about HOW to remember. Core concept for JASON-OS memory. Paradigm shift for auto-memory design.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["meta-memory", "jason-os", "auto-memory"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "Skill Evolution Loop",
+          "type": "pattern",
+          "description": "Mine failures, analyze, refine skills, propose new ones. Self-improving. General-purpose for any skill system (skill-audit, pattern-compliance).",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["self-improvement", "skills", "evolution"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "Skill Bank 5-Section Format",
+          "type": "pattern",
+          "description": "Description/Purpose/When to Use/How to Apply/Constraints. Comparison template for SoNash SKILL.md.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["skill-format", "memory-skill"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "Designer Prompt Templates",
+          "type": "pattern",
+          "description": "18KB failure classification + mutation prompts. Methodology for skill refinement.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["prompts", "skill-refinement", "mutation"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "Dual-Embedding Memory Bank",
+          "type": "pattern",
+          "description": "Content + context embeddings per memory item. Concept portable, code tied to FAISS+PyTorch.",
+          "novelty": "medium",
+          "effort": "E2",
+          "relevance": "medium",
+          "tags": ["embeddings", "memory", "retrieval"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "Operation Templates with Meta-Info",
+          "type": "pattern",
+          "description": "Usage + reward + EMA tracking for skill selection. Tool/skill selection system.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["skill-selection", "reward-tracking", "ema"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "15 Memory Skill Templates",
+          "type": "content",
+          "description": "Direct templates for JASON-OS memory operations. 8 conversational + 7 embodied skills.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["templates", "memory", "jason-os"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "capture_activity_details.md",
+          "type": "content",
+          "description": "Template for capturing activity details with temporal context. Applicable to auto-memory.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["auto-memory", "capture", "template"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "insert.md",
+          "type": "content",
+          "description": "Memory insert with duplicate avoidance, fact splitting, quality criteria.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["auto-memory", "insert", "template"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "arXiv 2602.02474 (NOT FETCHED)",
+          "type": "content",
+          "description": "Core theory: dual-embedding memory bank, failure mining, skill mutation strategies. MUST read before T4 execution.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["paper", "theory", "memory"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "Academic code quality in production",
+          "type": "anti-pattern",
+          "description": "42KB monolith, zero tests, no version pins, unsafe deserialization. Extract concepts, not code.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "academic-code", "adoption"],
+          "source_slug": "viktoraxelsen-memskill"
+        },
+        {
+          "name": "Research artifact as dependency",
+          "type": "anti-pattern",
+          "description": "Paper companion code won't be maintained. Extract knowledge, don't depend.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "research-artifact", "dependency"],
+          "source_slug": "viktoraxelsen-memskill"
+        }
+      ],
+      "relevance_to_home": "The most directly JASON-OS-relevant source in the slice for memory/auto-memory: meta-memory framing challenges SoNash's static auto-memory rules, and the 15 skill templates plus arXiv 2602.02474 are the foundation for JASON-OS memory research (T4). Must read the paper before T4 execution."
+    },
+    "farzaa-gist-c35ac0cf": {
+      "raw_themes": [
+        {
+          "name": "Ingest vs absorb (mechanical vs intellectual)",
+          "short_desc": "Ingest = read/extract/write entries. Absorb = understand meaning and update the web of knowledge. SoNash repo-analysis ingests; synthesis begins to absorb; nothing flows back into living artifacts.",
+          "evidence_quote": "the difference between ingesting knowledge and absorbing it. Ingest is mechanical (read source, extract facts, write entries). Absorb is intellectual (read entry, understand meaning, update the web of understanding).",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Anti-cramming / anti-thinning balance",
+          "short_desc": "Cramming = everything into same 5 big articles. Thinning = many stubs without depth. EXTRACTIONS.md has 81 candidates flat; some sources 17, some 5.",
+          "evidence_quote": "**Cramming**: everything goes into the same 5 big articles (your equivalent: SESSION_CONTEXT.md absorbing everything) - **Thinning**: creating many stubs without depth (your equivalent: MEMORY.md entries that are one-liners)",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "15-entry checkpoint cycle during batch ops",
+          "short_desc": "Every N items during long batch operations, pause to rebuild indices, audit quality, check anti-patterns. Mid-pipeline quality gate.",
+          "evidence_quote": "15-entry checkpoint cycle — during batch operations (like running `/repo-synthesis` across 6 repos), pause every N items to rebuild indices, audit quality, and check for anti-patterns.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Writer-not-filing-clerk identity",
+          "short_desc": "LLM's job is to understand and synthesize, not categorize and file. Extraction journal is pure filing.",
+          "evidence_quote": "**Writer-not-filing-clerk identity** — the framing that the LLM's job is to understand and synthesize, not categorize and file.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "7-command wiki skill architecture",
+          "short_desc": "ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize. Concrete instantiation of Karpathy's ingest-query-lint triad with more granularity. T24 reference.",
+          "evidence_quote": "The 7-command architecture maps cleanly to your existing skills",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Diary-driven structure anti-pattern",
+          "short_desc": "Organizing by date instead of theme — SESSION_HISTORY.md is pure chronology. Steve Jobs test: 'Early life/Career (by era)' beats event-specific headings.",
+          "evidence_quote": "**Diary structure**: organizing by date instead of by theme (your equivalent: SESSION_HISTORY.md is pure chronology)",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "No session continuity (gist-scope gap)",
+          "short_desc": "farzaa's skill assumes one long session. No compaction, no checkpoint. SoNash infrastructure (SESSION_CONTEXT.md, /checkpoint) is an entire layer he lacks.",
+          "evidence_quote": "**He has no session continuity.** His skill assumes one long session. No compaction handling, no checkpoint/restore, no cross-session state beyond `_absorb_log.json`.",
+          "strength_signal": "medium"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Anti-cramming / anti-thinning balance for knowledge skills",
+          "type": "knowledge",
+          "description": "When to split vs enrich. If adding third paragraph about sub-topic, split. If stub exists with 4 entries mentioning it, enrich. Directly applicable to /repo-synthesis and /website-synthesis granularity.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["design-principle", "granularity", "extractions"],
+          "source_slug": "farzaa-gist-c35ac0cf"
+        },
+        {
+          "name": "15-entry checkpoint cycle pattern",
+          "type": "pattern",
+          "description": "Periodic maintenance rhythm during long operations. Every N items: rebuild indexes, audit quality, check for anti-patterns. Mid-session companion to session-end.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["workflow", "checkpoint", "quality-gate"],
+          "source_slug": "farzaa-gist-c35ac0cf"
+        },
+        {
+          "name": "Parallel subagent cleanup workflow (5-batch audit)",
+          "type": "pattern",
+          "description": "Spawn batches of 5 agents, each audits one article across 6 dimensions (structure, length, tone, quotes, coherence, links). Deduplicate, then fix. Comparable to code-reviewer + skill-audit.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["parallel-agents", "audit", "batch"],
+          "source_slug": "farzaa-gist-c35ac0cf"
+        },
+        {
+          "name": "Writer-not-filing-clerk identity framing",
+          "type": "knowledge",
+          "description": "Identity statement shapes every operation: 'what does this mean and how does it connect' vs 'where do I file this'. Reframes analysis/synthesis skill output.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["design-principle", "identity", "synthesis"],
+          "source_slug": "farzaa-gist-c35ac0cf"
+        },
+        {
+          "name": "Concurrency safety rules for LLM file ops",
+          "type": "pattern",
+          "description": "Re-read before editing, never delete without reading, rebuild indices only at command end. Partially captured in CLAUDE.md guardrails.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["concurrency", "file-ops", "safety"],
+          "source_slug": "farzaa-gist-c35ac0cf"
+        },
+        {
+          "name": "7-command skill architecture as T24 reference design",
+          "type": "pattern",
+          "description": "ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize — concrete instantiation of Karpathy's ingest-query-lint triad with more granularity. Direct reference for T24 synthesis adoption skill design.",
+          "novelty": "high",
+          "effort": "E1",
+          "relevance": "high",
+          "tags": ["architecture", "wiki", "t24", "synthesis-adoption"],
+          "source_slug": "farzaa-gist-c35ac0cf"
+        }
+      ],
+      "relevance_to_home": "The most directly T24-relevant source: farzaa's 7-command architecture names the exact gap in SoNash CAS — 'absorb' (weave analysis outputs into living knowledge) and 'breakdown' (mine knowledge for missing entities) are both missing. Also surfaces anti-cramming/anti-thinning critique that applies to EXTRACTIONS.md."
+    },
+    "sidbharath-com-blog-claude-code-the-complete-guide": {
+      "raw_themes": [
+        {
+          "name": "Breadth-coverage calibration document",
+          "short_desc": "Public tutorial covering every major Claude Code feature — useful not for learning but for checking SoNash's feature coverage against an external expert's checklist.",
+          "evidence_quote": "The value isn't learning — it's calibration.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Junior engineer mental model",
+          "short_desc": "Treat Claude Code as mid-level engineer, not autopilot. External validation of SoNash guardrails (#1-15): plan-before-implement, stop-on-correction, never-push-without-approval.",
+          "evidence_quote": "The article frames Claude Code as a \"mid-level software engineer\" and recommends treating it that way. Our CLAUDE.md guardrails (#1-15) encode a stricter version of this",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Cloud teleportation pattern (& prefix)",
+          "short_desc": "Send long-running tasks to Claude Code Web with & prefix, pull results locally. Potential solution for terminal-blocking background agents.",
+          "evidence_quote": "Cloud teleportation pattern (& prefix) ... Send long-running tasks to Claude Code Web with & prefix, pull results locally.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Plugin marketplace watch",
+          "short_desc": "Anthropic marketplace with 36 curated plugins (Dec 2025). Not yet adopted by SoNash — skills cover the ground; worth tracking ecosystem maturity.",
+          "evidence_quote": "Mentions the Anthropic marketplace (36 plugins, Dec 2025). We haven't adopted plugins — our skills and hooks cover the same ground.",
+          "strength_signal": "medium"
+        },
+        {
+          "name": "Features-without-enforcement anti-pattern",
+          "short_desc": "Tutorial describes hooks as automation without describing them as gates. CLAUDE.md as memory without rules. No concept of guardrails that override judgment.",
+          "evidence_quote": "Hooks are described as \"automation\" but not as \"gates.\" CLAUDE.md is described as \"memory\" but not as \"non-negotiable rules.\" There's no concept of guardrails that override Claude's judgment.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Meta-tooling layer absent from public discourse",
+          "short_desc": "No mention of tools that audit your tools — skill audits, hook ecosystem audits, pattern compliance. The article treats Claude Code as product to configure, not platform to build on.",
+          "evidence_quote": "No mention of tools that audit your tools — skill audits, hook ecosystem audits, pattern compliance checking, learning effectiveness analysis. The article treats Claude Code as a product to configure, not a platform to build on.",
+          "strength_signal": "strong"
+        },
+        {
+          "name": "Compaction problem unaddressed",
+          "short_desc": "Article mentions /compact but never discusses state loss, checkpoint strategies, or compaction-resilient artifact design. Major operational blind spot.",
+          "evidence_quote": "Brief mention of `/compact` but no discussion of state loss during compaction, checkpoint strategies, or how to design artifacts that survive context resets.",
+          "strength_signal": "strong"
+        }
+      ],
+      "raw_candidates": [
+        {
+          "name": "Cloud teleportation pattern (& prefix)",
+          "type": "knowledge",
+          "description": "Send long-running tasks to Claude Code Web with & prefix, pull results locally with --teleport. Could solve terminal-blocking agent problem.",
+          "novelty": "high",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["cloud", "teleportation", "workflow"],
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide"
+        },
+        {
+          "name": "Plugin marketplace ecosystem status",
+          "type": "knowledge",
+          "description": "Anthropic marketplace (36 curated plugins, Dec 2025). Community marketplaces emerging. Not yet adopted by SoNash — worth tracking maturity.",
+          "novelty": "medium",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["plugins", "marketplace", "ecosystem"],
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide"
+        },
+        {
+          "name": "Junior engineer framing validation",
+          "type": "knowledge",
+          "description": "External validation that treating Claude Code as a junior engineer (not autopilot) produces best results. Aligns with SoNash guardrails approach.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["mental-model", "best-practices"],
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide"
+        },
+        {
+          "name": "Tutorial structure as onboarding template",
+          "type": "pattern",
+          "description": "Setup -> Daily Use -> Advanced -> Production progression. 20 sections with clear hierarchy. Could template a SoNash onboarding guide.",
+          "novelty": "medium",
+          "effort": "E1",
+          "relevance": "medium",
+          "tags": ["documentation", "onboarding", "tutorial"],
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide"
+        },
+        {
+          "name": "Feature-breadth coverage as completeness benchmark",
+          "type": "knowledge",
+          "description": "Checklist of Claude Code features an external expert considers important. Use to verify CLAUDE.md and skill coverage.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["benchmark", "completeness"],
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide"
+        },
+        {
+          "name": "Features without enforcement anti-pattern",
+          "type": "anti-pattern",
+          "description": "Describing hooks as automation without gates. CLAUDE.md as memory without rules. Misses the reliability layer entirely.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "high",
+          "tags": ["anti-pattern", "enforcement", "reliability"],
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide"
+        },
+        {
+          "name": "No compaction discussion anti-pattern",
+          "type": "anti-pattern",
+          "description": "Treating context as unlimited. No state loss discussion, no checkpoint strategies. Major operational gap for power users.",
+          "novelty": "low",
+          "effort": "E0",
+          "relevance": "medium",
+          "tags": ["anti-pattern", "compaction", "state-loss"],
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide"
+        }
+      ],
+      "relevance_to_home": "Calibration source rather than extraction source: confirms SoNash is well ahead on enforcement, meta-tooling, and compaction-resilience. Cloud teleportation and plugin marketplace are the only two ideas worth tracking. The article's blind spots (no enforcement, no meta-tooling, no compaction) map exactly onto SoNash's strongest moats."
+    }
+  },
+  "initial_clusters": [
+    {
+      "cluster_name": "MCP / CLI-wrapping / agent-native tool exposure (JASON-OS Domain 02a)",
+      "member_themes": [
+        {
+          "source_slug": "archivebox-archivebox",
+          "theme_name": "Zero-schema MCP from CLI introspection"
+        },
+        {
+          "source_slug": "hkuds-cli-anything",
+          "theme_name": "Agent-native CLI wrapping methodology (HARNESS.md)"
+        },
+        {
+          "source_slug": "hkuds-cli-anything",
+          "theme_name": ".claude-plugin/marketplace.json format reference"
+        },
+        {
+          "source_slug": "safishamsi-graphify",
+          "theme_name": "Stateless token-budgeted MCP server"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Four sources converge on patterns for exposing software/tools/data to AI agents via MCP or CLI wrappers. ArchiveBox auto-derives MCP schemas from CLI; CLI-Anything codifies the wrapping methodology; graphify shows a minimal stateless MCP server. Directly feeds JASON-OS Domain 02a."
+    },
+    {
+      "cluster_name": "Skill/hook architecture — format, orchestration, and governance",
+      "member_themes": [
+        {
+          "source_slug": "archivebox-archivebox",
+          "theme_name": "Hook execution model with runtime semantics"
+        },
+        {
+          "source_slug": "archivebox-archivebox",
+          "theme_name": "CLAUDE.md as philosophy document"
+        },
+        {
+          "source_slug": "hkuds-cli-anything",
+          "theme_name": "SKILL.md as command-catalog vs workflow-definition"
+        },
+        {
+          "source_slug": "safishamsi-graphify",
+          "theme_name": "10-step skill orchestration pipeline"
+        },
+        {
+          "source_slug": "viktoraxelsen-memskill",
+          "theme_name": "15 memory skill templates (5-section format)"
+        },
+        { "source_slug": "farzaa-gist-c35ac0cf", "theme_name": "7-command wiki skill architecture" }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Six sources offer competing/complementary SKILL.md and skill-orchestration designs: command catalogs vs workflow definitions, 5-section memory templates, 7-command wiki, 10-step pipelines, runtime hook semantics. SoNash sits in the middle — its workflow-definition SKILL.md is sophisticated but lacks runtime hook semantics, retirement workflows, and absorb/breakdown commands."
+    },
+    {
+      "cluster_name": "Ingest vs absorb / confidence vs flat extraction",
+      "member_themes": [
+        {
+          "source_slug": "farzaa-gist-c35ac0cf",
+          "theme_name": "Ingest vs absorb (mechanical vs intellectual)"
+        },
+        {
+          "source_slug": "farzaa-gist-c35ac0cf",
+          "theme_name": "Anti-cramming / anti-thinning balance"
+        },
+        {
+          "source_slug": "safishamsi-graphify",
+          "theme_name": "Confidence tagging (EXTRACTED/INFERRED/AMBIGUOUS)"
+        },
+        {
+          "source_slug": "safishamsi-graphify",
+          "theme_name": "Dual-pass extraction (AST deterministic + LLM semantic)"
+        },
+        {
+          "source_slug": "viktoraxelsen-memskill",
+          "theme_name": "Meta-memory: skills about HOW to remember"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Three sources converge on the theme that knowledge extraction needs more than flat candidate lists — it needs provenance (graphify confidence tags), absorption back into living artifacts (farzaa), and meta-rules about what/how to remember (MemSkill). Current SoNash CAS produces flat extraction candidates with no provenance and no absorb step."
+    },
+    {
+      "cluster_name": "Growth-outpacing-quality-gates anti-pattern",
+      "member_themes": [
+        {
+          "source_slug": "codecrafters-io-build-your-own-x",
+          "theme_name": "Curated-list celebrity stagnation"
+        },
+        {
+          "source_slug": "codecrafters-io-build-your-own-x",
+          "theme_name": "Missing retirement process as catalog failure mode"
+        },
+        { "source_slug": "hkuds-cli-anything", "theme_name": "Growth-outpacing-quality-gates" },
+        {
+          "source_slug": "MinerU",
+          "theme_name": "One-fuzzy-string-match test gated by 0.2% coverage"
+        },
+        {
+          "source_slug": "archivebox-archivebox",
+          "theme_name": "Governance gap behind healthy community signal"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Four different popular repos (486K / 58K / 28K / 27K stars) all exhibit variants of the same failure mode: community velocity and star counts outpace test/review/retirement infrastructure. Validates SoNash's heavy pre-commit/PR-review/skill-audit investment — and the need for a skill-retirement workflow before the index grows further."
+    },
+    {
+      "cluster_name": "Security defaults and enforcement gap",
+      "member_themes": [
+        {
+          "source_slug": "archivebox-archivebox",
+          "theme_name": "Governance gap behind healthy community signal"
+        },
+        { "source_slug": "MinerU", "theme_name": "HTTP service without default hardening" },
+        {
+          "source_slug": "hkuds-cli-anything",
+          "theme_name": "Adversarial-input security posture for AI agents"
+        },
+        {
+          "source_slug": "sidbharath-com-blog-claude-code-the-complete-guide",
+          "theme_name": "Features-without-enforcement anti-pattern"
+        },
+        {
+          "source_slug": "safishamsi-graphify",
+          "theme_name": "Threat-vector-organized security model"
+        }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Five sources contrast security posture: ArchiveBox and MinerU ship with permissive defaults (no auth, no rate limit); CLI-Anything names the adversarial-agent threat explicitly; graphify organizes docs by attack vector; Sid's tutorial misses enforcement layer entirely. SoNash's security-auditor / App Check / sanitizeError stack is the correct counter-model."
+    },
+    {
+      "cluster_name": "Documentation as product surface (schema, env-vars, decision matrices)",
+      "member_themes": [
+        { "source_slug": "MinerU", "theme_name": "Structured output as product surface" },
+        {
+          "source_slug": "MinerU",
+          "theme_name": "Environment variable catalog as single document"
+        },
+        { "source_slug": "MinerU", "theme_name": "Backend decision matrix before install" },
+        {
+          "source_slug": "safishamsi-graphify",
+          "theme_name": "ARCHITECTURE.md single-page discipline"
+        },
+        { "source_slug": "archivebox-archivebox", "theme_name": "CLAUDE.md as philosophy document" }
+      ],
+      "convergence_within_slice": "strong",
+      "short_desc": "Three sources treat documentation as a product surface rather than an afterthought: MinerU's output_files.md (schema-as-contract), env-var catalog, and backend decision matrix; graphify's single-page ARCHITECTURE.md; ArchiveBox's 498-line CLAUDE.md. Applies to SoNash CAS: ANALYSIS_OUTPUT_CONTRACT.md and ENV_VARS.md are half-day writes that close real drift gaps."
+    }
+  ],
+  "absence_signals": [
+    {
+      "domain": "Recovery-community / SoNash product-layer UX patterns",
+      "expected_because": "SoNash is a Sober Nashville recovery notebook; the only place agents could find recovery-specific UX patterns would be dedicated product sources.",
+      "suggestion": "Add sources focused on recovery/sobriety/journaling/mental-health UX (e.g., recovery.com, i-am-sober app design posts, AA literature structure). Current corpus treats SoNash purely as an engineering project."
+    },
+    {
+      "domain": "Firebase / Firestore / Cloud Functions architecture",
+      "expected_because": "SoNash is Next.js 16 + Firebase 12, with strict 'no direct writes via httpsCallable' contract. Zero analyzed sources in this slice cover Firebase architecture patterns, Firestore security rules, App Check, or Cloud Functions cold-start mitigation.",
+      "suggestion": "Add sources on Firebase production architecture (Firebase summits, Google Cloud Next talks, firebase-admin patterns) so SoNash's security/patterns §5 has external validation."
+    },
+    {
+      "domain": "TypeScript-strict Node/TS MCP server implementations",
+      "expected_because": "JASON-OS targets a portable Claude Code OS. MCP patterns in this slice are all Python (ArchiveBox, CLI-Anything, graphify). Build-vs-integrate decision hinges on finding a Node/TS reference.",
+      "suggestion": "Analyze @modelcontextprotocol/typescript-sdk reference servers, or a TS-based MCP server like FastMCP-TS or the Anthropic MCP example repo in TypeScript."
+    },
+    {
+      "domain": "Skill retirement / deprecation workflows",
+      "expected_because": "codecrafters/build-your-own-x exposed the failure mode (no retirement) and hkuds/cli-anything shows the same risk at higher velocity. But no source in the slice demonstrates a working retirement/deprecation workflow.",
+      "suggestion": "Analyze projects with mature deprecation processes (Rails deprecation_warning, Python PEP 387, Node.js deprecation cycle docs, npm deprecate command, a skill-registry project with real retirement in its changelog)."
+    },
+    {
+      "domain": "Progressive/resumable extraction with persistent state",
+      "expected_because": "MinerU's async task state machine is in-memory only (loses state on restart). T28 Gap Agent A Q5 asks for progressive extraction. The adoption-ready reference (crawl4ai with resume_state) sits outside this slice.",
+      "suggestion": "Ensure crawl4ai (in another slice) feeds the same cluster, and add a persistence-layer source — e.g., Temporal.io workflow engine, durable-execution pattern docs, or EventStore architecture — for the 'survive restart' shape."
+    }
+  ],
+  "notes": [
+    "Heavy cross-pollination within this slice: cross_repo_connections reference each other (archivebox <-> cli-anything, cli-anything <-> memskill, graphify <-> memskill). Parent synthesis should dedupe candidate names that appear in multiple sources' value-maps (e.g., skill-format patterns).",
+    "MinerU creator-view.md exceeded the 10K token read limit; full value-map.json was read and the first 200 lines of creator-view were read — themes/candidates were derived from those plus the summary in value-map. No information from the unread tail was asserted.",
+    "All sources in this slice are classified 'defer' in the extraction journal — per HOME_CONTEXT, synthesis is the pass that picks what to act on first. Top T1 candidates for act-first ranking from this slice: MCP auto-discovery (archivebox), HARNESS.md methodology (cli-anything), output_files.md + env-vars (MinerU), confidence tagging (graphify), meta-memory skills (memskill), 7-command wiki architecture (farzaa).",
+    "Several candidates are Python-bound (CLI-Anything harnesses, graphify's Python MCP server, MemSkill's FAISS+PyTorch). The build-vs-integrate decision for JASON-OS will determine whether the LIFT is code or methodology.",
+    "farzaa gist and Sid Bharath blog are the two 'mirror' sources that validate SoNash's existing posture without adding net-new candidates — except farzaa's absorb/breakdown commands, which name a real gap in the CAS pipeline.",
+    "Consistent anti-pattern across 4 of 6 repo sources: growth/popularity outpaced quality enforcement. This convergence is strong enough that parent synthesis should treat it as a single cross-corpus anti-pattern cluster rather than 4 separate items.",
+    "Three sources independently surface 'schema versioning / output contract' patterns (MinerU output_files.md, graphify graph-only-no-versioning anti-pattern, SoNash's own analysis.json schema_version). Parent should make this a first-class synthesis theme."
+  ]
+}

@@ -91,7 +91,7 @@
       "description": "52 Python files, 1 test. AWS reference architectures often skip tests. Don't follow this pattern."
     }
   ],
-  "last_synthesized_at": null,
+  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
   "meta": {
     "repo": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
     "scan_date": "2026-04-07",
