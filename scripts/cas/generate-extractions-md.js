@@ -24,7 +24,23 @@ const OUTPUT_PATH = path.join(PROJECT_ROOT, ".research", "EXTRACTIONS.md");
 
 function escapeCell(text) {
   if (typeof text !== "string") return "-";
-  return text.replaceAll("\\", "\\\\").replaceAll("|", "\\|").replaceAll("\n", " ").slice(0, 120);
+  return text
+    .replaceAll("\\", "\\\\")
+    .replaceAll("|", "\\|")
+    .replaceAll("[", "\\[")
+    .replaceAll("]", "\\]")
+    .replaceAll("\n", " ")
+    .slice(0, 120);
+}
+
+function escapeHeading(text) {
+  if (typeof text !== "string") return "-";
+  return text
+    .replaceAll("\\", "\\\\")
+    .replaceAll(/[\r\n]+/g, " ")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .slice(0, 200);
 }
 
 function groupBySource(entries) {
@@ -83,7 +99,9 @@ function buildSectionAnchorId(source, sourceType) {
     .toLowerCase()
     .replaceAll(/[^a-z0-9]+/g, "-")
     .replaceAll(/(^-|-$)/g, "");
-  return `${slug}-${sourceType}`;
+  const safeSlug = slug || "source";
+  const safeType = String(sourceType || "repo").replaceAll(/[^a-z0-9]+/gi, "-");
+  return `${safeSlug}-${safeType}`;
 }
 
 function buildTocRows(bySource, sourceOrder) {
@@ -137,7 +155,7 @@ function appendSourceSection(lines, source, sourceEntries) {
     // Explicit HTML anchor keeps TOC links stable across markdown renderers.
     `<a id="${anchorId}"></a>`,
     "",
-    `## ${source} (${sourceType})${isQuickScan ? " — Quick Scan" : ""}`,
+    `## ${escapeHeading(source)} (${escapeHeading(sourceType)})${isQuickScan ? " — Quick Scan" : ""}`,
     "",
     "| Candidate | Type | Decision | Date | Novelty | Effort | Relevance | Extracted To | Notes |",
     "| --------- | ---- | -------- | ---- | ------- | ------ | --------- | ------------ | ----- |"
