@@ -25,7 +25,8 @@
       "novelty": "high",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["docker", "security", "deployment"]
+      "tags": ["docker", "security", "deployment"],
+      "description": "Read-only filesystem, CAP_DROP ALL, non-root uid 998, alpine minimal, health checks. Best Docker hardening in T29 corpus."
     },
     {
       "name": "Session pool rate limiting",
@@ -33,7 +34,8 @@
       "novelty": "medium",
       "effort": "E0",
       "relevance": "medium",
-      "tags": ["rate-limiting", "architecture"]
+      "tags": ["rate-limiting", "architecture"],
+      "description": ""
     },
     {
       "name": "ADVERSARIAL_DEPENDENCY",
@@ -41,7 +43,8 @@
       "novelty": "high",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["anti-pattern", "platform-risk"]
+      "tags": ["anti-pattern", "platform-risk"],
+      "description": "Building product on scraping hostile platform. Twitter killed nitter by changing APIs. 12.8K stars, effectively dead."
     },
     {
       "name": "XSS_IN_CONTENT_RENDERER",
@@ -49,7 +52,8 @@
       "novelty": "medium",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["security", "anti-pattern"]
+      "tags": ["security", "anti-pattern"],
+      "description": "Rendering untrusted content without HTML escaping. Karax verbatim bypasses escaping."
     },
     {
       "name": "SECURITY_HEADERS_ABSENT",
@@ -57,7 +61,8 @@
       "novelty": "low",
       "effort": "E0",
       "relevance": "medium",
-      "tags": ["security", "anti-pattern"]
+      "tags": ["security", "anti-pattern"],
+      "description": "No CSP, X-Frame-Options, HSTS in web application. Zero defense-in-depth."
     }
   ],
   "last_synthesized_at": null,

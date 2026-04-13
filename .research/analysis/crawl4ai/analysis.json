@@ -34,7 +34,8 @@
       "novelty": "high",
       "effort": "E1",
       "relevance": "high",
-      "tags": ["architecture", "filtering"]
+      "tags": ["architecture", "filtering"],
+      "description": "Composable filter/scorer pipeline for content gating."
     },
     {
       "name": "3-tier resource pool",
@@ -42,7 +43,8 @@
       "novelty": "high",
       "effort": "E1",
       "relevance": "high",
-      "tags": ["infrastructure"]
+      "tags": ["infrastructure"],
+      "description": "Browser pool with tiered warmth and janitor lifecycle. 10x memory claim."
     },
     {
       "name": "Hook lifecycle (8 hooks)",
@@ -50,7 +52,8 @@
       "novelty": "high",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["hooks"]
+      "tags": ["hooks"],
+      "description": "8 lifecycle hooks with clear sequence and security model."
     },
     {
       "name": "CrawlState save/load",
@@ -58,7 +61,8 @@
       "novelty": "medium",
       "effort": "E1",
       "relevance": "medium",
-      "tags": ["resilience"]
+      "tags": ["resilience"],
+      "description": "Persistent state for long-running tasks. No on_state_change callback."
     },
     {
       "name": "Strategy ABC (55+)",
@@ -66,7 +70,8 @@
       "novelty": "medium",
       "effort": "E0",
       "relevance": "medium",
-      "tags": ["architecture"]
+      "tags": ["architecture"],
+      "description": ""
     },
     {
       "name": "DOCS_CODE_DRIFT",
@@ -74,7 +79,8 @@
       "novelty": "medium",
       "effort": "E0",
       "relevance": "high",
-      "tags": ["anti-pattern"]
+      "tags": ["anti-pattern"],
+      "description": ""
     },
     {
       "name": "MONOLITHIC_UTILS",
@@ -82,7 +88,8 @@
       "novelty": "low",
       "effort": "E0",
       "relevance": "medium",
-      "tags": ["anti-pattern"]
+      "tags": ["anti-pattern"],
+      "description": "utils.py at 3,778 lines."
     }
   ],
   "last_synthesized_at": null,

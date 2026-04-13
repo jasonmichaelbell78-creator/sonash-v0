@@ -132,7 +132,18 @@ const repoFields = z
   .object({
     metadata: repoMetadata,
     dimensions: z.record(z.string(), z.unknown()),
-    absence_patterns: z.array(z.string()),
+    absence_patterns: z.array(
+      z.union([
+        z.string(),
+        z
+          .object({
+            pattern: z.string(),
+            confidence: z.string().optional(),
+            evidence: z.string().optional(),
+          })
+          .passthrough(),
+      ])
+    ),
     adoption_verdict: z.string(),
   })
   .partial();
