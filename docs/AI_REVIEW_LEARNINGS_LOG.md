@@ -5197,4 +5197,8 @@ direction.
 
 **Commits:**
 
-- [populated at Step 8]
+- 44c49ea2 (single-commit batch — all 57 items per user direction: one commit
+  covering CRITICAL ReDoS + CC, MAJOR regex/ternaries/templates, MINOR
+  replaceAll/isNaN/Array.push consolidation, plus Number.isNaN propagation into
+  .claude/hooks/lib/rotate-state.js and CC baseline entry for
+  scripts/cas/self-audit.js).

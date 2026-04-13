@@ -15,7 +15,8 @@
     "install-Installing root dependencies": "2026-04-11T19:22:50.000Z",
     "network-error": "2026-04-13T13:00:54.473Z",
     "syntax-check": "2026-04-13T13:00:54.473Z",
-    "jsonl-sync": "2026-04-13T13:00:54.473Z"
+    "jsonl-sync": "2026-04-13T13:00:54.473Z",
+    "cli-tools-missing": "2026-04-13T22:25:40.122Z"
   },
   "lastCleared": "2026-04-13T13:00:54.473Z"
 }
