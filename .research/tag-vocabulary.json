@@ -1002,7 +1002,7 @@
     "classification": "taxonomy",
     "arxiv": "paper",
     "claude": "claude-code",
-    "agents": "subagents",
+    "agent": "subagents",
     "speech-to-text": "transcription",
     "audio-video-extraction": "media-extraction",
     "media-processing": "media-extraction",
