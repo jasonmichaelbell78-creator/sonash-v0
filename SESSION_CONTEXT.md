@@ -1,8 +1,8 @@
 # Session Context
 
-**Document Version**: 8.27 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.30 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-11 (Session #275 COMPLETE)
+2026-04-12 (Session #276 — T40 COMPLETE + Wave 4 Step 10 CLOSED)
 
 ## Purpose
 
@@ -29,53 +29,135 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-11 (Session #275 FOLLOW-UP SWEEP COMPLETE, PR #507
-CREATED) **Branch**: `planning-4826` **Working On**: **T39 FULLY CLOSED.** All
-T39 work plus T30 + T32 trailing work consolidated into PR #507. 28 commits, 248
-files changed, +27,130 / −16,270 lines. Branch pushed to origin, PR is OPEN and
-awaiting external review (CodeRabbit + SonarCloud + Gemini).
+**Last Checkpoint**: 2026-04-12 (Session #276 — T40 COMPLETE + Wave 4 Step 10
+CLOSED) **Branch**: `planning-41226` **Working On**: Both T40 (CAS tag quality)
+and T29 Wave 4 Step 10 (Standard-upgrade batch) **closed** this session.
 
-**PR**: https://github.com/jasonmichaelbell78-creator/sonash-v0/pull/507
-(replaces closed PR #506) — title: _T39 hook drift + pattern-compliance + JSONL
-helper sweep (T30/T32 trailing work)_. Full ultra-detailed PR body preserved at
-`.research/T39_PR_BODY.md` for reference.
+**This session's work (summary)**:
 
-**Follow-up sweep summary (this session)**: 5 commits landed after the main T39
-work: (1) `6e4a4d84` NaN doc comment reword, (2) `cb129d22` parse-jsonl-line.js
-header sync across 9 copies, (3) `9ec93d4a` streamLinesSync UTF-8 StringDecoder
+**Phase A — T40 CAS tag quality (6 commits, already landed):**
 
-- safe-fs dual-path require, (4) `fae8efb8` JSONL helper sweep across 53 files,
-  (5) `1fd882db` saved the follow-up plan before context clear. Plus 3 state
-  drift commits (`9e126ce6`, `ef649664`, `53173b88`). All verification passed:
-  patterns 0, propagation clean, cyclomatic-cc clean, lint 16 warn / 0 err
-  (baseline), tests 3720 pass / 0 fail / 1 skip.
+1. Two Standard repo-analyses (pre-/clear): `outline/outline` + `tobi/qmd`.
+   EXTRACTIONS.md: 277 → 295 candidates across 31 sources.
+2. Cherry-picked 3 commits from `worktree-smtasks` (pre-/clear).
+3. **Executed `.planning/cas-tag-quality/PLAN.md` in full** — T40 complete:
+   - **Part A**: Rewrote CONVENTIONS.md §14 (taxonomic vs semantic, 8
+     categories, minimum 3 semantic tags no upper cap, expanded forbidden list).
+     Updated Tag Suggestion sections in 4 handler SKILL.md files. Scaffolded
+     `.research/tag-vocabulary.json`. (`f300e3fb`)
+   - **Part B1-B3**: Built `scripts/cas/retag.js` +
+     `scripts/lib/retag-mutations.js` (locked CLI, regression guards,
+     `--dry-run`). Seeded vocabulary with 97 tags + 10 synonyms + 13 forbidden.
+     (`ac2fc999`)
+   - **Part C**: Category-aware display in `/recall` + vocabulary breakdown in
+     `--stats` + orphan/legacy tag visibility. Pattern-compliance fix folded in
+     (structuredClone + rename). (`b2f22b37`)
+   - **Full retag migration**: 31 source-scoped parallel agents in 6 waves
+     proposed per-source retagging. Aggregated 89 new vocab → 78 post- dedupe
+     (10 semantic merges became synonyms, 1 drop, 2 category conflicts
+     resolved). Applied via `retag.js apply` across all 31 batches. Two
+     entry-level agent errors caught + manually patched. (`d5ed65b3`)
+4. **Final T40 state** (`retag.js validate --strict` → exit 0):
+   - 295/295 entries retagged. 0 forbidden / 0 unknown / 0 <3-semantic / 0
+     zero-tag violations.
+   - Vocabulary: 97 → **175 tags**. Synonyms: 10 → 20.
+   - Top applicability signals: `jason-os-relevant` (133), `cas-relevant` (95),
+     `sonash-relevant` (65).
+   - Top domain/tech/concept: architecture (58), knowledge-management (44),
+     claude-code (44), extraction (38), orchestration (33).
 
-**Code-reviewer verdict** on the follow-up sweep: OK — safe to push, 0 blockers,
-2 cosmetic non-blocking concerns (both filed as TDMS follow-ups in PR body):
-check-session-gaps.js could upgrade silent-skip to error-reporting variant;
-ecosystem-health/run-ecosystem-health.js uses absolute-path require instead of
-relative-path convention.
+**Phase B — T29 Wave 4 Step 10 closeout (post-T40, this session):**
 
-**Known skips used on push** (both user-authorized per guardrail #14):
-`SKIP_CC=1 SKIP_CC_REASON="unbaselined violations"` (44 pre-existing legacy CC
-violations, none T39-touched),
-`SKIP_CHECKS="pr-creep" SKIP_REASON="user authorized"` (27+ commits on branch —
-PR deferred until sweep complete).
+1. **`/repo-analysis` on `jina-ai/reader` Standard** — full skill-compliant run,
+   14 candidates (3 patterns, 3 anti-patterns, 2 architecture-patterns, 3
+   knowledge, 2 content, 1 knowledge doubled as anti-pattern). Creator lens 72,
+   adoption lens 42. 3 S0s surfaced (unvalidated `x-proxy-url`,
+   `injectFrameScript` raw `fetch` with `setBypassCSP(true)`, global
+   `SSL_VERIFYPEER=false`), zero tests, private `thinapps-shared` submodule
+   blocks self-host. Security agent stalled mid-investigation; resumed via
+   `SendMessage` to write the dimension file. 5 new vocab proposed + accepted:
+   `puppeteer`, `cloud-run`, `html-to-markdown`, `tls-fingerprinting`,
+   `multi-provider-fallback`. Vocabulary 175 → 180.
+2. **Wave 4 Step 10 status audit** — counted remaining quicks. Found 3 (surya,
+   tesseract, qmd) but user said "last two". Caught the discrepancy: qmd
+   analysis.json was in a mixed-state bug — top-level fields said
+   `nicholasgasior/qmd` / `quick` while the 8 Standard artifacts on disk and 18
+   journal entries said `tobi/qmd`. `source` field and journal were out of §14.8
+   sync. Would have made qmd invisible to `/synthesize` pre-flight.
+3. **qmd analysis.json rebuild** — new UUID
+   `6b81e586-6cbe-4652-858c-4ccd995f983a`, source `tobi/qmd`, depth `standard`,
+   18 candidates rebuilt from journal, 16 semantic tags (all from approved
+   vocab), metadata from summary.md (21,126 stars, MIT, Tobi Lütke/Shopify).
+   Schema validates. 18 journal entries updated with `source_analysis_id`
+   linking to new UUID.
+4. **Wave 4 Step 10 closure** = 10/12 upgraded + 2 skipped by decision (surya,
+   tesseract remain quick as preview-only per §17.6). Not-done items: surya,
+   tesseract deliberately held back.
+5. **Orphan cleanup** — deleted 4 quick dirs superseded by Standard twins:
+   `.research/analysis/{reader,nitter,marker,ArchiveBox}/`. All had 0 journal
+   entries linked to their UUIDs. Safe.
+6. **Index rebuilt** — `rebuild-index.js`: 38 → 34 sources, 309 extractions, 270
+   unique tags (was 276 — 6 tags fell to zero count after orphan deletion,
+   retained in vocab). EXTRACTIONS.md regenerated: 309 candidates / 32 sources.
+7. **Checklist + todos updated** — `_quick-scan-upgrade.md` checklist reflects
+   true state (10 ✅, 2 `[~] SKIP BY DECISION`, Session #276 close log row).
+   `.planning/todos.jsonl` T29 progress updated. Branch context corrected
+   (`planning-4826` → `planning-41226`).
 
-**Next Step**: Await PR #507 external review cycle. When CodeRabbit/SonarCloud
-feedback arrives, process via `/pr-review`. After merge, resume **T29 Wave 4
-Step 10 #3 = crawl4ai** (`unclecode/crawl4ai`, Standard depth default). No
-uncommitted T39 work remains — ready to start next initiative.
+**Final Phase B state**:
 
-**Uncommitted Work**: Possible residual `.claude/override-log.jsonl` drift from
-the push operation itself (infinite-loop edge case — committing it generates
-another entry). Safe to ignore; next routine commit will sweep it.
+- Synthesis corpus: **31 Standard sources** (well above §17.6 3-source minimum)
+- Wave 4 Step 10: **CLOSED** (10 upgraded, 2 skipped by decision)
+- Step 10.5 full-corpus audit: still partial (firecrawl only, 33+ sources
+  pending)
+- Wave 5 (`/synthesize` E2E run): gated on Step 10.5
+
+**Commits**: 6 from Phase A already landed (`f300e3fb` through `24ec6eae`).
+Phase B commit pending session-end pipeline.
+
+**Next Step**:
+
+1. Push `planning-41226` → create PR → `/pr-review` cycle.
+2. After merge, **T29 Step 10.5** full-corpus audit across 31 Standard sources
+   (only firecrawl audited so far; 30 pending).
+3. After Step 10.5, **Wave 5** — `/synthesize` full run + E2E testing.
+4. New memory saved: `feedback_no_blanket_count_labels.md` (don't use
+   frequency-based terms like "singleton" as category labels — describe
+   substance, not count).
+
+**Uncommitted Work**: Phase B artifacts (jina-ai-reader analysis, qmd rebuild,
+orphan deletions, todos + checklist updates, vocabulary additions). Will be
+committed by session-end pipeline.
+
+**Smtasks worktree**: Still exists at
+`C:/Users/jason/Workspace/dev-projects/sonash-v0/.claude/worktrees/smtasks`. All
+3 cherry-picked commits now on `planning-41226` — can be removed with
+`git worktree remove .claude/worktrees/smtasks`.
+
+**Audit trail preserved**: `.planning/cas-tag-quality/batches/proposal-*.json`
+(31 agent output files) + `aggregated-new-vocab.json` for retro analysis.
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 275 (since Jan 1, 2026)
+**Current Session Count**: 276 (since Jan 1, 2026)
+
+> **Session #276 handoff (T40 COMPLETE + Wave 4 Step 10 CLOSED, 2026-04-12):**
+> **Phase A (T40):** Executed `.planning/cas-tag-quality/PLAN.md` fully. All 4
+> parts (A/B/C + full retag migration) landed in 6 commits. 295 journal entries
+> retagged via 31 parallel source-scoped agents + semantic dedupe of 89 proposed
+> new vocab tags → 78 kept. Vocabulary: 97 → 175 tags. `validate --strict`
+> clean. **Phase B (T29 Wave 4 Step 10 close):** `/repo-analysis` on
+> `jina-ai/reader` Standard (14 candidates + 5 new vocab → 180 total). Audit
+> caught qmd/analysis.json in mixed nicholasgasior-quick/tobi-standard state;
+> rebuilt properly (new UUID, 18 candidates, §14.8 source consistency). 4 orphan
+> quick dirs deleted (reader, nitter, marker, ArchiveBox — superseded by
+> Standard twins). Wave 4 Step 10 **CLOSED** = 10/12 upgraded + 2 skipped by
+> decision (surya, tesseract). Synthesis corpus = **31 Standard sources**.
+> **Next session priority: push `planning-41226` + PR + `/pr-review` cycle; then
+> T29 Step 10.5 full-corpus audit (30 sources pending); then Wave 5
+> `/synthesize` E2E.** Branch: `planning-41226`.
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -84,6 +166,95 @@ another entry). Safe to ignore; next routine commit will sweep it.
 ---
 
 ## Recent Session Summaries
+
+**Session #276** (T40 COMPLETE + T29 WAVE 4 STEP 10 CLOSED):
+
+- **Branch**: `planning-41226`
+- **Commits — Phase A (6, already landed)**: `f300e3fb` (Part A), `7975f77b`
+  (chore), `ac2fc999` (Part B1-B3), `b2f22b37` (Part C + B fix), `d5ed65b3`
+  (retag migration), `24ec6eae` (chore). **Phase B commit pending session-end.**
+- **Session arc**: Continued from pre-/clear checkpoint. Goal was to execute the
+  approved CAS tag quality plan. User pushed for full automation mid- session
+  when the scope of manual retag became clear ("find a way to automate this").
+  Design pivoted to agent-dispatched parallel retag with strict vocabulary
+  discipline. User attention minimized to design approval and post-dedupe vocab
+  decision approval.
+- **Part A — source-fix**: CONVENTIONS.md §14 rewritten (taxonomic vs semantic,
+  minimum 3 semantic tags with no upper cap, expanded forbidden list, 8-category
+  vocabulary
+  `domain/technology/concept/technique/pattern/ applicability/quality/taxonomic`,
+  vocabulary-first growth rules). Tag Suggestion sections in 4 handler SKILL.md
+  files aligned. `tag- vocabulary.json` scaffolded.
+- **Part B — retag CLI + seed vocab**: `scripts/cas/retag.js` with
+  `apply --batch-file` / `validate` subcommands, `--dry-run` flag. Pure
+  mutations extracted to `scripts/lib/retag-mutations.js`. Locked writes
+  (pattern from `todos-cli.js`), atomic per-batch, regression guards, SQLite
+  index rebuild. 97-tag seed vocabulary + 10 synonyms + 13 forbidden entries.
+- **Part C — /recall category-aware display**: Results enriched with
+  `semantic_tags` (grouped by category), `taxonomic_tags`, `orphan_tags`.
+  `--stats` gained vocabulary breakdown + top tags per category + orphan /
+  legacy counts. Synonym auto-resolution during display. Pattern- compliance fix
+  folded in (structuredClone replacing JSON deep-clone, `n` → `count` rename).
+- **Retag migration (automated)**:
+  - Phase 1: 31 source-scoped agents in 6 waves. Each read creator- view.md +
+    journal entries for its source. Each produced a batch JSON with discipline
+    rules enforced.
+  - Phase 2: Aggregated 89 proposed new vocab across sources. Semantic dedupe:
+    10 merges became synonyms (speech-to-text→transcription, audio-
+    video-extraction→media-extraction, pdf-processing→document-extraction,
+    dependency-pinning→version-pinning, async-polling→async-task-api,
+    queue-systems→background-jobs, self-describing-registry→registry,
+    dynamic-discovery→auto-discovery, plus 2 more). 1 drop (marketplace). 2
+    category conflict resolutions (transcription=domain, api-versioning=
+    pattern). 78 new vocab tags landed.
+  - Phase 3: 31 batches applied via `retag.js apply`. Two entry-level agent
+    errors caught by `<3 semantic` guard (compromise.js NLP + MinerU technical
+    report) — manually patched. Second pass clean.
+- **Final state** (`retag.js validate --strict` → exit 0): 295/295 retagged. 0
+  forbidden / 0 unknown / 0 <3-semantic / 0 zero-tag violations. Top
+  applicability: jason-os-relevant=133, cas-relevant=95, sonash-relevant=65.
+- **Memory saved**: `feedback_no_blanket_count_labels.md` — don't use
+  frequency-based terms like "singleton" as category labels; describe substance,
+  not count.
+- **Design decisions (in-session)**:
+  - Option B (three-way subject split) chosen for §14.3 categories.
+  - Minimum tag rules: ≥3 semantic, no upper cap (user rejected "1 per batch"
+    contrived limit).
+  - Forbidden list expanded beyond plan's literal source-type to include
+    entry-type values + `tool`.
+  - Automation via agent dispatch after user direction: "find a way to automate
+    this".
+- **Audit trail**: `.planning/cas-tag-quality/batches/proposal-*.json` (31
+  files) + `aggregated-new-vocab.json` preserved for retro.
+- **Phase B — T29 Wave 4 Step 10 CLOSEOUT** (continued after T40):
+  - `/repo-analysis https://github.com/jina-ai/reader` Standard run. 14
+    candidates (3 patterns, 3 anti-patterns, 2 architecture-patterns, 3
+    knowledge, 2 content, 1 knowledge/anti-pattern duplicate). Creator lens 72
+    Healthy, adoption lens 42 Needs Work. Surfaced 3 S0 security findings
+    (unvalidated `x-proxy-url`, `injectFrameScript` raw `fetch` with
+    `setBypassCSP(true)`, global `SSL_VERIFYPEER=false`), zero tests, private
+    submodule lock. 5 new vocab proposed + accepted (`puppeteer`, `cloud-run`,
+    `html-to-markdown`, `tls-fingerprinting`, `multi-provider-fallback`).
+    Vocabulary 175 → 180. Security dimension agent stalled mid-investigation;
+    resumed via `SendMessage` per prior memory guidance.
+  - Wave 4 Step 10 audit caught qmd/analysis.json in mixed
+    nicholasgasior-quick/tobi-standard state (top-level fields stale, 18 journal
+    entries + 8 Standard artifacts correct). §14.8 source-consistency violation
+    would have made qmd invisible to `/synthesize` pre-flight. Rebuilt: new UUID
+    `6b81e586-6cbe-4652-858c-4ccd995f983a`, source `tobi/qmd`, depth `standard`,
+    18 candidates, 16 semantic tags. Journal entries linked to new UUID.
+  - User decision: **surya + tesseract remain quick by decision** (preview-only
+    per §17.6). Wave 4 Step 10 **CLOSED** = 10/12 upgraded + 2 skipped.
+  - Orphan cleanup: deleted 4 quick dirs superseded by Standard twins (reader,
+    nitter, marker, ArchiveBox). All had 0 linked journal entries.
+  - `rebuild-index.js` → 34 sources / 309 extractions / 270 unique tags.
+    `generate-extractions-md.js` → 309 candidates / 32 sources.
+  - Synthesis corpus = **31 Standard sources**.
+  - `_quick-scan-upgrade.md` checklist and `.planning/todos.jsonl` T29 progress
+    both updated.
+- **WHERE TO RESUME**: Push `planning-41226` → create PR → `/pr-review` cycle.
+  After merge, **T29 Step 10.5** full-corpus audit (30 Standard sources pending;
+  only firecrawl audited so far). Then **Wave 5** `/synthesize` E2E run.
 
 **Session #275** (T39 COMPLETE — HOOK DRIFT LOOP + PATTERN-COMPLIANCE FULL
 CLEAN + CC REFACTOR):
@@ -274,22 +445,23 @@ CAUGHT):
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                                         |
-| ---------------------------------- | ------------- | -------------------------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                            |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                           |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded.  |
-| **T28 Content Analysis System**    | E2E DONE      | 25 sources, 236 candidates in journal. MinerU (#274) added 9 entries.            |
-| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10: **2 of 12** (firecrawl, MinerU). Standard. Remaining 10.         |
-| **T39 Hook Drift Loop**            | CLOSED        | Drift loop + pattern-compliance 0/0 + Option D CC refactor. 316→0. Needs new PR. |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                          |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                  |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                             |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                           |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                           |
+| Item                               | Status        | Progress                                                                                   |
+| ---------------------------------- | ------------- | ------------------------------------------------------------------------------------------ |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                      |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                     |
+| **Repo Analysis Skill**            | v4.3 ACTIVE   | Standard is now default (SKILL.md #274). 2 of 12 Wave 4 Step 10 repos upgraded.            |
+| **T28 Content Analysis System**    | E2E DONE      | 31 sources, 295 candidates in journal (+outline, +qmd in #276 cont.).                      |
+| **T29 Synthesis Consolidation**    | W1-W3 DONE    | Wave 4 Step 10 in progress; exact count in `.research/analysis/` + `git log`.              |
+| **T40 CAS tag quality**            | COMPLETE      | All 4 parts + full retag landed Session #276. 295/295 retagged. `validate --strict` clean. |
+| **T39 Hook Drift Loop**            | CLOSED        | Drift loop + pattern-compliance 0/0 + Option D CC refactor. 316→0. Needs new PR.           |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                                    |
+| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                          |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                            |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                       |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                     |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                     |
 
-**Current Branch**: `planning-4826`
+**Current Branch**: `planning-41226`
 
 **Test Status**: 3720 pass, 0 fail, 1 skip (post-T39 continuation)
 
@@ -308,9 +480,13 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **T39 continuation PR review + merge** — Review the new T39 PR created after
-   this session's commit (PR #506 was closed while paused; new PR number TBD).
-   Process any feedback via `/pr-review`. Once merged, T39 is fully retired.
+0. **Push T40 + open PR** — `planning-41226` has 6 unpushed commits from Session
+   #276 completing the CAS tag quality plan. Push, create PR, run `/pr-review`
+   cycle. Once merged, T40 is fully retired.
+
+1. **T39 continuation PR review + merge** — Review the T39 PR (branch was
+   `planning-4826`). Process any feedback via `/pr-review`. Once merged, T39 is
+   fully retired.
 2. **T39 follow-ups filed as TDMS** — File the non-blocking items surfaced by
    the T3/T4 code-reviewer agents: (a) `streamLinesSync` UTF-8 multi-byte
    boundary risk — swap to `StringDecoder` when a non-ASCII JSONL consumer

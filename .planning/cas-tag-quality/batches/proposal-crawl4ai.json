@@ -1,0 +1,86 @@
+{
+  "batch_id": "crawl4ai-2026-04-12",
+  "source": "unclecode/crawl4ai",
+  "notes": "LLM-first web crawling library (63k stars) with 55+ extraction strategies, a FilterChain/Scorer composition pattern, a 3-tier browser pool (PERMANENT/HOT/COLD) claiming 10x memory reduction, 8 ordered lifecycle hooks with a hardened security model, and CrawlState save/load for crash-resume. Directly relevant to the /analyze pipeline (FilterChain gating), JASON-OS infrastructure (resource pooling), and SoNash hook governance comparison. Reuses `web-scraping` proposed in the parallel firecrawl batch rather than introducing a redundant `web-crawling` tag.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "unclecode/crawl4ai",
+      "candidate": "FilterChain + Scorer composition",
+      "type": "pattern",
+      "tags": [
+        "extraction",
+        "filtering",
+        "web-scraping",
+        "architecture",
+        "pipeline",
+        "cas-relevant",
+        "library"
+      ]
+    },
+    {
+      "source": "unclecode/crawl4ai",
+      "candidate": "3-tier resource pool (PERMANENT/HOT/COLD)",
+      "type": "pattern",
+      "tags": [
+        "resource-pooling",
+        "infrastructure",
+        "architecture",
+        "caching",
+        "production-grade",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "unclecode/crawl4ai",
+      "candidate": "Hook lifecycle with 8 ordered hooks",
+      "type": "pattern",
+      "tags": [
+        "hooks",
+        "lifecycle-ordering",
+        "architecture",
+        "security",
+        "authentication",
+        "cas-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "unclecode/crawl4ai",
+      "candidate": "CrawlState save/load resume",
+      "type": "knowledge",
+      "tags": [
+        "state-machine",
+        "pipeline",
+        "web-scraping",
+        "claims-vs-reality",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "unclecode/crawl4ai",
+      "candidate": "Strategy ABC (55+ implementations)",
+      "type": "knowledge",
+      "tags": [
+        "strategy-pattern",
+        "architecture",
+        "plugins",
+        "extraction",
+        "web-scraping",
+        "library"
+      ]
+    },
+    {
+      "source": "unclecode/crawl4ai",
+      "candidate": "DOCUMENTATION_PROMISES_CODE_GAPS",
+      "type": "anti-pattern",
+      "tags": ["documentation", "claims-vs-reality", "docs-absence", "code-quality", "cas-relevant"]
+    },
+    {
+      "source": "unclecode/crawl4ai",
+      "candidate": "MONOLITHIC_UTILS",
+      "type": "anti-pattern",
+      "tags": ["code-quality", "code-bloat", "architecture", "technical-debt"]
+    }
+  ]
+}

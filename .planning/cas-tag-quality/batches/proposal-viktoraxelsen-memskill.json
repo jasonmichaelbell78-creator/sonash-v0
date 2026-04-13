@@ -1,0 +1,149 @@
+{
+  "batch_id": "viktoraxelsen-memskill-2026-04-12",
+  "source": "ViktorAxelsen/MemSkill",
+  "notes": "MemSkill is an arXiv-companion repo proposing meta-memory — skills about HOW an agent remembers — with an evolution loop that mines failures to refine skills. Concepts are highly JASON-OS-relevant for T4/T16 auto-memory; code is academic-quality and explicitly flagged as extract-concepts-only. Twelve entries cover patterns (meta-memory, evolution loop, dual-embedding, skill-bank format), direct content templates (15 memory skills, specific operation files, the arXiv paper), and anti-patterns (42KB monolith, research-artifact-as-dependency).",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Meta-Memory Skills Framework",
+      "type": "pattern",
+      "tags": [
+        "agent-memory",
+        "knowledge-management",
+        "skill-architecture",
+        "mental-model",
+        "ai-agents",
+        "jason-os-relevant",
+        "rag-alternative"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Skill Evolution Loop",
+      "type": "pattern",
+      "tags": [
+        "skill",
+        "skill-architecture",
+        "ai-agents",
+        "agent-memory",
+        "pipeline",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Skill Bank 5-Section Format",
+      "type": "pattern",
+      "tags": [
+        "skill",
+        "prompt-template",
+        "skill-architecture",
+        "markdown",
+        "ai-instructions",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Designer Prompt Templates",
+      "type": "pattern",
+      "tags": [
+        "prompt-engineering",
+        "prompt-template",
+        "skill",
+        "ai-agents",
+        "system-prompt",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Dual-Embedding Memory Bank",
+      "type": "pattern",
+      "tags": [
+        "agent-memory",
+        "vector-embedding",
+        "rag-alternative",
+        "knowledge-management",
+        "architecture",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Operation Templates with Meta-Info",
+      "type": "pattern",
+      "tags": [
+        "skill",
+        "prompt-template",
+        "orchestration",
+        "ai-agents",
+        "benchmarking",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "15 Memory Skill Templates",
+      "type": "content",
+      "tags": [
+        "agent-memory",
+        "prompt-template",
+        "skill",
+        "knowledge-management",
+        "markdown",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "capture_activity_details.md",
+      "type": "content",
+      "tags": [
+        "agent-memory",
+        "prompt-template",
+        "knowledge-management",
+        "extraction",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "insert.md",
+      "type": "content",
+      "tags": [
+        "agent-memory",
+        "prompt-template",
+        "knowledge-management",
+        "filtering",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "arXiv 2602.02474",
+      "type": "content",
+      "tags": [
+        "paper",
+        "agent-memory",
+        "knowledge-management",
+        "ai-agents",
+        "rag-alternative",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Academic Code Quality",
+      "type": "anti-pattern",
+      "tags": ["code-quality", "code-bloat", "testing", "docs-absence", "claims-vs-reality"]
+    },
+    {
+      "source": "ViktorAxelsen/MemSkill",
+      "candidate": "Research Artifact as Dependency",
+      "type": "anti-pattern",
+      "tags": ["code-quality", "supply-chain", "platform-risk", "docs-absence"]
+    }
+  ]
+}

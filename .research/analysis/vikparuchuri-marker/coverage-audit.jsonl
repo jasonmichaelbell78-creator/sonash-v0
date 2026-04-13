@@ -1,0 +1,8 @@
+{"category": "referenced_links", "item": "HuggingFace datasets (datalab-to/marker_benchmark, datalab-to/pdfs)", "status": "not_evaluated", "reason": "External datasets, cataloged", "user_decision": "skip"}
+{"category": "referenced_links", "item": "VikParuchuri/surya (sibling OCR engine)", "status": "not_evaluated", "reason": "Sibling repo, cataloged in related_repos", "user_decision": "skip"}
+{"category": "referenced_links", "item": "models.datalab.to (model artifacts)", "status": "not_evaluated", "reason": "External model hosting", "user_decision": "skip"}
+{"category": "internal_docs", "item": "benchmarks/overall/methods/ (7 method implementations)", "status": "cataloged_not_read", "reason": "Method code not read line-by-line, registry pattern extracted", "user_decision": "skip"}
+{"category": "internal_docs", "item": "benchmarks/overall/scorers/ (2 scorer implementations)", "status": "cataloged_not_read", "reason": "Scorer code cataloged, not read", "user_decision": "skip"}
+{"category": "internal_docs", "item": "data/examples/ (3 PDF examples with conversions)", "status": "cataloged_not_read", "reason": "Example outputs cataloged", "user_decision": "skip"}
+{"category": "cross_repo", "item": "MinerU overlapping-finding comparison", "status": "analyzed", "reason": "Cross-comparison done: both GPL/AGPL, neither adoptable. marker has better benchmarks, MinerU better architecture. Pattern-only value."}
+{"category": "cross_repo", "item": "docling (benchmarked competitor)", "status": "not_analyzed", "reason": "Referenced in benchmarks but not in T29 scope", "user_decision": "skip"}

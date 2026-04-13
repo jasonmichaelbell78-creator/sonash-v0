@@ -22,7 +22,8 @@
     ]
   },
   "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_GLOB_TIMEOUT_SECONDS": "60"
   },
   "enableAllProjectMcpServers": true,
   "disabledMcpjsonServers": [],

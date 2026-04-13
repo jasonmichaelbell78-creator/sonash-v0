@@ -1,0 +1,104 @@
+{
+  "batch_id": "bedrock-summarize-2026-04-12",
+  "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+  "notes": "This repo is the practical hands-on complement to enterprise media-extraction frameworks — 11 reader handlers (YouTube, PDF, Email, S3, Quip, HTTP), full Amazon Transcribe async lifecycle, and a clean PII tokenize/LLM/untokenize round-trip that is directly applicable to SoNash journal privacy. Core architectural lesson is Chain-of-Responsibility + factory auto-discovery via AST parsing, with AWS vendor lock-in called out as the dominant anti-pattern.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "YouTube audio extraction pipeline",
+      "type": "pattern",
+      "tags": ["media-extraction", "pipeline", "extraction", "cas-relevant", "jason-os-relevant"]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "Amazon Transcribe async job lifecycle",
+      "type": "knowledge",
+      "tags": [
+        "amazon-transcribe",
+        "transcription",
+        "async-task-api",
+        "media-extraction",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "PII tokenize/untokenize round-trip pattern",
+      "type": "pattern",
+      "tags": [
+        "privacy-preserving",
+        "llm-integration",
+        "prompt-engineering",
+        "sonash-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "Chain of Responsibility + Factory handler composition",
+      "type": "pattern",
+      "tags": [
+        "chain-of-responsibility",
+        "pipeline",
+        "plugins",
+        "skill-architecture",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "AST-based handler auto-discovery",
+      "type": "pattern",
+      "tags": ["auto-discovery", "plugins", "skill-architecture", "jason-os-relevant", "extraction"]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "JSONPath model-agnostic invocation config",
+      "type": "pattern",
+      "tags": ["model-adapter", "aws-bedrock", "llm-integration", "llm", "ai-integration"]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "pytubefix caption + search + async capabilities",
+      "type": "content",
+      "tags": [
+        "media-extraction",
+        "transcription",
+        "rag-alternative",
+        "cas-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "Amazon Transcribe API reference",
+      "type": "content",
+      "tags": [
+        "amazon-transcribe",
+        "transcription",
+        "async-task-api",
+        "media-extraction",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "AWS-coupled extraction anti-pattern",
+      "type": "anti-pattern",
+      "tags": [
+        "vendor-lock-in",
+        "platform-risk",
+        "media-extraction",
+        "jason-os-relevant",
+        "architecture"
+      ]
+    },
+    {
+      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
+      "candidate": "Blocking poll anti-pattern",
+      "type": "anti-pattern",
+      "tags": ["async-task-api", "amazon-transcribe", "ai-agents", "architecture", "cas-relevant"]
+    }
+  ]
+}

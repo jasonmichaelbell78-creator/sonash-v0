@@ -1,0 +1,88 @@
+{
+  "batch_id": "public-apis-2026-04-12",
+  "source": "public-apis/public-apis",
+  "notes": "Celebrity-stagnation curated-list (420K stars, 1490 entries, 1 commit/90d) with Python format+link validation scripts and APILayer commercial capture. Creator-view surfaces link-validation + catalog-format as jason-os-relevant, three APIs (Google Calendar/Open-Meteo/Google NL) as direct SoNash integration candidates, and two governance anti-patterns (sponsor-first README, validation-without-maintenance). No new vocabulary proposed — candidate terms (api-catalog, link-rot, sponsor-capture) failed the 3x recurrence test against the 295-corpus; existing vocab covers the semantic space.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Link Validation Workflow",
+      "type": "pattern",
+      "tags": [
+        "curated-list",
+        "ci-cd",
+        "documentation",
+        "github",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Structured Catalog Format (enum columns)",
+      "type": "pattern",
+      "tags": ["curated-list", "taxonomy", "knowledge-management", "markdown", "jason-os-relevant"]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Format Validation Script Pattern",
+      "type": "pattern",
+      "tags": ["curated-list", "testing", "code-quality", "ci-cd"]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Google Calendar API",
+      "type": "content",
+      "tags": ["curated-list", "oauth", "tool-integration", "sonash-relevant"]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Open-Meteo Weather API",
+      "type": "content",
+      "tags": ["curated-list", "http", "tool-integration", "sonash-relevant"]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Google Cloud Natural Language API",
+      "type": "content",
+      "tags": ["curated-list", "llm-integration", "tool-integration", "sonash-relevant"]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "validate_links.yml Workflow",
+      "type": "content",
+      "tags": [
+        "curated-list",
+        "ci-cd",
+        "github",
+        "documentation",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Celebrity Stagnation with Infrastructure",
+      "type": "knowledge",
+      "tags": [
+        "curated-list",
+        "governance",
+        "knowledge-concentration",
+        "claims-vs-reality",
+        "technical-debt"
+      ]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Validation Without Maintenance Trap",
+      "type": "anti-pattern",
+      "tags": ["curated-list", "code-quality", "technical-debt", "governance", "jason-os-relevant"]
+    },
+    {
+      "source": "public-apis/public-apis",
+      "candidate": "Sponsor-First README Anti-Pattern",
+      "type": "anti-pattern",
+      "tags": ["curated-list", "governance", "commercial-oss", "claims-vs-reality"]
+    }
+  ]
+}

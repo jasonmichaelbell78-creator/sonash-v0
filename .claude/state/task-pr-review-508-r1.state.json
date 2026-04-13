@@ -1,0 +1,27 @@
+{
+  "pr": 508,
+  "round": 1,
+  "review_number": 85,
+  "source": "mixed",
+  "total": 30,
+  "fixed": 28,
+  "deferred": 0,
+  "rejected": 2,
+  "severity": {
+    "critical": 2,
+    "major": 10,
+    "minor": 16,
+    "trivial": 0
+  },
+  "completed_steps": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_shas": {
+    "commit_a_critical_claude_tool": "15377923",
+    "commit_b_ci_tests": "655bed92",
+    "commit_c_major_security_reliability": "f6a78d9c",
+    "commit_d_cc_refactors_plus_minor_folded": "56f03efe",
+    "commit_e_tag_vocabulary_synonym_key": "e3ed9642"
+  },
+  "completed_at": "2026-04-13T02:23:39Z",
+  "notes": "Multi-source convergence (Qodo + Gemini) elevated CLAUDE_TOOL drop to CRITICAL. CI test coverage gap resolved via 61 new tests (42 retag-mutations + 19 retag). Rejections #29 #30 documented with technical justification in Review #85 (local single-user CLI, no PII)."
+}

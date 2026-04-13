@@ -1,0 +1,650 @@
+[
+  {
+    "tag": "transcription",
+    "category": "domain",
+    "definition": "Techniques for converting speech or caption data into text with timing information, including caption-first fetching from platforms, ASR models like Whisper, and format conversions between SRT, WebVTT, JSON, and plain text representations with timestamp preservation.",
+    "sources": [
+      "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "jdepoix/youtube-transcript-api"
+    ],
+    "conflicts": [
+      {
+        "source": "jdepoix/youtube-transcript-api",
+        "category": "technique"
+      }
+    ]
+  },
+  {
+    "tag": "youtube",
+    "category": "technology",
+    "definition": "YouTube platform as a content source or integration target, including its player API, caption system, innertube endpoints, data API, and operational concerns like IP blocking, rate limits, and regional restrictions that affect programmatic access.",
+    "sources": [
+      "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "jdepoix/youtube-transcript-api"
+    ],
+    "conflicts": []
+  },
+  {
+    "tag": "media-extraction",
+    "category": "domain",
+    "definition": "Problem space of extracting structured content (transcripts, captions, metadata, timestamps) from video and audio sources including YouTube, podcasts, and local media files, distinct from document-extraction and web-scraping because it involves time-aligned output, caption-vs-speech quality tiers, and platform-specific ingestion paths.",
+    "sources": [
+      "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
+      "jdepoix/youtube-transcript-api"
+    ],
+    "conflicts": []
+  },
+  {
+    "tag": "api-versioning",
+    "category": "pattern",
+    "definition": "Explicit techniques for managing multiple concurrent versions of an API surface or parser -- including parallel parser trees, experimental modules that develop beside stable ones, version-gated routing, and migration paths -- so that upstream changes can be absorbed without rewriting or destabilizing live callers.",
+    "sources": ["mendableai/firecrawl", "zedeus/nitter"],
+    "conflicts": [
+      {
+        "source": "zedeus/nitter",
+        "category": "technique"
+      }
+    ]
+  },
+  {
+    "tag": "media-processing",
+    "category": "domain",
+    "definition": "Processing of video, audio, and other time-based media including frame sampling, transcription, captioning, shot/scene segmentation, and multimodal feature extraction pipelines.",
+    "sources": [
+      "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws"
+    ],
+    "conflicts": []
+  },
+  {
+    "tag": "vector-similarity",
+    "category": "technique",
+    "definition": "Using vector embeddings with similarity metrics (cosine, dot-product, L2) for deduplication, nearest-neighbor search, and clustering — spans FAISS, OpenSearch, pgvector, and similar backends.",
+    "sources": [
+      "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws"
+    ],
+    "conflicts": []
+  },
+  {
+    "tag": "aws",
+    "category": "technology",
+    "definition": "Amazon Web Services platform including its managed services (Lambda, S3, Rekognition, Bedrock, Transcribe, OpenSearch, Step Functions) used as building blocks in reference architectures.",
+    "sources": [
+      "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws"
+    ],
+    "conflicts": []
+  },
+  {
+    "tag": "audio-video-extraction",
+    "category": "domain",
+    "definition": "Problem space covering retrieval and normalization of audio and video content from diverse sources such as YouTube, podcasts, conference recordings, and embedded HTML media, including download, format conversion, and handoff to transcription or frame-sampling pipelines.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "speech-to-text",
+    "category": "domain",
+    "definition": "Problem space covering automated transcription of spoken audio into text, including streaming and batch modes, speaker diarization, timestamp alignment, language detection, and selection between managed services (Transcribe, Deepgram) and local models (Whisper, wav2vec).",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "aws-bedrock",
+    "category": "technology",
+    "definition": "Amazon Bedrock managed service providing unified API access to foundation models from Anthropic, Amazon Titan, Meta, Mistral, and others, including model invocation, streaming, guardrails, and agent orchestration primitives within the AWS ecosystem.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "amazon-transcribe",
+    "category": "technology",
+    "definition": "AWS managed speech-to-text service offering async batch jobs with S3 input and output, speaker diarization, custom vocabularies, language identification, and real-time streaming transcription over WebSocket or HTTP/2.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "privacy-preserving",
+    "category": "concept",
+    "definition": "Design stance where sensitive personal data is transformed, tokenized, redacted, or kept local before it reaches third-party services or LLMs, with the goal of preserving semantic utility for downstream processing while minimizing exposure of identifying information.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "chain-of-responsibility",
+    "category": "pattern",
+    "definition": "Behavioral design pattern where a request is passed along a chain of handler objects until one processes it, with each handler deciding whether to act, mutate, or forward; commonly used for composable reader/processor/writer pipelines and middleware stacks.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "auto-discovery",
+    "category": "pattern",
+    "definition": "Registration pattern where a factory or loader walks a directory tree, parses source files or metadata manifests, and registers discovered handlers, skills, or plugins by class or name without requiring central configuration edits for each new addition.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "model-adapter",
+    "category": "pattern",
+    "definition": "Abstraction pattern where model-specific request and response schemas are described declaratively (JSONPath, templates, or adapter classes) so that a single invocation code path can target multiple LLMs or model families without conditional branches per vendor.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "async-polling",
+    "category": "pattern",
+    "definition": "Lifecycle pattern where a client submits a long-running job to a remote service, receives a job identifier, then repeatedly queries status with sleep-based backoff until completion, used when webhook or event-driven callbacks are unavailable or intentionally avoided.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "vendor-lock-in",
+    "category": "quality",
+    "definition": "Quality signal flagging that a source couples its core functionality to a specific cloud provider, managed service, or proprietary API surface in a way that makes migration, local development, or offline operation materially harder than the equivalent local-first alternative.",
+    "sources": ["ksharlandjiev/bedrock-summarize-audio-video-text"],
+    "conflicts": []
+  },
+  {
+    "tag": "whisper",
+    "category": "technology",
+    "definition": "OpenAI Whisper speech-to-text model family and its reimplementations (faster-whisper/CTranslate2, whisper.cpp, openai-whisper reference) used for audio transcription across local GPU, local CPU, and hosted API deployments.",
+    "sources": ["Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist"],
+    "conflicts": []
+  },
+  {
+    "tag": "gpu-acceleration",
+    "category": "technique",
+    "definition": "Using CUDA, Metal, ROCm, or similar GPU runtimes to speed up inference or numerical workloads, with runtime detection logic, compute-type selection (float16/int8), and CPU fallback paths for environments without compatible hardware.",
+    "sources": ["Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist"],
+    "conflicts": []
+  },
+  {
+    "tag": "caption-extraction",
+    "category": "technique",
+    "definition": "Pulling existing caption or subtitle tracks (auto-generated or manually authored) from a video source via its platform API rather than re-transcribing audio, typically used as a fast free first pass before falling back to a transcription engine.",
+    "sources": ["Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist"],
+    "conflicts": []
+  },
+  {
+    "tag": "monolithic-script",
+    "category": "pattern",
+    "definition": "Single-file tool where configuration, I/O, business logic, and output are entangled without module boundaries or a CLI surface — convenient for personal utility scripts but hostile to integration, testing, composition, and reuse by other tools.",
+    "sources": ["Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist"],
+    "conflicts": []
+  },
+  {
+    "tag": "hard-coded-config",
+    "category": "quality",
+    "definition": "Configuration values (paths, API keys, model names, feature flags) embedded as module-level constants or literal expressions in source files instead of being read from CLI arguments, environment variables, or config files, forcing source edits to change behavior across environments.",
+    "sources": ["Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist"],
+    "conflicts": []
+  },
+  {
+    "tag": "resource-pooling",
+    "category": "pattern",
+    "definition": "Managing a finite set of reusable expensive resources (browsers, database connections, agent instances, MCP sessions) through tiered warmth levels with explicit lifecycle transitions and a janitor sweeping idle instances.",
+    "sources": ["unclecode/crawl4ai"],
+    "conflicts": []
+  },
+  {
+    "tag": "strategy-pattern",
+    "category": "pattern",
+    "definition": "Classic GoF design pattern where an abstract base class or interface defines a contract implemented by many interchangeable concrete strategies, selected and composed at runtime rather than through inheritance.",
+    "sources": ["unclecode/crawl4ai"],
+    "conflicts": []
+  },
+  {
+    "tag": "lifecycle-ordering",
+    "category": "concept",
+    "definition": "Explicit ordering guarantees between lifecycle hooks or callbacks so consumers know the sequence in which phases run, which hook to use for which purpose, and which side effects are safe where.",
+    "sources": ["unclecode/crawl4ai"],
+    "conflicts": []
+  },
+  {
+    "tag": "document-extraction",
+    "category": "domain",
+    "definition": "Problem space of parsing heterogeneous document formats (PDF, DOCX, HTML, audio, images) into structured representations suitable for downstream analysis, retrieval, or indexing, distinct from generic web scraping or code parsing.",
+    "sources": ["DS4SD/docling"],
+    "conflicts": []
+  },
+  {
+    "tag": "production-grade",
+    "category": "quality",
+    "definition": "Quality signal where a source demonstrates engineering maturity beyond research or demo code, typically including thread safety, bounded resource usage, deterministic behavior, error handling under concurrency, and explicit operational contracts suitable for real production workloads.",
+    "sources": ["DS4SD/docling"],
+    "conflicts": []
+  },
+  {
+    "tag": "dynamic-discovery",
+    "category": "concept",
+    "definition": "Runtime discovery of tools, skills, schemas, or capabilities on demand rather than loading every definition into context up front, trading a search/fetch round-trip for context-window efficiency at scale.",
+    "sources": ["https://docs.composio.dev/docs"],
+    "conflicts": []
+  },
+  {
+    "tag": "engine-fallback",
+    "category": "pattern",
+    "definition": "Pluggable extraction or processing engines coordinated by an ordered fallback list, with per-engine telemetry and a named terminal failure mode when all engines are exhausted.",
+    "sources": ["mendableai/firecrawl"],
+    "conflicts": []
+  },
+  {
+    "tag": "web-scraping",
+    "category": "domain",
+    "definition": "Concerns specific to fetching and parsing live web pages including static HTML, JS-heavy sites, PDFs, proxies, and anti-bot handling — distinct from generic data extraction.",
+    "sources": ["mendableai/firecrawl"],
+    "conflicts": []
+  },
+  {
+    "tag": "queue-systems",
+    "category": "domain",
+    "definition": "Async job queues, worker pools, and background processing infrastructure for deferred or long-running work across distributed services.",
+    "sources": ["mendableai/firecrawl"],
+    "conflicts": []
+  },
+  {
+    "tag": "cookbook-pattern",
+    "category": "pattern",
+    "definition": "Shipping a directory of many self-contained worked examples as primary product documentation, each pairing the tool with a specific use case, LLM, or framework, rather than relying on prose tutorials.",
+    "sources": ["mendableai/firecrawl"],
+    "conflicts": []
+  },
+  {
+    "tag": "agent-native-interface",
+    "category": "concept",
+    "definition": "Interfaces specifically designed for AI agents to operate software, treating the agent as the primary user rather than a human, typically via CLI wrappers over GUI applications",
+    "sources": ["HKUDS/CLI-Anything"],
+    "conflicts": []
+  },
+  {
+    "tag": "auto-generation",
+    "category": "technique",
+    "definition": "Programmatic generation of structured artifacts (skill files, docs, configs) from source introspection, templates, or schemas rather than manual authoring",
+    "sources": ["HKUDS/CLI-Anything"],
+    "conflicts": []
+  },
+  {
+    "tag": "distribution-model",
+    "category": "pattern",
+    "definition": "Architectural pattern for distributing code or extensions to consumers, combining a registry manifest, a discovery surface (hub or index), and an install mechanism such as pip or package manager",
+    "sources": ["HKUDS/CLI-Anything"],
+    "conflicts": []
+  },
+  {
+    "tag": "registry",
+    "category": "pattern",
+    "definition": "Pluggable registry mapping names to implementations so new components can self-register without modifying core dispatch code, enabling swappable methods, scorers, or providers.",
+    "sources": ["VikParuchuri/marker"],
+    "conflicts": []
+  },
+  {
+    "tag": "dependency-injection",
+    "category": "pattern",
+    "definition": "Resolving component dependencies from a shared container or by inspecting constructor signatures at runtime, avoiding hardcoded instantiation and enabling easy test doubles and swappable implementations.",
+    "sources": ["VikParuchuri/marker"],
+    "conflicts": []
+  },
+  {
+    "tag": "pdf-processing",
+    "category": "domain",
+    "definition": "Extracting structured content from PDF documents including text, tables, equations, reading order, and layout recovery, typically via heuristic or ML-based pipelines rather than naive text dumping.",
+    "sources": ["VikParuchuri/marker"],
+    "conflicts": []
+  },
+  {
+    "tag": "copyleft",
+    "category": "quality",
+    "definition": "Source uses a copyleft license (GPL, AGPL, LGPL) that forces derivative works to inherit the same license, constraining downstream adoption in permissively licensed or proprietary projects.",
+    "sources": ["VikParuchuri/marker"],
+    "conflicts": []
+  },
+  {
+    "tag": "documentation-contract",
+    "category": "pattern",
+    "definition": "Human-readable specification of a system's output, schema, or API as a first-class versioned document with explicit breaking-change callouts, distinct from auto-generated schema or embedded code comments.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "config-reference",
+    "category": "pattern",
+    "definition": "Single-document reference cataloging all user-facing configuration (environment variables, flags, settings) grouped by subsystem with defaults, effects, and scoping rules in one place.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "decision-matrix",
+    "category": "pattern",
+    "definition": "Pre-install or pre-run decision aid tabulating available options against user constraints (hardware, OS, use case) so readers can pick the right path before committing to installation or execution.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "async-task-api",
+    "category": "pattern",
+    "definition": "Task submission interface that returns an identifier, tracks named task states over time, and exposes polling or callback for completion, typically with a queue and concurrency cap behind it.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "lazy-import",
+    "category": "technique",
+    "definition": "Deferring costly module imports until a specific code path is actually selected at runtime, commonly via importlib inside a dispatcher factory to avoid paying initialization cost for unused backends.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "cli-wrapping",
+    "category": "pattern",
+    "definition": "Wrapping an upstream command-line tool by intercepting sys.argv and injecting project-specific defaults before handing off to the original main entrypoint, as a maintainable alternative to forking the upstream tool.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "insecure-defaults",
+    "category": "quality",
+    "definition": "Quality signal where a system ships with security-sensitive defaults that require operator intervention to make safe, such as no authentication, no rate limiting, open CORS, or API documentation enabled on public endpoints.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "version-pinning",
+    "category": "technique",
+    "definition": "Discipline of pinning third-party dependencies, GitHub Actions, or container images to specific versions or SHAs rather than floating references like @master or unbounded floor-only constraints, to protect the supply chain.",
+    "sources": ["opendatalab/MinerU"],
+    "conflicts": []
+  },
+  {
+    "tag": "command-pattern",
+    "category": "pattern",
+    "definition": "Transport-agnostic business logic layer where HTTP routes, MCP tools, CLI, and other surfaces all delegate to shared command objects rather than each surface containing its own logic.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "decorators",
+    "category": "pattern",
+    "definition": "Field-level or class-level decorators that wrap behavior at the model or service layer, commonly used for AOP concerns like encryption, validation, authorization, caching, and logging.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "encryption",
+    "category": "technique",
+    "definition": "Techniques for encrypting data at rest or in transit, including field-level encryption, envelope encryption, transparent AES on ORM fields, and key management for stored secrets.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "integration-testing",
+    "category": "technique",
+    "definition": "Testing through real transport and infrastructure layers rather than mocks — exercising actual HTTP servers, databases, message queues, or serialization to verify end-to-end behavior.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "background-jobs",
+    "category": "concept",
+    "definition": "Asynchronous job queue patterns for event-driven background work, including Bull, Sidekiq, Celery — processor classes, retries, scheduling, and decoupling request path from slow operations.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "onboarding",
+    "category": "domain",
+    "definition": "User or workspace onboarding flows including first-run content injection, setup wizards, sample data templates, and guided introductions to product capabilities.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "csp",
+    "category": "technology",
+    "definition": "Content Security Policy HTTP headers that restrict which sources a browser may load scripts, styles, connections, and media from — including directive-level policies like connect-src, script-src, and frame-ancestors.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "concurrency",
+    "category": "concept",
+    "definition": "Handling concurrent access to shared state — race conditions, locks, SELECT FOR UPDATE, optimistic locking, transactional boundaries, and correctness under parallel requests or collaborative editing.",
+    "sources": ["outline/outline"],
+    "conflicts": []
+  },
+  {
+    "tag": "query-dsl",
+    "category": "concept",
+    "definition": "Formal query language with grammar or typed operators for expressing knowledge-base or search queries beyond simple flag combinations.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "hybrid-retrieval",
+    "category": "concept",
+    "definition": "Retrieval architecture combining multiple approaches (BM25 lexical, dense vector, LLM reranking, query expansion) whose results are fused for final ranking.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "chunking",
+    "category": "technique",
+    "definition": "Splitting documents or code into retrieval-sized units using structure-aware heuristics, scoring break points, or AST boundaries rather than naive character counts.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "evaluation-harness",
+    "category": "pattern",
+    "definition": "Fixture-based evaluation framework with categorized queries, expected results, and standard retrieval metrics (precision@k, recall, MRR, F1) to regression-test quality across backends.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "dependency-pinning",
+    "category": "technique",
+    "definition": "Practice of locking dependencies to exact versions rather than semver ranges to guarantee reproducible installs, especially for packages shipping platform binaries.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "fine-tuning",
+    "category": "technique",
+    "definition": "Adapting a pretrained model to a narrow task via supervised fine-tuning, often using LoRA adapters on small base models and cloud training jobs.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "local-inference",
+    "category": "concept",
+    "definition": "Running language or embedding models on-device rather than via hosted APIs, typically through GGUF quantization and llama.cpp-style runtimes for privacy and offline use.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "release-workflow",
+    "category": "concept",
+    "definition": "Disciplined release process covering changelog maintenance, dependency verification, version bumping, CI watch, and staged publishing, often encoded as a skill or checklist.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "marketplace",
+    "category": "concept",
+    "definition": "Distribution surface that bundles installable units (plugins, skills, tools) with a manifest describing sources, capabilities, and entry points for end users to install.",
+    "sources": ["tobi/qmd"],
+    "conflicts": []
+  },
+  {
+    "tag": "confidence-tagging",
+    "category": "concept",
+    "definition": "Explicit per-item confidence or provenance labels (e.g. EXTRACTED, INFERRED, AMBIGUOUS, HIGH, LOW) attached to findings, edges, recall results, or LLM outputs so downstream consumers can distinguish directly observed facts from inferred or uncertain ones.",
+    "sources": ["safishamsi/graphify"],
+    "conflicts": []
+  },
+  {
+    "tag": "ast-parsing",
+    "category": "technique",
+    "definition": "Abstract syntax tree parsing of source code via tree-sitter, libcst, Babel, or language-native parsers to extract structural facts (classes, functions, imports, call edges) deterministically and without LLM cost, typically as the first pass in hybrid analysis pipelines.",
+    "sources": ["safishamsi/graphify"],
+    "conflicts": []
+  },
+  {
+    "tag": "solo-maintainer",
+    "category": "quality",
+    "definition": "Repository with a single dominant committer (usually 90%+ of commits) and little to no external PR review pressure, creating risk that design choices, security assumptions, and API contracts have never been adversarially challenged even when surface quality looks high.",
+    "sources": ["safishamsi/graphify"],
+    "conflicts": []
+  },
+  {
+    "tag": "enforcement",
+    "category": "concept",
+    "definition": "Treating rules, hooks, or guardrails as non-negotiable gates that block execution rather than passive automation that merely advises or logs warnings.",
+    "sources": ["https://sidbharath.com/blog/claude-code-the-complete-guide/"],
+    "conflicts": []
+  },
+  {
+    "tag": "tutorial",
+    "category": "concept",
+    "definition": "Instructional walkthrough content structured as a learning path rather than reference documentation, typically ordered from setup through advanced use with worked examples.",
+    "sources": ["https://sidbharath.com/blog/claude-code-the-complete-guide/"],
+    "conflicts": []
+  },
+  {
+    "tag": "skill-distribution",
+    "category": "pattern",
+    "definition": "Mechanism for packaging and shipping a skill bundle (SKILL.md plus assets) to one or more install targets with version identity, so consumers can install and upgrade skills the same way they install libraries or plugins.",
+    "sources": ["teng-lin/notebooklm-py"],
+    "conflicts": []
+  },
+  {
+    "tag": "drift-detection",
+    "category": "technique",
+    "definition": "Comparing an installed or deployed artifact against its source of truth (version stamp, hash, schema) to detect divergence, typically via a status command or CI check that flags stale copies before they cause silent behavioral differences.",
+    "sources": ["teng-lin/notebooklm-py"],
+    "conflicts": []
+  },
+  {
+    "tag": "autonomy-rules",
+    "category": "pattern",
+    "definition": "Explicit per-command or per-action allowlist and asklist inside a SKILL.md or CLAUDE.md that tells an agent which operations to run automatically versus which require user confirmation, each annotated with a one-line rationale to make the policy auditable.",
+    "sources": ["teng-lin/notebooklm-py"],
+    "conflicts": []
+  },
+  {
+    "tag": "external-api-monitoring",
+    "category": "pattern",
+    "definition": "Scheduled CI or cron job that exercises an external or undocumented third-party contract and reports breakage via exit codes, auto-filed issues, or alert channels, providing early warning when upstream APIs change in ways that could break the consuming project.",
+    "sources": ["teng-lin/notebooklm-py"],
+    "conflicts": []
+  },
+  {
+    "tag": "python",
+    "category": "technology",
+    "definition": "Python programming language and its tooling ecosystem (pip, uv, packaging, dataclasses, pytest) as the implementation substrate of a source.",
+    "sources": ["teng-lin/notebooklm-py"],
+    "conflicts": []
+  },
+  {
+    "tag": "document-processing",
+    "category": "domain",
+    "definition": "Problem space covering extraction, parsing, normalization, and structured-output generation from heterogeneous document formats such as PDF, DOCX, HTML, images, and email, including layout-aware and OCR-driven pipelines.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "graceful-degradation",
+    "category": "pattern",
+    "definition": "Design pattern where a system detects missing optional capabilities (dependencies, credentials, network, models) at runtime and falls back to a reduced-fidelity code path with a logged warning instead of hard-failing, preserving partial functionality.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "self-describing-registry",
+    "category": "pattern",
+    "definition": "Registration pattern where each entry in a central enum or table declares its own dependencies, module path, capabilities, and identifying metadata, so that adding a new variant requires exactly one registration site and no changes to routing or dispatch code.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "auto-routing",
+    "category": "pattern",
+    "definition": "Dispatch pattern where an entrypoint inspects input characteristics such as MIME type, URL shape, or content signature and routes to the correct handler implicitly, eliminating the requirement that callers select a handler manually based on input type.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "snapshot-testing",
+    "category": "technique",
+    "definition": "Regression testing technique where actual output from a pipeline is serialized to a golden file checked into the repository, and test runs fail when current output drifts from the stored expectation, used heavily for extraction, rendering, and transformation pipelines.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "provenance-tracking",
+    "category": "concept",
+    "definition": "Practice of attaching origin metadata — source identifier, extraction timestamp, upstream permissions, coordinates within source, tool version — to each extracted or derived data element so that downstream consumers can audit, re-fetch, or attribute the element.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "over-engineering",
+    "category": "quality",
+    "definition": "Quality signal flagging abstraction layers, intermediate representations, or type hierarchies whose complexity exceeds the value they deliver, often acknowledged by the authoring team through TODO comments, migration notes, or explicit deprecation in favor of simpler structures.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "dx-fragmentation",
+    "category": "quality",
+    "definition": "Quality signal where related functionality is split across multiple packages, repositories, or skills such that consumers must install and coordinate several artifacts to accomplish a single coherent task, degrading the developer experience relative to a unified system.",
+    "sources": ["unstructured-io/unstructured"],
+    "conflicts": []
+  },
+  {
+    "tag": "agent-memory",
+    "category": "concept",
+    "definition": "Persistent state or knowledge an agent retains across turns, sessions, or tasks — including auto-memory, MEMORY.md files, knowledge bases, and personal wikis that feed back into future agent context.",
+    "sources": ["ViktorAxelsen/MemSkill"],
+    "conflicts": []
+  },
+  {
+    "tag": "prompt-template",
+    "category": "pattern",
+    "definition": "Reusable structured prompt or skill-definition format (e.g. 5-section skill spec, failure-classification prompt, capture-details template) intended to be filled in or adapted rather than written from scratch each time.",
+    "sources": ["ViktorAxelsen/MemSkill"],
+    "conflicts": []
+  },
+  {
+    "tag": "vector-embedding",
+    "category": "technology",
+    "definition": "Vector embeddings and the surrounding tooling — FAISS, Chroma, similarity search, embedding-based deduplication — used for semantic lookup rather than keyword or tag-based retrieval.",
+    "sources": ["ViktorAxelsen/MemSkill"],
+    "conflicts": []
+  },
+  {
+    "tag": "retrieval",
+    "category": "concept",
+    "definition": "Retrieving stored content by query, metadata, or surrounding context — the read side of knowledge systems, encompassing search, lookup, and recall strategies.",
+    "sources": ["https://www.youtube.com/watch?v=qINuQwL4E-k"],
+    "conflicts": []
+  },
+  {
+    "tag": "file-organization",
+    "category": "technique",
+    "definition": "Techniques for arranging files and attachments in folder hierarchies, including per-project subfolders, flat roots, and colocated-with-note layouts for retrievability.",
+    "sources": ["https://www.youtube.com/watch?v=qINuQwL4E-k"],
+    "conflicts": []
+  },
+  {
+    "tag": "proxy-rotation",
+    "category": "pattern",
+    "definition": "Operational pattern of routing outbound requests through a pool of rotating IP addresses (commonly residential proxies) with retry-on-block, connection-close headers to force rotation, and pluggable proxy-config abstractions, used to evade per-IP rate limits and bulk-access bans on scraping or platform-API workloads.",
+    "sources": ["jdepoix/youtube-transcript-api"],
+    "conflicts": []
+  },
+  {
+    "tag": "upstream-instability",
+    "category": "concept",
+    "definition": "A source explicitly addresses the risk that an upstream API, platform, or data provider will change or disappear, covering patterns such as parallel parser versions, reverse-engineered private APIs, scraping fallbacks, and dependencies on hostile or deprecating providers that can break the consuming project at any time.",
+    "sources": ["zedeus/nitter"],
+    "conflicts": []
+  }
+]

@@ -1,0 +1,205 @@
+{
+  "source": "jina-ai/reader",
+  "slug": "jina-ai-reader",
+  "generated_at": "2026-04-12",
+  "primary_lens": "creator",
+  "candidates": [
+    {
+      "name": "Multi-provider fallback generator (iterProviders)",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "url": "https://github.com/jina-ai/reader/tree/main/src/services/serp",
+      "notes": "Generator yields provider clients in preference order; for...of catches per-provider errors and advances. Small port (~40 lines). Reuse targets: deep-research cross-model verification, future multi-SERP surface, media-analysis transcript providers, embedding providers.",
+      "rank_rationale": "High relevance + low effort + concrete reuse across existing SoNash skills. Top T1 item."
+    },
+    {
+      "name": "x-* request header protocol",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "url": "https://github.com/jina-ai/reader/blob/main/README.md",
+      "notes": "Runtime config surface via headers (11+ headers). Cleaner than query-string pollution. Applicable when CAS exposes /website-analysis over MCP or as agent-facing tool surface.",
+      "rank_rationale": "Design reference — not a port — but likely useful when MCP surface emerges for CAS skills."
+    },
+    {
+      "name": "r.jina.ai hosted service as fetch backend",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://r.jina.ai/",
+      "notes": "DECISION candidate: adopt as /website-analysis fallback fetch backend? Pro: free tier, TLS fingerprint evasion, SPA handling. Con: vendor lock-in on core CAS primitive, 11-month staleness, Privacy-First tension. Recommended next step: instrument superpowers-chrome gaps first.",
+      "rank_rationale": "Highest-stakes decision surfaced by this analysis. Effort E0 because it's a call-or-don't-call decision."
+    },
+    {
+      "name": "Tiered fetch fallback chain with sideLoad body hint",
+      "type": "architecture-pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "url": "https://github.com/jina-ai/reader/blob/main/src/api/crawler.ts",
+      "notes": "Firestore cache -> curl -> proxy retry -> Puppeteer with sideLoad hint -> Readability -> Turndown -> stale cache fallback. Reference for /website-analysis pipeline evolution beyond superpowers-chrome.",
+      "rank_rationale": "Medium relevance, moderate effort — file for later if /website-analysis needs production-grade extraction."
+    },
+    {
+      "name": "Readability + Turndown + Puppeteer extraction pipeline",
+      "type": "architecture-pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E2",
+      "relevance": "medium",
+      "url": "https://github.com/jina-ai/reader/tree/main/src/services",
+      "notes": "Industry-standard HTML->markdown stack. All stages swappable via DI. If /website-analysis needs non-Chrome fallback (static sites only), HTML + @mozilla/readability covers happy path with small dep footprint.",
+      "rank_rationale": "Low novelty (standard pattern) but genuinely reusable. Park for when superpowers-chrome alternative is needed."
+    },
+    {
+      "name": "curl-impersonate + TLS fingerprint concept",
+      "type": "knowledge",
+      "tier": "T2",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "https://github.com/lwthiker/curl-impersonate",
+      "notes": "Understanding that anti-bot defenses fingerprint the full TLS/TCP stack explains why firecrawl/crawl4ai leak through some sites. Not directly usable in SoNash (no self-hosted fetcher), but conceptually T2.",
+      "rank_rationale": "Conceptual knowledge with indirect applicability. Worth understanding for any future content-fetch primitive in JASON-OS."
+    },
+    {
+      "name": "curl-impersonate as Docker LD_PRELOAD base layer",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "high",
+      "effort": "E3",
+      "relevance": "medium",
+      "url": "https://github.com/jina-ai/reader/blob/main/Dockerfile",
+      "notes": "Two-stage Docker build: FROM lwthiker/curl-impersonate ... -> FROM node:22. Copy .so + LD_PRELOAD. Template for any future self-hosted fetcher that needs to defeat anti-bot TLS fingerprinting.",
+      "rank_rationale": "High effort (Docker + C lib + system-level config). Only relevant if SoNash ever containerizes a fetcher. T3 reference."
+    },
+    {
+      "name": "Multi-target deployment via --args override",
+      "type": "architecture-pattern",
+      "tier": "T3",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "low",
+      "url": "https://github.com/jina-ai/reader/blob/main/.github/workflows/cd.yml",
+      "notes": "One image deployed 6 times to Cloud Run by varying --args. DI resolves correct class at container boot. Not directly applicable (SoNash is Firebase Functions), but reference pattern if JASON-OS needs a polyglot service shell.",
+      "rank_rationale": "Low immediate relevance — SoNash doesn't use Cloud Run. File as architecture pattern reference."
+    },
+    {
+      "name": "Commercial OSS without tests as an architectural stance",
+      "type": "knowledge",
+      "tier": "T3",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": null,
+      "notes": "Reader runs at scale with zero tests. Quality floor = TypeScript + lint + observability + traffic volume. A defensible stance for the originator but does not transfer to adopters. Cautionary knowledge.",
+      "rank_rationale": "Evergreen reference — don't emulate, but understand the trade-off when evaluating similar codebases."
+    },
+    {
+      "name": "Blog: Reader for search-grounding to improve factuality of LLMs",
+      "type": "content",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "https://jina.ai/news/jina-reader-for-search-grounding-to-improve-factuality-of-llms",
+      "notes": "Explains s.jina.ai's thesis — search-then-read for LLM grounding. Aligned with SoNash deep-research philosophy. Validation rather than novelty.",
+      "rank_rationale": "Low-effort content read. Validates existing CAS approach."
+    },
+    {
+      "name": "Colab notebook: full-site crawling methodology",
+      "type": "content",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "url": "https://colab.research.google.com/drive/1uoBy6_7BhxqpFQ45vuhgDDDGwstaCt4P",
+      "notes": "The only practical multi-URL example using r.jina.ai. Useful IF /website-analysis adds a bulk mode later. Not urgent.",
+      "rank_rationale": "Filed for future multi-URL use case. Evergreen reference."
+    },
+    {
+      "name": "DeepWiki-as-architecture-docs",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://github.com/jina-ai/reader/blob/main/README.md",
+      "notes": "README 'How it works' is a DeepWiki image badge. No first-party architecture exposition. Directly anti-example for SoNash docs philosophy. Check docs/agent_docs/* — none of these should ever outsource architecture narrative.",
+      "rank_rationale": "Active anti-pattern — immediately applicable as a 'do not do this' reference for SoNash documentation standards."
+    },
+    {
+      "name": "Public repo + private submodule requirement",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://github.com/jina-ai/reader/blob/main/.gitmodules",
+      "notes": "Public repo doesn't compile without SSH-only thinapps-shared. README calls it 'not integral' — misleading. Lesson: if shipping OSS, make it actually runnable from source. If closed, ship closed. Middle ground erodes trust.",
+      "rank_rationale": "Active anti-pattern for any future SoNash OSS release or JASON-OS distribution."
+    },
+    {
+      "name": "Zero tests in a 10k-star production service",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "url": "https://github.com/jina-ai/reader",
+      "notes": "Reader has no test suite. Quality = TypeScript strict + lint + traffic. Works for originator (observability), fails for adopters. Cautionary anti-pattern: 'no tests' requires compensating monitoring, not the other way around.",
+      "rank_rationale": "Active cautionary reference — file as 'no tests' quality floor boundary marker for adoption decisions."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "mendableai/firecrawl",
+      "connection_type": "complementary",
+      "detail": "Closest analyzed analogue. Firecrawl is self-hostable with tests; Reader is not. Reader has TLS fingerprint evasion (curl-impersonate); Firecrawl does not. If adopting one as infrastructure, firecrawl wins on adopter-safety; Reader wins on hardened-fetcher output."
+    },
+    {
+      "target_repo": "unclecode/crawl4ai",
+      "connection_type": "complementary",
+      "detail": "crawl4ai is Python, research-oriented, LLM-extraction focused. Reader is TypeScript, production-oriented, commercial. Different product slopes — Reader is what crawl4ai might look like if it commercialized."
+    },
+    {
+      "target_repo": "docling-project/docling",
+      "connection_type": "complementary",
+      "detail": "Docling covers documents (PDF/DOCX). Reader's PDF handling via pdfjs-dist is a sidebar to web extraction. Do not overlap — CAS likely wants docling for documents and Reader/firecrawl for web."
+    },
+    {
+      "target_repo": "VikParuchuri/marker",
+      "connection_type": "complementary",
+      "detail": "Marker is PDF-to-markdown. Reader's PDF path is minimal. Different primary domains — marker is for document corpus conversion, Reader is for web content."
+    },
+    {
+      "target_repo": "lwthiker/curl-impersonate",
+      "connection_type": "referenced",
+      "detail": "Reader depends on curl-impersonate as Docker base. Worth analyzing as a standalone repo if SoNash ever considers self-hosted fetching. Not yet analyzed."
+    },
+    {
+      "target_repo": "mozilla/readability",
+      "connection_type": "referenced",
+      "detail": "Reader uses @mozilla/readability as its extraction core. Library-level dependency. Industry standard — Firefox Reader Mode is built on this. Not a priority to analyze as own repo."
+    }
+  ],
+  "related_repos": [
+    "mendableai/firecrawl",
+    "unclecode/crawl4ai",
+    "docling-project/docling",
+    "VikParuchuri/marker",
+    "lwthiker/curl-impersonate",
+    "mozilla/readability",
+    "puppeteer/puppeteer"
+  ],
+  "synthesis_ready": true,
+  "synthesis_notes": "Fourth web-content-extraction repo analyzed. Cross-repo synthesis should now have enough convergence evidence to produce a 'state of web content extraction' reading. Recommend running /synthesize scoped to these 4 repos to surface shared patterns (Readability + Turndown is universal) and divergences (TLS fingerprinting only in Reader; testing only in firecrawl)."
+}

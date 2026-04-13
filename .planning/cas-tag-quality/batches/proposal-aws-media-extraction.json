@@ -1,0 +1,63 @@
+{
+  "batch_id": "aws-media-extraction-2026-04-12",
+  "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+  "notes": "AWS reference architecture splitting media extraction from analysis. Source of 8 journal entries (6 patterns, 2 anti-patterns) covering frame sampling, multi-granularity hierarchy, toggleable ML feature extraction, FAISS local dedup, subtitle-frame alignment, AWS-specific anti-patterns. Core T27/T28 reference — existing tags were source-type-duplicating 'repo' only.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "Frame sampling + smart dedup pipeline",
+      "type": "architecture-pattern",
+      "tags": [
+        "media-extraction",
+        "vector-similarity",
+        "pipeline",
+        "extraction",
+        "aws",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "Multi-granularity hierarchy (frame->shot->scene)",
+      "type": "architecture-pattern",
+      "tags": ["media-extraction", "taxonomy", "extraction", "cas-relevant"]
+    },
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "Toggleable per-frame ML feature extraction",
+      "type": "pattern",
+      "tags": ["media-extraction", "extraction", "ai-integration", "cas-relevant"]
+    },
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "FAISS local dedup (no cloud dependency)",
+      "type": "pattern",
+      "tags": ["vector-similarity", "media-extraction", "cas-relevant", "jason-os-relevant"]
+    },
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "Subtitle-to-frame timestamp alignment",
+      "type": "pattern",
+      "tags": ["media-extraction", "extraction", "cas-relevant"]
+    },
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "Evaluation Service prompt template system",
+      "type": "pattern",
+      "tags": ["llm-integration", "prompt-engineering", "ai-integration", "aws"]
+    },
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "OpenSearch dependency for similarity (anti-pattern)",
+      "type": "anti-pattern",
+      "tags": ["vector-similarity", "media-extraction", "platform-risk", "aws"]
+    },
+    {
+      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
+      "candidate": "No tests (anti-pattern)",
+      "type": "anti-pattern",
+      "tags": ["testing", "best-practices", "aws"]
+    }
+  ]
+}

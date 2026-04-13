@@ -1,0 +1,120 @@
+{
+  "batch_id": "outline-2026-04-12",
+  "source": "outline/outline",
+  "notes": "Outline is a production team knowledge-base with a mature MCP server, transport-agnostic command layer, and plugin system. Creator view flags high relevance to JASON-OS Domain 02a (MCP) and SoNash M4.5 (encryption) / M7.3 (onboarding).",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "outline/outline",
+      "candidate": "MCP OAuth scope-filtered tool registration",
+      "type": "pattern",
+      "tags": [
+        "mcp",
+        "oauth",
+        "authentication",
+        "tool-integration",
+        "security",
+        "filtering",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "Command pattern (transport-agnostic business logic)",
+      "type": "knowledge",
+      "tags": [
+        "command-pattern",
+        "architecture",
+        "mcp",
+        "tool-integration",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "PluginManager hook type registry",
+      "type": "pattern",
+      "tags": [
+        "plugins",
+        "hooks",
+        "architecture",
+        "orchestration",
+        "skill-architecture",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "buildAPIContext() MCP-to-API bridge",
+      "type": "pattern",
+      "tags": ["mcp", "command-pattern", "tool-integration", "architecture", "jason-os-relevant"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "@Encrypted field-level decorator",
+      "type": "pattern",
+      "tags": ["encryption", "security", "decorators", "sonash-relevant"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "TestServer ephemeral-port integration testing",
+      "type": "pattern",
+      "tags": ["testing", "integration-testing", "architecture"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "Abstract generic Store<T> with request dedup",
+      "type": "pattern",
+      "tags": ["caching", "architecture", "state-machine"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "PersistenceExtension race condition prevention",
+      "type": "knowledge",
+      "tags": ["concurrency", "distributed-systems", "best-practices"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "Content-as-code onboarding templates",
+      "type": "pattern",
+      "tags": ["onboarding", "markdown", "sonash-relevant"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "Presenter response formatting layer",
+      "type": "pattern",
+      "tags": ["architecture", "command-pattern", "http"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "Bull queue processor BaseProcessor",
+      "type": "pattern",
+      "tags": ["background-jobs", "architecture", "distributed-systems"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "RPC-over-POST API pattern",
+      "type": "anti-pattern",
+      "tags": ["http", "architecture", "caching", "sonash-relevant"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "Externalized documentation",
+      "type": "anti-pattern",
+      "tags": ["documentation", "docs-absence", "devex", "governance"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "CSP wildcard security debt",
+      "type": "anti-pattern",
+      "tags": ["csp", "security", "technical-debt"]
+    },
+    {
+      "source": "outline/outline",
+      "candidate": "Fat route files",
+      "type": "anti-pattern",
+      "tags": ["architecture", "code-bloat", "devex"]
+    }
+  ]
+}

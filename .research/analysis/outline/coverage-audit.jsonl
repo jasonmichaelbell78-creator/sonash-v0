@@ -1,0 +1,10 @@
+{"category": "referenced-links", "item": "https://getoutline.com/developers", "description": "External API documentation", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "referenced-links", "item": "https://docs.getoutline.com/s/hosting/", "description": "Self-hosting documentation", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "referenced-links", "item": "https://docs.getoutline.com/s/guide", "description": "User guide", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "internal-docs", "item": "server/models/decorators/Changeset.ts", "description": "Audit trail decorator - not read in detail", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "internal-docs", "item": "server/models/decorators/CounterCache.ts", "description": "Denormalized counts decorator - not read", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "internal-docs", "item": "server/models/decorators/Fix.ts", "description": "Data migration helper decorator - not read", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "structured-data", "item": "36 policy files", "description": "Authorization policies not individually analyzed", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "structured-data", "item": "39 presenter files", "description": "Response presenters not individually analyzed", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "cross-repo", "item": "yjs/yjs", "description": "Y.js collaborative editing engine - core dependency not traced", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}
+{"category": "anomaly", "item": "shared/editor/ (17 subdirs)", "description": "Substantial editor framework within shared/ - deeper analysis possible", "status": "skipped", "user_decision": "skip", "decision_date": "2026-04-12"}

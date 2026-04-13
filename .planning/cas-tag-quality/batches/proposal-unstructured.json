@@ -1,0 +1,150 @@
+{
+  "batch_id": "unstructured-2026-04-12",
+  "source": "unstructured-io/unstructured",
+  "notes": "Unstructured is the single most architecturally relevant repo for T28 CAS — its partition() auto-routing, self-describing FileType enum, AUTO/HI_RES/OCR_ONLY/FAST fallback chain, and golden-file snapshot testing each map onto concrete T28 gaps. Three anti-patterns (ontology V2 over-engineering, per-format TS partitioners, extraction/embedding fragmentation) are explicit 'don't replicate' calls from the creator-view.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Auto-routing via type detection",
+      "type": "pattern",
+      "tags": [
+        "document-extraction",
+        "auto-routing",
+        "orchestration",
+        "pipeline",
+        "extraction",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Self-describing FileType registry",
+      "type": "pattern",
+      "tags": [
+        "document-extraction",
+        "registry",
+        "plugins",
+        "skill-architecture",
+        "extraction",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Strategy fallback chain",
+      "type": "pattern",
+      "tags": [
+        "document-extraction",
+        "graceful-degradation",
+        "depth-tiers",
+        "orchestration",
+        "extraction",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Graceful dependency checking",
+      "type": "pattern",
+      "tags": [
+        "graceful-degradation",
+        "tool-integration",
+        "devex",
+        "orchestration",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Golden-file snapshot testing",
+      "type": "pattern",
+      "tags": [
+        "testing",
+        "snapshot-testing",
+        "ci-cd",
+        "extraction",
+        "best-practices",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Element type hierarchy with metadata",
+      "type": "knowledge",
+      "tags": [
+        "document-extraction",
+        "provenance-tracking",
+        "taxonomy",
+        "extraction",
+        "architecture",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Chunking with table isolation",
+      "type": "knowledge",
+      "tags": ["document-extraction", "rag", "extraction", "pipeline", "cas-relevant"]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Text cleaning pipeline",
+      "type": "knowledge",
+      "tags": ["document-extraction", "pipeline", "extraction", "filtering", "cas-relevant"]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "S3-backed performance benchmarking",
+      "type": "knowledge",
+      "tags": ["benchmarking", "ci-cd", "infrastructure", "testing", "best-practices"]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "unstructured-ingest connector ecosystem",
+      "type": "content",
+      "tags": ["document-extraction", "tool-integration", "extraction", "pipeline", "cas-relevant"]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Don't replicate ontology V2",
+      "type": "anti-pattern",
+      "tags": [
+        "document-extraction",
+        "over-engineering",
+        "architecture",
+        "code-bloat",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Don't build per-format parsers in TypeScript",
+      "type": "anti-pattern",
+      "tags": [
+        "document-extraction",
+        "tool-integration",
+        "orchestration",
+        "over-engineering",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "unstructured-io/unstructured",
+      "candidate": "Don't fragment extraction+analysis across repos",
+      "type": "anti-pattern",
+      "tags": [
+        "architecture",
+        "dx-fragmentation",
+        "devex",
+        "orchestration",
+        "cas-relevant",
+        "jason-os-relevant"
+      ]
+    }
+  ]
+}

@@ -27,10 +27,115 @@ const {
   validatePathInDir,
   refuseSymlinkWithParents,
 } = require("../lib/security-helpers.js");
+const { readTextWithSizeGuard } = require("../lib/safe-fs");
 // propagation: isSafeToWrite() compliance — read-only query module (refuse-symlink)
 
 const PROJECT_ROOT = path.resolve(__dirname, "../.."); // validatePathInDir: constant-path (no user input)
 const DB_PATH = path.join(PROJECT_ROOT, ".research", "content-analysis.db");
+const VOCAB_PATH = path.join(PROJECT_ROOT, ".research", "tag-vocabulary.json");
+
+function loadVocabulary() {
+  // Direct-read pattern (no existsSync precheck) per CODE_PATTERNS.md —
+  // avoids the TOCTOU between existsSync and read. readTextWithSizeGuard
+  // also imposes a size ceiling to prevent local DoS from an oversized
+  // vocabulary file.
+  let text;
+  try {
+    text = readTextWithSizeGuard(VOCAB_PATH);
+  } catch (err) {
+    if (err?.code === "ENOENT") return null;
+    // Surface non-ENOENT failures (size limit, EACCES, etc.) rather than
+    // swallowing silently — missing diagnostics have historically masked
+    // real vocabulary corruption.
+    console.warn(`warning: failed to read tag vocabulary: ${sanitizeError(err)}`);
+    return null;
+  }
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn(`warning: tag vocabulary is not valid JSON: ${sanitizeError(err)}`);
+    return null;
+  }
+}
+
+/**
+ * Flatten vocab.forbidden into a Set for O(1) membership checks.
+ */
+function buildForbiddenFlatSet(vocab) {
+  const set = new Set();
+  if (vocab.forbidden) {
+    for (const arr of Object.values(vocab.forbidden)) {
+      if (Array.isArray(arr)) for (const t of arr) set.add(t);
+    }
+  }
+  return set;
+}
+
+/**
+ * Place a single classified canonical tag into the semantic or taxonomic
+ * bucket. Used by classifyTagsForDisplay to keep the main loop flat.
+ */
+function placeClassifiedTag(canonical, info, semantic, taxonomic) {
+  if (info.category === "taxonomic") {
+    if (!taxonomic.includes(canonical)) taxonomic.push(canonical);
+    return;
+  }
+  if (!semantic[info.category]) semantic[info.category] = [];
+  if (!semantic[info.category].includes(canonical)) {
+    semantic[info.category].push(canonical);
+  }
+}
+
+/**
+ * Split a tag list into semantic (grouped by category), taxonomic, and orphan
+ * buckets. Applies synonym resolution. Per CONVENTIONS.md §14.
+ */
+function classifyTagsForDisplay(tags, vocab) {
+  const semantic = {};
+  const taxonomic = [];
+  const orphan = [];
+  // Guard against null, partial, or malformed vocab — loadVocabulary may
+  // return null (missing/invalid), and even a valid vocab may be missing
+  // .tags if the file was written by an old migration.
+  if (!vocab?.tags || typeof vocab.tags !== "object") {
+    return { semantic, taxonomic, orphan };
+  }
+  const forbiddenFlat = buildForbiddenFlatSet(vocab);
+  for (const raw of tags || []) {
+    const trimmed = String(raw).trim();
+    if (!trimmed) continue;
+    const canonical = vocab.synonyms?.[trimmed] ?? trimmed;
+    const info = vocab.tags[canonical];
+    if (!info || forbiddenFlat.has(canonical)) {
+      if (!orphan.includes(canonical)) orphan.push(canonical);
+      continue;
+    }
+    placeClassifiedTag(canonical, info, semantic, taxonomic);
+  }
+  return { semantic, taxonomic, orphan };
+}
+
+function enrichResult(row, vocab) {
+  let tags = [];
+  if (Array.isArray(row.tags)) {
+    tags = row.tags;
+  } else if (typeof row.tags === "string" && row.tags.trim()) {
+    try {
+      const parsed = JSON.parse(row.tags);
+      tags = Array.isArray(parsed) ? parsed : [];
+    } catch {
+      tags = [];
+    }
+  }
+  const classified = classifyTagsForDisplay(tags, vocab);
+  return {
+    ...row,
+    tags,
+    semantic_tags: classified.semantic,
+    taxonomic_tags: classified.taxonomic,
+    orphan_tags: classified.orphan,
+  };
+}
 
 function parseRecallArgs(argv) {
   const args = {
@@ -69,49 +174,114 @@ function parseRecallArgs(argv) {
   return args;
 }
 
-function showStats(db) {
+function fetchBasicStats(db) {
   const sources = db.prepare("SELECT COUNT(*) as count FROM sources").get();
   const extractions = db.prepare("SELECT COUNT(*) as count FROM extractions").get();
   const tags = db.prepare("SELECT COUNT(*) as count FROM tags").get();
-
   const byType = db
     .prepare(
       "SELECT source_type, COUNT(*) as count FROM sources GROUP BY source_type ORDER BY count DESC"
     )
     .all();
-
   const byNovelty = db
     .prepare(
       "SELECT novelty, COUNT(*) as count FROM extractions GROUP BY novelty ORDER BY count DESC"
     )
     .all();
-
-  const topTags = db
+  const allTagsWithCounts = db
     .prepare(
       `
       SELECT t.name, COUNT(*) as count
       FROM extraction_tags et JOIN tags t ON et.tag_id = t.id
-      GROUP BY t.name ORDER BY count DESC LIMIT 15
+      GROUP BY t.name ORDER BY count DESC
     `
     )
     .all();
+  return { sources, extractions, tags, byType, byNovelty, allTagsWithCounts };
+}
 
-  console.log(
-    JSON.stringify(
-      {
-        summary: {
-          sources: sources.count,
-          extractions: extractions.count,
-          unique_tags: tags.count,
-        },
-        by_source_type: byType,
-        by_novelty: byNovelty,
-        top_tags: topTags,
-      },
-      null,
-      2
-    )
+function computeVocabularyByCategory(vocab, categories) {
+  const byCategory = {};
+  for (const cat of Object.keys(categories)) byCategory[cat] = 0;
+  for (const info of Object.values(vocab.tags)) {
+    byCategory[info.category] = (byCategory[info.category] || 0) + 1;
+  }
+  return byCategory;
+}
+
+function computeTopTagsByCategory(vocab, categories) {
+  const topTagsByCategory = {};
+  for (const cat of Object.keys(categories)) {
+    topTagsByCategory[cat] = Object.entries(vocab.tags)
+      .filter(([, info]) => info.category === cat)
+      .map(([name, info]) => ({ name, count: info.count ?? 0 }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+  }
+  return topTagsByCategory;
+}
+
+function computeOrphanAndLegacyTags(allTagsWithCounts, vocab) {
+  const vocabTagSet = new Set(Object.keys(vocab.tags));
+  const synonymSet = new Set(Object.keys(vocab.synonyms || {}));
+  const forbiddenFlat = buildForbiddenFlatSet(vocab);
+  const orphanTags = allTagsWithCounts.filter(
+    (t) => !vocabTagSet.has(t.name) && !synonymSet.has(t.name) && !forbiddenFlat.has(t.name)
   );
+  const legacyTags = allTagsWithCounts.filter(
+    (t) => forbiddenFlat.has(t.name) || synonymSet.has(t.name)
+  );
+  return { orphanTags, legacyTags };
+}
+
+function attachVocabStats(output, vocab, allTagsWithCounts) {
+  if (!vocab?.tags || typeof vocab.tags !== "object") return;
+  const hasCategories =
+    vocab.categories &&
+    typeof vocab.categories === "object" &&
+    Object.keys(vocab.categories).length > 0;
+  const categories = hasCategories
+    ? vocab.categories
+    : Object.fromEntries(
+        Array.from(
+          new Set(
+            Object.values(vocab.tags)
+              .map((info) => info?.category)
+              .filter(Boolean)
+          )
+        ).map((c) => [c, {}])
+      );
+  output.vocabulary = {
+    total_size: Object.keys(vocab.tags).length,
+    by_category: computeVocabularyByCategory(vocab, categories),
+  };
+  output.top_tags_by_category = computeTopTagsByCategory(vocab, categories);
+  const { orphanTags, legacyTags } = computeOrphanAndLegacyTags(allTagsWithCounts, vocab);
+  output.orphan_tags_in_journal = {
+    count: orphanTags.length,
+    sample: orphanTags.slice(0, 10),
+  };
+  output.legacy_tags_in_journal = {
+    count: legacyTags.length,
+    sample: legacyTags.slice(0, 10),
+    note: "Forbidden tags + synonyms-not-yet-resolved. Will clear after retag.",
+  };
+}
+
+function showStats(db, vocab) {
+  const { sources, extractions, tags, byType, byNovelty, allTagsWithCounts } = fetchBasicStats(db);
+  const output = {
+    summary: {
+      sources: sources.count,
+      extractions: extractions.count,
+      unique_tags: tags.count,
+    },
+    by_source_type: byType,
+    by_novelty: byNovelty,
+    top_tags: allTagsWithCounts.slice(0, 15),
+  };
+  attachVocabStats(output, vocab, allTagsWithCounts);
+  console.log(JSON.stringify(output, null, 2));
 }
 
 function queryExtractions(db, args) {
@@ -264,8 +434,10 @@ function main() {
   try {
     db.pragma("journal_mode = WAL");
 
+    const vocab = loadVocabulary();
+
     if (args.stats) {
-      showStats(db);
+      showStats(db, vocab);
       return;
     }
 
@@ -276,7 +448,9 @@ function main() {
       process.exit(1);
     }
 
-    const results = args.target === "sources" ? querySources(db, args) : queryExtractions(db, args);
+    const rawResults =
+      args.target === "sources" ? querySources(db, args) : queryExtractions(db, args);
+    const results = rawResults.map((row) => enrichResult(row, vocab));
 
     console.log(JSON.stringify(results, null, 2));
     console.error(`\n${results.length} results returned.`);

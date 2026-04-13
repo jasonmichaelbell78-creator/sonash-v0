@@ -1,83 +1,229 @@
 {
-  "id": "68a92991-c33a-4aa4-9219-a42f198b59cd",
+  "id": "crawl4ai-2026-04-12",
   "schema_version": "3.0",
   "source_type": "repo",
   "source": "unclecode/crawl4ai",
   "slug": "crawl4ai",
   "title": "crawl4ai",
-  "analyzed_at": "2026-04-09T10:47:45.031Z",
-  "depth": "quick",
-  "tags": ["repo", "library", "crawl4ai", "python", "repository"],
+  "analyzed_at": "2026-04-12T13:15:00Z",
+  "depth": "standard",
+  "source_tier": "T1",
+  "tags": [
+    "repo",
+    "library",
+    "web-crawling",
+    "architecture",
+    "hooks",
+    "filtering",
+    "python",
+    "anti-pattern"
+  ],
   "scoring": {
-    "quality_band": "Excellent",
-    "quality_score": 83,
-    "personal_fit_band": "Needs Work",
-    "personal_fit_score": 50,
-    "classification": "park-for-later"
+    "quality_band": "Healthy",
+    "quality_score": 78,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 68,
+    "classification": "active-sprint"
   },
-  "summary": "Crawl4ai understands the operational realities of web crawling that document parsers ignore: anti-bot detection (3-tier with proxy escalation), crash recovery for long crawls (resume_state + on_state_change callbacks), deep crawl strategies (BFS/DFS with max-pages), Shadow DOM flattening, consent popup removal.  The resume_state pattern directly addresses Gap Agent A Q5 (progressive/resumable extraction).",
-  "creator_view": "Crawl4ai understands the operational realities of web crawling that document parsers ignore: anti-bot detection (3-tier with proxy escalation), crash recovery for long crawls (resume_state + on_state_change callbacks), deep crawl strategies (BFS/DFS with max-pages), Shadow DOM flattening, consent popup removal. The resume_state pattern directly addresses Gap Agent A Q5 (progressive/resumable extraction). Apache-2.0 is a major advantage over firecrawl's AGPL.",
-  "candidates": [],
+  "summary": "LLM-friendly web crawler (63.8K stars, Apache-2.0). Outstanding strategy pattern (55+ classes), FilterChain, 3-tier pool. Type safety weak.",
+  "creator_view": "See creator-view.md",
+  "candidates": [
+    {
+      "name": "FilterChain + Scorer",
+      "type": "pattern",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["architecture", "filtering"]
+    },
+    {
+      "name": "3-tier resource pool",
+      "type": "pattern",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["infrastructure"]
+    },
+    {
+      "name": "Hook lifecycle (8 hooks)",
+      "type": "pattern",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["hooks"]
+    },
+    {
+      "name": "CrawlState save/load",
+      "type": "knowledge",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["resilience"]
+    },
+    {
+      "name": "Strategy ABC (55+)",
+      "type": "knowledge",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["architecture"]
+    },
+    {
+      "name": "DOCS_CODE_DRIFT",
+      "type": "anti-pattern",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern"]
+    },
+    {
+      "name": "MONOLITHIC_UTILS",
+      "type": "anti-pattern",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["anti-pattern"]
+    }
+  ],
   "last_synthesized_at": null,
-  "schemaVersion": "4.3",
-  "skillVersion": "4.3",
-  "repo": "unclecode/crawl4ai",
-  "url": "https://github.com/unclecode/crawl4ai",
-  "analyzedAt": "2026-04-07T17:00:00Z",
-  "repoType": "library",
-  "repoSubtype": "llm-web-crawler",
   "metadata": {
-    "stars": 63528,
-    "forks": 6500,
-    "contributors": 72,
+    "url": "https://github.com/unclecode/crawl4ai",
+    "scan_version": "4.4",
+    "files_cloned": 887,
+    "stars": 63831,
     "language": "Python",
     "license": "Apache-2.0",
-    "lastPush": "2026-04-06T08:26:44Z",
-    "size": 150468,
-    "openIssues": 60,
-    "archived": false,
-    "fork": false
+    "created_at": "2024-05-09",
+    "pushed_at": "2026-04-11",
+    "age_days": 704,
+    "size_kb": 150467,
+    "forks": 6543,
+    "open_issues": 67,
+    "contributors": 30,
+    "is_fork": false,
+    "is_archived": false
   },
-  "summaryBands": {
-    "security": {
-      "band": "B",
-      "score": 75
+  "repo_type": "library",
+  "repo_type_secondary": null,
+  "dimensions": {
+    "QS-01_activity": {
+      "score": 95,
+      "band": "Excellent",
+      "detail": "Push 1 day ago"
     },
-    "reliability": {
-      "band": "A",
-      "score": 90
+    "QS-02_engagement": {
+      "score": 92,
+      "band": "Excellent",
+      "detail": "63.8K stars"
     },
-    "maintainability": {
-      "band": "A",
-      "score": 82
+    "ST-01_subprocess": {
+      "score": 75,
+      "band": "Healthy",
+      "detail": "Safe subprocess usage"
     },
-    "documentation": {
-      "band": "A",
-      "score": 85
+    "ST-02_tests": {
+      "score": 78,
+      "band": "Healthy",
+      "detail": "185 tests, no coverage metrics"
     },
-    "process": {
-      "band": "B",
-      "score": 78
+    "ST-04_structure": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "Clear but has duplicates"
     },
-    "velocity": {
-      "band": "A",
-      "score": 88
+    "ST-06_plugins": {
+      "score": 78,
+      "band": "Healthy",
+      "detail": "55+ strategies, hooks, FilterChain"
+    },
+    "ST-07_credentials": {
+      "score": 65,
+      "band": "Healthy",
+      "detail": "Default SECRET_KEY weakness"
+    },
+    "ST-08_path_safety": {
+      "score": 80,
+      "band": "Excellent",
+      "detail": "file:// blocked at API"
+    },
+    "ST-09_types": {
+      "score": 58,
+      "band": "Needs Work",
+      "detail": "No static checker"
+    },
+    "ST-13_docs": {
+      "score": 88,
+      "band": "Excellent",
+      "detail": "114 md files, GitFlow"
     }
   },
-  "absencePattern": "none",
-  "creatorLens": "Crawl4ai understands the operational realities of web crawling that document parsers ignore: anti-bot detection (3-tier with proxy escalation), crash recovery for long crawls (resume_state + on_state_change callbacks), deep crawl strategies (BFS/DFS with max-pages), Shadow DOM flattening, consent popup removal. The resume_state pattern directly addresses Gap Agent A Q5 (progressive/resumable extraction). Apache-2.0 is a major advantage over firecrawl's AGPL.",
-  "context": {
-    "t28Relevance": "Fills Gap Agent A Q5 (progressive/resumable extraction) via resume_state. Anti-bot and crash recovery are real-world operational patterns. Apache-2.0.",
-    "cluster": "C",
-    "notablePatterns": [
-      "resume_state + on_state_change — crash recovery for long-running crawls",
-      "3-tier anti-bot detection with proxy escalation",
-      "Deep crawl BFS/DFS strategies with max-pages",
-      "Shadow DOM flattening",
-      "Prefetch mode (5-10x faster URL discovery)",
-      "Async browser pool with caching",
-      "LLM extraction with natural language questions"
-    ]
+  "summary_bands": {
+    "Security": {
+      "score": 75,
+      "band": "Healthy"
+    },
+    "Reliability": {
+      "score": 78,
+      "band": "Healthy"
+    },
+    "Maintainability": {
+      "score": 68,
+      "band": "Healthy"
+    },
+    "Documentation": {
+      "score": 85,
+      "band": "Excellent"
+    },
+    "Process": {
+      "score": 72,
+      "band": "Healthy"
+    },
+    "Velocity": {
+      "score": 92,
+      "band": "Excellent"
+    }
   },
-  "source_tier": "T1"
+  "absence_patterns": [
+    {
+      "pattern": "TYPE_SAFETY_THEATER",
+      "confidence": "High",
+      "evidence": "No static checker despite hints"
+    },
+    {
+      "pattern": "DOCS_CODE_DRIFT",
+      "confidence": "Medium",
+      "evidence": "on_state_change not implemented"
+    }
+  ],
+  "adoption_assessment": {
+    "verdict": "Extract",
+    "verdict_score": 68,
+    "dimensions": {
+      "WR-01": {
+        "score": 45,
+        "band": "Needs Work"
+      },
+      "WR-02": {
+        "score": 70,
+        "band": "Healthy"
+      },
+      "WR-03": {
+        "score": 75,
+        "band": "Healthy"
+      },
+      "WR-04": {
+        "score": 90,
+        "band": "Excellent"
+      },
+      "WR-05": {
+        "score": 55,
+        "band": "Needs Work"
+      },
+      "WR-06": {
+        "score": 72,
+        "band": "Healthy"
+      }
+    },
+    "recommendation": "Extract patterns rather than adopting framework."
+  }
 }

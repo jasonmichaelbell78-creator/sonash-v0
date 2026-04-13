@@ -1,0 +1,129 @@
+{
+  "batch_id": "hkuds-cli-anything-2026-04-12",
+  "source": "HKUDS/CLI-Anything",
+  "notes": "HKUDS/CLI-Anything is a 29-day-old methodology + monorepo (35 Python harnesses) for wrapping GUI software as agent-invokable CLIs. Entries span agent-native interface patterns, Claude Code plugin/marketplace format, skill auto-generation, registry distribution, MCP backend wrapping, and anti-patterns around quality gates lagging rapid growth — all with direct JASON-OS Domain 02a relevance.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "HARNESS.md 7-Phase SOP",
+      "type": "pattern",
+      "tags": [
+        "agent-native-interface",
+        "cli",
+        "skill-architecture",
+        "orchestration",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "SKILL.md Command Catalog Format",
+      "type": "pattern",
+      "tags": ["claude-code", "skill", "skill-architecture", "cli", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": ".claude-plugin/marketplace.json",
+      "type": "pattern",
+      "tags": ["claude-code", "plugins", "skill", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Registry + CLI-Hub Distribution",
+      "type": "pattern",
+      "tags": ["distribution-model", "claude-code", "deployment", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "ReplSkin Terminal UI",
+      "type": "pattern",
+      "tags": ["cli", "devex", "agent-native-interface", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Codec Allowlist Pattern",
+      "type": "pattern",
+      "tags": ["security", "filtering", "cli", "best-practices"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Skill Generator (Jinja2)",
+      "type": "pattern",
+      "tags": ["auto-generation", "skill", "skill-architecture", "claude-code", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Agent-Native Software Methodology",
+      "type": "knowledge",
+      "tags": [
+        "agent-native-interface",
+        "ai-agents",
+        "tool-integration",
+        "cli",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Build-vs-Integrate Decision for JASON-OS",
+      "type": "knowledge",
+      "tags": ["architecture", "tool-integration", "distribution-model", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Quality Treadmill Case Study",
+      "type": "knowledge",
+      "tags": ["code-quality", "ci-cd", "governance", "claims-vs-reality"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "MCP Backend Pattern",
+      "type": "content",
+      "tags": [
+        "mcp",
+        "tool-integration",
+        "agent-native-interface",
+        "cli",
+        "jason-os-relevant",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Skill Auto-Generation Guide",
+      "type": "content",
+      "tags": ["auto-generation", "skill", "skill-architecture", "claude-code", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Mermaid Harness",
+      "type": "content",
+      "tags": ["agent-native-interface", "cli", "tool-integration", "jason-os-relevant"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Exa Harness",
+      "type": "content",
+      "tags": ["agent-native-interface", "deep-research", "tool-integration", "cli"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "No-CI-for-Tests Anti-Pattern",
+      "type": "anti-pattern",
+      "tags": ["testing", "ci-cd", "code-quality", "claims-vs-reality"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Monorepo Without Shared Testing",
+      "type": "anti-pattern",
+      "tags": ["testing", "architecture", "code-quality", "distribution-model"]
+    },
+    {
+      "source": "HKUDS/CLI-Anything",
+      "candidate": "Growing Faster Than Quality Gates",
+      "type": "anti-pattern",
+      "tags": ["code-quality", "ci-cd", "governance", "claims-vs-reality"]
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "batch_id": "zedeus-nitter-2026-04-12",
+  "source": "zedeus/nitter",
+  "notes": "Nitter is an alternative Twitter frontend in Nim whose engineering value is adversarial infrastructure -- session pooling, per-endpoint rate limiting, and parser versioning against a hostile upstream -- plus the most hardened Docker deployment in the T29 corpus. Six entries cover knowledge (Docker hardening, session pool rate-limiting, parser versioning) and anti-patterns (adversarial platform dependency, XSS in content renderer, absent web security headers).",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "zedeus/nitter",
+      "candidate": "Docker container hardening (RO fs + CAP_DROP ALL)",
+      "type": "knowledge",
+      "tags": [
+        "docker",
+        "security",
+        "deployment",
+        "infrastructure",
+        "best-practices",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "zedeus/nitter",
+      "candidate": "Session pool with per-endpoint rate limiting",
+      "type": "knowledge",
+      "tags": [
+        "rate-limiting",
+        "architecture",
+        "authentication",
+        "best-practices",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "zedeus/nitter",
+      "candidate": "ADVERSARIAL_DEPENDENCY",
+      "type": "anti-pattern",
+      "tags": ["platform-risk", "upstream-instability", "governance", "sonash-relevant"]
+    },
+    {
+      "source": "zedeus/nitter",
+      "candidate": "XSS_IN_CONTENT_RENDERER",
+      "type": "anti-pattern",
+      "tags": ["security", "code-quality", "sonash-relevant"]
+    },
+    {
+      "source": "zedeus/nitter",
+      "candidate": "Parser versioning for unstable APIs",
+      "type": "knowledge",
+      "tags": ["architecture", "api-versioning", "upstream-instability", "best-practices"]
+    },
+    {
+      "source": "zedeus/nitter",
+      "candidate": "SECURITY_HEADERS_ABSENT",
+      "type": "anti-pattern",
+      "tags": ["security", "code-quality", "sonash-relevant"]
+    }
+  ]
+}

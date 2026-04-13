@@ -1,0 +1,79 @@
+{
+  "batch_id": "archivebox-2026-04-12",
+  "source": "ArchiveBox/ArchiveBox",
+  "notes": "ArchiveBox is a self-hosted web archiver whose value to us lies in its MCP auto-discovery implementation, hook execution model, and CLAUDE.md discipline — not the archiving mission itself. Retag strips forbidden source-type and entry-type duplication, surfaces JASON-OS/SoNash applicability, and adds concrete domain/concept/quality signals the creator-view already calls out.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "ArchiveBox/ArchiveBox",
+      "candidate": "MCP auto-discovery from CLI metadata",
+      "type": "pattern",
+      "tags": [
+        "mcp",
+        "cli",
+        "tool-integration",
+        "ai-integration",
+        "plugins",
+        "jason-os-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "ArchiveBox/ArchiveBox",
+      "candidate": "Hook execution model (ordering + bg/fg lifecycle)",
+      "type": "pattern",
+      "tags": [
+        "hooks",
+        "plugins",
+        "orchestration",
+        "architecture",
+        "jason-os-relevant",
+        "sonash-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "ArchiveBox/ArchiveBox",
+      "candidate": "CLAUDE.md as structured developer philosophy",
+      "type": "pattern",
+      "tags": [
+        "claude-md",
+        "ai-instructions",
+        "documentation",
+        "devex",
+        "best-practices",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "ArchiveBox/ArchiveBox",
+      "candidate": "Coverage-as-dead-code-detector",
+      "type": "knowledge",
+      "tags": ["testing", "dead-code", "code-quality", "pipeline", "sonash-relevant"]
+    },
+    {
+      "source": "ArchiveBox/ArchiveBox",
+      "candidate": "Claude Code CI integration",
+      "type": "knowledge",
+      "tags": ["claude-code", "ci-cd", "github", "ai-integration", "jason-os-relevant"]
+    },
+    {
+      "source": "ArchiveBox/ArchiveBox",
+      "candidate": "SOLO_MAINTAINER_GOVERNANCE",
+      "type": "anti-pattern",
+      "tags": [
+        "governance",
+        "knowledge-concentration",
+        "code-quality",
+        "claims-vs-reality",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "ArchiveBox/ArchiveBox",
+      "candidate": "CONFIGURED_NOT_ENFORCED_TYPING",
+      "type": "anti-pattern",
+      "tags": ["code-quality", "claims-vs-reality", "governance", "testing", "sonash-relevant"]
+    }
+  ]
+}

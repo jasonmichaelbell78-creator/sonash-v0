@@ -1,8 +1,8 @@
 # AI Context & Rules for SoNash
 
 <!-- prettier-ignore-start -->
-**Document Version:** 5.9
-**Last Updated:** 2026-04-02
+**Document Version:** 6.0
+**Last Updated:** 2026-04-12
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -47,85 +47,31 @@ Section 8).
 
 ## 4. Behavioral Guardrails
 
-> [!CAUTION] These are non-negotiable. Violating these wastes the user's time.
+> [!CAUTION] Non-negotiable. Violating these wastes the user's time.
 
-1. **Ask on first confusion, not fourth.** If you don't understand an
-   instruction or format, ask immediately. Do NOT guess-and-retry multiple
-   times. `[BEHAVIORAL: proxy metric — PRE_GENERATION_CHECKLIST.md]`
-2. **Never implement without explicit approval.** Present the plan, wait for
-   "go", then execute. No matter how obvious the fix seems.
-   `[BEHAVIORAL: proxy metric — impl-before-plan count]`
-3. **When told to follow a skill's format, read the skill first.** Do not
-   improvise a format from memory. Read the actual SKILL.md, match it exactly.
-   `[BEHAVIORAL: proxy metric — format-deviation count]`
-4. **"Stop and ask" is a hard stop.** If the user says this, stop all action
-   immediately and ask for clarification before proceeding.
-   `[BEHAVIORAL: no automated enforcement]`
-5. **One correction = full stop.** If corrected on approach or format, do not
-   make a small adjustment and retry. Stop, ask what's wrong, confirm the
-   correct approach, then proceed. `[BEHAVIORAL: no automated enforcement]`
-6. **All passive surfacing must force acknowledgment.** Never fire-and-forget
-   warnings or data summaries. If data is surfaced (session-start, /alerts,
-   session-end), it must require the user to acknowledge or act on it.
-   Unacknowledged warnings become wallpaper.
-   `[BEHAVIORAL: no automated enforcement]`
-7. **Never push to remote without explicit approval.** `git commit` is fine
-   autonomously. `git push` requires the user to say "push" or "push it." Do not
-   push as part of a commit flow, PR creation, or session-end unless explicitly
-   asked. `[BEHAVIORAL: no automated enforcement]`
-8. **Respect the declared platform and shell.** The system prompt declares the
-   OS and shell. Do not assume Linux-only tools, paths, or syntax. When in
-   doubt, check the system prompt before generating shell commands.
-   `[BEHAVIORAL: no automated enforcement]`
-9. **On pre-commit hook failure, use `/pre-commit-fixer`.** Do not manually
-   retry or guess at fixes. The skill handles ESLint, pattern compliance, doc
-   headers, cross-doc deps, and index staleness. After 2 fixer attempts, ask the
-   user. `[BEHAVIORAL: no automated enforcement]`
-10. **Keep question batches concise.** When asking clarifying questions, batch
-    in groups of 5-8 maximum unless the user has requested exhaustive
-    questioning (e.g., via `/deep-plan`).
-    `[BEHAVIORAL: no automated enforcement]`
-11. **Verify no untracked files before PR or branch completion.** Run
-    `git status` and confirm no generated or untracked files are missing before
-    creating a PR, finishing a branch, or running `/session-end`.
-    `[BEHAVIORAL: no automated enforcement]`
-12. **Verify file state against the filesystem, not documentation.** Never trust
-    docs, memory, or conversation history about what files exist or contain. Run
-    `ls`, `cat`, `git status`, or use the Read tool to confirm before asserting
-    file state as fact. `[BEHAVIORAL: no automated enforcement]`
-13. **After every `git commit` or `git push`, review the hook summary output.**
-    Check the Bash output for warnings or failures in the pre-commit/pre-push
-    report. If any exist, present them to the user with remediation options
-    (fix, defer, acknowledge) before continuing other work. Hook data persists
-    in `hook-runs.jsonl` and `hook-warnings-log.jsonl` for `/alerts` and
-    `/pr-retro`. `[BEHAVIORAL: no automated enforcement]`
-14. **Never set SKIP_REASON autonomously.** When a pre-commit or pre-push check
-    fails and requires a skip, present the user with three options: (a) Fix now,
-    (b) Defer to `known-debt-baseline.json`, (c) Skip with user-provided reason.
-    Never compose a SKIP_REASON yourself — the user must authorize the exact
-    wording. Rewording "pre-existing" with synonyms is still a violation.
-    `[BEHAVIORAL: no automated enforcement]`
-15. **Never accept empty agent results silently.** Background agent output files
-    are 0 bytes on Windows (anthropics/claude-code#39791). When a background
-    agent completes, check the task-notification `<result>` field — if the
-    output file is empty, capture the result text inline or write it to the
-    expected output file yourself. Empty results must NEVER be silently
-    accepted, gracefully degraded, or skipped. If an agent produces no usable
-    output via any channel, report the failure to the user — do not continue as
-    if findings were captured. `[BEHAVIORAL: no automated enforcement]`
-16. **Follow skills to the letter — never defer or skip without explicit
-    approval.** When executing any skill (repo-analysis, analyze, deep-plan,
-    synthesize, etc.), every phase, MUST/SHOULD step, interactive gate, coverage
-    item, and candidate must be completed in full. If a step seems tangential,
-    inefficient, or already-done, do NOT unilaterally skip. Present the concern
-    to the user: "Step X says Y. Context suggests Z. Skip / do anyway / modify —
-    which?" Wait for answer. Interactive steps (tag suggestion, retro, routing
-    menu) are NOT optional even in batch mode. Coverage audit items marked
-    "skipped" or "deferred" require explicit user decision, not Claude's
-    judgment. Candidates marked "blocked on decision" must be surfaced in
-    conversation immediately, not buried in JSONL fields. Completion summaries
-    may only claim completion for items actually completed.
-    `[BEHAVIORAL: no automated enforcement]`
+1. **Ask on first confusion, not fourth.** Don't guess-and-retry.
+2. **Never implement without explicit approval.** Present plan, wait for "go."
+3. **Read SKILL.md before following any skill format.** Don't improvise from
+   memory.
+4. **"Stop and ask" = hard stop.** No action until clarification received.
+5. **One correction = full stop.** Stop, ask what's wrong, confirm, then
+   proceed.
+6. **All surfaced data must force acknowledgment.** No fire-and-forget warnings.
+7. **Never push without explicit approval.** `commit` is fine; `push` requires
+   user say-so.
+8. **Respect declared platform/shell.** Check system prompt before shell
+   commands.
+9. **On pre-commit failure, use `/pre-commit-fixer`.** After 2 attempts, ask.
+10. **Question batches: 5-8 max** (unless `/deep-plan` exhaustive mode).
+11. **Verify no untracked files** before PR, branch completion, or
+    `/session-end`.
+12. **Verify file state against filesystem**, not docs/memory/conversation.
+13. **Review hook summary after every commit/push.** Present warnings with
+    remediation options.
+14. **Never set SKIP_REASON autonomously.** User must authorize exact wording.
+15. **Never accept empty agent results silently.** Windows 0-byte bug — check
+    `<result>` field, report failures.
+16. **Follow skills exactly.** Never skip steps without explicit user approval.
 
 ## 5. Critical Anti-Patterns
 
@@ -170,35 +116,9 @@ commands. Use helpers from `scripts/lib/security-helpers.js`.
 - **Validation**: Zod runtime matching TS interfaces
   `[BEHAVIORAL: code-reviewer]`
 
-### Code Navigation (LSP)
-
-Native LSP is configured via `.lsp.json` (typescript-language-server). **Prefer
-LSP tools over Grep for symbol lookups:**
-
-- **Go-to-definition, find-references, rename** → Use LSP
-- **Text/pattern search, regex matching** → Use Grep
-- Do NOT use Grep to find class definitions, function implementations, or type
-  declarations when LSP can resolve them directly
-
-### CLI Tool Preferences
-
-When these tools are available (checked at session start via tool manifest),
-prefer them over defaults in Bash commands:
-
-| Available Tool | Use Instead Of | When                                            |
-| -------------- | -------------- | ----------------------------------------------- |
-| `bat`          | `cat`          | Displaying file contents in Bash                |
-| `fd`           | `find`         | File finding (Glob tool still preferred direct) |
-| `eza`          | `ls`           | Directory listings in Bash                      |
-| `difft`        | `diff`         | Structural code diffs                           |
-| `yq`           | manual parsing | YAML/XML/CSV processing                         |
-| `gron`         | —              | Exploring unknown JSON structures               |
-| `htmlq`        | —              | HTML content extraction in Bash pipes           |
-
-Tools configured automatically (no action needed): `delta` (git pager),
-`starship` (prompt), `zoxide` (smart cd), `rg` (already used by Grep tool).
-
-Interactive tools (suggest to user when appropriate): `lazygit`, `yazi`, `fzf`.
+**LSP & CLI tools**: Prefer LSP for symbol lookups, Grep for text search. See
+[CODING_TOOLS_REFERENCE.md](docs/agent_docs/CODING_TOOLS_REFERENCE.md) for
+preferred CLI tools (`bat`, `fd`, `eza`, `difft`, etc.).
 
 ## 7. Agent/Skill Triggers
 
@@ -206,29 +126,23 @@ Interactive tools (suggest to user when appropriate): `lazygit`, `yazi`, `fzf`.
 
 ### PRE-TASK (before starting work) `[BEHAVIORAL: no automated enforcement]`
 
-| Trigger                             | Action                                                                                    | Tool  |
-| ----------------------------------- | ----------------------------------------------------------------------------------------- | ----- |
-| Building/improving anything         | Scan `.research/EXTRACTIONS.md` for prior art, query `extraction-journal.jsonl` to filter | Read  |
-| Creative exploration, ideation      | `brainstorm` skill                                                                        | Skill |
-| Thorough planning requested         | `deep-plan` skill                                                                         | Skill |
-| Domain/technology research          | `deep-research` skill                                                                     | Skill |
-| Bug/error/unexpected behavior       | `systematic-debugging`                                                                    | Skill |
-| Exploring unfamiliar code           | `Explore` agent                                                                           | Task  |
-| Multi-step implementation           | `Plan` agent                                                                              | Task  |
-| Multi-file feature (3+ files)       | Development team                                                                          | Team  |
-| Multi-phase project                 | `/gsd:new-project` or `/gsd:plan-phase`                                                   | Skill |
-| Security/auth (no S0/S1)            | `security-auditor` agent                                                                  | Task  |
-| New documentation                   | `documentation-expert` agent                                                              | Task  |
-| React/frontend component work       | `frontend-developer` agent                                                                | Task  |
-| UI/frontend design                  | `frontend-design` skill                                                                   | Skill |
-| New UI feature                      | Generate `.protocol.json`                                                                 | Write |
-| Analyze any source                  | `analyze` skill (router — detects type, dispatches to handler)                            | Skill |
-| Query extracted knowledge           | `recall` skill (search extractions, tags, sources)                                        | Skill |
-| External repo analysis              | `repo-analysis` skill (also via `/analyze`)                                               | Skill |
-| Cross-source synthesis (3+ sources) | `synthesize` skill (unified — all 4 source types, also via `/analyze --synthesize`)       | Skill |
-| Website/URL analysis                | `website-analysis` skill (also via `/analyze`)                                            | Skill |
-| Document analysis (PDF, gist)       | `document-analysis` skill (also via `/analyze`)                                           | Skill |
-| Media analysis (video, audio)       | `media-analysis` skill (also via `/analyze`)                                              | Skill |
+| Trigger                                 | Action                                                                                    | Tool  |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- | ----- |
+| Building/improving anything             | Scan `.research/EXTRACTIONS.md` for prior art, query `extraction-journal.jsonl` to filter | Read  |
+| Creative exploration, ideation          | `brainstorm` skill                                                                        | Skill |
+| Thorough planning requested             | `deep-plan` skill                                                                         | Skill |
+| Domain/technology research              | `deep-research` skill                                                                     | Skill |
+| Bug/error/unexpected behavior           | `systematic-debugging`                                                                    | Skill |
+| Exploring unfamiliar code               | `Explore` agent                                                                           | Task  |
+| Multi-step implementation               | `Plan` agent                                                                              | Task  |
+| Multi-file feature (3+ files)           | Development team                                                                          | Team  |
+| Multi-phase project                     | `/gsd:new-project` or `/gsd:plan-phase`                                                   | Skill |
+| Security/auth (no S0/S1)                | `security-auditor` agent                                                                  | Task  |
+| New documentation                       | `documentation-expert` agent                                                              | Task  |
+| React/frontend component work           | `frontend-developer` agent                                                                | Task  |
+| UI/frontend design                      | `frontend-design` skill                                                                   | Skill |
+| New UI feature                          | Generate `.protocol.json`                                                                 | Write |
+| Analyze any source (repo/web/doc/media) | `analyze` skill (auto-detects type, dispatches handler). Also: `/recall`, `/synthesize`   | Skill |
 
 ### POST-TASK (before committing) `[GATE: pre-commit hook + code-reviewer]`
 
@@ -272,18 +186,6 @@ Evidence-Based).
 
 ---
 
-## Version History
-
-| Version | Date       | Changes                                               |
-| ------- | ---------- | ----------------------------------------------------- |
-| 5.9     | 2026-04-02 | Section 7: add repo-analysis trigger (Step 8 xrefs)   |
-| 5.8     | 2026-03-24 | Section 7: add teams/specialized agents notes (P5)    |
-| 5.7     | 2026-03-21 | Add guardrail #14: never set SKIP_REASON autonomously |
-| 5.6     | 2026-03-17 | Add 6 behavioral guardrails from /insights (7-12)     |
-| 5.5     | 2026-03-13 | Enforcement annotations on all rules                  |
-| 5.4     | 2026-03-13 | Add LSP code navigation preference                    |
-| 5.3     | 2026-03-05 | Add behavioral guardrails (Section 4)                 |
-| 5.2     | 2026-02-26 | Agent triggers, reference docs table                  |
-| 5.1     | 2026-02-10 | Initial versioned release                             |
-
+**Version:** 6.0 (2026-04-12) — Context optimization: compressed guardrails,
+moved CLI/LSP to reference doc, collapsed analysis triggers.
 [Full version history](docs/SESSION_HISTORY.md)

@@ -260,7 +260,14 @@ function isDuplicateWarning(data, hook, type, message, ackState) {
   return false;
 }
 
-function escalateSeverity(severity, occurrences) {
+function escalateSeverity(severity, occurrences, type) {
+  // T39 R1 declared pr-creep advisory-only (see .husky/pre-commit:72-77).
+  // Without this exemption, the generic 15+-occurrence escalation promoted
+  // pr-creep back to "error" on long-lived review branches, re-blocking the
+  // pre-push gate and forcing one-shot cache cleanups (e.g. 37d0c130).
+  // That recurrence defeats the T39 R1 policy — exempt pr-creep here so the
+  // policy is enforced uniformly at the warning-creation layer.
+  if (type === "pr-creep") return severity || "warning";
   if (occurrences >= 15) return "error";
   if (occurrences >= 5 && severity === "info") return "warning";
   return severity || "warning";
@@ -360,7 +367,7 @@ function appendWarning({
 
   const priorOccurrences = countRecentOccurrences(type);
   const occurrences = priorOccurrences + 1; // include this warning
-  const effectiveSeverity = escalateSeverity(severity, occurrences);
+  const effectiveSeverity = escalateSeverity(severity, occurrences, type);
   const lastAck = ackState.acknowledged[type] || null;
   const priorSinceAck = lastAck ? countOccurrencesSince(type, lastAck) : priorOccurrences;
   const sinceAck = priorSinceAck + 1; // include this warning

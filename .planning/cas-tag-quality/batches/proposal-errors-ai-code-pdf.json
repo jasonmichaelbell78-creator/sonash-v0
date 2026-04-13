@@ -1,0 +1,44 @@
+{
+  "batch_id": "errors-ai-code-pdf-2026-04-12",
+  "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+  "notes": "Six-page reference table cataloging 18 error categories in AI-generated code (security, architecture, deployment, debt, compliance). Mapped to existing SoNash pattern-check coverage; two genuine gaps (hallucinated deps, license scanning). Existing vocabulary covers the entries without needing new tags.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+      "candidate": "18-category AI error taxonomy",
+      "type": "knowledge",
+      "tags": ["taxonomy", "llm", "security", "code-quality", "best-practices", "cas-relevant"]
+    },
+    {
+      "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+      "candidate": "Hallucinated dependencies (slopsquatting)",
+      "type": "knowledge",
+      "tags": ["security", "supply-chain", "hallucination", "llm", "sonash-relevant"]
+    },
+    {
+      "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+      "candidate": "Intentional vs unintentional debt classification",
+      "type": "knowledge",
+      "tags": ["technical-debt", "taxonomy", "llm", "sonash-relevant"]
+    },
+    {
+      "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+      "candidate": "Context momentum / hallucinated logic",
+      "type": "knowledge",
+      "tags": ["hallucination", "prompt-engineering", "llm", "ai-instructions", "sonash-relevant"]
+    },
+    {
+      "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+      "candidate": "Structural entropy (code bloat)",
+      "type": "anti-pattern",
+      "tags": ["code-bloat", "code-quality", "llm", "sonash-relevant"]
+    },
+    {
+      "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
+      "candidate": "Deployment fragility (happy path only)",
+      "type": "anti-pattern",
+      "tags": ["deployment", "code-quality", "llm", "testing", "best-practices"]
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "id": "archivebox-archivebox-2026-04-12",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "ArchiveBox/ArchiveBox",
+  "slug": "archivebox-archivebox",
+  "title": "ArchiveBox",
+  "analyzed_at": "2026-04-12T12:30:00Z",
+  "depth": "standard",
+  "source_tier": "T1",
+  "tags": [
+    "repo",
+    "application",
+    "mcp",
+    "hooks",
+    "claude-md",
+    "python",
+    "web-archiving",
+    "anti-pattern"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 70,
+    "personal_fit_band": "Healthy",
+    "personal_fit_score": 63,
+    "classification": "active-sprint"
+  },
+  "summary": "Self-hosted web archiving application (27K stars, MIT, Python/Django). Outstanding CLAUDE.md and MCP auto-discovery pattern. Strong testing discipline. Security governance and process enforcement are weak spots.",
+  "creator_view": "See creator-view.md",
+  "candidates": [
+    {
+      "name": "MCP auto-discovery from CLI metadata",
+      "type": "pattern",
+      "description": "Zero-schema MCP server introspecting Click CLI. ~200 lines.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["mcp", "architecture"]
+    },
+    {
+      "name": "Hook execution model with ordering and bg/fg lifecycle",
+      "type": "pattern",
+      "description": "Event-family naming, 2-digit ordering, fg/bg with SIGTERM, JSONL stdout.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["hooks", "architecture"]
+    },
+    {
+      "name": "CLAUDE.md as structured developer philosophy",
+      "type": "pattern",
+      "description": "498-line CLAUDE.md with grep-friendly naming, minimize-unique-names, NO MOCKS.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["documentation", "claude-md"]
+    },
+    {
+      "name": "Coverage-as-dead-code-detector",
+      "type": "knowledge",
+      "description": "JSON+jq pipeline for 0% coverage files.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["testing", "dead-code"]
+    },
+    {
+      "name": "Claude Code in CI",
+      "type": "knowledge",
+      "description": "claude.yml GitHub Actions workflow.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["ci-cd", "ai-integration"]
+    },
+    {
+      "name": "SOLO_MAINTAINER_GOVERNANCE",
+      "type": "anti-pattern",
+      "description": "27K stars, 0 code reviews. Architectural decisions in prose not contracts.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["governance", "anti-pattern"]
+    },
+    {
+      "name": "CONFIGURED_NOT_ENFORCED_TYPING",
+      "type": "anti-pattern",
+      "description": "Pyright at 48% coverage with heavy Any. Type checker as decoration.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["type-safety", "anti-pattern"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "url": "https://github.com/ArchiveBox/ArchiveBox",
+    "scan_version": "4.4",
+    "clone_dir": "/tmp/repo-analysis-archivebox-archivebox/",
+    "files_cloned": 456,
+    "stars": 27221,
+    "language": "Python",
+    "license": "MIT",
+    "created_at": "2017-05-05T08:50:14Z",
+    "pushed_at": "2026-04-08T03:29:37Z",
+    "age_days": 3265,
+    "size_kb": 16633,
+    "forks": 1503,
+    "open_issues": 202,
+    "contributors": null,
+    "is_fork": false,
+    "is_archived": false,
+    "languages": {
+      "Python": 0
+    }
+  },
+  "repo_type": "application",
+  "repo_type_secondary": null,
+  "dimensions": {
+    "QS-01_activity_pulse": {
+      "score": 90,
+      "band": "Excellent",
+      "detail": "30 commits in 90 days, push 4 days ago"
+    },
+    "QS-02_engagement": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "27K stars, 1.5K forks"
+    },
+    "QS-04_license": {
+      "score": 95,
+      "band": "Excellent",
+      "detail": "MIT"
+    },
+    "QS-05_ci_cd": {
+      "score": 70,
+      "band": "Healthy",
+      "detail": "17 workflows, YAML errors"
+    },
+    "QS-06_branch_protection": {
+      "score": 15,
+      "band": "Critical",
+      "detail": "0/29 reviews, 1/10 OpenSSF"
+    },
+    "QS-10_community_health": {
+      "score": 100,
+      "band": "Excellent",
+      "detail": "100% health profile"
+    },
+    "QS-14_openssf": {
+      "score": 52,
+      "band": "Needs Work",
+      "detail": "5.2/10"
+    },
+    "ST-01_subprocess_safety": {
+      "score": 45,
+      "band": "Needs Work",
+      "detail": "f-string subprocess, shell=True"
+    },
+    "ST-02_test_coverage": {
+      "score": 82,
+      "band": "Excellent",
+      "detail": "616+ tests, pytest+Django"
+    },
+    "ST-03_test_ci": {
+      "score": 88,
+      "band": "Excellent",
+      "detail": "Parallel matrix, dual workflows"
+    },
+    "ST-04_code_structure": {
+      "score": 82,
+      "band": "Excellent",
+      "detail": "20+ Django apps, clear naming"
+    },
+    "ST-05_code_reuse": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "Base model mixins, shared utils"
+    },
+    "ST-06_plugin_architecture": {
+      "score": 75,
+      "band": "Healthy",
+      "detail": "Hook system, 10 services"
+    },
+    "ST-07_credential_handling": {
+      "score": 70,
+      "band": "Healthy",
+      "detail": "Dynamic secrets, env vars"
+    },
+    "ST-08_path_safety": {
+      "score": 68,
+      "band": "Healthy",
+      "detail": "Traversal checks, pathlib"
+    },
+    "ST-09_type_safety": {
+      "score": 58,
+      "band": "Needs Work",
+      "detail": "48% coverage, heavy Any"
+    },
+    "ST-10_dependency_isolation": {
+      "score": 79,
+      "band": "Healthy",
+      "detail": "uv lockfile, pinned"
+    },
+    "ST-11_error_handling": {
+      "score": 63,
+      "band": "Healthy",
+      "detail": "Rich logging, bare except"
+    },
+    "ST-13_methodology_docs": {
+      "score": 78,
+      "band": "Healthy",
+      "detail": "CLAUDE.md outstanding"
+    },
+    "ST-14_scaffolding": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "24 bin/ scripts, multi-format"
+    }
+  },
+  "summary_bands": {
+    "Security": {
+      "score": 52,
+      "band": "Needs Work"
+    },
+    "Reliability": {
+      "score": 75,
+      "band": "Healthy"
+    },
+    "Maintainability": {
+      "score": 72,
+      "band": "Healthy"
+    },
+    "Documentation": {
+      "score": 83,
+      "band": "Excellent"
+    },
+    "Process": {
+      "score": 48,
+      "band": "Needs Work"
+    },
+    "Velocity": {
+      "score": 90,
+      "band": "Excellent"
+    }
+  },
+  "absence_patterns": [
+    {
+      "pattern": "SECURITY_FACADE",
+      "confidence": "Medium",
+      "evidence": "Pyright configured not enforced"
+    },
+    {
+      "pattern": "SOLO_MAINTAINER",
+      "confidence": "High",
+      "evidence": "0/29 reviews, minimal branch protection"
+    },
+    {
+      "pattern": "PROCESS_THEATER",
+      "confidence": "Medium",
+      "evidence": "17 workflows but YAML errors"
+    }
+  ],
+  "adoption_assessment": {
+    "verdict": "Extract",
+    "verdict_score": 63,
+    "dimensions": {
+      "WR-01_stack_compatibility": {
+        "score": 40,
+        "band": "Needs Work",
+        "detail": "Python/Django vs Node/Next.js"
+      },
+      "WR-02_integration_complexity": {
+        "score": 65,
+        "band": "Healthy",
+        "detail": "Docker-first, MCP server"
+      },
+      "WR-03_maintenance_burden": {
+        "score": 70,
+        "band": "Healthy",
+        "detail": "Active dev, frequent releases"
+      },
+      "WR-04_lock_in_risk": {
+        "score": 85,
+        "band": "Excellent",
+        "detail": "MIT, open formats"
+      },
+      "WR-05_value_to_cost": {
+        "score": 45,
+        "band": "Needs Work",
+        "detail": "Archiving not SoNash domain"
+      },
+      "WR-06_ecosystem_maturity": {
+        "score": 75,
+        "band": "Healthy",
+        "detail": "9 years, 27K stars"
+      }
+    },
+    "recommendation": "Extract patterns rather than adopting the application."
+  }
+}

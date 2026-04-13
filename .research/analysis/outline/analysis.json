@@ -4,72 +4,88 @@
   "source_type": "repo",
   "source": "outline/outline",
   "slug": "outline",
-  "title": "outline",
-  "analyzed_at": "2026-04-09T10:47:45.072Z",
-  "depth": "quick",
-  "tags": ["repo", "application", "outline", "typescript", "repository"],
+  "title": "Outline",
+  "analyzed_at": "2026-04-12T19:30:00Z",
+  "depth": "standard",
+  "tags": [
+    "repo",
+    "application",
+    "typescript",
+    "mcp-server",
+    "plugin-architecture",
+    "command-pattern",
+    "knowledge-base",
+    "real-time-collaboration"
+  ],
   "scoring": {
     "quality_band": "Excellent",
-    "quality_score": 83,
-    "personal_fit_band": "Needs Work",
-    "personal_fit_score": 50,
-    "classification": "park-for-later"
+    "quality_score": 78,
+    "personal_fit_band": "Good",
+    "personal_fit_score": 75,
+    "classification": "extract"
   },
-  "summary": "Outline is a knowledge base PRODUCT, not an extraction tool.  It teaches wiki page structure (hierarchy, collections, search, real-time collaboration, Markdown-native storage) but not how to extract FROM wikis.",
-  "creator_view": "Outline is a knowledge base PRODUCT, not an extraction tool. It teaches wiki page structure (hierarchy, collections, search, real-time collaboration, Markdown-native storage) but not how to extract FROM wikis. Relevant for understanding what wiki content looks like structurally — nested documents, collections, permissions — which informs T28's wiki source type schema. TypeScript/React/Node.js.",
-  "candidates": [],
+  "summary": "Outline is a mature TypeScript knowledge base with a production MCP server, clean command pattern, and plugin architecture. Primary value as a pattern source for JASON-OS (MCP infrastructure, extensibility) rather than adoption target.",
+  "creator_view": "Outline understands that team knowledge needs hierarchy, real-time collaboration, and AI-agent access. Its MCP server, command pattern, and plugin system are the highest-value extraction targets. Challenge: SoNash Cloud Functions need a transport-agnostic command layer before MCP becomes cheap.",
+  "candidates": [
+    "MCP OAuth scope-filtered tool registration",
+    "Command pattern (transport-agnostic business logic)",
+    "PluginManager hook type registry",
+    "buildAPIContext() MCP-to-API bridge",
+    "@Encrypted field-level decorator",
+    "TestServer ephemeral-port integration testing",
+    "Abstract generic Store<T> with request dedup",
+    "PersistenceExtension race condition prevention",
+    "Content-as-code onboarding templates",
+    "Presenter response formatting layer",
+    "Bull queue processor BaseProcessor"
+  ],
   "last_synthesized_at": null,
-  "schemaVersion": "4.3",
-  "skillVersion": "4.3",
+  "schemaVersion": "4.5",
+  "skillVersion": "4.5",
   "repo": "outline/outline",
   "url": "https://github.com/outline/outline",
-  "analyzedAt": "2026-04-07T17:15:00Z",
+  "analyzedAt": "2026-04-12T19:30:00Z",
   "repoType": "application",
   "repoSubtype": "knowledge-base-product",
   "metadata": {
-    "stars": 37981,
+    "stars": 38038,
     "language": "TypeScript",
-    "license": "NOASSERTION",
-    "lastPush": "2026-04-07T15:23:46Z",
+    "license": "BSL 1.1",
+    "lastPush": "2026-04-12T16:43:31Z",
     "archived": false,
-    "fork": false
+    "fork": false,
+    "forks": 3199,
+    "openIssues": 69,
+    "contributors": 30,
+    "latestRelease": "v1.6.1",
+    "releaseDate": "2026-03-18",
+    "files": 2394,
+    "dependencies": 382,
+    "migrations": 281,
+    "plugins": 22,
+    "models": 64,
+    "mcpTools": 7,
+    "testFiles": 187,
+    "sourceFiles": 1688
   },
   "summaryBands": {
-    "security": {
-      "band": "B",
-      "score": 72
-    },
-    "reliability": {
-      "band": "A",
-      "score": 90
-    },
-    "maintainability": {
-      "band": "A",
-      "score": 85
-    },
-    "documentation": {
-      "band": "B",
-      "score": 78
-    },
-    "process": {
-      "band": "A",
-      "score": 85
-    },
-    "velocity": {
-      "band": "A",
-      "score": 90
-    }
+    "security": { "band": "B+", "score": 78 },
+    "reliability": { "band": "A-", "score": 84 },
+    "maintainability": { "band": "B+", "score": 80 },
+    "documentation": { "band": "C+", "score": 52 },
+    "process": { "band": "A-", "score": 83 },
+    "velocity": { "band": "A", "score": 90 }
   },
-  "creatorLens": "Outline is a knowledge base PRODUCT, not an extraction tool. It teaches wiki page structure (hierarchy, collections, search, real-time collaboration, Markdown-native storage) but not how to extract FROM wikis. Relevant for understanding what wiki content looks like structurally — nested documents, collections, permissions — which informs T28's wiki source type schema. TypeScript/React/Node.js.",
+  "creatorLens": "Outline understands that team knowledge needs hierarchy, real-time collaboration, and AI-agent access. Its MCP server routes through the same command layer as HTTP — AI access gets the same auth and audit trail. The plugin system with 10 hook types and structural client/server split is the cleanest extensibility pattern analyzed. Challenge: transport-agnostic commands enabled MCP for free.",
+  "adoptionAssessment": "Extract",
+  "dualScoring": {
+    "adoption": { "score": 69, "verdict": "Trial" },
+    "creator": { "score": 85, "verdict": "Extract" }
+  },
   "context": {
-    "t28Relevance": "Teaches wiki content STRUCTURE (what to expect when extracting from knowledge bases). Not an extraction tool itself.",
-    "cluster": "E",
-    "notablePatterns": [
-      "Document hierarchy: collections → documents → nested documents",
-      "Markdown-native storage with real-time collaboration",
-      "Full-text search + API for programmatic access",
-      "Permissions model on documents/collections"
-    ]
+    "primaryConnection": "JASON-OS Domain 02a (MCP infrastructure)",
+    "secondaryConnections": ["SoNash M4.5 Security & Privacy", "SoNash M7.3 Nashville & Knowledge"],
+    "cluster": "MCP-infrastructure"
   },
   "source_tier": "T1"
 }

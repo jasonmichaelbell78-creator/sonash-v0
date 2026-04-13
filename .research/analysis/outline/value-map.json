@@ -1,0 +1,196 @@
+{
+  "repo": "outline/outline",
+  "analyzed_at": "2026-04-12",
+  "depth": "standard",
+  "candidates": [
+    {
+      "name": "MCP OAuth scope-filtered tool registration",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "Production MCP server that filters tool registration based on OAuth scopes. Tools only visible if token has matching scope. Uses @modelcontextprotocol/sdk with Zod validation.",
+      "source_files": [
+        "server/tools/documents.ts",
+        "server/tools/collections.ts",
+        "server/tools/util.ts"
+      ],
+      "home_connection": "JASON-OS Domain 02a MCP infrastructure"
+    },
+    {
+      "name": "Command pattern (transport-agnostic business logic)",
+      "type": "knowledge",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Business logic in transport-agnostic command files (~8700 lines, ~20 commands). Both HTTP API routes and MCP tools delegate to same commands. Enables adding new surfaces without duplicating logic.",
+      "source_files": [
+        "server/commands/documentCreator.ts",
+        "server/commands/documentUpdater.ts",
+        "server/commands/documentMover.ts"
+      ],
+      "home_connection": "SoNash Cloud Functions could adopt this to enable future MCP surface"
+    },
+    {
+      "name": "PluginManager hook type registry",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "10 hook types (API, AuthProvider, EmailTemplate, Processor, Task, SearchProvider, etc.). Priority-based ordering. Auto-discovery via glob. plugin.json manifests. Structural client/server/shared split per plugin.",
+      "source_files": ["server/utils/PluginManager.ts"],
+      "home_connection": "JASON-OS skill/agent registration and discovery system"
+    },
+    {
+      "name": "buildAPIContext() MCP-to-API bridge",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Bridge function that constructs a Koa-style APIContext from MCP request context. Enables MCP tools to reuse existing API middleware and command infrastructure without duplication.",
+      "source_files": ["server/tools/util.ts"],
+      "home_connection": "Pattern for bridging MCP context to existing SoNash Cloud Function infrastructure"
+    },
+    {
+      "name": "@Encrypted field-level decorator pattern",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Sequelize model decorator that transparently encrypts/decrypts specific fields using AES via SECRET_KEY. Applied at the model layer, not the application layer.",
+      "source_files": ["server/models/decorators/Encrypted.ts", "server/storage/vaults.ts"],
+      "home_connection": "SoNash M4.5 Security & Privacy milestone"
+    },
+    {
+      "name": "TestServer ephemeral-port integration testing",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Custom test utility that starts a real Koa HTTP server on port 0 for integration tests. Tests exercise middleware, routing, and serialization through the actual transport.",
+      "source_files": ["server/test/TestServer.ts", "server/test/support.ts"],
+      "home_connection": "Alternative to SoNash httpsCallable mocking approach"
+    },
+    {
+      "name": "Abstract generic Store<T> with request deduplication",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "MobX base Store with generic typing, observable data Map, standardized RPC actions, and request dedup via Symbol-keyed promise tracking. Prevents N+1 fetch patterns.",
+      "source_files": ["app/stores/base/Store.ts", "app/stores/RootStore.ts"],
+      "home_connection": "Pattern for SoNash state management if complexity grows beyond React hooks"
+    },
+    {
+      "name": "PersistenceExtension race condition prevention",
+      "type": "knowledge",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "HocusPocus persistence extension uses SELECT FOR UPDATE to prevent race conditions during first-write of collaborative documents. Checks for existing Y.js state before initialization.",
+      "source_files": ["server/collaboration/PersistenceExtension.ts"],
+      "home_connection": "General lesson in concurrent write handling applicable to any multi-user feature"
+    },
+    {
+      "name": "Content-as-code onboarding templates",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "4 markdown templates in server/onboarding/ injected into new team workspaces. User-facing content stored as code, versioned with the app.",
+      "source_files": ["server/onboarding/"],
+      "home_connection": "SoNash M7.3 Nashville & Knowledge milestone"
+    },
+    {
+      "name": "Presenter response formatting layer",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "description": "JSON response formatting layer between models and API/MCP consumers. Each model has a presenter controlling exposed fields and formatting.",
+      "source_files": ["server/presenters/"],
+      "home_connection": "Pattern if SoNash adds formal API surface"
+    },
+    {
+      "name": "Bull queue processor BaseProcessor pattern",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "description": "Base class for async job processors with ~20 specialized implementations. Event-driven architecture for background work.",
+      "source_files": ["server/queues/processors/BaseProcessor.ts"],
+      "home_connection": "Pattern if SoNash needs complex async processing beyond Cloud Functions"
+    }
+  ],
+  "anti_patterns": [
+    {
+      "name": "RPC-over-POST API pattern",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "POST for everything including reads. Abandons HTTP caching, idempotency, content negotiation. Simpler client code but worse HTTP semantics.",
+      "lesson": "SoNash already has REST-like Cloud Functions. Don't regress to RPC-style."
+    },
+    {
+      "name": "Fat route files",
+      "type": "anti-pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "documents.ts handles ~30 endpoints. Even with command delegation, routing layer becomes discovery burden.",
+      "lesson": "SoNash's one-function-per-operation is cleaner. Don't consolidate into mega-route files."
+    },
+    {
+      "name": "Externalized documentation",
+      "type": "anti-pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "README delegates all docs to docs.getoutline.com. Creates contributor friction. No CONTRIBUTING.md, no .env.example, no API docs in repo.",
+      "lesson": "SoNash's in-repo documentation approach is better for contributor experience."
+    },
+    {
+      "name": "CSP wildcard security debt",
+      "type": "anti-pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "connect-src: * justified by Safari WebSocket bug fixed in Safari 15. Temporary workaround that became permanent debt.",
+      "lesson": "Never let temporary permissive security settings survive past their justification."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "ArchiveBox/ArchiveBox",
+      "connection_type": "shared-pattern",
+      "detail": "Both have comprehensive CLAUDE.md files for AI workflows. ArchiveBox: 498 lines with grep-friendly naming. Outline: 197 lines with class ordering. Complementary approaches to AI-workflow documentation."
+    },
+    {
+      "target_repo": "HKUDS/CLI-Anything",
+      "connection_type": "complementary",
+      "detail": "CLI-Anything has 37 SKILL.md files for per-module AI instructions. Outline has AGENTS.md as a monolithic guide. Different approaches to AI context distribution."
+    },
+    {
+      "target_repo": "mendableai/firecrawl",
+      "connection_type": "complementary",
+      "detail": "Firecrawl extracts content FROM knowledge bases. Outline IS a knowledge base. Together they form a knowledge creation-to-extraction pipeline."
+    }
+  ],
+  "related_repos": ["outline/rich-markdown-editor", "hocuspocus/hocuspocus", "yjs/yjs"]
+}

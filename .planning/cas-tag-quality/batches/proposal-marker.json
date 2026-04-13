@@ -1,0 +1,45 @@
+{
+  "batch_id": "marker-2026-04-12",
+  "source": "VikParuchuri/marker",
+  "notes": "PDF-to-structured-content ML tool with a pluggable benchmark registry, 3-stage extensible pipeline (provider/processor/renderer), and GPL-3.0 adoption trap alongside critical-band security gaps. Five journal entries split across pattern/knowledge/anti-pattern types; retag focuses on replacing source/entry duplication and weak filler tags with subject-matter and applicability signals.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "VikParuchuri/marker",
+      "candidate": "Benchmark registry (7 methods, 2 scorers)",
+      "type": "pattern",
+      "tags": ["benchmarking", "registry", "plugins", "cas-relevant", "best-practices"]
+    },
+    {
+      "source": "VikParuchuri/marker",
+      "candidate": "3-stage pipeline (provider/processor/renderer)",
+      "type": "knowledge",
+      "tags": [
+        "pipeline",
+        "architecture",
+        "plugins",
+        "dependency-injection",
+        "skill-architecture",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "VikParuchuri/marker",
+      "candidate": "ConfigParser introspection",
+      "type": "knowledge",
+      "tags": ["plugins", "dependency-injection", "architecture", "devex", "cas-relevant"]
+    },
+    {
+      "source": "VikParuchuri/marker",
+      "candidate": "GPL_LICENSE_TRAP",
+      "type": "anti-pattern",
+      "tags": ["licensing", "copyleft", "governance"]
+    },
+    {
+      "source": "VikParuchuri/marker",
+      "candidate": "SECURITY_AS_AFTERTHOUGHT",
+      "type": "anti-pattern",
+      "tags": ["security", "document-extraction", "code-quality", "best-practices"]
+    }
+  ]
+}

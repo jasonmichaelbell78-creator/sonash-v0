@@ -1,0 +1,152 @@
+{
+  "batch_id": "mineru-2026-04-12",
+  "source": "opendatalab/MinerU",
+  "notes": "MinerU is a 58k-star document-parsing toolkit with three backends, an HTTP task API, multi-vendor Docker distribution, and strong output-spec discipline offset by weak test/security defaults. Creator-view flags two T1 candidates (output contract, env-var catalog) and several anti-patterns SoNash already guards against.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Structured output contract page",
+      "type": "knowledge",
+      "tags": [
+        "documentation",
+        "documentation-contract",
+        "markdown",
+        "knowledge-management",
+        "cas-relevant",
+        "sonash-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Environment variable catalog",
+      "type": "knowledge",
+      "tags": [
+        "documentation",
+        "config-reference",
+        "devex",
+        "cas-relevant",
+        "sonash-relevant",
+        "best-practices"
+      ]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Async task state machine with TTL cleanup",
+      "type": "pattern",
+      "tags": [
+        "architecture",
+        "state-machine",
+        "async-task-api",
+        "orchestration",
+        "cas-relevant",
+        "depth-tiers",
+        "licensing"
+      ]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Backend decision matrix for multi-mode tools",
+      "type": "knowledge",
+      "tags": ["documentation", "decision-matrix", "devex", "cas-relevant", "sonash-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Three-backend dispatch with deferred imports",
+      "type": "pattern",
+      "tags": ["architecture", "lazy-import", "plugins", "orchestration"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Single fuzzy-match e2e test with low coverage floor",
+      "type": "anti-pattern",
+      "tags": ["testing", "ci-cd", "code-quality", "claims-vs-reality", "sonash-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Unarmored HTTP service with insecure defaults",
+      "type": "anti-pattern",
+      "tags": [
+        "security",
+        "http",
+        "insecure-defaults",
+        "authentication",
+        "rate-limiting",
+        "sonash-relevant"
+      ]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Silent retry workflow converts flake into green",
+      "type": "anti-pattern",
+      "tags": ["ci-cd", "testing", "flakiness", "github", "sonash-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "No PR test gating (push-only workflows)",
+      "type": "anti-pattern",
+      "tags": ["ci-cd", "testing", "github", "sonash-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Changelog-as-capability-index discipline",
+      "type": "knowledge",
+      "tags": ["documentation", "markdown", "knowledge-management", "best-practices"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Wrap upstream CLI instead of reimplementing",
+      "type": "pattern",
+      "tags": ["architecture", "cli-wrapping", "cli", "tool-integration"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Multi-vendor Dockerfile template",
+      "type": "knowledge",
+      "tags": ["deployment", "docker", "infrastructure", "platform-risk"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Per-chip deployment guide template",
+      "type": "knowledge",
+      "tags": ["documentation", "deployment", "infrastructure", "docs-absence"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Coarse-to-fine two-stage parsing framing",
+      "type": "knowledge",
+      "tags": ["architecture", "depth-tiers", "llm", "mental-model", "cas-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "README integration claim unbacked by first-party code",
+      "type": "anti-pattern",
+      "tags": ["documentation", "claims-vs-reality", "mcp", "sonash-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Unpinned GitHub Action reference",
+      "type": "anti-pattern",
+      "tags": ["ci-cd", "supply-chain", "github", "version-pinning", "sonash-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "Floor-only version constraint with known CVE exposure",
+      "type": "anti-pattern",
+      "tags": ["security", "supply-chain", "version-pinning", "sonash-relevant"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "MinerU 1.x technical report",
+      "type": "content",
+      "tags": ["paper", "llm", "extraction", "document-extraction"]
+    },
+    {
+      "source": "opendatalab/MinerU",
+      "candidate": "MinerU 2.5 technical report",
+      "type": "content",
+      "tags": ["paper", "llm", "depth-tiers", "extraction", "cas-relevant"]
+    }
+  ]
+}

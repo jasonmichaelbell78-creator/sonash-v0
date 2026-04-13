@@ -1,0 +1,250 @@
+{
+  "repo": "tobi/qmd",
+  "analyzed_at": "2026-04-12",
+  "depth": "standard",
+  "candidates": [
+    {
+      "name": "Claude Code plugin manifest (marketplace.json)",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Plugin manifest bundling MCP server + skills + metadata for 'claude plugin marketplace add' installation. Single source of truth for Claude Code plugin discovery.",
+      "source_files": [".claude-plugin/marketplace.json"],
+      "home_connection": "JASON-OS plugin portability. SoNash could ship its 81 skills as a Claude Code plugin."
+    },
+    {
+      "name": "Skill frontmatter: allowed-tools + disable-model-invocation",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Frontmatter declarations that restrict tool access ('allowed-tools: Bash(qmd:*), mcp__qmd__*') and prevent auto-invocation ('disable-model-invocation: true'). Enforces behavior via manifest, not prose.",
+      "source_files": ["skills/qmd/SKILL.md", "skills/release/SKILL.md"],
+      "home_connection": "SoNash's 81 skills use CLAUDE.md prose guardrails. Frontmatter-level enforcement is stronger."
+    },
+    {
+      "name": "MCP server as CLI subcommand (3 transports)",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "MCP server accessed via 'qmd mcp' subcommand. Three transports: stdio (default), HTTP foreground, HTTP daemon with PID file. Long-lived daemon avoids expensive model reload.",
+      "source_files": ["src/mcp/server.ts"],
+      "home_connection": "JASON-OS Domain 02a MCP infrastructure. Pattern for shipping MCP as part of a CLI tool."
+    },
+    {
+      "name": "Query DSL with typed sub-queries (EBNF grammar)",
+      "type": "pattern",
+      "tier": "T1",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "high",
+      "description": "Formal EBNF grammar for search queries. Typed sub-queries (lex/vec/hyde), optional intent disambiguation, parsing constraints. 182-line spec.",
+      "source_files": ["docs/SYNTAX.md"],
+      "home_connection": "SoNash's recall skill uses ad-hoc flag filters. A DSL would be more expressive across 277 candidates."
+    },
+    {
+      "name": "Scored markdown chunking algorithm",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Break point scoring: H1=100, H2=90, H3=80, code fence=80, HR=60, paragraph=20, list=5, line=1. Squared distance decay: score × (1 - (distance/window)² × 0.7). 900 tokens/chunk with 15% overlap.",
+      "source_files": ["src/store.ts"],
+      "home_connection": "SoNash content analysis pipeline uses naive chunking. This algorithm respects document structure."
+    },
+    {
+      "name": "RRF + position-aware blending",
+      "type": "knowledge",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Reciprocal Rank Fusion (k=60) with original query 2x weight, top-rank bonus (+0.05 #1, +0.02 #2-3), then position-aware blend after rerank: 75/60/40% RRF weight for ranks 1-3/4-10/11+.",
+      "source_files": ["README.md (scoring section)"],
+      "home_connection": "SoNash synthesize skill needs fusion algorithm for cross-source candidate ranking."
+    },
+    {
+      "name": "Fixture-based eval harness with difficulty tiers",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "high",
+      "description": "Test queries categorized easy/medium/hard with expected docs. Precision@k, recall, MRR, F1 across 4 backends. 'qmd bench' CLI command for reproducible quality measurement.",
+      "source_files": ["test/eval-harness.ts", "src/bench/"],
+      "home_connection": "SoNash has no formal skill evaluation. Skills regress silently."
+    },
+    {
+      "name": "Release skill with disabled auto-invocation",
+      "type": "pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "Release workflow: gather context via script, commit outstanding, write changelog, cut release, watch CI, push on confirmation. Enforces exact dep pinning. disable-model-invocation: true.",
+      "source_files": ["skills/release/SKILL.md", "scripts/release.sh"],
+      "home_connection": "SoNash has ad-hoc releases. This disciplined workflow is directly portable."
+    },
+    {
+      "name": "node-llama-cpp for privacy-first local inference",
+      "type": "knowledge",
+      "tier": "T2",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Node.js wrapper for llama.cpp. Runs GGUF models locally with Metal/CUDA/Vulkan acceleration. createRankingContext() + rankAndSort() for cross-encoder reranking.",
+      "source_files": ["package.json", "src/llm.ts"],
+      "home_connection": "SoNash's privacy-first vision could use node-llama-cpp for local AI without API keys."
+    },
+    {
+      "name": "AST-aware code chunking via tree-sitter",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "tree-sitter parsing for TS/JS/Python/Go/Rust. Chunks at function/class/import boundaries. Scores merged with regex markdown scores. Optional via '--chunk-strategy auto'.",
+      "source_files": ["src/ast.ts"],
+      "home_connection": "SoNash repo-analysis could produce better extraction candidates for code-heavy repos."
+    },
+    {
+      "name": "Daemon mode with PID file management",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "HTTP server with --daemon flag. PID at ~/.cache/qmd/mcp.pid. 'qmd mcp stop' reads PID and terminates. 'qmd status' shows 'MCP: running (PID ...)'. Idle context disposal after 5 min.",
+      "source_files": ["src/mcp/server.ts"],
+      "home_connection": "General daemon pattern for resource-heavy services."
+    },
+    {
+      "name": "LoRA SFT on small LLMs for domain tasks",
+      "type": "knowledge",
+      "tier": "T3",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "LoRA rank 16, alpha 32, all projection layers. ~2290 examples, 5 epochs, 2e-4 LR cosine. Qwen3-1.7B base. 92% eval score. $1.50 per run on HF Jobs A10G.",
+      "source_files": ["finetune/README.md", "finetune/configs/sft.yaml"],
+      "home_connection": "Future reference if SoNash needs domain-specific small model. Not current need."
+    },
+    {
+      "name": "HuggingFace Jobs for cheap cloud training",
+      "type": "knowledge",
+      "tier": "T3",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "hf jobs uv run --flavor a10g-large executes SFT in cloud for ~$1.50. Self-contained scripts in jobs/. hf jobs ps / inspect / logs / cancel for management.",
+      "source_files": ["finetune/jobs/"],
+      "home_connection": "Cheap cloud training reference. Not current SoNash need."
+    },
+    {
+      "name": "Rule-based reward function for RL",
+      "type": "knowledge",
+      "tier": "T3",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "5-dimension scoring (Format 30, Diversity 30, HyDE 20, Quality 20, Entity -45 to +20). Hard failures = 0.0. No LLM judge — deterministic and fast, suitable as RL signal.",
+      "source_files": ["finetune/reward.py", "finetune/SCORING.md"],
+      "home_connection": "Pattern for building deterministic quality metrics without LLM-as-judge."
+    },
+    {
+      "name": "Nix flake with home-manager module",
+      "type": "pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E2",
+      "relevance": "low",
+      "description": "flake.nix with homeModules.default providing programs.qmd.enable option. NixOS/home-manager users get reproducible install via config file.",
+      "source_files": ["flake.nix"],
+      "home_connection": "Low priority unless SoNash targets NixOS users."
+    }
+  ],
+  "anti_patterns": [
+    {
+      "name": "Fine-tuning before exhausting prompt engineering",
+      "type": "anti-pattern",
+      "tier": "T2",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "Fine-tuning is expensive and inflexible. qmd tried GEPA prompt optimization first (see finetune/experiments/gepa/best_prompt.txt) before SFT.",
+      "lesson": "Always exhaust prompting approaches before fine-tuning. SoNash has no current fine-tuning need but should remember this order."
+    },
+    {
+      "name": "Single-runtime CI when cross-runtime is claimed",
+      "type": "anti-pattern",
+      "tier": "T3",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "low",
+      "description": "qmd avoids this by testing both Node and Bun. If you claim cross-runtime support without matrix testing, you're shipping bugs.",
+      "lesson": "Match CI runtime coverage to claimed compatibility. SoNash is Node-only — don't claim Bun support without testing it."
+    },
+    {
+      "name": "Caret ranges in reproducible-install packages",
+      "type": "anti-pattern",
+      "tier": "T2",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "qmd pins all deps to exact versions. Especially critical for tools shipping platform-specific binaries (sqlite-vec has 5 platform packages).",
+      "lesson": "Use exact pins for publishable packages with native deps. SoNash uses carets — worth reviewing."
+    },
+    {
+      "name": "Skill without invocation gate on destructive ops",
+      "type": "anti-pattern",
+      "tier": "T1",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "Release/deploy/destructive skills that Claude can auto-invoke create risk. qmd's release skill uses 'disable-model-invocation: true' to prevent this.",
+      "lesson": "Destructive skills should declare disable-model-invocation. SoNash has skills that fire when they shouldn't (see feedback_no_premature_next_steps memory)."
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "outline/outline",
+      "connection_type": "shared-pattern",
+      "detail": "Both ship production MCP servers. Outline: OAuth scope-filtered, bridged to Koa API context. qmd: CLI subcommand with 3 transports. Complementary approaches — Outline for web app surface, qmd for standalone CLI."
+    },
+    {
+      "target_repo": "ArchiveBox/ArchiveBox",
+      "connection_type": "shared-pattern",
+      "detail": "Both have comprehensive CLAUDE.md files. ArchiveBox: 498 lines with grep-friendly naming. qmd: 167 lines with 'do not run automatically' guards. qmd is more concise."
+    },
+    {
+      "target_repo": "HKUDS/CLI-Anything",
+      "connection_type": "complementary",
+      "detail": "CLI-Anything has 37 SKILL.md files for per-module AI instructions. qmd has 2 SKILL.md files with allowed-tools + disable-model-invocation frontmatter. Different scale, qmd shows frontmatter discipline."
+    },
+    {
+      "target_repo": "mendableai/firecrawl",
+      "connection_type": "complementary",
+      "detail": "Firecrawl extracts content from the web. qmd indexes and searches extracted content. Together: firecrawl → SoNash extraction → qmd search."
+    },
+    {
+      "target_repo": "unclecode/crawl4ai",
+      "connection_type": "complementary",
+      "detail": "crawl4ai produces LLM-friendly markdown from web pages. qmd consumes markdown as its primary input format. Direct pipeline opportunity."
+    }
+  ],
+  "related_repos": [
+    "ggml-org/llama.cpp",
+    "modelcontextprotocol/typescript-sdk",
+    "tree-sitter/tree-sitter",
+    "asg017/sqlite-vec",
+    "withcatai/node-llama-cpp",
+    "huggingface/trl",
+    "Qwen/Qwen3"
+  ]
+}

@@ -1,0 +1,6 @@
+{"category": "internal_docs", "item": "README supported sites table (46 entries)", "status": "cataloged_not_read", "reason": "Capability matrix read via agent, individual entries not evaluated", "user_decision": "skip"}
+{"category": "internal_docs", "item": "script/generate_github_action_template.js", "status": "cataloged_not_read", "reason": "Referenced in content-eval, code not read line-by-line", "user_decision": "skip"}
+{"category": "referenced_links", "item": "Codecov.io integration", "status": "not_evaluated", "reason": "External service", "user_decision": "skip"}
+{"category": "referenced_links", "item": "Go Report Card", "status": "not_evaluated", "reason": "External service", "user_decision": "skip"}
+{"category": "cross_repo", "item": "yt-dlp comparison", "status": "cataloged_not_traced", "reason": "Python equivalent noted in related_repos, not analyzed", "user_decision": "skip"}
+{"category": "anomalies", "item": "45 auto-generated workflow files", "status": "flagged", "reason": "Generated files, not individually read -- template verified", "user_decision": "skip"}

@@ -1,0 +1,250 @@
+{
+  "id": "zedeus-nitter-2026-04-12",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "zedeus/nitter",
+  "slug": "zedeus-nitter",
+  "title": "nitter",
+  "analyzed_at": "2026-04-12T16:30:00Z",
+  "depth": "standard",
+  "source_tier": "T1",
+  "tags": ["repo", "application", "nim", "twitter", "anti-pattern", "docker", "legacy", "agpl"],
+  "scoring": {
+    "quality_band": "Needs Work",
+    "quality_score": 60,
+    "personal_fit_band": "Critical",
+    "personal_fit_score": 28,
+    "classification": "not-relevant"
+  },
+  "summary": "Alternative Twitter frontend in Nim (12.8K stars, AGPL-3.0). Effectively legacy -- core functionality broken by Twitter API changes. Excellent Docker hardening. XSS vulnerability. No adoption path.",
+  "creator_view": "See creator-view.md",
+  "candidates": [
+    {
+      "name": "Docker container hardening",
+      "type": "knowledge",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["docker", "security", "deployment"]
+    },
+    {
+      "name": "Session pool rate limiting",
+      "type": "knowledge",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["rate-limiting", "architecture"]
+    },
+    {
+      "name": "ADVERSARIAL_DEPENDENCY",
+      "type": "anti-pattern",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["anti-pattern", "platform-risk"]
+    },
+    {
+      "name": "XSS_IN_CONTENT_RENDERER",
+      "type": "anti-pattern",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["security", "anti-pattern"]
+    },
+    {
+      "name": "SECURITY_HEADERS_ABSENT",
+      "type": "anti-pattern",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["security", "anti-pattern"]
+    }
+  ],
+  "last_synthesized_at": null,
+  "metadata": {
+    "url": "https://github.com/zedeus/nitter",
+    "scan_version": "4.5",
+    "files_cloned": 184,
+    "stars": 12757,
+    "language": "Nim",
+    "license": "AGPL-3.0",
+    "created_at": "2019-06-20",
+    "pushed_at": "2026-03-31",
+    "age_days": 2488,
+    "size_kb": 6068,
+    "forks": 731,
+    "open_issues": 184,
+    "contributors": 30,
+    "is_fork": false,
+    "is_archived": false
+  },
+  "repo_type": "application",
+  "repo_type_secondary": null,
+  "dimensions": {
+    "QS-01_activity": {
+      "score": 65,
+      "band": "Healthy",
+      "detail": "Pushed 12 days ago but sporadic"
+    },
+    "QS-02_engagement": {
+      "score": 80,
+      "band": "Excellent",
+      "detail": "12.8K stars"
+    },
+    "QS-10_community": {
+      "score": 42,
+      "band": "Needs Work",
+      "detail": "42% health"
+    },
+    "QS-14_openssf": {
+      "score": 42,
+      "band": "Needs Work",
+      "detail": "4.2/10"
+    },
+    "ST-01_subprocess": {
+      "score": 95,
+      "band": "Excellent",
+      "detail": "Zero subprocess calls"
+    },
+    "ST-02_tests": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "9 test files, SeleniumBase, integration-focused"
+    },
+    "ST-03_test_ci": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "Multi-version Nim, gated Docker builds"
+    },
+    "ST-04_structure": {
+      "score": 78,
+      "band": "Healthy",
+      "detail": "Layered: core->API->data->routes->views"
+    },
+    "ST-05_reuse": {
+      "score": 72,
+      "band": "Healthy",
+      "detail": "Good utils, bloated parserutils"
+    },
+    "ST-06_plugins": {
+      "score": 85,
+      "band": "Excellent",
+      "detail": "Adversarial session pool, parser versioning"
+    },
+    "ST-07_credentials": {
+      "score": 55,
+      "band": "Needs Work",
+      "detail": "Plaintext sessions, default HMAC key"
+    },
+    "ST-08_path_safety": {
+      "score": 92,
+      "band": "Excellent",
+      "detail": "Strong URL validation, HMAC media signing"
+    },
+    "ST-09_types": {
+      "score": 81,
+      "band": "Excellent",
+      "detail": "ADTs, Option types, enums, compile-time HTML"
+    },
+    "ST-10_deps": {
+      "score": 76,
+      "band": "Healthy",
+      "detail": "11 deps pinned to commits"
+    },
+    "ST-11_errors": {
+      "score": 73,
+      "band": "Healthy",
+      "detail": "Custom exceptions, retry logic, broad catch-all"
+    },
+    "ST-13_docs": {
+      "score": 78,
+      "band": "Healthy",
+      "detail": "Good README, wiki refs, no CONTRIBUTING"
+    },
+    "ST-14_scaffolding": {
+      "score": 88,
+      "band": "Excellent",
+      "detail": "Multi-platform Docker, docker-compose, systemd"
+    }
+  },
+  "summary_bands": {
+    "Security": {
+      "score": 55,
+      "band": "Needs Work"
+    },
+    "Reliability": {
+      "score": 72,
+      "band": "Healthy"
+    },
+    "Maintainability": {
+      "score": 75,
+      "band": "Healthy"
+    },
+    "Documentation": {
+      "score": 58,
+      "band": "Needs Work"
+    },
+    "Process": {
+      "score": 50,
+      "band": "Needs Work"
+    },
+    "Velocity": {
+      "score": 50,
+      "band": "Needs Work"
+    }
+  },
+  "absence_patterns": [
+    {
+      "pattern": "LEGACY_PROJECT",
+      "confidence": "High",
+      "evidence": "Core functionality broken by Twitter API changes"
+    },
+    {
+      "pattern": "GOVERNANCE_DEFICIT",
+      "confidence": "High",
+      "evidence": "42% community health, no CONTRIBUTING/SECURITY"
+    },
+    {
+      "pattern": "XSS_VULNERABILITY",
+      "confidence": "High",
+      "evidence": "Unescaped verbatim HTML output for untrusted content"
+    }
+  ],
+  "adoption_assessment": {
+    "verdict": "Avoid",
+    "verdict_score": 28,
+    "dimensions": {
+      "WR-01": {
+        "score": 10,
+        "band": "Critical",
+        "detail": "Nim vs Node/Next.js, completely different stack"
+      },
+      "WR-02": {
+        "score": 20,
+        "band": "Critical",
+        "detail": "Requires Twitter sessions, hostile API dependency"
+      },
+      "WR-03": {
+        "score": 25,
+        "band": "Critical",
+        "detail": "Legacy project, 184 open issues"
+      },
+      "WR-04": {
+        "score": 15,
+        "band": "Critical",
+        "detail": "AGPL-3.0 + adversarial platform dependency"
+      },
+      "WR-05": {
+        "score": 15,
+        "band": "Critical",
+        "detail": "Twitter frontend not SoNash domain"
+      },
+      "WR-06": {
+        "score": 55,
+        "band": "Needs Work",
+        "detail": "7 years old, 12.8K stars, but effectively dead"
+      }
+    },
+    "recommendation": "Avoid. Extract Docker hardening pattern as knowledge reference only."
+  }
+}

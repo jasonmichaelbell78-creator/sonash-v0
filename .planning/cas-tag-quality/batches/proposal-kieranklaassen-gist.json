@@ -1,0 +1,85 @@
+{
+  "batch_id": "kieranklaassen-gist-2026-04-12",
+  "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+  "notes": "kieranklaassen's SKILL.md-formatted reference gist documenting Claude Code's TeammateTool + Task system — 82 code blocks, a 6-pattern orchestration taxonomy, 13 TeammateTool operations, three spawn backends, task auto-unblock, and a subagent-vs-teammate decision framework. Entries are pure orchestration/multi-agent reference material directly targeting AGENT_ORCHESTRATION.md, T5 (worktrees), and .claude/teams/.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+      "candidate": "6-pattern orchestration taxonomy for AGENT_ORCHESTRATION.md",
+      "type": "architecture-pattern",
+      "tags": [
+        "claude-code",
+        "orchestration",
+        "multi-agent",
+        "subagents",
+        "swarm",
+        "taxonomy",
+        "ai-agents",
+        "documentation",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+      "candidate": "Spawn backend comparison for T5 worktree management",
+      "type": "pattern",
+      "tags": [
+        "claude-code",
+        "tmux",
+        "subagents",
+        "multi-agent",
+        "orchestration",
+        "decision-matrix",
+        "ai-agents",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+      "candidate": "TeammateTool 13-operation reference",
+      "type": "pattern",
+      "tags": [
+        "claude-code",
+        "teammatetool",
+        "teams",
+        "orchestration",
+        "multi-agent",
+        "subagents",
+        "ai-agents",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+      "candidate": "Task dependency auto-unblock for skill pipeline design",
+      "type": "workflow-pattern",
+      "tags": [
+        "claude-code",
+        "orchestration",
+        "pipeline",
+        "subagents",
+        "multi-agent",
+        "ai-agents",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
+      "candidate": "Subagent vs teammate decision framework",
+      "type": "design-principle",
+      "tags": [
+        "claude-code",
+        "subagents",
+        "teammatetool",
+        "teams",
+        "multi-agent",
+        "orchestration",
+        "decision-matrix",
+        "ai-agents",
+        "jason-os-relevant"
+      ]
+    }
+  ]
+}

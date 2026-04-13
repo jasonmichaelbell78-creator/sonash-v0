@@ -1,0 +1,148 @@
+{
+  "batch_id": "firecrawl-2026-04-12",
+  "source": "mendableai/firecrawl",
+  "notes": "Commercial-OSS web-scraping product (AGPL-3.0, 106k stars) with pluggable engine-fallback extraction, capability-gated testing, 58 cookbook examples, and documented anti-patterns (absent docs/, coexisting queues, polyglot SDK parity). Highly relevant to SoNash's website-analysis, document-analysis, and agent-team design.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "scrapeURL engine-fallback chain",
+      "type": "architecture-pattern",
+      "tags": ["extraction", "web-scraping", "engine-fallback", "architecture", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Capability-gated test pattern",
+      "type": "pattern",
+      "tags": ["testing", "ci-cd", "devex", "sonash-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Harness-as-boot-orchestrator",
+      "type": "pattern",
+      "tags": ["testing", "devex", "orchestration", "sonash-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Version-parallel controller trees",
+      "type": "architecture-pattern",
+      "tags": ["api-versioning", "openapi", "architecture"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Redlock distributed cache serialization",
+      "type": "pattern",
+      "tags": ["distributed-systems", "caching", "redis"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Multi-agent orchestration via openai_swarm",
+      "type": "knowledge",
+      "tags": [
+        "multi-agent",
+        "swarm",
+        "subagents",
+        "orchestration",
+        "ai-agents",
+        "jason-os-relevant"
+      ]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Deep Research API usage pattern",
+      "type": "knowledge",
+      "tags": ["deep-research", "llm-integration", "ai-agents", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "GitHub repo analysis via firecrawl Map API",
+      "type": "knowledge",
+      "tags": ["extraction", "github", "web-scraping", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Docs-to-OpenAPI extraction",
+      "type": "knowledge",
+      "tags": ["extraction", "openapi", "web-scraping", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Commercial-OSS feature tiering via .env",
+      "type": "knowledge",
+      "tags": ["commercial-oss", "saas", "deployment"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "scrapeURL engine-fallback README",
+      "type": "content",
+      "tags": ["extraction", "engine-fallback", "architecture", "web-scraping", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "58-example cookbook pattern",
+      "type": "content",
+      "tags": [
+        "cookbook-pattern",
+        "documentation",
+        "example",
+        "devex",
+        "jason-os-relevant",
+        "cas-relevant"
+      ]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "openai_swarm_firecrawl example",
+      "type": "content",
+      "tags": ["multi-agent", "swarm", "subagents", "orchestration", "example", "jason-os-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "gemini-github-analyzer example",
+      "type": "content",
+      "tags": ["extraction", "github", "web-scraping", "example", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "deep-research-apartment-finder example",
+      "type": "content",
+      "tags": ["deep-research", "llm-integration", "cli", "example", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "turning_docs_into_api_specs example",
+      "type": "content",
+      "tags": ["extraction", "openapi", "web-scraping", "example", "cas-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "CLAUDE.md minimal-actionable exemplar",
+      "type": "content",
+      "tags": ["claude-md", "ai-instructions", "claude-code", "devex", "jason-os-relevant"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Zero architecture prose docs",
+      "type": "anti-pattern",
+      "tags": ["docs-absence", "knowledge-concentration", "architecture", "governance"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Two queue systems coexisting without migration plan",
+      "type": "anti-pattern",
+      "tags": ["background-jobs", "technical-debt", "architecture", "distributed-systems"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Hand-rolled polyglot SDK parity",
+      "type": "anti-pattern",
+      "tags": ["sdk-duplication", "openapi", "technical-debt", "api-versioning"]
+    },
+    {
+      "source": "mendableai/firecrawl",
+      "candidate": "Hidden feature flags via env vars",
+      "type": "anti-pattern",
+      "tags": ["feature-flags", "deployment", "devex", "technical-debt"]
+    }
+  ]
+}

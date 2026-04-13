@@ -1,0 +1,20 @@
+{
+  "batch_id": "youtube-qinuqwl4e-k-2026-04-12",
+  "source": "https://www.youtube.com/watch?v=qINuQwL4E-k",
+  "notes": "Obsidian Explained YouTube tutorial on attachment settings and context-over-filename retrieval. Surface-level UI walkthrough — SoNash CAS has already evolved past this via SQLite FTS and structured tags.",
+  "new_vocabulary": [],
+  "entries": [
+    {
+      "source": "https://www.youtube.com/watch?v=qINuQwL4E-k",
+      "candidate": "Context-over-filename retrieval principle",
+      "type": "knowledge",
+      "tags": ["knowledge-management", "retrieval", "obsidian", "personal-wiki", "cas-relevant"]
+    },
+    {
+      "source": "https://www.youtube.com/watch?v=qINuQwL4E-k",
+      "candidate": "Subfolder-per-project attachment pattern",
+      "type": "pattern",
+      "tags": ["obsidian", "file-organization", "personal-wiki", "knowledge-management"]
+    }
+  ]
+}
