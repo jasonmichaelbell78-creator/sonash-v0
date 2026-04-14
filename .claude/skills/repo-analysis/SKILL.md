@@ -239,7 +239,8 @@ MAY load additional context when comparison requires deeper understanding.
 3. Load home repo context.
 4. Write Creator View with all three inputs available.
 
-**Creator View sections (MUST produce all 6):**
+**Creator View sections (MUST produce all 6; Section 2b required for product
+repos):**
 
 1. **What This Repo Understands (+ Blindspots)** — Knowledge, methodology,
    insights. What it KNOWS, not what it does. Include blindspot analysis.
@@ -249,13 +250,25 @@ MAY load additional context when comparison requires deeper understanding.
    are relevant, not just category-level observations. A curated-list repo's
    value IS its links; a framework repo's value IS its internal docs. Surface
    the actual items, not just the container.
-3. **Where Your Approach Differs** — Classify as
+3. **b. Use-As-Is Verdict** (MUST when repo is a product; skip for
+   pattern-source or curated-list). Trigger: any of these taxonomic tags
+   accepted — `application`, `framework`, `tool-demo`. Required content: (a)
+   install path and what home repo gains Day-1 without code changes, (b) real
+   fit for home repo specifically (not abstract), (c) adoption blockers
+   (license, security, convention lock-in, commercial boundary), (d) recommended
+   path (e.g., license check → trial → decide), (e) bottom-line classification
+   **Adopt / Trial / Extract-only / Avoid**. Populates `adoption_verdict`,
+   `adoption_blockers`, `adoption_recommendation` fields in `analysis.json`.
+   Rationale: Section 2 "What's Relevant" covers pattern extraction but not
+   "install and use." For product repos, that is often the point — surface it
+   proactively, do not wait for the user to ask.
+4. **Where Your Approach Differs** — Classify as
    **Ahead**/**Different**/**Behind**.
-4. **The Challenge** — THE thing you should seriously consider. Say so if
+5. **The Challenge** — THE thing you should seriously consider. Say so if
    nothing.
-5. **Knowledge Candidates** — Tiered (T1 active, T2 systems, T3 lower). Added to
+6. **Knowledge Candidates** — Tiered (T1 active, T2 systems, T3 lower). Added to
    `value-map.json`.
-6. **What's Worth Avoiding** — Anti-ideas with evidence. See REFERENCE.md 14.8.
+7. **What's Worth Avoiding** — Anti-ideas with evidence. See REFERENCE.md 14.8.
 
 Write output to `creator-view.md`. **Self-verify (SHOULD):** Re-read generated
 Creator View; verify each home repo claim (file paths, skill names, projects)
@@ -616,6 +629,14 @@ cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"repo-analysi
 ```
 
 ---
+
+_v4.6 | 2026-04-13 | Session #278: Added Creator View **Section 2b: Use-As-Is
+Verdict** as MUST-produce for product repos (taxonomic tag in {application,
+framework, tool-demo}). Populates new analysis.json fields: adoption_verdict
+(Adopt/Trial/Extract-only/Avoid), adoption_blockers, adoption_recommendation.
+Gap discovered during GitNexus analysis — user had to prompt twice for
+install-as-is assessment because Section 2 covers extraction only. Fix rationale
+in feedback_adoption_verdict_in_creator_view.md._
 
 _v4.5 | 2026-04-12 | Session #276: Per-phase artifact gate (Write rejection =
 hard stop + Bash/Python retry). Self-audit expanded with 4 new checks:

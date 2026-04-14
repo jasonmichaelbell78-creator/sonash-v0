@@ -155,7 +155,7 @@
       "description": "DoclingDocument is optimized for single-document representation. T28 needs cross-source analysis schema. Study the tree pattern, design your own"
     }
   ],
-  "last_synthesized_at": "2026-04-13T18:08:57.918Z",
+  "last_synthesized_at": "2026-04-13T20:35:00Z",
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "DS4SD/docling",

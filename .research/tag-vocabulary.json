@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-04-12",
+  "last_updated": "2026-04-13",
   "description": "Controlled vocabulary for tags applied to analysis records and extraction journal entries. See .claude/skills/shared/CONVENTIONS.md §14 for rules.",
   "categories": {
     "domain": "Problem space or field (e.g., knowledge-management, security)",
@@ -16,17 +16,17 @@
     "cas-relevant": {
       "category": "applicability",
       "definition": "Directly applicable to the Content Analysis System (T28) work",
-      "count": 103
+      "count": 104
     },
     "jason-os-relevant": {
       "category": "applicability",
       "definition": "Directly applicable to the JASON-OS portable Claude Code OS vision",
-      "count": 134
+      "count": 135
     },
     "sonash-relevant": {
       "category": "applicability",
       "definition": "Directly applicable to the SoNash codebase",
-      "count": 67
+      "count": 68
     },
     "agent-memory": {
       "category": "concept",
@@ -76,18 +76,18 @@
     "enforcement": {
       "category": "concept",
       "definition": "Treating rules, hooks, or guardrails as non-negotiable gates that block execution rather than passive automation that merely advises or logs warnings.",
-      "count": 1,
+      "count": 2,
       "added_at": "2026-04-12"
     },
     "hooks": {
       "category": "concept",
       "definition": "Hook system for extending runtime behavior (Claude Code hooks, git hooks)",
-      "count": 4
+      "count": 5
     },
     "hybrid-retrieval": {
       "category": "concept",
       "definition": "Retrieval architecture combining multiple approaches (BM25 lexical, dense vector, LLM reranking, query expansion) whose results are fused for final ranking.",
-      "count": 2,
+      "count": 3,
       "added_at": "2026-04-12"
     },
     "lifecycle-ordering": {
@@ -110,7 +110,7 @@
     "marketplace": {
       "category": "concept",
       "definition": "Marketplace pattern for distributing plugins or tools",
-      "count": 0
+      "count": 1
     },
     "mental-model": {
       "category": "concept",
@@ -125,7 +125,7 @@
     "orchestration": {
       "category": "concept",
       "definition": "Coordinating multiple components or agents",
-      "count": 33
+      "count": 34
     },
     "personal-wiki": {
       "category": "concept",
@@ -135,7 +135,7 @@
     "plugins": {
       "category": "concept",
       "definition": "Plugin system for modular extension",
-      "count": 21
+      "count": 22
     },
     "privacy-preserving": {
       "category": "concept",
@@ -158,7 +158,7 @@
     "rag": {
       "category": "concept",
       "definition": "Retrieval-augmented generation",
-      "count": 4
+      "count": 5
     },
     "rag-alternative": {
       "category": "concept",
@@ -190,7 +190,7 @@
     "skill-architecture": {
       "category": "concept",
       "definition": "Architectural patterns for building skills",
-      "count": 21
+      "count": 22
     },
     "state-machine": {
       "category": "concept",
@@ -232,7 +232,7 @@
     "ai-agents": {
       "category": "domain",
       "definition": "AI agent development, coordination, and operation",
-      "count": 30
+      "count": 31
     },
     "ai-integration": {
       "category": "domain",
@@ -242,7 +242,7 @@
     "architecture": {
       "category": "domain",
       "definition": "System architecture as a problem space or concern",
-      "count": 58
+      "count": 59
     },
     "authentication": {
       "category": "domain",
@@ -267,7 +267,7 @@
     "devex": {
       "category": "domain",
       "definition": "Developer experience concerns",
-      "count": 23
+      "count": 24
     },
     "distributed-systems": {
       "category": "domain",
@@ -293,7 +293,7 @@
     "knowledge-management": {
       "category": "domain",
       "definition": "Organizing, capturing, and retrieving knowledge",
-      "count": 45
+      "count": 46
     },
     "llm-integration": {
       "category": "domain",
@@ -441,7 +441,7 @@
     "documentation-contract": {
       "category": "pattern",
       "definition": "Human-readable specification of a system's output, schema, or API as a first-class versioned document with explicit breaking-change callouts, distinct from auto-generated schema or embedded code comments.",
-      "count": 2,
+      "count": 3,
       "added_at": "2026-04-12"
     },
     "engine-fallback": {
@@ -453,7 +453,7 @@
     "evaluation-harness": {
       "category": "pattern",
       "definition": "Fixture-based evaluation framework with categorized queries, expected results, and standard retrieval metrics (precision@k, recall, MRR, F1) to regression-test quality across backends.",
-      "count": 1,
+      "count": 2,
       "added_at": "2026-04-12"
     },
     "external-api-monitoring": {
@@ -500,7 +500,7 @@
     "registry": {
       "category": "pattern",
       "definition": "Pluggable registry mapping names to implementations so new components can self-register without modifying core dispatch code, enabling swappable methods, scorers, or providers.",
-      "count": 2,
+      "count": 3,
       "added_at": "2026-04-12"
     },
     "resource-pooling": {
@@ -512,7 +512,7 @@
     "skill-distribution": {
       "category": "pattern",
       "definition": "Mechanism for packaging and shipping a skill bundle (SKILL.md plus assets) to one or more install targets with version identity, so consumers can install and upgrade skills the same way they install libraries or plugins.",
-      "count": 4,
+      "count": 5,
       "added_at": "2026-04-12"
     },
     "strategy-pattern": {
@@ -524,7 +524,7 @@
     "best-practices": {
       "category": "quality",
       "definition": "Source encodes or demonstrates best practices",
-      "count": 47
+      "count": 48
     },
     "claims-vs-reality": {
       "category": "quality",
@@ -614,7 +614,7 @@
     "production-grade": {
       "category": "quality",
       "definition": "Quality signal where a source demonstrates engineering maturity beyond research or demo code, typically including thread safety, bounded resource usage, deterministic behavior, error handling under concurrency, and explicit operational contracts suitable for real production workloads.",
-      "count": 10,
+      "count": 11,
       "added_at": "2026-04-12"
     },
     "sdk-duplication": {
@@ -642,7 +642,7 @@
     "application": {
       "category": "taxonomic",
       "definition": "Installable, runnable end-user application",
-      "count": 2
+      "count": 3
     },
     "blog": {
       "category": "taxonomic",
@@ -667,7 +667,7 @@
     "framework": {
       "category": "taxonomic",
       "definition": "Opinionated scaffolding with extension points (e.g., Next.js, Django)",
-      "count": 0
+      "count": 1
     },
     "library": {
       "category": "taxonomic",
@@ -702,7 +702,7 @@
     "ast-parsing": {
       "category": "technique",
       "definition": "Abstract syntax tree parsing of source code via tree-sitter, libcst, Babel, or language-native parsers to extract structural facts (classes, functions, imports, call edges) deterministically and without LLM cost, typically as the first pass in hybrid analysis pipelines.",
-      "count": 1,
+      "count": 2,
       "added_at": "2026-04-12"
     },
     "auto-generation": {
@@ -714,7 +714,7 @@
     "benchmarking": {
       "category": "technique",
       "definition": "Performance benchmarking methodology",
-      "count": 9
+      "count": 10
     },
     "caching": {
       "category": "technique",
@@ -803,7 +803,7 @@
     "pipeline": {
       "category": "technique",
       "definition": "Pipeline-style chained processing technique",
-      "count": 29
+      "count": 30
     },
     "prompt-engineering": {
       "category": "technique",
@@ -864,7 +864,7 @@
     "claude-code": {
       "category": "technology",
       "definition": "Anthropic's Claude Code CLI or the Claude model family it uses",
-      "count": 45
+      "count": 46
     },
     "claude-md": {
       "category": "technology",
@@ -874,7 +874,7 @@
     "cli": {
       "category": "technology",
       "definition": "Command-line interface as a deliverable surface",
-      "count": 16
+      "count": 17
     },
     "cloud-run": {
       "category": "technology",
@@ -900,7 +900,7 @@
     "github": {
       "category": "technology",
       "definition": "GitHub platform (API, Actions, features beyond generic git)",
-      "count": 11
+      "count": 12
     },
     "go": {
       "category": "technology",
@@ -930,7 +930,7 @@
     "mcp": {
       "category": "technology",
       "definition": "Model Context Protocol for connecting AI tools to external systems",
-      "count": 16
+      "count": 17
     },
     "oauth": {
       "category": "technology",
@@ -990,6 +990,41 @@
       "definition": "YouTube platform as a content source or integration target, including its player API, caption system, innertube endpoints, data API, and operational concerns like IP blocking, rate limits, and regional restrictions that affect programmatic access.",
       "count": 10,
       "added_at": "2026-04-12"
+    },
+    "knowledge-graph": {
+      "category": "concept",
+      "definition": "Nodes+edges representation of code or content semantic structure (entities + typed relations)",
+      "count": 1
+    },
+    "graph-rag": {
+      "category": "concept",
+      "definition": "RAG variant augmenting vector retrieval with graph traversal, clustering, or execution-flow lookup",
+      "count": 1
+    },
+    "precomputed-intelligence": {
+      "category": "technique",
+      "definition": "Indexing phase computes clusters/flows/confidence scores; tools return pre-scored context instead of raw edges",
+      "count": 1
+    },
+    "mcp-contract-block": {
+      "category": "pattern",
+      "definition": "Structured Always/When/Never/Tools block in CLAUDE.md or AGENTS.md defining MCP tool usage rules and risk levels",
+      "count": 1
+    },
+    "signs-pattern": {
+      "category": "pattern",
+      "definition": "Codifying recurring-twice failure patterns as explicit repo-visible rules in GUARDRAILS or equivalent",
+      "count": 1
+    },
+    "tree-sitter": {
+      "category": "technology",
+      "definition": "Multi-language AST parser library",
+      "count": 1
+    },
+    "wasm": {
+      "category": "technology",
+      "definition": "WebAssembly runtime or compile target",
+      "count": 1
     }
   },
   "synonyms": {

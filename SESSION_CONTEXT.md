@@ -1,8 +1,9 @@
 # Session Context
 
-**Document Version**: 8.31 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.32 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-13 (Session #277 — T29 Step 10.5 CLOSED + Wave 5 synthesis SHIPPED)
+2026-04-13 (Session #278 — T29 Step 12 COMPLETE + /repo-analysis v4.6 + GitNexus
+analysis)
 
 ## Purpose
 
@@ -29,137 +30,101 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-12 (Session #276 — T40 COMPLETE + Wave 4 Step 10
-CLOSED) **Branch**: `planning-41226` **Working On**: Both T40 (CAS tag quality)
-and T29 Wave 4 Step 10 (Standard-upgrade batch) **closed** this session.
+**Last Checkpoint**: 2026-04-13 (Session #278 — /session-end in progress).
+**Branch**: `planning-41426`. **Working On**: T29 Step 12 COMPLETE,
+`/repo-analysis` v4.6 shipped with Section 2b Use-As-Is Verdict, GitNexus
+analyzed + folded into corpus via incremental synthesis.
 
 **This session's work (summary)**:
 
-**Phase A — T40 CAS tag quality (6 commits, already landed):**
+**Phase A — Planning/research cleanup:**
 
-1. Two Standard repo-analyses (pre-/clear): `outline/outline` + `tobi/qmd`.
-   EXTRACTIONS.md: 277 → 295 candidates across 31 sources.
-2. Cherry-picked 3 commits from `worktree-smtasks` (pre-/clear).
-3. **Executed `.planning/cas-tag-quality/PLAN.md` in full** — T40 complete:
-   - **Part A**: Rewrote CONVENTIONS.md §14 (taxonomic vs semantic, 8
-     categories, minimum 3 semantic tags no upper cap, expanded forbidden list).
-     Updated Tag Suggestion sections in 4 handler SKILL.md files. Scaffolded
-     `.research/tag-vocabulary.json`. (`f300e3fb`)
-   - **Part B1-B3**: Built `scripts/cas/retag.js` +
-     `scripts/lib/retag-mutations.js` (locked CLI, regression guards,
-     `--dry-run`). Seeded vocabulary with 97 tags + 10 synonyms + 13 forbidden.
-     (`ac2fc999`)
-   - **Part C**: Category-aware display in `/recall` + vocabulary breakdown in
-     `--stats` + orphan/legacy tag visibility. Pattern-compliance fix folded in
-     (structuredClone + rename). (`b2f22b37`)
-   - **Full retag migration**: 31 source-scoped parallel agents in 6 waves
-     proposed per-source retagging. Aggregated 89 new vocab → 78 post- dedupe
-     (10 semantic merges became synonyms, 1 drop, 2 category conflicts
-     resolved). Applied via `retag.js apply` across all 31 batches. Two
-     entry-level agent errors caught + manually patched. (`d5ed65b3`)
-4. **Final T40 state** (`retag.js validate --strict` → exit 0):
-   - 295/295 entries retagged. 0 forbidden / 0 unknown / 0 <3-semantic / 0
-     zero-tag violations.
-   - Vocabulary: 97 → **175 tags**. Synonyms: 10 → 20.
-   - Top applicability signals: `jason-os-relevant` (133), `cas-relevant` (95),
-     `sonash-relevant` (65).
-   - Top domain/tech/concept: architecture (58), knowledge-management (44),
-     claude-code (44), extraction (38), orchestration (33).
+1. Archived 12 completed planning/research items (T40, Wave 5 agents, website
+   skill, orphan-detection, T39, learning research, github-health research,
+   unified-content-intelligence stub, worktree-management stub, analysis-
+   synthesis-comparison). Commit: `c92103cb`.
+2. Kept active per user decision: `plan-orchestration` (Wave 2+ pending),
+   `multi-layer-memory` research (more to do), `research-discovery-standard`
+   (more to do), `content-analysis-system` (CAS not finished),
+   `synthesis-consolidation` (Step 12+ remaining).
 
-**Phase B — T29 Wave 4 Step 10 closeout (post-T40, this session):**
+**Phase B — GitNexus analysis (new corpus source #33):**
 
-1. **`/repo-analysis` on `jina-ai/reader` Standard** — full skill-compliant run,
-   14 candidates (3 patterns, 3 anti-patterns, 2 architecture-patterns, 3
-   knowledge, 2 content, 1 knowledge doubled as anti-pattern). Creator lens 72,
-   adoption lens 42. 3 S0s surfaced (unvalidated `x-proxy-url`,
-   `injectFrameScript` raw `fetch` with `setBypassCSP(true)`, global
-   `SSL_VERIFYPEER=false`), zero tests, private `thinapps-shared` submodule
-   blocks self-host. Security agent stalled mid-investigation; resumed via
-   `SendMessage` to write the dimension file. 5 new vocab proposed + accepted:
-   `puppeteer`, `cloud-run`, `html-to-markdown`, `tls-fingerprinting`,
-   `multi-provider-fallback`. Vocabulary 175 → 180.
-2. **Wave 4 Step 10 status audit** — counted remaining quicks. Found 3 (surya,
-   tesseract, qmd) but user said "last two". Caught the discrepancy: qmd
-   analysis.json was in a mixed-state bug — top-level fields said
-   `nicholasgasior/qmd` / `quick` while the 8 Standard artifacts on disk and 18
-   journal entries said `tobi/qmd`. `source` field and journal were out of §14.8
-   sync. Would have made qmd invisible to `/synthesize` pre-flight.
-3. **qmd analysis.json rebuild** — new UUID
-   `6b81e586-6cbe-4652-858c-4ccd995f983a`, source `tobi/qmd`, depth `standard`,
-   18 candidates rebuilt from journal, 16 semantic tags (all from approved
-   vocab), metadata from summary.md (21,126 stars, MIT, Tobi Lütke/Shopify).
-   Schema validates. 18 journal entries updated with `source_analysis_id`
-   linking to new UUID.
-4. **Wave 4 Step 10 closure** = 10/12 upgraded + 2 skipped by decision (surya,
-   tesseract remain quick as preview-only per §17.6). Not-done items: surya,
-   tesseract deliberately held back.
-5. **Orphan cleanup** — deleted 4 quick dirs superseded by Standard twins:
-   `.research/analysis/{reader,nitter,marker,ArchiveBox}/`. All had 0 journal
-   entries linked to their UUIDs. Safe.
-6. **Index rebuilt** — `rebuild-index.js`: 38 → 34 sources, 309 extractions, 270
-   unique tags (was 276 — 6 tags fell to zero count after orphan deletion,
-   retained in vocab). EXTRACTIONS.md regenerated: 309 candidates / 32 sources.
-7. **Checklist + todos updated** — `_quick-scan-upgrade.md` checklist reflects
-   true state (10 ✅, 2 `[~] SKIP BY DECISION`, Session #276 close log row).
-   `.planning/todos.jsonl` T29 progress updated. Branch context corrected
-   (`planning-4826` → `planning-41226`).
+1. Ran `/repo-analysis` on `abhigyanpatwari/GitNexus` at Standard depth. 27K-
+   star TypeScript monorepo shipping zero-server client-side code intelligence
+   with multi-IDE MCP (Claude Code, Cursor, Codex, Windsurf, OpenCode) +
+   SWE-bench eval harness. 22 candidates (6 patterns, 5 knowledge, 7 content, 4
+   anti-patterns). 37 tags. Creator Healthy 82 / Adoption Healthy 64 / Use-as-is
+   verdict **Trial** (license NOASSERTION + 3 S2 security findings + no
+   incremental re-index are the blockers).
+2. 7 new vocabulary tags added (180 → 187): `knowledge-graph`, `graph-rag`,
+   `precomputed-intelligence`, `mcp-contract-block`, `signs-pattern`,
+   `tree-sitter`, `wasm`.
+3. Extraction journal +22 entries. EXTRACTIONS.md: 309 → 343 candidates across
+   33 sources. SQLite index rebuilt (35 sources, 343 extractions, 280 tags).
 
-**Final Phase B state**:
+**Phase C — Skill gap discovery + fix (mid-session):**
 
-- Synthesis corpus: **31 Standard sources** (well above §17.6 3-source minimum)
-- Wave 4 Step 10: **CLOSED** (10 upgraded, 2 skipped by decision)
-- Step 10.5 full-corpus audit: still partial (firecrawl only, 33+ sources
-  pending)
-- Wave 5 (`/synthesize` E2E run): gated on Step 10.5
+1. User surfaced gap: Creator View had no explicit "would SoNash install and use
+   this repo as-is?" section, only pattern/knowledge extraction. Critical for
+   product-type repos (application/framework/tool-demo).
+2. Added new **Section 2b: Use-As-Is Verdict** to the GitNexus creator-view.md,
+   summary.md, and analysis.json (verdict=trial, 5 blockers documented).
+3. Updated `/repo-analysis` SKILL.md v4.5 → **v4.6**: Section 2b now
+   MUST-produce when taxonomic tag is in {application, framework, tool-demo}.
+   New analysis.json fields: `adoption_verdict`, `adoption_blockers`,
+   `adoption_recommendation`.
+4. Saved feedback memory `feedback_adoption_verdict_in_creator_view.md` + index
+   entry in MEMORY.md.
+5. Created **T48**: Backfill Use-As-Is Verdict on prior product-repo analyses
+   (~20 candidates in existing corpus).
 
-**Commits**: 6 from Phase A already landed (`f300e3fb` through `24ec6eae`).
-Phase B commit pending session-end pipeline.
+**Phase D — T29 synthesis-consolidation PLAN Step 12 test:**
 
-**Next Step**:
+1. Ran `/synthesize` in incremental mode. Menu correctly detected 1 new Standard
+   source (GitNexus) with prior Wave 5 baseline present.
+2. Archived prior synthesis to
+   `history/synthesis-2026-04-13-wave5-baseline.{md,json}`.
+3. Generated new synthesis.md (10.9K chars) + synthesis.json (108K) with
+   "Changes Since Previous" as lead section covering themes strengthened (4),
+   themes added weak (1 — graph-backed code intelligence), candidates added
+   (22), gaps possibly closed (2 — marketplace reference, eval harness shape),
+   gaps added (2 — SoNash still has no eval, license policy absent), confidence
+   shifts (1), source impact ranking (GitNexus = high).
+4. Updated `last_synthesized_at` on all 33 Standard sources.
+5. Opportunities ledger upserted: 5 new rows (incl. Rank 1 "Build eval harness
+   for agent-capability measurement" — the S-tier Challenge from GitNexus
+   creator-view) + 12 prior preserved = 17 total entries.
+6. All 7 Step 12 requirements PASS. Self-audit 10/10 PASS.
 
-1. Push `planning-41226` → create PR → `/pr-review` cycle.
-2. After merge, **T29 Step 10.5** full-corpus audit across 31 Standard sources
-   (only firecrawl audited so far; 30 pending).
-3. After Step 10.5, **Wave 5** — `/synthesize` full run + E2E testing.
-4. New memory saved: `feedback_no_blanket_count_labels.md` (don't use
-   frequency-based terms like "singleton" as category labels — describe
-   substance, not count).
+**Commits**: `c92103cb` (archive) landed. Remaining work batched into a single
+session-end commit.
 
-**Uncommitted Work**: Phase B artifacts (jina-ai-reader analysis, qmd rebuild,
-orphan deletions, todos + checklist updates, vocabulary additions). Will be
-committed by session-end pipeline.
-
-**Smtasks worktree**: Still exists at
-`C:/Users/jason/Workspace/dev-projects/sonash-v0/.claude/worktrees/smtasks`. All
-3 cherry-picked commits now on `planning-41226` — can be removed with
-`git worktree remove .claude/worktrees/smtasks`.
-
-**Audit trail preserved**: `.planning/cas-tag-quality/batches/proposal-*.json`
-(31 agent output files) + `aggregated-new-vocab.json` for retro analysis.
+**Step status (synthesis-consolidation PLAN)**: Step 11 ✅, Step 12 ✅, Step 14
+effectively ✅, Steps 13 + 15 remain (paradigm/scoped test + code-reviewer
+audit).
 
 ---
 
 ## Session Tracking
 
-**Current Session Count**: 277 (since Jan 1, 2026)
+**Current Session Count**: 278 (since Jan 1, 2026)
 
-> **Session #277 handoff (T29 Step 10.5 CLOSED + Wave 5 synthesis SHIPPED,
-> 2026-04-13):** Session #277 executed the full T29 Step 10.5 remediation sprint
-> (11 commits A+D+G, C, J+K+L, E, F4-gists, H, B3, F4-composio, self-audit
-> expansion, E-extend, one-shot cleanup, description fill, aws-media promote)
-> taking corpus to **31/31 PASS** on expanded self-audit. Then ran Wave 5
-> `/synthesize` on the full 32-source corpus (4 parallel agents × 8 slices, 196
-> raw themes + 313 raw candidates, 20 meta-theme clusters, 16 absence signals).
-> Synthesis shipped to `.research/analysis/synthesis/synthesis.md` +
-> `synthesis.json` (Zod-validated). Adopted opportunities 1+2: scripts/docs/
-> generate-llms-txt.js + llms.txt (77 skills indexed),
-> scripts/check-slopsquat.js (soft-warn npm-registry verification). Created todo
-> T47 (Wave 6 source seed — 10 gap-fill sources). Initialized
-> `.research/analysis/synthesis/opportunities- ledger.jsonl` (mirrors
-> extraction-journal.jsonl pattern). `/synthesize` SKILL.md bumped to v1.1
-> documenting the ledger. **Next session priority: push `planning-41326` + PR;
-> then start on rank-3, 5, 6, 7, or 8 opportunities OR pull T47 Wave 6 into
-> active work.** Branch: `planning-41326`.
+> **Session #278 handoff (T29 Step 12 COMPLETE + /repo-analysis v4.6 + GitNexus
+> analysis, 2026-04-13):** Session #278 archived 12 completed planning/research
+> dirs, ran full Standard analysis on `abhigyanpatwari/GitNexus` (new corpus
+> source #33), discovered and fixed a real skill gap (Creator View had no
+> Use-As-Is verdict — now MUST-produce for product repos in v4.6), and exercised
+> T29 synthesis-consolidation PLAN Step 12 by running `/synthesize` in
+> incremental mode. All 7 Step 12 requirements PASS. Self-audit 10/10.
+> Opportunities ledger upserted: **5 new rows** (Rank 1 = Build eval harness —
+> the S-tier insight from GitNexus creator-view Challenge). Vocabulary 180 → 187
+> tags. EXTRACTIONS.md 309 → 343 candidates across 33 sources. Feedback memory +
+> T48 (backfill adoption verdict on prior product-repos) saved. **Next session
+> priorities: (1) Step 13 paradigm/scoped synthesize test + Step 15
+> code-reviewer audit to close synthesis-consolidation PLAN; (2) T48 backfill or
+> /deep-plan Rank 1 eval harness; (3) license check on GitNexus for
+> trial-install decision.** Branch: `planning-41426`.
 
 > **Increment this counter** at the start of each AI work session. **Note**:
 > Session count may exceed "Recent Session Summaries" entries; review-focused
@@ -168,6 +133,61 @@ committed by session-end pipeline.
 ---
 
 ## Recent Session Summaries
+
+**Session #278** (T29 STEP 12 COMPLETE + /REPO-ANALYSIS v4.6 + GITNEXUS):
+
+- **Branch**: `planning-41426` (post-merge of PR #510, 1 prior commit `c92103cb`
+  - session-end batch)
+- **Prior commits this session**: `c92103cb` (archive 12 completed
+  planning/research items + state drift).
+- **Planning/research cleanup**: Archived 12 items (T40, Wave 5 agents,
+  website-analysis, orphan-detection, 6 T39 md files, learning-system-
+  effectiveness research, learning-analysis brainstorm, github-health research,
+  unified-content-intelligence stub, worktree-management stub, analysis-
+  synthesis-comparison). Kept active: plan-orchestration, multi-layer-memory,
+  research-discovery-standard, content-analysis-system, synthesis-
+  consolidation, dev-dashboard, jason-os, skill-convergence, debt-runner-
+  expansion, repo-analysis, t28-\*, system-wide-standardization, creator-
+  view-upgrade.
+- **GitNexus repo-analysis** (corpus source #33): Standard depth. 2,213 files,
+  643K repomix tokens. 4 dimension agents ran (security Adequate 68,
+  architecture Clean 87, documentation Excellent 92, testing Robust 85). 22
+  candidates (6P / 5K / 7C / 4A-P). Creator Healthy 82, Adoption Healthy 64,
+  classification active-sprint, use-as-is verdict **Trial** (license
+  NOASSERTION + 3 S2 security + no incremental re-index). Generated 7 new vocab
+  tags (knowledge-graph, graph-rag, precomputed-intelligence, mcp-
+  contract-block, signs-pattern, tree-sitter, wasm). Vocabulary 180 → 187.
+- **Skill gap discovered mid-session**: user asked "where is the install-as-is
+  verdict?" — Creator View spec had 6 sections focused on pattern extraction but
+  no install-as-is answer. Backfilled Section 2b into GitNexus artifacts
+  (creator-view.md + analysis.json adoption\_\* fields + summary.md scoring
+  table).
+- **/repo-analysis SKILL.md v4.5 → v4.6**: Section 2b Use-As-Is Verdict now
+  MUST-produce when taxonomic tag is application/framework/tool-demo. New
+  analysis.json fields documented: `adoption_verdict`
+  (Adopt/Trial/Extract-only/Avoid), `adoption_blockers`,
+  `adoption_recommendation`.
+- **Memory**: Saved `feedback_adoption_verdict_in_creator_view.md` + indexed in
+  MEMORY.md feedback section.
+- **T48 todo created**: Backfill Use-As-Is Verdict on ~20 prior product-repo
+  analyses in `.research/analysis/`. P2 pending.
+- **T29 Step 12 incremental synthesis test**: `/synthesize` ran in incremental
+  mode. Menu correctly detected 1 new Standard source. Previous Wave 5 synthesis
+  archived to `history/synthesis-2026-04-13-wave5-baseline.{md,json}`. New
+  synthesis.md (10.9K) + synthesis.json (108K) generated. Changes Since
+  Previous: 4 themes strengthened, 1 theme added weak, 22 candidates added (16
+  high-relevance), 2 gaps partially closed, 2 gaps reinforced, 1 confidence
+  shift, source impact high. 33 Standard sources got `last_synthesized_at`
+  updated. Ledger: 5 new rows upserted (Rank 1 = Build eval harness, the S-tier
+  Challenge), 12 prior preserved, 17 total. Self-audit 10/10 PASS. **All 7 Step
+  12 requirements PASS.**
+- **SQLite index rebuilt**: 35 sources, 343 extractions, 280 tags, 0 FK
+  violations.
+- **Step status (synthesis-consolidation PLAN)**: Step 11 ✅ (Wave 5), Step 12
+  ✅ (this session), Step 14 effectively ✅ (earlier verify). Remaining: Step 13
+  (paradigm/scoped test), Step 15 (code-reviewer audit).
+- **Retro**: User rated incremental synthesis output as "looks good." No
+  weak/missing sections flagged.
 
 **Session #277** (T29 STEP 10.5 CLOSED + WAVE 5 SYNTHESIS SHIPPED):
 
@@ -306,191 +326,6 @@ committed by session-end pipeline.
   After merge, **T29 Step 10.5** full-corpus audit (30 Standard sources pending;
   only firecrawl audited so far). Then **Wave 5** `/synthesize` E2E run.
 
-**Session #275** (T39 COMPLETE — HOOK DRIFT LOOP + PATTERN-COMPLIANCE FULL
-CLEAN + CC REFACTOR):
-
-- **Branch**: `planning-4826`
-- **Commits**: `5961a604` (initial 9-fix batch), `177a9144` (pattern-compliance
-  iteration), `5019f9b9` (prior session-end), **+ pending final continuation
-  commit** — see "Uncommitted Work" in Quick Recovery above.
-- **Session arc**: Started as "hook drift loop" fix. After first push attempt
-  (#506), user mandated "complete fixes only, no baselines" for remaining 107
-  pattern-compliance violations. After `/clear` mid-stream, continuation plan at
-  `.research/T39_CONTINUATION_PLAN.md` resumed the work. All 107 dissolved.
-- **Session #275 Wave 1 (pre-clear)**: drift loop root cause (both
-  `.husky/pre- push` and `.husky/pre-commit` had broken failure-path EXIT traps
-  — `rm -f` ran BEFORE the conditional `write_hook_runs_jsonl`, overwriting `$?`
-  and deleting the tmpfile that the writer needed). Fixed with single combined
-  trap. Also: cognitive-cc/cyclomatic-cc harmonization, pr-creep noise dedup,
-  session- start bypass fix (was writing directly to `hook-warnings-log.jsonl`,
-  now routes through `append-hook-warning.js`), 5 `err.message` violations
-  wrapped with `sanitizeError()`, shared JSONL helper
-  (`scripts/lib/parse-jsonl-line.js`) rolled out to 36+ scripts + 8 per-skill
-  copies, pattern-compliance checker `excludeTests: true` on 7 safety detectors
-  (dissolved 421+ test-file warnings, 620 → 163).
-- **Session #275 Wave 2 (continuation, post-clear)**: All 10 pattern-compliance
-  categories fully cleared:
-  - §3.1 single-letter-variable (35 sites): `q` → `*Query` in Firestore
-    services, `h/m/p` → hours/minutes/period, haversine `a/c` → descriptive,
-    git-utils/state-utils normalized pairs.
-  - §3.2 unbounded-file-read (21 sites): new `readTextWithSizeGuard` and
-    `streamLinesSync` helpers in `scripts/lib/safe-fs.js`. D4a size-guard for 18
-    sites, D4b chunked-streaming for 3 library-caller sites
-    (extract-context-debt, resolve-bulk, planning/read-jsonl).
-  - §3.3 PII redaction (16 sites): neutral `tdms-intake` label in 2 intake
-    scripts; `getOperatorId()` (os.userInfo() only, SHA-256 hashed) routed for
-    sync-sonarcloud.
-  - §3.4 symlink-parent-traversal BLOCK (11 sites): `isSafeToWrite` guards added
-    around `mkdirSync` calls in 8 files.
-  - §3.5 read-without-binary-check (7 sites): TEXT_EXTS filter + 3 detector-
-    list string literal rewrites (JSON-parse name built from fragments).
-  - §3.6 absolute-path-in-log (4 sites): `path.relative(PROJECT_ROOT, ...)` in
-    `generate-views.js`.
-  - §3.7 regex-complexity-s5852 (3 sites): per-site regex simplification
-    (`learning-effectiveness.js`, `reference-graph.js`,
-    `build-enforcement-manifest.ts` — the worst was CC~75 → 4 simpler regexes).
-  - §3.8 no-process-env-inline (3 sites): new `lib/config/env.ts` centralized
-    `IS_DEV` helper, used by resources-page, today-page, error-boundary.
-  - §3.9 regex-newline-lookahead (2 sites): `\r?\n` in 2 lookaheads.
-  - §3.10 singletons (5 sites): TODO-without-ticket fix message rewording, audit
-    log context on `check-triggers.js`, control-char strip on
-    compute-changelog-metrics, for→while shell loop on install-cli-tools,
-    generic handler rename (`handleClick` → `handleMeetingCountdownClick`).
-- **Option D CC refactor (user-approved scope)**: 7 functions in files already
-  touched this session refactored to CC ≤15 via helper extraction.
-  `parseMarkdownReviews` in sync-reviews-to-jsonl.js was CC=134 → split into 13
-  helpers (`splitContentIntoReviewBlocks`, `enrichReviewFromRawLines`, 10+
-  per-field extractors) + 3-line orchestrator. `main` in intake-audit.js was
-  CC=48 → extracted `parseArgsOrExit`, `processInputLines`,
-  `runPostIntakePipeline`, etc. Plus `printIntakeReport`, `backfillFromJsonl`,
-  `runRepairMode`, `parseRetrospectives`, `extractRetroAutomation`. CC baseline
-  snapshotted (`check-cc.js --update-baseline`) for 60 remaining pre-existing
-  untouched violations — user-approved to avoid expanding T39 scope into
-  adjacent debt.
-- **Incidental inherited bug fixes** (needed to make verification pass):
-  - `scripts/lib/safe-cas-io.js:156-169`: `safeReadJson` threw generic `Error`
-    instead of `SyntaxError` (Session #275 Wave 1 regression); fixed to preserve
-    `SyntaxError` type so the existing test assertion passes.
-  - `scripts/archive/sync-reviews-to-jsonl.js:35,44`: broken require paths
-    (`./lib/safe-fs` — relative to `scripts/archive/`, which has no `lib/`) were
-    silently `process.exit(2)`'ing; fixed to `../lib/safe-fs`.
-  - `scripts/reviews/backfill-reviews.ts:26`: missing `eslint-disable-next-line`
-    for a second `require()` (1 lint error).
-  - `eslint.config.mjs`: new config block for
-    `.claude/skills/*/scripts/lib/ safe-fs.js` so the 8 per-skill copies lint
-    cleanly (Node globals + CJS sourceType, matching the canonical file's
-    config).
-- **Runtime tests T1-T4 (all pass)**:
-  - T1: pre-push trap verified via synthetic shell harness — all 4 cases
-    (failure writes, success silent, empty-tmpfile silent, HOOK_EXIT preserved
-    against rm overwrite).
-  - T2: session-start routing verified via static analysis — 0 direct
-    `appendFileSync` calls to hook-warnings-log.jsonl remain (only 1 historical
-    comment reference).
-  - T3: `pr-review-toolkit:code-reviewer` agent reviewed 117-file diff against
-    HEAD — 0 blockers, 3 non-blocking concerns (C1 UTF-8 boundary in
-    streamLinesSync filed as TDMS follow-up, C2 4th reference-graph regex
-    variant FIXED during review, C3 per-skill safe-fs fallback path misleading
-    comment filed as TDMS).
-  - T4: narrow code-reviewer on parse-jsonl-line.js — 0 bugs, 0 security
-    concerns; 2 non-blocking observations (header drift between canonical and
-    skill copies; ~54 callers still use inline JSON.parse — filed as follow-up).
-- **Final metrics**: Pattern compliance 0 BLOCK / 0 WARN (from 316→0).
-  Cognitive-cc exit 0 (60 pre-existing suppressed via baseline, 7 refactored to
-  ≤15). Cyclomatic-cc clean. ESLint 16 warnings / 0 errors (matches HEAD
-  baseline — all pre-existing in `scripts/generate-documentation-index.mjs`).
-  Tests 3720/3721 pass (1 skip, 0 fail — 1 regression from Session #275 Wave 1
-  fixed as part of incidental bug fixes). Propagation clean. Doc headers clean.
-  Cross-doc deps clean.
-- **WHERE TO RESUME**: After commit+push+new PR → new PR review cycle via
-  `/pr-review` → once merged, resume **T29 Wave 4 Step 10 #3 = crawl4ai**
-  (`unclecode/crawl4ai`) per continuation plan from Session #274.
-
-**Session #274** (T29 WAVE 4 STEP 10 #2 — MINERU STANDARD + SKILL COMPLIANCE
-RESET):
-
-- **Branch**: `planning-4826`
-- **Session shape**: Started as a continuation of Session #273 intended to
-  batch-upgrade the 11 remaining quick-scan repos. Derailed twice. MinerU first
-  pass silently deferred 15 coverage items and 3 interactive skill steps, same
-  anti-pattern as the firecrawl run in #273. User caught it, declared the
-  session "we're getting nowhere" territory, and reset the rules: "follow the
-  skill to the letter. DO NOT DEFER OR SKIP SOMETHING WITHOUT MY EXPLICIT
-  DECISION."
-- **Discipline resets committed:**
-  - **New memory** `feedback_never_defer_without_approval.md` — every skill step
-    must be completed in full or explicitly approved to skip. Coverage items
-    marked "skipped" or "deferred to Wave X" is forbidden unilaterally.
-  - **New CLAUDE.md guardrail #16** — same rule, gate-level. Added to Section 4
-    Behavioral Guardrails.
-  - **SKILL.md default changed**: `--depth=quick` → `--depth=standard` in
-    `.claude/skills/repo-analysis/SKILL.md`. Updated Critical Rule #1, Flags
-    table, and Phase 0 heading. Quick Scan is now opt-in via `--depth=quick` for
-    triage only; there is no preview-then-gate flow anymore.
-- **MinerU Standard analysis — full run completed after reset:**
-  - 88 findings in `findings.jsonl` (69 from first pass + 19 from coverage
-    expansion)
-  - 7 candidates in `analysis.json` (4 knowledge, 2 patterns, 1 anti-pattern)
-  - 19 extraction journal entries (was 10, +9 from expansion)
-  - All 15 deferred coverage items addressed: 11 Dockerfiles + compose.yaml
-    read, 13 chip deployment guides read, full `mineru/model/` subtree (37 .py
-    files) read, `demo/demo.py` read, `chemical_knowledge_introduction/`
-    confirmed non-textual sample data, cla.yml + mkdocs.yml read, pyproject dep
-    audit done (pdfminer CVE fixed, Pillow CVE exposure flagged, lxml XXE
-    noted), arXiv 2409.18839 and 2509.22186 abstracts read, cross-repo
-    comparison with firecrawl/marker/surya/crawl4ai completed
-  - **Critical first-pass correction**: `opendatalab/mineru-mcp` does not exist
-    (GitHub 404). First-pass Creator View treated it as a viable T2 knowledge
-    candidate. Demoted to `anti-mineru-007` (README integration claim unbacked
-    by first-party code). Top community impl is `neosun100/mineru-mcp-server` (9
-    stars, no license, single maintainer).
-  - **Progressive-extraction recommendation rewritten**: `pat-mineru-001` (async
-    task state machine) is now a shape reference only. The actually-adoptable
-    progressive-extraction target is **crawl4ai** (Apache-2.0, persistent
-    `resume_state` + `on_state_change` callbacks). MinerU's POST /tasks is
-    in-memory, loses state on restart, and is AGPL.
-  - All 3 interactive skill steps presented and answered: Tag Suggestion (13
-    tags accepted), Retro (user answered "nothing worked well" + corrective
-    notes persisted to state file `process_feedback`), Routing Menu (user
-    selected option 7 Done).
-  - Self-audit PASS (14 pass, 0 warn, 0 fail) — first fully clean run.
-- **EXTRACTIONS.md**: 227 → 236 candidates across 25 sources.
-- **Invocation tracked**: `inv-1775844226150-32584-1` (repo-analysis, standard,
-  opendatalab/MinerU, success).
-- **WHERE TO RESUME**: T29 Wave 4 Step 10 **#3 of 12 = crawl4ai**
-  (`unclecode/crawl4ai`). Standard depth is now the default — invoke
-  `/repo-analysis https://github.com/unclecode/crawl4ai` (no flag needed). Per
-  new guardrail #16, every phase must complete in full or be explicitly skipped
-  by user decision.
-
-**Session #273** (T29 WAVE 4 STEP 10 #1 — FIRECRAWL STANDARD + ANTI-PATTERN
-CAUGHT):
-
-- **Branch**: `planning-4826`
-- **Commits (4)**: `aa4b5fe7`, `ba78dfa2`, `3de8e17e`, `5a0b6b0d`. Not pushed —
-  pushed in Session #274.
-- **Wave 4 Step 8.5**: 9 mislabeled repos fixed (depth field + candidate
-  backfill), migrate-schemas.js root cause patched, migrate-v3.js self-heal rule
-  added (aa4b5fe7).
-- **Wave 4 Step 9**: `_quick-scan-upgrade.md` v3.0 revised to 12-repo scope
-  (3de8e17e).
-- **Wave 4 Step 10 #1 — firecrawl Standard**: Executed manually (phase artifacts
-  written directly) instead of via Skill tool. Caught mid-execution. Self-audit
-  PASS. Lesson documented in new memory
-  `feedback_skills_in_plans_are_tool_calls.md`. Session #274 went back and made
-  the same class of error on MinerU (see above).
-- **PLAN.md Step 10.5 added**: Full-corpus audit gate before Wave 5 (5a0b6b0d).
-- **T33 filed**: PreToolUse hook `node: command not found` on every Write/Edit
-  (non-blocking stderr noise, needs fnm/nvm PATH fix).
-- **4 memories saved**: `feedback_extractions_are_canon` (strengthened),
-  `feedback_no_session_end_assumptions`, `feedback_dont_over_surface`,
-  `feedback_skills_in_plans_are_tool_calls`.
-- **Push cancelled**: stale propagation-staged hook warning blocked push + user
-  declined autonomous ack.
-
-> For older session summaries (including Session #270, #271, #272), see
-> [SESSION_HISTORY.md](docs/SESSION_HISTORY.md)
-
 ---
 
 ## Quick Status
@@ -499,25 +334,26 @@ CAUGHT):
 | ---------------------------------- | ------------- | ------------------------------------------------------------------------------------------ |
 | **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                      |
 | **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                     |
-| **Repo Analysis Skill**            | v4.3 ACTIVE   | Wave 4 Step 10 CLOSED. 10/12 upgraded + 2 skipped by decision (surya, tesseract).          |
-| **T28 Content Analysis System**    | E2E DONE      | 32 Standard sources, ~309 unique candidates. aws-media promoted quick→standard (#277).     |
-| **T29 Synthesis Consolidation**    | W1-W5 DONE    | Step 10.5 CLOSED (31/31 PASS expanded self-audit). Wave 5 `/synthesize` SHIPPED (#277).    |
-| **Wave 5 Opportunity Ledger**      | INITIALIZED   | 12 entries. Ranks 1+2 adopted (llms.txt, slopsquat). Rank 4 deferred to T47. 9 pending.    |
-| **T40 CAS tag quality**            | COMPLETE      | All 4 parts + full retag landed Session #276. 295/295 retagged. `validate --strict` clean. |
-| **T39 Hook Drift Loop**            | CLOSED        | Drift loop + pattern-compliance 0/0 + Option D CC refactor. 316→0. Needs new PR.           |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed (brainstorm, dashboard, drift).                                    |
-| **Plan Orchestration**             | WAVE 1 DONE   | Steps 1-10 DONE, Waves 2-3 blocked on debt-runner                                          |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started Session #245, XL effort                                                            |
+| **Repo Analysis Skill**            | v4.6 ACTIVE   | Section 2b Use-As-Is Verdict now MUST for product repos. Bumped Session #278.              |
+| **T28 Content Analysis System**    | E2E DONE      | 33 Standard sources (GitNexus added #278), 343 unique candidates. Vocabulary 187 tags.     |
+| **T29 Synthesis Consolidation**    | STEP 12 DONE  | Steps 11-12 PASS. Step 14 effectively done. Remaining: Step 13 (paradigm/scoped), Step 15. |
+| **Wave 5 Opportunity Ledger**      | 17 ENTRIES    | 12 Wave 5 + 5 new from #278 incremental. Rank 1 (eval harness) is the new S-tier.          |
+| **T40 CAS tag quality**            | COMPLETE      | Session #276.                                                                              |
+| **T39 Hook Drift Loop**            | CLOSED        | Session #275. Needs new PR (deferred).                                                     |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed.                                                                   |
+| **Plan Orchestration**             | WAVE 1 DONE   | Waves 2-3 blocked on debt-runner.                                                          |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started #245, XL effort.                                                                   |
 | **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                       |
 | **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                     |
 | **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                     |
+| **T48 Adoption Verdict Backfill**  | NEW #278      | Backfill Section 2b on ~20 prior product-repo analyses.                                    |
 
-**Current Branch**: `planning-41326`
+**Current Branch**: `planning-41426`
 
 **Test Status**: 3720 pass, 0 fail, 1 skip (last verified Session #275)
 
-**Todos**: 46 total; 12 pending — run `/todo` to manage. T47 added Session #277
-(Wave 6 source seed — synthesis opportunity rank 4).
+**Todos**: 48 total, 13 pending — run `/todo` to manage. T48 added Session #278
+(adoption-verdict backfill).
 
 **Active ROADMAP Tracks** (see
 [ROADMAP.md §5](./ROADMAP.md#5--active-sprint-operational-visibility-p0)): Track
@@ -532,60 +368,47 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-0. **Push `planning-41326` + open PR** — 15 unpushed commits from Session #277
-   (T29 Step 10.5 + Wave 5). After push, create PR, run `/pr-review` cycle.
-   Merging retires T29 Steps 10.5 + Wave 5 completely.
+1. **Close synthesis-consolidation PLAN** — two steps remain:
+   - **Step 13**: Test scoped (`/synthesize --type=repo`) + paradigm
+     (`/synthesize --paradigm=matrix`) modes.
+   - **Step 15**: Run `code-reviewer` agent over `.claude/skills/synthesize/`,
+     `scripts/lib/analysis-schema.js`, and deprecation redirects
+     (`repo-synthesis/SKILL.md`, `website-synthesis/SKILL.md`).
 
-1. **Wave 5 opportunity matrix follow-through** — Ledger persists 12 entries at
-   `.research/analysis/synthesis/opportunities-ledger.jsonl`. 2 adopted (ranks
-   1, 2), 1 deferred to T47 (rank 4), 9 pending. Pick from:
-   - **Rank 3 (E1, medium):** `.claude-plugin/marketplace.json` distribution
-   - **Rank 5 (E2, medium):** Bidirectional doc-feature validator in pre-commit
-   - **Rank 6 (E2, high):** Prototype zero-schema MCP from SoNash scripts/ CLI
-   - **Rank 7 (E2, high):** `/deep-research` OAuth-scope-filtered MCP
-   - **Rank 8 (E2, high):** Meta-tool for SoNash skill/agent discovery
-   - **Rank 9 (E2, high):** SoNash Firebase-native reference doc
-   - **Rank 10 (E3, high):** `/deep-research` privacy-first on-device extraction
-   - **Rank 11 (E3, high):** `/deep-research` 42 CFR Part 2 / HIPAA architecture
-   - **Rank 12 (E2, medium):** Skill retirement workflow spec
+2. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
+   2b to ~20 prior product-repo analyses in `.research/analysis/`
+   (application/framework/tool-demo taxonomic). Parallelizable via agents.
 
-2. **T47 — Wave 6 CAS source seed** (created Session #277, see todos.jsonl) —
-   Queue 10 gap-fill sources from synthesis §2: Sober Grid, I Am Sober,
-   InTheRooms, 42 CFR Part 2 docs, Firebase reference, TS MCP SDK, whisper.cpp,
-   monolith, readable-cli, SBOM tool. After each round of `/analyze`, run
-   `/synthesize` again to diff against Wave 5.
+3. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
+   measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench shape
+   (baseline / native / native_augment), per-instance cached by
+   `(repo, commit)`, fixed benchmark. SoNash adaptation needs: curated scenarios
+   from review history + extraction journal, pattern-aware vs pattern-unaware
+   agent comparison, per-scenario metrics.
 
-3. **Test `/recall`** — SQLite FTS5 query interface updated with Wave 5 sync but
-   never tested with live queries.
+4. **GitNexus trial** (if license resolves permissive) — Step 1: check `LICENSE`
+   file. Step 2: install on throwaway branch (`npx gitnexus analyze`
+   - `gitnexus setup`). Step 3: use for one real task (`/pr-review` or
+     refactor). Step 4: adopt / extract-only decision.
 
-4. **T45 — Hook-based skill compliance enforcement** — 5 highest-risk skills
-   (session-end, brainstorm, pr-review, skill-creator, repo-analysis). Hooks are
-   high-reliability vs checklists' medium-reliability.
+5. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
+   sources (Sober Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase
+   reference, TS MCP SDK, whisper.cpp, monolith, readable-cli, SBOM).
 
-5. **T46 — Cross-locale memory sync STRATEGY** (research only) — Follow-up to
-   T43 one-shot merge. Needs `/deep-research` when prioritized.
+6. **Remaining Wave 5 opportunity matrix items** — 9 entries pending status
+   update in ledger (marketplace.json distribution, bidirectional doc-feature
+   validator, zero-schema MCP, OAuth-filter MCP, skill retirement spec, etc.).
 
-6. **T42 — Nous Research Hermes model series research** (P3).
+7. **T45 — Hook-based skill compliance enforcement** — 5 highest-risk skills.
+8. **T46 — Cross-locale memory sync STRATEGY** (research only).
+9. **T42 — Nous Research Hermes model series research** (P3).
+10. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
+11. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+12. **Multi-layer memory (T4)** — Research done.
+13. **T30 todo JSONL data loss prevention** — P1 bug.
+14. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
 
-7. **Dev dashboard implementation (T2)** — IN-PROGRESS (Session #245), XL.
-
-8. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-
-9. **Multi-layer memory (T4)** — Research done (40 agents, 128 claims).
-
-10. **T30 todo JSONL data loss prevention** — P1 bug, Write tool overwrites.
-
-11. **JASON-OS Domain 02a (T16)** — Brainstorm complete. Synthesis now provides
-    concrete starting patterns: outline's OAuth-scope-filtered MCP, archivebox's
-    zero-schema MCP, composio's meta-tool discovery pattern.
-
-12. **DEBT-45635 / DEBT-45646 investigations** (carried over).
-
-### After Debt-Runner
-
-8. **Plan orchestration Waves 2-3 (T6)** — SWS CANON + M1.6 features.
-
-### Backlog (run `/todo` for full list — 16 active, 6 completed)
+### Backlog (run `/todo` for full list — 13 pending, 48 total)
 
 ---
 

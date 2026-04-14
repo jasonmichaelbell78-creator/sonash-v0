@@ -39,16 +39,6 @@
       "timestamp": "2026-04-13T13:35:18.664Z",
       "occurrences": 3,
       "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
-      "type": "session-end-missing",
-      "severity": "warning",
-      "message": "Previous session started 1h ago without session-end",
-      "action": "Review with /alerts",
-      "timestamp": "2026-04-13T23:42:11.635Z",
-      "occurrences": 12,
-      "occurrences_since_ack": 1
     }
   ]
 }
