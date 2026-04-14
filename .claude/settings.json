@@ -254,6 +254,18 @@
             "continueOnError": true
           }
         ]
+      },
+      {
+        "matcher": "^(?i)(write|edit|multiedit)$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Write(.planning/todos.jsonl)|Edit(.planning/todos.jsonl)|MultiEdit(.planning/todos.jsonl)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js $ARGUMENTS",
+            "statusMessage": "Re-rendering TODOS.md from todos.jsonl...",
+            "continueOnError": true
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [

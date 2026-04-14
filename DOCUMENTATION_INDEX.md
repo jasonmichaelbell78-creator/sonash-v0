@@ -322,7 +322,7 @@ _Foundation_
 | Document                                      | Description                                                  | References | Last Modified |
 | --------------------------------------------- | ------------------------------------------------------------ | ---------- | ------------- |
 | [Architecture Documentation](ARCHITECTURE.md) | -                                                            | ↓10 ↑6     | 2026-03-25    |
-| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓10 ↑11    | 2026-04-13    |
+| [Development Guide](DEVELOPMENT.md)           | Unified dev dashboard for monitoring session activity, error | ↓10 ↑11    | 2026-04-14    |
 
 ### Agent Documentation (Tier 3)
 
@@ -524,7 +524,7 @@ _Claude Code skills_
 | [Recall Reference](.claude/skills/recall/REFERENCE.md)                                                                              | Query mode specifications, output formatting rules, follow-u...   | ↓0 ↑0      | 2026-04-08    |
 | [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓1 ↑0      | 2026-04-10    |
 | [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓0 ↑1      | 2026-04-13    |
-| [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-09    |
+| [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-14    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-04-11    |
@@ -545,7 +545,7 @@ _Claude Code skills_
 | [sonarcloud](.claude/skills/sonarcloud/SKILL.md)                                                                                    | Unified orchestrator for all SonarCloud operations against t...   | ↓0 ↑2      | 2026-03-12    |
 | [SonarCloud Enrichment (Step 1.5)](.claude/skills/pr-review/reference/SONARCLOUD_ENRICHMENT.md)                                     | When SonarCloud issues are detected in pasted feedback, auto...   | ↓1 ↑0      | 2026-02-14    |
 | [sonash-context](.claude/skills/sonash-context/SKILL.md)                                                                            | -                                                                 | ↓0 ↑0      | 2026-04-01    |
-| [synthesize](.claude/skills/synthesize/SKILL.md)                                                                                    | > **Status:** v1.2 (active). Consolidates `/repo-synthesis` ...   | ↓2 ↑0      | 2026-04-13    |
+| [synthesize](.claude/skills/synthesize/SKILL.md)                                                                                    | > **Status:** v1.2 (active). Consolidates `/repo-synthesis` ...   | ↓2 ↑0      | 2026-04-14    |
 | [System Test — 23-Domain Test Plan](.claude/skills/system-test/domains.md)                                                          | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
 | [System Test — Complete Interactive Workflow](.claude/skills/system-test/reference/WORKFLOW.md)                                     | Full reference for the 23-domain interactive system test ski...   | ↓1 ↑0      | 2026-02-19    |
 | [system-test](.claude/skills/system-test/SKILL.md)                                                                                  | -                                                                 | ↓0 ↑1      | 2026-02-24    |
@@ -564,7 +564,7 @@ _Claude Code skills_
 | [webapp-testing](.claude/skills/webapp-testing/SKILL.md)                                                                            | To test local web applications, write native Python Playwrig...   | ↓0 ↑0      | 2026-02-24    |
 | [Website Analysis Reference](.claude/skills/website-analysis/REFERENCE.md)                                                          | Lead with creator-specific relevance, not site description. ...   | ↓0 ↑0      | 2026-04-10    |
 | [website-analysis](.claude/skills/website-analysis/SKILL.md)                                                                        | Creator-first analysis of websites as knowledge artifacts. M...   | ↓0 ↑0      | 2026-04-12    |
-| [website-synthesis](.claude/skills/website-synthesis/SKILL.md)                                                                      | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-09    |
+| [website-synthesis](.claude/skills/website-synthesis/SKILL.md)                                                                      | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-14    |
 
 ### Slash Commands (Tier 3)
 

@@ -650,6 +650,7 @@ feedback on code quality, security, and best practices.
 | post-read-handler.js            | Read                      | Track   | Context tracking, auto-save, handoff                   |
 | commit-tracker.js               | Bash                      | Track   | Log git commits to JSONL (#138)                        |
 | governance-logger.js            | PostToolUse (Write/Edit)  | Log     | Log governance changes with git diff to JSONL          |
+| post-todos-render.js            | PostToolUse (Write/Edit)  | Render  | Re-render TODOS.md when .planning/todos.jsonl changes  |
 | track-agent-invocation.js       | Task                      | Track   | Record agent invocations for compliance (#101)         |
 | decision-save-prompt.js         | AskQuestion               | Prompt  | Remind to document decisions                           |
 | user-prompt-handler.js          | UserPromptSubmit          | Process | Process user prompts                                   |
