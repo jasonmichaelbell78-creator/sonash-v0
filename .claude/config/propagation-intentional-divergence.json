@@ -71,6 +71,13 @@
       "reason": "In PR #507 R2 C2d I added a top-level `function errCode(err)` helper in scripts/lib/safe-fs.js (propagated to all 8 skill copies) for defensive .code extraction. The 4 files listed here have BLOCK-LOCAL `const errCode = ...` inline within catch blocks (e.g., `const errCode = err && typeof err === 'object' && 'code' in err ? String(err.code) : ''`). They are independent locals, NOT copies of the safe-fs helper. Follow-up candidate: consolidate the 4 locals into the shared safe-fs helper, but scope out of PR #507.",
       "addedAt": "2026-04-11",
       "canonicalFile": "scripts/lib/safe-fs.js"
+    },
+    {
+      "funcName": "resolveGitRoot",
+      "files": [".claude/hooks/post-todos-render.js", "scripts/check-triggers.js"],
+      "reason": "Two independent one-liner helpers around `git rev-parse --show-toplevel` with different signatures — post-todos-render.js accepts an optional cwd (execFileSync), check-triggers.js takes no arg (spawnSync). Cost of extracting to a shared lib exceeds benefit for 2 call sites with different APIs. Future consolidation candidate if a 3rd copy appears. Confirmed independent in PR #511 R1.",
+      "addedAt": "2026-04-14",
+      "canonicalFile": null
     }
   ]
 }
