@@ -339,10 +339,16 @@ function parseMarkdownReviews(content) {
   //   2. Empty placeholders: zero everything and no patterns/learnings.
   //      These are markdown header-only entries with no real review content.
   return reviews.filter((r) => {
-    const dispositionsZero = r.fixed + r.deferred + r.rejected === 0;
-    if (r.total > 0 && dispositionsZero) return false;
+    // Coerce to numbers so undefined/NaN fields don't poison arithmetic.
+    // Parser can legitimately omit fields on malformed or partial entries.
+    const total = Number(r.total ?? 0) || 0;
+    const fixed = Number(r.fixed ?? 0) || 0;
+    const deferred = Number(r.deferred ?? 0) || 0;
+    const rejected = Number(r.rejected ?? 0) || 0;
+    const dispositionsZero = fixed + deferred + rejected === 0;
+    if (total > 0 && dispositionsZero) return false;
     const isEmpty =
-      r.total === 0 &&
+      total === 0 &&
       dispositionsZero &&
       (!r.patterns || r.patterns.length === 0) &&
       (!r.learnings || r.learnings.length === 0);

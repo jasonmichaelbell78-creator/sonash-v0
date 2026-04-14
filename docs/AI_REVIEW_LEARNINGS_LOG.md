@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#78)</summary>
+
+- **Date:** 2026-04-14
+- **Reviews consolidated:** #review-pr493-r1-#rev-87
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#77)</summary>
 
 - **Date:** 2026-04-13
@@ -1291,8 +1300,8 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~5330 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 23    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~5480 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 24    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -1940,6 +1949,41 @@ deduplicated, non-overlapping ranges):
 - narrow try-blocks + per-catch console.warn beats blanket
   catch-and-return-empty
 - opt-in egress flags are cheap hardening even in prototype phase
+
+---
+
+### Review rev-88: PR #511 R1 (Mixed: Qodo Code Review + Qodo Suggestions + Qodo Compliance + Gemini Code Assist + CI) (2026-04-14)
+
+**Date:** 2026-04-14 | **PR:** #511 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 10    | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 5     | 3     | 1       |
+
+**Patterns:**
+
+- sanitize-error-in-hooks
+- module-exports-requiremain-guard-retrofit
+- zod-regex-contracts
+- nan-safe-coercion
+- unfiltered-count-for-canonical-metrics
+- line-anchored-metric-regex
+- lightweight-jsonl-audit-trail
+- narrow-readfilesync-trycatch
+
+**Learnings:**
+
+- multi-source convergence rule paid off twice on schema-integrity bugs
+- test-baseline is last resort; module.exports retrofit is cheap at creation
+  time
+- audit trail on hot-path hooks belongs in state jsonl not hook stdout
+- large meta-PRs compress review volume when majority is research artifacts
 
 ## Key Patterns
 
@@ -5328,3 +5372,115 @@ DAS needed).
   tests for 2 new scripts, prettier synthesis.md, silent-swallow narrow-catch
   rewrite, --private-ok opt-in flag, TYPE_MAP fallback, L194 char-class-to-
   string replaceAll; hook state drift folded in).
+
+### Review #89 — PR #511 R1 (Mixed: Qodo Code Review + Qodo Suggestions + Qodo Compliance + Gemini Code Assist + CI)
+
+**Scope:** 10 items across 5 sources. All 10 this-PR (no DAS needed). 1C / 5M /
+3m / 1T severity split. PR is 100 files (93% research/state/meta) but review
+focus is the small code surface: `post-todos-render.js` (new hook),
+`analysis-schema.js` (Zod contracts), `review-lifecycle.js` (filter logic),
+`render-reviews-to-md.ts` (metrics write), and one test script.
+
+- 1 CRITICAL Qodo+Compliance: raw `err.message` logged in new hook (CLAUDE.md §5
+  rule — must use `sanitize-error`).
+- 1 MAJOR Qodo: `readFileSync` without try/catch in Step 13 test (CLAUDE.md §5
+  rule — existsSync race).
+- 1 MAJOR Qodo: filtered render corrupts Active-reviews metric when
+  `--filter-pr`/`--last` used against canonical output.
+- 1 MAJOR convergent (Qodo+Gemini): `title_key` regex missing on
+  `opportunitySchema` — elevated from MINOR to MAJOR via multi-source rule.
+- 1 MAJOR convergent (Qodo+Gemini): NaN risk in `review-lifecycle.js` noise
+  filter — elevated from MINOR to MAJOR.
+- 1 MAJOR CI: new hook (`post-todos-render.js`, 84 lines) absent from test
+  baseline — coverage completeness blocked.
+- 2 MINOR Gemini: `title_key` regex missing on `opportunityLedgerRecord`;
+  `first_seen_in_run`/`last_seen_in_run` missing YYYY-MM-DD regex.
+- 1 MINOR Qodo advisory: renderer stderr/stdout discarded on hook failure.
+- 1 TRIVIAL Qodo ⚪: hook lacks attributable audit trail.
+
+**Key fixes:**
+
+- **CRITICAL sanitize-error in post-todos-render.js:** Switched from inline
+  `err && err.message ? err.message : err` to
+  `require(".../sanitize-error.cjs")` with defensive fallback (matches
+  `governance-logger.js`, `settings-guardian.js`, `deploy-safeguard.js`). All
+  three emission sites — renderer failure, stage failure, audit-log error — now
+  route through the helper.
+- **Hook refactor for testability:** Inlined top-level logic moved into a
+  `main(rawArg)` function gated by `require.main === module`. Pure helpers
+  (`extractFilePath`, `isTodosJsonl`, `formatRendererError`, `writeAudit`,
+  `resolveProjectDir`) exported via `module.exports` so tests can exercise them
+  directly without spawning child processes. Same pattern we applied to
+  `check-slopsquat.js` and `generate-llms-txt.js` in PR #510 R2 (Review #88).
+- **Renderer diagnostics (#8):** Catch block now captures `err.stderr` (last
+  2KB), `err.stdout` (last 1KB), and `err.status` — all passed through
+  `sanitizeError()` before logging. Previously the exit status and stderr (where
+  the real failure message lives) were discarded, leaving developers with a
+  200-char truncated `err.message`.
+- **Audit trail (#9):** Added `writeAudit()` helper that appends JSONL entries
+  to `.claude/state/post-todos-render-audit.jsonl` with
+  `{timestamp, action, file_path, success, ...}` at every decision point
+  (`rendered`, `render_failed`, `staged`, `stage_failed`). Failure-safe: audit
+  append is wrapped in its own try/catch so an unwritable state dir can never
+  block the hook. Lightweight enough that per-Write noise is acceptable.
+- **readFileSync try/catch (#2):** Wrapped the two `readFileSync` calls in
+  `.research/analysis/synthesis/test-step13/test.js` in narrow try/catch blocks
+  that `console.error` + `process.exit(1)` on failure. Added `process` to the
+  `/* global */` directive.
+- **Filtered-render metric corruption (#3):** Snapshot
+  `totalRecordCount = records.length` before filters apply. Replaced
+  `records.length` with `totalRecordCount` in the regex replacement and — when
+  filters are active — skip the metrics-row auto-update entirely (writing a
+  total while rendering a subset would still misrepresent the canonical file's
+  shape). Also anchored both metric-row regexes to line start (`^...$` with
+  `/m`) to prevent unintended row matches. Matches Qodo-suggested approach B+C
+  combined.
+- **Zod regex contracts (#4, #5, #6):** Hoisted `TITLE_KEY_REGEX` and
+  `DATE_YMD_REGEX` constants, applied `.regex(...)` to `title_key` in both
+  `opportunitySchema` (optional) and `opportunityLedgerRecord` (required), and
+  to `first_seen_in_run`/`last_seen_in_run` date strings. Enforcement closes the
+  gap between the docstring contract and the runtime schema.
+- **NaN coercion in review-lifecycle (#7):** Coerced `total`, `fixed`,
+  `deferred`, `rejected` via `Number(r.field ?? 0) || 0` before arithmetic.
+  Previously undefined fields from malformed parsed entries produced `NaN` in
+  the sum, which silently made the integrity check
+  `total > 0 && dispositionsZero` false — letting invalid records through.
+  Dual-guard (`?? 0` + `|| 0`) handles both missing keys and `NaN` coercion
+  fallout.
+- **CI coverage (#10):** New `tests/hooks/post-todos-render.test.ts` with 28
+  tests across 5 suites: `extractFilePath` (6), `isTodosJsonl` (7),
+  `formatRendererError` (8), `writeAudit` (5), module-exports smoke (2). Tests
+  use `path.resolve(PROJECT_ROOT, ...)` with source/dist detection (pattern from
+  `state-utils.test.ts`) so the test works from both `tests/hooks/` and
+  `dist-tests/tests/hooks/`. All 28 pass.
+
+**R1 process learnings:**
+
+- **Convergence rule paid off twice:** Items #4 and #7 were both MINOR
+  individually, but Qodo+Gemini flagged each independently — the auto-elevate-
+  to-MAJOR rule from skill v4.1 caught two schema-integrity bugs that would
+  otherwise have been batched with stylistic MINOR fixes and possibly deferred
+  on a larger PR. Worth keeping.
+- **Test-baseline vs. real tests:** On the prior PR (#510 R2 / Review #88) we
+  added tests for two flagged hooks rather than baseline entries — same call
+  here on user direction ("real tests"). The `module.exports` +
+  `require.main === module` retrofit is becoming the standard opener for any new
+  script/hook — testable from day one costs ~5 extra lines and removes the
+  retrofit friction later.
+- **Audit-trail as structured JSONL, not console.log:** For ⚪ audit-trail
+  findings on hot-path hooks, the right answer is a lightweight append to a
+  dedicated `.claude/state/` JSONL — not verbose console output on every
+  invocation. Keeps diagnostics attributable (timestamp + action + success)
+  without polluting hook stdout (which Claude Code inlines into every tool
+  result).
+- **Large meta-PRs compress review volume:** Despite 100 changed files, the
+  review surface landed at 10 items — 93% of the diff was research/state/
+  planning artifacts that Qodo/Gemini correctly ignored. The Step 0 "large PR
+  advisory + first-scan detection" warm-up correctly predicted this and the
+  batch-ack path was the right default.
+
+**Commits:**
+
+- (single-commit batch — all 10 R1 items per user direction: hook refactor with
+  sanitize-error + audit trail + stderr capture, Step 13 try/catch, schema regex
+  contracts, NaN coercion, filtered-render metric fix, 28-test hook coverage).

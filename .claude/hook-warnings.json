@@ -1,23 +1,13 @@
 {
   "warnings": [
     {
-      "hook": "pre-commit",
-      "type": "jsonl-sync",
+      "hook": "session-start",
+      "type": "session-end-missing",
       "severity": "warning",
-      "message": "Planning JSONL changed without MD regeneration",
-      "action": "Run generation scripts",
-      "timestamp": "2026-04-13T20:02:40.602Z",
-      "occurrences": 2,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "agent",
-      "severity": "warning",
-      "message": "Agent compliance warnings - code changed without agent review",
-      "action": "Use code-reviewer agent for modified code",
-      "timestamp": "2026-04-13T18:10:48.767Z",
-      "occurrences": 2,
+      "message": "Previous session started 3h ago without session-end",
+      "action": "Review with /alerts",
+      "timestamp": "2026-04-14T14:19:23.220Z",
+      "occurrences": 8,
       "occurrences_since_ack": 1
     },
     {
@@ -26,18 +16,18 @@
       "severity": "warning",
       "message": "S0: 26 critical debt items",
       "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-13T13:35:18.748Z",
+      "timestamp": "2026-04-14T14:19:23.342Z",
       "occurrences": 3,
       "occurrences_since_ack": 1
     },
     {
       "hook": "session-start",
-      "type": "review-lifecycle",
+      "type": "cli-tools-missing",
       "severity": "warning",
-      "message": "Review lifecycle validation issues found",
-      "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-13T13:35:18.664Z",
-      "occurrences": 3,
+      "message": "CLI tools missing: rg",
+      "action": "bash scripts/install-cli-tools.sh",
+      "timestamp": "2026-04-14T14:19:23.446Z",
+      "occurrences": 2,
       "occurrences_since_ack": 1
     }
   ]

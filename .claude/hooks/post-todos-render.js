@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* global require, process, console */
+/* global require, process, console, module, __dirname */
 /* eslint-disable @typescript-eslint/no-require-imports */
 
 // PostToolUse Write/Edit hook: when .planning/todos.jsonl is written, regenerate
@@ -11,73 +11,154 @@
 "use strict";
 
 const { execFileSync } = require("node:child_process");
+const fs = require("node:fs");
 const path = require("node:path");
 
 const TODOS_JSONL = ".planning/todos.jsonl";
 const TODOS_MD = ".planning/TODOS.md";
 const RENDERER = "scripts/planning/render-todos.js";
+const AUDIT_LOG = ".claude/state/post-todos-render-audit.jsonl";
+
+// sanitize-error helper — required by CLAUDE.md §5. Fallback preserves
+// non-blocking semantics if the helper is unavailable mid-refactor.
+let sanitizeError;
+try {
+  ({ sanitizeError } = require(
+    path.join(__dirname, "..", "..", "scripts", "lib", "sanitize-error.cjs")
+  ));
+} catch {
+  sanitizeError = (err) => (err instanceof Error ? err.constructor.name : "unknown error");
+}
+
+function extractFilePath(rawArg) {
+  if (!rawArg) return "";
+  const trimmed = String(rawArg);
+  if (trimmed.trimStart().startsWith("{")) {
+    try {
+      return JSON.parse(trimmed).file_path || "";
+    } catch {
+      return trimmed;
+    }
+  }
+  return trimmed;
+}
+
+function isTodosJsonl(filePath) {
+  if (!filePath) return false;
+  return String(filePath).replaceAll("\\", "/").endsWith(TODOS_JSONL);
+}
+
+function writeAudit(projectDir, entry) {
+  try {
+    const auditPath = path.join(projectDir, AUDIT_LOG);
+    fs.mkdirSync(path.dirname(auditPath), { recursive: true });
+    fs.appendFileSync(
+      auditPath,
+      JSON.stringify({ timestamp: new Date().toISOString(), ...entry }) + "\n"
+    );
+  } catch {
+    // Non-blocking: audit failure must never block hook completion.
+  }
+}
+
+function formatRendererError(err) {
+  const stderrTail = err && err.stderr ? String(err.stderr).slice(-2000) : "";
+  const stdoutTail = err && err.stdout ? String(err.stdout).slice(-1000) : "";
+  const exitStatus = err && typeof err.status === "number" ? err.status : null;
+  const safeMsg = sanitizeError(err).slice(0, 200);
+  const safeStderr = sanitizeError(stderrTail).slice(-800);
+  const safeStdout = sanitizeError(stdoutTail).slice(-400);
+
+  const message =
+    "[post-todos-render] Renderer failed (non-blocking): " +
+    safeMsg +
+    (exitStatus !== null ? " [exit=" + exitStatus + "]" : "") +
+    (safeStderr ? "\n--- stderr ---\n" + safeStderr : "") +
+    (safeStdout ? "\n--- stdout ---\n" + safeStdout : "");
+
+  return { message, exitStatus, safeMsg };
+}
+
+function resolveProjectDir(cwd) {
+  try {
+    return execFileSync("git", ["rev-parse", "--show-toplevel"], {
+      encoding: "utf8",
+      timeout: 5000,
+      cwd,
+    }).trim();
+  } catch {
+    return cwd;
+  }
+}
 
 function ok() {
   console.log("ok");
   process.exit(0);
 }
 
-const rawArg = process.argv[2] || "";
-if (!rawArg) ok();
+function main(rawArg) {
+  if (!rawArg) return ok();
 
-let filePath = "";
-if (rawArg.trimStart().startsWith("{")) {
+  const filePath = extractFilePath(rawArg);
+  if (!filePath) return ok();
+  if (!isTodosJsonl(filePath)) return ok();
+
+  const projectDir = resolveProjectDir(process.cwd());
+
+  // Re-render — non-blocking on failure.
   try {
-    filePath = JSON.parse(rawArg).file_path || "";
-  } catch {
-    filePath = rawArg;
+    execFileSync("node", [path.resolve(projectDir, RENDERER)], {
+      cwd: projectDir,
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 30_000,
+    });
+    writeAudit(projectDir, { action: "rendered", file_path: filePath, success: true });
+  } catch (err) {
+    const { message, exitStatus, safeMsg } = formatRendererError(err);
+    console.error(message);
+    writeAudit(projectDir, {
+      action: "render_failed",
+      file_path: filePath,
+      success: false,
+      exit_status: exitStatus,
+      error: safeMsg,
+    });
+    return ok();
   }
-} else {
-  filePath = rawArg;
+
+  // Stage the regenerated MD so it lands in the same commit as the JSONL change.
+  try {
+    execFileSync("git", ["add", TODOS_MD], {
+      cwd: projectDir,
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 5000,
+    });
+    writeAudit(projectDir, { action: "staged", file_path: TODOS_MD, success: true });
+  } catch (err) {
+    writeAudit(projectDir, {
+      action: "stage_failed",
+      file_path: TODOS_MD,
+      success: false,
+      error: sanitizeError(err).slice(0, 200),
+    });
+    // Not in git, file unchanged, or other transient — ignore
+  }
+
+  return ok();
 }
 
-if (!filePath) ok();
+module.exports = {
+  extractFilePath,
+  isTodosJsonl,
+  formatRendererError,
+  writeAudit,
+  resolveProjectDir,
+  AUDIT_LOG,
+  TODOS_JSONL,
+  TODOS_MD,
+  RENDERER,
+};
 
-// Normalize the path. Match anything ending in .planning/todos.jsonl
-// (handles absolute, relative, and windows-style paths).
-const normalized = filePath.replaceAll("\\", "/");
-if (!normalized.endsWith(TODOS_JSONL)) ok();
-
-let projectDir = process.cwd();
-try {
-  projectDir = execFileSync("git", ["rev-parse", "--show-toplevel"], {
-    encoding: "utf8",
-    timeout: 5000,
-  }).trim();
-} catch {
-  // Not in a git repo — re-render is still useful, just skip staging
+if (require.main === module) {
+  main(process.argv[2] || "");
 }
-
-// Re-render — non-blocking on failure.
-try {
-  execFileSync("node", [path.resolve(projectDir, RENDERER)], {
-    cwd: projectDir,
-    stdio: ["ignore", "pipe", "pipe"],
-    timeout: 30_000,
-  });
-} catch (err) {
-  console.error(
-    "[post-todos-render] Renderer failed (non-blocking): " +
-      String(err && err.message ? err.message : err).slice(0, 200)
-  );
-  ok();
-}
-
-// Stage the regenerated MD so it lands in the same commit as the JSONL change.
-// Failure is non-blocking — user can stage manually later.
-try {
-  execFileSync("git", ["add", TODOS_MD], {
-    cwd: projectDir,
-    stdio: ["ignore", "pipe", "pipe"],
-    timeout: 5000,
-  });
-} catch {
-  // Not in git, file unchanged, or other transient — ignore
-}
-
-ok();

@@ -464,6 +464,12 @@ export function renderReviews(
   const rawRecords = readJsonl(inputPath, { safe: true, quiet: true });
   let records = parseRecords(rawRecords);
 
+  // Snapshot the unfiltered count — the Document Health "Active reviews" metric
+  // must reflect the canonical dataset size, not a filtered subset. Computing
+  // before filters prevents silent metric drift when --filter-pr/--last run
+  // against the canonical output path.
+  const totalRecordCount = records.length;
+
   // Apply filters
   if (options?.filterPr != null) {
     records = records.filter((r) => r.pr === options.filterPr);
@@ -500,14 +506,27 @@ export function renderReviews(
   let fullDocument = assembleDocument(preserved, renderedEntries);
 
   // Auto-update Document Health Monitoring metrics table to prevent drift.
-  // Two-pass: first set active-reviews count, then count final line length.
-  // The active-reviews row is the validator's drift trigger; the line-count row
-  // is informational. Bounded inputs (single-line table cells), no ReDoS risk.
-  fullDocument = fullDocument.replace(/(\| Active reviews \| )\d+(\s*\|)/, `$1${records.length}$2`);
-  const lineCount = fullDocument.split("\n").length;
-  // Round to nearest 10 to keep diffs minimal across runs that don't change content
-  const roundedLines = Math.round(lineCount / 10) * 10;
-  fullDocument = fullDocument.replace(/(\| Main log lines \| ~)\d+(\s*\|)/, `$1${roundedLines}$2`);
+  // Skip when filters are active — the rendered subset doesn't reflect the
+  // canonical dataset, so writing a metric from either the subset or the total
+  // would misrepresent document health. Line-anchored regex prevents matching
+  // unintended rows. Bounded inputs (single-line table cells), no ReDoS risk.
+  const filtersActive = options?.filterPr != null || options?.lastN != null;
+  if (!filtersActive) {
+    // Line-anchored to prevent mid-document matches. Not full-line anchored —
+    // the metrics table has multi-column rows, so `$` at end-of-line would
+    // reject valid matches.
+    fullDocument = fullDocument.replace(
+      /^(\| Active reviews \| )\d+(\s*\|)/m,
+      `$1${totalRecordCount}$2`
+    );
+    const lineCount = fullDocument.split("\n").length;
+    // Round to nearest 10 to keep diffs minimal across runs that don't change content
+    const roundedLines = Math.round(lineCount / 10) * 10;
+    fullDocument = fullDocument.replace(
+      /^(\| Main log lines \| ~)\d+(\s*\|)/m,
+      `$1${roundedLines}$2`
+    );
+  }
 
   // Ensure output directory exists
   const outDir = path.dirname(absOutputPath);

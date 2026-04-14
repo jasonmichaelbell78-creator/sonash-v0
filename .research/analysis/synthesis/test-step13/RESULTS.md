@@ -1,6 +1,6 @@
 # Step 13 Functional Test Results
 
-**Date:** 2026-04-14T13:00:19.794Z **Method:** Lighter functional test (option
+**Date:** 2026-04-14T14:44:39.046Z **Method:** Lighter functional test (option
 B) — verify filter + paradigm code paths without full synthesis run
 
 ## Test 13a — `--type=repo` source filter

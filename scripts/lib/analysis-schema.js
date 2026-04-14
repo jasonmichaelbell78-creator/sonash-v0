@@ -250,10 +250,20 @@ const chainNodeSchema = z.object({
 // OPTIONAL in the synthesis.json snapshot (writers may compute on-the-fly when
 // upserting the ledger). REQUIRED in opportunityLedgerRecord below — the ledger
 // is the durable file where title_key is the dedup primary key.
+// title_key contract: lowercase alnum + underscores only, max 60 chars.
+// Enforced at the schema level to guarantee cross-run dedup keys match the
+// documented format — prevents silent drift between writers.
+const TITLE_KEY_REGEX = /^[a-z0-9_]+$/;
+const DATE_YMD_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
 const opportunitySchema = z.object({
   rank: z.number().int().positive(),
   title: z.string(),
-  title_key: z.string().max(60).optional(),
+  title_key: z
+    .string()
+    .max(60)
+    .regex(TITLE_KEY_REGEX, "title_key must be lowercase alnum + underscores only")
+    .optional(),
   description: z.string(),
   effort: effortEnum,
   impact: z.enum(["low", "medium", "high"]),
@@ -273,11 +283,14 @@ const deferredToSchema = z
   })
   .nullable();
 const opportunityLedgerRecord = z.object({
-  title_key: z.string().max(60),
+  title_key: z
+    .string()
+    .max(60)
+    .regex(TITLE_KEY_REGEX, "title_key must be lowercase alnum + underscores only"),
   rank: z.number().int().positive(),
   title: z.string(),
-  first_seen_in_run: z.string(), // YYYY-MM-DD
-  last_seen_in_run: z.string(),
+  first_seen_in_run: z.string().regex(DATE_YMD_REGEX, "Must be YYYY-MM-DD"),
+  last_seen_in_run: z.string().regex(DATE_YMD_REGEX, "Must be YYYY-MM-DD"),
   runs_seen: z.number().int().positive(),
   status: ledgerStatusEnum,
   effort: effortEnum,

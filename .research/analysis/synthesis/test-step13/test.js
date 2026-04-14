@@ -1,4 +1,4 @@
-/* global console */
+/* global console, process */
 // Step 13 functional verification — re-runnable.
 // Tests /synthesize --type=repo filter logic + --paradigm=matrix contract.
 // Originally ran in Session #279 to close T29 PLAN Step 13.
@@ -48,8 +48,21 @@ const result13a = {
 };
 
 // === Test 13b: --paradigm=matrix schema/reference check ===
-const schema = readFileSync(join(ROOT, "scripts", "lib", "analysis-schema.js"), "utf8");
-const ref = readFileSync(join(ROOT, ".claude", "skills", "synthesize", "REFERENCE.md"), "utf8");
+// Wrap reads in try/catch — CLAUDE.md §5 rule (existsSync race condition).
+let schema = "";
+let ref = "";
+try {
+  schema = readFileSync(join(ROOT, "scripts", "lib", "analysis-schema.js"), "utf8");
+} catch (err) {
+  console.error("Failed to read analysis-schema.js:", err instanceof Error ? err.message : err);
+  process.exit(1);
+}
+try {
+  ref = readFileSync(join(ROOT, ".claude", "skills", "synthesize", "REFERENCE.md"), "utf8");
+} catch (err) {
+  console.error("Failed to read REFERENCE.md:", err instanceof Error ? err.message : err);
+  process.exit(1);
+}
 
 const result13b = {
   zod_enum_includes_matrix: /paradigmEnum\s*=\s*z\.enum\(\[[^\]]*['"]matrix['"]/.test(schema),
