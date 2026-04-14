@@ -2,16 +2,6 @@
   "warnings": [
     {
       "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "warning",
-      "message": "Branch has >=20 commits  PR strongly recommended",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-13T22:23:52.421Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 2
-    },
-    {
-      "hook": "pre-commit",
       "type": "jsonl-sync",
       "severity": "warning",
       "message": "Planning JSONL changed without MD regeneration",
@@ -31,16 +21,6 @@
       "occurrences_since_ack": 1
     },
     {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "info",
-      "message": "Branch has >=10 commits  create PR soon",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-13T16:54:48.826Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 2
-    },
-    {
       "hook": "session-start",
       "type": "tdms-s0",
       "severity": "warning",
@@ -58,6 +38,16 @@
       "action": "npm run reviews:lifecycle",
       "timestamp": "2026-04-13T13:35:18.664Z",
       "occurrences": 3,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "session-end-missing",
+      "severity": "warning",
+      "message": "Previous session started 1h ago without session-end",
+      "action": "Review with /alerts",
+      "timestamp": "2026-04-13T23:42:11.635Z",
+      "occurrences": 12,
       "occurrences_since_ack": 1
     }
   ]

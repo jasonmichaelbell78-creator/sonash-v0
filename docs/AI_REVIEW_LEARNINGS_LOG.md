@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#77)</summary>
+
+- **Date:** 2026-04-13
+- **Reviews consolidated:** #85-#rev-87
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#76)</summary>
 
 - **Date:** 2026-04-13
@@ -1927,6 +1936,40 @@ deduplicated, non-overlapping ranges):
 - String.raw eliminates double-escape audit burden in regex escapes
 - pre-existing CC on modified files requires baseline update or refactor commit
 - 42-of-57 items in 2 NEW files = individual triage still cheap when clustered
+
+---
+
+### Review rev-87: PR #510 R2 (Mixed: SonarCloud + CI + Qodo Compliance + Qodo Suggestions) (2026-04-13)
+
+**Date:** 2026-04-13 | **PR:** #510 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 4     | 4     | 0       |
+
+**Patterns:**
+
+- char-class-to-string-replaceAll
+- module-exports-requiremain-guard-retrofit
+- narrow-catch-with-sanitized-warn
+- network-egress-opt-in-flag
+- type-map-fallback
+- prettier-generated-content
+- coverage-gate-real-tests
+
+**Learnings:**
+
+- module.exports + require.main guard should be default for any script with >=1
+  pure helper
+- narrow try-blocks + per-catch console.warn beats blanket
+  catch-and-return-empty
+- opt-in egress flags are cheap hardening even in prototype phase
 
 ## Key Patterns
 
