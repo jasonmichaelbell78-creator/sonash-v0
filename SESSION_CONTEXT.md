@@ -1,9 +1,9 @@
 # Session Context
 
-**Document Version**: 8.32 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.33 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-13 (Session #278 — T29 Step 12 COMPLETE + /repo-analysis v4.6 + GitNexus
-analysis)
+2026-04-14 (Session #279 — /session-begin triage 4 fixed + T29 PLAN CLOSED +
+TODOS.md auto-render hook + CAS PLAN hygiene + handoff doc)
 
 ## Purpose
 
@@ -30,85 +30,106 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-13 (Session #278 — /session-end in progress).
-**Branch**: `planning-41426`. **Working On**: T29 Step 12 COMPLETE,
-`/repo-analysis` v4.6 shipped with Section 2b Use-As-Is Verdict, GitNexus
-analyzed + folded into corpus via incremental synthesis.
+**Last Checkpoint**: 2026-04-14 (Session #279 — /session-end in progress).
+**Branch**: `planning-41426` (5 commits ahead of origin pre-session-end).
+**Working On**: /session-begin triage closed (4 of 5 fixed), T29 synthesis-
+consolidation PLAN fully closed (15/15 steps marked ✅), TODOS.md auto-render
+hook shipped, CAS PLAN.md hygienic (13/15 ✅, 2 ⏳), CAS handoff doc written.
 
 **This session's work (summary)**:
 
-**Phase A — Planning/research cleanup:**
+**Phase A — /session-begin triage (4 of 5 items fixed):**
 
-1. Archived 12 completed planning/research items (T40, Wave 5 agents, website
-   skill, orphan-detection, T39, learning research, github-health research,
-   unified-content-intelligence stub, worktree-management stub, analysis-
-   synthesis-comparison). Commit: `c92103cb`.
-2. Kept active per user decision: `plan-orchestration` (Wave 2+ pending),
-   `multi-layer-memory` research (more to do), `research-discovery-standard`
-   (more to do), `content-analysis-system` (CAS not finished),
-   `synthesis-consolidation` (Step 12+ remaining).
+1. **github-health P0** — Backlog Enforcement workflow failing 3 weeks. Routed:
+   F2 Dependabot fails → DEBT-45653 (new); F1 Backlog Enforcement →
+   cross-referenced existing DEBT-0891 + DEBT-0398 with recurrence note in
+   github-health-history.jsonl. F3 stale CI skipped (currently green).
+2. **reviews disposition violations (3 S2)** — root cause: parser regex
+   `(\d+)\s+(?:total|items)` matched prose. Fix: parseMarkdownReviews() filters
+   records with total>0 + zero dispositions, plus empty placeholders. Removed 3
+   stub records. Added #508 to KNOWN_SKIPPED_IDS.
+3. **Rendered-view drift S3** — manual table at line 1295 of
+   AI_REVIEW_LEARNINGS_LOG.md. Quick patch + structural: render-reviews-to-md.ts
+   now auto-updates Active reviews + Main log lines metrics rows on every
+   render. No future manual maintenance.
+4. **roadmap:hygiene B3 + S4 false positives** — fuzzy substring match was too
+   loose. Tightened scanCommitsForCompletions: word-boundary + structural marker
+   preceding the ID (`(`, `[`, `#`, `:`, or start-of-line).
 
-**Phase B — GitNexus analysis (new corpus source #33):**
+**Phase B — T29 synthesis-consolidation PLAN closed (Steps 13 + 15):**
 
-1. Ran `/repo-analysis` on `abhigyanpatwari/GitNexus` at Standard depth. 27K-
-   star TypeScript monorepo shipping zero-server client-side code intelligence
-   with multi-IDE MCP (Claude Code, Cursor, Codex, Windsurf, OpenCode) +
-   SWE-bench eval harness. 22 candidates (6 patterns, 5 knowledge, 7 content, 4
-   anti-patterns). 37 tags. Creator Healthy 82 / Adoption Healthy 64 / Use-as-is
-   verdict **Trial** (license NOASSERTION + 3 S2 security findings + no
-   incremental re-index are the blockers).
-2. 7 new vocabulary tags added (180 → 187): `knowledge-graph`, `graph-rag`,
-   `precomputed-intelligence`, `mcp-contract-block`, `signs-pattern`,
-   `tree-sitter`, `wasm`.
-3. Extraction journal +22 entries. EXTRACTIONS.md: 309 → 343 candidates across
-   33 sources. SQLite index rebuilt (35 sources, 343 extractions, 280 tags).
+1. **Step 13**: Functional verification (option B, no full-run clobber). 13a
+   `--type=repo`: 35 → 26 repos in / 9 non-repos out (PASS). 13b
+   `--paradigm=matrix`: Zod enum + REFERENCE.md §1.3 spec + 4 contract markers
+   all PASS. Results at `.research/analysis/synthesis/test-step13/`.
+2. **Step 15**: code-reviewer audit returned 8 findings. ALL FIXED in-session
+   (none deferred):
+   - F1 status banner v1.0 → v1.2; F2 opportunitySchema title_key (optional); F3
+     opportunityLedgerRecord Zod schema added (validates 17/17 existing ledger
+     rows) + ledgerStatusEnum + deferredToSchema; F4-F8 wording + routing
+     guide + path correction + double-warning note.
+3. **PLAN.md fully marked**: top status banner + 16 ✅/⏳ markers (15 steps
+   - 8.5). T29 fully closed.
 
-**Phase C — Skill gap discovery + fix (mid-session):**
+**Phase C — TODOS.md auto-render hook (drift prevention):**
 
-1. User surfaced gap: Creator View had no explicit "would SoNash install and use
-   this repo as-is?" section, only pattern/knowledge extraction. Critical for
-   product-type repos (application/framework/tool-demo).
-2. Added new **Section 2b: Use-As-Is Verdict** to the GitNexus creator-view.md,
-   summary.md, and analysis.json (verdict=trial, 5 blockers documented).
-3. Updated `/repo-analysis` SKILL.md v4.5 → **v4.6**: Section 2b now
-   MUST-produce when taxonomic tag is in {application, framework, tool-demo}.
-   New analysis.json fields: `adoption_verdict`, `adoption_blockers`,
-   `adoption_recommendation`.
-4. Saved feedback memory `feedback_adoption_verdict_in_creator_view.md` + index
-   entry in MEMORY.md.
-5. Created **T48**: Backfill Use-As-Is Verdict on prior product-repo analyses
-   (~20 candidates in existing corpus).
+1. **Discovered**: TODOS.md was 2 sessions stale (last regen 6a3eb32e Session
+   #277). T47 + T48 invisible because they were after the last render.
+2. **Fix**: New `.claude/hooks/post-todos-render.js` — fires on Write/Edit/
+   MultiEdit when `.planning/todos.jsonl` is touched. Re-renders + auto-stages.
+   Wired in `.claude/settings.json` with `if:` filter scoped to that exact path
+   (governance-logger pattern). Failures non-blocking. Documented in TRIGGERS.md
+   - DEVELOPMENT.md.
 
-**Phase D — T29 synthesis-consolidation PLAN Step 12 test:**
+**Phase D — CAS PLAN hygiene + handoff doc:**
 
-1. Ran `/synthesize` in incremental mode. Menu correctly detected 1 new Standard
-   source (GitNexus) with prior Wave 5 baseline present.
-2. Archived prior synthesis to
-   `history/synthesis-2026-04-13-wave5-baseline.{md,json}`.
-3. Generated new synthesis.md (10.9K chars) + synthesis.json (108K) with
-   "Changes Since Previous" as lead section covering themes strengthened (4),
-   themes added weak (1 — graph-backed code intelligence), candidates added
-   (22), gaps possibly closed (2 — marketplace reference, eval harness shape),
-   gaps added (2 — SoNash still has no eval, license policy absent), confidence
-   shifts (1), source impact ranking (GitNexus = high).
-4. Updated `last_synthesized_at` on all 33 Standard sources.
-5. Opportunities ledger upserted: 5 new rows (incl. Rank 1 "Build eval harness
-   for agent-capability measurement" — the S-tier Challenge from GitNexus
-   creator-view) + 12 prior preserved = 17 total entries.
-6. All 7 Step 12 requirements PASS. Self-audit 10/10 PASS.
+1. **Investigation**: Found 3 stale active todos: T29 (in-progress P1, but
+   closed today), T37 (pending P3, but GitNexus analyzed Session #278), T40
+   (pending P2, but full retag migration shipped Sessions #275-#276). Marked all
+   three completed.
+2. **CAS PLAN.md hygiene**: Added top status banner (⏳ NEAR-COMPLETE — 13/15)
+   with wave-by-wave summary + corpus snapshot. Marked 13 steps ✅, 2 steps ⏳
+   (Step 14 audit, Step 15 E2E). Same drift pattern as T29 PLAN had.
+3. **Handoff doc** at `.planning/content-analysis-system/REMAINING_CAS_TASKS.md`
+   — full step-by-step plan to close T28 (Steps A/B/C), optional follow-ups
+   (T47, T48, T42), `/deep-plan` template gap analysis with 3-part fix, resume
+   protocol.
+4. **T49 added** (P2 pending) — Fix /deep-plan template (status banner +
+   per-step ✅ markers + plans:hygiene checker).
 
-**Commits**: `c92103cb` (archive) landed. Remaining work batched into a single
-session-end commit.
+**Commits this session (5 ahead of origin pre-/session-end commit)**: `8ec88846`
+(triage 4 fixed + DEBT-45653), `9787b418` (T29 closure 8 audit fixes),
+`b13bd2c4` (TODOS.md auto-render hook), `8a0f71a3` (T29 PLAN markers),
+`8ec75ce7` (stale todos + CAS PLAN hygiene + handoff doc).
 
-**Step status (synthesis-consolidation PLAN)**: Step 11 ✅, Step 12 ✅, Step 14
-effectively ✅, Steps 13 + 15 remain (paradigm/scoped test + code-reviewer
-audit).
+**Step status (T29 synthesis-consolidation PLAN)**: ALL 15 STEPS ✅ COMPLETE.
+**Step status (T28 CAS PLAN)**: 13/15 ✅, Step 14 (audit) + Step 15 (E2E) ⏳.
 
 ---
 
 ## Session Tracking
 
 **Current Session Count**: 279 (since Jan 1, 2026)
+
+> **Session #279 handoff (Triage 4 + T29 CLOSED + auto-render hook + CAS PLAN
+> hygiene, 2026-04-14):** /session-begin surfaced 5 triage items — 4 fixed
+> in-session (github-health P0 routed to DEBT-45653 + cross-refs; reviews
+> disposition violations cleaned via parser tightening; rendered-view drift
+> patched + auto-update added; roadmap:hygiene matcher tightened with
+> word-boundary + structural-marker requirement); 5th was info-only. T29
+> synthesis-consolidation PLAN fully closed: Step 13 functional verification
+> PASS, Step 15 code-reviewer audit returned 8 findings ALL FIXED in-session
+> (incl. new opportunityLedgerRecord Zod schema validating 17/17 existing rows).
+> Discovered TODOS.md was 2 sessions stale → built post-todos-render.js hook
+> that auto-regenerates + auto-stages on every todos.jsonl Write/Edit
+> (governance-logger pattern). Closed 3 stale todos (T29/T37/T40). CAS PLAN.md
+> hygienic banner + 13/15 ✅ + 2 ⏳ markers added. Handoff doc at
+> .planning/content-analysis-system/REMAINING_CAS_TASKS.md. T49 added (fix
+> /deep-plan template gap discovered today). **Next session priorities: (1) CAS
+> Step A — skill-audit on 7 CAS skills (T38 unblocks); (2) CAS Step B — E2E
+> /recall verification → close T28; (3) T48 Adoption Verdict backfill (~20
+> product-repos, parallelizable); (4) T47 Wave 6 source seed; (5) T49 /deep-plan
+> template fix.** Branch: `planning-41426`.
 
 > **Session #278 handoff (T29 Step 12 COMPLETE + /repo-analysis v4.6 + GitNexus
 > analysis, 2026-04-13):** Session #278 archived 12 completed planning/research
@@ -133,6 +154,60 @@ audit).
 ---
 
 ## Recent Session Summaries
+
+**Session #279** (TRIAGE 4 FIXED + T29 PLAN CLOSED + AUTO-RENDER HOOK + CAS
+HYGIENE):
+
+- **Branch**: `planning-41426` (5 commits this session pre-/session-end)
+- **Commits**: `8ec88846` (triage #1-#4 + DEBT-45653 — 21 files), `9787b418`
+  (T29 PLAN closure: Step 13 + Step 15 + 8 audit fixes — 8 files), `b13bd2c4`
+  (TODOS.md auto-render hook — 6 files), `8a0f71a3` (T29 PLAN.md mark all 15
+  steps complete — 2 files), `8ec75ce7` (close stale T29/T37/T40 + CAS PLAN
+  hygiene + handoff doc — 5 files).
+- **/session-begin triage** (5 items, 4 fixed, 1 info-skipped): F1 github-
+  health P0 (Backlog Enforcement weekly fail) → DEBT-45653 + cross-ref
+  DEBT-0891/0398 with recurrence note. F2 reviews disposition × 3 → parser
+  filter for total>0 with zero dispositions + empty placeholders, removed 3 stub
+  records, added #508 to KNOWN_SKIPPED_IDS. F3 rendered-view drift → manual
+  patch + structural fix (render-reviews-to-md.ts auto-updates Doc Health
+  Monitoring table). F4 roadmap:hygiene B3+S4 false positives → matcher
+  tightened (word-boundary + structural marker preceding ID).
+- **T29 synthesis-consolidation PLAN CLOSED**: All 15 steps marked ✅. Step 13
+  functional verification (option B, no full-run clobber): 13a `--type=repo`
+  filter PASS (26 in / 9 out); 13b `--paradigm=matrix` PASS (Zod + REFERENCE
+  - 4 markers). Step 15 code-reviewer audit: 8 findings, ALL FIXED — F1 banner
+    v1.0 → v1.2; F2 `opportunitySchema.title_key` optional; F3 new
+    `opportunityLedgerRecord` schema validates 17/17 existing ledger rows; F4
+    wording; F5 Routing Guide table added; F6 website-synthesis path correction;
+    F7 covered by F3; F8 double-warning clarification.
+- **TODOS.md auto-render hook**: Discovered .md was 2 sessions stale (T47 + T48
+  invisible behind "Show all?" prompt). Built `post-todos-render.js` PostToolUse
+  hook (governance-logger pattern, `if:` filter scoped to todos.jsonl).
+  Documented in TRIGGERS.md + DEVELOPMENT.md.
+- **CAS PLAN hygiene**: T28 PLAN.md got top status banner + 13 ✅ + 2 ⏳
+  markers. Same drift pattern that bit T29 PLAN.
+- **Stale todos closed**: T29 (synthesis consolidation, in-progress P1 →
+  completed); T37 (GitNexus exploration P3 → completed, analyzed Session #278);
+  T40 (CAS tag taxonomy P2 → completed, full retag migration shipped Sessions
+  #275-#276). Counts: 27 → 24 active, 20 → 23 completed.
+- **/deep-plan template gap discovered**: REFERENCE.md PLAN.md template (lines
+  119-154) has no status banner, no per-step ✅ markers, no hygiene rules.
+  Tracked as T49 (P2 pending). 3-part fix in REMAINING_CAS_TASKS.md.
+- **Handoff doc**: `.planning/content-analysis-system/REMAINING_CAS_TASKS.md` —
+  full plan to close T28 (Steps A/B/C), optional follow-ups, /deep-plan fix
+  details, resume protocol.
+- **Schema deltas** (`scripts/lib/analysis-schema.js`): added optional
+  `title_key` to opportunitySchema; new `opportunityLedgerRecord` (16 fields,
+  status enum, nested deferred_to). Exports updated. 17/17 existing ledger rows
+  validate.
+- **Pre-existing schema drift flagged** (NOT addressed): synthesisRecord vs
+  current synthesis.json — sources_included items are strings vs schema expects
+  objects, opportunity_matrix has free-form fields. Needs separate
+  reconciliation task.
+- **Retro**: Skill-flow worked smoothly. Triage #2 had a misstep (deletion
+  approach broke things; reverted via git checkout, root-caused parser bug
+  upstream, then proper fix). Per-finding pause-and-confirm pattern caught scope
+  creep at the right moments.
 
 **Session #278** (T29 STEP 12 COMPLETE + /REPO-ANALYSIS v4.6 + GITNEXUS):
 
@@ -368,47 +443,61 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **Close synthesis-consolidation PLAN** — two steps remain:
-   - **Step 13**: Test scoped (`/synthesize --type=repo`) + paradigm
-     (`/synthesize --paradigm=matrix`) modes.
-   - **Step 15**: Run `code-reviewer` agent over `.claude/skills/synthesize/`,
-     `scripts/lib/analysis-schema.js`, and deprecation redirects
-     (`repo-synthesis/SKILL.md`, `website-synthesis/SKILL.md`).
+1. **Close T28 — CAS Step A: `/skill-audit` on 7 CAS skills** (analyze, recall,
+   repo-analysis, website-analysis, document-analysis, media-analysis,
+   synthesize). Tracker T38 (currently blocked on T28 — unblock when starting).
+   Parallelizable via 7 code-reviewer agents using the synthesis-consolidation
+   Step 15 audit prompt as template. ~30-60 min total. See
+   `.planning/content-analysis-system/REMAINING_CAS_TASKS.md` Step A for full
+   spec.
 
-2. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
-   2b to ~20 prior product-repo analyses in `.research/analysis/`
-   (application/framework/tool-demo taxonomic). Parallelizable via agents.
+2. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
+   `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries (tag,
+   type, FTS5, cross-source) → verify extraction-journal + last_synthesized_at.
+   ~15-30 min. See REMAINING_CAS_TASKS.md Step B.
 
-3. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
-   measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench shape
-   (baseline / native / native_augment), per-instance cached by
-   `(repo, commit)`, fixed benchmark. SoNash adaptation needs: curated scenarios
-   from review history + extraction journal, pattern-aware vs pattern-unaware
-   agent comparison, per-scenario metrics.
+3. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
+   banner to ✅ COMPLETE, unblock T38, SESSION_CONTEXT note.
 
-4. **GitNexus trial** (if license resolves permissive) — Step 1: check `LICENSE`
-   file. Step 2: install on throwaway branch (`npx gitnexus analyze`
-   - `gitnexus setup`). Step 3: use for one real task (`/pr-review` or
-     refactor). Step 4: adopt / extract-only decision.
+4. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
+   2b to ~20 prior product-repo analyses (application/framework/tool-demo
+   taxonomic). Parallelizable via agents (1 per repo). Could pair naturally with
+   Step A skill-audit since both touch the same artifacts.
 
-5. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
+5. **T49 — Fix /deep-plan template gap** (discovered Session #279). 3-part fix:
+   (a) update REFERENCE.md PLAN.md template with status banner + per-step
+   markers; (b) update SKILL.md Critical Rule for plan hygiene maintenance; (c)
+   add `npm run plans:hygiene` checker. Prevents future drift in any new PLAN.md
+   created via /deep-plan.
+
+6. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
    sources (Sober Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase
-   reference, TS MCP SDK, whisper.cpp, monolith, readable-cli, SBOM).
+   reference, TS MCP SDK, whisper.cpp, monolith, readable-cli, SBOM). Method:
+   `/analyze` each, then `/synthesize --resume` to diff against current
+   baseline.
 
-6. **Remaining Wave 5 opportunity matrix items** — 9 entries pending status
-   update in ledger (marketplace.json distribution, bidirectional doc-feature
+7. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
+   measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench
+   shape, per-instance cached by `(repo, commit)`. SoNash adaptation: curated
+   scenarios from review history + extraction journal, pattern-aware vs
+   pattern-unaware agent comparison.
+
+8. **GitNexus trial** (if license resolves permissive) — license check → install
+   on throwaway branch → use for one real task → adopt/extract decision.
+
+9. **Remaining Wave 5 opportunity matrix items** — entries pending status update
+   in ledger (marketplace.json distribution, bidirectional doc-feature
    validator, zero-schema MCP, OAuth-filter MCP, skill retirement spec, etc.).
 
-7. **T45 — Hook-based skill compliance enforcement** — 5 highest-risk skills.
-8. **T46 — Cross-locale memory sync STRATEGY** (research only).
-9. **T42 — Nous Research Hermes model series research** (P3).
-10. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
-11. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-12. **Multi-layer memory (T4)** — Research done.
-13. **T30 todo JSONL data loss prevention** — P1 bug.
-14. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+10. **T45** — Hook-based skill compliance enforcement (5 highest-risk skills).
+11. **T46** — Cross-locale memory sync STRATEGY (research only).
+12. **T42** — Nous Research Hermes model series research (P3).
+13. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
+14. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+15. **Multi-layer memory (T4)** — Research done.
+16. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
 
-### Backlog (run `/todo` for full list — 13 pending, 48 total)
+### Backlog (run `/todo` for full list — see TODOS.md, ~25 active, 48 total)
 
 ---
 
