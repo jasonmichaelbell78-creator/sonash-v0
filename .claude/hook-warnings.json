@@ -2,16 +2,6 @@
   "warnings": [
     {
       "hook": "session-start",
-      "type": "session-end-missing",
-      "severity": "warning",
-      "message": "Previous session started 3h ago without session-end",
-      "action": "Review with /alerts",
-      "timestamp": "2026-04-14T14:19:23.220Z",
-      "occurrences": 8,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
       "type": "tdms-s0",
       "severity": "warning",
       "message": "S0: 26 critical debt items",
