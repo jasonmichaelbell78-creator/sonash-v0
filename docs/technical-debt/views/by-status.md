@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2151)
+## NEW (2152)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -747,6 +747,7 @@
 | DEBT-45649 | Hook gate gap: cyclomatic CC runs at pre-push only, not p...    | S2       | engineering-productivity |
 | DEBT-45651 | Learning-system refinement queue is broken (702 items, 0 ...    | S2       | process                  |
 | DEBT-45652 | release-please workflow stale (last failed run 2026-04-03...    | S2       | process                  |
+| DEBT-45653 | Dependabot npm_and_yarn auto-update workflow failing on m...    | S2       | process                  |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

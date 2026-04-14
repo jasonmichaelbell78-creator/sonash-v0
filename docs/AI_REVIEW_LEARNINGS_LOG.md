@@ -1291,8 +1291,8 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~2048 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~5330 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 23    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -1464,16 +1464,6 @@ deduplicated, non-overlapping ranges):
 - Categorical fields in JSONL must use consistent lowercase without compound
   values or uncertainty markers
 - Skill schema examples must be internally consistent with definitions
-
----
-
-### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
-
-**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
 
 ---
 
@@ -1851,16 +1841,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 85: PR #508 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 30    | 0     | 0        | 0        |
-
----
-
 ### Review 86: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (2026-04-13)
 
 **Date:** 2026-04-13 | **PR:** #508 | **Source:** sonarcloud+qodo
@@ -1891,16 +1871,6 @@ deduplicated, non-overlapping ranges):
 - gh pr view --json files clipping confirmed two-round pattern
 - test files inherit production fix patterns via propagation sweep
 - same-line multi-source folds detectable on Step 2 triage
-
----
-
-### Review 86-pr509: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (unknown)
-
-**Date:** unknown | **PR:** #509 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 29    | 0     | 0        | 0        |
 
 ---
 

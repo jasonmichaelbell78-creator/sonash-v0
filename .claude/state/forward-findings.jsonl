@@ -13,3 +13,6 @@
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"65\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-03T11:21:24.924Z"}
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"65\" appears 3 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-03T12:45:14.096Z"}
 {"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"506\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-07T15:44:50.368Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"508\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-14T11:39:28.707Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"85\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-14T11:39:28.707Z"}
+{"source_plan":"review-lifecycle","finding_type":"gap","pattern":"ID \"86-pr509\" appears 2 times in reviews.jsonl","severity":"S1","target_ecosystem":"review-lifecycle","timestamp":"2026-04-14T11:39:28.707Z"}

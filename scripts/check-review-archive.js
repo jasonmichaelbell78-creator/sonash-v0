@@ -108,6 +108,11 @@ const KNOWN_SKIPPED_IDS = new Set([
   442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 458, 459, 462, 465, 468, 469, 477, 478, 479,
   // #505: Gap in backfill sequence — ID never assigned (Session #268)
   505,
+  // #508: Spurious ID from prose-derived total in historical entry at line 2170
+  // of AI_REVIEW_LEARNINGS_LOG.md (parser regex matched "4 items" → total=4).
+  // Stub removed + parser tightened (Session #279). Real review for PR #499 R1
+  // is rev-66 (string-id, not in numeric gap scan).
+  508,
 ]);
 
 // Known-duplicate review IDs: IDs that legitimately appear multiple times in JSONL

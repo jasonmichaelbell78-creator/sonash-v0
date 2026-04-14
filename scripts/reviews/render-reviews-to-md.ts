@@ -497,7 +497,17 @@ export function renderReviews(
   const preserved = extractPreservedSections(outputPath);
 
   // Assemble full document
-  const fullDocument = assembleDocument(preserved, renderedEntries);
+  let fullDocument = assembleDocument(preserved, renderedEntries);
+
+  // Auto-update Document Health Monitoring metrics table to prevent drift.
+  // Two-pass: first set active-reviews count, then count final line length.
+  // The active-reviews row is the validator's drift trigger; the line-count row
+  // is informational. Bounded inputs (single-line table cells), no ReDoS risk.
+  fullDocument = fullDocument.replace(/(\| Active reviews \| )\d+(\s*\|)/, `$1${records.length}$2`);
+  const lineCount = fullDocument.split("\n").length;
+  // Round to nearest 10 to keep diffs minimal across runs that don't change content
+  const roundedLines = Math.round(lineCount / 10) * 10;
+  fullDocument = fullDocument.replace(/(\| Main log lines \| ~)\d+(\s*\|)/, `$1${roundedLines}$2`);
 
   // Ensure output directory exists
   const outDir = path.dirname(absOutputPath);

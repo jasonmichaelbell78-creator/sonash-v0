@@ -162,11 +162,20 @@ function scanCommitsForCompletions(openItems) {
   const commits = gitLog.trim().split("\n").filter(Boolean);
 
   for (const item of openItems) {
-    // Check if any commit message references this item's ID
+    // Check if any commit message references this item's ID via word-boundary
+    // match (not substring) to avoid false positives — e.g. "B3" matching
+    // "Cat B3", "S4" matching "S4036", "T2" matching "T29". Word boundaries
+    // require a non-word/word transition on each side so "B3" matches "B3:" or
+    // " B3 " but not "B30" or "AB3".
     const id = item.id.replaceAll(/[*:]/g, "");
-    const idLower = id.toLowerCase();
+    const escapedId = id.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    // Require structural markers before the ID — `(`, `[`, `#`, `:`, or start
+    // of string. Plain whitespace excluded to avoid context-suffix matches like
+    // "Cat B3", "Step B3". Roadmap refs typically use `(B3)`, `[B3]`, `#B3`, or
+    // `B3:` at start of line. Trade-off: false negatives for "completes B3".
+    const idRegex = new RegExp(String.raw`(?:^|[(\[#:])` + escapedId + String.raw`\b`, "i");
     for (const commit of commits) {
-      if (commit.toLowerCase().includes(idLower)) {
+      if (idRegex.test(commit)) {
         candidates.push({
           ...item,
           commitMessage: commit.slice(0, 80),
