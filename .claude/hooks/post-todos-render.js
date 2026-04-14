@@ -30,7 +30,7 @@ try {
   sanitizeError = (err) => (err instanceof Error ? err.constructor.name : "unknown error");
 }
 
-function extractFilePath(rawArg) {
+function parseHookFilePath(rawArg) {
   if (!rawArg) return "";
   const trimmed = String(rawArg);
   if (trimmed.trimStart().startsWith("{")) {
@@ -79,7 +79,7 @@ function formatRendererError(err) {
   return { message, exitStatus, safeMsg };
 }
 
-function resolveProjectDir(cwd) {
+function resolveGitRoot(cwd) {
   try {
     return execFileSync("git", ["rev-parse", "--show-toplevel"], {
       encoding: "utf8",
@@ -99,11 +99,11 @@ function ok() {
 function main(rawArg) {
   if (!rawArg) return ok();
 
-  const filePath = extractFilePath(rawArg);
+  const filePath = parseHookFilePath(rawArg);
   if (!filePath) return ok();
   if (!isTodosJsonl(filePath)) return ok();
 
-  const projectDir = resolveProjectDir(process.cwd());
+  const projectDir = resolveGitRoot(process.cwd());
 
   // Re-render — non-blocking on failure.
   try {
@@ -148,11 +148,11 @@ function main(rawArg) {
 }
 
 module.exports = {
-  extractFilePath,
+  parseHookFilePath,
   isTodosJsonl,
   formatRendererError,
   writeAudit,
-  resolveProjectDir,
+  resolveGitRoot,
   AUDIT_LOG,
   TODOS_JSONL,
   TODOS_MD,

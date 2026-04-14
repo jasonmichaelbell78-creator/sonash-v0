@@ -26,7 +26,7 @@ const HOOK_PATH = path.resolve(PROJECT_ROOT, ".claude/hooks/post-todos-render.js
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const hook = require(HOOK_PATH) as {
-  extractFilePath: (raw: string) => string;
+  parseHookFilePath: (raw: string) => string;
   isTodosJsonl: (filePath: string) => boolean;
   formatRendererError: (err: unknown) => {
     message: string;
@@ -38,33 +38,33 @@ const hook = require(HOOK_PATH) as {
   TODOS_JSONL: string;
 };
 
-describe("extractFilePath", () => {
+describe("parseHookFilePath", () => {
   test("extracts file_path from JSON argument", () => {
     const arg = JSON.stringify({ file_path: ".planning/todos.jsonl" });
-    assert.equal(hook.extractFilePath(arg), ".planning/todos.jsonl");
+    assert.equal(hook.parseHookFilePath(arg), ".planning/todos.jsonl");
   });
 
   test("returns raw string when arg is not JSON", () => {
-    assert.equal(hook.extractFilePath(".planning/todos.jsonl"), ".planning/todos.jsonl");
+    assert.equal(hook.parseHookFilePath(".planning/todos.jsonl"), ".planning/todos.jsonl");
   });
 
   test("returns empty string for empty input", () => {
-    assert.equal(hook.extractFilePath(""), "");
+    assert.equal(hook.parseHookFilePath(""), "");
   });
 
   test("returns empty string when JSON has no file_path field", () => {
     const arg = JSON.stringify({ other: "value" });
-    assert.equal(hook.extractFilePath(arg), "");
+    assert.equal(hook.parseHookFilePath(arg), "");
   });
 
   test("falls back to raw string when JSON is malformed", () => {
     const arg = "{ not valid json";
-    assert.equal(hook.extractFilePath(arg), "{ not valid json");
+    assert.equal(hook.parseHookFilePath(arg), "{ not valid json");
   });
 
   test("handles leading whitespace before JSON", () => {
     const arg = '  {"file_path":"foo.jsonl"}';
-    assert.equal(hook.extractFilePath(arg), "foo.jsonl");
+    assert.equal(hook.parseHookFilePath(arg), "foo.jsonl");
   });
 });
 
@@ -229,7 +229,7 @@ describe("writeAudit", () => {
 
 describe("module exports", () => {
   test("exports the expected helper functions", () => {
-    assert.equal(typeof hook.extractFilePath, "function");
+    assert.equal(typeof hook.parseHookFilePath, "function");
     assert.equal(typeof hook.isTodosJsonl, "function");
     assert.equal(typeof hook.formatRendererError, "function");
     assert.equal(typeof hook.writeAudit, "function");
