@@ -617,7 +617,7 @@ For audits with <=20 decisions, show full table with grep evidence:
 ```
 
 For audits with >20 decisions, group by category. PASS items show grep evidence
-inline. Expand PARTIAL/MISSING with all three layers:
+inline. Expand PARTIAL/MISSING with both deterministic layers (grep + diff):
 
 ```
 Cat 1 (Intent Fidelity): 3/3 PASS
@@ -636,13 +636,11 @@ SELF-AUDIT REPORT: [skill-name]
 ================================
 Verification method:    Evidence-based (grep + agent + diff)
 Decision verification:  [N/M PASS | K PARTIAL | J MISSING]
-Agent discrepancies:    [N found | "none" | "skipped (<=15 decisions)"]
 Process compliance:     [N/M checks passed]
 Structural validation:  [PASS/FAIL]
 skills:validate:        [PASS/FAIL]
 
 [List each PARTIAL or MISSING with resolution]
-[List each agent discrepancy with resolution]
 ```
 
 ### Completion Summary (only after report passes clean)
