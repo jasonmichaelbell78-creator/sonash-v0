@@ -2,16 +2,6 @@
   "warnings": [
     {
       "hook": "session-start",
-      "type": "tdms-s0",
-      "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-14T14:19:23.342Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
       "type": "cli-tools-missing",
       "severity": "warning",
       "message": "CLI tools missing: rg",
@@ -21,15 +11,14 @@
       "occurrences_since_ack": 1
     },
     {
-      "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "info",
-      "message": "Branch has >=10 commits — create PR soon",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-14T15:39:12.278Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 1,
-      "count": "10"
+      "hook": "session-start",
+      "type": "tdms-s0",
+      "severity": "warning",
+      "message": "S0: 26 critical debt items",
+      "action": "npm run debt:report --severity=S0",
+      "timestamp": "2026-04-14T14:19:23.342Z",
+      "occurrences": 3,
+      "occurrences_since_ack": 1
     }
   ]
 }

@@ -30,13 +30,57 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-14 (Session #279 — /session-end in progress).
-**Branch**: `planning-41426` (5 commits ahead of origin pre-session-end).
-**Working On**: /session-begin triage closed (4 of 5 fixed), T29 synthesis-
-consolidation PLAN fully closed (15/15 steps marked ✅), TODOS.md auto-render
-hook shipped, CAS PLAN.md hygienic (13/15 ✅, 2 ⏳), CAS handoff doc written.
+**Last Checkpoint**: 2026-04-14 (Session #280 — Step 3 self-audit pattern
+complete, autonomous mode). **Branch**: `planning-41426` (7 commits ahead of
+origin). **Working On**: Self-audit pattern infrastructure shipped. Step A
+(7-skill /skill-audit on CAS) is the next user-decision-required task — paused
+for user return.
 
-**This session's work (summary)**:
+**Session #280 work (summary)**:
+
+**Step 3 — per-skill self-audit pattern (4 sub-steps, 2 commits):**
+
+1. **3.A** — `.claude/skills/_shared/SELF_AUDIT_PATTERN.md` (~230 lines).
+   Canonical doc: location (`scripts/skills/<name>/self-audit.js`), CLI
+   (`--target/--state/--json`; exit 0/1/2), `---SUMMARY---` JSON output,
+   9-dimension mapping with tier requirements, required shared helpers,
+   skip-list convention, state schema contract, SKILL.md Phase 5 wiring
+   template, rollout protocol.
+2. **3.B + 3.E folded** — `scripts/skills/skill-audit/self-audit.js` (~470
+   lines). Reference impl + skill-audit's own self-audit. Reads
+   `task-skill-audit-<name>.state.json`, runs all 9 SKILL_STANDARDS dimensions.
+   Schema gaps reported as WARN for backward compat. Dim 3 stub-marker matching
+   uses comment-context patterns + self-referential exclusion (avoids
+   regex-literal false positives). `.claude/skills/skill-audit/SKILL.md` v3.6:
+   new Phase 5.0 invokes script before existing 5.1-5.5 prose.
+3. **3.C** — `.claude/skills/skill-creator/SKILL.md` v3.4. Phase 4.3 self-audit
+   guidance now has TWO parts (prose phase + scaffolded script). Phase 5 step 7
+   verifies BOTH presence. References section adds SELF_AUDIT_PATTERN.md link.
+4. **3.D** — `.claude/skills/skill-audit/REFERENCE.md` Category 12. New
+   "Canonical Fix Action" subsection: when Cat 12 scores <7, the canonical Phase
+   4 implementation is 5 concrete steps (create script, wire SKILL.md, extend
+   state schema, document skips, validate against known-good prior run).
+
+**Plus**: `.claude/COMMAND_REFERENCE.md` v6.1 (cross-doc dependency
+satisfaction).
+
+**Commits this session**: `e3a9f93c` (3.A+3.B), `91444183` (3.C+3.D).
+
+**Tests run before each commit**: `npm run skills:validate` (pass),
+`npm run patterns:check` (pass), `npm run lint` (0 errors), self-audit script
+PASS-path + FAIL-path + real stub detection + self-referential exclusion.
+
+**Next session pickup point**: Step A — run `/skill-audit` on the 7 CAS skills
+using W2 approach (parallel agents producing findings JSON, lead presents
+per-target menu for user decisions). Order: handlers first (repo-analysis,
+website-analysis, document-analysis, media-analysis), then synthesize, recall,
+analyze. See `.planning/content-analysis-system/REMAINING_CAS_TASKS.md` Step A.
+Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
+12 canonical fix action.
+
+---
+
+**Prior session (#279) work (summary)**:
 
 **Phase A — /session-begin triage (4 of 5 items fixed):**
 
@@ -109,7 +153,7 @@ hook shipped, CAS PLAN.md hygienic (13/15 ✅, 2 ⏳), CAS handoff doc written.
 
 ## Session Tracking
 
-**Current Session Count**: 279 (since Jan 1, 2026)
+**Current Session Count**: 280 (since Jan 1, 2026)
 
 > **Session #279 handoff (Triage 4 + T29 CLOSED + auto-render hook + CAS PLAN
 > hygiene, 2026-04-14):** /session-begin surfaced 5 triage items — 4 fixed
