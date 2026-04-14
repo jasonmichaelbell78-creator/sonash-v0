@@ -745,7 +745,7 @@ detection.
 
 ---
 
-### Step 13: Test scoped synthesis
+### Step 13: Test scoped synthesis ✅ COMPLETE (Session #279, 2026-04-14)
 
 Invoke `/synthesize --type=repo`. Verify only repo sources are included. Invoke
 `/synthesize --paradigm=matrix`. Verify matrix paradigm output structure.
@@ -754,6 +754,12 @@ Invoke `/synthesize --type=repo`. Verify only repo sources are included. Invoke
 output.
 
 **Depends on:** Step 11
+
+**Result:** Functional verification (option B) —
+`.research/analysis/synthesis/test-step13/RESULTS.md`. 13a PASS (26 repos in / 9
+non-repos out: 6 web, 1 doc, 2 media). 13b PASS (Zod enum + REFERENCE.md §1.3
+spec + structure all verified). Full-run testing skipped to preserve baseline;
+flag combinations verified via static + filter inspection.
 
 ---
 
@@ -775,7 +781,7 @@ skill names except deprecation redirects.
 
 ---
 
-### Step 15: Audit
+### Step 15: Audit ✅ COMPLETE (Session #279, 2026-04-14)
 
 Run code-reviewer agent on all new/modified files. Focus on:
 
@@ -788,6 +794,23 @@ Run code-reviewer agent on all new/modified files. Focus on:
 **Done when:** All code-reviewer findings addressed or tracked in TDMS.
 
 **Depends on:** All implementation steps (14)
+
+**Result:** Audit returned 8 findings (3 P1, 4 P2, 2 P3 — F7 covered by F3). All
+8 fixed in-session (none deferred to TDMS):
+
+- F1 (P1) status banner v1.0 → v1.2 (also bumped for v1.2 changes below)
+- F2 (P1) `opportunitySchema.title_key` added (optional, since current writers
+  compute it on-the-fly)
+- F3 (P1) `opportunityLedgerRecord` Zod schema + `ledgerStatusEnum` +
+  `deferredToSchema` added; validates 17/17 existing ledger rows
+- F4 (P2) repo-synthesis redirect "8 sections supersetting the 6" wording fix
+- F5 (P2) Routing Guide table added to synthesize/SKILL.md
+- F6 (P2) website-synthesis redirect path corrected (was claiming "remain the
+  same" but parent dir consolidated `website-analysis/` → `analysis/`)
+- F7 (P3) `deferred_to` shape — covered by F3 (`deferredToSchema` enforces
+  nested object)
+- F8 (P3) "2 sources of same type" line clarified (double warning: min-sources +
+  thin convergence)
 
 ---
 

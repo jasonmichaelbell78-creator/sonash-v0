@@ -10,7 +10,7 @@ description:
 
 # /synthesize — Cross-Source Synthesis (T29)
 
-> **Status:** v1.0 (active). Consolidates `/repo-synthesis` (v1.3) and
+> **Status:** v1.2 (active). Consolidates `/repo-synthesis` (v1.3) and
 > `/website-synthesis` (v1.1) into a single skill that handles all 4 source
 > types (repo, website, document, media). See
 > `.planning/synthesis-consolidation/DECISIONS.md` for the 32 decisions behind
@@ -53,9 +53,22 @@ description:
 ## When NOT to Use
 
 - Single source available — use the analysis output directly
-- 2 sources of same type — synthesis runs but warns about thin convergence
+- 2 sources of same type — synthesis runs but emits **two warnings**:
+  min-sources (default threshold 3) and thin convergence
 - Sources are all Quick Scan only — pre-flight will block, suggesting upgrade
 - Analyzing a single new source — use `/analyze` (handler skill), not this
+
+## Routing Guide
+
+| I want to...                                        | Use                                    |
+| --------------------------------------------------- | -------------------------------------- |
+| Analyze a single new source (repo/web/doc/media)    | `/analyze <url>` (router)              |
+| Query the existing knowledge base                   | `/recall`                              |
+| Cross-source synthesis across all analyzed sources  | `/synthesize` (this skill)             |
+| Synthesis filtered to one source type               | `/synthesize --type=<repo\|...>`       |
+| Apply a different synthesis paradigm                | `/synthesize --paradigm=<matrix\|...>` |
+| Resume an interrupted synthesis run                 | `/synthesize --resume`                 |
+| Brainstorm next action from a synthesis opportunity | `/brainstorm` (routed from Phase 6)    |
 
 ## Input
 
@@ -361,7 +374,8 @@ Synthesis runs with prior ledger data should suppress or annotate already-
 
 ## Version History
 
-| Version | Date       | Changes                                                                                  |
-| ------- | ---------- | ---------------------------------------------------------------------------------------- |
-| 1.1     | 2026-04-13 | Opportunities ledger (T29 Wave 5 Session #277). Phase 5 step 5 added; ledger schema doc. |
-| 1.0     | 2026-04-09 | T29 Wave 2 — initial unified skill (Session #271)                                        |
+| Version | Date       | Changes                                                                                                            |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------ |
+| 1.2     | 2026-04-14 | Step 15 audit fixes (Session #279): Routing Guide added; "2 sources" double-warning clarified; status banner sync. |
+| 1.1     | 2026-04-13 | Opportunities ledger (T29 Wave 5 Session #277). Phase 5 step 5 added; ledger schema doc.                           |
+| 1.0     | 2026-04-09 | T29 Wave 2 — initial unified skill (Session #271)                                                                  |

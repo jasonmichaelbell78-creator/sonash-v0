@@ -14,10 +14,10 @@ This skill has been consolidated into [`/synthesize`](../synthesize/SKILL.md).
 
 T29 (Session #271) merged `/repo-synthesis` (v1.3) and `/website-synthesis`
 (v1.1) plus the cross-type synthesis stub from `/analyze` into a single unified
-skill. The new skill produces the same 6 outputs that this skill did (emergent
-themes, ecosystem gaps, reading chains, mental model evolution, fit portfolio,
-knowledge map) plus 2 new ones (opportunity matrix, changes since previous), and
-handles all source types in one pass.
+skill. The new skill produces 8 output sections — supersetting the 6 this skill
+provided (emergent themes, ecosystem gaps, reading chains, mental model
+evolution, fit portfolio, knowledge map) with 2 additions (opportunity matrix,
+changes since previous) — and handles all source types in one pass.
 
 See `.planning/synthesis-consolidation/` for the full design (32 decisions, 5
 waves, 15 steps).

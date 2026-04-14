@@ -34,8 +34,10 @@ waves, 15 steps).
 /synthesize --paradigm=matrix             # paradigm overrides supported
 ```
 
-All flags from the old skill are supported via `/synthesize`. Output paths
-remain the same: `.research/analysis/synthesis/synthesis.md`. History is
+All flags from the old skill are supported via `/synthesize`. Output paths have
+changed: `.research/website-analysis/synthesis/synthesis.md` →
+`.research/analysis/synthesis/synthesis.md` (parent directory consolidated from
+per-handler `website-analysis/` to the unified `analysis/`). History is
 auto-archived to `.research/analysis/synthesis/history/`.
 
 ## Removal
