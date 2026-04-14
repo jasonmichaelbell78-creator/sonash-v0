@@ -171,3 +171,65 @@ PLAN.md hygiene update + todo closures so the next session loads it from disk.
    - **(d)** T47 Wave 6 source seed (heavier, queue + synthesize, ~2 hours)
    - **(e)** T49 (new) — fix /deep-plan template + add plans:hygiene checker
 4. Whatever order — recommend Step A → Step B → T48 → close T28 → T47 → T49.
+
+---
+
+## Update — Session #280 (2026-04-14): Step 3 self-audit infrastructure SHIPPED
+
+The original handoff didn't include Step 3 — it was discussed and approved
+mid-session. Step 3 is now COMPLETE (4 sub-steps, 3 commits on branch `41426`,
+pushed to origin).
+
+**What changed since the original handoff was written:**
+
+- **New canonical doc:**
+  [`.claude/skills/_shared/SELF_AUDIT_PATTERN.md`](../../.claude/skills/_shared/SELF_AUDIT_PATTERN.md)
+  — pattern for per-skill self-audit scripts (location, CLI, dimensions,
+  helpers, state schema, wiring).
+- **New reference impl:**
+  [`scripts/skills/skill-audit/self-audit.js`](../../scripts/skills/skill-audit/self-audit.js)
+  — runs all 9 SKILL_STANDARDS dimensions against a state file. PASS/FAIL/WARN
+  per dimension, exit 0/1/2, `---SUMMARY---` JSON block.
+- **skill-audit SKILL.md v3.6:** new Phase 5.0 invokes the script before
+  existing prose checks.
+- **skill-creator SKILL.md v3.4:** Phase 4.3 now scaffolds
+  `scripts/skills/<name>/self-audit.js` for new Standard/Complex skills; Phase 5
+  verifies both prose phase + script presence.
+- **skill-audit REFERENCE.md Cat 12:** new "Canonical Fix Action" subsection —
+  when Cat 12 scores <7, the canonical Phase 4 fix is to create a self-audit.js
+  per the pattern (5 concrete steps documented).
+
+**Impact on Step A (the original next task):**
+
+Each `/skill-audit` on the 7 CAS skills will now likely add a
+`scripts/skills/<skill-name>/self-audit.js` per the Cat 12 canonical fix action.
+This widens Step A's blast radius (state schema extensions on existing skills
+may be needed too) but pays off long-term.
+
+---
+
+## Cross-locale resume (work ↔ home)
+
+This branch (`41426`) is on origin. To resume on the other machine:
+
+```bash
+git fetch origin
+git checkout 41426    # or `git pull` if already on it
+git log --oneline -8  # verify last 4 commits are: 78d97ab7, 06f3faa8, 91444183, e3a9f93c
+```
+
+Then `/session-begin` and read this file. The Step A plan below (W2 approach)
+was approved mid-Session #280 — proceed with it without re-litigating the
+design.
+
+**Files to read in order at home:**
+
+1. `SESSION_CONTEXT.md` — Session #280 work summary + next pickup point
+2. This file (`REMAINING_CAS_TASKS.md`) — full Step A spec + above update
+3. `.claude/skills/_shared/SELF_AUDIT_PATTERN.md` — the new canonical pattern
+4. `scripts/skills/skill-audit/self-audit.js` — the reference impl (template
+   when adding self-audit to other skills via Cat 12 fix)
+
+**Memory caveat:** Auto-memory is per-locale (under user profile, not in repo).
+Findings/decisions from this session that weren't committed to git aren't
+visible at home. Everything material from Step 3 is in commits.

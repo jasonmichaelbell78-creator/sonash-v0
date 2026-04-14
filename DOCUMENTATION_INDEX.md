@@ -528,7 +528,7 @@ _Claude Code skills_
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-04-11    |
-| [Self-Audit Pattern](.claude/skills/_shared/SELF_AUDIT_PATTERN.md)                                                                  | <!-- prettier-ignore-start -->                                    | ↓4 ↑1      | 2026-04-14    |
+| [Self-Audit Pattern](.claude/skills/_shared/SELF_AUDIT_PATTERN.md)                                                                  | <!-- prettier-ignore-start -->                                    | ↓5 ↑1      | 2026-04-14    |
 | [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑2      | 2026-03-16    |
 | [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-04-08    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-26    |
@@ -1564,7 +1564,7 @@ _Uncategorized_
 
 | Document                                                                                       | Description                                                      | References | Last Modified |
 | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
-| [CAS — Remaining Tasks to Close T28](.planning/content-analysis-system/REMAINING_CAS_TASKS.md) | -                                                                | ↓0 ↑0      | 2026-04-14    |
+| [CAS — Remaining Tasks to Close T28](.planning/content-analysis-system/REMAINING_CAS_TASKS.md) | -                                                                | ↓0 ↑1      | 2026-04-14    |
 | [Decision Record: T28 Content Analysis System](.planning/content-analysis-system/DECISIONS.md) | -                                                                | ↓0 ↑0      | 2026-04-09    |
 | [Diagnosis: T28 Content Analysis System](.planning/content-analysis-system/DIAGNOSIS.md)       | -                                                                | ↓0 ↑0      | 2026-04-09    |
 | [Implementation Plan: T28 Content Analysis System](.planning/content-analysis-system/PLAN.md)  | > **Status:** ⏳ **NEAR-COMPLETE** — 13 of 15 steps done (Ses... | ↓0 ↑0      | 2026-04-14    |
