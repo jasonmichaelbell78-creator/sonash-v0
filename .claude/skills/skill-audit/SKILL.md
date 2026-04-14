@@ -37,6 +37,11 @@ gap through guided decisions with the user.
    intent, fix the behavioral instructions, not the naming.
 6. **Self-audit before completion** — Phase 5 is MUST. Never skip verification.
    Re-read all modified files and verify every decision was implemented.
+7. **Mode-aware execution** — Phase 1.0 selects mode (single / batch / multi)
+   before any other work. `single` preserves line 118 per-category gating MUST.
+   `batch` and `multi` use Phase 2b (batched findings) + Phase 2.B (decision
+   collection). Never apply line 118 to batch/multi; never collapse single-mode
+   per-category gates.
 
 ## When to Use
 
@@ -510,7 +515,11 @@ surface auto-learnings and user feedback from the previous run.
 > the actual skill name and decision count. Empty context breaks audit tracking.
 
 ```bash
-cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"skill-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"target":"SKILL_NAME","decisions":N,"score":SCORE}}'
+# single / batch mode:
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"skill-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"target":"SKILL_NAME","decisions":N,"score":SCORE,"mode":"single"}}'
+
+# multi mode — includes batch_id + skills_in_batch:
+cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"skill-audit","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"mode":"multi","batch_id":"BATCH_ID","skills_in_batch":["a","b","c"],"decisions":N}}'
 ```
 
 **Closure summary:**
@@ -566,14 +575,15 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 ## Version History
 
-| Version | Date       | Description                                                                |
-| ------- | ---------- | -------------------------------------------------------------------------- |
-| 3.6     | 2026-04-14 | Phase 5.0: invoke scripts/skills/skill-audit/self-audit.js (pattern-based) |
-| 3.5     | 2026-04-04 | Add Category 12 (Completion Verification Design), expand Phase 2.5+3       |
-| 3.4     | 2026-03-19 | Fix invocation tracking: context MUST include target+decisions+score       |
-| 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2        |
-| 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping    |
-| 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts       |
-| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.              |
-| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.                    |
-| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan                   |
+| Version | Date       | Description                                                                                                                                                                                                                                                                                                                                                               |
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.0     | 2026-04-14 | Add batch + multi modes (D7); split Phase 2 into 2a/2b (D8); Phase 2.B decision collection (D9); Phase 2.A cross-skill pattern detection (D20); batched Phase 3 crosscheck (D20); remove code-reviewer agent layer from all modes (D11); parallel Phase 5 self-audit.js dispatch for multi (D12); decouple from audit-review-team (D19). Per skill-audit-batch-mode plan. |
+| 3.6     | 2026-04-14 | Phase 5.0: invoke scripts/skills/skill-audit/self-audit.js (pattern-based)                                                                                                                                                                                                                                                                                                |
+| 3.5     | 2026-04-04 | Add Category 12 (Completion Verification Design), expand Phase 2.5+3                                                                                                                                                                                                                                                                                                      |
+| 3.4     | 2026-03-19 | Fix invocation tracking: context MUST include target+decisions+score                                                                                                                                                                                                                                                                                                      |
+| 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2                                                                                                                                                                                                                                                                                                       |
+| 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping                                                                                                                                                                                                                                                                                                   |
+| 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts                                                                                                                                                                                                                                                                                                      |
+| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.                                                                                                                                                                                                                                                                                                             |
+| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.                                                                                                                                                                                                                                                                                                                   |
+| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan                                                                                                                                                                                                                                                                                                                  |
