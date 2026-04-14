@@ -1,0 +1,250 @@
+{
+  "source": "abhigyanpatwari/GitNexus",
+  "source_id": "a7e1d2c3-8b4f-4a56-9c72-f3b8e9d1a054",
+  "slug": "abhigyanpatwari-gitnexus",
+  "analyzed_at": "2026-04-13",
+  "pattern_candidates": [
+    {
+      "name": "gitnexus:start MCP contract block",
+      "type": "pattern",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["mcp-contract-block", "documentation-contract", "mcp"],
+      "description": "Structured Always/When/Never block in CLAUDE.md defining MCP tool usage rules with impact risk levels (d=1/d=2/d=3). Template for SoNash when it emits MCP tool contracts."
+    },
+    {
+      "name": "Signs pattern (recurring failures as codified rules)",
+      "type": "pattern",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["signs-pattern", "enforcement"],
+      "description": "GUARDRAILS.md introduces 'Signs' - recurring failure patterns codified once observed twice. Analogous to SoNash MEMORY.md feedback entries but repo-visible."
+    },
+    {
+      "name": ".claude-plugin/marketplace.json reference impl",
+      "type": "pattern",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["marketplace", "skill-distribution"],
+      "description": "Canonical format for Claude Code marketplace: marketplace.json + plugin.json (name, version, source, description). Wave 5 Rank 3 validation."
+    },
+    {
+      "name": "Typed DAG phase pipeline",
+      "type": "pattern",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["pipeline", "orchestration", "architecture"],
+      "description": "12-phase ingestion DAG with typed deps[], execute(ctx, deps), and output. Cycles validated at startup. Adding a phase is a new file + buildPhaseList() registration. Relevant to plan-orchestration Wave 2+ (SWS CANON)."
+    },
+    {
+      "name": "PreToolUse ambient grep enrichment",
+      "type": "pattern",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["hooks", "claude-code"],
+      "description": "Hook intercepts grep results and appends graph context (callers, callees, processes) silently. Makes meta-tooling ambient rather than explicit."
+    },
+    {
+      "name": "superpowers plan format (TDD-first executable spec)",
+      "type": "pattern",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["best-practices", "documentation-contract"],
+      "description": "Structured plan: write failing test - verify fail - implement - verify pass - commit template. Checkbox tracking per step, spec ref. Real-world example at docs/superpowers/plans/."
+    }
+  ],
+  "knowledge_candidates": [
+    {
+      "name": "SWE-bench 3-mode eval harness shape",
+      "type": "knowledge",
+      "novelty": "high",
+      "effort": "E3",
+      "relevance": "high",
+      "tags": ["evaluation-harness", "benchmarking"],
+      "description": "Baseline / native / native_augment modes, per-instance cached by (repo, commit), multi-model support. Structural pattern for measuring agent capability gain from meta-tooling."
+    },
+    {
+      "name": "Multi-IDE MCP negotiation at install time",
+      "type": "knowledge",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["mcp", "claude-code", "skill-distribution"],
+      "description": "One MCP server reaches 5 IDEs. Setup command auto-detects editor and writes config once. Claude Code gets PreToolUse+PostToolUse depth; others get base tools."
+    },
+    {
+      "name": "Confidence-scored edges",
+      "type": "knowledge",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["knowledge-graph", "precomputed-intelligence"],
+      "description": "Every relation carries confidence 0.7-1.0 (exact/heuristic/fallback/lenient). Tools expose minConfidence filter. Lets agents decide when to clarify vs proceed."
+    },
+    {
+      "name": "Precomputed relational intelligence",
+      "type": "knowledge",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["precomputed-intelligence", "knowledge-graph", "graph-rag"],
+      "description": "Shift cognitive load from LLM to indexing pipeline: precompute clusters (Leiden), flows, confidence. Tools return complete context in one call. Indirect relevance to /recall improvements."
+    },
+    {
+      "name": "SWE-bench eval server daemon",
+      "type": "knowledge",
+      "novelty": "medium",
+      "effort": "E2",
+      "relevance": "low",
+      "tags": ["evaluation-harness", "benchmarking"],
+      "description": "HTTP daemon (localhost:5959) ~50x faster than cold CLI per tool call. Only relevant if SoNash measures skill invocation cost."
+    }
+  ],
+  "content_candidates": [
+    {
+      "name": "eval/README.md (SWE-bench harness ref)",
+      "type": "content",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["evaluation-harness"],
+      "description": "214-line reference. 3 modes, metrics, caching, multi-model support.",
+      "url": "https://github.com/abhigyanpatwari/GitNexus/blob/main/eval/README.md"
+    },
+    {
+      "name": "CLAUDE.md gitnexus:start contract block",
+      "type": "content",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["mcp-contract-block"],
+      "description": "The template block for MCP tool contracts in CLAUDE.md.",
+      "url": "https://github.com/abhigyanpatwari/GitNexus/blob/main/CLAUDE.md"
+    },
+    {
+      "name": "AGENTS.md canonical rules + gitnexus:start",
+      "type": "content",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["mcp-contract-block", "documentation-contract"],
+      "description": "Canonical agent rules + MCP block.",
+      "url": "https://github.com/abhigyanpatwari/GitNexus/blob/main/AGENTS.md"
+    },
+    {
+      "name": "GUARDRAILS.md with Signs pattern",
+      "type": "content",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["signs-pattern", "enforcement"],
+      "description": "Non-negotiables + Signs (recurring failures codified as rules).",
+      "url": "https://github.com/abhigyanpatwari/GitNexus/blob/main/GUARDRAILS.md"
+    },
+    {
+      "name": "gitnexus-pr-review skill (graph-impact-based PR review)",
+      "type": "content",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["skill-architecture"],
+      "description": "PR review via graph impact d=1/2/3 classification. Complements SoNash /pr-review (bot feedback processing).",
+      "url": "https://github.com/abhigyanpatwari/GitNexus/blob/main/gitnexus/skills/gitnexus-pr-review.md"
+    },
+    {
+      "name": ".claude-plugin/marketplace.json",
+      "type": "content",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["marketplace", "skill-distribution"],
+      "description": "Canonical marketplace.json format.",
+      "url": "https://github.com/abhigyanpatwari/GitNexus/blob/main/.claude-plugin/marketplace.json"
+    },
+    {
+      "name": "docs/superpowers/plans/pr626-high-fixes.md",
+      "type": "content",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["documentation-contract"],
+      "description": "725-line TDD-first superpowers plan - real-world example.",
+      "url": "https://github.com/abhigyanpatwari/GitNexus/blob/main/docs/superpowers/plans/2026-04-02-pr626-high-fixes.md"
+    }
+  ],
+  "anti_pattern_candidates": [
+    {
+      "name": "MCP tool shadowing (naming conflicts with native tools)",
+      "type": "anti-pattern",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "high",
+      "tags": ["mcp"],
+      "description": "Defining MCP tools with names that conflict with native tools (e.g., custom `grep`). GitNexus noodlbox-comparison draft flags this as unsafe. Lesson: name SoNash MCP tools distinctly (sonash_search_patterns, not search)."
+    },
+    {
+      "name": "Aspirational docs outrunning implementation",
+      "type": "anti-pattern",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "description": "swift-ingestion-gaps.md, type-resolution-roadmap.md at root alongside shipped docs. GitNexus mitigates by using .sisyphus/drafts/ for clearly-marked drafts. Lesson: never let brainstorm/plan content leak into shipped docs."
+    },
+    {
+      "name": "Over-featuring before measurement",
+      "type": "anti-pattern",
+      "novelty": "high",
+      "effort": "E0",
+      "relevance": "high",
+      "description": "GitNexus has ~1 core capability + 1 eval harness. SoNash has 77 skills + 38 agents + 450 patterns + 0 eval harness. Inverse ratio. Lesson: add eval before skill N+1."
+    },
+    {
+      "name": "Graph/schema versioning without migration path",
+      "type": "anti-pattern",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "medium",
+      "description": "GitNexus graph schema has no documented migration path. Same risk applies to SoNash SQLite index at .research/content-analysis.db. Lesson: add MIGRATIONS.md when schema is next touched."
+    }
+  ],
+  "related_repos": [
+    {
+      "owner_repo": "karpathy/autoresearch",
+      "relation": "prior-analysis",
+      "reason": "Potential overlap on eval harness patterns"
+    },
+    {
+      "owner_repo": "outline",
+      "relation": "prior-analysis",
+      "reason": "Both emit Claude Code integration via MCP, different domain"
+    }
+  ],
+  "cross_repo_connections": [
+    {
+      "target_repo": "karpathy/autoresearch",
+      "connection_type": "complementary",
+      "detail": "Both care about measuring agent capability; GitNexus ships SWE-bench harness, autoresearch has research agent methodology"
+    },
+    {
+      "target_repo": "outline",
+      "connection_type": "shared-pattern",
+      "detail": "Both use MCP as the integration contract with agent environments"
+    },
+    {
+      "target_repo": "Noodlbox",
+      "connection_type": "referenced",
+      "detail": "Explicit competitor per .sisyphus/drafts/noodlbox-comparison.md. Not yet analyzed. Session Hooks pattern identified as steal-worthy."
+    }
+  ],
+  "ranking_summary": {
+    "high_relevance": 13,
+    "medium_relevance": 8,
+    "low_relevance": 1
+  }
+}

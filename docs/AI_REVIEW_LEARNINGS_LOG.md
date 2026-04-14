@@ -366,6 +366,24 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#78)</summary>
+
+- **Date:** 2026-04-14
+- **Reviews consolidated:** #review-pr493-r1-#rev-87
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#77)</summary>
+
+- **Date:** 2026-04-13
+- **Reviews consolidated:** #85-#rev-87
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#76)</summary>
 
 - **Date:** 2026-04-13
@@ -1282,7 +1300,7 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~2048 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~5610 | 1500      | Run `npm run reviews:archive -- --apply` |
 | Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
@@ -1455,16 +1473,6 @@ deduplicated, non-overlapping ranges):
 - Categorical fields in JSONL must use consistent lowercase without compound
   values or uncertainty markers
 - Skill schema examples must be internally consistent with definitions
-
----
-
-### Review 508: PR #499 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-07)
-
-**Date:** 2026-04-07 | **PR:** #499 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
 
 ---
 
@@ -1842,16 +1850,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 85: PR #508 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 30    | 0     | 0        | 0        |
-
----
-
 ### Review 86: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (2026-04-13)
 
 **Date:** 2026-04-13 | **PR:** #508 | **Source:** sonarcloud+qodo
@@ -1882,16 +1880,6 @@ deduplicated, non-overlapping ranges):
 - gh pr view --json files clipping confirmed two-round pattern
 - test files inherit production fix patterns via propagation sweep
 - same-line multi-source folds detectable on Step 2 triage
-
----
-
-### Review 86-pr509: PR #508 R2 (Mixed: Qodo Compliance + Qodo Suggestions + SonarCloud + CI) (unknown)
-
-**Date:** unknown | **PR:** #509 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 29    | 0     | 0        | 0        |
 
 ---
 
@@ -1927,6 +1915,109 @@ deduplicated, non-overlapping ranges):
 - String.raw eliminates double-escape audit burden in regex escapes
 - pre-existing CC on modified files requires baseline update or refactor commit
 - 42-of-57 items in 2 NEW files = individual triage still cheap when clustered
+
+---
+
+### Review rev-87: PR #510 R2 (Mixed: SonarCloud + CI + Qodo Compliance + Qodo Suggestions) (2026-04-13)
+
+**Date:** 2026-04-13 | **PR:** #510 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 4     | 4     | 0       |
+
+**Patterns:**
+
+- char-class-to-string-replaceAll
+- module-exports-requiremain-guard-retrofit
+- narrow-catch-with-sanitized-warn
+- network-egress-opt-in-flag
+- type-map-fallback
+- prettier-generated-content
+- coverage-gate-real-tests
+
+**Learnings:**
+
+- module.exports + require.main guard should be default for any script with >=1
+  pure helper
+- narrow try-blocks + per-catch console.warn beats blanket
+  catch-and-return-empty
+- opt-in egress flags are cheap hardening even in prototype phase
+
+---
+
+### Review rev-88: PR #511 R1 (Mixed: Qodo Code Review + Qodo Suggestions + Qodo Compliance + Gemini Code Assist + CI) (2026-04-14)
+
+**Date:** 2026-04-14 | **PR:** #511 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 10    | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 5     | 3     | 1       |
+
+**Patterns:**
+
+- sanitize-error-in-hooks
+- module-exports-requiremain-guard-retrofit
+- zod-regex-contracts
+- nan-safe-coercion
+- unfiltered-count-for-canonical-metrics
+- line-anchored-metric-regex
+- lightweight-jsonl-audit-trail
+- narrow-readfilesync-trycatch
+
+**Learnings:**
+
+- multi-source convergence rule paid off twice on schema-integrity bugs
+- test-baseline is last resort; module.exports retrofit is cheap at creation
+  time
+- audit trail on hot-path hooks belongs in state jsonl not hook stdout
+- large meta-PRs compress review volume when majority is research artifacts
+
+---
+
+### Review rev-89: PR #511 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestion) (2026-04-14)
+
+**Date:** 2026-04-14 | **PR:** #511 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 3     | 3     | 2       |
+
+**Patterns:**
+
+- cc-regression-after-r1-logic-add
+- test-helper-hoist
+- pii-safe-audit-log
+- strict-path-containment
+- pid-platform-actor-context-no-pii
+- string-raw-backslash-literals
+- whitespace-tolerant-metric-regex
+
+**Learnings:**
+
+- R1 fixes regress their own metrics — every new logic-add risks CC regression
+- audit-trail design carries PII risk if input fields pass through unsanitized
+- two compliance findings can pull opposite directions on the same file
+- new test files attract SonarCloud lint items; worth pre-push linting on
+  creation
 
 ## Key Patterns
 
@@ -5315,3 +5406,211 @@ DAS needed).
   tests for 2 new scripts, prettier synthesis.md, silent-swallow narrow-catch
   rewrite, --private-ok opt-in flag, TYPE_MAP fallback, L194 char-class-to-
   string replaceAll; hook state drift folded in).
+
+### Review #89 — PR #511 R1 (Mixed: Qodo Code Review + Qodo Suggestions + Qodo Compliance + Gemini Code Assist + CI)
+
+**Scope:** 10 items across 5 sources. All 10 this-PR (no DAS needed). 1C / 5M /
+3m / 1T severity split. PR is 100 files (93% research/state/meta) but review
+focus is the small code surface: `post-todos-render.js` (new hook),
+`analysis-schema.js` (Zod contracts), `review-lifecycle.js` (filter logic),
+`render-reviews-to-md.ts` (metrics write), and one test script.
+
+- 1 CRITICAL Qodo+Compliance: raw `err.message` logged in new hook (CLAUDE.md §5
+  rule — must use `sanitize-error`).
+- 1 MAJOR Qodo: `readFileSync` without try/catch in Step 13 test (CLAUDE.md §5
+  rule — existsSync race).
+- 1 MAJOR Qodo: filtered render corrupts Active-reviews metric when
+  `--filter-pr`/`--last` used against canonical output.
+- 1 MAJOR convergent (Qodo+Gemini): `title_key` regex missing on
+  `opportunitySchema` — elevated from MINOR to MAJOR via multi-source rule.
+- 1 MAJOR convergent (Qodo+Gemini): NaN risk in `review-lifecycle.js` noise
+  filter — elevated from MINOR to MAJOR.
+- 1 MAJOR CI: new hook (`post-todos-render.js`, 84 lines) absent from test
+  baseline — coverage completeness blocked.
+- 2 MINOR Gemini: `title_key` regex missing on `opportunityLedgerRecord`;
+  `first_seen_in_run`/`last_seen_in_run` missing YYYY-MM-DD regex.
+- 1 MINOR Qodo advisory: renderer stderr/stdout discarded on hook failure.
+- 1 TRIVIAL Qodo ⚪: hook lacks attributable audit trail.
+
+**Key fixes:**
+
+- **CRITICAL sanitize-error in post-todos-render.js:** Switched from inline
+  `err && err.message ? err.message : err` to
+  `require(".../sanitize-error.cjs")` with defensive fallback (matches
+  `governance-logger.js`, `settings-guardian.js`, `deploy-safeguard.js`). All
+  three emission sites — renderer failure, stage failure, audit-log error — now
+  route through the helper.
+- **Hook refactor for testability:** Inlined top-level logic moved into a
+  `main(rawArg)` function gated by `require.main === module`. Pure helpers
+  (`extractFilePath`, `isTodosJsonl`, `formatRendererError`, `writeAudit`,
+  `resolveProjectDir`) exported via `module.exports` so tests can exercise them
+  directly without spawning child processes. Same pattern we applied to
+  `check-slopsquat.js` and `generate-llms-txt.js` in PR #510 R2 (Review #88).
+- **Renderer diagnostics (#8):** Catch block now captures `err.stderr` (last
+  2KB), `err.stdout` (last 1KB), and `err.status` — all passed through
+  `sanitizeError()` before logging. Previously the exit status and stderr (where
+  the real failure message lives) were discarded, leaving developers with a
+  200-char truncated `err.message`.
+- **Audit trail (#9):** Added `writeAudit()` helper that appends JSONL entries
+  to `.claude/state/post-todos-render-audit.jsonl` with
+  `{timestamp, action, file_path, success, ...}` at every decision point
+  (`rendered`, `render_failed`, `staged`, `stage_failed`). Failure-safe: audit
+  append is wrapped in its own try/catch so an unwritable state dir can never
+  block the hook. Lightweight enough that per-Write noise is acceptable.
+- **readFileSync try/catch (#2):** Wrapped the two `readFileSync` calls in
+  `.research/analysis/synthesis/test-step13/test.js` in narrow try/catch blocks
+  that `console.error` + `process.exit(1)` on failure. Added `process` to the
+  `/* global */` directive.
+- **Filtered-render metric corruption (#3):** Snapshot
+  `totalRecordCount = records.length` before filters apply. Replaced
+  `records.length` with `totalRecordCount` in the regex replacement and — when
+  filters are active — skip the metrics-row auto-update entirely (writing a
+  total while rendering a subset would still misrepresent the canonical file's
+  shape). Also anchored both metric-row regexes to line start (`^...$` with
+  `/m`) to prevent unintended row matches. Matches Qodo-suggested approach B+C
+  combined.
+- **Zod regex contracts (#4, #5, #6):** Hoisted `TITLE_KEY_REGEX` and
+  `DATE_YMD_REGEX` constants, applied `.regex(...)` to `title_key` in both
+  `opportunitySchema` (optional) and `opportunityLedgerRecord` (required), and
+  to `first_seen_in_run`/`last_seen_in_run` date strings. Enforcement closes the
+  gap between the docstring contract and the runtime schema.
+- **NaN coercion in review-lifecycle (#7):** Coerced `total`, `fixed`,
+  `deferred`, `rejected` via `Number(r.field ?? 0) || 0` before arithmetic.
+  Previously undefined fields from malformed parsed entries produced `NaN` in
+  the sum, which silently made the integrity check
+  `total > 0 && dispositionsZero` false — letting invalid records through.
+  Dual-guard (`?? 0` + `|| 0`) handles both missing keys and `NaN` coercion
+  fallout.
+- **CI coverage (#10):** New `tests/hooks/post-todos-render.test.ts` with 28
+  tests across 5 suites: `extractFilePath` (6), `isTodosJsonl` (7),
+  `formatRendererError` (8), `writeAudit` (5), module-exports smoke (2). Tests
+  use `path.resolve(PROJECT_ROOT, ...)` with source/dist detection (pattern from
+  `state-utils.test.ts`) so the test works from both `tests/hooks/` and
+  `dist-tests/tests/hooks/`. All 28 pass.
+
+**R1 process learnings:**
+
+- **Convergence rule paid off twice:** Items #4 and #7 were both MINOR
+  individually, but Qodo+Gemini flagged each independently — the auto-elevate-
+  to-MAJOR rule from skill v4.1 caught two schema-integrity bugs that would
+  otherwise have been batched with stylistic MINOR fixes and possibly deferred
+  on a larger PR. Worth keeping.
+- **Test-baseline vs. real tests:** On the prior PR (#510 R2 / Review #88) we
+  added tests for two flagged hooks rather than baseline entries — same call
+  here on user direction ("real tests"). The `module.exports` +
+  `require.main === module` retrofit is becoming the standard opener for any new
+  script/hook — testable from day one costs ~5 extra lines and removes the
+  retrofit friction later.
+- **Audit-trail as structured JSONL, not console.log:** For ⚪ audit-trail
+  findings on hot-path hooks, the right answer is a lightweight append to a
+  dedicated `.claude/state/` JSONL — not verbose console output on every
+  invocation. Keeps diagnostics attributable (timestamp + action + success)
+  without polluting hook stdout (which Claude Code inlines into every tool
+  result).
+- **Large meta-PRs compress review volume:** Despite 100 changed files, the
+  review surface landed at 10 items — 93% of the diff was research/state/
+  planning artifacts that Qodo/Gemini correctly ignored. The Step 0 "large PR
+  advisory + first-scan detection" warm-up correctly predicted this and the
+  batch-ack path was the right default.
+
+**Commits:**
+
+- (single-commit batch — all 10 R1 items per user direction: hook refactor with
+  sanitize-error + audit trail + stderr capture, Step 13 try/catch, schema regex
+  contracts, NaN coercion, filtered-render metric fix, 28-test hook coverage).
+
+### Review #90 — PR #511 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestion)
+
+**Scope:** 8 items across 3 sources after R1 commits (b1912836, b5765e5b,
+45a3a0db, a6164648). All 8 this-PR — classic R1→R2 pattern where the R1 fixes
+themselves introduced items. No DAS blocks needed.
+
+- 1 SonarCloud MAJOR: cognitive complexity 16→15 on `renderReviews` after R1's
+  metric-fix block pushed CC over threshold.
+- 1 SonarCloud MAJOR: `mkTmp` test helper defined inside describe block (should
+  be outer scope).
+- 1 Qodo Compliance 🔴 MAJOR: PII risk in audit log — raw `file_path` may be
+  absolute, leaking usernames when state file lands in git.
+- 2 SonarCloud MINOR: `String.raw` should be used in two test strings with
+  escaped backslashes.
+- 1 Qodo Suggestion MINOR: whitespace-tolerant regex for Document Health metrics
+  table rows.
+- 1 Qodo Compliance ⚪ TRIVIAL: path-check hardening — endsWith() alone accepts
+  crafted paths from unexpected cwd.
+- 1 Qodo Compliance ⚪ TRIVIAL: audit entries lack actor context (pid/
+  platform/user identifier).
+
+**Key fixes:**
+
+- **CC refactor + whitespace-tolerant regex (R2 #1 + #8):** Extracted the two
+  regex replacements into `updateDocumentHealthMetrics(doc, totalCount)` helper
+  above `renderReviews`. Also applied Qodo's whitespace-tolerant regex
+  (`/^(\|\s*Active reviews\s*\|\s*)~?\d+(\s*\|)/m`) which tolerates column-
+  width adjustments in the markdown table. Single edit closed both items because
+  #1 required extraction anyway.
+- **PII-safe audit log (R2 #6):** Added `toSafeRelPath(projectDir, filePath)`
+  helper — converts abs to project-relative, returns `[outside-project]` if the
+  path escapes. Applied to `file_path` in all `writeAudit()` call sites in
+  `main()`. Deliberately handles Windows backslashes by normalizing to forward
+  slashes at the end (so audit entries are cross-platform comparable).
+- **Strict path containment (R2 #5):** Added
+  `isCanonicalTodosPath(projectDir, filePath)` — rejects anything that doesn't
+  resolve to exactly `{projectDir}/.planning/todos.jsonl`. Called in `main()`
+  between `isTodosJsonl` (suffix check) and the renderer invocation. Guards
+  against crafted paths from unexpected cwd. Case-insensitive compare on
+  Windows.
+- **Actor context w/o PII (R2 #7):** Added `pid: process.pid` and
+  `platform: process.platform` to every audit entry. Deliberately did NOT
+  include `process.env.USER` or `os.hostname()` — those would reintroduce the
+  PII that #6 just stripped out.
+- **mkTmp hoist (R2 #4):** Moved the test helper from inside
+  `describe("writeAudit", ...)` to module-level (right after `HOOK_PATH`). Now
+  shared by all test suites that need a tmpdir.
+- **String.raw for backslash literals (R2 #2, #3):** Replaced
+  `"C:\Users\dev\repo\.planning\todos.jsonl"` with
+  `` String.raw`C:\Users\dev\repo\.planning\todos.jsonl` `` in both test lines.
+  Removes the \-pair-double-escape noise and makes the test intent readable.
+
+**R2 process learnings:**
+
+- **R1 fixes regress on their own metrics.** Every R1 round that adds logic
+  risks a CC regression, and every new test file attracts SonarCloud lint items.
+  The CC check (`node scripts/check-cc.js --staged`) recommended in the skill is
+  not TS-aware — SonarCloud remains the authority for .ts files. Worth adding a
+  tsc-based CC pre-push for .ts files someday.
+- **Audit-trail design carries PII risk.** Adding structured logs (R1 #9) solved
+  one compliance finding but introduced another (R2 #6) by including an
+  unsanitized input field. Lesson: any new field that echoes user- controlled
+  input to a persisted log needs a sanitization pass in the _same_ review round
+  — don't rely on a follow-up to catch it.
+- **Two compliance findings, opposite directions, same file.** R2 #6 (strip PII)
+  and R2 #7 (add actor context) pull in opposite directions. The resolution —
+  pid + platform, no user/hostname — threads the needle: enough signal for
+  debugging, no PII leak. Document the tradeoff in the helper comment so future
+  editors don't reintroduce `process.env.USER`.
+- **Test file design matters for SonarCloud.** Hoisting test helpers to module
+  scope (R2 #4) and using `String.raw` for paths (R2 #2, #3) are both low-effort
+  but high-clarity wins. Both found on our brand-new test file from R1 — worth
+  checking _future_ new test files for the same patterns before the first push.
+
+**Bonus security fix (security-auditor agent, PRE-TASK hook mandated):**
+
+- **Symlink hardening on both new helpers:** The auditor flagged S2 — both
+  `isCanonicalTodosPath` and `toSafeRelPath` were string-level only, so a
+  symlink at `{projectDir}/.planning/todos.jsonl` (or inside `.planning/`)
+  pointing outside the repo would pass containment _and_ get logged as a clean
+  relative path while the real target escapes. Added `realpathIfExists()`
+  helper + `lstatSync` symlink rejection on `isCanonicalTodosPath`, and
+  `realpathSync` resolution on both sides of `toSafeRelPath`'s `path.relative()`
+  call. Matches the refuseSymlinkWithParents pattern from
+  `scripts/lib/security-helpers.js`. Two new tests (skip gracefully on Windows
+  without admin/dev-mode). Folded into the R2 commit per user approval — closes
+  the gap while the code is hot rather than filing as TDMS.
+
+**Commits:**
+
+- (single-commit batch — all 8 R2 items plus security-auditor S2 symlink
+  hardening: CC extraction + regex tolerance, PII-safe audit log, strict path
+  containment w/ symlink rejection, pid+platform actor context, mkTmp hoist,
+  String.raw literals, plus 13 new tests covering the new helpers, actor-context
+  / PII assertions, and symlink edge cases).

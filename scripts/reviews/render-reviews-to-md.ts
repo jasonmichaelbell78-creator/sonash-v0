@@ -398,6 +398,30 @@ export interface RenderResult {
 }
 
 /**
+ * Update the Document Health Monitoring metrics table in the assembled doc.
+ * - Active reviews: canonical record count (unfiltered)
+ * - Main log lines: rounded to nearest 10 to minimize diff churn
+ *
+ * Regexes are line-anchored (prevents mid-document matches) and whitespace-
+ * tolerant (handles column-width adjustments in the markdown table). Not
+ * full-line anchored — metric rows have multi-column tables, so `$` at end-
+ * of-line would reject valid matches.
+ *
+ * Bounded inputs (single-line table cells), no ReDoS risk.
+ */
+function updateDocumentHealthMetrics(doc: string, totalRecordCount: number): string {
+  let updated = doc.replace(
+    /^(\|\s*Active reviews\s*\|\s*)~?\d+(\s*\|)/m,
+    `$1${totalRecordCount}$2`
+  );
+  const lineCount = updated.split("\n").length;
+  // Round to nearest 10 to keep diffs minimal across runs that don't change content
+  const roundedLines = Math.round(lineCount / 10) * 10;
+  updated = updated.replace(/^(\|\s*Main log lines\s*\|\s*)~?\d+(\s*\|)/m, `$1~${roundedLines}$2`);
+  return updated;
+}
+
+/**
  * Render reviews from JSONL to markdown.
  * Called by the orchestrator (Step 4) or standalone via CLI.
  *
@@ -464,6 +488,12 @@ export function renderReviews(
   const rawRecords = readJsonl(inputPath, { safe: true, quiet: true });
   let records = parseRecords(rawRecords);
 
+  // Snapshot the unfiltered count — the Document Health "Active reviews" metric
+  // must reflect the canonical dataset size, not a filtered subset. Computing
+  // before filters prevents silent metric drift when --filter-pr/--last run
+  // against the canonical output path.
+  const totalRecordCount = records.length;
+
   // Apply filters
   if (options?.filterPr != null) {
     records = records.filter((r) => r.pr === options.filterPr);
@@ -497,7 +527,15 @@ export function renderReviews(
   const preserved = extractPreservedSections(outputPath);
 
   // Assemble full document
-  const fullDocument = assembleDocument(preserved, renderedEntries);
+  let fullDocument = assembleDocument(preserved, renderedEntries);
+
+  // Skip metrics update when filters are active — rendered subset doesn't
+  // reflect the canonical dataset, so either the subset or the total would
+  // misrepresent document health.
+  const filtersActive = options?.filterPr != null || options?.lastN != null;
+  if (!filtersActive) {
+    fullDocument = updateDocumentHealthMetrics(fullDocument, totalRecordCount);
+  }
 
   // Ensure output directory exists
   const outDir = path.dirname(absOutputPath);

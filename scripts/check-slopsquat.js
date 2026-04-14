@@ -38,11 +38,15 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { sanitizeError } = require("./lib/sanitize-error.js");
+const { validatePathInDir } = require("./lib/security-helpers.js");
 
-const ROOT = path.resolve(__dirname, "..");
+const ROOT = path.resolve(__dirname, ".."); // validatePathInDir: constant-path (no user input)
+// validatePathInDir enforces containment invariant on the subpaths below.
+// These are constants today, but the check guards against future regressions
+// if paths ever come from CLI input. Throws if any entry escapes ROOT.
 const PACKAGE_FILES = [
-  path.join(ROOT, "package.json"),
-  path.join(ROOT, "functions", "package.json"),
+  path.join(ROOT, validatePathInDir(ROOT, "package.json")),
+  path.join(ROOT, validatePathInDir(ROOT, "functions/package.json")),
 ];
 
 const REGISTRY_BASE = "https://registry.npmjs.org/";

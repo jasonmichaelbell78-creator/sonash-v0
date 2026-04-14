@@ -1,244 +1,46 @@
 {
   "schema_version": "1.0",
-  "generated_at": "2026-04-13T18:08:48.419Z",
+  "generated_at": "2026-04-13T20:35:00Z",
   "paradigm": "thematic",
-  "mode": "full",
+  "mode": "incremental",
+  "parent_run_at": "2026-04-13T18:08:48.419Z",
   "sources_included": [
-    {
-      "slug": "errors-and-vulnerabilities-in-ai-generated-code",
-      "source": "Errors and Vulnerabilities in AI-Generated Code.pdf",
-      "source_type": "document",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "youtube-oszdfnqmgrw",
-      "source": "https://www.youtube.com/watch?v=OSZdFnQmgRw",
-      "source_type": "media",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "youtube-qinuqwl4e-k",
-      "source": "https://www.youtube.com/watch?v=qINuQwL4E-k",
-      "source_type": "media",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "archivebox-archivebox",
-      "source": "ArchiveBox/ArchiveBox",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "aws-media-extraction",
-      "source": "aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "bedrock-summarize-audio-video-text",
-      "source": "ksharlandjiev/bedrock-summarize-audio-video-text",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "bulk-transcribe-youtube-playlist",
-      "source": "Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "codecrafters-io-build-your-own-x",
-      "source": "codecrafters-io/build-your-own-x",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "crawl4ai",
-      "source": "unclecode/crawl4ai",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "docling",
-      "source": "DS4SD/docling",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "firecrawl",
-      "source": "mendableai/firecrawl",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "hkuds-cli-anything",
-      "source": "HKUDS/CLI-Anything",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "jina-ai-reader",
-      "source": "jina-ai/reader",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "karpathy-autoresearch",
-      "source": "karpathy/autoresearch",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "lux-video-downloader",
-      "source": "iawia002/lux",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "MinerU",
-      "source": "opendatalab/MinerU",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "outline",
-      "source": "outline/outline",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "public-apis_public-apis",
-      "source": "public-apis/public-apis",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "qmd",
-      "source": "tobi/qmd",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "safishamsi-graphify",
-      "source": "safishamsi/graphify",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "teng-lin_notebooklm-py",
-      "source": "teng-lin/notebooklm-py",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "unstructured",
-      "source": "unstructured-io/unstructured",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "vikparuchuri-marker",
-      "source": "VikParuchuri/marker",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "viktoraxelsen-memskill",
-      "source": "ViktorAxelsen/MemSkill",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "youtube-transcript-api",
-      "source": "jdepoix/youtube-transcript-api",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "zedeus-nitter",
-      "source": "zedeus/nitter",
-      "source_type": "repo",
-      "source_tier": "T1",
-      "depth": "standard"
-    },
-    {
-      "slug": "docs-composio-dev",
-      "source": "https://docs.composio.dev/docs",
-      "source_type": "website",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "farzaa-gist-c35ac0cf",
-      "source": "https://gist.github.com/farzaa/c35ac0cfbeb957788650e36aabea836d",
-      "source_type": "website",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "karpathy-gist-442a6bf",
-      "source": "https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f",
-      "source_type": "website",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "kieranklaassen-gist-4f2aba89",
-      "source": "https://gist.github.com/kieranklaassen/4f2aba89594a4aea4ad64d753984b2ea",
-      "source_type": "website",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "maharshi-pandya-gist-4aeccbe1",
-      "source": "https://gist.github.com/Maharshi-Pandya/4aeccbe1dbaa7f89c182bd65d2764203",
-      "source_type": "website",
-      "source_tier": "T2",
-      "depth": "standard"
-    },
-    {
-      "slug": "sidbharath-com-blog-claude-code-the-complete-guide",
-      "source": "https://sidbharath.com/blog/claude-code-the-complete-guide/",
-      "source_type": "website",
-      "source_tier": "T2",
-      "depth": "standard"
-    }
+    "MinerU",
+    "abhigyanpatwari-gitnexus",
+    "archivebox-archivebox",
+    "aws-media-extraction",
+    "bedrock-summarize-audio-video-text",
+    "bulk-transcribe-youtube-playlist",
+    "codecrafters-io-build-your-own-x",
+    "crawl4ai",
+    "docling",
+    "docs-composio-dev",
+    "errors-and-vulnerabilities-in-ai-generated-code",
+    "farzaa-gist-c35ac0cf",
+    "firecrawl",
+    "hkuds-cli-anything",
+    "jina-ai-reader",
+    "karpathy-autoresearch",
+    "karpathy-gist-442a6bf",
+    "kieranklaassen-gist-4f2aba89",
+    "lux-video-downloader",
+    "maharshi-pandya-gist-4aeccbe1",
+    "outline",
+    "public-apis_public-apis",
+    "qmd",
+    "safishamsi-graphify",
+    "sidbharath-com-blog-claude-code-the-complete-guide",
+    "teng-lin_notebooklm-py",
+    "unstructured",
+    "vikparuchuri-marker",
+    "viktoraxelsen-memskill",
+    "youtube-oszdfnqmgrw",
+    "youtube-qinuqwl4e-k",
+    "youtube-transcript-api",
+    "zedeus-nitter"
   ],
-  "sources_excluded": [
-    {
-      "slug": "surya",
-      "reason": "Quick-depth preview per Step 10 skip decision"
-    },
-    {
-      "slug": "tesseract",
-      "reason": "Quick-depth preview per Step 10 skip decision"
-    }
-  ],
+  "sources_excluded": ["surya", "tesseract"],
+  "new_sources_this_run": ["abhigyanpatwari-gitnexus"],
   "themes": [
     {
       "name": "Multi-stage extraction pipelines (fallback-based)",
@@ -1996,116 +1798,6 @@
       }
     ]
   },
-  "opportunity_matrix": [
-    {
-      "rank": 1,
-      "title": "Publish SoNash /llms.txt from CLAUDE.md + SKILL.md corpus",
-      "description": "One-shot script that generates llms.txt from existing docs. Makes SoNash discoverable by other LLM systems without custom integration.",
-      "effort": "E1",
-      "impact": "medium",
-      "evidence": ["docs-composio-dev"],
-      "suggested_route": "/deep-plan"
-    },
-    {
-      "rank": 2,
-      "title": "Add slopsquatting gate to pre-commit (package-name verification)",
-      "description": "Pre-install check: verify npm package names against registry + dep-hallucinator-style heuristics. Closes an AI-native supply-chain risk SoNash currently does not gate.",
-      "effort": "E1",
-      "impact": "high",
-      "evidence": ["errors-and-vulnerabilities-in-ai-generated-code"],
-      "suggested_route": "/deep-plan"
-    },
-    {
-      "rank": 3,
-      "title": "Adopt .claude-plugin/marketplace.json as SoNash skill distribution format",
-      "description": "If SoNash ever distributes skills outside the single repo, the emerging marketplace.json format is the standard. Cheap to preemptively adopt.",
-      "effort": "E1",
-      "impact": "medium",
-      "evidence": ["sidbharath-com-blog-claude-code-the-complete-guide", "hkuds-cli-anything"],
-      "suggested_route": "/deep-plan"
-    },
-    {
-      "rank": 4,
-      "title": "Queue 3-5 recovery-community UX sources for Wave 6 /analyze",
-      "description": "Biggest gap in corpus. Sober Grid, I Am Sober, InTheRooms, peer-support UX. Fills the single most critical absence (3-agent confirmation).",
-      "effort": "E0",
-      "impact": "high",
-      "evidence": ["absence-signal:recovery-community-ux"],
-      "suggested_route": "/analyze"
-    },
-    {
-      "rank": 5,
-      "title": "Add bidirectional doc-feature validator to SoNash pre-commit",
-      "description": "Inward check (cross-doc-deps) already exists. Outward check (code feature has doc reference) closes the drift loop.",
-      "effort": "E2",
-      "impact": "medium",
-      "evidence": ["crawl4ai", "jina-ai-reader"],
-      "suggested_route": "/deep-plan"
-    },
-    {
-      "rank": 6,
-      "title": "Prototype zero-schema MCP server from SoNash scripts/ CLI introspection",
-      "description": "SoNash has 100+ scripts/ with argparse/yargs. An MCP server introspecting them eliminates the schema-drift class entirely. JASON-OS Domain 02a candidate.",
-      "effort": "E2",
-      "impact": "high",
-      "evidence": ["archivebox-archivebox"],
-      "suggested_route": "/brainstorm"
-    },
-    {
-      "rank": 7,
-      "title": "Research OAuth-scope-filtered MCP tool registration for JASON-OS",
-      "description": "Outline's production pattern. Before JASON-OS adds any MCP tool, this is the security model worth studying in depth.",
-      "effort": "E2",
-      "impact": "high",
-      "evidence": ["outline"],
-      "suggested_route": "/deep-research"
-    },
-    {
-      "rank": 8,
-      "title": "Prototype meta-tool pattern for SoNash skill/agent discovery",
-      "description": "72+ skills + 38 agents. Loading all at session start is expensive. A meta-skill that searches and loads on demand follows composio's playbook.",
-      "effort": "E2",
-      "impact": "high",
-      "evidence": ["docs-composio-dev"],
-      "suggested_route": "/brainstorm"
-    },
-    {
-      "rank": 9,
-      "title": "Design SoNash Firebase-native reference doc",
-      "description": "Architectural write-up + diagrams. App Check posture, Firestore rules, httpsCallable gateway, emulator patterns. Becomes SoNash's reference for onboarding AI agents to the stack.",
-      "effort": "E2",
-      "impact": "high",
-      "evidence": ["absence-signal:firebase-native"],
-      "suggested_route": "/deep-plan"
-    },
-    {
-      "rank": 10,
-      "title": "Explore privacy-first on-device extraction for SoNash content analysis",
-      "description": "whisper.cpp for local ASR, monolith/SingleFile for local HTML, readable-cli for local Reader-mode. If SoNash ever analyzes user-provided content, privacy-first local-first is the vision statement commitment.",
-      "effort": "E3",
-      "impact": "high",
-      "evidence": ["absence-signal:privacy-first-on-device"],
-      "suggested_route": "/deep-research"
-    },
-    {
-      "rank": 11,
-      "title": "Design 42 CFR Part 2 / HIPAA-adjacent data-handling architecture for SoNash",
-      "description": "Compliance question, not coding. Should be scoped before SoNash adds any storage pattern that touches sobriety-specific data.",
-      "effort": "E3",
-      "impact": "high",
-      "evidence": ["absence-signal:sud-confidentiality"],
-      "suggested_route": "/deep-research"
-    },
-    {
-      "rank": 12,
-      "title": "Spec a skill retirement workflow for SoNash .claude/skills/",
-      "description": "As SoNash accumulates skills (72+ today), retirement has to be a first-class motion. Draft a deprecation process: warning phase, deprecation_warning-style surface, removal.",
-      "effort": "E2",
-      "impact": "medium",
-      "evidence": ["codecrafters-io-build-your-own-x", "hkuds-cli-anything"],
-      "suggested_route": "/deep-plan"
-    }
-  ],
   "reading_chain": [
     {
       "order": 1,
@@ -2364,5 +2056,230 @@
       "claude-code-platform"
     ],
     "date_range": "2026-03-31 to 2026-04-13"
-  }
+  },
+  "opportunity_matrix": [
+    {
+      "title": "Build eval harness for agent-capability measurement (SWE-bench shape)",
+      "rank": 1,
+      "effort": "E3",
+      "impact": "high",
+      "suggested_route": "/deep-plan",
+      "evidence_sources": ["abhigyanpatwari-gitnexus", "absence-signal:no-eval-harness-in-sonash"],
+      "notes_new": "Surfaced by GitNexus analysis (Session #278). Creator View Challenge: SoNash has 450+ patterns, 77 skills, 38 agents, and a learning metric in dispute, with no A/B apparatus. GitNexus reference: 3-mode harness (baseline/native/native_augment), per-instance caching by (repo, commit), multi-model support. NEW this run."
+    },
+    {
+      "title": "Adopt gitnexus:start-style MCP contract block in SoNash CLAUDE.md",
+      "rank": 2,
+      "effort": "E0",
+      "impact": "medium",
+      "suggested_route": "/deep-plan",
+      "evidence_sources": ["abhigyanpatwari-gitnexus"],
+      "notes_new": "Format: Always Do / When X / When Y / Never Do / Tools Quick Reference / Risk Levels / Self-Check. When SoNash adds MCP-emitting capabilities, wrap in sonash:start/sonash:end block. NEW this run."
+    },
+    {
+      "title": "Codify high-impact MEMORY.md feedback entries as repo-visible Signs pattern",
+      "rank": 3,
+      "effort": "E0",
+      "impact": "medium",
+      "suggested_route": "/brainstorm",
+      "evidence_sources": ["abhigyanpatwari-gitnexus"],
+      "notes_new": "GitNexus GUARDRAILS.md 'Signs' codifies recurring-twice failures as repo-level rules (visible to any agent, not just Claude Code memory). Analogous to SoNash feedback_ memories. Candidate for cross-agent portability. NEW this run."
+    },
+    {
+      "title": "Adopt .claude-plugin/marketplace.json as SoNash skill distribution format",
+      "rank": 4,
+      "effort": "E1",
+      "impact": "medium",
+      "suggested_route": "/deep-plan",
+      "evidence_sources": ["abhigyanpatwari-gitnexus", "outline", "karpathy-autoresearch"],
+      "notes_new": "Reinforced by GitNexus (ships at marketplace.json v1.3.3 + plugin.json v1.3.6). Was Rank 3 in Wave 5 but explicitly deprioritized by user. GitNexus is the concrete reference implementation if revisited."
+    },
+    {
+      "title": "Trial GitNexus on SoNash (pending license clarification)",
+      "rank": 5,
+      "effort": "E1",
+      "impact": "high",
+      "suggested_route": "/analyze",
+      "evidence_sources": ["abhigyanpatwari-gitnexus"],
+      "notes_new": "Use-as-is verdict from adoption_verdict field. Blocker: NOASSERTION license. Step 1: check LICENSE file. Step 2: trial on branch. Step 3: decide adopt vs extract-only. NEW this run."
+    },
+    {
+      "rank": 1,
+      "title": "Publish SoNash /llms.txt from CLAUDE.md + SKILL.md corpus",
+      "description": "One-shot script that generates llms.txt from existing docs. Makes SoNash discoverable by other LLM systems without custom integration.",
+      "effort": "E1",
+      "impact": "medium",
+      "evidence": ["docs-composio-dev"],
+      "suggested_route": "/deep-plan"
+    },
+    {
+      "rank": 2,
+      "title": "Add slopsquatting gate to pre-commit (package-name verification)",
+      "description": "Pre-install check: verify npm package names against registry + dep-hallucinator-style heuristics. Closes an AI-native supply-chain risk SoNash currently does not gate.",
+      "effort": "E1",
+      "impact": "high",
+      "evidence": ["errors-and-vulnerabilities-in-ai-generated-code"],
+      "suggested_route": "/deep-plan"
+    },
+    {
+      "rank": 4,
+      "title": "Queue 3-5 recovery-community UX sources for Wave 6 /analyze",
+      "description": "Biggest gap in corpus. Sober Grid, I Am Sober, InTheRooms, peer-support UX. Fills the single most critical absence (3-agent confirmation).",
+      "effort": "E0",
+      "impact": "high",
+      "evidence": ["absence-signal:recovery-community-ux"],
+      "suggested_route": "/analyze"
+    },
+    {
+      "rank": 5,
+      "title": "Add bidirectional doc-feature validator to SoNash pre-commit",
+      "description": "Inward check (cross-doc-deps) already exists. Outward check (code feature has doc reference) closes the drift loop.",
+      "effort": "E2",
+      "impact": "medium",
+      "evidence": ["crawl4ai", "jina-ai-reader"],
+      "suggested_route": "/deep-plan"
+    },
+    {
+      "rank": 6,
+      "title": "Prototype zero-schema MCP server from SoNash scripts/ CLI introspection",
+      "description": "SoNash has 100+ scripts/ with argparse/yargs. An MCP server introspecting them eliminates the schema-drift class entirely. JASON-OS Domain 02a candidate.",
+      "effort": "E2",
+      "impact": "high",
+      "evidence": ["archivebox-archivebox"],
+      "suggested_route": "/brainstorm"
+    },
+    {
+      "rank": 7,
+      "title": "Research OAuth-scope-filtered MCP tool registration for JASON-OS",
+      "description": "Outline's production pattern. Before JASON-OS adds any MCP tool, this is the security model worth studying in depth.",
+      "effort": "E2",
+      "impact": "high",
+      "evidence": ["outline"],
+      "suggested_route": "/deep-research"
+    },
+    {
+      "rank": 8,
+      "title": "Prototype meta-tool pattern for SoNash skill/agent discovery",
+      "description": "72+ skills + 38 agents. Loading all at session start is expensive. A meta-skill that searches and loads on demand follows composio's playbook.",
+      "effort": "E2",
+      "impact": "high",
+      "evidence": ["docs-composio-dev"],
+      "suggested_route": "/brainstorm"
+    },
+    {
+      "rank": 9,
+      "title": "Design SoNash Firebase-native reference doc",
+      "description": "Architectural write-up + diagrams. App Check posture, Firestore rules, httpsCallable gateway, emulator patterns. Becomes SoNash's reference for onboarding AI agents to the stack.",
+      "effort": "E2",
+      "impact": "high",
+      "evidence": ["absence-signal:firebase-native"],
+      "suggested_route": "/deep-plan"
+    },
+    {
+      "rank": 10,
+      "title": "Explore privacy-first on-device extraction for SoNash content analysis",
+      "description": "whisper.cpp for local ASR, monolith/SingleFile for local HTML, readable-cli for local Reader-mode. If SoNash ever analyzes user-provided content, privacy-first local-first is the vision statement commitment.",
+      "effort": "E3",
+      "impact": "high",
+      "evidence": ["absence-signal:privacy-first-on-device"],
+      "suggested_route": "/deep-research"
+    },
+    {
+      "rank": 11,
+      "title": "Design 42 CFR Part 2 / HIPAA-adjacent data-handling architecture for SoNash",
+      "description": "Compliance question, not coding. Should be scoped before SoNash adds any storage pattern that touches sobriety-specific data.",
+      "effort": "E3",
+      "impact": "high",
+      "evidence": ["absence-signal:sud-confidentiality"],
+      "suggested_route": "/deep-research"
+    },
+    {
+      "rank": 12,
+      "title": "Spec a skill retirement workflow for SoNash .claude/skills/",
+      "description": "As SoNash accumulates skills (72+ today), retirement has to be a first-class motion. Draft a deprecation process: warning phase, deprecation_warning-style surface, removal.",
+      "effort": "E2",
+      "impact": "medium",
+      "evidence": ["codecrafters-io-build-your-own-x", "hkuds-cli-anything"],
+      "suggested_route": "/deep-plan"
+    }
+  ],
+  "changes_since_previous": {
+    "themes_strengthened": [
+      {
+        "theme": "Plugin systems & hook/lifecycle governance",
+        "new_evidence": "GitNexus ships Claude Code marketplace plugin (v1.3.3) + PostToolUse/PreToolUse hooks for ambient grep enrichment"
+      },
+      {
+        "theme": "Testing, coverage, and verification approaches",
+        "new_evidence": "GitNexus SWE-bench 3-mode eval harness (baseline/native/native_augment) — most concrete reference implementation in corpus"
+      },
+      {
+        "theme": "Agent orchestration and meta-tooling discipline",
+        "new_evidence": "GitNexus gitnexus:start contract block: structured Always/When/Never MCP tool-usage rules in CLAUDE.md"
+      },
+      {
+        "theme": "Precomputed structure over raw context exploration",
+        "new_evidence": "GitNexus shifts cognitive load from LLM to index: confidence-scored edges, cluster-annotated results, blast-radius pre-computation"
+      }
+    ],
+    "themes_added_weak": [
+      {
+        "theme": "Graph-backed code intelligence as MCP layer",
+        "convergence": "weak (1 source)",
+        "evidence": "abhigyanpatwari-gitnexus"
+      }
+    ],
+    "candidates_added_high_relevance": 16,
+    "candidates_added_total": 22,
+    "candidates_tag_overlap_with_prior": [
+      "evaluation-harness",
+      "marketplace",
+      "skill-distribution",
+      "mcp"
+    ],
+    "gaps_possibly_closed": [
+      {
+        "gap": "No concrete reference for Claude Code marketplace packaging",
+        "closed_by": "abhigyanpatwari-gitnexus"
+      },
+      {
+        "gap": "No agent-capability eval harness reference",
+        "closed_by": "abhigyanpatwari-gitnexus (partial — reference shape, not domain-fit)"
+      }
+    ],
+    "gaps_added_or_confirmed": [
+      {
+        "gap": "SoNash still has no eval harness of its own — GitNexus analysis highlights severity"
+      },
+      {
+        "gap": "License clarity policy — GitNexus NOASSERTION illustrates common ecosystem risk not addressed in SoNash adoption workflow"
+      }
+    ],
+    "confidence_shifts": [
+      {
+        "area": "Claude Code plugin distribution viability",
+        "from": "theoretical (Wave 5)",
+        "to": "confirmed via shipped reference (GitNexus)"
+      }
+    ],
+    "contradictions": [],
+    "source_impact_ranking": [
+      {
+        "source": "abhigyanpatwari-gitnexus",
+        "impact": "high",
+        "reasons": [
+          "introduces eval-harness-shape opportunity",
+          "concretizes marketplace distribution",
+          "adds MCP contract-block pattern",
+          "exposes Signs pattern for repo-visible guardrails"
+        ]
+      }
+    ]
+  },
+  "opportunities_ledger_delta": {
+    "inserted": 5,
+    "updated": 0,
+    "total": 17
+  },
+  "self_audit": {}
 }

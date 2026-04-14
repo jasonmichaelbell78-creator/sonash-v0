@@ -1,0 +1,14 @@
+{"category": "internal-docs", "item": "RUNBOOK.md", "reason": "Operational runbook - not read in depth", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "internal-docs", "item": "MIGRATION.md", "reason": "Version migration notes - not read", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "internal-docs", "item": "TESTING.md", "reason": "Testing conventions - listed but not read fully", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "internal-docs", "item": "CHANGELOG.md", "reason": "Version history - not read", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "skill-files", "item": "gitnexus/skills/gitnexus-cli.md and 4 others", "reason": "5 of 7 skill files not sampled", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "source-code", "item": "gitnexus/src/core/ingestion/", "reason": "Core indexing pipeline source - architecture inferred from docs only", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "source-code", "item": "eval/agents/, eval/environments/, eval/tests/", "reason": "Python eval code not read - README summarized", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "config", "item": "pnpm-workspace.yaml / workspace root config", "reason": "Monorepo config details not inspected", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "ci", "item": ".github/workflows/*.yml individual files", "reason": "Testing dimension summarized aggregate - individual workflows not read", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "referenced-external", "item": "Noodlbox", "reason": "Competitor referenced in .sisyphus/drafts but not analyzed - could be a separate /repo-analysis run", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "referenced-external", "item": "KuzuDB / LadybugDB", "reason": "Embedded graph DB referenced in architecture - not studied", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "referenced-external", "item": "SWE-bench", "reason": "Eval benchmark referenced - not studied (academic project)", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "vendor", "item": "gitnexus/vendor/ tree-sitter WASM files", "reason": "14 language parsers vendored - not inspected (binary)", "user_decision": "skip", "user_decision_date": "2026-04-13"}
+{"category": "plans", "item": "docs/plans/2026-03-26-feat-cobol-full-language-coverage-plan.md", "reason": "Feature plan - not read", "user_decision": "skip", "user_decision_date": "2026-04-13"}

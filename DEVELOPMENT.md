@@ -718,9 +718,10 @@ initialization when needed. Saves ~140ms per hook invocation.
 
 **PostToolUse Hooks (Write/Edit — governance):**
 
-| Hook                 | Condition                                      | Action | Purpose                                       |
-| -------------------- | ---------------------------------------------- | ------ | --------------------------------------------- |
-| governance-logger.js | `Write/Edit(CLAUDE.md\|.claude/settings.json)` | Log    | Log governance changes with git diff to JSONL |
+| Hook                 | Condition                                      | Action | Purpose                                              |
+| -------------------- | ---------------------------------------------- | ------ | ---------------------------------------------------- |
+| governance-logger.js | `Write/Edit(CLAUDE.md\|.claude/settings.json)` | Log    | Log governance changes with git diff to JSONL        |
+| post-todos-render.js | `Write/Edit/MultiEdit(.planning/todos.jsonl)`  | Render | Re-render TODOS.md from canonical JSONL + auto-stage |
 
 **PostToolUse Hooks (Bash):**
 

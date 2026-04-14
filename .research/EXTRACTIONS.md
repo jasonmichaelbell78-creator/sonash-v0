@@ -4,7 +4,7 @@ Auto-generated from `extraction-journal.jsonl` by
 `scripts/cas/generate-extractions-md.js`. Do not edit directly — run
 `node scripts/cas/generate-extractions-md.js` to rebuild.
 
-**Total:** 318 candidates across 32 sources | **By decision:** defer: 294,
+**Total:** 343 candidates across 33 sources | **By decision:** defer: 319,
 investigate: 2, extract: 20, skip: 2
 
 ---
@@ -13,7 +13,8 @@ investigate: 2, extract: 20, skip: 2
 
 | Source                                                                                                                                                                                                                   | Type     | Total | Pattern | Knowledge | Anti-Pattern | Content |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | ----- | ------- | --------- | ------------ | ------- |
-| [ArchiveBox/ArchiveBox](#archivebox-archivebox-repo)                                                                                                                                                                     | repo     | 7     | 3       | 2         | 2            | 0       |
+| [abhigyanpatwari/GitNexus](#abhigyanpatwari-gitnexus-repo)                                                                                                                                                               | repo     | 22    | 6       | 5         | 4            | 7       |
+| [ArchiveBox/ArchiveBox](#archivebox-archivebox-repo)                                                                                                                                                                     | repo     | 10    | 3       | 4         | 3            | 0       |
 | [aws-solutions-library-samples/guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws](#aws-solutions-library-samples-guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws-repo) | repo     | 8     | 6       | 0         | 2            | 0       |
 | [codecrafters-io/build-your-own-x](#codecrafters-io-build-your-own-x-repo)                                                                                                                                               | repo     | 12    | 2       | 4         | 2            | 4       |
 | [Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist](#dicklesworthstone-bulk-transcribe-youtube-videos-from-playlist-repo)                                                                                   | repo     | 12    | 4       | 3         | 3            | 2       |
@@ -48,19 +49,51 @@ investigate: 2, extract: 20, skip: 2
 
 ---
 
+<a id="abhigyanpatwari-gitnexus-repo"></a>
+
+## abhigyanpatwari/GitNexus (repo)
+
+| Candidate                                               | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| ------------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| SWE-bench 3-mode eval harness shape                     | knowledge    | defer    | 2026-04-13 | high    | E3     | high      | -            | Baseline / native / native_augment modes, per-instance cached by (repo, commit), multi-model support. Structural pattern |
+| gitnexus:start MCP contract block                       | pattern      | defer    | 2026-04-13 | high    | E0     | high      | -            | Structured Always/When/Never block in CLAUDE.md defining MCP tool usage rules with impact risk levels (d=1/d=2/d=3). Tem |
+| Signs pattern (recurring failures as codified rules)    | pattern      | defer    | 2026-04-13 | medium  | E0     | high      | -            | GUARDRAILS.md introduces 'Signs' - recurring failure patterns codified once observed twice. Analogous to SoNash MEMORY.m |
+| .claude-plugin/marketplace.json reference impl          | pattern      | defer    | 2026-04-13 | low     | E1     | high      | -            | Canonical format for Claude Code marketplace: marketplace.json + plugin.json (name, version, source, description). Wave  |
+| Typed DAG phase pipeline                                | pattern      | defer    | 2026-04-13 | medium  | E2     | medium    | -            | 12-phase ingestion DAG with typed deps\[\], execute(ctx, deps), and output. Cycles validated at startup. Adding a phase  |
+| Multi-IDE MCP negotiation at install time               | knowledge    | defer    | 2026-04-13 | medium  | E2     | medium    | -            | One MCP server reaches 5 IDEs. Setup command auto-detects editor and writes config once. Claude Code gets PreToolUse+Pos |
+| PreToolUse ambient grep enrichment                      | pattern      | defer    | 2026-04-13 | high    | E2     | medium    | -            | Hook intercepts grep results and appends graph context (callers, callees, processes) silently. Makes meta-tooling ambien |
+| Confidence-scored edges                                 | knowledge    | defer    | 2026-04-13 | medium  | E1     | medium    | -            | Every relation carries confidence 0.7-1.0 (exact/heuristic/fallback/lenient). Tools expose minConfidence filter. Lets ag |
+| Precomputed relational intelligence                     | knowledge    | defer    | 2026-04-13 | high    | E2     | medium    | -            | Shift cognitive load from LLM to indexing pipeline: precompute clusters (Leiden), flows, confidence. Tools return comple |
+| superpowers plan format (TDD-first executable spec)     | pattern      | defer    | 2026-04-13 | medium  | E1     | medium    | -            | Structured plan: write failing test - verify fail - implement - verify pass - commit template. Checkbox tracking per ste |
+| SWE-bench eval server daemon                            | knowledge    | defer    | 2026-04-13 | medium  | E2     | low       | -            | HTTP daemon (localhost:5959) ~50x faster than cold CLI per tool call. Only relevant if SoNash measures skill invocation  |
+| eval/README.md (SWE-bench harness ref)                  | content      | defer    | 2026-04-13 | high    | E0     | high      | -            | 214-line reference. 3 modes, metrics, caching, multi-model support.                                                      |
+| CLAUDE.md gitnexus:start contract block                 | content      | defer    | 2026-04-13 | high    | E0     | high      | -            | The template block for MCP tool contracts in CLAUDE.md.                                                                  |
+| AGENTS.md canonical rules + gitnexus:start              | content      | defer    | 2026-04-13 | high    | E0     | high      | -            | Canonical agent rules + MCP block.                                                                                       |
+| GUARDRAILS.md with Signs pattern                        | content      | defer    | 2026-04-13 | medium  | E0     | high      | -            | Non-negotiables + Signs (recurring failures codified as rules).                                                          |
+| gitnexus-pr-review skill (graph-impact-based PR review) | content      | defer    | 2026-04-13 | medium  | E0     | high      | -            | PR review via graph impact d=1/2/3 classification. Complements SoNash /pr-review (bot feedback processing).              |
+| .claude-plugin/marketplace.json                         | content      | defer    | 2026-04-13 | high    | E0     | high      | -            | Canonical marketplace.json format.                                                                                       |
+| docs/superpowers/plans/pr626-high-fixes.md              | content      | defer    | 2026-04-13 | medium  | E0     | high      | -            | 725-line TDD-first superpowers plan - real-world example.                                                                |
+| MCP tool shadowing (naming conflicts with native tools) | anti-pattern | defer    | 2026-04-13 | medium  | E0     | high      | -            | Defining MCP tools with names that conflict with native tools (e.g., custom `grep`). GitNexus noodlbox-comparison draft  |
+| Aspirational docs outrunning implementation             | anti-pattern | defer    | 2026-04-13 | low     | E0     | medium    | -            | swift-ingestion-gaps.md, type-resolution-roadmap.md at root alongside shipped docs. GitNexus mitigates by using .sisyphu |
+| Over-featuring before measurement                       | anti-pattern | defer    | 2026-04-13 | high    | E0     | high      | -            | GitNexus has ~1 core capability + 1 eval harness. SoNash has 77 skills + 38 agents + 450 patterns + 0 eval harness. Inve |
+| Graph/schema versioning without migration path          | anti-pattern | defer    | 2026-04-13 | low     | E1     | medium    | -            | GitNexus graph schema has no documented migration path. Same risk applies to SoNash SQLite index at .research/content-an |
+
 <a id="archivebox-archivebox-repo"></a>
 
 ## ArchiveBox/ArchiveBox (repo)
 
-| Candidate                                         | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
-| ------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| MCP auto-discovery from CLI metadata              | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Zero-schema MCP server introspecting Click CLI. ~200 lines. Principle portable to JASON-OS Domain 02a (Node/TS adaptatio |
-| Hook execution model (ordering + bg/fg lifecycle) | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Event-family naming, 2-digit ordering, foreground/background with SIGTERM. Complements SoNash hook governance.           |
-| CLAUDE.md as structured developer philosophy      | pattern      | defer    | 2026-04-12 | medium  | E0     | high      | -            | 498-line CLAUDE.md with grep-friendly naming, minimize-unique-names, NO MOCKS testing. Compare against SoNash 135-line C |
-| Coverage-as-dead-code-detector                    | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | JSON+jq pipeline for 0% coverage files. Passive coverage during dev server. Relevant to T21 orphan detection.            |
-| Claude Code CI integration                        | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | claude.yml GitHub Actions workflow. AI-in-CI pattern for JASON-OS CI/CD domain.                                          |
-| SOLO_MAINTAINER_GOVERNANCE                        | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | 27K stars, 0/29 changesets reviewed. Architectural docs in prose not contracts. Bus-factor warning.                      |
-| CONFIGURED_NOT_ENFORCED_TYPING                    | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | Pyright configured, 48% coverage, heavy Any/cast. Type checker as decoration not gate.                                   |
+| Candidate                                         | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                     |
+| ------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| Strict assertion testing convention               | knowledge    | defer    | 2026-04-13 | low     | E0     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Use exact counts (==) not loose bounds (>=) in test assertions. For  |
+| Plugin isolation principle                        | knowledge    | defer    | 2026-04-13 | low     | E0     | low       | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). Plugins forbidden from importing host application or framework (Dja  |
+| PERMISSIVE_DEFAULTS_FOR_SELF_HOSTED               | anti-pattern | defer    | 2026-04-13 | low     | E0     | medium    | -            | Backfilled by T29 Step 10.5 Cat E (decision: defer). ALLOWED_HOSTS='\*', SESSION_COOKIE_SECURE=False, no HTTPS enforcemen |
+| MCP auto-discovery from CLI metadata              | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Zero-schema MCP server introspecting Click CLI. ~200 lines. Principle portable to JASON-OS Domain 02a (Node/TS adaptatio  |
+| Hook execution model (ordering + bg/fg lifecycle) | pattern      | defer    | 2026-04-12 | high    | E1     | high      | -            | Event-family naming, 2-digit ordering, foreground/background with SIGTERM. Complements SoNash hook governance.            |
+| CLAUDE.md as structured developer philosophy      | pattern      | defer    | 2026-04-12 | medium  | E0     | high      | -            | 498-line CLAUDE.md with grep-friendly naming, minimize-unique-names, NO MOCKS testing. Compare against SoNash 135-line C  |
+| Coverage-as-dead-code-detector                    | knowledge    | defer    | 2026-04-12 | medium  | E0     | medium    | -            | JSON+jq pipeline for 0% coverage files. Passive coverage during dev server. Relevant to T21 orphan detection.             |
+| Claude Code CI integration                        | knowledge    | defer    | 2026-04-12 | medium  | E1     | medium    | -            | claude.yml GitHub Actions workflow. AI-in-CI pattern for JASON-OS CI/CD domain.                                           |
+| SOLO_MAINTAINER_GOVERNANCE                        | anti-pattern | defer    | 2026-04-12 | medium  | E0     | high      | -            | 27K stars, 0/29 changesets reviewed. Architectural docs in prose not contracts. Bus-factor warning.                       |
+| CONFIGURED_NOT_ENFORCED_TYPING                    | anti-pattern | defer    | 2026-04-12 | low     | E0     | medium    | -            | Pyright configured, 48% coverage, heavy Any/cast. Type checker as decoration not gate.                                    |
 
 <a id="aws-solutions-library-samples-guidance-for-media-extraction-and-dynamic-content-policy-framework-on-aws-repo"></a>
 

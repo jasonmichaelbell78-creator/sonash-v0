@@ -245,14 +245,63 @@ const chainNodeSchema = z.object({
 });
 
 // Opportunity — actionable next-step routed to brainstorm/plan/research/analyze (D#12).
+// `title_key` is the normalized stable identifier used for cross-run dedup against
+// the opportunities ledger (lowercase + alnum-only + `_` for spaces, max 60 chars).
+// OPTIONAL in the synthesis.json snapshot (writers may compute on-the-fly when
+// upserting the ledger). REQUIRED in opportunityLedgerRecord below — the ledger
+// is the durable file where title_key is the dedup primary key.
+// title_key contract: lowercase alnum + underscores only, max 60 chars.
+// Enforced at the schema level to guarantee cross-run dedup keys match the
+// documented format — prevents silent drift between writers.
+const TITLE_KEY_REGEX = /^[a-z0-9_]+$/;
+const DATE_YMD_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
 const opportunitySchema = z.object({
   rank: z.number().int().positive(),
   title: z.string(),
+  title_key: z
+    .string()
+    .max(60)
+    .regex(TITLE_KEY_REGEX, "title_key must be lowercase alnum + underscores only")
+    .optional(),
   description: z.string(),
   effort: effortEnum,
   impact: z.enum(["low", "medium", "high"]),
   evidence: z.array(z.string()),
   suggested_route: opportunityRouteEnum,
+});
+
+// Opportunities ledger row — durable cross-run record (T29 Wave 5).
+// File: .research/analysis/synthesis/opportunities-ledger.jsonl (append/upsert).
+// Schema is named so future helper scripts can validate ledger I/O at runtime.
+const ledgerStatusEnum = z.enum(["pending", "adopted", "skipped", "deferred", "stale"]);
+const deferredToSchema = z
+  .object({
+    type: z.enum(["todo", "roadmap", "milestone"]),
+    id: z.string(),
+    file: z.string().optional(),
+  })
+  .nullable();
+const opportunityLedgerRecord = z.object({
+  title_key: z
+    .string()
+    .max(60)
+    .regex(TITLE_KEY_REGEX, "title_key must be lowercase alnum + underscores only"),
+  rank: z.number().int().positive(),
+  title: z.string(),
+  first_seen_in_run: z.string().regex(DATE_YMD_REGEX, "Must be YYYY-MM-DD"),
+  last_seen_in_run: z.string().regex(DATE_YMD_REGEX, "Must be YYYY-MM-DD"),
+  runs_seen: z.number().int().positive(),
+  status: ledgerStatusEnum,
+  effort: effortEnum,
+  impact: z.enum(["low", "medium", "high"]),
+  suggested_route: opportunityRouteEnum,
+  evidence_sources: z.array(z.string()),
+  adopted_at: z.string().nullable(),
+  adopted_to: z.string().nullable(),
+  commit_sha: z.string().nullable(),
+  deferred_to: deferredToSchema.optional(),
+  notes: z.string().nullable(),
 });
 
 // Re-synthesis change detection — all 6 dimensions (D#10).
@@ -417,6 +466,8 @@ module.exports = {
   gapSchema,
   chainNodeSchema,
   opportunitySchema,
+  opportunityLedgerRecord,
+  deferredToSchema,
   changesSectionSchema,
 
   // Enums
@@ -435,6 +486,7 @@ module.exports = {
   convergenceEnum,
   opportunityRouteEnum,
   chainTierEnum,
+  ledgerStatusEnum,
 
   // Helper
   validate,

@@ -1,32 +1,22 @@
 {
   "warnings": [
     {
-      "hook": "pre-commit",
-      "type": "pr-creep",
+      "hook": "session-start",
+      "type": "tdms-s0",
       "severity": "warning",
-      "message": "Branch has >=20 commits  PR strongly recommended",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-13T22:23:52.421Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 2
-    },
-    {
-      "hook": "pre-commit",
-      "type": "jsonl-sync",
-      "severity": "warning",
-      "message": "Planning JSONL changed without MD regeneration",
-      "action": "Run generation scripts",
-      "timestamp": "2026-04-13T20:02:40.602Z",
-      "occurrences": 2,
+      "message": "S0: 26 critical debt items",
+      "action": "npm run debt:report --severity=S0",
+      "timestamp": "2026-04-14T14:19:23.342Z",
+      "occurrences": 3,
       "occurrences_since_ack": 1
     },
     {
-      "hook": "pre-commit",
-      "type": "agent",
+      "hook": "session-start",
+      "type": "cli-tools-missing",
       "severity": "warning",
-      "message": "Agent compliance warnings - code changed without agent review",
-      "action": "Use code-reviewer agent for modified code",
-      "timestamp": "2026-04-13T18:10:48.767Z",
+      "message": "CLI tools missing: rg",
+      "action": "bash scripts/install-cli-tools.sh",
+      "timestamp": "2026-04-14T14:19:23.446Z",
       "occurrences": 2,
       "occurrences_since_ack": 1
     },
@@ -34,31 +24,12 @@
       "hook": "pre-commit",
       "type": "pr-creep",
       "severity": "info",
-      "message": "Branch has >=10 commits  create PR soon",
+      "message": "Branch has >=10 commits — create PR soon",
       "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-13T16:54:48.826Z",
-      "occurrences": 9,
-      "occurrences_since_ack": 2
-    },
-    {
-      "hook": "session-start",
-      "type": "tdms-s0",
-      "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-13T13:35:18.748Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
-      "type": "review-lifecycle",
-      "severity": "warning",
-      "message": "Review lifecycle validation issues found",
-      "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-13T13:35:18.664Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 1
+      "timestamp": "2026-04-14T15:39:12.278Z",
+      "occurrences": 7,
+      "occurrences_since_ack": 1,
+      "count": "10"
     }
   ]
 }

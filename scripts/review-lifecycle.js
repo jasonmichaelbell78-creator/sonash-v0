@@ -332,7 +332,28 @@ function parseMarkdownReviews(content) {
     delete review._rawLines;
   }
 
-  return reviews;
+  // Filter parser noise. Two cases:
+  //   1. Integrity-failing: total > 0 but dispositions all 0 — mirrors
+  //      validateDispositions() criterion. Common source: prose like "N items"
+  //      matching the total fallback regex, or stub tables.
+  //   2. Empty placeholders: zero everything and no patterns/learnings.
+  //      These are markdown header-only entries with no real review content.
+  return reviews.filter((r) => {
+    // Coerce to numbers so undefined/NaN fields don't poison arithmetic.
+    // Parser can legitimately omit fields on malformed or partial entries.
+    const total = Number(r.total ?? 0) || 0;
+    const fixed = Number(r.fixed ?? 0) || 0;
+    const deferred = Number(r.deferred ?? 0) || 0;
+    const rejected = Number(r.rejected ?? 0) || 0;
+    const dispositionsZero = fixed + deferred + rejected === 0;
+    if (total > 0 && dispositionsZero) return false;
+    const isEmpty =
+      total === 0 &&
+      dispositionsZero &&
+      (!r.patterns || r.patterns.length === 0) &&
+      (!r.learnings || r.learnings.length === 0);
+    return !isEmpty;
+  });
 }
 
 /**

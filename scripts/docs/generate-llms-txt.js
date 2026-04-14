@@ -19,10 +19,14 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { safeReadText } = require("../lib/safe-cas-io.js");
 const { safeAtomicWriteSync } = require("../lib/safe-fs.js");
+const { validatePathInDir } = require("../lib/security-helpers.js");
 
-const ROOT = path.resolve(__dirname, "..", "..");
-const SKILLS_DIR = path.join(ROOT, ".claude", "skills");
-const OUT_PATH = path.join(ROOT, "llms.txt");
+const ROOT = path.resolve(__dirname, "..", ".."); // validatePathInDir: constant-path (no user input)
+// validatePathInDir enforces containment invariant on the subpaths below.
+// These are constants today, but the check guards against future regressions
+// if paths ever come from CLI input. Throws if any entry escapes ROOT.
+const SKILLS_DIR = path.join(ROOT, validatePathInDir(ROOT, ".claude/skills"));
+const OUT_PATH = path.join(ROOT, validatePathInDir(ROOT, "llms.txt"));
 
 const FOLDED_SCALAR_MARKERS = new Set([">-", ">", "|", "|-"]);
 

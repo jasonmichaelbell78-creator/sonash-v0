@@ -1,5 +1,18 @@
 # Implementation Plan: Synthesis Consolidation
 
+> **Status:** ✅ COMPLETE (all 15 steps, Sessions #269–#279, closed 2026-04-14)
+>
+> Wave 1–3 (Sessions #269–#271): Schema, skill authoring, deprecation redirects,
+> references. Wave 4 (Sessions #275–#276): Quick-scan upgrades (12 repos to
+> Standard). Wave 4.5 / Step 8.5 (Session #275): Schema drift remediation. Step
+> 10.5 (Sessions #276–#277): Full-corpus audit + remediation (12 categories).
+> Wave 5 (Session #277): First synthesis run + opportunities ledger shipped.
+> Step 12 (Session #278): Incremental synthesis test (GitNexus delta). Steps
+> 13 + 15 (Session #279): Scoped+paradigm test + code-reviewer audit (8
+> findings, all fixed).
+>
+> See per-step ✅ markers below for evidence anchors.
+
 ## Summary
 
 Merge repo-synthesis (v1.3) + website-synthesis (v1.1) + cross-type synthesis
@@ -69,7 +82,7 @@ producing full artifact sets (D#30).
 
 ## Wave 1: Schema & Foundation (parallelizable)
 
-### Step 1: Add source_tier to Zod Schema
+### Step 1: Add source_tier to Zod Schema ✅ COMPLETE (Wave 1, Session #269–270)
 
 Add `source_tier` field to `analysisRecordCore` in
 `scripts/lib/analysis-schema.js`:
@@ -148,7 +161,7 @@ Existing analysis validation still passes:
 
 ---
 
-### Step 2: Migrate source_tier into existing analyses
+### Step 2: Migrate source_tier into existing analyses ✅ COMPLETE (Wave 1, Session #270)
 
 Update `scripts/cas/migrate-v3.js` to fill `source_tier` for existing records:
 
@@ -167,7 +180,7 @@ reports 0 issues on re-run.
 
 ---
 
-### Step 3: Update handler Quick Scan gate messaging
+### Step 3: Update handler Quick Scan gate messaging ✅ COMPLETE (Wave 1, Session #270)
 
 In all 4 handler SKILL.md files, update the interactive gate text to make it
 clear Quick Scan is a preview:
@@ -195,7 +208,7 @@ Standard as the real analysis, Quick Scan as preview.
 
 ## Wave 2: Skill Authoring (depends on Wave 1)
 
-### Step 4: Write SKILL.md for /synthesize
+### Step 4: Write SKILL.md for /synthesize ✅ COMPLETE (Wave 2, Session #271 — initial; v1.1 ledger Session #277; v1.2 audit Session #279)
 
 Create `.claude/skills/synthesize/SKILL.md`. Structure per DECISIONS.md:
 
@@ -245,7 +258,7 @@ Detailed specs go in REFERENCE.md.
 
 ---
 
-### Step 5: Write REFERENCE.md for /synthesize
+### Step 5: Write REFERENCE.md for /synthesize ✅ COMPLETE (Wave 2, Session #271)
 
 Create `.claude/skills/synthesize/REFERENCE.md`. Contains:
 
@@ -283,7 +296,7 @@ Create `.claude/skills/synthesize/REFERENCE.md`. Contains:
 
 ## Wave 3: Reference Updates (parallelizable, depends on Wave 2)
 
-### Step 6: Deprecate old synthesis skills
+### Step 6: Deprecate old synthesis skills ✅ COMPLETE (Wave 3, Session #271 — both redirects shipped; path note corrected Session #279 F6)
 
 Replace contents of both old SKILL.md files with redirect:
 
@@ -316,7 +329,7 @@ deleted.
 
 ---
 
-### Step 7: Update all upstream/downstream references
+### Step 7: Update all upstream/downstream references ✅ COMPLETE (Wave 3, Session #271)
 
 Per D#16, update 14+ files. Run grep first to catch any missed references:
 
@@ -351,7 +364,7 @@ deprecated SKILL.md files themselves.
 
 ---
 
-### Step 8: Add CONVENTIONS.md Section 17
+### Step 8: Add CONVENTIONS.md Section 17 ✅ COMPLETE (Wave 3, Session #271)
 
 Add "Synthesis Output Contract" to `.claude/skills/shared/CONVENTIONS.md`:
 
@@ -509,7 +522,7 @@ fixed, and `migrate-v3.js` has idempotent self-heal for future recurrences.
 
 ---
 
-### Step 9: Prioritize and create upgrade checklist (REVISED)
+### Step 9: Prioritize and create upgrade checklist (REVISED) ✅ COMPLETE (Wave 4, Session #275)
 
 Create `.research/analysis/_quick-scan-upgrade.md` with all **12** TRUE quick
 scans ranked by synthesis relevance:
@@ -535,7 +548,7 @@ synthesis value.
 
 ---
 
-### Step 10: Batch upgrade 12 TRUE quick-scan repos to Standard (REVISED)
+### Step 10: Batch upgrade 12 TRUE quick-scan repos to Standard (REVISED) ✅ COMPLETE (Wave 4, Session #276 — 10/12 upgraded, 2 skipped by decision per CONVENTIONS §17.6)
 
 Execute `/analyze <url> --depth=standard` for each of the **12** TRUE quick-scan
 repos, in priority order. Batch optimizations:
@@ -584,7 +597,7 @@ all 12:
 
 ---
 
-### Step 10.5 (NEW): Full-corpus audit — content, schema, conventions, extractions
+### Step 10.5 (NEW): Full-corpus audit — content, schema, conventions, extractions ✅ COMPLETE (Sessions #276–#277, 12 categories remediated A–L)
 
 **Added Session #273 per user instruction.** Gates Wave 5.
 
@@ -706,7 +719,7 @@ re-create the class of bug Session #272-273 just fixed.
 
 ## Wave 5: Testing & Verification (depends on all previous waves)
 
-### Step 11: End-to-end test — full synthesis
+### Step 11: End-to-end test — full synthesis ✅ COMPLETE (Wave 5, Session #277 — first full synthesis of corpus, opportunities ledger initialized)
 
 Invoke `/synthesize` with all sources (now 34 Standard-depth). Verify:
 
@@ -727,7 +740,7 @@ Invoke `/synthesize` with all sources (now 34 Standard-depth). Verify:
 
 ---
 
-### Step 12: Test incremental synthesis
+### Step 12: Test incremental synthesis ✅ COMPLETE (Session #278 — incremental mode test on GitNexus delta, 7/7 requirements PASS, self-audit 10/10)
 
 After full synthesis, analyze one NEW source (any type). Then invoke
 `/synthesize` again. Verify:
@@ -745,7 +758,7 @@ detection.
 
 ---
 
-### Step 13: Test scoped synthesis
+### Step 13: Test scoped synthesis ✅ COMPLETE (Session #279, 2026-04-14)
 
 Invoke `/synthesize --type=repo`. Verify only repo sources are included. Invoke
 `/synthesize --paradigm=matrix`. Verify matrix paradigm output structure.
@@ -755,9 +768,15 @@ output.
 
 **Depends on:** Step 11
 
+**Result:** Functional verification (option B) —
+`.research/analysis/synthesis/test-step13/RESULTS.md`. 13a PASS (26 repos in / 9
+non-repos out: 6 web, 1 doc, 2 media). 13b PASS (Zod enum + REFERENCE.md §1.3
+spec + structure all verified). Full-run testing skipped to preserve baseline;
+flag combinations verified via static + filter inspection.
+
 ---
 
-### Step 14: Verify all reference updates
+### Step 14: Verify all reference updates ✅ COMPLETE (Sessions #271 + verified #278 — grep confirmed only deprecation redirects + historical files mention old skill names)
 
 Run comprehensive grep to verify no stale references remain:
 
@@ -775,7 +794,7 @@ skill names except deprecation redirects.
 
 ---
 
-### Step 15: Audit
+### Step 15: Audit ✅ COMPLETE (Session #279, 2026-04-14)
 
 Run code-reviewer agent on all new/modified files. Focus on:
 
@@ -788,6 +807,23 @@ Run code-reviewer agent on all new/modified files. Focus on:
 **Done when:** All code-reviewer findings addressed or tracked in TDMS.
 
 **Depends on:** All implementation steps (14)
+
+**Result:** Audit returned 8 findings (3 P1, 4 P2, 2 P3 — F7 covered by F3). All
+8 fixed in-session (none deferred to TDMS):
+
+- F1 (P1) status banner v1.0 → v1.2 (also bumped for v1.2 changes below)
+- F2 (P1) `opportunitySchema.title_key` added (optional, since current writers
+  compute it on-the-fly)
+- F3 (P1) `opportunityLedgerRecord` Zod schema + `ledgerStatusEnum` +
+  `deferredToSchema` added; validates 17/17 existing ledger rows
+- F4 (P2) repo-synthesis redirect "8 sections supersetting the 6" wording fix
+- F5 (P2) Routing Guide table added to synthesize/SKILL.md
+- F6 (P2) website-synthesis redirect path corrected (was claiming "remain the
+  same" but parent dir consolidated `website-analysis/` → `analysis/`)
+- F7 (P3) `deferred_to` shape — covered by F3 (`deferredToSchema` enforces
+  nested object)
+- F8 (P3) "2 sources of same type" line clarified (double warning: min-sources +
+  thin convergence)
 
 ---
 
