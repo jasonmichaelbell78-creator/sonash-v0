@@ -1300,8 +1300,8 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~5480 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 24    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~5610 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -1984,6 +1984,40 @@ deduplicated, non-overlapping ranges):
   time
 - audit trail on hot-path hooks belongs in state jsonl not hook stdout
 - large meta-PRs compress review volume when majority is research artifacts
+
+---
+
+### Review rev-89: PR #511 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestion) (2026-04-14)
+
+**Date:** 2026-04-14 | **PR:** #511 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 3     | 3     | 2       |
+
+**Patterns:**
+
+- cc-regression-after-r1-logic-add
+- test-helper-hoist
+- pii-safe-audit-log
+- strict-path-containment
+- pid-platform-actor-context-no-pii
+- string-raw-backslash-literals
+- whitespace-tolerant-metric-regex
+
+**Learnings:**
+
+- R1 fixes regress their own metrics — every new logic-add risks CC regression
+- audit-trail design carries PII risk if input fields pass through unsanitized
+- two compliance findings can pull opposite directions on the same file
+- new test files attract SonarCloud lint items; worth pre-push linting on
+  creation
 
 ## Key Patterns
 
@@ -5484,3 +5518,99 @@ focus is the small code surface: `post-todos-render.js` (new hook),
 - (single-commit batch — all 10 R1 items per user direction: hook refactor with
   sanitize-error + audit trail + stderr capture, Step 13 try/catch, schema regex
   contracts, NaN coercion, filtered-render metric fix, 28-test hook coverage).
+
+### Review #90 — PR #511 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestion)
+
+**Scope:** 8 items across 3 sources after R1 commits (b1912836, b5765e5b,
+45a3a0db, a6164648). All 8 this-PR — classic R1→R2 pattern where the R1 fixes
+themselves introduced items. No DAS blocks needed.
+
+- 1 SonarCloud MAJOR: cognitive complexity 16→15 on `renderReviews` after R1's
+  metric-fix block pushed CC over threshold.
+- 1 SonarCloud MAJOR: `mkTmp` test helper defined inside describe block (should
+  be outer scope).
+- 1 Qodo Compliance 🔴 MAJOR: PII risk in audit log — raw `file_path` may be
+  absolute, leaking usernames when state file lands in git.
+- 2 SonarCloud MINOR: `String.raw` should be used in two test strings with
+  escaped backslashes.
+- 1 Qodo Suggestion MINOR: whitespace-tolerant regex for Document Health metrics
+  table rows.
+- 1 Qodo Compliance ⚪ TRIVIAL: path-check hardening — endsWith() alone accepts
+  crafted paths from unexpected cwd.
+- 1 Qodo Compliance ⚪ TRIVIAL: audit entries lack actor context (pid/
+  platform/user identifier).
+
+**Key fixes:**
+
+- **CC refactor + whitespace-tolerant regex (R2 #1 + #8):** Extracted the two
+  regex replacements into `updateDocumentHealthMetrics(doc, totalCount)` helper
+  above `renderReviews`. Also applied Qodo's whitespace-tolerant regex
+  (`/^(\|\s*Active reviews\s*\|\s*)~?\d+(\s*\|)/m`) which tolerates column-
+  width adjustments in the markdown table. Single edit closed both items because
+  #1 required extraction anyway.
+- **PII-safe audit log (R2 #6):** Added `toSafeRelPath(projectDir, filePath)`
+  helper — converts abs to project-relative, returns `[outside-project]` if the
+  path escapes. Applied to `file_path` in all `writeAudit()` call sites in
+  `main()`. Deliberately handles Windows backslashes by normalizing to forward
+  slashes at the end (so audit entries are cross-platform comparable).
+- **Strict path containment (R2 #5):** Added
+  `isCanonicalTodosPath(projectDir, filePath)` — rejects anything that doesn't
+  resolve to exactly `{projectDir}/.planning/todos.jsonl`. Called in `main()`
+  between `isTodosJsonl` (suffix check) and the renderer invocation. Guards
+  against crafted paths from unexpected cwd. Case-insensitive compare on
+  Windows.
+- **Actor context w/o PII (R2 #7):** Added `pid: process.pid` and
+  `platform: process.platform` to every audit entry. Deliberately did NOT
+  include `process.env.USER` or `os.hostname()` — those would reintroduce the
+  PII that #6 just stripped out.
+- **mkTmp hoist (R2 #4):** Moved the test helper from inside
+  `describe("writeAudit", ...)` to module-level (right after `HOOK_PATH`). Now
+  shared by all test suites that need a tmpdir.
+- **String.raw for backslash literals (R2 #2, #3):** Replaced
+  `"C:\Users\dev\repo\.planning\todos.jsonl"` with
+  `` String.raw`C:\Users\dev\repo\.planning\todos.jsonl` `` in both test lines.
+  Removes the \-pair-double-escape noise and makes the test intent readable.
+
+**R2 process learnings:**
+
+- **R1 fixes regress on their own metrics.** Every R1 round that adds logic
+  risks a CC regression, and every new test file attracts SonarCloud lint items.
+  The CC check (`node scripts/check-cc.js --staged`) recommended in the skill is
+  not TS-aware — SonarCloud remains the authority for .ts files. Worth adding a
+  tsc-based CC pre-push for .ts files someday.
+- **Audit-trail design carries PII risk.** Adding structured logs (R1 #9) solved
+  one compliance finding but introduced another (R2 #6) by including an
+  unsanitized input field. Lesson: any new field that echoes user- controlled
+  input to a persisted log needs a sanitization pass in the _same_ review round
+  — don't rely on a follow-up to catch it.
+- **Two compliance findings, opposite directions, same file.** R2 #6 (strip PII)
+  and R2 #7 (add actor context) pull in opposite directions. The resolution —
+  pid + platform, no user/hostname — threads the needle: enough signal for
+  debugging, no PII leak. Document the tradeoff in the helper comment so future
+  editors don't reintroduce `process.env.USER`.
+- **Test file design matters for SonarCloud.** Hoisting test helpers to module
+  scope (R2 #4) and using `String.raw` for paths (R2 #2, #3) are both low-effort
+  but high-clarity wins. Both found on our brand-new test file from R1 — worth
+  checking _future_ new test files for the same patterns before the first push.
+
+**Bonus security fix (security-auditor agent, PRE-TASK hook mandated):**
+
+- **Symlink hardening on both new helpers:** The auditor flagged S2 — both
+  `isCanonicalTodosPath` and `toSafeRelPath` were string-level only, so a
+  symlink at `{projectDir}/.planning/todos.jsonl` (or inside `.planning/`)
+  pointing outside the repo would pass containment _and_ get logged as a clean
+  relative path while the real target escapes. Added `realpathIfExists()`
+  helper + `lstatSync` symlink rejection on `isCanonicalTodosPath`, and
+  `realpathSync` resolution on both sides of `toSafeRelPath`'s `path.relative()`
+  call. Matches the refuseSymlinkWithParents pattern from
+  `scripts/lib/security-helpers.js`. Two new tests (skip gracefully on Windows
+  without admin/dev-mode). Folded into the R2 commit per user approval — closes
+  the gap while the code is hot rather than filing as TDMS.
+
+**Commits:**
+
+- (single-commit batch — all 8 R2 items plus security-auditor S2 symlink
+  hardening: CC extraction + regex tolerance, PII-safe audit log, strict path
+  containment w/ symlink rejection, pid+platform actor context, mkTmp hoist,
+  String.raw literals, plus 13 new tests covering the new helpers, actor-context
+  / PII assertions, and symlink edge cases).

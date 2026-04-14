@@ -114,3 +114,4 @@
 {"agent":"Explore","description":"Test infrastructure & eval","outcome":"invoked","timestamp":"2026-04-14T00:19:53.715Z"}
 {"agent":"Explore","description":"Architecture dimension","outcome":"invoked","timestamp":"2026-04-14T00:25:43.578Z"}
 {"agent":"code-reviewer","description":"Step 15 synthesis-consolidation audit","outcome":"invoked","timestamp":"2026-04-14T13:02:31.239Z"}
+{"agent":"security-auditor","description":"Security review hook changes","outcome":"invoked","timestamp":"2026-04-14T16:33:23.471Z"}

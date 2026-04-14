@@ -398,6 +398,30 @@ export interface RenderResult {
 }
 
 /**
+ * Update the Document Health Monitoring metrics table in the assembled doc.
+ * - Active reviews: canonical record count (unfiltered)
+ * - Main log lines: rounded to nearest 10 to minimize diff churn
+ *
+ * Regexes are line-anchored (prevents mid-document matches) and whitespace-
+ * tolerant (handles column-width adjustments in the markdown table). Not
+ * full-line anchored — metric rows have multi-column tables, so `$` at end-
+ * of-line would reject valid matches.
+ *
+ * Bounded inputs (single-line table cells), no ReDoS risk.
+ */
+function updateDocumentHealthMetrics(doc: string, totalRecordCount: number): string {
+  let updated = doc.replace(
+    /^(\|\s*Active reviews\s*\|\s*)~?\d+(\s*\|)/m,
+    `$1${totalRecordCount}$2`
+  );
+  const lineCount = updated.split("\n").length;
+  // Round to nearest 10 to keep diffs minimal across runs that don't change content
+  const roundedLines = Math.round(lineCount / 10) * 10;
+  updated = updated.replace(/^(\|\s*Main log lines\s*\|\s*)~?\d+(\s*\|)/m, `$1~${roundedLines}$2`);
+  return updated;
+}
+
+/**
  * Render reviews from JSONL to markdown.
  * Called by the orchestrator (Step 4) or standalone via CLI.
  *
@@ -505,27 +529,12 @@ export function renderReviews(
   // Assemble full document
   let fullDocument = assembleDocument(preserved, renderedEntries);
 
-  // Auto-update Document Health Monitoring metrics table to prevent drift.
-  // Skip when filters are active — the rendered subset doesn't reflect the
-  // canonical dataset, so writing a metric from either the subset or the total
-  // would misrepresent document health. Line-anchored regex prevents matching
-  // unintended rows. Bounded inputs (single-line table cells), no ReDoS risk.
+  // Skip metrics update when filters are active — rendered subset doesn't
+  // reflect the canonical dataset, so either the subset or the total would
+  // misrepresent document health.
   const filtersActive = options?.filterPr != null || options?.lastN != null;
   if (!filtersActive) {
-    // Line-anchored to prevent mid-document matches. Not full-line anchored —
-    // the metrics table has multi-column rows, so `$` at end-of-line would
-    // reject valid matches.
-    fullDocument = fullDocument.replace(
-      /^(\| Active reviews \| )\d+(\s*\|)/m,
-      `$1${totalRecordCount}$2`
-    );
-    const lineCount = fullDocument.split("\n").length;
-    // Round to nearest 10 to keep diffs minimal across runs that don't change content
-    const roundedLines = Math.round(lineCount / 10) * 10;
-    fullDocument = fullDocument.replace(
-      /^(\| Main log lines \| ~)\d+(\s*\|)/m,
-      `$1${roundedLines}$2`
-    );
+    fullDocument = updateDocumentHealthMetrics(fullDocument, totalRecordCount);
   }
 
   // Ensure output directory exists

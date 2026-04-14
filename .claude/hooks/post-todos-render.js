@@ -48,14 +48,77 @@ function isTodosJsonl(filePath) {
   return String(filePath).replaceAll("\\", "/").endsWith(TODOS_JSONL);
 }
 
+// Resolve symlinks if present, otherwise return the lexical resolved path.
+// Silently tolerates ENOENT (file may not exist yet in some code paths).
+function realpathIfExists(absPath) {
+  try {
+    return fs.realpathSync(absPath);
+  } catch {
+    return absPath;
+  }
+}
+
+// Containment check — strict. The resolved file_path must match exactly
+// {projectDir}/.planning/todos.jsonl. Defends against crafted paths that
+// merely end in the expected suffix but resolve outside the expected dir.
+// Uses realpathSync to defeat symlink redirects AND rejects any symlink at
+// the file path itself (matches security-helpers.js refuseSymlinkWithParents
+// pattern) — a symlink pointing inside the repo is still suspicious here
+// because the canonical `.planning/todos.jsonl` is never a symlink in
+// normal operation.
+function isCanonicalTodosPath(projectDir, filePath) {
+  if (!projectDir || !filePath) return false;
+  try {
+    const absActual = path.resolve(filePath);
+    // Reject symlinks outright — only the real, canonical file should trigger.
+    try {
+      if (fs.lstatSync(absActual).isSymbolicLink()) return false;
+    } catch {
+      // ENOENT is fine — the tool may be creating the file. Fall through.
+    }
+    const expected = realpathIfExists(path.resolve(projectDir, TODOS_JSONL));
+    const actual = realpathIfExists(absActual);
+    const norm = (p) => (process.platform === "win32" ? p.toLowerCase() : p);
+    return norm(expected) === norm(actual);
+  } catch {
+    return false;
+  }
+}
+
+// Convert to project-relative path for logging — strips user-specific
+// absolute path prefixes that would leak into the committed audit log.
+// Resolves symlinks before computing the relative path so a symlink inside
+// .planning/ can't produce a clean-looking relative path that hides an
+// out-of-repo target.
+function toSafeRelPath(projectDir, filePath) {
+  if (!filePath) return "";
+  try {
+    const resolvedAbs = realpathIfExists(path.resolve(filePath));
+    const resolvedBase = realpathIfExists(path.resolve(projectDir));
+    const rel = path.relative(resolvedBase, resolvedAbs);
+    // If relative escapes projectDir, redact rather than leak the abs path.
+    if (!rel || /^\.\.(?:[\\/]|$)/.test(rel) || path.isAbsolute(rel)) {
+      return "[outside-project]";
+    }
+    return rel.replaceAll("\\", "/");
+  } catch {
+    return "[unresolvable]";
+  }
+}
+
 function writeAudit(projectDir, entry) {
   try {
     const auditPath = path.join(projectDir, AUDIT_LOG);
     fs.mkdirSync(path.dirname(auditPath), { recursive: true });
-    fs.appendFileSync(
-      auditPath,
-      JSON.stringify({ timestamp: new Date().toISOString(), ...entry }) + "\n"
-    );
+    // Actor context: pid + platform. Deliberately NOT including USER/hostname
+    // to avoid reintroducing PII that toSafeRelPath strips out.
+    const record = {
+      timestamp: new Date().toISOString(),
+      pid: process.pid,
+      platform: process.platform,
+      ...entry,
+    };
+    fs.appendFileSync(auditPath, JSON.stringify(record) + "\n");
   } catch {
     // Non-blocking: audit failure must never block hook completion.
   }
@@ -105,6 +168,12 @@ function main(rawArg) {
 
   const projectDir = resolveGitRoot(process.cwd());
 
+  // Strict containment — rejects crafted paths that merely end in the
+  // expected suffix but resolve outside {projectDir}/.planning/todos.jsonl.
+  if (!isCanonicalTodosPath(projectDir, filePath)) return ok();
+
+  const safeRelPath = toSafeRelPath(projectDir, filePath);
+
   // Re-render — non-blocking on failure.
   try {
     execFileSync("node", [path.resolve(projectDir, RENDERER)], {
@@ -112,13 +181,13 @@ function main(rawArg) {
       stdio: ["ignore", "pipe", "pipe"],
       timeout: 30_000,
     });
-    writeAudit(projectDir, { action: "rendered", file_path: filePath, success: true });
+    writeAudit(projectDir, { action: "rendered", file_path: safeRelPath, success: true });
   } catch (err) {
     const { message, exitStatus, safeMsg } = formatRendererError(err);
     console.error(message);
     writeAudit(projectDir, {
       action: "render_failed",
-      file_path: filePath,
+      file_path: safeRelPath,
       success: false,
       exit_status: exitStatus,
       error: safeMsg,
@@ -150,6 +219,8 @@ function main(rawArg) {
 module.exports = {
   parseHookFilePath,
   isTodosJsonl,
+  isCanonicalTodosPath,
+  toSafeRelPath,
   formatRendererError,
   writeAudit,
   resolveGitRoot,
