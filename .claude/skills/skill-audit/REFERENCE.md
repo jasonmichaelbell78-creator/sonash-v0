@@ -535,12 +535,18 @@ PHASE N: [NAME]
 
 ## Self-Audit Report Format
 
-### Evidence-Based Verification (MUST — all three layers)
+### Evidence-Based Verification (MUST — both deterministic layers)
 
 **IMPORTANT:** A decision logged as "accepted" is NOT verified until objective
 evidence proves it was implemented. Self-reporting "PASS" without evidence is
-the primary failure mode of self-audits. Each verification layer catches
-different failure types.
+the primary failure mode of self-audits.
+
+**Session #281 change (per skill-audit-batch-mode D11):** Agent-based Layer 2
+verification (previously MUST for >15 decisions) is REMOVED from all modes.
+Another LLM reading the same state + files is echo, not independent verification
+— same drift class as using agents to produce findings (which was rejected).
+Deterministic checks (grep + diff) catch the "I thought I wrote it but didn't"
+failure mode mechanically, without drift risk.
 
 #### Layer 1: Grep-Based Proof (MUST for every decision)
 
@@ -570,22 +576,7 @@ Cat6-C: "pause/resume protocol with --resume flag"
 - Grep MUST target the output file, not the state file or conversation memory
 - For decisions affecting multiple files, grep each file
 
-#### Layer 2: Independent Agent Verification (MUST for >15 decisions)
-
-Dispatch a `code-reviewer` agent with:
-
-- The full decision list from the state file
-- The list of modified files
-- Instruction: "For each accepted decision, verify it was implemented in the
-  modified files. Report any decisions that are MISSING or only PARTIALLY
-  implemented. Do not trust the auditor's self-assessment."
-
-The agent returns a list of discrepancies. Any discrepancy overrides the
-self-assessment — the agent's finding takes priority.
-
-For <=15 decisions, this layer is SHOULD (recommended but not required).
-
-#### Layer 3: Diff-Based Mapping (MUST)
+#### Layer 2: Diff-Based Mapping (MUST)
 
 Generate `git diff` (or compare old vs new content) for all modified files. For
 each accepted decision, identify the specific diff hunk that implements it.
@@ -613,6 +604,9 @@ Cat9-D: "add skill feedback prompt after commit"
 - This catches "I thought I wrote it but didn't" failures
 
 ### Decision Verification Table
+
+Both layers are deterministic (grep + diff). There is no agent-based Layer 2
+anymore (Session #281 D11).
 
 For audits with <=20 decisions, show full table with grep evidence:
 
@@ -724,6 +718,195 @@ This preserves institutional memory about WHY decisions were rejected.
 
 **Confidence tagging:** Append to accepted decisions when applicable:
 `"A-accepted [high] (description)"`, `"B-accepted [low] (description)"`.
+
+---
+
+## Batch Mode Appendix (Session #281)
+
+The sections below specify batch/multi mode additions per the
+skill-audit-batch-mode plan. They extend — not replace — the sections above.
+
+### Mode Field on Per-Skill State Schema
+
+The existing state schema at
+`.claude/state/task-skill-audit-{skill-name}.state.json` gains these fields:
+
+```json
+{
+  "mode": "single | batch | multi",
+  "batch_id": "optional string — if part of a multi-mode batch, refs parent state",
+  "findings_by_category": {
+    "cat1_intent_fidelity": {
+      "assessment": "string — current-state assessment citing sections/lines",
+      "pros": ["..."],
+      "cons": ["..."],
+      "gaps": ["..."],
+      "suggestions": [
+        {
+          "id": "A",
+          "description": "...",
+          "rationale": "...",
+          "recommendation": true
+        }
+      ],
+      "opportunities": ["..."],
+      "generated_at": "ISO timestamp"
+    }
+  }
+}
+```
+
+The existing `decisions` field stays. `findings_by_category` is populated during
+Phase 2b; `decisions` is populated during Phase 2.B (batch/multi) or Phase 2a
+(single). For legacy state files without `mode`, treat as `mode: "single"`.
+
+### Parent Batch State Schema (multi mode)
+
+Path: `.claude/state/task-skill-audit-batch-<batch-id>.state.json`
+
+```json
+{
+  "task": "Skill Audit Batch: <batch-id>",
+  "batch_id": "string — timestamp or user-supplied tag",
+  "mode": "multi",
+  "skills": ["name1", "name2", "..."],
+  "skill_status": {
+    "name1": "phase_2b_findings | phase_2B_decisions | phase_3_crosscheck | phase_4_impl | phase_5_audit | complete",
+    "name2": "..."
+  },
+  "cross_skill_patterns": [
+    {
+      "pattern": "description",
+      "skills_affected": ["..."],
+      "severity": "high | medium | low",
+      "detected_at": "ISO timestamp"
+    }
+  ],
+  "started_at": "ISO timestamp",
+  "updated": "ISO timestamp",
+  "status": "in_progress | complete"
+}
+```
+
+The parent state coordinates the batch; each skill still has its own per-skill
+state file with the extended schema above.
+
+### Batch Findings Production Procedure (Phase 2b)
+
+For each skill in the batch (1 skill if `mode=batch`, list if `mode=multi`):
+
+1. **For each category (1-12):**
+   - Follow Phase 2a per-category procedure steps 1-8 (assess, list pros, cons,
+     gaps, suggestions with recommendations, opportunities)
+   - **SKIP step 9** (collect decisions) — Phase 2.B handles that
+   - Write findings to `state.findings_by_category.<cat_key>`
+   - **Save state file** (MUST — per category, matches Phase 2a save cadence)
+2. **After all 12 categories complete:** render markdown to
+   `.claude/tmp/skill-audit-<name>-findings.md` (see §Batch Findings Rendering)
+3. **Progress:** "Phase 2b [skill-name]: N/12 categories generated"
+
+**Faithfulness guarantee:** Findings produced here MUST be equivalent to what
+Phase 2a would produce on the same skill — same 12 categories, same depth, same
+REFERENCE.md rubric. Only **delivery** differs (batched vs gated).
+
+### Batch Findings Rendering
+
+Trigger: after all 12 categories written to `state.findings_by_category` for a
+skill.
+
+Output path: `.claude/tmp/skill-audit-<name>-findings.md`
+
+Format:
+
+```markdown
+# Findings: <skill-name>
+
+**Mode:** batch | multi **Generated:** <ISO timestamp> **Batch ID:**
+<only if multi>
+
+---
+
+## Category 1: Intent Fidelity
+
+### Assessment
+
+<one-paragraph current-state assessment>
+
+### Pros
+
+- <pro 1>
+- <pro 2>
+
+### Cons
+
+- <con 1>
+
+### Gaps
+
+- <gap 1>
+
+### Suggestions
+
+- **A (recommended):** <description> — <rationale>
+- **B:** <description> — <rationale>
+
+### Opportunities
+
+- <opportunity 1> (or: "Opportunities: None for this category.")
+
+---
+
+## Category 2: ...
+```
+
+Rendering is done by the main session — it writes `state.findings_by_category`
+into this markdown template. No separate script required.
+
+### Decision Collection Procedure (Phase 2.B)
+
+For each skill in the batch (if multi, iterate through all skills):
+
+1. Reference the rendered tmp findings file
+2. For each category (1-12):
+   - Read the category's `suggestions` array from state (**NOT re-analyze** —
+     findings are locked from Phase 2b per faithfulness guarantee)
+   - For `mode=multi`: surface any `cross_skill_patterns` entries affecting this
+     category inline: "also appears in N other skills in this batch ([list])"
+   - Collect disposition conversationally (accept / modify / reject /
+     alternative) — NEVER use AskUserQuestion
+   - **Real-time conflict check (MUST):** compare new decision vs all earlier
+     decisions in this audit. If a conflict is detected (e.g., Cat8 accepts an
+     approach that contradicts Cat3's accepted approach), present the conflict
+     and resolve before continuing.
+   - Save decision to state file (MUST — per category)
+3. After all 12 categories decided: **final sweep conflict pass** (MUST
+   backstop) — re-scan the full decision set for any conflicts missed during
+   real-time checks.
+
+### Tmp File Lifecycle
+
+- **Created:** at Phase 2b completion per skill
+  (`.claude/tmp/skill-audit-<name>-findings.md`)
+- **Active:** lives at the above path through Phase 2.B + Phase 4
+- **Archived:** at Phase 6 closure, moved to
+  `.claude/tmp/history/skill-audit-<name>-<ISO-timestamp>-findings.md`
+- **Rolling retention:** keep last 5 archives per skill; prune older at archive
+  time
+- **Directory creation:** ensure `.claude/tmp/history/` exists (create if
+  missing at archive time)
+
+### Multi-Mode Resume Protocol
+
+On `/skill-audit` invocation when a parent batch state file exists and
+`status != "complete"`:
+
+1. Read parent batch state file
+2. Identify last-active skill (first `skill_status` entry != `complete`)
+3. Read that skill's per-skill state file
+4. Determine resume point: last saved `findings_by_category` key (if in Phase
+   2b) or last saved `decisions` key (if in Phase 2.B)
+5. Offer: "Resume batch `<batch-id>` from skill `<X>` category `<N>`, or discard
+   and restart?"
 
 ---
 
