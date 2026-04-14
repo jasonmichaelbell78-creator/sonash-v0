@@ -528,7 +528,7 @@ _Claude Code skills_
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-04-11    |
-| [Self-Audit Pattern](.claude/skills/_shared/SELF_AUDIT_PATTERN.md)                                                                  | <!-- prettier-ignore-start -->                                    | ↓2 ↑1      | 2026-04-14    |
+| [Self-Audit Pattern](.claude/skills/_shared/SELF_AUDIT_PATTERN.md)                                                                  | <!-- prettier-ignore-start -->                                    | ↓4 ↑1      | 2026-04-14    |
 | [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑2      | 2026-03-16    |
 | [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-04-08    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-26    |
@@ -536,12 +536,12 @@ _Claude Code skills_
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Shared Ecosystem Audit Library](.claude/skills/_shared/ecosystem-audit/README.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-26    |
 | [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-12    |
-| [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑0      | 2026-04-04    |
+| [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑1      | 2026-04-04    |
 | [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-06    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-03-24    |
 | [Skill Standards](.claude/skills/_shared/SKILL_STANDARDS.md)                                                                        | <!-- prettier-ignore-start -->                                    | ↓6 ↑0      | 2026-04-11    |
-| [skill-audit](.claude/skills/skill-audit/SKILL.md)                                                                                  | Interactive, category-by-category behavioral quality audit f...   | ↓0 ↑1      | 2026-04-11    |
-| [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | Structured creation workflow that produces high-quality skil...   | ↓0 ↑2      | 2026-04-11    |
+| [skill-audit](.claude/skills/skill-audit/SKILL.md)                                                                                  | Interactive, category-by-category behavioral quality audit f...   | ↓0 ↑1      | 2026-04-14    |
+| [skill-creator](.claude/skills/skill-creator/SKILL.md)                                                                              | Structured creation workflow that produces high-quality skil...   | ↓0 ↑3      | 2026-04-11    |
 | [skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md)                                                              | Deep diagnostic of the entire skill ecosystem — SKILL.md fil...   | ↓0 ↑0      | 2026-03-26    |
 | [sonarcloud](.claude/skills/sonarcloud/SKILL.md)                                                                                    | Unified orchestrator for all SonarCloud operations against t...   | ↓0 ↑2      | 2026-03-12    |
 | [SonarCloud Enrichment (Step 1.5)](.claude/skills/pr-review/reference/SONARCLOUD_ENRICHMENT.md)                                     | When SonarCloud issues are detected in pasted feedback, auto...   | ↓1 ↑0      | 2026-02-14    |
@@ -680,7 +680,7 @@ _Uncategorized_
 
 | Document                                                              | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑1      | 2026-04-10    |
+| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑1      | 2026-04-14    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                        | Documents all Claude Code hooks configured in `.claude/setti... | ↓2 ↑4      | 2026-03-24    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)   | > **DEPRECATION NOTICE (2026-02-23):** The `scripts/sync-cla... | ↓3 ↑0      | 2026-02-25    |
 | [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)          | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-04-05    |

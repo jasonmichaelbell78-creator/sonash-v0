@@ -432,6 +432,33 @@ include a self-audit phase with 9 verification dimensions.
 - No regression detection — re-runs silently lose prior capabilities
 - Self-audit checks existence but not function (file exists but doesn't work)
 
+### Canonical Fix Action
+
+When Cat 12 scores **<7** (no self-audit, structural-only, or missing key
+dimensions), the canonical Phase 4 implementation is:
+
+1. **Create** `scripts/skills/<target-skill>/self-audit.js` per
+   [SELF_AUDIT_PATTERN.md](../_shared/SELF_AUDIT_PATTERN.md). Use
+   `scripts/skills/skill-audit/self-audit.js` as the template; replace
+   domain-specific dimension checks. This gives MUST dimensions 1-5 + 8-9 (and
+   6-7 for Complex tier) automated coverage out of the box.
+2. **Wire SKILL.md Phase 5** to invoke the script as a new Phase 5.0 (per
+   pattern doc §Wiring template). Existing prose Phase 5 steps remain for
+   judgment-only checks (interactive multi-agent dispatch, decision
+   walkthrough).
+3. **Extend the skill's state schema** if needed (`files_created`,
+   `files_modified`, `decisions[].file_modified`) so Dim 4 Gap analysis can map
+   decisions to diff hunks.
+4. **Document any skipped dimensions** in the script header with rationale (per
+   pattern doc §Skip List Convention).
+5. **Validate against a known-good prior run** to confirm the script reports
+   PASS on existing artifacts (regression guardrail for the check logic itself).
+
+When Cat 12 scores **7-8**, recommend incremental improvements (typically adding
+regression detection or contract verification). When Cat 12 scores **9-10**, no
+remediation required — note the skill as a positive reference example for future
+audits.
+
 ### Scoring Guide
 
 | Score | Criteria                                                        |
