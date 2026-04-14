@@ -1,11 +1,18 @@
 # audit-review-team
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-03-24
+**Document Version:** 2.0
+**Last Updated:** 2026-04-14
 **Status:** ACTIVE
 **Source:** agent-env Phase 4, Step 4.2
 <!-- prettier-ignore-end -->
+
+> **v2.0 (Session #281):** Decoupled from `/skill-audit` per
+> skill-audit-batch-mode plan D11. `/skill-audit` now handles multi-skill
+> batches natively via `mode=multi` (Shape Y) with no agent simulation —
+> faithful to its 12-category rubric. This team config remains valid for
+> `/audit-comprehensive` and other generic multi-target audit contexts where
+> rubric fidelity is not the load-bearing concern.
 
 ## Purpose
 
@@ -36,9 +43,11 @@ Per learnings from Session #225 (feedback_agent_teams_learnings.md):
 
 Spawn this team when ANY of these conditions are met:
 
-1. **`/audit-*` or `/skill-audit` invocation** targeting 3+ artifacts
+1. **`/audit-*` invocation** targeting 3+ artifacts (excluding `/skill-audit`,
+   which handles multi-target batches natively via `mode=multi`)
 2. **`/audit-comprehensive`** on any domain
-3. **Manual audit** across 5+ agents, skills, or ecosystem components
+3. **Manual audit** across 5+ agents or ecosystem components where rubric
+   fidelity is not the primary concern
 4. **Post-phase audit checkpoint** (e.g., after Phase 3 or Phase 5 of a plan)
 
 Do NOT spawn for:
@@ -138,14 +147,19 @@ TeamCreate("audit-review-team")
       tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 ```
 
-### Task Assignment Example (skill-audit on 5 skills)
+### Task Assignment Example (5-target comprehensive audit)
 
 ```
-SendMessage("reviewer", "Audit these 5 skills against the 11 skill-audit
-  categories: [skill-1, skill-2, skill-3, skill-4, skill-5]. Process one at a
-  time. After each, send findings to fixer. After all 5, send a systemic
+SendMessage("reviewer", "Audit these 5 targets against the audit categories
+  provided: [target-1, target-2, target-3, target-4, target-5]. Process one at
+  a time. After each, send findings to fixer. After all 5, send a systemic
   patterns summary to me.")
 ```
+
+> **Note:** For `/skill-audit` on 3+ skills, do NOT use this team. Use
+> `/skill-audit` directly with `mode=multi` — it runs the real 12-category
+> rubric faithfully in the main session (no agent simulation), with batched
+> orchestration (Shape Y) and cross-skill pattern detection built in.
 
 ### Debrief and Teardown
 
@@ -176,10 +190,10 @@ TeamDelete("audit-review-team")
 
 ## Integration Points
 
-| System                 | Integration                                                    |
-| ---------------------- | -------------------------------------------------------------- |
-| `/skill-audit`         | Spawn team when target count >= 3                              |
-| `/audit-comprehensive` | Always spawn team (comprehensive audits are multi-target)      |
-| CLAUDE.md Section 7    | Trigger table: "audit execution" -> audit-review-team          |
-| Pre-commit hooks       | Not applicable (audits run interactively, not in commit flow)  |
-| Token monitoring       | Log to `.claude/state/agent-token-usage.jsonl` via PostToolUse |
+| System                 | Integration                                                      |
+| ---------------------- | ---------------------------------------------------------------- |
+| `/skill-audit`         | **DECOUPLED** (v2.0). Uses native `mode=multi` — no team needed. |
+| `/audit-comprehensive` | Always spawn team (comprehensive audits are multi-target)        |
+| CLAUDE.md Section 7    | Trigger table: "audit execution" -> audit-review-team            |
+| Pre-commit hooks       | Not applicable (audits run interactively, not in commit flow)    |
+| Token monitoring       | Log to `.claude/state/agent-token-usage.jsonl` via PostToolUse   |

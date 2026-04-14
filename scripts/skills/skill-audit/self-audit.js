@@ -27,9 +27,11 @@
  * All 9 dimensions MUST be covered.
  *
  * Skipped / degraded from full coverage (documented per pattern doc):
- *   - Dim 6 Multi-agent: runs in MANUAL mode only. Script prints a
- *     reproducible prompt block; human or orchestrator dispatches the agent.
- *     Rationale: self-audit is a CLI script; Agent tool unavailable standalone.
+ *   - Dim 6 Multi-agent: REMOVED (Session #281 — skill-audit-batch-mode D11).
+ *     Replaced with a deterministic cross-reference integrity check. Rationale:
+ *     another LLM reading state+files is echo, not independent verification;
+ *     same drift class as the rejected pattern for findings production. Layer 1
+ *     (grep) + Layer 3 (diff) cover the failure mode mechanically.
  *   - Dim 7 Regression: degrades to WARN when no previous state file exists.
  *     No history file is kept post-completion in the current schema.
  *   - Dim 2 Orphan detection: checks that files_modified are grep-referenced
@@ -339,29 +341,55 @@ function dim5Functional(targetSkill) {
 }
 
 // ---------------------------------------------------------------------------
-// Dimension 6: Multi-agent verification (MANUAL fallback)
+// Dimension 6: Cross-reference integrity (deterministic, Session #281 rework)
+//
+// Previously: MANUAL block asking human to dispatch code-reviewer.
+// Now: deterministic check that decision count matches accepted+rejected,
+// and that accepted decisions have implementation references.
+// Rationale: see skill-audit-batch-mode/DECISIONS.md D11.
 
-function dim6MultiAgent(state, targetSkill) {
+function dim6CrossReferenceIntegrity(state) {
   const findings = { pass: [], fail: [], warn: [] };
-  const decisionCount = state.total_decisions || 0;
+  const total = state.total_decisions;
+  const accepted = state.accepted_decisions;
+  const rejected = state.rejected_decisions;
+
+  // Counter integrity: total == accepted + rejected (when all present)
+  if (typeof total === "number" && typeof accepted === "number" && typeof rejected === "number") {
+    if (total === accepted + rejected) {
+      findings.pass.push(
+        `decision counters consistent: total=${total} = accepted=${accepted} + rejected=${rejected}`
+      );
+    } else {
+      findings.fail.push(
+        `decision counter mismatch: total=${total} != accepted=${accepted} + rejected=${rejected}`
+      );
+    }
+  } else {
+    findings.warn.push(
+      `decision counters incomplete (total/accepted/rejected missing) — cannot verify`
+    );
+  }
+
+  // Accepted decisions should have at least one file reference
+  const decisions = state.decisions;
   const filesModified = state.files_modified || [];
+  if (
+    decisions &&
+    typeof decisions === "object" &&
+    Object.keys(decisions).length > 0 &&
+    filesModified.length === 0 &&
+    (accepted || 0) > 0
+  ) {
+    findings.fail.push(
+      `${accepted} accepted decisions but files_modified is empty — no cross-reference possible`
+    );
+  } else if (filesModified.length > 0 && (accepted || 0) > 0) {
+    findings.pass.push(
+      `${accepted} accepted decisions mapped to ${filesModified.length} modified file(s)`
+    );
+  }
 
-  // MANUAL block printed to output for human/orchestrator to run.
-  const prompt = [
-    `MANUAL: Dispatch code-reviewer agent with the following inputs:`,
-    `  Target skill: ${targetSkill}`,
-    `  Decision count: ${decisionCount}`,
-    `  Files modified: ${filesModified.length}`,
-    `  Prompt: "Independently verify each accepted decision from`,
-    `    .claude/state/task-skill-audit-${targetSkill}.state.json`,
-    `    is implemented in the listed files_modified. Report any decision`,
-    `    lacking corresponding code/prose change as MISSING."`,
-    ``,
-    `Agent verification is MUST for Complex tier. Run before declaring`,
-    `self-audit complete in interactive sessions.`,
-  ].join("\n");
-
-  findings.warn.push(prompt);
   return findings;
 }
 
@@ -509,22 +537,23 @@ function main() {
     build: dim3BuildIntegrity(state),
     gap: dim4GapAnalysis(state),
     functional: dim5Functional(args.target),
-    multi_agent: dim6MultiAgent(state, args.target),
+    cross_reference: dim6CrossReferenceIntegrity(state),
     regression: dim7Regression(state),
     contract: dim8Contract(args.target),
     partial_recovery: dim9PartialRecovery(state),
   };
 
-  // MUST dimensions for Complex tier: 1-5, 6 (Complex MUST), 7 (Complex MUST),
-  // 8 (MUST if consumers — skill-audit has consumers: skill-creator, skill-ecosystem-audit),
-  // 9 (Complex MUST). So ALL 9 are MUST for skill-audit.
+  // MUST dimensions for Complex tier: 1-5, 6 (now cross_reference integrity —
+  // deterministic replacement for multi_agent per Session #281 D11),
+  // 7 (Complex MUST), 8 (MUST if consumers — skill-audit has consumers:
+  // skill-creator, skill-ecosystem-audit), 9 (Complex MUST). All 9 are MUST.
   const mustDimensions = [
     "completeness",
     "orphans",
     "build",
     "gap",
     "functional",
-    "multi_agent",
+    "cross_reference",
     "regression",
     "contract",
     "partial_recovery",

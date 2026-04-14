@@ -76,6 +76,34 @@ Phase 6: Learning Loop  → Process feedback, invocation tracking, closure
 
 ---
 
+## Phase 1.0: Mode Selection (MUST — first gate)
+
+Before any other work, prompt the user for mode:
+
+```
+Mode?
+  (1) single — interactive, one category at a time (default behavior, MUST gated)
+  (2) batch  — single skill, all 12 categories produced at once to tmp file
+  (3) multi  — multiple skills, batched per skill, Shape Y orchestration
+```
+
+Record the chosen mode to state file `mode` field. If `mode=multi`, follow-up
+prompt: _"Skills to audit (comma-separated list):"_ — record as
+`skills_in_batch` on the parent batch state file (see
+`.claude/skills/skill-audit/REFERENCE.md` §Parent Batch State Schema).
+
+**Phase routing after Phase 1:**
+
+- `mode=single` → standard flow through Phase 2a (gated, interactive)
+- `mode=batch` → Phase 2b (batched findings) → Phase 2.B (decision collection) →
+  Phase 3
+- `mode=multi` → Phase 2b per skill → Phase 2.A (cross-skill patterns) → Phase
+  2.B (decision collection per skill) → batched Phase 3
+
+**Done when:** Mode recorded to state file; for multi, skills list captured.
+
+---
+
 ## Phase 1: Preparation (MUST)
 
 1. **Validate target** (MUST) — if SKILL.md doesn't exist, report error and
@@ -101,7 +129,10 @@ Categories: 10 | Estimated decisions: [N]
 
 ---
 
-## Phase 2: Category Audit (Interactive, MUST)
+## Phase 2a: Category Audit — single mode (Interactive, Gated, MUST)
+
+> **Mode scope:** This phase applies ONLY when `mode=single`. For `mode=batch`
+> or `mode=multi`, skip to Phase 2b below.
 
 > Read `.claude/skills/skill-audit/REFERENCE.md` for the 12 category
 > definitions, question banks, scoring rubrics, and presentation format.
@@ -169,7 +200,7 @@ show fundamental issues. Continue auditing, or pivot to `/skill-creator`?"
 "Are there quality concerns the 11 categories didn't surface?" Add user findings
 as additional decisions.
 
-### Phase 2 Completion (MUST)
+### Phase 2a Completion (MUST — single mode only)
 
 > See REFERENCE.md for the completion summary template.
 
@@ -177,6 +208,107 @@ Present aggregate summary: all decisions by category, overall score, top
 findings. Then: "Proceed to implementation with these N decisions? [Y/modify/n]"
 
 **Update state file.**
+
+---
+
+## Phase 2b: Category Audit — batch/multi modes (Batched, MUST)
+
+> **Mode scope:** This phase applies when `mode=batch` or `mode=multi`. Line 118
+> MUST rule (single-category gating) does NOT apply here — it is scoped to Phase
+> 2a only.
+
+### Findings-Only Flow (MUST)
+
+Produce findings for ALL 12 categories **before** collecting any decisions.
+Decision collection happens in Phase 2.B. This decouples:
+
+- **Findings production** (this phase — batched)
+- **User decision gate** (Phase 2.B — still interactive per-category)
+
+### Per-Skill Procedure (MUST)
+
+For each skill in the batch (one skill if `mode=batch`, list if `mode=multi`):
+
+1. **For each category (1-12)** — follow the Phase 2a per-category procedure
+   steps 1-8 (assess, list pros, cons, gaps, suggestions with recommendations,
+   opportunities) — **SKIP step 9 (collect decisions)**. Findings go to state
+   under `findings_by_category.<cat_key>`.
+2. **Save state after each category's findings** (MUST — matches Phase 2a save
+   cadence). See REFERENCE.md §Batch Findings Production Procedure.
+3. **Render markdown** to `.claude/tmp/skill-audit-<name>-findings.md` after all
+   12 categories complete. See REFERENCE.md §Batch Findings Rendering.
+
+### Faithfulness Guarantee (MUST)
+
+Findings produced in Phase 2b MUST be equivalent to what Phase 2a would produce
+on the same skill — same 12 categories, same pros/cons/gaps/suggestions depth,
+same REFERENCE.md rubric. Only **delivery** differs (batched vs gated).
+
+**Done when:** All skills in the batch have complete
+`state.findings_by_category` and rendered tmp file. State saved after each
+category per skill.
+
+---
+
+## Phase 2.A: Cross-Skill Pattern Detection (MUST — multi mode only)
+
+> **Mode scope:** This phase applies ONLY when `mode=multi`. Skip for batch or
+> single modes.
+
+### Purpose
+
+Surface systemic patterns (same gap type, same missing section, same
+anti-pattern) that appear across multiple skills in the batch — before any
+decisions are collected. Lets cross-skill context inform per-skill decisions.
+
+### Procedure (MUST)
+
+1. After all skills' Phase 2b findings produced
+2. Analyze `findings_by_category` across all skills in the batch
+3. **Identify patterns appearing in 3+ skills** (threshold): same gap label,
+   same missing section, same anti-pattern type
+4. Write to parent batch state file `cross_skill_patterns` field (see
+   REFERENCE.md §Parent Batch State Schema)
+5. **Present to user before Phase 2.B begins:** "Patterns detected across 3+
+   skills: [list]. These will be noted in per-skill decision prompts."
+
+**Done when:** Cross-skill patterns written to parent state and presented to
+user.
+
+---
+
+## Phase 2.B: Decision Collection (MUST — batch/multi modes)
+
+> **Mode scope:** This phase applies when `mode=batch` or `mode=multi`.
+
+### Purpose
+
+Collect accept/modify/reject/alternative decisions for the already-produced
+findings. Faithful to Phase 2a's per-category decision schema — just decoupled
+from findings production.
+
+### Procedure (MUST)
+
+For each skill in the batch (if multi, iterate through all skills):
+
+1. Reference the rendered tmp findings file
+   (`.claude/tmp/skill-audit-<name>-findings.md`)
+2. For each category (1-12):
+   - Present that category's suggestions (read from state, NOT re-analyze —
+     findings are locked from Phase 2b per faithfulness guarantee)
+   - For `mode=multi`: surface any `cross_skill_patterns` entries affecting this
+     category inline ("also appears in 3 other skills in this batch")
+   - Collect decisions conversationally (accept/modify/reject/alternative) —
+     NEVER use AskUserQuestion. Same schema as Phase 2a step 9.
+   - **Real-time conflict check** (MUST): compare new decision vs all earlier
+     decisions in this audit. If conflict detected, present and resolve before
+     continuing.
+   - Save decision to state file (MUST — per category)
+3. After all 12 categories decided: **final sweep conflict pass** (MUST
+   backstop) over the full decision set.
+
+**Done when:** All categories across all skills in the batch have decisions
+recorded; both real-time and final-sweep conflict checks complete.
 
 ---
 
@@ -209,6 +341,15 @@ finding. **Pause for user confirmation before proceeding to Phase 3.**
 
 ## Phase 3: Crosscheck + Ecosystem Impact (MUST)
 
+> **Mode branching:**
+>
+> - `mode=single` or `mode=batch`: run this phase per-skill (single skill in
+>   scope)
+> - `mode=multi`: run this phase ONCE across the batch (see Batched Phase 3
+>   below)
+
+### Standard Phase 3 (single / batch modes)
+
 1. Review skill-creator — does it guide creators to avoid the gaps found?
 2. **Self-audit crosscheck** (MUST) — does skill-creator's discovery include
    self-audit design questions? Does the content checklist require a self-audit
@@ -220,7 +361,27 @@ finding. **Pause for user confirmation before proceeding to Phase 3.**
    each impact, offer actionable solutions (not just notifications). User may
    address downstream impacts within this audit or defer.
 
-**Update state file.**
+### Batched Phase 3 (multi mode only, MUST)
+
+Run the crosscheck **ONCE across the batch**, not N times:
+
+1. **Skill-creator crosscheck** — review ONCE against composite gap list (union
+   of skill-creator-affecting gaps across all audited skills)
+2. **Self-audit crosscheck** — ONCE for the composite
+3. **Adjacent skill contracts** — aggregate across batch; identify cross-skill
+   contract inconsistencies (e.g., two audited skills reference each other with
+   mismatched handoff assumptions)
+4. **Ecosystem impact** — aggregate downstream skills/files across all audited
+   skills; dedupe overlapping impacts
+5. Present a **single batched crosscheck summary** with per-skill breakdown +
+   composite findings
+
+Rationale: skill-creator crosscheck converges quickly across skills (gap set is
+small); N-times is waste. Batched aggregation catches cross-skill
+inconsistencies that per-skill would miss.
+
+**Update state file (parent batch state for multi, per-skill state for
+single/batch).**
 
 ---
 
@@ -255,26 +416,35 @@ Do not run separate audits per sub-command.
 
 ### 5.0 Run Self-Audit Script (MUST — first step)
 
-Invoke the per-skill self-audit script:
+**Mode branching:**
 
-```bash
-node scripts/skills/skill-audit/self-audit.js --target=<audited-skill-name>
-```
+- `mode=single` or `mode=batch`: invoke the per-skill self-audit script once:
+
+  ```bash
+  node scripts/skills/skill-audit/self-audit.js --target=<audited-skill-name>
+  ```
+
+- `mode=multi`: invoke **in parallel** for each skill in the batch. Aggregate
+  `---SUMMARY---` JSON blocks into a composite result; present to user as a
+  batch table (one row per skill) with `overall` status + counts of
+  `must_failed` / `should_warned`.
 
 Parse the `---SUMMARY---` JSON block. Branch:
 
 - **`overall == "FAIL"`**: present each `must_failed` dimension to the user with
   remediation options. Re-enter Phase 4 (Implementation), fix, re-run the
   script. Per SKILL_STANDARDS.md §Self-Audit ordering: "If self-audit finds
-  failures, re-enter Build, fix, then re-run Self-Audit."
+  failures, re-enter Build, fix, then re-run Self-Audit." For multi mode: failed
+  skills get per-skill remediation; passing skills remain clean.
 - **`overall == "PASS"` with `should_warned` non-empty**: present warnings
-  (typically `multi_agent` MANUAL block + `regression` no-history note). User
-  decides acknowledge / fix / defer. Proceed only after explicit decision.
+  (typically `regression` no-history note on first runs). User decides
+  acknowledge / fix / defer. Proceed only after explicit decision.
 - **`overall == "PASS"` clean**: proceed to 5.1 prose verification.
 
-The script covers MUST dimensions 1-5 + 7-9 mechanically. Steps 5.1-5.5 below
-handle the judgment-only checks (Dim 6 multi-agent dispatch when interactive,
-process compliance, decision-by-decision evidence walkthrough).
+The script covers MUST dimensions 1-5 + 7-9 mechanically (Dim 6 replaced with
+cross-reference integrity check per Session #281 agent-layer removal). Steps
+5.1-5.5 below handle process-compliance + decision-by-decision evidence
+walkthrough — **no LLM agent re-interpretation**, deterministic only.
 
 ### 5.1 Re-read All Modified Files (MUST)
 
@@ -283,18 +453,21 @@ Re-read every file modified or created in Phase 4. Do NOT rely on memory.
 ### 5.2 Evidence-Based Decision Verification (MUST)
 
 > Logging a decision as "PASS" does NOT mean it was implemented. Each decision
-> MUST be verified with objective evidence. See REFERENCE.md for the three
-> required verification methods and evidence format.
+> MUST be verified with objective evidence. See REFERENCE.md for the
+> deterministic verification methods and evidence format.
+>
+> **Deterministic only (Session #281 change):** Verification uses grep + diff
+> mechanical checks. No LLM agent re-interpretation. Rationale: another LLM
+> reading the same inputs is echo, not independent verification. Deterministic
+> checks (grep + diff + schema validation) catch the "I thought I wrote it but
+> didn't" failure mode without drift risk.
 
-Three verification layers, ALL required:
+Two verification layers, ALL required:
 
 1. **Grep-based proof (MUST):** For each decision, grep the output file for a
    keyword or pattern that proves implementation. Cite the grep result. If grep
    finds nothing, the decision is MISSING — not PASS.
-2. **Independent agent verification (MUST for >15 decisions):** Dispatch a
-   `code-reviewer` agent with the decision list and modified files. Agent
-   independently checks each decision and reports discrepancies.
-3. **Diff-based mapping (MUST):** Generate `git diff` of all modified files. Map
+2. **Diff-based mapping (MUST):** Generate `git diff` of all modified files. Map
    each decision to the specific diff hunk that implements it. Decisions with no
    corresponding diff hunk are MISSING.
 
@@ -382,10 +555,12 @@ Files modified: [list] | Skill-creator gaps: [N]
 - **Output:** Updated skill files + decision record in state file (the state
   file IS the persistent decision record)
 - **Handoff:** Use `/skill-creator` for major rewrites after audit
-- **Team config:** When auditing 3+ skills in a batch, consider spawning the
-  `audit-review-team` (`.claude/teams/audit-review-team.md`) instead of
-  sequential solo invocations. The team's reviewer-fixer pipeline accumulates
-  cross-target patterns after 3+ targets and reuses proven fixes.
+- **Multi-skill batches:** Use `mode=multi` (selected in Phase 1.0) to audit 3+
+  skills in one coherent run. The skill handles batch orchestration natively via
+  Shape Y (audit-all → decide-all → implement-all) with cross-skill pattern
+  detection in Phase 2.A. No team dispatch required — faithfulness to the
+  12-category rubric is maintained by running the real skill process, not agent
+  simulation.
 
 ---
 
