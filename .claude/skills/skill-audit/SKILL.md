@@ -249,7 +249,32 @@ Do not run separate audits per sub-command.
 
 ## Phase 5: Self-Audit (MUST — before completing)
 
-> Read REFERENCE.md for detailed self-audit criteria and report format.
+> Read REFERENCE.md for detailed self-audit criteria and report format. Pattern
+> reference:
+> [`.claude/skills/_shared/SELF_AUDIT_PATTERN.md`](../_shared/SELF_AUDIT_PATTERN.md).
+
+### 5.0 Run Self-Audit Script (MUST — first step)
+
+Invoke the per-skill self-audit script:
+
+```bash
+node scripts/skills/skill-audit/self-audit.js --target=<audited-skill-name>
+```
+
+Parse the `---SUMMARY---` JSON block. Branch:
+
+- **`overall == "FAIL"`**: present each `must_failed` dimension to the user with
+  remediation options. Re-enter Phase 4 (Implementation), fix, re-run the
+  script. Per SKILL_STANDARDS.md §Self-Audit ordering: "If self-audit finds
+  failures, re-enter Build, fix, then re-run Self-Audit."
+- **`overall == "PASS"` with `should_warned` non-empty**: present warnings
+  (typically `multi_agent` MANUAL block + `regression` no-history note). User
+  decides acknowledge / fix / defer. Proceed only after explicit decision.
+- **`overall == "PASS"` clean**: proceed to 5.1 prose verification.
+
+The script covers MUST dimensions 1-5 + 7-9 mechanically. Steps 5.1-5.5 below
+handle the judgment-only checks (Dim 6 multi-agent dispatch when interactive,
+process compliance, decision-by-decision evidence walkthrough).
 
 ### 5.1 Re-read All Modified Files (MUST)
 
@@ -366,13 +391,14 @@ Files modified: [list] | Skill-creator gaps: [N]
 
 ## Version History
 
-| Version | Date       | Description                                                             |
-| ------- | ---------- | ----------------------------------------------------------------------- |
-| 3.5     | 2026-04-04 | Add Category 12 (Completion Verification Design), expand Phase 2.5+3    |
-| 3.4     | 2026-03-19 | Fix invocation tracking: context MUST include target+decisions+score    |
-| 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2     |
-| 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping |
-| 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts    |
-| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.           |
-| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.                 |
-| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan                |
+| Version | Date       | Description                                                                |
+| ------- | ---------- | -------------------------------------------------------------------------- |
+| 3.6     | 2026-04-14 | Phase 5.0: invoke scripts/skills/skill-audit/self-audit.js (pattern-based) |
+| 3.5     | 2026-04-04 | Add Category 12 (Completion Verification Design), expand Phase 2.5+3       |
+| 3.4     | 2026-03-19 | Fix invocation tracking: context MUST include target+decisions+score       |
+| 3.3     | 2026-03-15 | Add Category 11 (T25 convergence loop), self-application in Phase 2        |
+| 3.2     | 2026-03-07 | Evidence-based self-audit: grep proof, agent verification, diff mapping    |
+| 3.1     | 2026-03-07 | SA-1,3,4: Phase 2.5 operational deps, root cause, adjacent contracts       |
+| 3.0     | 2026-03-06 | Self-audit: 42 changes, routing, guard rails, UX, confidence.              |
+| 2.0     | 2026-03-06 | Add Phase 5 self-audit. Source: pr-retro audit session.                    |
+| 1.0     | 2026-03-01 | Initial implementation from deep-plan audit of deep-plan                   |
