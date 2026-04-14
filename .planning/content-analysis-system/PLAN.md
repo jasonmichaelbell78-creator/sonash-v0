@@ -1,5 +1,24 @@
 # Implementation Plan: T28 Content Analysis System
 
+> **Status:** ⏳ **NEAR-COMPLETE** — 13 of 15 steps done (Sessions #267–#279).
+> Steps 14 (Audit) + 15 (E2E verification) remain.
+>
+> Wave 1 (Sessions #267–#268): Steps 1, 2, 3, 12 — backups, unified Zod schema,
+> CONVENTIONS §13/14/16, .gitignore. Wave 2 (Session #269): Steps 4, 5 —
+> repo-analysis + website-analysis migrated to unified schema. Wave 3 (Sessions
+> #269–#270): Steps 6, 7, 8 — document-analysis + media-analysis built;
+> SQLite+FTS5 index infrastructure (`content-analysis.db`). Wave 4 (Sessions
+> #270–#278): Steps 9, 10, 11, 13 — `/analyze` router, directory migration,
+> `/recall` skill, synthesis merge (T29 sub-plan: closed Session #279, all 15
+> sub-steps complete). Wave 5 (PENDING): Steps 14 (skill-audit on all 7 CAS
+> skills — blocked tracker T38) + 15 (E2E `/recall` verification on fresh
+> source).
+>
+> **Current corpus:** 35 sources (26 repo, 6 website, 1 doc, 2 media), 343
+> extraction candidates, 280 tags, 17 opportunities ledger entries.
+>
+> See per-step ✅ markers below for evidence anchors.
+
 ## Summary
 
 Build the Content Analysis System: two user-facing skills (`/analyze` and
@@ -57,7 +76,7 @@ sessions)
 
 ---
 
-## Step 1: Back Up Existing Skills
+## Step 1: Back Up Existing Skills ✅ COMPLETE (Wave 1, Session #267)
 
 Before any modifications, create safety copies of the skills being changed.
 
@@ -75,7 +94,7 @@ Before any modifications, create safety copies of the skills being changed.
 
 ---
 
-## Step 2: Unified Zod Schema
+## Step 2: Unified Zod Schema ✅ COMPLETE (Wave 1, Session #267 — `scripts/lib/analysis-schema.js`; extended Sessions #271 + #279 for synthesis)
 
 Create `scripts/lib/analysis-schema.js` with Zod schemas for both the analysis
 record and the extraction record. Per Decision #6 and #7.
@@ -183,7 +202,7 @@ with Step 1)
 
 ---
 
-## Step 3: CONVENTIONS.md Expansion
+## Step 3: CONVENTIONS.md Expansion ✅ COMPLETE (Wave 1, Session #267 — Sections 13/14/16 added; §17 added by T29 Session #271)
 
 Add 4 new sections per Decision #25:
 
@@ -205,7 +224,7 @@ Add 4 new sections per Decision #25:
 
 ---
 
-## Step 4: Modify Repo-Analysis for Unified Schema
+## Step 4: Modify Repo-Analysis for Unified Schema ✅ COMPLETE (Wave 2, Session #269 — repo-analysis migrated; later bumped to v4.6 in Session #278 with Use-As-Is verdict)
 
 Update repo-analysis to write the unified analysis record schema. This is the
 template that all other skills follow.
@@ -234,7 +253,7 @@ known repo produces output that passes Zod validation. All phases still run.
 
 ---
 
-## Step 5: Modify Website-Analysis for Unified Schema
+## Step 5: Modify Website-Analysis for Unified Schema ✅ COMPLETE (Wave 2, Session #269)
 
 Align website-analysis to match repo-analysis structure and write unified
 schema.
@@ -262,7 +281,7 @@ mirrors repo-analysis. Zod validation passes. **Depends on:** Steps 1, 2, 3, 4
 
 ---
 
-## Step 6: Build Document-Analysis Skill
+## Step 6: Build Document-Analysis Skill ✅ COMPLETE (Wave 3, Session #269)
 
 New skill at `.claude/skills/document-analysis/SKILL.md`. Follows repo-analysis
 v4.3 template structure. Per Decision #15 and #16.
@@ -308,7 +327,7 @@ repo-analysis. Writes valid unified schema. Manual test with a PDF and a gist.
 
 ---
 
-## Step 7: Build Media-Analysis Skill
+## Step 7: Build Media-Analysis Skill ✅ COMPLETE (Wave 3, Session #270)
 
 New skill at `.claude/skills/media-analysis/SKILL.md`. Per Decision #17.
 
@@ -361,7 +380,7 @@ conventions + template)
 
 ---
 
-## Step 8: Build SQLite Index Infrastructure
+## Step 8: Build SQLite Index Infrastructure ✅ COMPLETE (Wave 3, Session #270 — `.research/content-analysis.db`, FTS5 enabled, rebuild script at scripts/cas/rebuild-index.js)
 
 Per Decisions #9, #10, #23, #28. Three scripts in `scripts/cas/`.
 
@@ -436,7 +455,7 @@ schema.
 
 ---
 
-## Step 9: Build Router Skill (`/analyze`)
+## Step 9: Build Router Skill (`/analyze`) ✅ COMPLETE (Wave 4, Session #270)
 
 New skill at `.claude/skills/analyze/SKILL.md`. Per Decisions #1, #3, #18.
 
@@ -483,7 +502,7 @@ triggers synthesis. `--type` override works. **Depends on:** Steps 4, 5, 6, 7
 
 ---
 
-## Step 10: Directory Migration + Data Migration
+## Step 10: Directory Migration + Data Migration ✅ COMPLETE (Wave 4, Session #270 — v3.0 migration to unified `.research/analysis/`)
 
 Per Decisions #22, #24, #29. Two sub-steps.
 
@@ -530,7 +549,7 @@ validate against unified schema, SQLite index built with correct counts.
 
 ---
 
-## Step 11: Build Recall Skill (`/recall`)
+## Step 11: Build Recall Skill (`/recall`) ✅ COMPLETE (Wave 4, Session #270 — skill exists; functional E2E test pending in Step 15)
 
 New skill at `.claude/skills/recall/SKILL.md`. Per Decisions #2, #27.
 
@@ -562,7 +581,7 @@ New skill at `.claude/skills/recall/SKILL.md`. Per Decisions #2, #27.
 
 ---
 
-## Step 12: Update .gitignore + CLAUDE.md
+## Step 12: Update .gitignore + CLAUDE.md ✅ COMPLETE (Wave 1, Session #268)
 
 - Add to `.gitignore`:
   ```
@@ -582,7 +601,7 @@ on:** None (can run anytime)
 
 ---
 
-## Step 13: Synthesis Merge
+## Step 13: Synthesis Merge ✅ COMPLETE (Wave 4 + T29 sub-plan — closed Session #279; all 15 T29 steps marked complete, opportunities-ledger.jsonl shipped with 17 entries)
 
 Update synthesis to work within the `/analyze` router and across all source
 types. Per Decisions #18, #19.
@@ -604,7 +623,7 @@ on:** Steps 4, 5, 6, 7, 10 (needs all handlers + migrated data)
 
 ---
 
-## Step 14: Audit Checkpoint
+## Step 14: Audit Checkpoint ⏳ PENDING (tracker T38 — `/skill-audit` on all 7 CAS skills: analyze, recall, repo-analysis, website-analysis, document-analysis, media-analysis, synthesize)
 
 Run code-reviewer agent on all new and modified files:
 
@@ -630,7 +649,7 @@ previous steps
 
 ---
 
-## Step 15: End-to-End Verification
+## Step 15: End-to-End Verification ⏳ PENDING (functional `/recall` testing; full pipeline run on a fresh source; corpus integrity audit)
 
 Test the complete flow:
 
