@@ -1,0 +1,60 @@
+{
+  "pr": 513,
+  "round": 2,
+  "review_number": 93,
+  "review_id": "rev-93",
+  "source": "mixed",
+  "total": 19,
+  "fixed": 19,
+  "deferred": 0,
+  "rejected": 0,
+  "severity": { "critical": 0, "major": 2, "minor": 15, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_shas": ["33d08ea8"],
+  "files_modified": [
+    "scripts/skills/document-analysis/self-audit.js",
+    "scripts/skills/media-analysis/self-audit.js",
+    "scripts/skills/repo-analysis/self-audit.js",
+    "scripts/skills/website-analysis/self-audit.js",
+    "scripts/skills/skill-audit/self-audit.js",
+    ".claude/hooks/session-start.js"
+  ],
+  "files_created": [
+    "tests/scripts/skills/document-analysis/self-audit.test.ts",
+    "tests/scripts/skills/media-analysis/self-audit.test.ts",
+    "tests/scripts/skills/repo-analysis/self-audit.test.ts",
+    "tests/scripts/skills/website-analysis/self-audit.test.ts"
+  ],
+  "baseline_updates": {
+    ".test-baseline.json": "Added .claude/hooks/gsd-prompt-guard.js + .claude/hooks/gsd-workflow-guard.js (pre-existing untested, surfaced by auto-clean)",
+    ".claude/state/known-debt-baseline.json": "Added .claude/hooks/session-start.js: 21 (pre-existing CC debt, high-churn watchlist file)"
+  },
+  "scope_expansions": [
+    {
+      "file": ".claude/hooks/session-start.js",
+      "reason": "User-approved propagation of optional-chain fix (err && err.code → err?.code) at L122, L781",
+      "user_approved": true
+    },
+    {
+      "file": ".test-baseline.json",
+      "reason": "User-approved [A] baseline + DEBT for 2 pre-existing untested gsd-*-guard hooks surfaced by test-registry auto-clean",
+      "user_approved": true
+    },
+    {
+      "file": ".claude/state/known-debt-baseline.json",
+      "reason": "User-approved [1] add session-start.js to CC baseline at 21 — matches cas/self-audit.js:25 precedent",
+      "user_approved": true
+    }
+  ],
+  "debt_items_created": ["DEBT-45656"],
+  "code_reviewer_invoked": true,
+  "code_reviewer_findings": {
+    "critical": 0,
+    "warnings": 0,
+    "non_blocking_observations": 2,
+    "verdict": "APPROVE",
+    "notes": "Non-blocking: (1) depthError === 'missing' in checkTranscript produces correct outcome but indirect messaging; (2) tmpDir helper duplicated across 4 test files — future maintenance concern."
+  },
+  "completed_at": "2026-04-15T00:00:00Z"
+}
