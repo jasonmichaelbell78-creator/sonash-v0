@@ -418,7 +418,7 @@ _Claude Code skills_
 | [add-debt](.claude/skills/add-debt/SKILL.md)                                                                                        | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-20    |
 | [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | -                                                                 | ↓0 ↑1      | 2026-04-08    |
 | [Alerts Reference](.claude/skills/alerts/REFERENCE.md)                                                                              | Detailed workflows, schemas, benchmarks, and reference data ...   | ↓1 ↑0      | 2026-03-24    |
-| [analyze](.claude/skills/analyze/SKILL.md)                                                                                          | The front door to the Content Analysis System. One command f...   | ↓0 ↑0      | 2026-04-10    |
+| [analyze](.claude/skills/analyze/SKILL.md)                                                                                          | The front door to the Content Analysis System. One command f...   | ↓0 ↑0      | 2026-04-15    |
 | [Analyze Reference](.claude/skills/analyze/REFERENCE.md)                                                                            | Type detection patterns, flags reference, synthesis mode spe...   | ↓0 ↑0      | 2026-04-10    |
 | [artifacts-builder](.claude/skills/artifacts-builder/SKILL.md)                                                                      | To build powerful frontend claude.ai artifacts, follow these...   | ↓0 ↑0      | 2026-02-24    |
 | [Audit Agent Quality — Reference](.claude/skills/audit-agent-quality/REFERENCE.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-17    |
@@ -1618,7 +1618,7 @@ _Uncategorized_
 | [JASON-OS Research — Cross-Domain Dependencies](.planning/jason-os/DEPENDENCIES.md)  | -                                                               | ↓0 ↑0      | 2026-04-09    |
 | [JASON-OS Research — Cross-Domain Synthesis](.planning/jason-os/SYNTHESIS.md)        | Rolling synthesis of findings across all research domains. N... | ↓0 ↑0      | 2026-04-02    |
 | [JASON-OS Research Roadmap — Status Tracker](.planning/jason-os/RESEARCH_ROADMAP.md) | -                                                               | ↓0 ↑0      | 2026-04-09    |
-| [Research Roadmap: JASON-OS](.planning/jason-os/PLAN.md)                             | Comprehensive inventory of every skill, agent, hook, script,... | ↓0 ↑1      | 2026-04-09    |
+| [Research Roadmap: JASON-OS](.planning/jason-os/PLAN.md)                             | Comprehensive inventory of every skill, agent, hook, script,... | ↓0 ↑1      | 2026-04-15    |
 
 ### .planning > plan-orchestration (Tier 4)
 

@@ -5,10 +5,10 @@ description:
   documents, media). Produces emergent themes, ecosystem gaps, reading chains,
   mental model evolution, fit portfolio, knowledge map, and an interactive
   opportunity matrix that routes to the next action. Replaces /repo-synthesis,
-  /website-synthesis, and the cross-type synthesis stub. Part of T28 CAS.
+  /website-synthesis, and the cross-type synthesis stub.
 ---
 
-# /synthesize — Cross-Source Synthesis (T29)
+# /synthesize — Cross-Source Synthesis
 
 > **Status:** v1.2 (active). Consolidates `/repo-synthesis` (v1.3) and
 > `/website-synthesis` (v1.1) into a single skill that handles all 4 source
