@@ -524,8 +524,8 @@ _Claude Code skills_
 | [recall](.claude/skills/recall/SKILL.md)                                                                                            | Search and query your extracted knowledge. Everything analyz...   | ↓0 ↑0      | 2026-04-12    |
 | [Recall Reference](.claude/skills/recall/REFERENCE.md)                                                                              | Query mode specifications, output formatting rules, follow-u...   | ↓0 ↑0      | 2026-04-08    |
 | [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓1 ↑0      | 2026-04-10    |
-| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓1 ↑1      | 2026-04-13    |
-| [repo-analysis — Version History Archive](.claude/skills/repo-analysis/ARCHIVE.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑1      | 2026-04-15    |
+| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓1 ↑3      | 2026-04-13    |
+| [repo-analysis — Version History Archive](.claude/skills/repo-analysis/ARCHIVE.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑1      | 2026-04-15    |
 | [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-14    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
 | [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)                                            | Templates, schemas, category reference, and checker developm...   | ↓0 ↑0      | 2026-03-09    |
@@ -537,7 +537,7 @@ _Claude Code skills_
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-04-05    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
 | [Shared Ecosystem Audit Library](.claude/skills/_shared/ecosystem-audit/README.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-26    |
-| [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-12    |
+| [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)                                                                    | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-15    |
 | [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)                                                                    | Does the skill deliver what its tagline promises?                 | ↓0 ↑1      | 2026-04-14    |
 | [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)                                                                | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-06    |
 | [Skill Index](.claude/skills/SKILL_INDEX.md)                                                                                        | -                                                                 | ↓0 ↑0      | 2026-03-24    |
@@ -553,7 +553,7 @@ _Claude Code skills_
 | [System Test — Complete Interactive Workflow](.claude/skills/system-test/reference/WORKFLOW.md)                                     | Full reference for the 23-domain interactive system test ski...   | ↓1 ↑0      | 2026-02-19    |
 | [system-test](.claude/skills/system-test/SKILL.md)                                                                                  | -                                                                 | ↓0 ↑1      | 2026-02-24    |
 | [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | - When the task doesn't match this skill's scope -- check re...   | ↓0 ↑0      | 2026-02-24    |
-| [Tag Suggestion Protocol](.claude/skills/_shared/TAG_SUGGESTION.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-15    |
+| [Tag Suggestion Protocol](.claude/skills/_shared/TAG_SUGGESTION.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-04-15    |
 | [task-next](.claude/skills/task-next/SKILL.md)                                                                                      | Shows which tasks are ready to work on based on dependency r...   | ↓0 ↑0      | 2026-02-24    |
 | [TDMS Integration (Step 6.5)](.claude/skills/pr-review/reference/TDMS_INTEGRATION.md)                                               | When items are deferred during PR review, they MUST be inges...   | ↓1 ↑0      | 2026-02-14    |
 | [tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire Technical Debt Management Syst...   | ↓0 ↑0      | 2026-03-26    |
@@ -683,7 +683,7 @@ _Uncategorized_
 
 | Document                                                              | Description                                                     | References | Last Modified |
 | --------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑1      | 2026-04-14    |
+| [Claude Code Command Reference (Index)](.claude/COMMAND_REFERENCE.md) | <!-- prettier-ignore-start -->                                  | ↓3 ↑1      | 2026-04-15    |
 | [Claude Hooks Documentation](.claude/HOOKS.md)                        | Documents all Claude Code hooks configured in `.claude/setti... | ↓2 ↑4      | 2026-03-24    |
 | [Cross-Platform Claude Code Setup](.claude/CROSS_PLATFORM_SETUP.md)   | > **DEPRECATION NOTICE (2026-02-23):** The `scripts/sync-cla... | ↓3 ↑0      | 2026-02-25    |
 | [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)          | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-04-05    |
@@ -3597,7 +3597,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**1399 orphaned documents:**
+**1397 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -3864,7 +3864,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Routing menu adds value](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/feedback_routing_menu_value.md)
 - [Contrarian/OTB agent design task](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/project_contrarian_agent_design.md)
 - [Skill Index](.claude/skills/SKILL_INDEX.md)
-- [Tag Suggestion Protocol](.claude/skills/_shared/TAG_SUGGESTION.md)
 - [Ecosystem Audit: Closure & Guard Rails](.claude/skills/_shared/ecosystem-audit/CLOSURE_AND_GUARDRAILS.md)
 - [Ecosystem Audit: Compaction Guard](.claude/skills/_shared/ecosystem-audit/COMPACTION_GUARD.md)
 - [Ecosystem Audit: Critical Rules](.claude/skills/_shared/ecosystem-audit/CRITICAL_RULES.md)
@@ -3948,7 +3947,6 @@ Documents with no inbound links (not referenced by any other document):
 - [quick-fix](.claude/skills/quick-fix/SKILL.md)
 - [Recall Reference](.claude/skills/recall/REFERENCE.md)
 - [recall](.claude/skills/recall/SKILL.md)
-- [repo-analysis — Version History Archive](.claude/skills/repo-analysis/ARCHIVE.md)
 - [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)
 - [Script Ecosystem Audit — Reference](.claude/skills/script-ecosystem-audit/REFERENCE.md)
 - [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)
