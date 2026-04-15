@@ -171,6 +171,7 @@ Source: `.husky/`
 
 | Version | Date         | Change                                                                                                                                                                                                                  |
 | ------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 8.7     | 2026-04-15   | Skill-audit batch Wave 2 (media-analysis): v1.1 → v2.0 rewrite — BREAKING phase 4b → 3.5, NEW Integration + Retro + Invocation sections, duration scope-explosion (>60 min), Python bootstrap → REFERENCE §5.1          |
 | 8.6     | 2026-04-15   | Skill-audit batch Wave 2 (document-analysis): v1.1 → v2.0 rewrite — BREAKING phase renumber (Cat 2-E + Pattern 10), NEW Integration + Retro + Invocation sections, Warm-up, Routing Guide, scope-explosion (>100 pages) |
 | 8.5     | 2026-04-15   | Skill-audit batch Wave 2 (website-analysis): v1.2 → v2.0 rewrite — Warm-up, Routing Guide, Delegation & Defaults, consolidated Guard Rails, scope-explosion soft prompt (>50 pages), Done-when gates, output table      |
 | 8.4     | 2026-04-15   | Skill-audit batch Wave 2 (repo-analysis): v4.6 → v5.0 rewrite — phase 4b → 3.5 (breaking), Warm-up, Routing Guide, Delegation & Defaults, consolidated Guard Rails, Done-when gates                                     |

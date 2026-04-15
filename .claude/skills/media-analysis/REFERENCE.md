@@ -841,6 +841,20 @@ YouTube content.
 python -c "from youtube_transcript_api import YouTubeTranscriptApi; print('ok')"
 ```
 
+**Bootstrap (one-time, Windows):** If the Python package isn't installed:
+
+```bash
+curl -sL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && python.exe /tmp/get-pip.py
+python.exe -m pip install youtube-transcript-api
+```
+
+The embedded Python at `~/bin/python312/` may need its `._pth` file edited to
+enable site-packages (uncomment `import site`). If Python is unavailable
+entirely, fall back to WebFetch-based caption extraction or offer manual
+transcript input — this is the `transcript_source: "manual"` path.
+
+Absorbed from media-analysis SKILL.md v1.1 → v2.0 to keep SKILL.md lean.
+
 If installed, use it:
 
 ```bash
