@@ -90,7 +90,15 @@ function checkSourceType(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const dir = path.join(ANALYSIS_DIR, slug);
-    const json = safeReadJson(path.join(dir, "analysis.json"));
+    let json;
+    try {
+      json = safeReadJson(path.join(dir, "analysis.json"));
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return { status: "FAIL", details: "analysis.json missing" };
+      }
+      throw err;
+    }
     if (json?.source_type !== "repo") {
       return { status: "FAIL", details: `source_type is '${json?.source_type}', expected 'repo'` };
     }
