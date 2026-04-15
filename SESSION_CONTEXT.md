@@ -1,9 +1,9 @@
 # Session Context
 
-**Document Version**: 8.33 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.34 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-14 (Session #279 — /session-begin triage 4 fixed + T29 PLAN CLOSED +
-TODOS.md auto-render hook + CAS PLAN hygiene + handoff doc)
+2026-04-14 (Session #281 — skill-audit batch-mode plan: deep-plan + 4 waves
+implemented across SKILL.md/REFERENCE.md/self-audit.js/audit-review-team.md)
 
 ## Purpose
 
@@ -153,7 +153,29 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 
 ## Session Tracking
 
-**Current Session Count**: 280 (since Jan 1, 2026)
+**Current Session Count**: 281 (since Jan 1, 2026)
+
+> **Session #281 handoff (skill-audit batch-mode plan + implementation,
+> 2026-04-14):** Full thread: sync to remote canon (branch `41426`,
+> `planning-41426` deleted) → /session-begin (triage: CI-stale confirmed,
+> warnings acked) → user flagged that code-reviewer agents drift from
+> /skill-audit 12-category rubric → 20-question /deep-plan designed new
+> `batch` + `multi` modes with Shape Y orchestration (audit-all → decide-all →
+> implement-all), removed code-reviewer agent layer from ALL /skill-audit modes
+> (D11 scope expansion), decoupled /skill-audit from audit-review-team. Plan: 27
+> decisions (7 seed + 20 discovery), 23 steps, 4 waves. Approved + executed all
+> 4 waves in same session: (1) SKILL.md structural + self-audit.js Dim 6 rework
+> (cross-reference integrity) + team config decouple; (2) REFERENCE.md batch
+> appendix (schema + procedures + rendering + lifecycle); (3) SKILL.md v4.0 +
+> Critical Rule #7 + mode-aware invocation tracking; (4) code-reviewer audit on
+> diff → stale "three layers" + "Agent discrepancies" references cleaned. Parity
+> test (PLAN Steps 19-20) deferred to next session due to context weight. **Next
+> session priorities: (1) Run parity test on `recall` skill —
+> `/skill-audit recall --mode=single` vs `--mode=batch`, document in
+> `.planning/skill-audit-batch-mode/PARITY_TEST.md`; (2) CAS Step A can now
+> proceed via `/skill-audit` with `mode=multi` on 7 CAS skills; (3) CAS Step B
+> E2E /recall verification; (4) T48 Adoption Verdict backfill.** Branch: `41426`
+> (4 commits ahead of origin pre-push).
 
 > **Session #279 handoff (Triage 4 + T29 CLOSED + auto-render hook + CAS PLAN
 > hygiene, 2026-04-14):** /session-begin surfaced 5 triage items — 4 fixed
@@ -487,7 +509,13 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **Close T28 — CAS Step A: `/skill-audit` on 7 CAS skills** (analyze, recall,
+1. **Parity test for skill-audit batch mode** (skill-audit-batch-mode PLAN Steps
+   19-20, deferred from Session #281). Run `/skill-audit recall --mode=single`
+   and `--mode=batch`; compare findings category-by-category; document in new
+   `.planning/skill-audit-batch-mode/PARITY_TEST.md`. Accepts if ≥80% suggestion
+   overlap per category + zero missing cons/gaps. ~15-30 min.
+
+2. **Close T28 — CAS Step A: `/skill-audit` on 7 CAS skills** (analyze, recall,
    repo-analysis, website-analysis, document-analysis, media-analysis,
    synthesize). Tracker T38 (currently blocked on T28 — unblock when starting).
    Parallelizable via 7 code-reviewer agents using the synthesis-consolidation
@@ -495,51 +523,51 @@ Actions, manual setup).
    `.planning/content-analysis-system/REMAINING_CAS_TASKS.md` Step A for full
    spec.
 
-2. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
+3. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
    `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries (tag,
    type, FTS5, cross-source) → verify extraction-journal + last_synthesized_at.
    ~15-30 min. See REMAINING_CAS_TASKS.md Step B.
 
-3. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
+4. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
    banner to ✅ COMPLETE, unblock T38, SESSION_CONTEXT note.
 
-4. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
+5. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
    2b to ~20 prior product-repo analyses (application/framework/tool-demo
    taxonomic). Parallelizable via agents (1 per repo). Could pair naturally with
    Step A skill-audit since both touch the same artifacts.
 
-5. **T49 — Fix /deep-plan template gap** (discovered Session #279). 3-part fix:
+6. **T49 — Fix /deep-plan template gap** (discovered Session #279). 3-part fix:
    (a) update REFERENCE.md PLAN.md template with status banner + per-step
    markers; (b) update SKILL.md Critical Rule for plan hygiene maintenance; (c)
    add `npm run plans:hygiene` checker. Prevents future drift in any new PLAN.md
    created via /deep-plan.
 
-6. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
+7. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
    sources (Sober Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase
    reference, TS MCP SDK, whisper.cpp, monolith, readable-cli, SBOM). Method:
    `/analyze` each, then `/synthesize --resume` to diff against current
    baseline.
 
-7. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
+8. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
    measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench
    shape, per-instance cached by `(repo, commit)`. SoNash adaptation: curated
    scenarios from review history + extraction journal, pattern-aware vs
    pattern-unaware agent comparison.
 
-8. **GitNexus trial** (if license resolves permissive) — license check → install
+9. **GitNexus trial** (if license resolves permissive) — license check → install
    on throwaway branch → use for one real task → adopt/extract decision.
 
-9. **Remaining Wave 5 opportunity matrix items** — entries pending status update
-   in ledger (marketplace.json distribution, bidirectional doc-feature
-   validator, zero-schema MCP, OAuth-filter MCP, skill retirement spec, etc.).
+10. **Remaining Wave 5 opportunity matrix items** — entries pending status
+    update in ledger (marketplace.json distribution, bidirectional doc-feature
+    validator, zero-schema MCP, OAuth-filter MCP, skill retirement spec, etc.).
 
-10. **T45** — Hook-based skill compliance enforcement (5 highest-risk skills).
-11. **T46** — Cross-locale memory sync STRATEGY (research only).
-12. **T42** — Nous Research Hermes model series research (P3).
-13. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
-14. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-15. **Multi-layer memory (T4)** — Research done.
-16. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+11. **T45** — Hook-based skill compliance enforcement (5 highest-risk skills).
+12. **T46** — Cross-locale memory sync STRATEGY (research only).
+13. **T42** — Nous Research Hermes model series research (P3).
+14. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
+15. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+16. **Multi-layer memory (T4)** — Research done.
+17. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
 
 ### Backlog (run `/todo` for full list — see TODOS.md, ~25 active, 48 total)
 

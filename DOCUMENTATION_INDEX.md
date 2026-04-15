@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-04-14 **Active Documents:** 1481 **Archived Documents:** 132
+**Generated:** 2026-04-15 **Active Documents:** 1481 **Archived Documents:** 132
 
 ---
 
@@ -3582,7 +3582,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-14    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-15    |
 
 ### scripts (Tier 4)
 
@@ -6633,7 +6633,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-04-14 | Auto-generated from codebase scan |
+| Auto    | 2026-04-15 | Auto-generated from codebase scan |
 
 ---
 

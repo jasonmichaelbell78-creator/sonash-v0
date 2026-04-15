@@ -2,23 +2,15 @@
   "warnings": [
     {
       "hook": "session-start",
-      "type": "cli-tools-missing",
-      "severity": "warning",
-      "message": "CLI tools missing: rg",
-      "action": "bash scripts/install-cli-tools.sh",
-      "timestamp": "2026-04-14T14:19:23.446Z",
-      "occurrences": 2,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
       "type": "tdms-s0",
       "severity": "warning",
       "message": "S0: 26 critical debt items",
       "action": "npm run debt:report --severity=S0",
       "timestamp": "2026-04-14T14:19:23.342Z",
       "occurrences": 3,
-      "occurrences_since_ack": 1
+      "occurrences_since_ack": 0,
+      "lastAck": "2026-04-14T22:10:52.977Z"
     }
-  ]
+  ],
+  "lastCleared": "2026-04-14T22:10:52.977Z"
 }
