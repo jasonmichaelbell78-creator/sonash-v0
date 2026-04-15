@@ -121,7 +121,7 @@ Tier requirements:
 | 3. Build integrity         | MUST              | MUST              | Yes — grep for stub markers          |
 | 4. Gap analysis            | MUST              | MUST              | Yes — state.decisions vs diff        |
 | 5. Functional verification | MUST              | MUST              | Yes — invoke validators in dry-run   |
-| 6. Multi-agent             | SHOULD            | MUST              | Partial — script dispatches agent    |
+| 6. Cross-reference (det.)  | SHOULD            | MUST              | Yes — counter + reference checks     |
 | 7. Regression              | SHOULD            | MUST              | Yes — compare current vs prior state |
 | 8. Contract                | MUST if consumers | MUST if consumers | Yes — schema/section validation      |
 | 9. Partial recovery        | SHOULD            | MUST              | Yes — state.phase + timestamp check  |
@@ -130,11 +130,30 @@ Tier requirements:
 programmatic check in `self-audit.js`. SHOULD dimensions MAY be scripted or MAY
 be deferred to Phase 5 prose (but if deferred, document why).
 
-**Multi-agent delegation (Dim 6):** The script spawns a `code-reviewer`
-sub-process via the Agent tool (when run in a Claude Code session) or prints a
-"MANUAL: run code-reviewer with these inputs" block (when run standalone in CI).
-For Complex skills this is MUST; falling back to a prompt block is acceptable
-when Agent tool is unavailable.
+**Dim 6 — Cross-reference integrity (deterministic):** Per Session #281 D11
+(skill-audit-batch-mode plan), the agent-based "second-LLM-reviews-the-state"
+layer was REMOVED. Rationale: another LLM reading the same state file and diffs
+is echo, not independent verification, and produces the same drift class as the
+rejected pattern for findings production.
+
+The replacement deterministic check:
+
+1. **Counter integrity:**
+   `total_decisions == accepted_decisions + rejected_decisions` (or derive from
+   `state.decisions.{accepted,rejected}` arrays when top-level counters are
+   absent).
+2. **Cross-reference presence:** every accepted decision has at least one
+   `files_modified` entry — empty `files_modified` with non-zero accepted
+   decisions is a FAIL (no implementation to verify).
+3. Layer 1 (grep — Dim 2) + Layer 2 (diff — Dim 4) cover the "I thought I wrote
+   it but didn't" failure mode mechanically.
+
+If a multi-agent check is still genuinely valuable for a specific skill (e.g.,
+domain expertise the deterministic checks can't approximate), the script MAY
+print a "MANUAL: run code-reviewer with these inputs" block when running inside
+Claude Code. It MUST NOT be required for PASS unless the skill explicitly
+documents why deterministic checks are insufficient. For Complex skills, the
+deterministic check is the default; a prompt block is opt-in.
 
 ---
 
@@ -191,23 +210,44 @@ Minimum state schema keys referenced by self-audit:
   "skill": "skill-name",
   "target": "artifact-id",
   "phase": "complete",
+  "status": "complete",
   "decisions": {
     "accepted": [{ "id": "D1", "file_modified": "path", "diff_hunk": "..." }],
     "rejected": [...]
   },
+  "total_decisions": 0,
+  "accepted_decisions": 0,
+  "rejected_decisions": 0,
   "files_created": ["path1", "path2"],
-  "files_modified": ["path3"],
-  "previous_run": { "completed_at": "...", "files_created": [...] }
+  "files_modified": ["path3 (description of changes)"],
+  "previous_run": {
+    "completed_at": "...",
+    "files_created": [...],
+    "files_modified": [...]
+  }
 }
 ```
 
+`files_modified` entries MAY be either a pure path (`"scripts/foo.js"`) or a
+path + description suffix (`"scripts/foo.js (refactor X)"`). Reference
+implementations (`scripts/skills/<name>/self-audit.js`) MUST normalize before
+filesystem operations — see `normalizeFilesModified()` in
+`scripts/skills/skill-audit/self-audit.js`.
+
+Counter fields (`total_decisions`, `accepted_decisions`, `rejected_decisions`)
+are the canonical inputs to Dim 6 cross-reference integrity. When absent,
+implementations MUST derive from `decisions.{accepted,rejected}.length`.
+
 Dimensions use this as follows:
 
-- Dim 1 Completeness: `files_created` exist on disk
+- Dim 1 Completeness: `files_created` (or `files_modified`) exist on disk
 - Dim 2 Orphans: every `files_created` is grep-referenced somewhere
 - Dim 4 Gap: `decisions.accepted.length == sum(has file_modified or diff_hunk)`
-- Dim 7 Regression: `previous_run.files_created` ⊆ current `files_created`
-- Dim 9 Partial recovery: `phase == "complete"` and timestamps consistent
+- Dim 6 Cross-reference: counters consistent + accepted decisions have files
+- Dim 7 Regression: `previous_run.files_modified` (or `files_created`) ⊆
+  current. Reference implementations MUST accept either field for cross-skill
+  compatibility.
+- Dim 9 Partial recovery: `status == "complete"` and timestamps consistent
 
 Skills whose state schema lacks these fields MUST extend the schema as part of
 adding self-audit (documented in the skill's decision record).

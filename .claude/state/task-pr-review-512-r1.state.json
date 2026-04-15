@@ -4,14 +4,20 @@
   "review_number": "TBD",
   "source": "mixed",
   "total": 30,
-  "fixed": 0,
+  "fixed": 14,
   "deferred": 0,
-  "rejected": 0,
+  "rejected": 1,
   "severity": { "critical": 3, "major": 9, "minor": 16, "trivial": 2 },
-  "completed_steps": [1, 2, 3],
+  "completed_steps": [1, 2, 3, 4],
   "status": "in_progress",
-  "commit_sha": null,
+  "commit_sha": "7dcb449c",
   "completed_at": null,
+  "rejected_items": [
+    {
+      "item": "Qodo R1 #2 — npm.cmd + shell:false suggestion",
+      "rationale": "Suggestion is technically correct pre-Node 20, but Node 18+ enforces CVE-2024-27980 hardening that REJECTS .cmd/.bat with shell:false (EINVAL on spawn). Verified locally — npm.cmd + shell:false produces EINVAL. Kept original shell:process.platform === 'win32' pattern; added maxBuffer cap and inline rationale for SonarCloud S4036 acknowledgment (PATH search is intentional for npm-style commands; args are hardcoded and untrusted-input-free)."
+    }
+  ],
   "sources": ["sonarcloud", "qodo", "gemini", "doc-lint"],
   "threat_model_flags": [
     "injection (S4036 PATH + shell:true)",

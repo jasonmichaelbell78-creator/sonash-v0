@@ -38,10 +38,10 @@ gap through guided decisions with the user.
 6. **Self-audit before completion** — Phase 5 is MUST. Never skip verification.
    Re-read all modified files and verify every decision was implemented.
 7. **Mode-aware execution** — Phase 1.0 selects mode (single / batch / multi)
-   before any other work. `single` preserves line 118 per-category gating MUST.
+   before any other work. `single` preserves Phase 2a per-category gating MUST.
    `batch` and `multi` use Phase 2b (batched findings) + Phase 2.B (decision
-   collection). Never apply line 118 to batch/multi; never collapse single-mode
-   per-category gates.
+   collection). Never apply Phase 2a gating to batch/multi; never collapse
+   single-mode per-category gates.
 
 ## When to Use
 
@@ -446,10 +446,11 @@ Parse the `---SUMMARY---` JSON block. Branch:
   acknowledge / fix / defer. Proceed only after explicit decision.
 - **`overall == "PASS"` clean**: proceed to 5.1 prose verification.
 
-The script covers MUST dimensions 1-5 + 7-9 mechanically (Dim 6 replaced with
-cross-reference integrity check per Session #281 agent-layer removal). Steps
-5.1-5.5 below handle process-compliance + decision-by-decision evidence
-walkthrough — **no LLM agent re-interpretation**, deterministic only.
+The script covers all 9 MUST dimensions mechanically (Dim 6 is a deterministic
+cross-reference integrity check, replacing the previous agent-based layer per
+Session #281 D11). Steps 5.1-5.5 below handle process-compliance + decision-by-
+decision evidence walkthrough — **no LLM agent re-interpretation**,
+deterministic only.
 
 ### 5.1 Re-read All Modified Files (MUST)
 

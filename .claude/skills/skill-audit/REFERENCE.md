@@ -634,7 +634,7 @@ Cat 6 (Guard Rails): 3/4 — 1 MISSING:
 ```
 SELF-AUDIT REPORT: [skill-name]
 ================================
-Verification method:    Evidence-based (grep + agent + diff)
+Verification method:    Evidence-based (grep + diff, deterministic)
 Decision verification:  [N/M PASS | K PARTIAL | J MISSING]
 Process compliance:     [N/M checks passed]
 Structural validation:  [PASS/FAIL]

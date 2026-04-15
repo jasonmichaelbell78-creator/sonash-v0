@@ -31,7 +31,7 @@
  *     Replaced with a deterministic cross-reference integrity check. Rationale:
  *     another LLM reading state+files is echo, not independent verification;
  *     same drift class as the rejected pattern for findings production. Layer 1
- *     (grep) + Layer 3 (diff) cover the failure mode mechanically.
+ *     (grep) + Layer 2 (diff) cover the failure mode mechanically.
  *   - Dim 7 Regression: degrades to WARN when no previous state file exists.
  *     No history file is kept post-completion in the current schema.
  *   - Dim 2 Orphan detection: checks that files_modified are grep-referenced
@@ -89,6 +89,47 @@ const DIM3_EXCLUDE = [
   /\.claude[\\/]skills[\\/]_shared[\\/]SELF_AUDIT_PATTERN\.md$/,
   /scripts[\\/]cas[\\/]self-audit\.js$/,
 ];
+
+// ---------------------------------------------------------------------------
+// files_modified normalization
+//
+// REFERENCE.md §State File Schema documents `files_modified` entries as
+// `"path (description of changes)"`. Legacy/machine-written state may be
+// pure paths. Normalize by stripping a trailing parenthesized segment so
+// dimensions that filesystem-check the entry (dim1/dim3/dim7) work for both
+// forms. Returns the path only; descriptions are discarded for machine use.
+
+// String-parse YAML frontmatter detection. Replaces a regex with nested
+// quantifiers (S5852) — accepts both `\n` and `\r\n` line endings. Frontmatter
+// is `---<newline>...<newline>---<newline>` at the very start of the file.
+// We require a real terminating `---` line (not a `----` ruler).
+function hasYamlFrontmatter(content) {
+  if (typeof content !== "string") return false;
+  const startsLF = content.startsWith("---\n");
+  const startsCRLF = content.startsWith("---\r\n");
+  if (!startsLF && !startsCRLF) return false;
+  // Search for closing delimiter starting after the opening line.
+  // `\n---\n` or `\n---\r\n` are the only valid closers (a terminating line
+  // that is exactly `---`); `\n----` is a Markdown horizontal ruler and
+  // does NOT close frontmatter.
+  const startOffset = startsCRLF ? 5 : 4;
+  return (
+    content.indexOf("\n---\n", startOffset) !== -1 ||
+    content.indexOf("\n---\r\n", startOffset) !== -1
+  );
+}
+
+function normalizeFilesModified(entries) {
+  const list = Array.isArray(entries) ? entries : [];
+  return list.map((entry) => {
+    if (typeof entry !== "string") return entry;
+    // Match `path (description)` — trim trailing space + parenthesized group.
+    // Description may contain any non-paren character; take the first `(`.
+    const parenIdx = entry.indexOf(" (");
+    if (parenIdx === -1) return entry.trim();
+    return entry.slice(0, parenIdx).trim();
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Arg parsing
@@ -156,7 +197,7 @@ function dim1Completeness(state) {
     findings.pass.push(`state.overall_score recorded (${state.overall_score})`);
   }
 
-  const filesModified = state.files_modified || [];
+  const filesModified = normalizeFilesModified(state.files_modified);
   if (filesModified.length === 0) {
     findings.warn.push(`state.files_modified is empty — no artifacts to verify`);
   }
@@ -185,34 +226,113 @@ function dim1Completeness(state) {
 // ---------------------------------------------------------------------------
 // Dimension 2: Orphan detection
 
+// Split files_modified into in-scope (under target skill tree or _shared)
+// and out-of-scope. POSIX-style normalization for cross-platform comparison.
+function splitFilesByScope(filesModified, expectedPrefixes) {
+  const inScope = [];
+  const outOfScope = [];
+  for (const rel of filesModified) {
+    const normalized = rel.replace(/\\/g, "/");
+    if (expectedPrefixes.some((p) => normalized.startsWith(p))) {
+      inScope.push(rel);
+    } else {
+      outOfScope.push(rel);
+    }
+  }
+  return { inScope, outOfScope };
+}
+
+// SKILL.md is the canonical entry point — users load it directly, so it is
+// never "referenced" by another file. Detection works for either path
+// separator style.
+function isSkillEntryPoint(rel, targetSkill) {
+  const normalized = rel.replace(/\\/g, "/");
+  return normalized === `.claude/skills/${targetSkill}/SKILL.md`;
+}
+
+// Run git-grep for `basename` across `searchRoots` and return whether any
+// hit exists OTHER than the file itself. Returns:
+//   { referenced: true|false }                   on success or no-match
+//   { referenced: true,  error: <sanitized> }    on tool error (fail-open)
+// Fail-open on tool error avoids false-FAIL when git is missing.
+function gitGrepHasReferences(basename, normalizedSelf, searchRoots) {
+  try {
+    const out = execFileSync("git", ["grep", "-l", "-F", "--", basename, ...searchRoots], {
+      cwd: PROJECT_ROOT,
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 10000,
+    })
+      .toString("utf8")
+      .trim();
+    if (out.length === 0) return { referenced: false };
+    const hits = out
+      .split(/\r?\n/)
+      .map((h) => h.replace(/\\/g, "/"))
+      .filter((h) => h !== normalizedSelf);
+    return { referenced: hits.length > 0 };
+  } catch (err) {
+    // git grep exit 1 = no match → unreferenced. Other exits = tool error.
+    const status = err && typeof err.status === "number" ? err.status : null;
+    if (status === 1) return { referenced: false };
+    return { referenced: true, error: sanitizeError(err) };
+  }
+}
+
+function detectOrphans(inScope, targetSkill, searchRoots, findings) {
+  const orphans = [];
+  for (const rel of inScope) {
+    if (isSkillEntryPoint(rel, targetSkill)) continue;
+    const basename = path.basename(rel);
+    if (!basename || searchRoots.length === 0) continue;
+    const normalizedSelf = rel.replace(/\\/g, "/");
+    const result = gitGrepHasReferences(basename, normalizedSelf, searchRoots);
+    if (result.error) {
+      findings.warn.push(`git grep failed for ${basename}: ${result.error}`);
+      continue; // fail-open — treat as referenced to avoid false-FAIL
+    }
+    if (!result.referenced) orphans.push(rel);
+  }
+  return orphans;
+}
+
 function dim2Orphans(state, targetSkill) {
   const findings = { pass: [], fail: [], warn: [] };
-  const filesModified = state.files_modified || [];
+  const filesModified = normalizeFilesModified(state.files_modified);
   if (filesModified.length === 0) {
     findings.warn.push(`no files_modified to check for orphans`);
     return findings;
   }
 
-  // Heuristic: any file modified by skill-audit should live under the target
-  // skill's tree, under scripts/skills/<target>/, or under shared skill dirs.
   const expectedPrefixes = [
     `.claude/skills/${targetSkill}/`,
     `scripts/skills/${targetSkill}/`,
     `.claude/skills/_shared/`,
   ];
-  const outOfScope = [];
-  for (const rel of filesModified) {
-    const normalized = rel.replace(/\\/g, "/");
-    const inScope = expectedPrefixes.some((p) => normalized.startsWith(p));
-    if (!inScope) outOfScope.push(rel);
-  }
-
+  const { inScope, outOfScope } = splitFilesByScope(filesModified, expectedPrefixes);
   if (outOfScope.length > 0) {
     findings.warn.push(
-      `${outOfScope.length} files_modified outside expected target-skill tree (review if intentional): ${outOfScope.slice(0, 3).join(", ")}${outOfScope.length > 3 ? "..." : ""}`
+      `${outOfScope.length} files_modified outside expected target-skill tree: ${outOfScope.slice(0, 3).join(", ")}${outOfScope.length > 3 ? "..." : ""}`
     );
-  } else {
-    findings.pass.push(`all files_modified in-scope under target skill or shared`);
+  }
+
+  // Real orphan detection (Dim 2 MUST per SELF_AUDIT_PATTERN.md §Dim 2):
+  // for each in-scope non-entry-point file, use git-grep to find references
+  // to its basename within the target skill tree + shared. Zero references
+  // = orphan candidate. git-grep honors .gitignore and avoids node_modules.
+  const searchRoots = [
+    path.join(".claude", "skills", targetSkill),
+    path.join("scripts", "skills", targetSkill),
+    path.join(".claude", "skills", "_shared"),
+  ].filter((p) => fs.existsSync(path.join(PROJECT_ROOT, p)));
+
+  const orphans = detectOrphans(inScope, targetSkill, searchRoots, findings);
+
+  if (orphans.length > 0) {
+    findings.fail.push(
+      `${orphans.length} potential orphan file(s) — no references found in skill tree: ${orphans.slice(0, 5).join(", ")}${orphans.length > 5 ? "..." : ""}`
+    );
+  } else if (inScope.length > 0) {
+    findings.pass.push(`${inScope.length} in-scope file(s) have references in skill tree`);
   }
 
   return findings;
@@ -221,13 +341,51 @@ function dim2Orphans(state, targetSkill) {
 // ---------------------------------------------------------------------------
 // Dimension 3: Build integrity
 
-function dim3BuildIntegrity(state) {
-  const findings = { pass: [], fail: [], warn: [] };
-  const filesModified = state.files_modified || [];
+// Per-file read with security layering. Returns either content (string) or
+// a skip reason. validatePathInDir blocks `../` traversal; symlink refusal
+// blocks redirection; existsSync catches missing; try/catch catches I/O.
+// Extracted to keep dim3BuildIntegrity below CC-15.
+function readFileForDim3(rel) {
+  const abs = path.join(PROJECT_ROOT, rel);
+  try {
+    validatePathInDir(PROJECT_ROOT, abs);
+  } catch {
+    return { skipReason: "containment" };
+  }
+  try {
+    refuseSymlinkWithParents(abs);
+  } catch {
+    return { skipReason: "symlink_refused" };
+  }
+  if (!fs.existsSync(abs)) return { skipReason: "missing" };
+  try {
+    return { content: fs.readFileSync(abs, "utf8") };
+  } catch {
+    return { skipReason: "read_error" };
+  }
+}
+
+// Scan a file's lines for any STUB_MARKERS match. Returns an array of
+// `path:line  preview` strings.
+function findStubMarkerHits(content, rel) {
   const hits = [];
-  // Track skipped files with reasons so Dim 3 cannot silently report PASS
-  // when entries could not actually be scanned. Each entry records the file
-  // and a categorized reason (containment, symlink, missing, read_error).
+  const lines = content.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    for (const re of STUB_MARKERS) {
+      if (re.test(lines[i])) {
+        hits.push(`${rel}:${i + 1}  ${lines[i].trim().slice(0, 80)}`);
+      }
+    }
+  }
+  return hits;
+}
+
+// Walk filesModified once; classify each into excluded / skipped / scanned
+// and accumulate stub-marker hits. Containment failures are also pushed to
+// findings.fail (security signal). Returns the bookkeeping the caller needs
+// for summarization.
+function scanFilesForStubMarkers(filesModified, findings) {
+  const hits = [];
   const skipped = [];
   let excluded = 0;
   for (const rel of filesModified) {
@@ -235,66 +393,50 @@ function dim3BuildIntegrity(state) {
       excluded++;
       continue;
     }
-    const abs = path.join(PROJECT_ROOT, rel);
-    // Containment: a crafted state file could list "../../secret". Without
-    // validatePathInDir the subsequent read would follow the escape and
-    // expose stub-marker hit lines from outside PROJECT_ROOT. symlink
-    // refusal alone does NOT block `../` traversal on a non-symlink path.
-    try {
-      validatePathInDir(PROJECT_ROOT, abs);
-    } catch {
-      findings.fail.push(`files_modified entry escapes project root: ${rel}`);
-      skipped.push({ rel, reason: "containment" });
-      continue;
-    }
-    try {
-      refuseSymlinkWithParents(abs);
-    } catch {
-      skipped.push({ rel, reason: "symlink_refused" });
-      continue;
-    }
-    if (!fs.existsSync(abs)) {
-      skipped.push({ rel, reason: "missing" });
-      continue;
-    }
-    let content;
-    try {
-      content = fs.readFileSync(abs, "utf8");
-    } catch {
-      skipped.push({ rel, reason: "read_error" });
-      continue;
-    }
-    const lines = content.split(/\r?\n/);
-    for (let i = 0; i < lines.length; i++) {
-      for (const re of STUB_MARKERS) {
-        if (re.test(lines[i])) {
-          hits.push(`${rel}:${i + 1}  ${lines[i].trim().slice(0, 80)}`);
-        }
+    const { content, skipReason } = readFileForDim3(rel);
+    if (skipReason) {
+      skipped.push({ rel, reason: skipReason });
+      if (skipReason === "containment") {
+        findings.fail.push(`files_modified entry escapes project root: ${rel}`);
       }
+      continue;
     }
+    hits.push(...findStubMarkerHits(content, rel));
   }
+  return { hits, skipped, excluded };
+}
 
+function reportDim3Hits(hits, filesModified, excluded, skippedCount, findings) {
   if (hits.length > 0) {
     findings.fail.push(`${hits.length} stub marker(s) in modified files:`);
     for (const h of hits.slice(0, 10)) findings.fail.push(`  ${h}`);
     if (hits.length > 10) findings.fail.push(`  ... and ${hits.length - 10} more`);
-  } else if (filesModified.length > 0) {
-    const scanned = filesModified.length - excluded - skipped.length;
-    const excludedNote = excluded > 0 ? ` (${excluded} pattern-definition file(s) excluded)` : "";
-    findings.pass.push(`no stub markers in ${scanned} modified file(s)${excludedNote}`);
+    return;
   }
+  if (filesModified.length === 0) return;
+  const scanned = filesModified.length - excluded - skippedCount;
+  const excludedNote = excluded > 0 ? ` (${excluded} pattern-definition file(s) excluded)` : "";
+  findings.pass.push(`no stub markers in ${scanned} modified file(s)${excludedNote}`);
+}
 
+function reportDim3Skipped(skipped, findings) {
+  if (skipped.length === 0) return;
+  const preview = skipped
+    .slice(0, 5)
+    .map((s) => `${s.rel} (${s.reason})`)
+    .join(", ");
+  const more = skipped.length > 5 ? `, ... and ${skipped.length - 5} more` : "";
+  findings.warn.push(`${skipped.length} file(s) not scanned: ${preview}${more}`);
+}
+
+function dim3BuildIntegrity(state) {
+  const findings = { pass: [], fail: [], warn: [] };
+  const filesModified = normalizeFilesModified(state.files_modified);
+  const { hits, skipped, excluded } = scanFilesForStubMarkers(filesModified, findings);
+  reportDim3Hits(hits, filesModified, excluded, skipped.length, findings);
   // Surface skipped files so Dim 3 cannot silently PASS with incomplete
   // scanning. Symlink/missing/read_error are audit signals, not noise.
-  if (skipped.length > 0) {
-    const preview = skipped
-      .slice(0, 5)
-      .map((s) => `${s.rel} (${s.reason})`)
-      .join(", ");
-    const more = skipped.length > 5 ? `, ... and ${skipped.length - 5} more` : "";
-    findings.warn.push(`${skipped.length} file(s) not scanned: ${preview}${more}`);
-  }
-
+  reportDim3Skipped(skipped, findings);
   return findings;
 }
 
@@ -346,12 +488,21 @@ function dim4GapAnalysis(state) {
 function dim5Functional(targetSkill) {
   const findings = { pass: [], fail: [], warn: [] };
   try {
-    // Use execFileSync (not exec) to avoid shell interpretation
+    // npm on Windows is dispatched via npm.cmd, which Node refuses to spawn
+    // without shell: true after CVE-2024-27980. The Qodo R1 suggestion to
+    // use { shell: false, "npm.cmd" } breaks at runtime with EINVAL — it
+    // pre-dates the Node hardening. The acceptable mitigation:
+    //   1. Hardcoded args (no untrusted input concatenated into the command)
+    //   2. cwd locked to PROJECT_ROOT (no relative-path tricks)
+    //   3. timeout + maxBuffer caps (resource exhaustion guard)
+    //   4. SonarCloud S4036 (PATH search) acknowledged: PATH is the user's
+    //      developer/CI environment, not attacker-controlled.
     execFileSync("npm", ["run", "skills:validate"], {
       cwd: PROJECT_ROOT,
       stdio: "pipe",
       timeout: 60000,
-      shell: process.platform === "win32", // npm on Windows requires shell
+      maxBuffer: 10 * 1024 * 1024, // 10MB cap — guard against runaway child
+      shell: process.platform === "win32",
     });
     findings.pass.push(`npm run skills:validate exited 0`);
   } catch (err) {
@@ -383,47 +534,60 @@ function dim5Functional(targetSkill) {
 // and that accepted decisions have implementation references.
 // Rationale: see skill-audit-batch-mode/DECISIONS.md D11.
 
-function dim6CrossReferenceIntegrity(state) {
-  const findings = { pass: [], fail: [], warn: [] };
-  const total = state.total_decisions;
-  const accepted = state.accepted_decisions;
-  const rejected = state.rejected_decisions;
+// Derive decision counts from either top-level counters or
+// state.decisions.{accepted,rejected} (per SELF_AUDIT_PATTERN.md schema).
+function deriveDecisionCounts(state) {
+  const decisionsObj = state.decisions || {};
+  const acceptedFromList = Array.isArray(decisionsObj.accepted) ? decisionsObj.accepted.length : 0;
+  const rejectedFromList = Array.isArray(decisionsObj.rejected) ? decisionsObj.rejected.length : 0;
+  const accepted = state.accepted_decisions ?? acceptedFromList;
+  const rejected = state.rejected_decisions ?? rejectedFromList;
+  const total = state.total_decisions ?? accepted + rejected;
+  return { total, accepted, rejected };
+}
 
-  // Counter integrity: total == accepted + rejected (when all present)
-  if (typeof total === "number" && typeof accepted === "number" && typeof rejected === "number") {
-    if (total === accepted + rejected) {
-      findings.pass.push(
-        `decision counters consistent: total=${total} = accepted=${accepted} + rejected=${rejected}`
-      );
-    } else {
-      findings.fail.push(
-        `decision counter mismatch: total=${total} != accepted=${accepted} + rejected=${rejected}`
-      );
-    }
-  } else {
+function checkCounterIntegrity({ total, accepted, rejected }, findings) {
+  const allNumbers =
+    typeof total === "number" && typeof accepted === "number" && typeof rejected === "number";
+  if (!allNumbers) {
     findings.warn.push(
       `decision counters incomplete (total/accepted/rejected missing) — cannot verify`
     );
+    return;
   }
+  if (total === accepted + rejected) {
+    findings.pass.push(
+      `decision counters consistent: total=${total} = accepted=${accepted} + rejected=${rejected}`
+    );
+  } else {
+    findings.fail.push(
+      `decision counter mismatch: total=${total} != accepted=${accepted} + rejected=${rejected}`
+    );
+  }
+}
 
-  // Accepted decisions should have at least one file reference
+function checkAcceptedHaveFiles(state, accepted, findings) {
   const decisions = state.decisions;
   const filesModified = state.files_modified || [];
-  if (
-    decisions &&
-    typeof decisions === "object" &&
-    Object.keys(decisions).length > 0 &&
-    filesModified.length === 0 &&
-    (accepted || 0) > 0
-  ) {
+  const hasDecisions =
+    decisions && typeof decisions === "object" && Object.keys(decisions).length > 0;
+  const acceptedCount = accepted || 0;
+  if (hasDecisions && filesModified.length === 0 && acceptedCount > 0) {
     findings.fail.push(
       `${accepted} accepted decisions but files_modified is empty — no cross-reference possible`
     );
-  } else if (filesModified.length > 0 && (accepted || 0) > 0) {
+  } else if (filesModified.length > 0 && acceptedCount > 0) {
     findings.pass.push(
       `${accepted} accepted decisions mapped to ${filesModified.length} modified file(s)`
     );
   }
+}
+
+function dim6CrossReferenceIntegrity(state) {
+  const findings = { pass: [], fail: [], warn: [] };
+  const counts = deriveDecisionCounts(state);
+  checkCounterIntegrity(counts, findings);
+  checkAcceptedHaveFiles(state, counts.accepted, findings);
 
   return findings;
 }
@@ -441,8 +605,11 @@ function dim7Regression(state) {
     return findings;
   }
 
-  const prevFiles = previous.files_modified || [];
-  const currFiles = state.files_modified || [];
+  // Support both files_modified (skill-audit's schema) and files_created
+  // (the SELF_AUDIT_PATTERN.md §Dim 7 documented field). Normalize so
+  // entries like `path (description)` compare correctly.
+  const prevFiles = normalizeFilesModified(previous.files_modified || previous.files_created);
+  const currFiles = normalizeFilesModified(state.files_modified || state.files_created);
   const currSet = new Set(currFiles.map((f) => f.replace(/\\/g, "/")));
   const missing = [];
   for (const rel of prevFiles) {
@@ -487,11 +654,16 @@ function dim8Contract(targetSkill) {
     return findings;
   }
 
-  // YAML frontmatter (required)
-  if (!/^---\s*\n[\s\S]+?\n---\s*\n/.test(content)) {
-    findings.fail.push(`SKILL.md missing YAML frontmatter (required per SKILL_STANDARDS.md)`);
-  } else {
+  // YAML frontmatter (required). Use string parsing instead of a regex
+  // with nested quantifiers — /^---\s*\n[\s\S]+?\n---\s*\n/ has catastrophic
+  // backtracking on pathological input (SonarCloud S5852). Two-strikes rule
+  // (CODE_PATTERNS.md): prefer string parsing to regex for simple delimiter
+  // scans. indexOf is O(n); the `\n---\n` / `\n---\r\n` literal avoids
+  // false-matching `\n----` (ruler line, which is valid Markdown).
+  if (hasYamlFrontmatter(content)) {
     findings.pass.push(`SKILL.md YAML frontmatter present`);
+  } else {
+    findings.fail.push(`SKILL.md missing YAML frontmatter (required per SKILL_STANDARDS.md)`);
   }
 
   // Required sections
@@ -545,6 +717,90 @@ function dim9PartialRecovery(state) {
 // ---------------------------------------------------------------------------
 // Main
 
+// MUST dimensions for Complex tier: 1-5, 6 (cross_reference integrity —
+// deterministic replacement for multi_agent per Session #281 D11),
+// 7 (Complex MUST), 8 (MUST if consumers — skill-audit has consumers:
+// skill-creator, skill-ecosystem-audit), 9 (Complex MUST). All 9 are MUST.
+// Set instead of Array — `.has()` is O(1) and reads more clearly.
+const MUST_DIMENSIONS = new Set([
+  "completeness",
+  "orphans",
+  "build",
+  "gap",
+  "functional",
+  "cross_reference",
+  "regression",
+  "contract",
+  "partial_recovery",
+]);
+
+// Compute PASS/WARN/FAIL from a findings bucket. Extracted from a nested
+// ternary in the summary loop for readability and CC reduction.
+function findingsStatus(findings) {
+  if (findings.fail.length > 0) return "FAIL";
+  if (findings.warn.length > 0) return "WARN";
+  return "PASS";
+}
+
+// Aggregate the per-dimension findings into the SUMMARY block.
+function buildSummary(args, statePath, dimensions) {
+  const summary = {
+    skill: "skill-audit",
+    target: args.target,
+    state_path: path.relative(PROJECT_ROOT, statePath),
+    dimensions: {},
+    overall: "PASS",
+    must_failed: [],
+    should_warned: [],
+    timestamp: new Date().toISOString(),
+  };
+  for (const [name, findings] of Object.entries(dimensions)) {
+    const status = findingsStatus(findings);
+    summary.dimensions[name] = {
+      status,
+      pass: findings.pass.length,
+      warn: findings.warn.length,
+      fail: findings.fail.length,
+    };
+    if (status === "FAIL" && MUST_DIMENSIONS.has(name)) {
+      summary.must_failed.push(name);
+      summary.overall = "FAIL";
+    }
+    if (status === "WARN") summary.should_warned.push(name);
+  }
+  return summary;
+}
+
+function printHumanStream(args, dimensions, summary) {
+  console.log(`skill-audit Self-Audit: ${args.target}`);
+  console.log(`State: ${summary.state_path}`);
+  console.log("---");
+  for (const [name, findings] of Object.entries(dimensions)) {
+    const status = summary.dimensions[name].status;
+    console.log(`\n[Dim ${name}] ${status}`);
+    for (const p of findings.pass) console.log(`  + ${p}`);
+    for (const w of findings.warn) console.log(`  ~ ${w}`);
+    for (const f of findings.fail) console.log(`  x ${f}`);
+  }
+  console.log("\n---SUMMARY---");
+  console.log(JSON.stringify(summary, null, 2));
+  console.log("---END---");
+}
+
+function runAllDimensions(state, target) {
+  return {
+    completeness: dim1Completeness(state),
+    orphans: dim2Orphans(state, target),
+    build: dim3BuildIntegrity(state),
+    gap: dim4GapAnalysis(state),
+    functional: dim5Functional(target),
+    cross_reference: dim6CrossReferenceIntegrity(state),
+    regression: dim7Regression(state),
+    contract: dim8Contract(target),
+    partial_recovery: dim9PartialRecovery(state),
+  };
+}
+
 function main() {
   const args = parseArgs(process.argv);
   if (!args.target) {
@@ -566,80 +822,14 @@ function main() {
     process.exit(2);
   }
 
-  const dimensions = {
-    completeness: dim1Completeness(state),
-    orphans: dim2Orphans(state, args.target),
-    build: dim3BuildIntegrity(state),
-    gap: dim4GapAnalysis(state),
-    functional: dim5Functional(args.target),
-    cross_reference: dim6CrossReferenceIntegrity(state),
-    regression: dim7Regression(state),
-    contract: dim8Contract(args.target),
-    partial_recovery: dim9PartialRecovery(state),
-  };
-
-  // MUST dimensions for Complex tier: 1-5, 6 (now cross_reference integrity —
-  // deterministic replacement for multi_agent per Session #281 D11),
-  // 7 (Complex MUST), 8 (MUST if consumers — skill-audit has consumers:
-  // skill-creator, skill-ecosystem-audit), 9 (Complex MUST). All 9 are MUST.
-  const mustDimensions = [
-    "completeness",
-    "orphans",
-    "build",
-    "gap",
-    "functional",
-    "cross_reference",
-    "regression",
-    "contract",
-    "partial_recovery",
-  ];
-
-  const summary = {
-    skill: "skill-audit",
-    target: args.target,
-    state_path: path.relative(PROJECT_ROOT, statePath),
-    dimensions: {},
-    overall: "PASS",
-    must_failed: [],
-    should_warned: [],
-    timestamp: new Date().toISOString(),
-  };
-
-  for (const [name, findings] of Object.entries(dimensions)) {
-    const status = findings.fail.length > 0 ? "FAIL" : findings.warn.length > 0 ? "WARN" : "PASS";
-    summary.dimensions[name] = {
-      status,
-      pass: findings.pass.length,
-      warn: findings.warn.length,
-      fail: findings.fail.length,
-    };
-    if (status === "FAIL" && mustDimensions.includes(name)) {
-      summary.must_failed.push(name);
-      summary.overall = "FAIL";
-    }
-    if (status === "WARN") summary.should_warned.push(name);
-  }
+  const dimensions = runAllDimensions(state, args.target);
+  const summary = buildSummary(args, statePath, dimensions);
 
   if (args.json) {
     process.stdout.write(JSON.stringify(summary, null, 2) + "\n");
-    process.exit(summary.overall === "FAIL" ? 1 : 0);
+  } else {
+    printHumanStream(args, dimensions, summary);
   }
-
-  // Human-readable stream
-  console.log(`skill-audit Self-Audit: ${args.target}`);
-  console.log(`State: ${summary.state_path}`);
-  console.log("---");
-  for (const [name, findings] of Object.entries(dimensions)) {
-    const status = summary.dimensions[name].status;
-    console.log(`\n[Dim ${name}] ${status}`);
-    for (const p of findings.pass) console.log(`  + ${p}`);
-    for (const w of findings.warn) console.log(`  ~ ${w}`);
-    for (const f of findings.fail) console.log(`  x ${f}`);
-  }
-
-  console.log("\n---SUMMARY---");
-  console.log(JSON.stringify(summary, null, 2));
-  console.log("---END---");
   process.exit(summary.overall === "FAIL" ? 1 : 0);
 }
 
