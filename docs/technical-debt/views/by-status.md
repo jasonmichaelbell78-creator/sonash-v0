@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2153)
+## NEW (2154)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -749,6 +749,7 @@
 | DEBT-45652 | release-please workflow stale (last failed run 2026-04-03...    | S2       | process                  |
 | DEBT-45653 | Dependabot npm_and_yarn auto-update workflow failing on m...    | S2       | process                  |
 | DEBT-45654 | JSONL append hooks don't dedupe by id — learning-routes/p...    | S2       | process                  |
+| DEBT-45655 | Add unit tests for self-audit reference implementation (8...    | S2       | process                  |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

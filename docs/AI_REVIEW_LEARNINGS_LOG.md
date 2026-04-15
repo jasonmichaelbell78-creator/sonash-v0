@@ -5728,3 +5728,58 @@ compliance), Gemini (7 inline review comments), documentation lint blocker on
 - Skill list reminders fired ~7 times during the review — system noise that
   didn't change behavior. Worth investigating if these can be suppressed during
   multi-step skills.
+
+### Review review-pr512-r2: PR #512 R2 - Mixed (SonarCloud + Qodo Compliance + CI test coverage) (2026-04-15)
+
+**Items:** 6 total — 2 fixed, 1 deferred (DEBT-45655), 3 rejected **Severity:**
+0 CRITICAL / 1 MAJOR / 2 MINOR / 3 INFORMATIONAL (Qodo ⚪) **Source:**
+SonarCloud (2 indexOf→includes), Qodo Compliance (3 informational ⚪), CI
+test-coverage check (1 blocker)
+
+**Top R2 learnings:**
+
+- **Cross-round dedup paid off concretely.** Qodo R2 raised "PATH-based
+  execution" again — but this time covering both `npm` (R1) AND the new
+  `git grep` (R2). Per the skill's cross-round dedup rule, R1's rejection
+  rationale extended naturally: hardcoded args, trusted dev/CI PATH, no
+  untrusted-input concatenation. Auto-rejected with a one-sentence reference to
+  R1, no re-investigation cost. Saved ~10 min vs treating it as a fresh finding.
+
+- **Disposition discipline matters when a single item has two parts.** M1 (test
+  coverage CI blocker) had an immediate workaround (add file to
+  `.test-baseline.json`) AND a real fix (write the test suite). My first attempt
+  counted both as "fixed" + "deferred", which broke the disposition-sum
+  invariant in `write-review-record.js`. Correct: the canonical disposition is
+  the underlying gap (deferred to DEBT-45655); the baseline addition is the
+  workaround that lets the PR land. **Lesson:** when an item has a temporary
+  workaround AND a tracked follow-up, the follow-up is the disposition.
+
+- **Informational ⚪ Qodo items still need explicit dispositions.** Three ⚪
+  items (PATH execution, path disclosure in errors, unstructured console logs)
+  are observational, not blocking. But per the "NEVER silently ignore" rule,
+  each needed a rationale. All three rejected with context: i1 cross-round
+  dedup, i2 paths-in-errors useful for dev/CI debugging, i3 `--json` flag
+  already covers structured-output use case.
+
+**Disposition breakdown:**
+
+- **FIXED — m1, m2** SonarCloud L114/L115: `indexOf(...) !== -1` →
+  `includes(...)` in `hasYamlFrontmatter()` helper.
+- **DEFERRED — DEBT-45655** Test suite for `self-audit.js` (839 lines, 0%
+  coverage). Baselined for now; comprehensive node:test suite (mock state files,
+  exercise 9 dimensions, security helpers, JSON/human modes) belongs in its own
+  PR.
+- **REJECTED — Qodo Compliance i1** PATH-based execution. Cross-round dedup with
+  R1 Qodo #2; same rationale (hardcoded args, trusted PATH).
+- **REJECTED — Qodo Compliance i2** Path disclosure in error messages.
+  User-accepted: paths in error strings are useful for dev/CI debugging; ⚪
+  severity confirms it's observational.
+- **REJECTED — Qodo Compliance i3** Unstructured console logs. User-accepted:
+  `--json` flag (L101-104) already covers structured-output use case for
+  centralized log ingestion.
+
+**Process note:** R2 was a small, fast cycle (6 items). No security-auditor
+re-dispatch needed — R1's pass covered the architecture, and R2's items were
+either trivial (indexOf), blocking-but-procedural (test baseline), or
+already-rejected-by-rationale (Qodo PATH). Marginal value of another agent pass
+would have been low.

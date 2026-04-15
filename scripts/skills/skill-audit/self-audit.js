@@ -110,10 +110,7 @@ function hasYamlFrontmatter(content) {
   // that is exactly `---`); `\n----` is a Markdown horizontal ruler and
   // does NOT close frontmatter.
   const startOffset = startsCRLF ? 5 : 4;
-  return (
-    content.indexOf("\n---\n", startOffset) !== -1 ||
-    content.indexOf("\n---\r\n", startOffset) !== -1
-  );
+  return content.includes("\n---\n", startOffset) || content.includes("\n---\r\n", startOffset);
 }
 
 function normalizeFilesModified(entries) {

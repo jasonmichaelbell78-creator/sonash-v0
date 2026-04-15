@@ -1419,7 +1419,7 @@
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...  | doc-header                                                                                                                                         | 0    | process                  | E2        |
 | DEBT-45647 | CAS family: parent-chain symlink guards missing on reads      | scripts/cas/backfill-tags.js                                                                                                                       | 45   | security                 | E1        |
 
-## S2 - Medium (3461)
+## S2 - Medium (3462)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4884,6 +4884,7 @@
 | DEBT-45652 | release-please workflow stale (last failed run 2026-04-03...      | .github/workflows/release-please.yml                                                                                                                                        | 0         | process                  | E1        |
 | DEBT-45653 | Dependabot npm_and_yarn auto-update workflow failing on m...      | .github/workflows/auto-merge-dependabot.yml                                                                                                                                 | 0         | process                  | E1        |
 | DEBT-45654 | JSONL append hooks don't dedupe by id — learning-routes/p...      | .claude/hooks/                                                                                                                                                              | 0         | process                  | E1        |
+| DEBT-45655 | Add unit tests for self-audit reference implementation (8...      | scripts/skills/skill-audit/self-audit.js                                                                                                                                    | 0         | process                  | E2        |
 
 ## S3 - Low (3643)
 

@@ -6404,7 +6404,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (738)
+## process (739)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6786,6 +6786,7 @@
 | DEBT-45652 | release-please workflow stale (last failed run 2026-04-03...  | S2       | .github/workflows/release-please.yml                                    | 0    |
 | DEBT-45653 | Dependabot npm_and_yarn auto-update workflow failing on m...  | S2       | .github/workflows/auto-merge-dependabot.yml                             | 0    |
 | DEBT-45654 | JSONL append hooks don't dedupe by id — learning-routes/p...  | S2       | .claude/hooks/                                                          | 0    |
+| DEBT-45655 | Add unit tests for self-audit reference implementation (8...  | S2       | scripts/skills/skill-audit/self-audit.js                                | 0    |
 | DEBT-0811  | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812  | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813  | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |
