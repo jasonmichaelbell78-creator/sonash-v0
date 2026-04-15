@@ -5986,3 +5986,92 @@ optional-chain code smells)
   4 wrappers before this review — the ENOENT-in-catch pattern wasn't reached for
   until Qodo flagged it. Pre-generation checklist should call out Pattern 9
   explicitly when new I/O wrappers are being authored.
+
+### Review review-pr513-r2: PR #513 R2 - Mixed (SonarCloud S6582 + CI test-coverage + Qodo Suggestions) (2026-04-15)
+
+**Items:** 19 total — 19 fixed, 0 deferred, 0 rejected **Severity:** 0 CRITICAL
+/ 2 MAJOR / 15 MINOR / 2 TRIVIAL **Source:** SonarCloud (12 optional-chain code
+smells), CI (1 test-coverage blocker), Qodo PR Code Suggestions (6)
+
+**Top R2 learnings:**
+
+- **R1 fixes create R2 code smells — optional-chain on `err && err.code`.**
+  Every one of the 12 SonarCloud S6582 hits in R2 was on a line that didn't
+  exist before R1. The ENOENT-classification pattern
+  `if (err && err.code === "ENOENT")` converts to `if (err?.code === "ENOENT")`.
+  **Lesson:** FIX_TEMPLATES entry for ENOENT classification should use
+  `err?.code` on first write — manual `err &&` idiom creates R2 rework.
+
+- **Test coverage gate + baseline auto-clean produces cascading surfacing.**
+  `generate-test-registry.js --check-coverage` auto-cleans stale baseline
+  entries. When it ran against R1's state, it removed 9 stale entries AND
+  surfaced 2 previously-masked untested files (`gsd-prompt-guard.js`,
+  `gsd-workflow-guard.js`). **Lesson:** when a PR adds NEW untested files,
+  expect the baseline auto-clean to expose other pre-existing gaps. Plan for a
+  small scope expansion (baseline + DEBT) or let CI surface it.
+
+- **Touching a high-churn file with 2 lines trips pre-existing CC.** Two
+  optional-chain edits (L122, L781) to `.claude/hooks/session-start.js` pulled
+  the whole file into the staged CC check, surfacing 3 pre-existing violations
+  (`saveRootHash` CC=21, `saveFunctionsHash` CC=21, `writeWarningsFile` CC=20).
+  **Lesson:** the CC baseline at `.claude/state/known-debt-baseline.json` is the
+  precedent (see `scripts/cas/self-audit.js: 25`). Add a per-file baseline entry
+  when propagating style fixes into high-churn files; don't refactor unrelated
+  pre-existing CC as scope creep.
+
+- **Refactoring `readDepth` to return `{depth, error}` pays off when TWO
+  reviewers flag the same silent-swallow.** Code-reviewer (R1 WARN #1) and Qodo
+  (R2 suggestion #2+#3 at importance 4) both flagged `readDepth`'s
+  catch-all-return-null. Structured return lets `checkTranscript` FAIL early on
+  `error === "unreadable"` rather than defaulting to strict on corrupt metadata.
+  **Lesson:** silent-swallow-with-safe-fallback is OK for truly-no-ambiguity
+  cases, but when two reviewers in succession flag the same swallow, the
+  information is load-bearing — surface the error state.
+
+- **`main()` preflight validation matches the documented exit-code contract.**
+  Qodo R2 #4: `validatePathInDir(ANALYSIS_DIR, slug)` in `main()` before any
+  side-effecting call, `process.exit(2)` on refusal. Without preflight, a
+  traversal slug reaches `runFloor` → throws → outer exits 1 (wrongly
+  classifying security refusal as "audit failed"). **Lesson:** scripts with
+  documented exit-code contracts need explicit preflight blocks for each exit-2
+  condition.
+
+- **Test coverage via exported helpers + `require.main === module` guard.** The
+  4 wrappers unconditionally called `main()` at the bottom, meaning a test
+  `require()` would execute main. Fix: wrap with
+  `if (require.main === module) main()` and `module.exports = {...}`.
+  **Lesson:** any CLI script that may grow a test suite should guard `main()`
+  from the start — one line, saves a refactor later.
+
+**Disposition breakdown:**
+
+- **FIXED — SonarCloud S6582 × 12 (A1–A12)** `err && err.code` → `err?.code`
+  across all 5 self-audit.js files. Propagated to
+  `.claude/hooks/session-start.js`.
+- **FIXED — CI test coverage (B)** node:test suites for all 4 new self-audit.js
+  wrappers under `tests/scripts/skills/`. Refactored each wrapper to export pure
+  helpers and guard `main()`. 35/35 tests pass.
+- **FIXED — Qodo #1 (C)** `spawnSync` now includes `timeout: 60_000` and
+  `maxBuffer: 10 * 1024 * 1024` in all 5 wrappers.
+- **FIXED — Qodo #2+#3 (D1+D2)** `readDepth()` in media-analysis returns
+  `{depth, error}`; `checkTranscript` FAILs early on unreadable metadata.
+- **FIXED — Qodo #4 (E)** `main()` in all 4 wrappers preflights
+  `validatePathInDir` and exits 2 on refusal.
+- **FIXED — Qodo #5+#6 (F1+F2)** `state.phases_completed` now
+  Array.isArray-guarded with string-only filter.
+- **FIXED (propagation, user-approved)** 2 pre-existing `err && err.code` hits
+  in `.claude/hooks/session-start.js` (L122, L781).
+- **FIXED (scope expansion, user-approved)** 2 pre-existing untested hook
+  scripts (`gsd-prompt-guard.js`, `gsd-workflow-guard.js`) baselined in
+  `.test-baseline.json`; tests tracked via DEBT-45656 (S2, code-quality).
+- **FIXED (scope expansion, user-approved)** `.claude/hooks/session-start.js`
+  added to CC baseline at 21; 3 pre-existing functions at CC 20/21/21 already on
+  the high-churn-watchlist refactor-candidate list.
+
+**Process notes:**
+
+- All fixes consolidated into a single commit per user direction —
+  optional-chain + defensive spawn + readDepth restructure + main() preflight +
+  phases guard + test suites + baselines are cohesive.
+- No rejections this round (cross-round dedup armed correctly; R1's one reject
+  on Qodo #12 did not recur).

@@ -268,7 +268,7 @@
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions         | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-10933 | Filesystem MCP server configured but noted as unused              | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (4723)
+## code-quality (4724)
 
 | ID         | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | ---------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -3450,6 +3450,7 @@
 | DEBT-45620 | Auto-generated DOCUMENTATION_INDEX leaks machine-specific...    | S2       | DOCUMENTATION_INDEX.md                                                                                                                                                      | 103  |
 | DEBT-45640 | Pre-existing test failure: warning-lifecycle.test.js            | S2       | scripts/health/lib/warning-lifecycle.test.js                                                                                                                                | 0    |
 | DEBT-45648 | CAS scripts: 6 cyclomatic CC violations baselined (PR #505)     | S2       | scripts/cas/migrate-schemas.js                                                                                                                                              | 84   |
+| DEBT-45656 | Test suite for gsd-prompt-guard.js and gsd-workflow-guard.js    | S2       | .claude/hooks/gsd-prompt-guard.js                                                                                                                                           | 0    |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-0554  | Prefer `String#replaceAll()` over `String#replace()`.           | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555  | Visible, non-interactive elements with click handlers mus...    | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |

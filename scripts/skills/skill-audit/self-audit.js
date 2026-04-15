@@ -356,7 +356,7 @@ function readFileForDim3(rel) {
   try {
     return { content: fs.readFileSync(abs, "utf8") };
   } catch (err) {
-    if (err && err.code === "ENOENT") return { skipReason: "missing" };
+    if (err?.code === "ENOENT") return { skipReason: "missing" };
     return { skipReason: "read_error" };
   }
 }
@@ -643,7 +643,7 @@ function dim8Contract(targetSkill) {
   try {
     content = fs.readFileSync(skillMdPath, "utf8");
   } catch (err) {
-    if (err && err.code === "ENOENT") {
+    if (err?.code === "ENOENT") {
       findings.fail.push(`target SKILL.md not found: ${skillMdPath}`);
     } else {
       findings.fail.push(`cannot read SKILL.md: ${sanitizeError(err)}`);

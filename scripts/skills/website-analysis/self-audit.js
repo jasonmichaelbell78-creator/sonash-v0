@@ -38,6 +38,8 @@ function runFloor(slug) {
   const res = spawnSync(process.execPath, [CAS_AUDIT, `--slug=${slug}`], {
     cwd: PROJECT_ROOT,
     encoding: "utf8",
+    timeout: 60_000,
+    maxBuffer: 10 * 1024 * 1024,
   });
   const spawnErr = res.error ? sanitizeError(res.error) : null;
   const statusCode = typeof res.status === "number" ? res.status : null;
@@ -58,7 +60,7 @@ function checkMetaJson(slug) {
     try {
       meta = safeReadJson(metaPath);
     } catch (err) {
-      if (err && err.code === "ENOENT") {
+      if (err?.code === "ENOENT") {
         return { status: "FAIL", details: "meta.json missing — required for website handler" };
       }
       throw err;
@@ -81,7 +83,7 @@ function checkSourceTypeAndCompliance(slug) {
     try {
       json = safeReadJson(jsonPath);
     } catch (err) {
-      if (err && err.code === "ENOENT") {
+      if (err?.code === "ENOENT") {
         return { status: "FAIL", details: "analysis.json missing" };
       }
       throw err;
@@ -119,6 +121,14 @@ function main() {
     console.error(
       "Usage: node scripts/skills/website-analysis/self-audit.js --slug=<slug> [--json]"
     );
+    process.exit(2);
+  }
+
+  // Preflight slug containment (Qodo R2 #4 — exit 2 on security refusal).
+  try {
+    validatePathInDir(ANALYSIS_DIR, slug);
+  } catch (err) {
+    console.error(`Refusing to run: ${sanitizeError(err)}`);
     process.exit(2);
   }
 
@@ -164,4 +174,10 @@ function main() {
   process.exit(overall === "PASS" ? 0 : 1);
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = {
+  parseArgs,
+  checkMetaJson,
+  checkSourceTypeAndCompliance,
+};

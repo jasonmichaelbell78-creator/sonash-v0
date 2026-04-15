@@ -19,7 +19,8 @@
       ]
     },
     "cognitive-complexity": {
-      "scripts/cas/self-audit.js": 25
+      "scripts/cas/self-audit.js": 25,
+      ".claude/hooks/session-start.js": 21
     },
     "cyclomatic-complexity": {
       "scripts/cas/migrate-schemas.js": 36,

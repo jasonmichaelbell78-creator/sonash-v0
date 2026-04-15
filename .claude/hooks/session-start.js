@@ -119,7 +119,7 @@ function readSessionState() {
   try {
     return JSON.parse(fs.readFileSync(SESSION_STATE_FILE, "utf8"));
   } catch (err) {
-    if (err && err.code !== "ENOENT") {
+    if (err?.code !== "ENOENT") {
       console.error(`session-start: failed to read session state: ${sanitizeError(err)}`);
     }
   }
@@ -778,7 +778,7 @@ function readWarningsJsonl(filePath) {
     const entries = content.split("\n").map(safeParseLine).filter(Boolean);
     return { entries, error: null };
   } catch (err) {
-    if (err && err.code === "ENOENT") return { entries: [], error: "ENOENT" };
+    if (err?.code === "ENOENT") return { entries: [], error: "ENOENT" };
     return { entries: [], error: sanitizeError(err) };
   }
 }

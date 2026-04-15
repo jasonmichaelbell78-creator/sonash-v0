@@ -30,7 +30,7 @@ const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const CAS_AUDIT = path.join(PROJECT_ROOT, "scripts", "cas", "self-audit.js");
 const STATE_DIR = path.join(PROJECT_ROOT, ".claude", "state");
@@ -49,6 +49,8 @@ function runFloor(slug) {
   const res = spawnSync(process.execPath, [CAS_AUDIT, `--slug=${slug}`], {
     cwd: PROJECT_ROOT,
     encoding: "utf8",
+    timeout: 60_000,
+    maxBuffer: 10 * 1024 * 1024,
   });
   const spawnErr = res.error ? sanitizeError(res.error) : null;
   const statusCode = typeof res.status === "number" ? res.status : null;
@@ -69,7 +71,7 @@ function checkRepomix(slug) {
     try {
       text = safeReadText(repomixPath);
     } catch (err) {
-      if (err && err.code === "ENOENT") {
+      if (err?.code === "ENOENT") {
         return {
           status: "FAIL",
           details: "repomix-output.txt missing — required for Extract routing",
@@ -94,7 +96,7 @@ function checkSourceType(slug) {
     try {
       json = safeReadJson(path.join(dir, "analysis.json"));
     } catch (err) {
-      if (err && err.code === "ENOENT") {
+      if (err?.code === "ENOENT") {
         return { status: "FAIL", details: "analysis.json missing" };
       }
       throw err;
@@ -117,13 +119,14 @@ function checkPhaseOrdering(slug) {
     try {
       state = safeReadJson(statePath);
     } catch (err) {
-      if (err && err.code === "ENOENT") {
+      if (err?.code === "ENOENT") {
         return { status: "WARN", details: "no state file found (skipping phase-ordering check)" };
       }
       throw err;
     }
     if (!state) return { status: "WARN", details: "state file present but empty" };
-    const phases = state.phases_completed || [];
+    const phasesRaw = state.phases_completed;
+    const phases = Array.isArray(phasesRaw) ? phasesRaw.filter((p) => typeof p === "string") : [];
     const idxAny = (needles) => {
       for (const n of needles) {
         const i = phases.findIndex((p) => p.includes(n));
@@ -153,6 +156,14 @@ function main() {
   const { slug, json } = parseArgs(process.argv);
   if (!slug) {
     console.error("Usage: node scripts/skills/repo-analysis/self-audit.js --slug=<slug> [--json]");
+    process.exit(2);
+  }
+
+  // Preflight slug containment (Qodo R2 #4 — exit 2 on security refusal).
+  try {
+    validatePathInDir(ANALYSIS_DIR, slug);
+  } catch (err) {
+    console.error(`Refusing to run: ${sanitizeError(err)}`);
     process.exit(2);
   }
 
@@ -199,4 +210,11 @@ function main() {
   process.exit(overall === "PASS" ? 0 : 1);
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = {
+  parseArgs,
+  checkRepomix,
+  checkSourceType,
+  checkPhaseOrdering,
+};

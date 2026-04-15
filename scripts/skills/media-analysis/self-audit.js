@@ -20,7 +20,7 @@ const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const CAS_AUDIT = path.join(PROJECT_ROOT, "scripts", "cas", "self-audit.js");
 
@@ -40,6 +40,8 @@ function runFloor(slug) {
   const res = spawnSync(process.execPath, [CAS_AUDIT, `--slug=${slug}`], {
     cwd: PROJECT_ROOT,
     encoding: "utf8",
+    timeout: 60_000,
+    maxBuffer: 10 * 1024 * 1024,
   });
   const spawnErr = res.error ? sanitizeError(res.error) : null;
   const statusCode = typeof res.status === "number" ? res.status : null;
@@ -55,27 +57,36 @@ function runFloor(slug) {
 // Read analysis.json.depth once so transcript/source checks can gate on the
 // quick-scan contract (Quick Scan runs without transcription — transcript.md
 // and transcript_source are NOT required per SKILL.md "Quick Scan" section).
+// Returns structured { depth, error } so callers can distinguish "file missing"
+// from "file unreadable" (addresses Qodo R2 #2+#3).
 function readDepth(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
     const json = safeReadJson(jsonPath);
-    return json?.depth || null;
-  } catch {
-    return null;
+    return { depth: json?.depth || null, error: null };
+  } catch (err) {
+    if (err?.code === "ENOENT") return { depth: null, error: "missing" };
+    return { depth: null, error: "unreadable" };
   }
 }
 
 function checkTranscript(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
-    const depth = readDepth(slug);
+    const { depth, error: depthError } = readDepth(slug);
+    if (depthError === "unreadable") {
+      return {
+        status: "FAIL",
+        details: "analysis.json unreadable — cannot determine transcript requirements",
+      };
+    }
     const transcriptPath = path.join(ANALYSIS_DIR, slug, "transcript.md");
     let text;
     try {
       text = safeReadText(transcriptPath);
     } catch (err) {
-      if (err && err.code === "ENOENT") {
+      if (err?.code === "ENOENT") {
         if (depth === "quick") {
           return { status: "PASS", details: "transcript.md not required for quick depth" };
         }
@@ -103,7 +114,7 @@ function checkSourceTypeAndTranscriptSource(slug) {
     try {
       json = safeReadJson(jsonPath);
     } catch (err) {
-      if (err && err.code === "ENOENT") {
+      if (err?.code === "ENOENT") {
         return { status: "FAIL", details: "analysis.json missing" };
       }
       throw err;
@@ -143,6 +154,16 @@ function main() {
   const { slug, json } = parseArgs(process.argv);
   if (!slug) {
     console.error("Usage: node scripts/skills/media-analysis/self-audit.js --slug=<slug> [--json]");
+    process.exit(2);
+  }
+
+  // Preflight slug containment (Qodo R2 #4 — exit 2 on security refusal per
+  // documented exit-code contract, rather than letting a late-phase throw
+  // exit with code 1).
+  try {
+    validatePathInDir(ANALYSIS_DIR, slug);
+  } catch (err) {
+    console.error(`Refusing to run: ${sanitizeError(err)}`);
     process.exit(2);
   }
 
@@ -188,4 +209,12 @@ function main() {
   process.exit(overall === "PASS" ? 0 : 1);
 }
 
-main();
+if (require.main === module) main();
+
+module.exports = {
+  parseArgs,
+  readDepth,
+  checkTranscript,
+  checkSourceTypeAndTranscriptSource,
+  VALID_SOURCES,
+};
