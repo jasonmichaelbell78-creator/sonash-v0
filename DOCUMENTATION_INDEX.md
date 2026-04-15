@@ -475,7 +475,7 @@ _Claude Code skills_
 | [Doc-Optimizer Agent Prompts](.claude/skills/doc-optimizer/prompts.md)                                                              | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
 | [docs-maintain](.claude/skills/docs-maintain/SKILL.md)                                                                              | Unified skill for checking doc sync and updating doc artifac...   | ↓0 ↑0      | 2026-02-24    |
 | [Document Analysis Reference](.claude/skills/document-analysis/REFERENCE.md)                                                        | Output schemas, dimension catalog, type detection matrix, sl...   | ↓0 ↑0      | 2026-04-08    |
-| [document-analysis](.claude/skills/document-analysis/SKILL.md)                                                                      | Content analysis of documents as knowledge artifacts. Mirror...   | ↓0 ↑0      | 2026-04-12    |
+| [document-analysis](.claude/skills/document-analysis/SKILL.md)                                                                      | Analysis of documents as knowledge artifacts. Mirrors `/repo...   | ↓0 ↑1      | 2026-04-12    |
 | [Documentation Audit — Agent Prompts & Templates](.claude/skills/audit-documentation/prompts.md)                                    | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-02-24    |
 | [Ecosystem Audit: Closure & Guard Rails](.claude/skills/_shared/ecosystem-audit/CLOSURE_AND_GUARDRAILS.md)                          | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-04-11    |
 | [Ecosystem Audit: Compaction Guard](.claude/skills/_shared/ecosystem-audit/COMPACTION_GUARD.md)                                     | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-26    |
@@ -553,7 +553,7 @@ _Claude Code skills_
 | [System Test — Complete Interactive Workflow](.claude/skills/system-test/reference/WORKFLOW.md)                                     | Full reference for the 23-domain interactive system test ski...   | ↓1 ↑0      | 2026-02-19    |
 | [system-test](.claude/skills/system-test/SKILL.md)                                                                                  | -                                                                 | ↓0 ↑1      | 2026-02-24    |
 | [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | - When the task doesn't match this skill's scope -- check re...   | ↓0 ↑0      | 2026-02-24    |
-| [Tag Suggestion Protocol](.claude/skills/_shared/TAG_SUGGESTION.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-04-15    |
+| [Tag Suggestion Protocol](.claude/skills/_shared/TAG_SUGGESTION.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓3 ↑0      | 2026-04-15    |
 | [task-next](.claude/skills/task-next/SKILL.md)                                                                                      | Shows which tasks are ready to work on based on dependency r...   | ↓0 ↑0      | 2026-02-24    |
 | [TDMS Integration (Step 6.5)](.claude/skills/pr-review/reference/TDMS_INTEGRATION.md)                                               | When items are deferred during PR review, they MUST be inges...   | ↓1 ↑0      | 2026-02-14    |
 | [tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire Technical Debt Management Syst...   | ↓0 ↑0      | 2026-03-26    |
@@ -567,7 +567,7 @@ _Claude Code skills_
 | [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Foundation visual showing historical and projected market si...   | ↓0 ↑0      | 2026-01-12    |
 | [webapp-testing](.claude/skills/webapp-testing/SKILL.md)                                                                            | To test local web applications, write native Python Playwrig...   | ↓0 ↑0      | 2026-02-24    |
 | [Website Analysis Reference](.claude/skills/website-analysis/REFERENCE.md)                                                          | Lead with creator-specific relevance, not site description. ...   | ↓0 ↑0      | 2026-04-10    |
-| [website-analysis](.claude/skills/website-analysis/SKILL.md)                                                                        | Creator-first analysis of websites as knowledge artifacts. M...   | ↓0 ↑1      | 2026-04-12    |
+| [website-analysis](.claude/skills/website-analysis/SKILL.md)                                                                        | Creator-first analysis of websites as knowledge artifacts. M...   | ↓0 ↑1      | 2026-04-15    |
 | [website-synthesis](.claude/skills/website-synthesis/SKILL.md)                                                                      | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-14    |
 
 ### Slash Commands (Tier 3)
