@@ -21,6 +21,7 @@
  */
 
 const path = require("node:path");
+const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
@@ -55,13 +56,17 @@ function runFloor(slug) {
 
 function checkDeepRead(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
-    const text = safeReadText(path.join(dir, "deep-read.md"));
-    if (!text || text.length < 50) {
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const deepPath = path.join(ANALYSIS_DIR, slug, "deep-read.md");
+    if (!fs.existsSync(deepPath)) {
       return {
         status: "FAIL",
-        details: "deep-read.md missing or too short (MUST for Standard/Deep, now Phase 2)",
+        details: "deep-read.md missing (MUST for Standard/Deep, now Phase 2)",
       };
+    }
+    const text = safeReadText(deepPath);
+    if (!text || text.length < 50) {
+      return { status: "FAIL", details: "deep-read.md present but too short (<50 bytes)" };
     }
     return { status: "PASS", details: `deep-read.md: ${text.length} bytes` };
   } catch (err) {
@@ -71,8 +76,10 @@ function checkDeepRead(slug) {
 
 function checkSourceType(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
-    const json = safeReadJson(path.join(dir, "analysis.json"));
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
+    if (!fs.existsSync(jsonPath)) return { status: "FAIL", details: "analysis.json missing" };
+    const json = safeReadJson(jsonPath);
     if (!json || json.source_type !== "document") {
       return {
         status: "FAIL",
@@ -87,13 +94,14 @@ function checkSourceType(slug) {
 
 function checkPhaseOrdering(slug) {
   try {
-    const statePath = validatePathInDir(
-      path.join(STATE_DIR, `document-analysis.${slug}.state.json`),
-      STATE_DIR
-    );
-    const state = safeReadJson(statePath);
-    if (!state)
+    const stateFile = `document-analysis.${slug}.state.json`;
+    validatePathInDir(STATE_DIR, stateFile);
+    const statePath = path.join(STATE_DIR, stateFile);
+    if (!fs.existsSync(statePath)) {
       return { status: "WARN", details: "no state file found (skipping phase-ordering check)" };
+    }
+    const state = safeReadJson(statePath);
+    if (!state) return { status: "WARN", details: "state file unreadable" };
     const phases = state.phases_completed || [];
     const idx = (needle) => phases.findIndex((p) => p.includes(needle));
     const iDeepRead = idx("deep-read");

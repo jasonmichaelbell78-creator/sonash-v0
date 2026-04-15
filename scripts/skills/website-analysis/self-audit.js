@@ -16,6 +16,7 @@
  */
 
 const path = require("node:path");
+const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
@@ -49,10 +50,13 @@ function runFloor(slug) {
 
 function checkMetaJson(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
-    const meta = safeReadJson(path.join(dir, "meta.json"));
-    if (!meta)
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const metaPath = path.join(ANALYSIS_DIR, slug, "meta.json");
+    if (!fs.existsSync(metaPath)) {
       return { status: "FAIL", details: "meta.json missing — required for website handler" };
+    }
+    const meta = safeReadJson(metaPath);
+    if (!meta) return { status: "FAIL", details: "meta.json present but unreadable" };
     if (!meta.title && !meta.url) {
       return { status: "WARN", details: "meta.json present but missing title/url fields" };
     }
@@ -64,9 +68,11 @@ function checkMetaJson(slug) {
 
 function checkSourceTypeAndCompliance(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
-    const json = safeReadJson(path.join(dir, "analysis.json"));
-    if (!json) return { status: "FAIL", details: "analysis.json missing" };
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
+    if (!fs.existsSync(jsonPath)) return { status: "FAIL", details: "analysis.json missing" };
+    const json = safeReadJson(jsonPath);
+    if (!json) return { status: "FAIL", details: "analysis.json unreadable" };
     if (json.source_type !== "website") {
       return {
         status: "FAIL",

@@ -26,6 +26,7 @@
  */
 
 const path = require("node:path");
+const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
@@ -60,14 +61,17 @@ function runFloor(slug) {
 
 function checkRepomix(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
-    const repomixPath = path.join(dir, "repomix-output.txt");
-    const text = safeReadText(repomixPath);
-    if (!text || text.length === 0) {
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const repomixPath = path.join(ANALYSIS_DIR, slug, "repomix-output.txt");
+    if (!fs.existsSync(repomixPath)) {
       return {
         status: "FAIL",
-        details: "repomix-output.txt missing or empty — required for Extract routing",
+        details: "repomix-output.txt missing — required for Extract routing",
       };
+    }
+    const text = safeReadText(repomixPath);
+    if (!text || text.length === 0) {
+      return { status: "FAIL", details: "repomix-output.txt present but empty" };
     }
     return { status: "PASS", details: `repomix-output.txt: ${text.length} bytes` };
   } catch (err) {
@@ -77,7 +81,8 @@ function checkRepomix(slug) {
 
 function checkSourceType(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const dir = path.join(ANALYSIS_DIR, slug);
     const json = safeReadJson(path.join(dir, "analysis.json"));
     if (!json || json.source_type !== "repo") {
       return { status: "FAIL", details: `source_type is '${json?.source_type}', expected 'repo'` };
@@ -90,13 +95,14 @@ function checkSourceType(slug) {
 
 function checkPhaseOrdering(slug) {
   try {
-    const statePath = validatePathInDir(
-      path.join(STATE_DIR, `repo-analysis.${slug}.state.json`),
-      STATE_DIR
-    );
-    const state = safeReadJson(statePath);
-    if (!state)
+    const stateFile = `repo-analysis.${slug}.state.json`;
+    validatePathInDir(STATE_DIR, stateFile);
+    const statePath = path.join(STATE_DIR, stateFile);
+    if (!fs.existsSync(statePath)) {
       return { status: "WARN", details: "no state file found (skipping phase-ordering check)" };
+    }
+    const state = safeReadJson(statePath);
+    if (!state) return { status: "WARN", details: "state file present but empty" };
     const phases = state.phases_completed || [];
     const idx = (name) => phases.findIndex((p) => p.includes(name));
     const i35 = idx("3.5");

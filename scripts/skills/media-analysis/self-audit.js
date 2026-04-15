@@ -16,6 +16,7 @@
  */
 
 const path = require("node:path");
+const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
@@ -51,13 +52,14 @@ function runFloor(slug) {
 
 function checkTranscript(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
-    const text = safeReadText(path.join(dir, "transcript.md"));
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const transcriptPath = path.join(ANALYSIS_DIR, slug, "transcript.md");
+    if (!fs.existsSync(transcriptPath)) {
+      return { status: "FAIL", details: "transcript.md missing — MUST per CONVENTIONS §13.3" };
+    }
+    const text = safeReadText(transcriptPath);
     if (!text || text.length < 10) {
-      return {
-        status: "FAIL",
-        details: "transcript.md missing or empty — MUST per CONVENTIONS §13.3",
-      };
+      return { status: "FAIL", details: "transcript.md present but empty" };
     }
     return { status: "PASS", details: `transcript.md: ${text.length} bytes` };
   } catch (err) {
@@ -67,9 +69,11 @@ function checkTranscript(slug) {
 
 function checkSourceTypeAndTranscriptSource(slug) {
   try {
-    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
-    const json = safeReadJson(path.join(dir, "analysis.json"));
-    if (!json) return { status: "FAIL", details: "analysis.json missing" };
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
+    if (!fs.existsSync(jsonPath)) return { status: "FAIL", details: "analysis.json missing" };
+    const json = safeReadJson(jsonPath);
+    if (!json) return { status: "FAIL", details: "analysis.json unreadable" };
     if (json.source_type !== "media") {
       return { status: "FAIL", details: `source_type is '${json.source_type}', expected 'media'` };
     }
