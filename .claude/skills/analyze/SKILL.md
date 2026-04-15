@@ -3,19 +3,45 @@ name: analyze
 description: >-
   Content Analysis System router. Feed it anything — repo URL, website, YouTube
   link, PDF, gist, or no input for synthesis. Auto-detects source type and
-  dispatches to the right handler skill. Part of T28 CAS.
+  dispatches to the right handler skill.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-04-08
+**Document Version:** 1.2
+**Last Updated:** 2026-04-15
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+**Shared conventions:** See `.claude/skills/shared/CONVENTIONS.md`
 
 # Analyze
 
 The front door to the Content Analysis System. One command for everything:
 `/analyze <anything>`.
+
+## Handoff Contract (formalized v1.2)
+
+The router dispatches to handler skills with a standard payload. All 4 CAS
+handlers (`/repo-analysis` v5.0, `/website-analysis` v2.0, `/document-analysis`
+v2.0, `/media-analysis` v2.0) acknowledge this contract in their SKILL.md
+headers.
+
+**Payload:**
+
+```json
+{
+  "target": "<raw input the user provided>",
+  "auto_detected_type": "repo|website|document|media",
+  "flags": { "depth": "...", "type": "..." /* passthrough */ }
+}
+```
+
+**Handler responsibilities:** Run the full pipeline per its SKILL.md. The
+handler treats the call as if invoked directly
+(`/repo-analysis <target> --depth=...`); `auto_detected_type` is informational.
+
+**Router responsibilities after handler returns:** Run post-handler index update
+steps (below).
 
 ## How It Works
 
@@ -120,7 +146,8 @@ capability. See CONVENTIONS.md §17 for the synthesis output contract.
 
 ## Version History
 
-| Version | Date       | Description                                                                                                |
-| ------- | ---------- | ---------------------------------------------------------------------------------------------------------- |
-| 1.1     | 2026-04-09 | Fix: post-handler index update is router's responsibility, add generate-extractions-md step (Session #270) |
-| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269)                                                                   |
+| Version | Date       | Description                                                                                                                                                                                                                                                    |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.2     | 2026-04-15 | Skill-audit batch Wave 4: formalize handoff contract (`{target, auto_detected_type, flags}`) matching handler v2.0 declarations. T28 tagline removed from user-visible description. CONVENTIONS.md reference added. Full /analyze audit deferred as follow-up. |
+| 1.1     | 2026-04-09 | Fix: post-handler index update is router's responsibility, add generate-extractions-md step (Session #270)                                                                                                                                                     |
+| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269)                                                                                                                                                                                                                       |
