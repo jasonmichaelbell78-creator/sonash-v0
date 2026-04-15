@@ -111,8 +111,12 @@ function parseArgs(argv) {
 // State loading (security-hardened)
 
 function loadState(targetSkill, stateOverride) {
+  // Defense-in-depth: resolve override relative to PROJECT_ROOT (not cwd) so
+  // that when the script runs from a parent dir, relative paths can't escape.
+  // validatePathInDir below is the primary containment; this layer narrows the
+  // attack window for TOCTOU between resolve() and readFileSync.
   const statePath = stateOverride
-    ? path.resolve(stateOverride)
+    ? path.resolve(PROJECT_ROOT, stateOverride)
     : path.join(STATE_DIR, `task-skill-audit-${targetSkill}.state.json`);
 
   // Containment: if override path, must still be inside project root
@@ -221,6 +225,10 @@ function dim3BuildIntegrity(state) {
   const findings = { pass: [], fail: [], warn: [] };
   const filesModified = state.files_modified || [];
   const hits = [];
+  // Track skipped files with reasons so Dim 3 cannot silently report PASS
+  // when entries could not actually be scanned. Each entry records the file
+  // and a categorized reason (containment, symlink, missing, read_error).
+  const skipped = [];
   let excluded = 0;
   for (const rel of filesModified) {
     if (DIM3_EXCLUDE.some((re) => re.test(rel))) {
@@ -228,16 +236,32 @@ function dim3BuildIntegrity(state) {
       continue;
     }
     const abs = path.join(PROJECT_ROOT, rel);
+    // Containment: a crafted state file could list "../../secret". Without
+    // validatePathInDir the subsequent read would follow the escape and
+    // expose stub-marker hit lines from outside PROJECT_ROOT. symlink
+    // refusal alone does NOT block `../` traversal on a non-symlink path.
+    try {
+      validatePathInDir(PROJECT_ROOT, abs);
+    } catch {
+      findings.fail.push(`files_modified entry escapes project root: ${rel}`);
+      skipped.push({ rel, reason: "containment" });
+      continue;
+    }
     try {
       refuseSymlinkWithParents(abs);
     } catch {
+      skipped.push({ rel, reason: "symlink_refused" });
       continue;
     }
-    if (!fs.existsSync(abs)) continue;
+    if (!fs.existsSync(abs)) {
+      skipped.push({ rel, reason: "missing" });
+      continue;
+    }
     let content;
     try {
       content = fs.readFileSync(abs, "utf8");
     } catch {
+      skipped.push({ rel, reason: "read_error" });
       continue;
     }
     const lines = content.split(/\r?\n/);
@@ -255,9 +279,20 @@ function dim3BuildIntegrity(state) {
     for (const h of hits.slice(0, 10)) findings.fail.push(`  ${h}`);
     if (hits.length > 10) findings.fail.push(`  ... and ${hits.length - 10} more`);
   } else if (filesModified.length > 0) {
-    const scanned = filesModified.length - excluded;
+    const scanned = filesModified.length - excluded - skipped.length;
     const excludedNote = excluded > 0 ? ` (${excluded} pattern-definition file(s) excluded)` : "";
     findings.pass.push(`no stub markers in ${scanned} modified file(s)${excludedNote}`);
+  }
+
+  // Surface skipped files so Dim 3 cannot silently PASS with incomplete
+  // scanning. Symlink/missing/read_error are audit signals, not noise.
+  if (skipped.length > 0) {
+    const preview = skipped
+      .slice(0, 5)
+      .map((s) => `${s.rel} (${s.reason})`)
+      .join(", ");
+    const more = skipped.length > 5 ? `, ... and ${skipped.length - 5} more` : "";
+    findings.warn.push(`${skipped.length} file(s) not scanned: ${preview}${more}`);
   }
 
   return findings;

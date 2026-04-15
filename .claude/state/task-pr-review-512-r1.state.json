@@ -1,0 +1,28 @@
+{
+  "pr": 512,
+  "round": 1,
+  "review_number": "TBD",
+  "source": "mixed",
+  "total": 30,
+  "fixed": 0,
+  "deferred": 0,
+  "rejected": 0,
+  "severity": { "critical": 3, "major": 9, "minor": 16, "trivial": 2 },
+  "completed_steps": [1, 2, 3],
+  "status": "in_progress",
+  "commit_sha": null,
+  "completed_at": null,
+  "sources": ["sonarcloud", "qodo", "gemini", "doc-lint"],
+  "threat_model_flags": [
+    "injection (S4036 PATH + shell:true)",
+    "TOCTOU (existsSync race)",
+    "path-traversal (dim3 missing validatePathInDir)"
+  ],
+  "plan": {
+    "commit_1": "CRITICAL security — path traversal + propagation",
+    "commit_2": "MAJOR bugs + CC refactor + regex DoS + doc-lint fix",
+    "commit_3": "MINOR batch cleanup"
+  },
+  "security_auditor_dispatched": true,
+  "security_auditor_agent_id": "aaa70caee22da1678"
+}
