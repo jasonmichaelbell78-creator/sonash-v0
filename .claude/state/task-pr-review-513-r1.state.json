@@ -1,0 +1,35 @@
+{
+  "pr": 513,
+  "round": 1,
+  "review_number": 92,
+  "review_id": "rev-92",
+  "source": "mixed",
+  "total": 12,
+  "fixed": 11,
+  "deferred": 0,
+  "rejected": 1,
+  "severity": { "critical": 0, "major": 8, "minor": 1, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_shas": ["ca39306a", "16f971dd", "a56d3bc7"],
+  "files_modified": [
+    "scripts/skills/document-analysis/self-audit.js",
+    "scripts/skills/media-analysis/self-audit.js",
+    "scripts/skills/repo-analysis/self-audit.js",
+    "scripts/skills/website-analysis/self-audit.js",
+    "scripts/skills/skill-audit/self-audit.js"
+  ],
+  "scope_expansion": {
+    "file": "scripts/skills/skill-audit/self-audit.js",
+    "reason": "Pattern 9 propagation sweep — 2 pre-existing TOCTOU violations fixed (readFileForDim3 L354, dim8Contract L638); 3 existence-only sites left intact (L208, L320, L514 — not Pattern 9 violations)",
+    "user_approved": true
+  },
+  "code_reviewer_invoked": true,
+  "code_reviewer_findings": {
+    "critical": 0,
+    "warnings": 2,
+    "warnings_addressed": 1,
+    "notes": "WARNING #2 (repo-analysis/checkSourceType ENOENT consistency) addressed in commit 16f971dd. WARNING #1 (media-analysis/readDepth silent-swallow on non-ENOENT errors) left as-is — safe-side failure, suggested improvement not a correctness fix."
+  },
+  "completed_at": "2026-04-15T00:00:00Z"
+}

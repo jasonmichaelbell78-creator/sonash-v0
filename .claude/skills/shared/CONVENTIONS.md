@@ -522,6 +522,66 @@ synthesis output.
 
 ---
 
+## 18. Prior Feedback Replay
+
+All handler skills in the Content Analysis System MUST replay prior retro
+feedback at the start of a re-invocation for the same target. This closes the
+loop between Section 10 (Retro Persistence) capture and next-run consumption —
+without replay, retro feedback is write-only and process improvement stalls.
+
+### 18.1 When
+
+During the VALIDATE or WARM-UP phase, before any analysis work begins. Skills
+with an early guards phase run replay as part of that phase so the user sees
+prior feedback before committing to another run.
+
+### 18.2 What to Replay
+
+1. Read the state file at `.claude/state/<skill>.<slug>.state.json` if present.
+2. Extract `process_feedback` (prior retro response, per Section 10).
+3. Extract structured retro dimensions if stored: `worked_well`, `would_change`,
+   `longest_phase`, `signal_quality`.
+4. If absent, null, or `"skipped"`, proceed without replay (no error).
+
+### 18.3 How to Present
+
+Before the first phase marker, present:
+
+```
+Prior run feedback ({completed_at}):
+  {process_feedback}
+  {structured retro dimensions, if present}
+
+Continue, or adjust approach based on this feedback?
+```
+
+**Gate behavior:**
+
+- If the user responds with adjustments (e.g., "skip Deep Read this run"),
+  record adjustments in the new state file's `prior_feedback_applied` field and
+  honor them during execution.
+- If the user responds "continue" or equivalent, proceed — but log that feedback
+  was displayed (`prior_feedback_shown: true`) so self-audit can verify replay
+  happened.
+- If no prior state file exists, skip this step silently — first runs have
+  nothing to replay.
+
+### 18.4 Scope
+
+Applies to all CAS handlers (`/repo-analysis`, `/website-analysis`,
+`/document-analysis`, `/media-analysis`). `/synthesize` has its own feedback
+surface and is not covered by this section — see Section 17 for synthesis-
+specific behavior.
+
+### 18.5 Pattern Origin
+
+Promoted from `/website-analysis` (the reference implementation). Prior to this
+section, website-analysis was the only handler that replayed feedback;
+repo-analysis, document-analysis, and media-analysis captured feedback but never
+surfaced it. Codifying the pattern as CAS-wide closes the gap.
+
+---
+
 ## Adoption
 
 Each skill's SKILL.md includes a one-line reference:

@@ -366,6 +366,33 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#83)</summary>
+
+- **Date:** 2026-04-15
+- **Reviews consolidated:** #review-pr493-r1-#rev-91
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#82)</summary>
+
+- **Date:** 2026-04-15
+- **Reviews consolidated:** #review-pr493-r1-#rev-91
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#81)</summary>
+
+- **Date:** 2026-04-15
+- **Reviews consolidated:** #review-pr493-r1-#rev-91
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#80)</summary>
 
 - **Date:** 2026-04-15
@@ -1318,8 +1345,8 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~5630 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~5860 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 27    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -2036,6 +2063,72 @@ deduplicated, non-overlapping ranges):
 - two compliance findings can pull opposite directions on the same file
 - new test files attract SonarCloud lint items; worth pre-push linting on
   creation
+
+---
+
+### Review rev-90: PR #512 R1 - Mixed (SonarCloud + Qodo + Gemini + Doc Lint) (2026-04-15)
+
+**Date:** 2026-04-15 | **PR:** #512 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 30    | 27    | 1        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 3        | 9     | 16    | 2       |
+
+**Patterns:**
+
+- normalize-state-fields-before-fs-ops
+- string-parse-over-regex-for-delimiters
+- reject-suggestions-incompatible-with-runtime
+
+**Learnings:**
+
+- Node CVE-2024-27980 blocks .cmd/.bat with shell:false
+- REFERENCE.md schema field semantics MUST be respected by reference
+  implementations
+- Hook auto-append without dedup compounds: 95% duplication in two state files
+- Security threat model on every PR touching scripts/ catches real risks (3
+  flags this PR)
+
+---
+
+### Review rev-91: PR #512 R2 - Mixed (SonarCloud + Qodo Compliance + CI test coverage) (2026-04-15)
+
+**Date:** 2026-04-15 | **PR:** #512 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 2     | 1        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 1     | 2     | 0       |
+
+**Patterns:**
+
+- cross-round-dedup-saves-investigation-cost
+- baseline-untested-but-track-as-debt
+- accept-with-rationale-beats-token-fixes-on-informational
+
+**Learnings:**
+
+- Cross-round dedup works: R1 npm.cmd rejection rationale extended naturally to
+  R2 git grep flag — same hardcoded-args trusted-PATH logic
+- Test baseline is the right gate for reference implementations: untested =
+  pattern propagates without quality bar; tracked as DEBT-45655 not silently
+  skipped
+- Qodo Compliance ⚪ severity is observational, not blocking — informational
+  items still need explicit dispositions per skill rule
+- R2 disposition discipline: M1 had a workaround (baseline) AND a deferred fix
+  (test suite). The canonical disposition is the underlying gap (deferred), not
+  the workaround
 
 ## Key Patterns
 
@@ -5783,3 +5876,202 @@ re-dispatch needed — R1's pass covered the architecture, and R2's items were
 either trivial (indexOf), blocking-but-procedural (test baseline), or
 already-rejected-by-rationale (Qodo PATH). Marginal value of another agent pass
 would have been low.
+
+### Review review-pr513-r1: PR #513 R1 - Mixed (Qodo Bugs/Rules + Qodo Suggestions + Qodo Compliance + SonarCloud Hotspots + SonarCloud Code Smells) (2026-04-15)
+
+**Items:** 12 total — 11 fixed, 0 deferred, 1 rejected **Severity:** 0 CRITICAL
+/ 8 MAJOR / 1 MINOR / 2 TRIVIAL / 1 REJECTED **Source:** Qodo (3 bugs/rules + 3
+suggestions + compliance observations), SonarCloud (4 S4036 hotspots + 2
+optional-chain code smells)
+
+**Top R1 learnings:**
+
+- **Pattern 9 (existsSync → read) reintroduced in brand-new code.** The 4
+  self-audit wrappers shipped in PR #513 each had 1–3 `fs.existsSync(x)` calls
+  immediately before `safeReadText(x)` / `safeReadJson(x)`. CODE_PATTERNS
+  Pattern 9 explicitly prohibits this (TOCTOU race). **Lesson:** when writing
+  new I/O scripts, default to attempt-read + `err.code === "ENOENT"` in the
+  catch branch. Never use `existsSync` as a precondition to a read. The
+  `safeReadJson` helper already throws ENOENT cleanly — callers just need to
+  classify it.
+
+- **SonarCloud S4036 on `spawnSync("node", ...)` has a one-line structural
+  fix.** Using `process.execPath` (the absolute path to the current Node binary)
+  instead of the string `"node"` removes the PATH lookup entirely. No downsides
+  for in-repo scripts: you get the same node that's running the parent, no trust
+  assumption on the user's PATH, and the S4036 hotspot is structurally resolved
+  rather than suppressed. **Lesson:** when `spawnSync`-ing another node script
+  from a node script, always reach for `process.execPath` — it's the correct
+  primitive, not a workaround.
+
+- **Rejecting a reviewer suggestion that contradicts project canon is legitimate
+  — with an explicit rationale.** Qodo suggestion #12 recommended adding
+  `fs.existsSync(jsonPath)` before `safeReadJson` in `checkSourceType` — the
+  exact Pattern 9 anti-pattern items A and the main rule violation were about.
+  Rejected with a one-sentence reference to CODE_PATTERNS Pattern 9 and the fact
+  that `safeReadJson` already returns null on missing files. **Lesson:** the
+  "NEVER dismiss as pre-existing" rule is about ducking work, not about
+  disagreeing with a suggestion on technical merit. A suggestion that
+  contradicts a documented canonical rule deserves an explicit rejection with
+  the rule cited.
+
+- **Depth-aware self-audit wrappers: Quick Scan has a different contract.** The
+  `media-analysis` wrapper was failing Quick Scan runs because `transcript.md`
+  and `analysis.json.transcript_source` were treated as unconditional MUSTs. But
+  Quick Scan's done-when is "analysis.json + teaser + caption availability
+  recorded" — no transcription artifacts required. Fix: read
+  `analysis.json.depth` first, branch on `depth === "quick"`, and keep current
+  behavior for standard/deep. **Lesson:** when a skill has multiple tiers with
+  different contracts, the self-audit wrapper must branch on tier before
+  applying tier-specific MUSTs. Check the SKILL.md "done when" for each tier,
+  not just the deepest one.
+
+- **Substring matching in phase ordering misses legacy labels during migration
+  windows.** `checkPhaseOrdering` used `idx("3.5")` to find the content-eval
+  phase — but state files migrating from v2.0 still contain
+  `phase-4b-content-eval`. The check silently passed for those states
+  (content-eval index was -1 → `iContent >= 0` guard skipped). Fix: explicit
+  multi-label lookup via
+  `idxAny(["phase-3.5-content-eval", "phase-4b-content-eval", "content-eval"])`.
+  **Lesson:** when a label migrates, the self-audit check must accept BOTH
+  labels during the documented window. Use a label-agnostic helper (`idxAny`),
+  not a prefix-substring heuristic — substring matches like `idx("phase-3")` can
+  even false-match adjacent phases (`phase-3.5-*`).
+
+- **Propagation sweep caught 2 real pre-existing Pattern 9 violations in a
+  non-PR file.** Sweeping for `fs.existsSync` across `scripts/skills/` turned up
+  6 hits in `skill-audit/self-audit.js` (not in PR #513's diff). Of the 6, only
+  2 were true read-after-stat pairs (`readFileForDim3` L354, `dim8Contract`
+  L638); the other 4 were existence-only checks for reporting or filtering (no
+  follow-up read), which are not Pattern 9 violations. Fixed both real ones in
+  the same commit as the PR-513 wrappers. **Lesson:** propagation sweeps need
+  per-site classification, not a bulk replace. `existsSync` + `readFileSync` in
+  sequence = anti-pattern. `existsSync` alone for reporting/logging = legitimate
+  (even if TOCTOU-vulnerable, there's no read to race with).
+
+**Disposition breakdown:**
+
+- **FIXED — Qodo Rule #1 (item A)** `existsSync` pre-check removed from 4
+  wrappers; attempt-read with ENOENT classification.
+- **FIXED — Qodo Bug #2 (item B)** `media-analysis` self-audit now depth-aware;
+  Quick Scan runs no longer fail on missing transcript.
+- **FIXED — Qodo Bug #3 (item C)** `repo-analysis/checkPhaseOrdering` now uses
+  `idxAny([...])` with all three content-eval label variants.
+- **FIXED — Qodo suggestion #10 (item D)**
+  `document-analysis/checkPhaseOrdering` uses `idxAny([...])` for every phase
+  marker (deep-read, dimension-wave, content-eval, creator-view, 6c,
+  self-audit).
+- **FIXED — SonarCloud S4036 × 4 (items E1–E4)** `spawnSync("node", ...)` →
+  `spawnSync(process.execPath, ...)` in all 4 wrappers.
+- **FIXED — Qodo suggestion #11 (item F)** `runFloor` hardened to surface
+  `res.error`, `res.signal`, and null `res.status` as FAIL across all 4
+  wrappers.
+- **FIXED — SonarCloud S6582 × 2 (items G1–G2)**
+  `!json || json.source_type !== "..."` → `json?.source_type !== "..."` in
+  `document-analysis` and `repo-analysis`.
+- **FIXED (scope expansion, propagation sweep)** 2 pre-existing Pattern 9
+  violations in `scripts/skills/skill-audit/self-audit.js` (`readFileForDim3`
+  L354, `dim8Contract` L638). User-approved scope expansion.
+- **REJECTED — Qodo suggestion #12 (R1 reject)** Add `fs.existsSync(jsonPath)`
+  before `safeReadJson` in `checkSourceType`. Contradicts CODE_PATTERNS Pattern
+  9; `safeReadJson` already returns null on missing files.
+
+**Process notes:**
+
+- Single-commit strategy chosen: all 5 files (4 wrappers + 1 pre-existing
+  propagation) share a coherent Pattern 9 remediation narrative. Splitting out
+  the 2-line optional-chain fix or the scope-expansion file would add churn
+  without improving review signal.
+- Commit 1 of the PR's main batch already had `fs.existsSync` pre-checks in the
+  4 wrappers before this review — the ENOENT-in-catch pattern wasn't reached for
+  until Qodo flagged it. Pre-generation checklist should call out Pattern 9
+  explicitly when new I/O wrappers are being authored.
+
+### Review review-pr513-r2: PR #513 R2 - Mixed (SonarCloud S6582 + CI test-coverage + Qodo Suggestions) (2026-04-15)
+
+**Items:** 19 total — 19 fixed, 0 deferred, 0 rejected **Severity:** 0 CRITICAL
+/ 2 MAJOR / 15 MINOR / 2 TRIVIAL **Source:** SonarCloud (12 optional-chain code
+smells), CI (1 test-coverage blocker), Qodo PR Code Suggestions (6)
+
+**Top R2 learnings:**
+
+- **R1 fixes create R2 code smells — optional-chain on `err && err.code`.**
+  Every one of the 12 SonarCloud S6582 hits in R2 was on a line that didn't
+  exist before R1. The ENOENT-classification pattern
+  `if (err && err.code === "ENOENT")` converts to `if (err?.code === "ENOENT")`.
+  **Lesson:** FIX_TEMPLATES entry for ENOENT classification should use
+  `err?.code` on first write — manual `err &&` idiom creates R2 rework.
+
+- **Test coverage gate + baseline auto-clean produces cascading surfacing.**
+  `generate-test-registry.js --check-coverage` auto-cleans stale baseline
+  entries. When it ran against R1's state, it removed 9 stale entries AND
+  surfaced 2 previously-masked untested files (`gsd-prompt-guard.js`,
+  `gsd-workflow-guard.js`). **Lesson:** when a PR adds NEW untested files,
+  expect the baseline auto-clean to expose other pre-existing gaps. Plan for a
+  small scope expansion (baseline + DEBT) or let CI surface it.
+
+- **Touching a high-churn file with 2 lines trips pre-existing CC.** Two
+  optional-chain edits (L122, L781) to `.claude/hooks/session-start.js` pulled
+  the whole file into the staged CC check, surfacing 3 pre-existing violations
+  (`saveRootHash` CC=21, `saveFunctionsHash` CC=21, `writeWarningsFile` CC=20).
+  **Lesson:** the CC baseline at `.claude/state/known-debt-baseline.json` is the
+  precedent (see `scripts/cas/self-audit.js: 25`). Add a per-file baseline entry
+  when propagating style fixes into high-churn files; don't refactor unrelated
+  pre-existing CC as scope creep.
+
+- **Refactoring `readDepth` to return `{depth, error}` pays off when TWO
+  reviewers flag the same silent-swallow.** Code-reviewer (R1 WARN #1) and Qodo
+  (R2 suggestion #2+#3 at importance 4) both flagged `readDepth`'s
+  catch-all-return-null. Structured return lets `checkTranscript` FAIL early on
+  `error === "unreadable"` rather than defaulting to strict on corrupt metadata.
+  **Lesson:** silent-swallow-with-safe-fallback is OK for truly-no-ambiguity
+  cases, but when two reviewers in succession flag the same swallow, the
+  information is load-bearing — surface the error state.
+
+- **`main()` preflight validation matches the documented exit-code contract.**
+  Qodo R2 #4: `validatePathInDir(ANALYSIS_DIR, slug)` in `main()` before any
+  side-effecting call, `process.exit(2)` on refusal. Without preflight, a
+  traversal slug reaches `runFloor` → throws → outer exits 1 (wrongly
+  classifying security refusal as "audit failed"). **Lesson:** scripts with
+  documented exit-code contracts need explicit preflight blocks for each exit-2
+  condition.
+
+- **Test coverage via exported helpers + `require.main === module` guard.** The
+  4 wrappers unconditionally called `main()` at the bottom, meaning a test
+  `require()` would execute main. Fix: wrap with
+  `if (require.main === module) main()` and `module.exports = {...}`.
+  **Lesson:** any CLI script that may grow a test suite should guard `main()`
+  from the start — one line, saves a refactor later.
+
+**Disposition breakdown:**
+
+- **FIXED — SonarCloud S6582 × 12 (A1–A12)** `err && err.code` → `err?.code`
+  across all 5 self-audit.js files. Propagated to
+  `.claude/hooks/session-start.js`.
+- **FIXED — CI test coverage (B)** node:test suites for all 4 new self-audit.js
+  wrappers under `tests/scripts/skills/`. Refactored each wrapper to export pure
+  helpers and guard `main()`. 35/35 tests pass.
+- **FIXED — Qodo #1 (C)** `spawnSync` now includes `timeout: 60_000` and
+  `maxBuffer: 10 * 1024 * 1024` in all 5 wrappers.
+- **FIXED — Qodo #2+#3 (D1+D2)** `readDepth()` in media-analysis returns
+  `{depth, error}`; `checkTranscript` FAILs early on unreadable metadata.
+- **FIXED — Qodo #4 (E)** `main()` in all 4 wrappers preflights
+  `validatePathInDir` and exits 2 on refusal.
+- **FIXED — Qodo #5+#6 (F1+F2)** `state.phases_completed` now
+  Array.isArray-guarded with string-only filter.
+- **FIXED (propagation, user-approved)** 2 pre-existing `err && err.code` hits
+  in `.claude/hooks/session-start.js` (L122, L781).
+- **FIXED (scope expansion, user-approved)** 2 pre-existing untested hook
+  scripts (`gsd-prompt-guard.js`, `gsd-workflow-guard.js`) baselined in
+  `.test-baseline.json`; tests tracked via DEBT-45656 (S2, code-quality).
+- **FIXED (scope expansion, user-approved)** `.claude/hooks/session-start.js`
+  added to CC baseline at 21; 3 pre-existing functions at CC 20/21/21 already on
+  the high-churn-watchlist refactor-candidate list.
+
+**Process notes:**
+
+- All fixes consolidated into a single commit per user direction —
+  optional-chain + defensive spawn + readDepth restructure + main() preflight +
+  phases guard + test suites + baselines are cohesive.
+- No rejections this round (cross-round dedup armed correctly; R1's one reject
+  on Qodo #12 did not recur).

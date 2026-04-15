@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2154)
+## NEW (2155)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -750,6 +750,7 @@
 | DEBT-45653 | Dependabot npm_and_yarn auto-update workflow failing on m...    | S2       | process                  |
 | DEBT-45654 | JSONL append hooks don't dedupe by id — learning-routes/p...    | S2       | process                  |
 | DEBT-45655 | Add unit tests for self-audit reference implementation (8...    | S2       | process                  |
+| DEBT-45656 | Test suite for gsd-prompt-guard.js and gsd-workflow-guard.js    | S2       | code-quality             |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |

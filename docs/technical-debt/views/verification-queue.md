@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2154
+**Items Needing Verification:** 2155
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -753,6 +753,7 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45653 | Dependabot npm_and_yarn auto-update workflow failing on m...    | S2       | .github/workflows/auto-merge-dependabot.yml                                      | 0         |
 | DEBT-45654 | JSONL append hooks don't dedupe by id — learning-routes/p...    | S2       | .claude/hooks/                                                                   | 0         |
 | DEBT-45655 | Add unit tests for self-audit reference implementation (8...    | S2       | scripts/skills/skill-audit/self-audit.js                                         | 0         |
+| DEBT-45656 | Test suite for gsd-prompt-guard.js and gsd-workflow-guard.js    | S2       | .claude/hooks/gsd-prompt-guard.js                                                | 0         |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |

@@ -459,12 +459,12 @@ the router that the pipeline is complete and it can proceed to index update.
 
 ### 4.3 Handler Availability
 
-| Handler              | Status  | Notes                      |
-| -------------------- | ------- | -------------------------- |
-| `/repo-analysis`     | Mature  | v4.3, fully implemented    |
-| `/website-analysis`  | Mature  | v1.1, fully implemented    |
-| `/document-analysis` | Planned | Not yet built, T28 roadmap |
-| `/media-analysis`    | Planned | Not yet built, T28 roadmap |
+| Handler              | Status | Notes                   |
+| -------------------- | ------ | ----------------------- |
+| `/repo-analysis`     | Mature | v5.0, fully implemented |
+| `/website-analysis`  | Mature | v2.0, fully implemented |
+| `/document-analysis` | Mature | v2.0, fully implemented |
+| `/media-analysis`    | Mature | v2.0, fully implemented |
 
 When a handler is not yet available, the router reports: "Handler for [type] is
 not yet implemented. Use --type to route to an available handler, or defer this

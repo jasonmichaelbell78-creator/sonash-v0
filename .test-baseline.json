@@ -44,6 +44,16 @@
       "note": "Wave 2 hook — tested via scripts/test-hook-gates.js harness"
     },
     {
+      "path": ".claude/hooks/gsd-prompt-guard.js",
+      "lines": 97,
+      "note": "Pre-existing untested — baselined in PR #513 R2; tests tracked via DEBT"
+    },
+    {
+      "path": ".claude/hooks/gsd-workflow-guard.js",
+      "lines": 95,
+      "note": "Pre-existing untested — baselined in PR #513 R2; tests tracked via DEBT"
+    },
+    {
       "path": ".claude/hooks/large-file-gate.js",
       "lines": 169,
       "note": "Wave 3 hook — tested via scripts/test-hook-gates.js harness"

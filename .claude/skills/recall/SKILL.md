@@ -3,7 +3,7 @@ name: recall
 description: >-
   Query the Content Analysis System knowledge base. Search extraction
   candidates, filter by tags/type/source, find specific ideas across all
-  analyzed sources. Part of T28 CAS.
+  analyzed sources.
 ---
 
 <!-- prettier-ignore-start -->

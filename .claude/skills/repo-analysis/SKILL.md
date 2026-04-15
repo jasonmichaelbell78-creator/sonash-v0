@@ -2,18 +2,24 @@
 name: repo-analysis
 description: >-
   Dual-lens repo analysis: Creator View (knowledge, insights, home-repo
-  comparison) + Engineer View (health, security, process). Three tiers
-  (Quick/Standard/Deep). Link mining for curated lists. Fit separation via dual
-  scoring lenses. Outputs to .research/analysis/<repo-slug>/.
+  comparison) + Engineer View (health, security, process). Two user-invokable
+  depths (Standard / Deep); Quick Scan is triage-only. Link mining for curated
+  lists. Fit separation via dual scoring lenses. Outputs to
+  .research/analysis/<repo-slug>/.
 ---
 
 <!-- prettier-ignore-start -->
-**Document Version:** 4.5
-**Last Updated:** 2026-04-12
+**Document Version:** 5.0
+**Last Updated:** 2026-04-15
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
 **Shared conventions:** See `.claude/skills/shared/CONVENTIONS.md`
+
+**`/analyze` router:** This skill is the repo-handler arm of `/analyze` — direct
+invocation and router dispatch both supported. Handoff contract: the router
+passes `{target, auto_detected_type: "repo"}` as if the skill were invoked
+directly.
 
 # Repo Analysis
 
@@ -22,19 +28,42 @@ what the repo understands, how it compares to your work, and where you should be
 challenged. **Engineer View** assesses health, security, process, and adoption
 fitness. Both views are always produced; Creator View comes first.
 
+## Warm-up (shown at invocation)
+
+Before any work begins, display:
+
+```
+/repo-analysis <target>
+  depth:         <quick | standard | deep>  (default: standard)
+  phases:        PHASE N of M  (M = 9 Standard, 10 Deep, 1 Quick)
+  est. time:     Standard ~8-15 min | Deep ~20-30 min | Quick <30s
+  output:        .research/analysis/<slug>/
+  prior feedback: {replay per CONVENTIONS §18 if prior state file exists}
+```
+
+## Routing Guide
+
+| You want to…                             | Use this                |
+| ---------------------------------------- | ----------------------- |
+| Analyze one external GitHub repo         | `/repo-analysis` (here) |
+| Let router auto-pick repo vs site vs PDF | `/analyze <target>`     |
+| Cross-repo synthesis across 3+ analyses  | `/synthesize`           |
+| Audit the home repo (SoNash itself)      | `/audit-comprehensive`  |
+| Research a domain or technology broadly  | `/deep-research`        |
+| Explore design space before planning     | `/brainstorm`           |
+
 ## Critical Rules (MUST follow)
 
-1. **Standard is the default.** Full artifact set: clone + repomix + dimension
-   wave + Deep Read + Content Evaluation + Creator View + Engineer View + Value
-   Map + Coverage Audit + Tag Suggestion + Retro + Routing Menu. Quick Scan
-   (`--depth=quick`) is opt-in for triage scenarios where a preview is all
-   that's needed. Deep (`--depth=deep`) adds the History Wave.
-2. **Write-to-disk-first.** Every step writes its output file before proceeding.
-   Orchestrator verifies file existence, not return values.
-3. **Bands over numbers.** Display categorical bands with score in parentheses.
+1. **Standard is the default user depth.** Full artifact set: clone + repomix
+   - dimension wave + Deep Read + Content Eval + Creator View + Engineer View
+   - Value Map + Coverage Audit + Tag Suggestion + Retro + Routing Menu. Deep
+     adds the History Wave. **Quick Scan (`--depth=quick`) is triage state, not
+     a peer user tier** — Standard and Deep are the user-invokable depths.
+2. **Write-to-disk-first.** Every phase writes its output file before
+   proceeding. Orchestrator verifies file existence, not return values.
+3. **Bands over numbers.** Display categorical bands with score in parens.
 4. **No silent skips.** After every SHOULD step, verify the expected output
-   exists. If missing: retry once with mitigation, then report to user. Never
-   silently continue past a failed step.
+   exists. If missing: retry once with mitigation, then report to user.
 5. **Home repo guard.** If target matches
    `jasonmichaelbell78-creator/sonash-v0`, redirect to `/audit-comprehensive`.
 6. **Rate limit safety.** Check `gh api rate_limit` before every API batch.
@@ -42,25 +71,26 @@ fitness. Both views are always produced; Creator View comes first.
 7. **State file on every phase transition.** Long analyses WILL hit compaction.
 8. **No TDMS auto-pollution.** TDMS intake is opt-in via routing menu only.
 9. **Creator View is mandatory** for Standard/Deep. Quick Scan includes a
-   lightweight creator lens from README/description. The creator lens captures
-   what the repo KNOWS, not just its health.
+   lightweight creator lens. The creator lens captures what the repo KNOWS, not
+   just its health.
 10. **Conversational, not clinical.** Creator View MUST be written in
     conversational prose. Anti-goal: must NOT read like a technical manual.
 
 ## When to Use
 
 - User invokes `/repo-analysis` with a GitHub URL
-- User asks to evaluate an external repo for adoption, learning, or inspiration
-- User wants to understand what a repo knows or teaches
-- User needs a structured health report for a dependency decision
-- Triage of multiple candidate repos (Quick Scan each)
+- Evaluate an external repo for adoption, learning, or inspiration
+- Understand what a repo knows or teaches
+- Structured health report for a dependency decision
+- Triage of multiple candidates (Quick Scan each, then promote to Standard)
 
-**When NOT to Use:** Cross-repo synthesis -> `/synthesize` | Home repo audit ->
-`/audit-comprehensive` | Domain/technology research -> `/deep-research` | Quick
-dependency check -> `gh api` directly.
+**When NOT to Use:** Cross-repo synthesis → `/synthesize` | Home repo audit →
+`/audit-comprehensive` | Domain/technology research → `/deep-research` | Quick
+dependency check → `gh api` directly.
 
 > See [REFERENCE.md](./REFERENCE.md) for dimension catalog, tool stack, output
-> schemas, absence patterns, Creator View specification, and guard rails.
+> schemas, absence patterns, Creator View specification (§14), process details
+> (§15), and full guard rails (§9).
 
 ## Input
 
@@ -77,499 +107,360 @@ repomix-output.txt (gitignored), mined-links.jsonl (curated-list only),
 trends.jsonl (re-analysis comparison).
 
 **Schema contract:** analysis.json MUST validate against the unified Zod schema
-in `scripts/lib/analysis-schema.js`. See CONVENTIONS.md Section 12.
+in `scripts/lib/analysis-schema.js`. See CONVENTIONS.md §12.
 
 ---
 
 ## Process Overview
 
-Standard (`--depth=standard`, default) and Deep (`--depth=deep`) share the main
-pipeline; Quick Scan (`--depth=quick`) is a standalone triage mode that stops
-after its own artifacts. There is no interactive gate between Quick and
-Standard/Deep — each depth is picked up-front via the `--depth` flag.
+Standard (default) and Deep share the main pipeline; Quick is standalone triage.
+There is no interactive gate between Quick and Standard/Deep — depth is picked
+up-front via the `--depth` flag.
 
-**Standard / Deep flow (default):**
-
-```
-VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback?
-PHASE 1    Clone+Repomix  -> Blobless clone, generate repomix IMMEDIATELY, verify
-PHASE 2    Dimension Wave -> Inline (<20 files) or agents (large repos)
-PHASE 2b   Deep Read      -> Read internal artifacts beyond code (guides, notebooks, examples, embedded docs)
-PHASE 3    History Wave   -> 12-month temporal analysis (Deep only)
-PHASE 4    Creator View   -> Load home context + Deep Read + Content Analysis, compare, challenge
-PHASE 4b   Content Eval   -> Evaluate embedded content (links, APIs, refs) for specific relevance
-PHASE 5    Engineer View  -> Merge dimensions, compute bands, dual-lens scoring
-PHASE 6    Value Map      -> Pattern + knowledge candidates ranked
-PHASE 6b   Coverage Audit -> Scan for unexplored content, prompt user to analyze or skip
-ROUTING    Menu           -> Extract | TDMS | Deep-plan | Memory | Adopt | Done
-```
-
-**Quick Scan flow (`--depth=quick`, opt-in triage):**
+**Standard flow (M=9):**
 
 ```
-VALIDATE   Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback?
-PHASE 0    Quick Scan     -> API-only, <30s, 18 dimensions + lightweight creator lens
-ROUTING    Menu           -> Queue for Standard | Extract | Done
+VALIDATE    Guards         -> Home repo? Archived? Rate limits? Fork? Prior feedback replay (§18)?
+PHASE 1 of 9  Clone+Repomix   -> Blobless clone, generate repomix IMMEDIATELY, verify
+PHASE 2 of 9  Dimension Wave  -> Inline (<20 files) or agents (large repos)
+PHASE 2b of 9 Deep Read       -> Read internal artifacts beyond code
+PHASE 3.5 of 9 Content Eval   -> Evaluate embedded content (links, APIs, refs) — BEFORE Creator View
+PHASE 4 of 9   Creator View   -> Load home context + Deep Read + Content Eval, compare, challenge
+PHASE 5 of 9   Engineer View  -> Merge dimensions, compute bands, dual-lens scoring
+PHASE 6 of 9   Value Map      -> Pattern + knowledge + content + anti-pattern candidates
+PHASE 6b of 9  Coverage Audit -> Scan for unexplored content (interactive)
+PHASE 6c of 9  Tag Suggestion -> Per _shared/TAG_SUGGESTION.md
+SELF-AUDIT + ROUTING
 ```
 
-Phase markers: `========== PHASE N: [NAME] ==========`
+**Deep flow (M=10):** inserts `PHASE 3 of 10 History Wave` (12-month temporal
+analysis) between Phase 2b and Phase 3.5.
+
+**Quick flow (M=1):**
+
+```
+VALIDATE   Guards       -> Home repo? Archived? Rate limits? Fork? Prior feedback?
+PHASE 0 of 1 Quick Scan -> API-only, <30s, 18 dimensions + lightweight creator lens
+ROUTING                 -> Queue for Standard | Extract | Done
+```
 
 ---
 
-## Quick Scan (Phase 0 — runs only when `--depth=quick` is passed)
+## Quick Scan (Phase 0 — `--depth=quick` only)
 
 API-only, under 30 seconds. 18 dimensions (QS-01 through QS-18). See
-REFERENCE.md Section 1.1 for full dimension catalog and API batch structure.
+REFERENCE.md §1.1. Quick is triage, not a user tier.
 
-**Process:** Validate → 3 parallel API batches → classify repo type (Section 5b)
-→ compute dimensions → score 6 summary bands → absence pattern classifier →
-write artifacts → present inline.
+**Process:** Validate → 3 parallel API batches → classify repo type (§5b) →
+compute dimensions → score 6 summary bands → absence pattern classifier → write
+artifacts → present inline.
 
 **Lightweight creator lens (MUST):** After computing health dimensions, read the
-repo description and README (via Contents API, first 200 lines). Write 2-3
-sentences: "This repo appears to understand/demonstrate/teach X." This is a
-teaser, not the full Creator View — enough to judge whether a deeper analysis
-should be queued later.
+repo description and README (Contents API, first 200 lines). Write 2-3
+sentences: "This repo appears to understand/demonstrate/teach X." Teaser only,
+not full Creator View.
 
-**Note:** Quick Scan is a standalone triage mode, not a preview step for
-Standard. Standard (`--depth=standard`, default) proceeds directly to Phase 1
-(Clone + Repomix). There is no Standard/Deep gate.
+**source_tier:** Repos emit `source_tier: "T1"` (first-party artifacts).
 
-For `curated-list` repos at Quick depth: report the link count and recommend a
-Standard run for link mining. See REFERENCE.md Section 16.
-
-**source_tier:** Repos always emit `source_tier: "T1"` (first-party artifacts).
-Stored in `analysis.json` and consumed by `/synthesize` for evidence weighting.
+**Done when:** analysis.json exists AND creator lens sentences written.
 
 ---
 
-## Clone + Repomix (Phase 1)
+## Clone + Repomix (Phase 1 of M)
 
 1. Clone: `git clone --filter=blob:none --depth=1 <url>` to `/tmp/`
-2. **Generate repomix IMMEDIATELY after clone (MUST).** Run
-   `npx repomix@latest --compress` and save to output directory. Verify file
-   exists before proceeding. If repomix fails: retry once, then report failure
-   to user. Do NOT silently skip — repomix is required for Extract routing.
-3. For Deep: `git fetch --unshallow` or `--shallow-since="1 year ago"`
+2. **Generate repomix IMMEDIATELY (MUST).** Run `npx repomix@latest --compress`
+   and save to output directory. Verify file exists before proceeding. If
+   repomix fails: retry once, then report. Do NOT silently skip — repomix is
+   required for Extract routing.
+3. For Deep: `git fetch --unshallow` or `--shallow-since="1 year ago"`.
 4. Update state file.
 
-> See REFERENCE.md for LFS check, monorepo detection, tool availability. Tool
-> availability: `node scripts/repo-analysis/check-tools.js`
+**Done when:** clone path recorded AND repomix-output.txt exists and is
+non-empty.
+
+> See REFERENCE.md §15.1 for LFS, monorepo detection, tool availability.
 
 ---
 
-## Dimension Wave (Phase 2)
+## Dimension Wave (Phase 2 of M)
 
-**Small repos (<20 files):** Analyze inline. Read files directly via Bash.
-Subagents cannot access temp directories — do not spawn agents for small repos.
+**Small repos (<20 files):** Analyze inline via Bash. Subagents cannot access
+temp directories.
 
 **Large repos (20+ files):** Copy clone to project workspace
-(`.research/analysis/<slug>/source/`), then spawn up to 4 concurrent agents.
-Verify each agent's output file exists after completion. If empty or missing:
-capture task-notification result text and write it to the dimension file. If
-agent failed entirely: report failure, continue with available data.
+(`.research/analysis/<slug>/source/`), spawn up to 4 concurrent agents. Verify
+each agent's output file exists after completion; on 0-byte or missing, capture
+task-notification result text and write it to the dimension file.
 
 **Dimensions:** Security audit, architecture analysis, documentation quality,
-test infrastructure. See REFERENCE.md Section 1.2 for full catalog.
+test infrastructure. See REFERENCE.md §1.2.
+
+**Done when:** all dimension files exist and are non-empty, with agent failures
+logged (if any).
 
 ---
 
-## Deep Read (Phase 2b — MUST for Standard/Deep)
+## Deep Read (Phase 2b of M — MUST for Standard/Deep)
 
-After the dimension wave, identify and read internal artifacts beyond source
-code. A repo's knowledge lives in its documentation, examples, guides,
-notebooks, and embedded references — not just its `.py` or `.ts` files. Skipping
-these is like reviewing a library by looking at the building and ignoring the
-books.
+A repo's knowledge lives in docs, examples, guides, notebooks, and referenced
+resources — not just code. Skipping these is like reviewing a library by looking
+at the building and ignoring the books.
 
 **Artifact discovery (MUST):** Scan the clone for:
 
-- Guide/tutorial documents (`guides/`, `docs/`, `examples/`, `*.md` beyond
-  README)
-- Notebooks (`.ipynb` files — read for methodology, not just code)
-- Embedded SKILL.md / instruction files (especially in monorepos with per-module
-  docs)
+- Guide/tutorial documents (`guides/`, `docs/`, `examples/`, non-README `*.md`)
+- Notebooks (`.ipynb` — methodology, not just code)
+- Embedded SKILL.md / instruction files (monorepos with per-module docs)
 - SOP/methodology documents (HARNESS.md, CONTRIBUTING.md details, architecture
   docs)
-- Referenced external resources (arXiv papers, linked repos, datasets, blog
-  posts) — catalog these for Phase 4b evaluation
+- Referenced external resources (arXiv papers, linked repos, datasets) —
+  cataloged for Phase 3.5 evaluation
 
-**Output:** Write `deep-read.md` listing what was found, what was read, and what
-was cataloged for Phase 4b. For each artifact read, note what knowledge it
-contains that isn't visible from the code alone.
+**Output:** `deep-read.md` listing what was found, read, and cataloged for Phase
+3.5. For each read artifact, note knowledge not visible from code.
 
-**Feed forward:** Deep Read findings feed directly into Creator View (Phase 4).
-The Creator View's "What's Relevant To Your Work" section MUST reference
-specific internal artifacts, not just top-level observations.
+**Feed forward:** Deep Read findings feed into Creator View (Phase 4). The
+Creator View's "What's Relevant To Your Work" section MUST reference specific
+internal artifacts, not category-level observations.
+
+**Done when:** deep-read.md exists AND all internal artifacts are cataloged
+(read or deferred to Phase 3.5).
 
 ---
 
-## History Wave (Phase 3 — Deep only)
+## History Wave (Phase 3 of 10 — Deep only)
 
 12-month temporal analysis: commit velocity, contributor health, churn hotspots.
-See REFERENCE.md Sections 1.4 and 7 for temporal fingerprint specification.
+See REFERENCE.md §1.4 and §7 for temporal fingerprint spec.
+
+**Done when:** history.jsonl exists AND temporal fingerprint written to
+analysis.json.
 
 ---
 
-## Creator View (Phase 4 — MUST for Standard/Deep)
+## Content Evaluation (Phase 3.5 of M — MUST for Standard/Deep)
 
-The primary analytical output. Written in conversational prose, not tables.
-Creator View is informed by THREE upstream inputs: home repo context, Deep Read
-artifacts (Phase 2b), and Content Evaluation results (Phase 4b). Do not write
-Creator View until Phase 4b completes — the content analysis shapes relevance.
-
-**Home repo context loading (MUST):**
-
-Load before writing Creator View — these enable direct comparison:
-
-- `SESSION_CONTEXT.md` (primary — current sprint)
-- `ROADMAP.md` (project direction, planned features)
-- `CLAUDE.md` (conventions, stack, architecture)
-- `.claude/skills/` directory listing (active skills)
-- Active project memories from MEMORY.md
-- MEMORY.md entries about the target repo or its domain (SHOULD)
-
-MAY load additional context when comparison requires deeper understanding.
-
-**Phase ordering for Creator View inputs:**
-
-1. Run Phase 4b (Content Evaluation) FIRST — it produces the content relevance
-   data that Creator View Section 2 needs.
-2. Load Deep Read results from Phase 2b — internal artifacts already analyzed.
-3. Load home repo context.
-4. Write Creator View with all three inputs available.
-
-**Creator View sections (MUST produce all 6; Section 2b required for product
-repos):**
-
-1. **What This Repo Understands (+ Blindspots)** — Knowledge, methodology,
-   insights. What it KNOWS, not what it does. Include blindspot analysis.
-2. **What's Relevant To Your Work** — Direct home-repo comparison with file
-   refs. **MUST reference specific content** from Deep Read and Content
-   Evaluation — specific tutorials, APIs, guides, papers, or internal docs that
-   are relevant, not just category-level observations. A curated-list repo's
-   value IS its links; a framework repo's value IS its internal docs. Surface
-   the actual items, not just the container.
-3. **b. Use-As-Is Verdict** (MUST when repo is a product; skip for
-   pattern-source or curated-list). Trigger: any of these taxonomic tags
-   accepted — `application`, `framework`, `tool-demo`. Required content: (a)
-   install path and what home repo gains Day-1 without code changes, (b) real
-   fit for home repo specifically (not abstract), (c) adoption blockers
-   (license, security, convention lock-in, commercial boundary), (d) recommended
-   path (e.g., license check → trial → decide), (e) bottom-line classification
-   **Adopt / Trial / Extract-only / Avoid**. Populates `adoption_verdict`,
-   `adoption_blockers`, `adoption_recommendation` fields in `analysis.json`.
-   Rationale: Section 2 "What's Relevant" covers pattern extraction but not
-   "install and use." For product repos, that is often the point — surface it
-   proactively, do not wait for the user to ask.
-4. **Where Your Approach Differs** — Classify as
-   **Ahead**/**Different**/**Behind**.
-5. **The Challenge** — THE thing you should seriously consider. Say so if
-   nothing.
-6. **Knowledge Candidates** — Tiered (T1 active, T2 systems, T3 lower). Added to
-   `value-map.json`.
-7. **What's Worth Avoiding** — Anti-ideas with evidence. See REFERENCE.md 14.8.
-
-Write output to `creator-view.md`. **Self-verify (SHOULD):** Re-read generated
-Creator View; verify each home repo claim (file paths, skill names, projects)
-references something that exists.
-
-(SHOULD) Check existing analyses in `.research/analysis/` for cross-refs.
-
----
-
-## Content Evaluation (Phase 4b — MUST for Standard/Deep)
+> **Phase renumbered from 4b to 3.5 in v5.0** (breaking change for existing
+> state files — see Version History migration note). Execution order is
+> unchanged; the number now matches the execution slot.
 
 Evaluate the repo's embedded content for specific relevance to home context.
-This phase runs BEFORE Creator View (Phase 4) and feeds into it. A repo's value
-often lives in its references, not its code.
+Runs BEFORE Creator View and feeds into it. A repo's value often lives in its
+references, not its code.
 
-**Applies to ALL repo types** (not just curated-list):
+Applies to ALL repo types (not just curated-list). For curated-list repos,
+content IS the repo; for framework/library repos, content is internal docs; for
+research repos, content is external papers and datasets.
 
-### For curated-list/registry repos:
+Writes `content-eval.jsonl` (or `mined-links.jsonl` for curated-list) with one
+entry per evaluated item:
+`{category, name, url, relevance, applicability, home_connection}`. This output
+feeds Creator View §2.
 
-The repo's value IS its links. Evaluate them, not just count them.
+**Done when:** content-eval.jsonl (or mined-links.jsonl) exists AND every item
+has a relevance rating AND the "feed to Creator View §2" handoff is ready.
 
-- **Depth 0 (MUST):** Parse entries, classify by category, score categories
-  against home context (SoNash features, JASON-OS domains, current roadmap).
-- **Depth 1 (MUST for medium/high categories):** Evaluate individual entries
-  within relevant categories. For each: name, what it does, auth requirements,
-  specific applicability to home work. Filter structured metadata (auth type,
-  HTTPS, CORS) to surface zero-friction integration candidates.
-- **Depth 2 (interactive gate):** Targeted deep-dive on selected entries. Fetch
-  docs, test endpoints, evaluate quality. Gate: "N entries look relevant.
-  Deep-dive? [Y/N/Select]"
-
-Output to `mined-links.jsonl` (curated-list) or `content-eval.jsonl` (other).
-See REFERENCE.md Section 16 for link mining spec. If Depth 1 fetch fails for
-
-> 50% of links, abort Depth 1 and present Depth 0 results.
-
-### For framework/library/tool repos:
-
-Evaluate internal documentation artifacts identified in Deep Read (Phase 2b):
-
-- **Guides and tutorials:** Read each. Note which are relevant to home work.
-- **Per-module docs** (e.g., 37 SKILL.md files in cli-anything): Sample
-  representative examples. Compare against home equivalents. Identify the
-  best-built and worst-built examples.
-- **Embedded SKILL.md / instruction files:** Read and compare against home
-  SKILL.md format. Note structural differences.
-
-### For research/experimental repos:
-
-Evaluate referenced external resources:
-
-- **Papers/arXiv references:** Summarize relevance. Note if the paper's
-  methodology applies to home work.
-- **Linked repos** (forks, parent repos, related projects): Catalog with
-  one-line relevance assessment.
-- **Datasets/models referenced:** Note if accessible and applicable.
-- **Notebooks:** Read for methodology patterns, not just code.
-
-### Output
-
-Write `content-eval.jsonl` with one entry per evaluated item:
-
-```json
-{
-  "category": "guide|api|tutorial|paper|repo|notebook|skill-file",
-  "name": "...",
-  "url": "...",
-  "relevance": "high|medium|low|none",
-  "applicability": "...",
-  "home_connection": "..."
-}
-```
-
-This output feeds directly into Creator View Section 2.
+> **Full detail** — depth tiers, structured-metadata filtering, fetch failure
+> handling, per-type evaluation rubrics — see REFERENCE.md §15.4.
 
 ---
 
-## Engineer View (Phase 5)
+## Creator View (Phase 4 of M — MUST for Standard/Deep)
 
-Current behavior — health tables, scoring bands, absence patterns, adoption
-assessment. See REFERENCE.md for dimension details, band thresholds, and absence
-pattern definitions.
+The primary analytical output. Written in conversational prose, not tables.
+Informed by THREE upstream inputs: home repo context, Deep Read artifacts (Phase
+2b), and Content Eval results (Phase 3.5). Do not write Creator View until Phase
+3.5 completes.
 
-6 summary dimensions: Security, Reliability, Maintainability, Documentation,
-Process, Velocity. Adoption assessment: Adopt/Trial/Extract/Avoid.
+**Home repo context loading (MUST):** `SESSION_CONTEXT.md`, `ROADMAP.md`,
+`CLAUDE.md`, `.claude/skills/`, MEMORY.md entries. See REFERENCE.md §14.2.
 
-Two scoring lenses always computed: adoption (default for library/application)
-and creator (default for curated-list/documentation-hub). Both shown, primary
-marked. Override with `--lens`. See REFERENCE.md Section 4.
+**6 MUST-produce sections** (Section 2b required only for product repos):
+
+1. What This Repo Understands (+ Blindspots)
+2. What's Relevant To Your Work
+   - 2b. Use-As-Is Verdict (product repos only — Adopt/Trial/Extract-only/Avoid)
+3. Where Your Approach Differs (Ahead / Different / Behind)
+4. The Challenge
+5. Knowledge Candidates (T1 active / T2 systems / T3 lower)
+6. What's Worth Avoiding
+
+Write output to `creator-view.md`. **Self-verify:** re-read generated Creator
+View; verify each home repo claim references something that exists.
+
+**Done when:** creator-view.md exists AND all MUST sections written AND Section
+2 references specific items from Deep Read + Content Eval.
+
+> **Full specification** — style guide, section prompts, fit-badge derivation,
+> anti-pattern rules — see REFERENCE.md §14.
 
 ---
 
-## Value Map (Phase 6)
+## Engineer View (Phase 5 of M)
+
+Health tables, scoring bands, absence patterns, adoption assessment. 6 summary
+dimensions: Security, Reliability, Maintainability, Documentation, Process,
+Velocity. Adoption: Adopt/Trial/Extract/Avoid.
+
+Two scoring lenses computed (adoption + creator); both shown, primary marked.
+Override with `--lens`. See REFERENCE.md §4.
+
+**Done when:** engineer-view.md OR summary.md contains all 6 bands + absence
+pattern verdict + adoption classification.
+
+---
+
+## Value Map (Phase 6 of M)
 
 Generate `value-map.json` with four candidate types:
 
-- **Pattern candidates:** Code, architecture, tooling to extract (existing)
-- **Knowledge candidates:** Understanding, methodology, insights to learn (new)
-- **Content candidates:** Specific items FROM the repo's content (tutorials,
-  APIs, guides, papers) that have direct home applicability. These are promoted
-  from `content-eval.jsonl` — any item rated `high` relevance in Phase 4b MUST
-  become a content candidate in value-map.json AND an extraction entry in both
-  EXTRACTIONS.md and extraction-journal.jsonl.
-- **Anti-pattern candidates:** Cautionary lessons from Creator View Section 6
-  ("What's Worth Avoiding"). What NOT to do is as valuable as what to do. Each
-  anti-pattern in Section 6 that is actionable (not just observational) MUST
-  become an anti-pattern candidate.
+- **Pattern** — code, architecture, tooling to extract
+- **Knowledge** — understanding, methodology, insights to learn (E0-E1)
+- **Content** — specific items FROM the repo's content (tutorials, APIs, guides,
+  papers) with direct home applicability. Promoted from `content-eval.jsonl`:
+  any `high` relevance item MUST become a content candidate AND an extraction
+  entry.
+- **Anti-pattern** — cautionary lessons from Creator View §6. Each actionable
+  warning MUST become an anti-pattern candidate.
 
-All four types use the same ranking fields (novelty, effort, relevance). Content
-candidates include a `url` field pointing to the specific resource. Knowledge
-candidates use extraction effort E0-E1 (reading/studying, not porting code).
-Anti-pattern candidates use effort E0 (they're lessons, not work).
+All four use the same ranking fields (novelty, effort, relevance). Content
+candidates include a `url`. Knowledge candidates use E0-E1. Anti-pattern
+candidates use E0.
 
-**Content promotion rule (MUST):** Do not leave high-relevance content buried in
-content-eval.jsonl. The whole point of evaluating content is to surface
-actionable items. If a tutorial, API, paper, or guide is worth calling out in
-Creator View Section 2, it's worth tracking as an extraction candidate.
+**Scope-explosion prompt:** For curated-list repos with **>100 entries**,
+prompt:
+`"Curated list has N entries. Evaluate all / top 50 by signal / custom scope?"`.
+Soft user-confirmation; never hard-block.
 
-**Anti-pattern promotion rule (MUST):** Do not leave actionable warnings buried
-in creator-view.md. If a "What's Worth Avoiding" item could prevent a future
-mistake, track it in value-map.json and extraction files.
+Append relationships to `.research/reading-chain.jsonl`. Populate
+`related_repos[]` and `cross_repo_connections[]` in value-map.json.
 
-Append discovered repo relationships to `.research/reading-chain.jsonl`
-(canonical root path). Populate `related_repos[]` in value-map.json for any
-repos referenced during analysis.
+**Done when:** value-map.json exists AND all 4 candidate arrays present AND
+content + anti-pattern promotion rules applied.
 
-**Cross-repo connections (MUST):** Add `cross_repo_connections[]` to
-value-map.json. For each connection to another analyzed repo, record:
+---
 
-```json
-{
-  "target_repo": "owner/name",
-  "connection_type": "shared-pattern|complementary|overlapping-finding|referenced",
-  "detail": "..."
-}
-```
+## Coverage Audit (Phase 6b of M — MUST for Standard/Deep)
 
-These connections feed `/synthesize`. Flag connection points even if the target
-repo hasn't been analyzed yet — they become leads for future analysis.
+After all artifacts are written, scan for content that exists in the repo but
+was NOT analyzed. The safety net that catches edge cases. Interactive prompt:
+Analyze all / Select categories / Skip. Record user decision in
+`coverage-audit.jsonl` — never silently discard.
 
-## Tag Suggestion (Phase 6c — MUST for Standard/Deep)
+**Done when:** coverage-audit.jsonl exists AND every item has a `user_decision`
+field (`analyze` / `skip`) or `status: "analyzed"`.
 
-After writing value-map.json, propose tags for the analysis record AND each
-extraction-journal entry per CONVENTIONS.md §14: **at least 3 semantic tags per
-entry** from the 8 categories (domain, technology, concept, technique, pattern,
-applicability, quality, taxonomic). No upper bound. Pull from
-`.research/tag-vocabulary.json`; for tags not in the vocabulary, propose with
-category + one-sentence definition for user approval.
+> **Full detail** — categories scanned, output format, re-analysis triggering —
+> see REFERENCE.md §15.5.
+
+---
+
+## Tag Suggestion (Phase 6c of M — MUST for Standard/Deep)
+
+Follow the canonical protocol in
+[`.claude/skills/_shared/TAG_SUGGESTION.md`](../_shared/TAG_SUGGESTION.md). Per
+CONVENTIONS §14: at least 3 semantic tags per entry, 8 categories, no upper
+bound.
 
 **Signal sources for repo-analysis**: `creator-view.md`, entry `notes`,
 `engineer-view.md`, `mined-links.jsonl`, top dependencies from repomix output.
 
-Present to user: "Suggested tags for [entry]: [list]. Accept, modify, or add
-your own?" Store accepted tags in `analysis.json.tags` AND each
-`extraction-journal.jsonl` entry. Do not pre-populate without approval.
+**Done when:** user-approved tags written to `analysis.json.tags` AND each
+`extraction-journal.jsonl` row.
 
 ---
 
-## Coverage Audit (Phase 6b — MUST for Standard/Deep)
-
-After all artifacts are written, scan for content that exists in the repo but
-was NOT analyzed during this run. This is the safety net that catches edge cases
-and ensures nothing important falls through the cracks.
-
-**Scan for:**
-
-1. **Referenced but unfollowed links** — URLs in README, docs, or code comments
-   that point to external resources (papers, repos, datasets, blog posts) not
-   evaluated in Phase 4b.
-2. **Internal artifacts not read** — guides, notebooks, examples, config files,
-   embedded docs discovered in Phase 2b but not read during analysis.
-3. **Structured data not queried** — metadata fields (auth types, categories,
-   registry entries, dependency lists) that could have been filtered against
-   home context but weren't.
-4. **Cross-repo connections not traced** — references to other repos (analyzed
-   or not) whose content relationships weren't explored.
-5. **Anomalies** — anything unusual: unexpectedly large files, hidden
-   directories, generated artifacts, binary blobs, config files that suggest
-   undocumented features.
-
-**Output format:** Present as an interactive prompt:
-
-```
-Coverage Audit: N unexplored items found.
-
-  [A] Referenced links not evaluated (M items)
-      - arXiv 2602.02474 (referenced in value-map)
-      - https://github.com/karpathy/nanochat (parent repo)
-  [B] Internal docs not read (K items)
-      - guides/mcp-backend.md
-      - guides/skill-generation.md
-  [C] Structured data not queried (J items)
-      - 807 no-auth APIs not filtered for SoNash applicability
-  [D] Cross-repo connections (L items)
-      - memskill arXiv → autoresearch methodology overlap?
-  [E] Anomalies (P items)
-      - analysis.ipynb (8.4KB notebook, methodology patterns)
-
-Analyze all / Select categories / Skip? [A/S/N]
-```
-
-**If user selects Analyze or specific categories:** Run the additional analysis,
-update affected artifacts (creator-view.md, value-map.json, content-eval.jsonl),
-and re-verify.
-
-**If user selects Skip:** Record skipped items in `coverage-audit.jsonl` for
-future reference. Do not silently discard — the record ensures the next run or
-`/synthesize` knows what was deferred.
-
 ## Cross-Repo Extraction Tracking (MUST for Standard/Deep)
 
-After writing value-map.json, update both cross-repo extraction files:
+After Phase 6, update both files:
 
-1. **extraction-journal.jsonl** (`.research/extraction-journal.jsonl`) —
-   Machine-readable per-candidate records. Unified v2.0 schema shared with
-   website-analysis. One line per candidate:
+1. **`.research/extraction-journal.jsonl`** (machine-readable, unified v2.0
+   schema shared with website-analysis). Remove stale entries for the repo;
+   write fresh entries for all candidates.
+2. **`.research/EXTRACTIONS.md`** (human-readable, generated). **Do NOT edit
+   manually.** Run: `node scripts/cas/generate-extractions-md.js`.
 
-   ```json
-   {
-     "schema_version": "2.0",
-     "source_type": "repo",
-     "source": "owner/name",
-     "candidate": "Name",
-     "type": "pattern|knowledge|content|anti-pattern|tool",
-     "decision": "defer|extract|skip|investigate",
-     "decision_date": "YYYY-MM-DD",
-     "extracted_to": null,
-     "extracted_at": null,
-     "notes": "...",
-     "novelty": "high|medium|low",
-     "effort": "E0|E1|E2|E3",
-     "relevance": "high|medium|low"
-   }
-   ```
+Both are canonical: journal is the data source; EXTRACTIONS.md is the
+regenerated reading interface.
 
-   Remove stale entries for the repo being re-analyzed. Write fresh entries for
-   all candidates in value-map.json.
+**Done when:** `grep -c "$SOURCE" .research/extraction-journal.jsonl` >= 1 AND
+script output confirms the source in EXTRACTIONS.md.
 
-2. **EXTRACTIONS.md** (`.research/EXTRACTIONS.md`) — Human-readable cross-repo
-   summary with Table of Contents. **Do NOT edit manually.** After updating the
-   journal, run:
-   ```bash
-   node scripts/cas/generate-extractions-md.js
-   ```
-   This regenerates the entire file from the journal including header stats, TOC
-   (source, type, candidate counts by category), and per-source tables.
+> **Full record schema + regeneration detail** — see REFERENCE.md §15.6.
 
-Both files are canonical — extraction-journal.jsonl is the data source,
-EXTRACTIONS.md is the generated reading interface. The journal is always updated
-first; EXTRACTIONS.md is always regenerated, never manually appended.
+---
+
+## Delegation & Defaults
+
+At every interactive gate, a default applies if the user does not choose. Record
+the default explicitly in state so self-audit can verify.
+
+| Gate                             | Default                                     |
+| -------------------------------- | ------------------------------------------- |
+| `--depth` unspecified            | `standard`                                  |
+| Coverage Audit unanswered        | `skip all` (logged in coverage-audit.jsonl) |
+| Tag Suggestion unanswered        | **never auto-approve** — block with prompt  |
+| Scope-explosion prompt           | `top 50 by signal`                          |
+| Routing menu unanswered          | `7. Done` (cleanup + invocation track)      |
+| Prior Feedback Replay (CONV §18) | `continue unchanged` (logged as shown)      |
+
+Auto-approve is forbidden for Tag Suggestion — tags require explicit user
+judgment (CONVENTIONS §14.6).
+
+---
 
 ## Per-Phase Artifact Gate (MUST)
 
-After every phase that writes an output file, **verify the file exists and is
-non-empty before proceeding to the next phase.** If a Write tool call is
-rejected by a hook (security hook false positive on analysis prose), immediately
-retry via Bash/Python. Do NOT continue to the next phase with missing artifacts.
+After every phase, verify the output file exists and is non-empty before
+proceeding. If a Write is rejected by a hook (security hook false positive on
+analysis prose), immediately retry via Bash/Python heredoc.
 
-**Why:** Write rejections on analysis artifacts that discuss security topics
-(findings referencing subprocess patterns, creator-view quoting vulnerability
-details) are common false positives. The mitigation is to use `python3` or Bash
-heredoc for writing these files, which bypasses the hook trigger.
-
-**Verification:** After each phase write, run:
+**Verification:**
 `[ -s ".research/analysis/<slug>/<artifact>" ] && echo PASS || echo FAIL`
+
+---
+
+## Guard Rails (top 5)
+
+1. **Rate limit safety** — `gh api rate_limit` before every API batch; abort if
+   `remaining < 200`.
+2. **Home repo guard** — target matches `jasonmichaelbell78-creator/sonash-v0` →
+   redirect to `/audit-comprehensive`.
+3. **Large repo safety** — >5000 files or >500MB clone → confirm with user
+   before proceeding.
+4. **Fork detection** — archive + fork + low stars → flag as low-signal before
+   Deep.
+5. **Write-rejection bypass** — hook-rejected prose writes → retry via
+   Bash/Python, never silently skip.
+
+> **Full guard catalog** — LFS, monorepo, clone safety, framework detection,
+> error handling — see REFERENCE.md §9.
 
 ---
 
 ## Self-Audit (MUST, before routing)
 
-Before presenting the routing menu, run the self-audit minimum floor per
-CONVENTIONS.md Section 8, plus domain-specific checks:
+Run minimum floor per CONVENTIONS §8 plus domain checks:
 
-1. **Artifact presence:** All MUST files exist and are non-empty (analysis.json,
-   findings.jsonl, value-map.json, creator-view.md, summary.md, deep-read.md,
-   content-eval.jsonl or mined-links.jsonl, coverage-audit.jsonl,
-   EXTRACTIONS.md, extraction-journal.jsonl)
-2. **Schema contract:** analysis.json validates against canonical schema
-   (`.claude/skills/schemas/analysis-schema.ts`)
-3. **Completeness:** All phases that ran produced output
-4. **Schema drift detection:** Check `skillVersion` in analysis.json matches
-   expected version
-5. **Regression check:** If prior analysis exists for this repo, compare finding
-   count delta — flag significant changes
-6. **REFERENCE.md contract:** Verify output structure matches documented schema
-7. **Extraction journal entries exist:**
-   `grep -c "$SOURCE" .research/extraction-journal.jsonl` must return >= 1. Then
-   run `node scripts/cas/generate-extractions-md.js` to rebuild EXTRACTIONS.md.
-   Verify the script output confirms the source is included.
-8. **Tags populated:** `analysis.json.tags` array must be non-empty. Tags
-   require user approval in Phase 6c before self-audit runs.
-9. **Coverage audit user decision recorded:** Every item in
-   `coverage-audit.jsonl` must have a `user_decision` field (analyze/skip) or
-   `status: "analyzed"`. Items without a decision indicate the interactive
-   prompt was skipped.
-10. **Phase ordering in state file:** State file `phases_completed` array must
-    show `phase-4b-content-eval` before `phase-4-creator-view`, and
-    `phase-6c-tags` before `self-audit`. Misordered phases indicate the
-    execution sequence was wrong even if artifacts are present.
+1. Artifact presence (analysis.json, findings.jsonl, value-map.json,
+   creator-view.md, summary.md, deep-read.md, content-eval.jsonl OR
+   mined-links.jsonl, coverage-audit.jsonl, extraction-journal.jsonl)
+2. Schema contract — analysis.json validates
+3. Completeness — all ran phases produced output
+4. Schema drift — `skillVersion` matches expected
+5. Regression check — compare finding count delta vs prior analysis
+6. REFERENCE.md contract — structure matches
+7. Extraction journal — `grep -c "$SOURCE"` >= 1, EXTRACTIONS.md rebuilt
+8. Tags populated — `analysis.json.tags` non-empty (user-approved)
+9. Coverage audit decisions — every item has `user_decision` or `analyzed`
+10. Phase ordering — state file `phases_completed` shows
+    `phase-3.5-content-eval` before `phase-4-creator-view`, `phase-6c-tags`
+    before `self-audit`
+11. Prior feedback replay — `prior_feedback_shown: true` if prior state existed
+    (CONVENTIONS §18)
 
-Report any failures to user before routing.
+Report failures to user before routing.
 
 ---
 
@@ -577,16 +468,16 @@ Report any failures to user before routing.
 
 Presented after Standard or Deep. 8 options:
 
-| Option                      | Action                                           |
-| --------------------------- | ------------------------------------------------ |
-| **1. Extract value**        | Load repomix + value-map. Present candidates.    |
-| **2. Send to TDMS**         | Transform findings to TDMS format. Opt-in only.  |
-| **3. Deep-plan this**       | Inject analysis as research context.             |
-| **4. Save to memory**       | Persist key findings as project memory.          |
-| **5. Adoption verdict**     | Full WR-01 through WR-06 assessment.             |
-| **6. Explore insights**     | Deeper conversation about Creator View findings. |
-| **7. Done**                 | Cleanup, confirm artifacts, track invocation.    |
-| **8. Cross-repo synthesis** | If 3+ repos analyzed, offer /synthesize.         |
+| Option                  | Action                                        |
+| ----------------------- | --------------------------------------------- |
+| 1. Extract value        | Load repomix + value-map. Present candidates. |
+| 2. Send to TDMS         | Transform findings to TDMS. Opt-in only.      |
+| 3. Deep-plan this       | Inject analysis as research context.          |
+| 4. Save to memory       | Persist key findings as project memory.       |
+| 5. Adoption verdict     | Full WR-01 through WR-06 assessment.          |
+| 6. Explore insights     | Deeper conversation about Creator View.       |
+| 7. Done                 | Cleanup, confirm artifacts, track invocation. |
+| 8. Cross-repo synthesis | If 3+ repos analyzed, offer `/synthesize`.    |
 
 ---
 
@@ -595,7 +486,12 @@ Presented after Standard or Deep. 8 options:
 State file: `.claude/state/repo-analysis.<repo-slug>.state.json`
 
 Update after every phase. On re-invocation: offer Resume/Re-run/Compare. See
-REFERENCE.md Section 8 for schema.
+REFERENCE.md §8 for schema.
+
+**v5.0 migration note:** Existing state files with `phases_completed` containing
+`phase-4b-content-eval` will be auto-migrated to `phase-3.5-content-eval` on
+next resume. Self-audit phase-ordering check accepts either label during
+transition window (through v5.2).
 
 ## Compaction Resilience
 
@@ -605,57 +501,63 @@ phase-level resume.
 
 ## Integration
 
-- **Upstream:** `/deep-research`, `/brainstorm`
+- **Upstream:** `/deep-research`, `/brainstorm`, `/analyze` (router)
 - **Downstream:** `/deep-plan`, `/synthesize`, TDMS, project memory
 - **Neighbors:** `/audit-comprehensive` (home repo), dimension agents
-- **References:** [REFERENCE.md](./REFERENCE.md),
-  [BRAINSTORM.md](../../.research/archive/repo-analysis-knowledge/BRAINSTORM.md)
+- **References:** [REFERENCE.md](./REFERENCE.md), [ARCHIVE.md](./ARCHIVE.md),
+  [\_shared/TAG_SUGGESTION.md](../_shared/TAG_SUGGESTION.md)
 
-## Guard Rails
+## Retro & Prior Feedback Replay
 
-See REFERENCE.md Section 9. Summary: rate limit safety, home repo redirect, fork
-flagging, large repo handling, monorepo detection, no silent skips.
+**Retro (per CONVENTIONS §10):** Before presenting the routing menu, ask: "What
+worked well? What would you change next time?" Save to `process_feedback` in the
+state file. Optional structured dimensions: `worked_well`, `would_change`,
+`longest_phase`, `signal_quality`.
 
-## Retro
+**Prior Feedback Replay (per CONVENTIONS §18):** On re-invocation for the same
+target, replay prior `process_feedback` during VALIDATE and ask whether to
+adjust approach. Log `prior_feedback_shown: true` in the new state file.
 
-Before presenting the routing menu, ask: "What worked well? What would you
-change next time?" Save the response to `process_feedback` field in the state
-file. This persists across sessions and enables process improvement.
-
-On "Done" routing, track invocation:
+**Invocation tracking** — on Done routing, capture enriched context:
 
 ```bash
-cd scripts/reviews && npx tsx write-invocation.ts --data '{"skill":"repo-analysis","type":"skill","success":true,"schema_version":1,"completeness":"stub","origin":{"type":"manual"},"context":{"repo":"TARGET_REPO","depth":"DEPTH"}}'
+cd scripts/reviews && npx tsx write-invocation.ts --data '{
+  "skill":"repo-analysis","type":"skill","success":true,
+  "schema_version":1,"completeness":"stub",
+  "origin":{"type":"manual"},
+  "context":{"target":"TARGET_REPO","mode":"repo","depth":"DEPTH",
+             "lens":"LENS","score":SCORE,"decisions":DECISION_COUNT,
+             "candidates":CANDIDATE_COUNT}
+}'
 ```
 
 ---
 
-_v4.6 | 2026-04-13 | Session #278: Added Creator View **Section 2b: Use-As-Is
-Verdict** as MUST-produce for product repos (taxonomic tag in {application,
-framework, tool-demo}). Populates new analysis.json fields: adoption_verdict
-(Adopt/Trial/Extract-only/Avoid), adoption_blockers, adoption_recommendation.
-Gap discovered during GitNexus analysis — user had to prompt twice for
-install-as-is assessment because Section 2 covers extraction only. Fix rationale
-in feedback_adoption_verdict_in_creator_view.md._
+_v5.0 | 2026-04-15 | Skill-audit batch 2026-04-15-analysis-quartet Wave 2.
+**Breaking:** Phase 4b → 3.5 (Content Eval) — state files with
+`phase-4b-content-eval` in `phases_completed` auto-migrate on resume.
+Structural: /analyze router ack, Warm-up block, Routing Guide, Delegation &
+Defaults, consolidated top-5 Guard Rails, scope-explosion soft prompt, Done-when
+gates per phase, PHASE N of M markers, enriched invocation tracking, Prior
+Feedback Replay per CONVENTIONS §18, Tag Suggestion body replaced with
+`_shared/TAG_SUGGESTION.md` reference. Detail extractions to REFERENCE.md §14
+(Creator View full spec already present), §15.4 (Content Eval detail), §15.5
+(Coverage Audit detail), §15.6 (Extraction Tracking detail). v4.2 footer moved
+to ARCHIVE.md in Wave 1._
 
-_v4.5 | 2026-04-12 | Session #276: Per-phase artifact gate (Write rejection =
-hard stop + Bash/Python retry). Self-audit expanded with 4 new checks:
-EXTRACTIONS.md section exists, tags non-empty, coverage audit user decisions
-recorded, phase ordering verified in state file. Fixes 5 process gaps found
-during ArchiveBox/crawl4ai analysis runs._
+_v4.6 | 2026-04-13 | Session #278: Creator View Section 2b Use-As-Is Verdict as
+MUST-produce for product repos. Populates analysis.json adoption_verdict /
+adoption_blockers / adoption_recommendation._
+
+_v4.5 | 2026-04-12 | Session #276: Per-phase artifact gate, self-audit +4 checks
+(EXTRACTIONS.md presence, tags non-empty, coverage decisions recorded, phase
+ordering in state file)._
 
 _v4.4 | 2026-04-10 | PR #505 Gemini review: split Process Overview into
-Standard/Deep and Quick Scan flows to remove the stale "GATE Interactive → Run
-Standard/Deep?" row that contradicted the v4.3 decision to drop the interactive
-gate (Quick is now an opt-in triage mode, not a preview step)._
+Standard/Deep and Quick Scan flows; removed stale "GATE Interactive" row._
 
 _v4.3 | 2026-04-06 | Convergence: CONVENTIONS.md ref, self-audit phase, schema
 drift fix, artifact path alignment, agent_budget removal, retro persistence,
 invocation tracking. Per DECISIONS.md #1-20._
 
-_v4.2 | 2026-04-06 | 4-gap fix: Phase 2b Deep Read (internal artifacts beyond
-code), Phase 4b expanded to Content Evaluation (all repo types, not just
-curated-list), Creator View informed by content analysis, Phase 6b Coverage
-Audit (scan for unexplored content with interactive prompt),
-cross_repo_connections in value-map, extraction tracking (EXTRACTIONS.md +
-extraction-journal.jsonl). See v4.1 for prior changes._
+_v4.2 and earlier — see [ARCHIVE.md](./ARCHIVE.md)._

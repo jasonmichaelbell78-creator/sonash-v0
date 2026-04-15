@@ -1709,6 +1709,175 @@ concurrent. See Section 10 for agent allocation.
 4. Bot-commit filtering (exclude dependabot, renovate, etc.)
 5. Monthly aggregation for temporal fingerprint (Section 7)
 
+### 15.4 Content Evaluation Detail (Phase 3.5)
+
+> Absorbed from SKILL.md v5.0 to keep SKILL.md under ~330 lines. Phase 3.5 was
+> numbered 4b prior to v5.0.
+
+Evaluate the repo's embedded content for specific relevance to home context.
+Runs BEFORE Creator View (Phase 4) and feeds into it. Applies to ALL repo types.
+
+#### 15.4.1 Curated-List / Registry Repos
+
+The repo's value IS its links. Evaluate them, not just count them.
+
+- **Depth 0 (MUST):** Parse entries, classify by category, score categories
+  against home context (SoNash features, JASON-OS domains, current roadmap).
+- **Depth 1 (MUST for medium/high categories):** Evaluate individual entries
+  within relevant categories. For each: name, what it does, auth requirements,
+  specific applicability to home work. Filter structured metadata (auth type,
+  HTTPS, CORS) to surface zero-friction integration candidates.
+- **Depth 2 (interactive gate):** Targeted deep-dive on selected entries. Fetch
+  docs, test endpoints, evaluate quality. Gate: _"N entries look relevant.
+  Deep-dive? [Y/N/Select]"_
+
+Output to `mined-links.jsonl` (curated-list) or `content-eval.jsonl` (other).
+See §16 for link mining spec. If Depth 1 fetch fails for >50% of links, abort
+Depth 1 and present Depth 0 results.
+
+#### 15.4.2 Framework / Library / Tool Repos
+
+Evaluate internal documentation artifacts identified in Deep Read (Phase 2b):
+
+- **Guides and tutorials:** Read each. Note which are relevant to home work.
+- **Per-module docs** (e.g., 37 SKILL.md files in cli-anything): Sample
+  representative examples. Compare against home equivalents. Identify the
+  best-built and worst-built examples.
+- **Embedded SKILL.md / instruction files:** Read and compare against home
+  SKILL.md format. Note structural differences.
+
+#### 15.4.3 Research / Experimental Repos
+
+Evaluate referenced external resources:
+
+- **Papers / arXiv references:** Summarize relevance. Note if the paper's
+  methodology applies to home work.
+- **Linked repos** (forks, parent repos, related projects): Catalog with
+  one-line relevance assessment.
+- **Datasets / models referenced:** Note if accessible and applicable.
+- **Notebooks:** Read for methodology patterns, not just code.
+
+#### 15.4.4 Output Schema
+
+Write `content-eval.jsonl` with one entry per evaluated item:
+
+```json
+{
+  "category": "guide|api|tutorial|paper|repo|notebook|skill-file",
+  "name": "...",
+  "url": "...",
+  "relevance": "high|medium|low|none",
+  "applicability": "...",
+  "home_connection": "..."
+}
+```
+
+This output feeds directly into Creator View Section 2.
+
+### 15.5 Coverage Audit Detail (Phase 6b)
+
+> Absorbed from SKILL.md v5.0.
+
+After all artifacts are written, scan for content that exists in the repo but
+was NOT analyzed. Safety net that catches edge cases.
+
+#### 15.5.1 Scan Categories
+
+1. **Referenced but unfollowed links** — URLs in README, docs, or code comments
+   pointing to external resources not evaluated in Phase 3.5.
+2. **Internal artifacts not read** — guides, notebooks, examples, config files,
+   embedded docs discovered in Phase 2b but not read.
+3. **Structured data not queried** — metadata fields (auth types, categories,
+   registry entries, dependency lists) that could have been filtered against
+   home context but weren't.
+4. **Cross-repo connections not traced** — references to other repos (analyzed
+   or not) whose content relationships weren't explored.
+5. **Anomalies** — unexpectedly large files, hidden directories, generated
+   artifacts, binary blobs, config files suggesting undocumented features.
+
+#### 15.5.2 Interactive Output Format
+
+```
+Coverage Audit: N unexplored items found.
+
+  [A] Referenced links not evaluated (M items)
+      - arXiv 2602.02474 (referenced in value-map)
+      - https://github.com/karpathy/nanochat (parent repo)
+  [B] Internal docs not read (K items)
+      - guides/mcp-backend.md
+      - guides/skill-generation.md
+  [C] Structured data not queried (J items)
+      - 807 no-auth APIs not filtered for SoNash applicability
+  [D] Cross-repo connections (L items)
+      - memskill arXiv -> autoresearch methodology overlap?
+  [E] Anomalies (P items)
+      - analysis.ipynb (8.4KB notebook, methodology patterns)
+
+Analyze all / Select categories / Skip? [A/S/N]
+```
+
+#### 15.5.3 User Decision Handling
+
+- **Analyze** → Run additional analysis, update affected artifacts
+  (creator-view.md, value-map.json, content-eval.jsonl), re-verify.
+- **Select categories** → Same as Analyze, but only for chosen categories.
+- **Skip** → Record skipped items in `coverage-audit.jsonl` with
+  `user_decision: "skip"`. Do NOT silently discard — the record ensures the next
+  run or `/synthesize` knows what was deferred.
+
+### 15.6 Cross-Repo Extraction Tracking Detail
+
+> Absorbed from SKILL.md v5.0.
+
+After writing value-map.json, update both cross-repo extraction files.
+
+#### 15.6.1 `extraction-journal.jsonl` Schema (v2.0, unified with website-analysis)
+
+Machine-readable, one JSON object per line:
+
+```json
+{
+  "schema_version": "2.0",
+  "source_type": "repo",
+  "source": "owner/name",
+  "candidate": "Name",
+  "type": "pattern|knowledge|content|anti-pattern|tool",
+  "decision": "defer|extract|skip|investigate",
+  "decision_date": "YYYY-MM-DD",
+  "extracted_to": null,
+  "extracted_at": null,
+  "notes": "...",
+  "novelty": "high|medium|low",
+  "effort": "E0|E1|E2|E3",
+  "relevance": "high|medium|low"
+}
+```
+
+Remove stale entries for the repo being re-analyzed. Write fresh entries for all
+candidates in value-map.json.
+
+#### 15.6.2 `EXTRACTIONS.md` Regeneration
+
+Human-readable cross-repo summary with Table of Contents. **Do NOT edit
+manually.** After updating the journal, run:
+
+```bash
+node scripts/cas/generate-extractions-md.js
+```
+
+This regenerates the entire file from the journal including header stats, TOC
+(source, type, candidate counts by category), and per-source tables.
+
+#### 15.6.3 Canonicality
+
+- `extraction-journal.jsonl` is the **data source** — always updated first.
+- `EXTRACTIONS.md` is the **generated reading interface** — always regenerated
+  from the journal, never manually appended.
+
+Self-audit verifies: `grep -c "$SOURCE" .research/extraction-journal.jsonl` >= 1
+AND the generator script output confirms the source is included in
+EXTRACTIONS.md.
+
 ---
 
 ## 16. Link Mining Pipeline
