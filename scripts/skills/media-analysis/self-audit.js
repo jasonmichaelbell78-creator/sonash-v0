@@ -1,0 +1,144 @@
+/* global __dirname */
+"use strict";
+
+/**
+ * /media-analysis — Self-Audit (per-skill wrapper)
+ *
+ * Runs the shared CAS handler-output-contract check as a FLOOR, then adds
+ * media-analysis specific checks:
+ *   - transcript.md exists AND non-empty (MUST per CONVENTIONS §13.3)
+ *   - analysis.json.source_type === "media"
+ *   - analysis.json.transcript_source ∈ {captions, whisper, manual}
+ *
+ * Usage:    node scripts/skills/media-analysis/self-audit.js --slug=<slug>
+ * Pattern:  .claude/skills/_shared/SELF_AUDIT_PATTERN.md
+ * Floor:    scripts/cas/self-audit.js (CONVENTIONS §13 contract)
+ */
+
+const path = require("node:path");
+const { spawnSync } = require("node:child_process");
+const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
+const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
+
+const PROJECT_ROOT = path.resolve(__dirname, "../../..");
+const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
+const CAS_AUDIT = path.join(PROJECT_ROOT, "scripts", "cas", "self-audit.js");
+
+const VALID_SOURCES = ["captions", "whisper", "manual"];
+
+function parseArgs(argv) {
+  let slug = null;
+  let json = false;
+  for (const arg of argv.slice(2)) {
+    if (arg.startsWith("--slug=")) slug = arg.slice(7);
+    else if (arg === "--json") json = true;
+  }
+  return { slug, json };
+}
+
+function runFloor(slug) {
+  const res = spawnSync("node", [CAS_AUDIT, `--slug=${slug}`], {
+    cwd: PROJECT_ROOT,
+    encoding: "utf8",
+  });
+  return {
+    status: res.status === 0 ? "PASS" : "FAIL",
+    exit: res.status,
+    stdout: res.stdout || "",
+    stderr: res.stderr || "",
+  };
+}
+
+function checkTranscript(slug) {
+  try {
+    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
+    const text = safeReadText(path.join(dir, "transcript.md"));
+    if (!text || text.length < 10) {
+      return {
+        status: "FAIL",
+        details: "transcript.md missing or empty — MUST per CONVENTIONS §13.3",
+      };
+    }
+    return { status: "PASS", details: `transcript.md: ${text.length} bytes` };
+  } catch (err) {
+    return { status: "FAIL", details: `transcript check: ${sanitizeError(err)}` };
+  }
+}
+
+function checkSourceTypeAndTranscriptSource(slug) {
+  try {
+    const dir = validatePathInDir(path.join(ANALYSIS_DIR, slug), ANALYSIS_DIR);
+    const json = safeReadJson(path.join(dir, "analysis.json"));
+    if (!json) return { status: "FAIL", details: "analysis.json missing" };
+    if (json.source_type !== "media") {
+      return { status: "FAIL", details: `source_type is '${json.source_type}', expected 'media'` };
+    }
+    const ts = json.transcript_source;
+    if (!ts) {
+      return { status: "FAIL", details: "transcript_source missing — MUST per CONVENTIONS §13.3" };
+    }
+    if (!VALID_SOURCES.includes(ts)) {
+      return {
+        status: "FAIL",
+        details: `transcript_source '${ts}' not in {${VALID_SOURCES.join(", ")}}`,
+      };
+    }
+    return { status: "PASS", details: `source_type: media, transcript_source: ${ts}` };
+  } catch (err) {
+    return {
+      status: "FAIL",
+      details: `source_type/transcript_source check: ${sanitizeError(err)}`,
+    };
+  }
+}
+
+function main() {
+  const { slug, json } = parseArgs(process.argv);
+  if (!slug) {
+    console.error("Usage: node scripts/skills/media-analysis/self-audit.js --slug=<slug> [--json]");
+    process.exit(2);
+  }
+
+  const floor = runFloor(slug);
+  if (!json) {
+    process.stdout.write(floor.stdout);
+    if (floor.stderr) process.stderr.write(floor.stderr);
+  }
+
+  const results = {
+    "cas-floor": { status: floor.status, details: `exit=${floor.exit}` },
+    transcript: checkTranscript(slug),
+    source_type_and_transcript_source: checkSourceTypeAndTranscriptSource(slug),
+  };
+
+  const mustFailed = Object.entries(results)
+    .filter(([, v]) => v.status === "FAIL")
+    .map(([k]) => k);
+  const warned = Object.entries(results)
+    .filter(([, v]) => v.status === "WARN")
+    .map(([k]) => k);
+  const overall = mustFailed.length === 0 ? "PASS" : "FAIL";
+
+  const summary = {
+    skill: "media-analysis",
+    target: slug,
+    dimensions: results,
+    overall,
+    must_failed: mustFailed,
+    should_warned: warned,
+    timestamp: new Date().toISOString(),
+  };
+
+  if (!json) {
+    for (const [name, r] of Object.entries(results)) {
+      console.log(`[${name}] ${r.status}: ${r.details}`);
+    }
+    console.log("\n---SUMMARY---");
+  }
+  console.log(JSON.stringify(summary, null, 2));
+  if (!json) console.log("---END---");
+
+  process.exit(overall === "PASS" ? 0 : 1);
+}
+
+main();
