@@ -16,10 +16,9 @@
  */
 
 const path = require("node:path");
-const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
-const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
+const { safeReadJson } = require("../../lib/safe-cas-io.js");
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../..");
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
@@ -36,15 +35,18 @@ function parseArgs(argv) {
 }
 
 function runFloor(slug) {
-  const res = spawnSync("node", [CAS_AUDIT, `--slug=${slug}`], {
+  const res = spawnSync(process.execPath, [CAS_AUDIT, `--slug=${slug}`], {
     cwd: PROJECT_ROOT,
     encoding: "utf8",
   });
+  const spawnErr = res.error ? sanitizeError(res.error) : null;
+  const statusCode = typeof res.status === "number" ? res.status : null;
+  const failedToRun = spawnErr || res.signal || statusCode === null;
   return {
-    status: res.status === 0 ? "PASS" : "FAIL",
-    exit: res.status,
+    status: !failedToRun && statusCode === 0 ? "PASS" : "FAIL",
+    exit: statusCode,
     stdout: res.stdout || "",
-    stderr: res.stderr || "",
+    stderr: (res.stderr || "") + (spawnErr ? `\nspawn error: ${spawnErr}` : ""),
   };
 }
 
@@ -52,10 +54,15 @@ function checkMetaJson(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const metaPath = path.join(ANALYSIS_DIR, slug, "meta.json");
-    if (!fs.existsSync(metaPath)) {
-      return { status: "FAIL", details: "meta.json missing — required for website handler" };
+    let meta;
+    try {
+      meta = safeReadJson(metaPath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return { status: "FAIL", details: "meta.json missing — required for website handler" };
+      }
+      throw err;
     }
-    const meta = safeReadJson(metaPath);
     if (!meta) return { status: "FAIL", details: "meta.json present but unreadable" };
     if (!meta.title && !meta.url) {
       return { status: "WARN", details: "meta.json present but missing title/url fields" };
@@ -70,8 +77,15 @@ function checkSourceTypeAndCompliance(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
-    if (!fs.existsSync(jsonPath)) return { status: "FAIL", details: "analysis.json missing" };
-    const json = safeReadJson(jsonPath);
+    let json;
+    try {
+      json = safeReadJson(jsonPath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return { status: "FAIL", details: "analysis.json missing" };
+      }
+      throw err;
+    }
     if (!json) return { status: "FAIL", details: "analysis.json unreadable" };
     if (json.source_type !== "website") {
       return {

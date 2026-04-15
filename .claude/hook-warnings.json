@@ -9,6 +9,16 @@
       "timestamp": "2026-04-15T11:54:11.649Z",
       "occurrences": 5,
       "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "session-end-missing",
+      "severity": "warning",
+      "message": "Previous session started 3h ago without session-end",
+      "action": "Review with /alerts",
+      "timestamp": "2026-04-15T19:47:07.169Z",
+      "occurrences": 9,
+      "occurrences_since_ack": 1
     }
   ]
 }

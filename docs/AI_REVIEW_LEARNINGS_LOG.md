@@ -366,6 +366,15 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#83)</summary>
+
+- **Date:** 2026-04-15
+- **Reviews consolidated:** #review-pr493-r1-#rev-91
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#82)</summary>
 
 - **Date:** 2026-04-15
@@ -5867,3 +5876,113 @@ re-dispatch needed — R1's pass covered the architecture, and R2's items were
 either trivial (indexOf), blocking-but-procedural (test baseline), or
 already-rejected-by-rationale (Qodo PATH). Marginal value of another agent pass
 would have been low.
+
+### Review review-pr513-r1: PR #513 R1 - Mixed (Qodo Bugs/Rules + Qodo Suggestions + Qodo Compliance + SonarCloud Hotspots + SonarCloud Code Smells) (2026-04-15)
+
+**Items:** 12 total — 11 fixed, 0 deferred, 1 rejected **Severity:** 0 CRITICAL
+/ 8 MAJOR / 1 MINOR / 2 TRIVIAL / 1 REJECTED **Source:** Qodo (3 bugs/rules + 3
+suggestions + compliance observations), SonarCloud (4 S4036 hotspots + 2
+optional-chain code smells)
+
+**Top R1 learnings:**
+
+- **Pattern 9 (existsSync → read) reintroduced in brand-new code.** The 4
+  self-audit wrappers shipped in PR #513 each had 1–3 `fs.existsSync(x)` calls
+  immediately before `safeReadText(x)` / `safeReadJson(x)`. CODE_PATTERNS
+  Pattern 9 explicitly prohibits this (TOCTOU race). **Lesson:** when writing
+  new I/O scripts, default to attempt-read + `err.code === "ENOENT"` in the
+  catch branch. Never use `existsSync` as a precondition to a read. The
+  `safeReadJson` helper already throws ENOENT cleanly — callers just need to
+  classify it.
+
+- **SonarCloud S4036 on `spawnSync("node", ...)` has a one-line structural
+  fix.** Using `process.execPath` (the absolute path to the current Node binary)
+  instead of the string `"node"` removes the PATH lookup entirely. No downsides
+  for in-repo scripts: you get the same node that's running the parent, no trust
+  assumption on the user's PATH, and the S4036 hotspot is structurally resolved
+  rather than suppressed. **Lesson:** when `spawnSync`-ing another node script
+  from a node script, always reach for `process.execPath` — it's the correct
+  primitive, not a workaround.
+
+- **Rejecting a reviewer suggestion that contradicts project canon is legitimate
+  — with an explicit rationale.** Qodo suggestion #12 recommended adding
+  `fs.existsSync(jsonPath)` before `safeReadJson` in `checkSourceType` — the
+  exact Pattern 9 anti-pattern items A and the main rule violation were about.
+  Rejected with a one-sentence reference to CODE_PATTERNS Pattern 9 and the fact
+  that `safeReadJson` already returns null on missing files. **Lesson:** the
+  "NEVER dismiss as pre-existing" rule is about ducking work, not about
+  disagreeing with a suggestion on technical merit. A suggestion that
+  contradicts a documented canonical rule deserves an explicit rejection with
+  the rule cited.
+
+- **Depth-aware self-audit wrappers: Quick Scan has a different contract.** The
+  `media-analysis` wrapper was failing Quick Scan runs because `transcript.md`
+  and `analysis.json.transcript_source` were treated as unconditional MUSTs. But
+  Quick Scan's done-when is "analysis.json + teaser + caption availability
+  recorded" — no transcription artifacts required. Fix: read
+  `analysis.json.depth` first, branch on `depth === "quick"`, and keep current
+  behavior for standard/deep. **Lesson:** when a skill has multiple tiers with
+  different contracts, the self-audit wrapper must branch on tier before
+  applying tier-specific MUSTs. Check the SKILL.md "done when" for each tier,
+  not just the deepest one.
+
+- **Substring matching in phase ordering misses legacy labels during migration
+  windows.** `checkPhaseOrdering` used `idx("3.5")` to find the content-eval
+  phase — but state files migrating from v2.0 still contain
+  `phase-4b-content-eval`. The check silently passed for those states
+  (content-eval index was -1 → `iContent >= 0` guard skipped). Fix: explicit
+  multi-label lookup via
+  `idxAny(["phase-3.5-content-eval", "phase-4b-content-eval", "content-eval"])`.
+  **Lesson:** when a label migrates, the self-audit check must accept BOTH
+  labels during the documented window. Use a label-agnostic helper (`idxAny`),
+  not a prefix-substring heuristic — substring matches like `idx("phase-3")` can
+  even false-match adjacent phases (`phase-3.5-*`).
+
+- **Propagation sweep caught 2 real pre-existing Pattern 9 violations in a
+  non-PR file.** Sweeping for `fs.existsSync` across `scripts/skills/` turned up
+  6 hits in `skill-audit/self-audit.js` (not in PR #513's diff). Of the 6, only
+  2 were true read-after-stat pairs (`readFileForDim3` L354, `dim8Contract`
+  L638); the other 4 were existence-only checks for reporting or filtering (no
+  follow-up read), which are not Pattern 9 violations. Fixed both real ones in
+  the same commit as the PR-513 wrappers. **Lesson:** propagation sweeps need
+  per-site classification, not a bulk replace. `existsSync` + `readFileSync` in
+  sequence = anti-pattern. `existsSync` alone for reporting/logging = legitimate
+  (even if TOCTOU-vulnerable, there's no read to race with).
+
+**Disposition breakdown:**
+
+- **FIXED — Qodo Rule #1 (item A)** `existsSync` pre-check removed from 4
+  wrappers; attempt-read with ENOENT classification.
+- **FIXED — Qodo Bug #2 (item B)** `media-analysis` self-audit now depth-aware;
+  Quick Scan runs no longer fail on missing transcript.
+- **FIXED — Qodo Bug #3 (item C)** `repo-analysis/checkPhaseOrdering` now uses
+  `idxAny([...])` with all three content-eval label variants.
+- **FIXED — Qodo suggestion #10 (item D)**
+  `document-analysis/checkPhaseOrdering` uses `idxAny([...])` for every phase
+  marker (deep-read, dimension-wave, content-eval, creator-view, 6c,
+  self-audit).
+- **FIXED — SonarCloud S4036 × 4 (items E1–E4)** `spawnSync("node", ...)` →
+  `spawnSync(process.execPath, ...)` in all 4 wrappers.
+- **FIXED — Qodo suggestion #11 (item F)** `runFloor` hardened to surface
+  `res.error`, `res.signal`, and null `res.status` as FAIL across all 4
+  wrappers.
+- **FIXED — SonarCloud S6582 × 2 (items G1–G2)**
+  `!json || json.source_type !== "..."` → `json?.source_type !== "..."` in
+  `document-analysis` and `repo-analysis`.
+- **FIXED (scope expansion, propagation sweep)** 2 pre-existing Pattern 9
+  violations in `scripts/skills/skill-audit/self-audit.js` (`readFileForDim3`
+  L354, `dim8Contract` L638). User-approved scope expansion.
+- **REJECTED — Qodo suggestion #12 (R1 reject)** Add `fs.existsSync(jsonPath)`
+  before `safeReadJson` in `checkSourceType`. Contradicts CODE_PATTERNS Pattern
+  9; `safeReadJson` already returns null on missing files.
+
+**Process notes:**
+
+- Single-commit strategy chosen: all 5 files (4 wrappers + 1 pre-existing
+  propagation) share a coherent Pattern 9 remediation narrative. Splitting out
+  the 2-line optional-chain fix or the scope-expansion file would add churn
+  without improving review signal.
+- Commit 1 of the PR's main batch already had `fs.existsSync` pre-checks in the
+  4 wrappers before this review — the ENOENT-in-catch pattern wasn't reached for
+  until Qodo flagged it. Pre-generation checklist should call out Pattern 9
+  explicitly when new I/O wrappers are being authored.

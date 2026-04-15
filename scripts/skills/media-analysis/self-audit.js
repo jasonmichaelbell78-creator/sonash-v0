@@ -16,7 +16,6 @@
  */
 
 const path = require("node:path");
-const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
@@ -38,27 +37,56 @@ function parseArgs(argv) {
 }
 
 function runFloor(slug) {
-  const res = spawnSync("node", [CAS_AUDIT, `--slug=${slug}`], {
+  const res = spawnSync(process.execPath, [CAS_AUDIT, `--slug=${slug}`], {
     cwd: PROJECT_ROOT,
     encoding: "utf8",
   });
+  const spawnErr = res.error ? sanitizeError(res.error) : null;
+  const statusCode = typeof res.status === "number" ? res.status : null;
+  const failedToRun = spawnErr || res.signal || statusCode === null;
   return {
-    status: res.status === 0 ? "PASS" : "FAIL",
-    exit: res.status,
+    status: !failedToRun && statusCode === 0 ? "PASS" : "FAIL",
+    exit: statusCode,
     stdout: res.stdout || "",
-    stderr: res.stderr || "",
+    stderr: (res.stderr || "") + (spawnErr ? `\nspawn error: ${spawnErr}` : ""),
   };
+}
+
+// Read analysis.json.depth once so transcript/source checks can gate on the
+// quick-scan contract (Quick Scan runs without transcription — transcript.md
+// and transcript_source are NOT required per SKILL.md "Quick Scan" section).
+function readDepth(slug) {
+  try {
+    validatePathInDir(ANALYSIS_DIR, slug);
+    const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
+    const json = safeReadJson(jsonPath);
+    return json?.depth || null;
+  } catch {
+    return null;
+  }
 }
 
 function checkTranscript(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
+    const depth = readDepth(slug);
     const transcriptPath = path.join(ANALYSIS_DIR, slug, "transcript.md");
-    if (!fs.existsSync(transcriptPath)) {
-      return { status: "FAIL", details: "transcript.md missing — MUST per CONVENTIONS §13.3" };
+    let text;
+    try {
+      text = safeReadText(transcriptPath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        if (depth === "quick") {
+          return { status: "PASS", details: "transcript.md not required for quick depth" };
+        }
+        return { status: "FAIL", details: "transcript.md missing — MUST per CONVENTIONS §13.3" };
+      }
+      throw err;
     }
-    const text = safeReadText(transcriptPath);
     if (!text || text.length < 10) {
+      if (depth === "quick") {
+        return { status: "WARN", details: "quick depth: transcript.md present but empty" };
+      }
       return { status: "FAIL", details: "transcript.md present but empty" };
     }
     return { status: "PASS", details: `transcript.md: ${text.length} bytes` };
@@ -71,13 +99,28 @@ function checkSourceTypeAndTranscriptSource(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
-    if (!fs.existsSync(jsonPath)) return { status: "FAIL", details: "analysis.json missing" };
-    const json = safeReadJson(jsonPath);
+    let json;
+    try {
+      json = safeReadJson(jsonPath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return { status: "FAIL", details: "analysis.json missing" };
+      }
+      throw err;
+    }
     if (!json) return { status: "FAIL", details: "analysis.json unreadable" };
     if (json.source_type !== "media") {
       return { status: "FAIL", details: `source_type is '${json.source_type}', expected 'media'` };
     }
+    const depth = json.depth || null;
     const ts = json.transcript_source;
+    if (depth === "quick") {
+      // Quick Scan runs without transcription; transcript_source is optional.
+      return {
+        status: "PASS",
+        details: `source_type: media, depth: quick (transcript_source optional)`,
+      };
+    }
     if (!ts) {
       return { status: "FAIL", details: "transcript_source missing — MUST per CONVENTIONS §13.3" };
     }

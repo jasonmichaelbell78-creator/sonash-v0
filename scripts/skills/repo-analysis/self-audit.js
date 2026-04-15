@@ -26,7 +26,6 @@
  */
 
 const path = require("node:path");
-const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
@@ -47,15 +46,18 @@ function parseArgs(argv) {
 }
 
 function runFloor(slug) {
-  const res = spawnSync("node", [CAS_AUDIT, `--slug=${slug}`], {
+  const res = spawnSync(process.execPath, [CAS_AUDIT, `--slug=${slug}`], {
     cwd: PROJECT_ROOT,
     encoding: "utf8",
   });
+  const spawnErr = res.error ? sanitizeError(res.error) : null;
+  const statusCode = typeof res.status === "number" ? res.status : null;
+  const failedToRun = spawnErr || res.signal || statusCode === null;
   return {
-    status: res.status === 0 ? "PASS" : "FAIL",
-    exit: res.status,
+    status: !failedToRun && statusCode === 0 ? "PASS" : "FAIL",
+    exit: statusCode,
     stdout: res.stdout || "",
-    stderr: res.stderr || "",
+    stderr: (res.stderr || "") + (spawnErr ? `\nspawn error: ${spawnErr}` : ""),
   };
 }
 
@@ -63,13 +65,18 @@ function checkRepomix(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const repomixPath = path.join(ANALYSIS_DIR, slug, "repomix-output.txt");
-    if (!fs.existsSync(repomixPath)) {
-      return {
-        status: "FAIL",
-        details: "repomix-output.txt missing — required for Extract routing",
-      };
+    let text;
+    try {
+      text = safeReadText(repomixPath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return {
+          status: "FAIL",
+          details: "repomix-output.txt missing — required for Extract routing",
+        };
+      }
+      throw err;
     }
-    const text = safeReadText(repomixPath);
     if (!text || text.length === 0) {
       return { status: "FAIL", details: "repomix-output.txt present but empty" };
     }
@@ -84,7 +91,7 @@ function checkSourceType(slug) {
     validatePathInDir(ANALYSIS_DIR, slug);
     const dir = path.join(ANALYSIS_DIR, slug);
     const json = safeReadJson(path.join(dir, "analysis.json"));
-    if (!json || json.source_type !== "repo") {
+    if (json?.source_type !== "repo") {
       return { status: "FAIL", details: `source_type is '${json?.source_type}', expected 'repo'` };
     }
     return { status: "PASS", details: `source_type: repo` };
@@ -98,22 +105,32 @@ function checkPhaseOrdering(slug) {
     const stateFile = `repo-analysis.${slug}.state.json`;
     validatePathInDir(STATE_DIR, stateFile);
     const statePath = path.join(STATE_DIR, stateFile);
-    if (!fs.existsSync(statePath)) {
-      return { status: "WARN", details: "no state file found (skipping phase-ordering check)" };
+    let state;
+    try {
+      state = safeReadJson(statePath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return { status: "WARN", details: "no state file found (skipping phase-ordering check)" };
+      }
+      throw err;
     }
-    const state = safeReadJson(statePath);
     if (!state) return { status: "WARN", details: "state file present but empty" };
     const phases = state.phases_completed || [];
-    const idx = (name) => phases.findIndex((p) => p.includes(name));
-    const i35 = idx("3.5");
-    const i4 = idx("creator-view");
-    const i6c = idx("6c");
-    const iAudit = idx("self-audit");
-    if (i35 >= 0 && i4 >= 0 && i35 > i4) {
-      return {
-        status: "FAIL",
-        details: "phase-3.5-content-eval must precede phase-4-creator-view",
-      };
+    const idxAny = (needles) => {
+      for (const n of needles) {
+        const i = phases.findIndex((p) => p.includes(n));
+        if (i >= 0) return i;
+      }
+      return -1;
+    };
+    // Accept both the current label (phase-3.5-content-eval) and the legacy
+    // label (phase-4b-content-eval) during the documented migration window.
+    const iContent = idxAny(["phase-3.5-content-eval", "phase-4b-content-eval", "content-eval"]);
+    const iCreator = idxAny(["phase-4-creator-view", "creator-view"]);
+    const i6c = idxAny(["phase-6c-tags", "6c-tags", "phase-6c", "6c"]);
+    const iAudit = idxAny(["self-audit"]);
+    if (iContent >= 0 && iCreator >= 0 && iContent > iCreator) {
+      return { status: "FAIL", details: "content-eval must precede creator-view" };
     }
     if (i6c >= 0 && iAudit >= 0 && i6c > iAudit) {
       return { status: "FAIL", details: "phase-6c-tags must precede self-audit" };

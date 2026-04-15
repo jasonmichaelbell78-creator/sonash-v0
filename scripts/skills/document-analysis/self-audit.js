@@ -21,7 +21,6 @@
  */
 
 const path = require("node:path");
-const fs = require("node:fs");
 const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadText, safeReadJson } = require("../../lib/safe-cas-io.js");
@@ -42,15 +41,18 @@ function parseArgs(argv) {
 }
 
 function runFloor(slug) {
-  const res = spawnSync("node", [CAS_AUDIT, `--slug=${slug}`], {
+  const res = spawnSync(process.execPath, [CAS_AUDIT, `--slug=${slug}`], {
     cwd: PROJECT_ROOT,
     encoding: "utf8",
   });
+  const spawnErr = res.error ? sanitizeError(res.error) : null;
+  const statusCode = typeof res.status === "number" ? res.status : null;
+  const failedToRun = spawnErr || res.signal || statusCode === null;
   return {
-    status: res.status === 0 ? "PASS" : "FAIL",
-    exit: res.status,
+    status: !failedToRun && statusCode === 0 ? "PASS" : "FAIL",
+    exit: statusCode,
     stdout: res.stdout || "",
-    stderr: res.stderr || "",
+    stderr: (res.stderr || "") + (spawnErr ? `\nspawn error: ${spawnErr}` : ""),
   };
 }
 
@@ -58,13 +60,18 @@ function checkDeepRead(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const deepPath = path.join(ANALYSIS_DIR, slug, "deep-read.md");
-    if (!fs.existsSync(deepPath)) {
-      return {
-        status: "FAIL",
-        details: "deep-read.md missing (MUST for Standard/Deep, now Phase 2)",
-      };
+    let text;
+    try {
+      text = safeReadText(deepPath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return {
+          status: "FAIL",
+          details: "deep-read.md missing (MUST for Standard/Deep, now Phase 2)",
+        };
+      }
+      throw err;
     }
-    const text = safeReadText(deepPath);
     if (!text || text.length < 50) {
       return { status: "FAIL", details: "deep-read.md present but too short (<50 bytes)" };
     }
@@ -78,9 +85,16 @@ function checkSourceType(slug) {
   try {
     validatePathInDir(ANALYSIS_DIR, slug);
     const jsonPath = path.join(ANALYSIS_DIR, slug, "analysis.json");
-    if (!fs.existsSync(jsonPath)) return { status: "FAIL", details: "analysis.json missing" };
-    const json = safeReadJson(jsonPath);
-    if (!json || json.source_type !== "document") {
+    let json;
+    try {
+      json = safeReadJson(jsonPath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return { status: "FAIL", details: "analysis.json missing" };
+      }
+      throw err;
+    }
+    if (json?.source_type !== "document") {
       return {
         status: "FAIL",
         details: `source_type is '${json?.source_type}', expected 'document'`,
@@ -97,19 +111,34 @@ function checkPhaseOrdering(slug) {
     const stateFile = `document-analysis.${slug}.state.json`;
     validatePathInDir(STATE_DIR, stateFile);
     const statePath = path.join(STATE_DIR, stateFile);
-    if (!fs.existsSync(statePath)) {
-      return { status: "WARN", details: "no state file found (skipping phase-ordering check)" };
+    let state;
+    try {
+      state = safeReadJson(statePath);
+    } catch (err) {
+      if (err && err.code === "ENOENT") {
+        return { status: "WARN", details: "no state file found (skipping phase-ordering check)" };
+      }
+      throw err;
     }
-    const state = safeReadJson(statePath);
     if (!state) return { status: "WARN", details: "state file unreadable" };
     const phases = state.phases_completed || [];
-    const idx = (needle) => phases.findIndex((p) => p.includes(needle));
-    const iDeepRead = idx("deep-read");
-    const iDim = idx("dimension-wave") >= 0 ? idx("dimension-wave") : idx("phase-3");
-    const iContent = idx("content-eval");
-    const iCreator = idx("creator-view");
-    const i6c = idx("tag") >= 0 ? idx("tag") : idx("6c");
-    const iAudit = idx("self-audit");
+    const idxAny = (needles) => {
+      for (const n of needles) {
+        const i = phases.findIndex((p) => p.includes(n));
+        if (i >= 0) return i;
+      }
+      return -1;
+    };
+    const iDeepRead = idxAny(["phase-2-deep-read", "deep-read"]);
+    const iDim = idxAny([
+      "phase-3-dimension-wave",
+      "phase-2-dimension-wave", // legacy during v2.0→v2.2
+      "dimension-wave",
+    ]);
+    const iContent = idxAny(["phase-3.5-content-eval", "phase-4b-content-eval", "content-eval"]);
+    const iCreator = idxAny(["phase-4-creator-view", "creator-view"]);
+    const i6c = idxAny(["phase-6c-tags", "6c-tags", "phase-6c", "6c"]);
+    const iAudit = idxAny(["self-audit"]);
     const issues = [];
     if (iDeepRead >= 0 && iDim >= 0 && iDeepRead > iDim)
       issues.push("deep-read must precede dimension-wave");

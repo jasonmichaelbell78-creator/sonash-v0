@@ -337,7 +337,9 @@ function dim2Orphans(state, targetSkill) {
 
 // Per-file read with security layering. Returns either content (string) or
 // a skip reason. validatePathInDir blocks `../` traversal; symlink refusal
-// blocks redirection; existsSync catches missing; try/catch catches I/O.
+// blocks redirection; try/catch catches I/O and ENOENT. (No existsSync
+// pre-check — Pattern 9 prohibits the stat/read race; attempt the read and
+// classify ENOENT as "missing" in the catch branch.)
 // Extracted to keep dim3BuildIntegrity below CC-15.
 function readFileForDim3(rel) {
   const abs = path.join(PROJECT_ROOT, rel);
@@ -351,10 +353,10 @@ function readFileForDim3(rel) {
   } catch {
     return { skipReason: "symlink_refused" };
   }
-  if (!fs.existsSync(abs)) return { skipReason: "missing" };
   try {
     return { content: fs.readFileSync(abs, "utf8") };
-  } catch {
+  } catch (err) {
+    if (err && err.code === "ENOENT") return { skipReason: "missing" };
     return { skipReason: "read_error" };
   }
 }
@@ -635,16 +637,17 @@ function dim8Contract(targetSkill) {
     findings.fail.push(`SKILL.md path invalid: ${sanitizeError(err)}`);
     return findings;
   }
-  if (!fs.existsSync(skillMdPath)) {
-    findings.fail.push(`target SKILL.md not found: ${skillMdPath}`);
-    return findings;
-  }
-
+  // No existsSync pre-check — Pattern 9 prohibits the stat/read race.
+  // Attempt the read; classify ENOENT as not-found in the catch branch.
   let content;
   try {
     content = fs.readFileSync(skillMdPath, "utf8");
   } catch (err) {
-    findings.fail.push(`cannot read SKILL.md: ${sanitizeError(err)}`);
+    if (err && err.code === "ENOENT") {
+      findings.fail.push(`target SKILL.md not found: ${skillMdPath}`);
+    } else {
+      findings.fail.push(`cannot read SKILL.md: ${sanitizeError(err)}`);
+    }
     return findings;
   }
 
