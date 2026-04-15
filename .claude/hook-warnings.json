@@ -1,16 +1,34 @@
 {
   "warnings": [
     {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "info",
+      "message": "Branch has >=10 commits  create PR soon",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-15T00:09:04.029Z",
+      "occurrences": 8,
+      "occurrences_since_ack": 1
+    },
+    {
       "hook": "session-start",
       "type": "tdms-s0",
       "severity": "warning",
       "message": "S0: 26 critical debt items",
       "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-14T14:19:23.342Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 0,
-      "lastAck": "2026-04-14T22:10:52.977Z"
+      "timestamp": "2026-04-15T00:22:00.934Z",
+      "occurrences": 4,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
+      "type": "agent",
+      "severity": "warning",
+      "message": "Agent compliance warnings - code changed without agent review",
+      "action": "Use code-reviewer agent for modified code",
+      "timestamp": "2026-04-15T00:37:22.224Z",
+      "occurrences": 2,
+      "occurrences_since_ack": 1
     }
-  ],
-  "lastCleared": "2026-04-14T22:10:52.977Z"
+  ]
 }
