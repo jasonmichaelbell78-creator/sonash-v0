@@ -523,8 +523,8 @@ _Claude Code skills_
 | [quick-fix](.claude/skills/quick-fix/SKILL.md)                                                                                      | Auto-suggest fixes for common pre-commit and pattern complia...   | ↓0 ↑0      | 2026-02-24    |
 | [recall](.claude/skills/recall/SKILL.md)                                                                                            | Search and query your extracted knowledge. Everything analyz...   | ↓0 ↑0      | 2026-04-12    |
 | [Recall Reference](.claude/skills/recall/REFERENCE.md)                                                                              | Query mode specifications, output formatting rules, follow-u...   | ↓0 ↑0      | 2026-04-08    |
-| [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓1 ↑0      | 2026-04-10    |
-| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓1 ↑3      | 2026-04-13    |
+| [Repo Analysis Reference](.claude/skills/repo-analysis/REFERENCE.md)                                                                | Dimension catalog, tool stack, output schemas, repo type cla...   | ↓1 ↑0      | 2026-04-15    |
+| [repo-analysis](.claude/skills/repo-analysis/SKILL.md)                                                                              | Dual-lens analysis of external GitHub repositories. \*\*Creato... | ↓1 ↑3      | 2026-04-15    |
 | [repo-analysis — Version History Archive](.claude/skills/repo-analysis/ARCHIVE.md)                                                  | <!-- prettier-ignore-start -->                                    | ↓1 ↑1      | 2026-04-15    |
 | [repo-synthesis](.claude/skills/repo-synthesis/SKILL.md)                                                                            | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-14    |
 | [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)                                                     | Bugs often manifest deep in the call stack (git init in wron...   | ↓0 ↑0      | 2026-01-12    |
@@ -553,7 +553,7 @@ _Claude Code skills_
 | [System Test — Complete Interactive Workflow](.claude/skills/system-test/reference/WORKFLOW.md)                                     | Full reference for the 23-domain interactive system test ski...   | ↓1 ↑0      | 2026-02-19    |
 | [system-test](.claude/skills/system-test/SKILL.md)                                                                                  | -                                                                 | ↓0 ↑1      | 2026-02-24    |
 | [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)                                                                | - When the task doesn't match this skill's scope -- check re...   | ↓0 ↑0      | 2026-02-24    |
-| [Tag Suggestion Protocol](.claude/skills/_shared/TAG_SUGGESTION.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓1 ↑0      | 2026-04-15    |
+| [Tag Suggestion Protocol](.claude/skills/_shared/TAG_SUGGESTION.md)                                                                 | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-04-15    |
 | [task-next](.claude/skills/task-next/SKILL.md)                                                                                      | Shows which tasks are ready to work on based on dependency r...   | ↓0 ↑0      | 2026-02-24    |
 | [TDMS Integration (Step 6.5)](.claude/skills/pr-review/reference/TDMS_INTEGRATION.md)                                               | When items are deferred during PR review, they MUST be inges...   | ↓1 ↑0      | 2026-02-14    |
 | [tdms-ecosystem-audit](.claude/skills/tdms-ecosystem-audit/SKILL.md)                                                                | Deep diagnostic of the entire Technical Debt Management Syst...   | ↓0 ↑0      | 2026-03-26    |
@@ -567,7 +567,7 @@ _Claude Code skills_
 | [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md) | Foundation visual showing historical and projected market si...   | ↓0 ↑0      | 2026-01-12    |
 | [webapp-testing](.claude/skills/webapp-testing/SKILL.md)                                                                            | To test local web applications, write native Python Playwrig...   | ↓0 ↑0      | 2026-02-24    |
 | [Website Analysis Reference](.claude/skills/website-analysis/REFERENCE.md)                                                          | Lead with creator-specific relevance, not site description. ...   | ↓0 ↑0      | 2026-04-10    |
-| [website-analysis](.claude/skills/website-analysis/SKILL.md)                                                                        | Creator-first analysis of websites as knowledge artifacts. M...   | ↓0 ↑0      | 2026-04-12    |
+| [website-analysis](.claude/skills/website-analysis/SKILL.md)                                                                        | Creator-first analysis of websites as knowledge artifacts. M...   | ↓0 ↑1      | 2026-04-12    |
 | [website-synthesis](.claude/skills/website-synthesis/SKILL.md)                                                                      | This skill has been consolidated into [`/synthesize`](../syn...   | ↓0 ↑1      | 2026-04-14    |
 
 ### Slash Commands (Tier 3)
