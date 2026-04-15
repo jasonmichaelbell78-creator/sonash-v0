@@ -1,0 +1,46 @@
+{
+  "pr": 512,
+  "round": 1,
+  "review_number": "TBD",
+  "source": "mixed",
+  "total": 30,
+  "fixed": 27,
+  "deferred": 1,
+  "rejected": 2,
+  "pending_user_decision": 0,
+  "deferred_items": [
+    {
+      "item": "Qodo R1 #4/#5 — JSONL ID dedup (learning-routes + pending-refinements)",
+      "debt_id": "DEBT-45654",
+      "rationale": "Data dedup'd in this PR (845→41 / 814→38 lines). Root cause is hook bug — auto-append doesn't dedupe by id. Without hook fix, recurs next session. DEBT-45654 tracks the hook fix."
+    }
+  ],
+  "severity": { "critical": 3, "major": 9, "minor": 16, "trivial": 2 },
+  "completed_steps": [1, 2, 3, 4],
+  "status": "in_progress",
+  "commit_sha": "7dcb449c",
+  "completed_at": null,
+  "rejected_items": [
+    {
+      "item": "Qodo R1 #2 — npm.cmd + shell:false suggestion",
+      "rationale": "Suggestion is technically correct pre-Node 20, but Node 18+ enforces CVE-2024-27980 hardening that REJECTS .cmd/.bat with shell:false (EINVAL on spawn). Verified locally — npm.cmd + shell:false produces EINVAL. Kept original shell:process.platform === 'win32' pattern; added maxBuffer cap and inline rationale for SonarCloud S4036 acknowledgment (PATH search is intentional for npm-style commands; args are hardcoded and untrusted-input-free)."
+    },
+    {
+      "item": "Qodo R1 #6 — existsSync to statSync (TOCTOU)",
+      "rationale": "User-confirmed reject (option B). Synchronous audit script with no security boundary between existsSync and any subsequent read; the read is in its own try-block. No exploit window. Qodo's own importance score: 3/10 with 'minimal practical value in this synchronous audit script'."
+    }
+  ],
+  "sources": ["sonarcloud", "qodo", "gemini", "doc-lint"],
+  "threat_model_flags": [
+    "injection (S4036 PATH + shell:true)",
+    "TOCTOU (existsSync race)",
+    "path-traversal (dim3 missing validatePathInDir)"
+  ],
+  "plan": {
+    "commit_1": "CRITICAL security — path traversal + propagation",
+    "commit_2": "MAJOR bugs + CC refactor + regex DoS + doc-lint fix",
+    "commit_3": "MINOR batch cleanup"
+  },
+  "security_auditor_dispatched": true,
+  "security_auditor_agent_id": "aaa70caee22da1678"
+}

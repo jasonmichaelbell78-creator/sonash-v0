@@ -1,0 +1,41 @@
+{
+  "pr": 512,
+  "round": 2,
+  "review_number": 91,
+  "source": "mixed",
+  "total": 6,
+  "fixed": 2,
+  "deferred": 1,
+  "rejected": 3,
+  "severity": { "critical": 0, "major": 1, "minor": 2, "trivial": 0, "informational": 3 },
+  "completed_steps": [1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_sha": null,
+  "completed_at": "2026-04-15T01:30:00Z",
+  "sources": ["sonarcloud", "qodo-compliance", "ci-test-coverage"],
+  "fixed_items": [
+    { "id": "m1", "what": "L114 indexOf -> includes" },
+    { "id": "m2", "what": "L115 indexOf -> includes" }
+  ],
+  "deferred_items": [
+    {
+      "item": "M1 — test coverage gap (CI blocker)",
+      "debt_id": "DEBT-45655",
+      "rationale": "User-confirmed (option A). Underlying gap: 0% test coverage on 839-line reference implementation. Immediate workaround: added to .test-baseline.json to unblock CI. Proper fix (comprehensive node:test suite mocking state files + exercising all 9 dimensions + security helpers + JSON/human modes) belongs in its own PR — DEBT-45655 tracks. Single canonical disposition: deferred (the baseline addition is just the workaround, not the fix)."
+    }
+  ],
+  "rejected_items": [
+    {
+      "item": "Qodo Compliance i1 — PATH-based execution (now also covers git)",
+      "rationale": "Cross-round dedup: extends R1 Qodo #2 rejection rationale to git grep. Same justification: hardcoded args (no untrusted input concatenation), trusted PATH (developer/CI environment), no exploit window. Documented inline in R1 commit; same rationale applies."
+    },
+    {
+      "item": "Qodo Compliance i2 — Path disclosure in error messages",
+      "rationale": "User-accepted (option A). statePath/skillDir in error messages are useful for debugging in dev/CI context. Script is run by developers with access to the project anyway; informational ⚪ severity confirms this is a soft observation, not a vulnerability."
+    },
+    {
+      "item": "Qodo Compliance i3 — Unstructured console logs",
+      "rationale": "User-accepted (option A). printHumanStream is intentionally human-readable; --json flag (already exists at L101-104) covers structured-output use case for centralized log ingestion. Separation of concerns: one mode per output target."
+    }
+  ]
+}

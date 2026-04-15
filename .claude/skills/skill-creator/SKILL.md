@@ -245,11 +245,22 @@ convergence-loop programmatic mode into that phase. Reference
 `/convergence-loop` SKILL.md "Programmatic Mode" section for the integration
 contract.
 
-**Self-audit phase (MUST for Standard/Complex):** Write a self-audit phase into
-the created skill as the penultimate phase (before Closure). Reference
-SKILL_STANDARDS.md "Self-Audit at Completion" for the 9 verification dimensions.
-Customize with the skill's specific deliverables, downstream contracts, and
-regression detection needs from Phase 3 planning.
+**Self-audit phase (MUST for Standard/Complex):** Two parts.
+
+1. **Prose phase in SKILL.md** — write a self-audit phase as the penultimate
+   phase (before Closure). Reference SKILL_STANDARDS.md "Self-Audit at
+   Completion" for the 9 verification dimensions. Customize with the skill's
+   specific deliverables, downstream contracts, and regression detection needs
+   from Phase 3 planning.
+2. **Scaffold the script** — create `scripts/skills/<skill-name>/self-audit.js`
+   per [SELF_AUDIT_PATTERN.md](../_shared/SELF_AUDIT_PATTERN.md). Use
+   `scripts/skills/skill-audit/self-audit.js` as the template and replace
+   domain-specific dimension checks. The Phase 5 prose in SKILL.md MUST invoke
+   this script first (per pattern doc §Wiring to SKILL.md Phase 5), with prose
+   handling judgment-only checks afterwards.
+
+If skill is Simple tier (<50 lines, reference-only), skip both parts — the "Done
+when:" gate is sufficient per SKILL_STANDARDS.md.
 
 ### 4.4 Write Companions (SHOULD)
 
@@ -277,9 +288,12 @@ templates, question banks to companion files.
    implementation. Decisions with no grep match are MISSING — fix before
    proceeding to Phase 6. See SKILL_STANDARDS.md "Self-Audit at Completion."
 
-7. **Self-audit phase present** (MUST for Standard/Complex) — verify the created
-   skill includes a self-audit phase positioned as penultimate, referencing
-   SKILL_STANDARDS.md dimensions appropriate to its tier
+7. **Self-audit phase present** (MUST for Standard/Complex) — verify both: (a)
+   SKILL.md includes a self-audit phase positioned as penultimate, referencing
+   SKILL_STANDARDS.md dimensions appropriate to tier; (b)
+   `scripts/skills/<name>/self-audit.js` exists and follows
+   [SELF_AUDIT_PATTERN.md](../_shared/SELF_AUDIT_PATTERN.md) (matching CLI
+   shape, exit codes, SUMMARY block, required helpers).
 8. **Contract verification wired** (MUST if downstream consumers) — verify the
    self-audit checks output against documented consumer expectations
 
@@ -344,7 +358,8 @@ behavioral quality that structural validation cannot catch.
   `/convergence-loop` (Phase 4.3: wire into created skill if T25 applies; Phase
   5: verify created skill's codebase claims)
 - **References:** [SKILL_STANDARDS.md](../_shared/SKILL_STANDARDS.md) (Phase 5
-  content checklist),
+  content checklist), [SELF_AUDIT_PATTERN.md](../_shared/SELF_AUDIT_PATTERN.md)
+  (Phase 4.3 scaffold + Phase 5 verification),
   [SKILL_AGENT_POLICY.md](../../../docs/agent_docs/SKILL_AGENT_POLICY.md)
 - **Handoff:** State file documents intent + discovery decisions for skill-audit
 
@@ -354,6 +369,7 @@ behavioral quality that structural validation cannot catch.
 
 | Version | Date       | Description                                                                          |
 | ------- | ---------- | ------------------------------------------------------------------------------------ |
+| 3.4     | 2026-04-14 | Phase 4.3 + 5.7: scaffold + verify scripts/skills/<name>/self-audit.js per pattern   |
 | 3.3     | 2026-04-04 | Add mandatory self-audit phase for Standard/Complex skills (9 dimensions)            |
 | 3.2     | 2026-03-15 | Skill-audit: CL verify MUST for Complex, reorder Phase 5, anti-patterns to REFERENCE |
 | 3.1     | 2026-03-15 | Convergence-loop integration: Phase 4.3 build + Phase 5 verify                       |
