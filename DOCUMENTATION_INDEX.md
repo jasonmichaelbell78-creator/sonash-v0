@@ -1572,7 +1572,7 @@ _Uncategorized_
 | Document                                                                                       | Description                                                      | References | Last Modified |
 | ---------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- | ---------- | ------------- |
 | [CAS — Remaining Tasks to Close T28](.planning/content-analysis-system/REMAINING_CAS_TASKS.md) | -                                                                | ↓0 ↑1      | 2026-04-15    |
-| [CAS Step A — Multi-Skill Audit Handoff](.planning/content-analysis-system/STEP_A_HANDOFF.md)  | -                                                                | ↓1 ↑0      | 2026-04-15    |
+| [CAS Step A — Multi-Skill Audit Handoff](.planning/content-analysis-system/STEP_A_HANDOFF.md)  | -                                                                | ↓0 ↑0      | 2026-04-15    |
 | [Decision Record: T28 Content Analysis System](.planning/content-analysis-system/DECISIONS.md) | -                                                                | ↓0 ↑0      | 2026-04-09    |
 | [Diagnosis: T28 Content Analysis System](.planning/content-analysis-system/DIAGNOSIS.md)       | -                                                                | ↓0 ↑0      | 2026-04-09    |
 | [Implementation Plan: T28 Content Analysis System](.planning/content-analysis-system/PLAN.md)  | > **Status:** ⏳ **NEAR-COMPLETE** — 13 of 15 steps done (Ses... | ↓0 ↑0      | 2026-04-14    |
@@ -3503,7 +3503,7 @@ _Reference_
 | Document                              | Description                                                       | References | Last Modified |
 | ------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [AI Workflow Guide](AI_WORKFLOW.md)   | \*\*Every phase, section, or milestone completion MUST include... | ↓11 ↑17    | 2026-03-25    |
-| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑9      | 2026-04-15    |
+| [Session Context](SESSION_CONTEXT.md) | Quick session-to-session handoff context for AI coding sessi...   | ↓7 ↑8      | 2026-04-15    |
 
 ### scripts (Tier 4)
 
@@ -3581,10 +3581,10 @@ Documents that link to other documents most frequently:
 | [Development Guide](DEVELOPMENT.md)                                                                       | 11             |
 | [Documentation Inventory](docs/README.md)                                                                 | 11             |
 | [AI Context &amp; Rules for SoNash](CLAUDE.md)                                                            | 10             |
-| [Session Context](SESSION_CONTEXT.md)                                                                     | 9              |
 | [Review Policy Index](docs/REVIEW_POLICY_INDEX.md)                                                        | 9              |
 | [RESUME: research-discovery-standard-v2](.research/research-discovery-standard-v2/RESUME.md)              | 8              |
 | [Contributing to SoNash](CONTRIBUTING.md)                                                                 | 8              |
+| [Session Context](SESSION_CONTEXT.md)                                                                     | 8              |
 | [Enhancement Audit Template \(Multi-AI Injectable\)](docs/audits/multi-ai/templates/ENHANCEMENT_AUDIT.md) | 8              |
 | [Multi-AI Review JSONL Schema Standard](docs/templates/JSONL_SCHEMA_STANDARD.md)                          | 8              |
 | [audit-comprehensive](.claude/skills/audit-comprehensive/SKILL.md)                                        | 6              |
@@ -3597,7 +3597,7 @@ Documents that link to other documents most frequently:
 
 Documents with no inbound links (not referenced by any other document):
 
-**1397 orphaned documents:**
+**1398 orphaned documents:**
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
@@ -4199,6 +4199,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Diagnosis: T28 Content Analysis System](.planning/content-analysis-system/DIAGNOSIS.md)
 - [Implementation Plan: T28 Content Analysis System](.planning/content-analysis-system/PLAN.md)
 - [CAS — Remaining Tasks to Close T28](.planning/content-analysis-system/REMAINING_CAS_TASKS.md)
+- [CAS Step A — Multi-Skill Audit Handoff](.planning/content-analysis-system/STEP_A_HANDOFF.md)
 - [AUDIT: Creator View Comprehensive Upgrade](.planning/creator-view-upgrade/AUDIT.md)
 - [DIAGNOSIS: Creator View Comprehensive Upgrade](.planning/creator-view-upgrade/DIAGNOSIS.md)
 - [PLAN: Creator View Comprehensive Upgrade](.planning/creator-view-upgrade/PLAN.md)
@@ -5716,7 +5717,7 @@ Documents with no inbound links (not referenced by any other document):
 | 708  | [.planning/research-discovery-standard/PLAN.md](.planning/research-discovery-standard/PLAN.md)                                                                                                                             | Research &amp; Discovery Standard — Implementation Plan                                                                                  | 4    | DRAFT — Pending Approval                                                                                                  |
 | 709  | [.planning/skill-audit-batch-mode/DECISIONS.md](.planning/skill-audit-batch-mode/DECISIONS.md)                                                                                                                             | DECISIONS: Multi-skill Batched Audit Mode for /skill-audit                                                                               | 4    | Decision record — source of truth for implementation                                                                      |
 | 710  | [.planning/skill-audit-batch-mode/DIAGNOSIS.md](.planning/skill-audit-batch-mode/DIAGNOSIS.md)                                                                                                                             | DIAGNOSIS: Multi-skill Batched Audit Mode for /skill-audit                                                                               | 4    | Phase 0 — awaiting user confirmation before Discovery                                                                     |
-| 711  | [.planning/skill-audit-batch-mode/PARITY_TEST.md](.planning/skill-audit-batch-mode/PARITY_TEST.md)                                                                                                                         | Skill-Audit Batch Mode — Parity Test                                                                                                     | 4    | EXECUTED 2026-04-15 \(Session #282\) — **VERDICT: PASS \(with caveats\)**                                                 |
+| 711  | [.planning/skill-audit-batch-mode/PARITY_TEST.md](.planning/skill-audit-batch-mode/PARITY_TEST.md)                                                                                                                         | Skill-Audit Batch Mode — Parity Test                                                                                                     | 4    | EXECUTED 2026-04-15 \(Session #282\) — \*\*VERDICT:                                                                       |
 | 712  | [.planning/skill-audit-batch-mode/parity-run-batch.md](.planning/skill-audit-batch-mode/parity-run-batch.md)                                                                                                               | Parity Test — Run 2 \(batch mode\)                                                                                                       | 4    | -                                                                                                                         |
 | 713  | [.planning/skill-audit-batch-mode/parity-run-single.md](.planning/skill-audit-batch-mode/parity-run-single.md)                                                                                                             | Parity Test — Run 1 \(single mode\)                                                                                                      | 4    | -                                                                                                                         |
 | 714  | [.planning/skill-audit-batch-mode/PLAN.md](.planning/skill-audit-batch-mode/PLAN.md)                                                                                                                                       | PLAN: Multi-skill Batched Audit Mode for /skill-audit                                                                                    | 4    | ⏳ NEW \(0 of 23 steps complete — 22 numbered + 1 sub-step 5b\)                                                           |

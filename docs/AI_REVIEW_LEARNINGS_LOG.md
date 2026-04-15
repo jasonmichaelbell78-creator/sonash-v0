@@ -366,6 +366,24 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#82)</summary>
+
+- **Date:** 2026-04-15
+- **Reviews consolidated:** #review-pr493-r1-#rev-91
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#81)</summary>
+
+- **Date:** 2026-04-15
+- **Reviews consolidated:** #review-pr493-r1-#rev-91
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#80)</summary>
 
 - **Date:** 2026-04-15
@@ -1318,8 +1336,8 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~5630 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 25    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~5860 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 27    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -2036,6 +2054,72 @@ deduplicated, non-overlapping ranges):
 - two compliance findings can pull opposite directions on the same file
 - new test files attract SonarCloud lint items; worth pre-push linting on
   creation
+
+---
+
+### Review rev-90: PR #512 R1 - Mixed (SonarCloud + Qodo + Gemini + Doc Lint) (2026-04-15)
+
+**Date:** 2026-04-15 | **PR:** #512 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 30    | 27    | 1        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 3        | 9     | 16    | 2       |
+
+**Patterns:**
+
+- normalize-state-fields-before-fs-ops
+- string-parse-over-regex-for-delimiters
+- reject-suggestions-incompatible-with-runtime
+
+**Learnings:**
+
+- Node CVE-2024-27980 blocks .cmd/.bat with shell:false
+- REFERENCE.md schema field semantics MUST be respected by reference
+  implementations
+- Hook auto-append without dedup compounds: 95% duplication in two state files
+- Security threat model on every PR touching scripts/ catches real risks (3
+  flags this PR)
+
+---
+
+### Review rev-91: PR #512 R2 - Mixed (SonarCloud + Qodo Compliance + CI test coverage) (2026-04-15)
+
+**Date:** 2026-04-15 | **PR:** #512 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 2     | 1        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 1     | 2     | 0       |
+
+**Patterns:**
+
+- cross-round-dedup-saves-investigation-cost
+- baseline-untested-but-track-as-debt
+- accept-with-rationale-beats-token-fixes-on-informational
+
+**Learnings:**
+
+- Cross-round dedup works: R1 npm.cmd rejection rationale extended naturally to
+  R2 git grep flag — same hardcoded-args trusted-PATH logic
+- Test baseline is the right gate for reference implementations: untested =
+  pattern propagates without quality bar; tracked as DEBT-45655 not silently
+  skipped
+- Qodo Compliance ⚪ severity is observational, not blocking — informational
+  items still need explicit dispositions per skill rule
+- R2 disposition discipline: M1 had a workaround (baseline) AND a deferred fix
+  (test suite). The canonical disposition is the underlying gap (deferred), not
+  the workaround
 
 ## Key Patterns
 

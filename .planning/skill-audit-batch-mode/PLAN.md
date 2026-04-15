@@ -579,7 +579,7 @@ with mode field; multi-mode extensions shown.
 
 ## Phase F: Parity Test + Faithfulness Verification
 
-### Step 19: Select parity-test skill + document procedure ⏳ NEW
+### Step 19: Select parity-test skill + document procedure ✅ DONE (Session #282)
 
 **File:** `.planning/skill-audit-batch-mode/PARITY_TEST.md` (new file)
 
@@ -604,7 +604,7 @@ criteria.
 
 ---
 
-### Step 20: Execute parity test + document results ⏳ NEW
+### Step 20: Execute parity test + document results ✅ DONE (Session #282 — PASS with same-session bias caveat)
 
 **File:** `.planning/skill-audit-batch-mode/PARITY_TEST.md` (updated with
 results)

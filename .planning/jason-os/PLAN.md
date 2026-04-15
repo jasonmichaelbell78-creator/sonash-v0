@@ -1,6 +1,6 @@
 # Research Roadmap: JASON-OS
 
-## Summary
+## Summary/deep-rese
 
 A 16-domain research program to build the knowledge foundation for JASON-OS — a
 portable Claude Code operating system extracted from SoNash. Research is

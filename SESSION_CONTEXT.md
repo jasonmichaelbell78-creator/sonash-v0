@@ -1,9 +1,10 @@
 # Session Context
 
-**Document Version**: 8.34 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.35 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-14 (Session #281 — skill-audit batch-mode plan: deep-plan + 4 waves
-implemented across SKILL.md/REFERENCE.md/self-audit.js/audit-review-team.md)
+2026-04-15 (Session #282 — skill-audit batch `2026-04-15-analysis-quartet`
+executed: 7 waves, 9 commits on branch 41526, CAS handler quartet upgraded to
+v2.0/v5.0 + 4 self-audit scripts + shared foundations)
 
 ## Purpose
 
@@ -30,11 +31,14 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-14 (Session #280 — Step 3 self-audit pattern
-complete, autonomous mode). **Branch**: `planning-41426` (7 commits ahead of
-origin). **Working On**: Self-audit pattern infrastructure shipped. Step A
-(7-skill /skill-audit on CAS) is the next user-decision-required task — paused
-for user return.
+**Last Checkpoint**: 2026-04-15 (Session #282 — skill-audit batch COMPLETE, 9
+commits on branch 41526, ready to push + PR). **Branch**: `41526` (9 commits
+ahead of `origin/main`). **Working On**: COMPLETE — CAS handler quartet
+(repo/website/document/media-analysis) audited and rewritten. Batch ID
+`2026-04-15-analysis-quartet`. Status file
+`.claude/state/task-skill-audit-batch-2026-04-15-analysis-quartet.state.json`
+updated to `status: "complete"`. Follow-ups deferred: full `/analyze` audit, 5
+skill-creator gaps identified Phase 3, T28 Step B (/recall E2E).
 
 **Session #280 work (summary)**:
 
@@ -220,6 +224,56 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 ---
 
 ## Recent Session Summaries
+
+**Session #282** (SKILL-AUDIT BATCH `2026-04-15-analysis-quartet` — 7 WAVES, 9
+COMMITS):
+
+- **Branch**: `41526` (9 commits ahead of origin, ready to push + PR)
+- **Commits**: `ccddea68` (Wave 1 foundation: \_shared/TAG_SUGGESTION.md +
+  CONVENTIONS §18 Prior Feedback Replay + repo-analysis/ARCHIVE.md), `927c22f7`
+  (Wave 2 repo-analysis v5.0, **breaking: phase 4b→3.5**), `b9df4ab8` (Wave 2
+  website-analysis v2.0), `07b41daa` (Wave 2 document-analysis v2.0, **breaking:
+  Cat 2-E + Pattern 10 phase renumber**), `2b3309a8` (Wave 2 media-analysis
+  v2.0, **breaking: phase 4b→3.5**), `8bf4de31` (Wave 4 /analyze v1.2 handoff
+  contract formalized), `2ae89115` (Wave 5 T28 tagline cleanup across CAS
+  family), `dd4157a3` (Wave 6: 4 per-skill self-audit.js scripts), `397a9635`
+  (Wave 7 validation: fix validatePathInDir arg order + graceful ENOENT).
+- **Resumed paused batch from Phase 4 Wave 1**. Parent state file preserved 17
+  cross-skill decisions across 15 patterns from prior discovery / Phase 3
+  challenge waves. User confirmed judgment calls for each wave (version bumps,
+  phase renumbers, line-count tolerance, script-last sequencing).
+- **All 4 CAS handler SKILL.md files rewritten** with: /analyze router ack,
+  Warm-up block, Routing Guide table, PHASE N of M markers, Delegation &
+  Defaults table, consolidated top-5 Guard Rails, scope-explosion soft prompts
+  (repo >100 curated-list entries / site >50 pages / doc >100 pages / media
+  > 60 min), Done-when gates on MUST phases, Tag Suggestion body replaced with
+  > `_shared/TAG_SUGGESTION.md` reference, Prior Feedback Replay pointer to
+  > CONVENTIONS §18, enriched invocation tracking, NEW Integration + Retro +
+  > Invocation sections for document + media (previously missing), output lists
+  > reformatted as tables, REFERENCE.md absorption of Content Eval / Coverage
+  > Audit / Extraction Tracking detail.
+- **4 new self-audit scripts** under `scripts/skills/<name>/self-audit.js` —
+  wrap shared `scripts/cas/self-audit.js` floor per SELF_AUDIT_PATTERN.md, add
+  skill-specific checks (repomix / meta.json / deep-read.md / transcript.md
+  - transcript_source). Validation bug found and fixed during Wave 7:
+    validatePathInDir arg order was swapped; graceful missing-file handling via
+    fs.existsSync pre-check.
+- **COMMAND_REFERENCE.md bumped** through v8.3 → v8.10 with one entry per wave.
+  T28 tagline cleanup in recall + synthesize descriptions; /synthesize "(T29)"
+  title suffix removed; analyze REFERENCE §4.3 Handler Availability updated to
+  current v2.0/v5.0 Mature status.
+- **Line counts** (SKILL.md, aspirational 300-line target missed, justified by
+  new sections): repo-analysis 661→563; website-analysis 371→385 (+15 net with
+  much richer content); document-analysis 288→426 (gap-fill: +138); media-
+  analysis 315→462 (gap-fill: +147).
+- **Known follow-ups deferred**: full /analyze audit (separate skill-audit run),
+  5 skill-creator gaps (TAG_SUGGESTION shared-template guidance, prior- feedback
+  replay pattern, soft-prompt-vs-hard-block distinction, /analyze router ack
+  guidance, Warm-up + PHASE N of M in UX checklist).
+- **Smoke-test**: repo-analysis self-audit against
+  `.research/analysis/archivebox-archivebox/` — source_type PASS, repomix FAIL
+  (legitimate: repomix-output.txt is gitignored), phase_ordering WARN
+  (legitimate: no state file). Script works as designed.
 
 **Session #279** (TRIAGE 4 FIXED + T29 PLAN CLOSED + AUTO-RENDER HOOK + CAS
 HYGIENE):
@@ -471,25 +525,29 @@ HYGIENE):
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                                                   |
-| ---------------------------------- | ------------- | ------------------------------------------------------------------------------------------ |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                      |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                     |
-| **Repo Analysis Skill**            | v4.6 ACTIVE   | Section 2b Use-As-Is Verdict now MUST for product repos. Bumped Session #278.              |
-| **T28 Content Analysis System**    | E2E DONE      | 33 Standard sources (GitNexus added #278), 343 unique candidates. Vocabulary 187 tags.     |
-| **T29 Synthesis Consolidation**    | STEP 12 DONE  | Steps 11-12 PASS. Step 14 effectively done. Remaining: Step 13 (paradigm/scoped), Step 15. |
-| **Wave 5 Opportunity Ledger**      | 17 ENTRIES    | 12 Wave 5 + 5 new from #278 incremental. Rank 1 (eval harness) is the new S-tier.          |
-| **T40 CAS tag quality**            | COMPLETE      | Session #276.                                                                              |
-| **T39 Hook Drift Loop**            | CLOSED        | Session #275. Needs new PR (deferred).                                                     |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed.                                                                   |
-| **Plan Orchestration**             | WAVE 1 DONE   | Waves 2-3 blocked on debt-runner.                                                          |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started #245, XL effort.                                                                   |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                       |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                     |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                     |
-| **T48 Adoption Verdict Backfill**  | NEW #278      | Backfill Section 2b on ~20 prior product-repo analyses.                                    |
+| Item                               | Status        | Progress                                                                                              |
+| ---------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                                 |
+| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                                |
+| **Repo Analysis Skill**            | v5.0 ACTIVE   | Phase 4b→3.5 breaking rewrite (Session #282). Warm-up + Routing Guide + Delegation + self-audit.js.   |
+| **Website Analysis Skill**         | v2.0 ACTIVE   | Session #282 rewrite: Warm-up + Routing Guide + scope-explosion (>50 pages) + self-audit.js.          |
+| **Document Analysis Skill**        | v2.0 ACTIVE   | Session #282 breaking rewrite: Cat 2-E + Pattern 10 phase renumber, NEW Integration/Retro/Invocation. |
+| **Media Analysis Skill**           | v2.0 ACTIVE   | Session #282 rewrite: transcript.md MUST per §13.3, NEW Integration/Retro/Invocation + self-audit.js. |
+| **T28 Content Analysis System**    | E2E DONE      | 33 Standard sources (GitNexus added #278), 343 unique candidates. Vocabulary 187 tags.                |
+| **T29 Synthesis Consolidation**    | STEP 12 DONE  | Steps 11-12 PASS. Step 14 effectively done. Remaining: Step 13 (paradigm/scoped), Step 15.            |
+| **Wave 5 Opportunity Ledger**      | 17 ENTRIES    | 12 Wave 5 + 5 new from #278 incremental. Rank 1 (eval harness) is the new S-tier.                     |
+| **T40 CAS tag quality**            | COMPLETE      | Session #276.                                                                                         |
+| **T39 Hook Drift Loop**            | CLOSED        | Session #275. Needs new PR (deferred).                                                                |
+| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed.                                                                              |
+| **Plan Orchestration**             | WAVE 1 DONE   | Waves 2-3 blocked on debt-runner.                                                                     |
+| **Dev Dashboard**                  | IN-PROGRESS   | Started #245, XL effort.                                                                              |
+| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                                  |
+| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                                |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                                |
+| **T48 Adoption Verdict Backfill**  | NEW #278      | Backfill Section 2b on ~20 prior product-repo analyses.                                               |
 
-**Current Branch**: `planning-41426`
+**Current Branch**: `41526` (9 commits ahead of origin, skill-audit batch
+complete)
 
 **Test Status**: 3720 pass, 0 fail, 1 skip (last verified Session #275)
 
@@ -509,65 +567,73 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **Parity test for skill-audit batch mode** (skill-audit-batch-mode PLAN Steps
-   19-20, deferred from Session #281). Run `/skill-audit recall --mode=single`
-   and `--mode=batch`; compare findings category-by-category; document in new
-   `.planning/skill-audit-batch-mode/PARITY_TEST.md`. Accepts if ≥80% suggestion
-   overlap per category + zero missing cons/gaps. ~15-30 min.
+1. **Push branch 41526 + open PR** (Session #282). 9 commits ready, PR body in
+   `docs/PR-41526.md` or generate from `git log`. Covers Waves 1-7 of
+   skill-audit batch `2026-04-15-analysis-quartet`. **Breaking change alert**: 3
+   skills have phase-renumber breaking changes (repo, document, media —
+   state-file auto-migration windows through v2.2). PR should call these out
+   prominently.
 
-2. **Close T28 — CAS Step A: `/skill-audit` on 7 CAS skills** (analyze, recall,
-   repo-analysis, website-analysis, document-analysis, media-analysis,
-   synthesize). Tracker T38 (currently blocked on T28 — unblock when starting).
-   Parallelizable via 7 code-reviewer agents using the synthesis-consolidation
-   Step 15 audit prompt as template. ~30-60 min total. See
-   `.planning/content-analysis-system/REMAINING_CAS_TASKS.md` Step A for full
-   spec.
+2. **Full `/analyze` audit** — deferred follow-up from batch Phase 3 decision.
+   Run `/skill-audit analyze --mode=single` now that its v1.2 handoff contract
+   is locked in. Should be lighter than handler audits since router is thin.
 
-3. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
+3. **5 skill-creator gap updates** — narrow update adding TAG_SUGGESTION
+   shared-template guidance, prior-feedback replay pattern, soft-prompt-vs-
+   hard-block distinction, /analyze router ack for router-dispatched skills,
+   Warm-up + PHASE N of M in UX checklist. Identified Phase 3 of the batch.
+   Separate narrow /skill-creator update, not blocking anything.
+
+4. **Close T28 — CAS Step A remaining skills** (analyze [now queued], recall,
+   synthesize). The 4 handler skills done in Session #282 were the hardest
+   slice. Tracker T38 remains blocked on T28 closure.
+
+5. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
    `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries (tag,
    type, FTS5, cross-source) → verify extraction-journal + last_synthesized_at.
    ~15-30 min. See REMAINING_CAS_TASKS.md Step B.
 
-4. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
+6. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
    banner to ✅ COMPLETE, unblock T38, SESSION_CONTEXT note.
 
-5. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
+7. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
    2b to ~20 prior product-repo analyses (application/framework/tool-demo
    taxonomic). Parallelizable via agents (1 per repo). Could pair naturally with
    Step A skill-audit since both touch the same artifacts.
 
-6. **T49 — Fix /deep-plan template gap** (discovered Session #279). 3-part fix:
+8. **T49 — Fix /deep-plan template gap** (discovered Session #279). 3-part fix:
    (a) update REFERENCE.md PLAN.md template with status banner + per-step
    markers; (b) update SKILL.md Critical Rule for plan hygiene maintenance; (c)
    add `npm run plans:hygiene` checker. Prevents future drift in any new PLAN.md
    created via /deep-plan.
 
-7. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
+9. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
    sources (Sober Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase
    reference, TS MCP SDK, whisper.cpp, monolith, readable-cli, SBOM). Method:
    `/analyze` each, then `/synthesize --resume` to diff against current
    baseline.
 
-8. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
-   measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench
-   shape, per-instance cached by `(repo, commit)`. SoNash adaptation: curated
-   scenarios from review history + extraction journal, pattern-aware vs
-   pattern-unaware agent comparison.
+10. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
+    measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench
+    shape, per-instance cached by `(repo, commit)`. SoNash adaptation: curated
+    scenarios from review history + extraction journal, pattern-aware vs
+    pattern-unaware agent comparison.
 
-9. **GitNexus trial** (if license resolves permissive) — license check → install
-   on throwaway branch → use for one real task → adopt/extract decision.
+11. **GitNexus trial** (if license resolves permissive) — license check →
+    install on throwaway branch → use for one real task → adopt/extract
+    decision.
 
-10. **Remaining Wave 5 opportunity matrix items** — entries pending status
+12. **Remaining Wave 5 opportunity matrix items** — entries pending status
     update in ledger (marketplace.json distribution, bidirectional doc-feature
     validator, zero-schema MCP, OAuth-filter MCP, skill retirement spec, etc.).
 
-11. **T45** — Hook-based skill compliance enforcement (5 highest-risk skills).
-12. **T46** — Cross-locale memory sync STRATEGY (research only).
-13. **T42** — Nous Research Hermes model series research (P3).
-14. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
-15. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-16. **Multi-layer memory (T4)** — Research done.
-17. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+13. **T45** — Hook-based skill compliance enforcement (5 highest-risk skills).
+14. **T46** — Cross-locale memory sync STRATEGY (research only).
+15. **T42** — Nous Research Hermes model series research (P3).
+16. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
+17. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+18. **Multi-layer memory (T4)** — Research done.
+19. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
 
 ### Backlog (run `/todo` for full list — see TODOS.md, ~25 active, 48 total)
 
