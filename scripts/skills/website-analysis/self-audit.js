@@ -20,7 +20,7 @@ const { spawnSync } = require("node:child_process");
 const { sanitizeError, validatePathInDir } = require("../../lib/security-helpers.js");
 const { safeReadJson } = require("../../lib/safe-cas-io.js");
 
-const PROJECT_ROOT = path.resolve(__dirname, "../../..");
+const PROJECT_ROOT = path.resolve(__dirname, "../../.."); // validatePathInDir: constant-path (no user input)
 const ANALYSIS_DIR = path.join(PROJECT_ROOT, ".research", "analysis");
 const CAS_AUDIT = path.join(PROJECT_ROOT, "scripts", "cas", "self-audit.js");
 

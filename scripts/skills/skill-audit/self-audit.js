@@ -151,7 +151,7 @@ function loadState(targetSkill, stateOverride) {
   // validatePathInDir below is the primary containment; this layer narrows the
   // attack window for TOCTOU between resolve() and readFileSync.
   const statePath = stateOverride
-    ? path.resolve(PROJECT_ROOT, stateOverride)
+    ? path.resolve(PROJECT_ROOT, stateOverride) // validatePathInDir: enforced immediately below
     : path.join(STATE_DIR, `task-skill-audit-${targetSkill}.state.json`);
 
   // Containment: if override path, must still be inside project root
