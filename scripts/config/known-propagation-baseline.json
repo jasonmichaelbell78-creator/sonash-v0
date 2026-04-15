@@ -4167,6 +4167,13 @@
       "file": "scripts/health/lib/health-log.js",
       "addedAt": "2026-04-11",
       "reason": "pre-existing at PR #507 R2 FP bundle commit. Uses bare statSync without lstatSync + isSymbolicLink (TOCTOU guard pattern from PR #388/#397). Not touched by PR #507 — baselining to land FP bundle cleanly. Schedule follow-up TDMS item."
+    },
+    {
+      "type": "pattern",
+      "key": "validate-path",
+      "file": ".claude/hooks/post-todos-render.js",
+      "addedAt": "2026-04-15",
+      "reason": "False positive at PR #512 R1. File has stronger containment than validatePathInDir(): isCanonicalTodosPath() at L69-86 enforces strict exact-path equality (more restrictive than prefix containment), lstatSync symlink rejection at L74-78, realpathIfExists() on both sides of path.relative() at L96-97, plus an explicit traversal check at L100 (the CLAUDE.md-recommended pattern). Audited by security-auditor in prior PR. The validate-path antiPattern regex matches naively on path.resolve() without recognizing equivalent custom containment. No follow-up TDMS — security posture is correct."
     }
   ]
 }
