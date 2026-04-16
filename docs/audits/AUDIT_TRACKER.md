@@ -1,6 +1,6 @@
 # Audit Tracker
 
-**Document Version:** 2.8 **Created:** 2026-01-08 **Last Updated:** 2026-02-23
+**Document Version:** 2.9 **Created:** 2026-01-08 **Last Updated:** 2026-04-16
 **Purpose:** Track single-session and multi-AI audit completions for threshold
 management
 
@@ -46,12 +46,12 @@ When tracking audits:
 
 | Category                 | Last Audit                 | Commits Since | Files Since | Trigger At                                |
 | ------------------------ | -------------------------- | ------------- | ----------- | ----------------------------------------- |
-| Code                     | 2026-02-23 (Comprehensive) | 0             | 0           | 25 commits OR 15 files                    |
-| Security                 | 2026-02-23 (Comprehensive) | 0             | 0           | Any security-sensitive file OR 20 commits |
-| Performance              | 2026-02-23 (Comprehensive) | 0             | 0           | 30 commits OR bundle change               |
-| Refactoring              | 2026-02-23 (Comprehensive) | 0             | 0           | 40 commits OR 3 complexity warnings       |
-| Documentation            | 2026-02-23 (Comprehensive) | 0             | 0           | 20 doc files changed OR 30 commits        |
-| Process                  | 2026-02-23 (Comprehensive) | 0             | 0           | Any CI/hook file changed OR 30 commits    |
+| Code                     | 2026-04-16 (Baseline)      | 0             | 0           | 25 commits OR 15 files                    |
+| Security                 | 2026-04-16 (Baseline)      | 0             | 0           | Any security-sensitive file OR 20 commits |
+| Performance              | 2026-04-16 (Baseline)      | 0             | 0           | 30 commits OR bundle change               |
+| Refactoring              | 2026-04-16 (Baseline)      | 0             | 0           | 40 commits OR 3 complexity warnings       |
+| Documentation            | 2026-04-16 (Baseline)      | 0             | 0           | 20 doc files changed OR 30 commits        |
+| Process                  | 2026-04-16 (Baseline)      | 0             | 0           | Any CI/hook file changed OR 30 commits    |
 | Engineering-Productivity | 2026-02-23 (Comprehensive) | 0             | 0           | 30 commits OR DX-impacting changes        |
 | Enhancements             | 2026-02-23 (Comprehensive) | 0             | 0           | 40 commits OR major feature complete      |
 | AI Optimization          | 2026-02-23 (Comprehensive) | 0             | 0           | 50 commits OR relevant file changes       |

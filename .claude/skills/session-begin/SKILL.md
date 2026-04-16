@@ -173,12 +173,15 @@ now / Defer / Ignore?" Do not silently decide.
 npm run crossdoc:check
 ```
 
-### 3.2 Velocity & Task Dependencies (SHOULD)
+### 3.2 Task Dependencies (SHOULD)
 
 ```bash
-node scripts/velocity/generate-report.js 2>/dev/null || true
 node scripts/tasks/resolve-dependencies.js 2>/dev/null || true
 ```
+
+> **Note:** Velocity reporting was removed in commit `7e74fada`
+> (`/alerts --full` consolidation). Do not re-add `scripts/velocity/` references
+> without first restoring the script.
 
 ---
 
