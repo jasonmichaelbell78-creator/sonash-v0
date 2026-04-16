@@ -214,6 +214,7 @@ orphaned documents.
 | .planning > archive > propagation-research                                      | 2     |
 | .planning > archive > statusline-research                                       | 2     |
 | .planning > archive > synthesis-wave5-agents                                    | 2     |
+| .research > analysis > synthesis > history                                      | 2     |
 | .research > archive > custom-statusline > challenges                            | 2     |
 | .research > archive > github-health                                             | 2     |
 | .research > archive > repo-analysis-skill > challenges                          | 2     |
@@ -246,8 +247,6 @@ orphaned documents.
 | .research > analysis > hkuds-cli-anything > \_v3-archive                        | 1     |
 | .research > analysis > karpathy-autoresearch > \_v2-archive                     | 1     |
 | .research > analysis > public-apis_public-apis > \_v3-archive                   | 1     |
-| .research > analysis > synthesis > history                                      | 1     |
-| .research > analysis > synthesis                                                | 1     |
 | .research > analysis > synthesis > test-step13                                  | 1     |
 | .research > analysis > viktoraxelsen-memskill > \_v2-archive                    | 1     |
 | .research > archive > analysis-synthesis-comparison                             | 1     |
@@ -414,7 +413,7 @@ _Claude Code skills_
 
 | Document                                                                                                                            | Description                                                       | References | Last Modified |
 | ----------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
-| [/synthesize — Reference Material](.claude/skills/synthesize/REFERENCE.md)                                                          | Companion to `SKILL.md`. Detailed specs, schemas, algorithms...   | ↓0 ↑0      | 2026-04-09    |
+| [/synthesize — Reference Material](.claude/skills/synthesize/REFERENCE.md)                                                          | Companion to `SKILL.md`. Detailed specs, schemas, algorithms...   | ↓0 ↑0      | 2026-04-16    |
 | [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)                                   | You have access to the systematic debugging skill at              | ↓0 ↑0      | 2026-01-12    |
 | [add-debt](.claude/skills/add-debt/SKILL.md)                                                                                        | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-03-20    |
 | [alerts](.claude/skills/alerts/SKILL.md)                                                                                            | -                                                                 | ↓0 ↑1      | 2026-04-08    |
@@ -549,7 +548,7 @@ _Claude Code skills_
 | [sonarcloud](.claude/skills/sonarcloud/SKILL.md)                                                                                    | Unified orchestrator for all SonarCloud operations against t...   | ↓0 ↑2      | 2026-03-12    |
 | [SonarCloud Enrichment (Step 1.5)](.claude/skills/pr-review/reference/SONARCLOUD_ENRICHMENT.md)                                     | When SonarCloud issues are detected in pasted feedback, auto...   | ↓1 ↑0      | 2026-02-14    |
 | [sonash-context](.claude/skills/sonash-context/SKILL.md)                                                                            | SoNash-specific stack, architecture, and security context co...   | ↓0 ↑0      | 2026-04-15    |
-| [synthesize](.claude/skills/synthesize/SKILL.md)                                                                                    | > **Status:** v1.2 (active). Consolidates `/repo-synthesis` ...   | ↓2 ↑0      | 2026-04-15    |
+| [synthesize](.claude/skills/synthesize/SKILL.md)                                                                                    | > **Status:** v2.0 (active). Rewritten per `/skill-audit syn...   | ↓2 ↑0      | 2026-04-16    |
 | [System Test — 23-Domain Test Plan](.claude/skills/system-test/domains.md)                                                          | <!-- prettier-ignore-start -->                                    | ↓0 ↑0      | 2026-02-24    |
 | [System Test — Complete Interactive Workflow](.claude/skills/system-test/reference/WORKFLOW.md)                                     | Full reference for the 23-domain interactive system test ski...   | ↓1 ↑0      | 2026-02-19    |
 | [system-test](.claude/skills/system-test/SKILL.md)                                                                                  | -                                                                 | ↓0 ↑1      | 2026-02-24    |
@@ -2282,21 +2281,14 @@ _Uncategorized_
 | [Deep Read — Sid Bharath Claude Code Guide](.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/deep-read.md)                 | -           | ↓0 ↑0      | 2026-04-10    |
 | [Sid Bharath: Claude Code Complete Guide — Summary](.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/summary.md)           | -           | ↓0 ↑0      | 2026-04-10    |
 
-### .research > analysis > synthesis (Tier 4)
-
-_Uncategorized_
-
-| Document                                                                                            | Description | References | Last Modified |
-| --------------------------------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Synthesis — Incremental Run (Session #278, 2026-04-13)](.research/analysis/synthesis/synthesis.md) | -           | ↓0 ↑0      | 2026-04-14    |
-
 ### .research > analysis > synthesis > history (Tier 4)
 
 _Uncategorized_
 
-| Document                                                                                                       | Description                    | References | Last Modified |
-| -------------------------------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Cross-Source Synthesis — Wave 5](.research/analysis/synthesis/history/synthesis-2026-04-13-wave5-baseline.md) | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-04-14    |
+| Document                                                                                                                  | Description                    | References | Last Modified |
+| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
+| [Cross-Source Synthesis — Wave 5](.research/analysis/synthesis/history/synthesis-2026-04-13-wave5-baseline.md)            | <!-- prettier-ignore-start --> | ↓0 ↑0      | 2026-04-14    |
+| [Synthesis — Incremental Run (Session #278, 2026-04-13)](.research/analysis/synthesis/history/synthesis-pre-v2-legacy.md) | -                              | ↓0 ↑0      | 2026-04-16    |
 
 ### .research > analysis > synthesis > test-step13 (Tier 4)
 
@@ -4383,7 +4375,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Deep Read — Sid Bharath Claude Code Guide](.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/deep-read.md)
 - [Sid Bharath: Claude Code Complete Guide — Summary](.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/summary.md)
 - [Cross-Source Synthesis — Wave 5](.research/analysis/synthesis/history/synthesis-2026-04-13-wave5-baseline.md)
-- [Synthesis — Incremental Run (Session #278, 2026-04-13)](.research/analysis/synthesis/synthesis.md)
+- [Synthesis — Incremental Run (Session #278, 2026-04-13)](.research/analysis/synthesis/history/synthesis-pre-v2-legacy.md)
 - [Step 13 Functional Test Results](.research/analysis/synthesis/test-step13/RESULTS.md)
 - [Creator View: teng-lin/notebooklm-py](.research/analysis/teng-lin_notebooklm-py/_v4-archive/creator-view.md)
 - [Engineer View: teng-lin/notebooklm-py](.research/analysis/teng-lin_notebooklm-py/_v4-archive/engineer-view.md)
@@ -5929,7 +5921,7 @@ Documents with no inbound links (not referenced by any other document):
 | 908  | [.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/deep-read.md](.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/deep-read.md)                                                   | Deep Read — Sid Bharath Claude Code Guide                                                                                                | 4    | -                                                                                                                         |
 | 909  | [.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/summary.md](.research/analysis/sidbharath-com-blog-claude-code-the-complete-guide/summary.md)                                                       | Sid Bharath: Claude Code Complete Guide — Summary                                                                                        | 4    | -                                                                                                                         |
 | 910  | [.research/analysis/synthesis/history/synthesis-2026-04-13-wave5-baseline.md](.research/analysis/synthesis/history/synthesis-2026-04-13-wave5-baseline.md)                                                                 | Cross-Source Synthesis — Wave 5                                                                                                          | 4    | -                                                                                                                         |
-| 911  | [.research/analysis/synthesis/synthesis.md](.research/analysis/synthesis/synthesis.md)                                                                                                                                     | Synthesis — Incremental Run \(Session #278, 2026-04-13\)                                                                                 | 4    | -                                                                                                                         |
+| 911  | [.research/analysis/synthesis/history/synthesis-pre-v2-legacy.md](.research/analysis/synthesis/history/synthesis-pre-v2-legacy.md)                                                                                         | Synthesis — Incremental Run \(Session #278, 2026-04-13\)                                                                                 | 4    | -                                                                                                                         |
 | 912  | [.research/analysis/synthesis/test-step13/RESULTS.md](.research/analysis/synthesis/test-step13/RESULTS.md)                                                                                                                 | Step 13 Functional Test Results                                                                                                          | 4    | -                                                                                                                         |
 | 913  | [.research/analysis/teng-lin_notebooklm-py/\_v4-archive/creator-view.md](.research/analysis/teng-lin_notebooklm-py/_v4-archive/creator-view.md)                                                                            | Creator View: teng-lin/notebooklm-py                                                                                                     | 4    | -                                                                                                                         |
 | 914  | [.research/analysis/teng-lin_notebooklm-py/\_v4-archive/engineer-view.md](.research/analysis/teng-lin_notebooklm-py/_v4-archive/engineer-view.md)                                                                          | Engineer View: teng-lin/notebooklm-py                                                                                                    | 4    | -                                                                                                                         |

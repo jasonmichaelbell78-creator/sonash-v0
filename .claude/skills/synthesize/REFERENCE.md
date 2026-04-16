@@ -24,6 +24,7 @@ that would bloat the main skill file. Read on demand during execution.
 11. [Subagent Strategy (D#20)](#11-subagent-strategy)
 12. [Reading Chain Algorithm (D#25)](#12-reading-chain-algorithm)
 13. [Opportunities Ledger](#13-opportunities-ledger)
+14. [Integration, Output Contracts & Anti-Patterns](#14-integration-output-contracts--anti-patterns)
 
 ---
 
@@ -430,6 +431,46 @@ Result: 10 PASS, 0 FAIL, 2 WARN. Acknowledged WARNs: dim 4, dim 9.
 3. Else: skip phases per `sections_completed[]`. Re-validate inputs to ensure no
    source has been re-analyzed since `started_at` (would invalidate resume).
 
+### Schema v2 additions (Session #284)
+
+`schema_version: "2.0"`. Added fields (all optional for backward compatibility
+with v1 reads; the writer populates them on every new run):
+
+- `tier_overrides[]` — per-run tier changes.
+  `[{slug, original_tier, new_tier, reason?}]`. Persisted to state for the run
+  only; handler-written tier on `analysis.json` is NOT mutated (4A).
+- `routings[]` — Phase 6 handoffs.
+  `[{opportunity_title, routed_command, handoff_context_hash, timestamp}]` (1C).
+- `invocation: {args, flags, started_at}` — for retro reconstruction (4F).
+- `files_created[]`, `files_modified[]` — strings or `"path (description)"` per
+  SELF_AUDIT_PATTERN.md normalization (12G).
+- `decisions[].file_modified` — maps each accepted decision to a file path for
+  self-audit gap analysis (12G).
+- `last_complete_run` — ISO timestamp of last terminal `status === "complete"`.
+  Used by self-audit Dim 6 partial-recovery check (12E).
+- `phase_costs[]` — `[{phase, elapsed_ms, subagent_token_estimate?}]`. Phase 2
+  > 30 min OR > 20 concurrent subagents emits an in-flight warning (13A).
+- `blocked_reason`, `blocked_at` — populated when `status === "blocked"`. The
+  blocked-run output also writes `synthesis.md` with a `## BLOCKED` header,
+  reason, and remediation; exit 1 (3H).
+- `status` enum extended:
+  `complete | no_signal | blocked | paused | failed | in_progress`.
+
+### Operational behaviors (v2)
+
+- **Parallel-run lock (13D):** `.claude/state/synthesize.lock` acquired
+  pre-Phase-1, released on terminal status. Concurrent invocations refused with
+  a clear error and a stale-lock timeout of 1 hour.
+- **Disengagement (6D):** pause / Ctrl-C → `state.status = "paused"`, progress
+  summary printed, exit 0. Resume re-enters at the start of the last incomplete
+  phase per the resume protocol above.
+- **Phase guards (6F):** each phase MUST verify prior phases are present in
+  `state.sections_completed[]`. Missing prior phase → throw + suggest
+  `--resume`.
+- **Encoding (13E):** all `.md` and `.jsonl` writes use UTF-8 explicitly with LF
+  line endings (`{ encoding: "utf8" }` for `fs.writeFile`; LF in content).
+  Required because Windows Git often CRLF-converts otherwise.
+
 ---
 
 ## 10. Synthesis JSON Schema
@@ -612,6 +653,95 @@ re-synthesis.
 Synthesis runs with prior ledger data should suppress or annotate already-
 `adopted`/`skipped` opportunities in the interactive Opportunity Matrix menu.
 (Implementation deferred — first such run will add this.)
+
+---
+
+## 14. Integration, Output Contracts & Anti-Patterns
+
+Detail extracted from SKILL.md per the v2.0 line-budget pass. Loaded on demand
+by humans reading SKILL.md's Integration / State summaries.
+
+### 14.1 Output Contracts for Consumers (3E)
+
+| Consumer              | Reads                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `/recall`             | SQLite index built from `synthesis.json`; gates on `synthesis.json.schema_version >= 1.0` (3O1). |
+| Phase 6 chain targets | `--context=<json>` per 5B; falls back to inline paste when the routed command lacks the flag.    |
+| Handler skills (4)    | Read `synthesis.json.last_synthesized_at`; MUST preserve it on subsequent handler writes (2B).   |
+| `/skill-audit`        | Reads `.claude/state/synthesize.state.json` plus `.claude/state/synthesize-audit-log.jsonl`.     |
+| `/session-end`        | Reads `state.status`; surfaces non-terminal as orphaned-run prompt (resume / abandon).           |
+
+### 14.2 Consumers (read /synthesize output)
+
+- `/recall` — queries SQLite index updated by `scripts/cas/rebuild-index.js`.
+- `/brainstorm`, `/deep-plan`, `/deep-research`, `/analyze` — routed from Phase
+  6 Opportunity Matrix.
+- `/session-end` (5A) — orphan check per 14.1.
+- `/skill-audit` — consumes state file + audit-log JSONL for Cat 12 scoring.
+
+### 14.3 Producers (write /synthesize input)
+
+- `/repo-analysis`, `/website-analysis`, `/document-analysis`, `/media-analysis`
+  — handler skills; produce the artifacts /synthesize reads.
+- `/analyze` — router; **`/analyze --synthesize` is the ONLY auto-trigger**
+  (8I). `/analyze <url>` without flag dispatches to handlers; handlers never
+  auto-call /synthesize.
+
+### 14.4 Router Contract (5E)
+
+`/analyze --synthesize` passes `--flags=<...> --context=<json>` carrying
+`{source_count, type_breakdown, triggered_by}`. Gracefully degrades to direct
+invocation when the context flag is missing — /synthesize then re-derives counts
+via PRE-FLIGHT.
+
+### 14.5 Ranking Inputs (5F, 5G)
+
+- **ROADMAP.md** active milestone informs §2 Gap Analysis and §7 Opportunity
+  Matrix ranking — opportunities aligned with the active milestone get a ranking
+  boost.
+- **SESSION_CONTEXT.md** Next Session Goals further boost goal-matching
+  opportunities so they surface first in the matrix.
+
+### 14.6 Ecosystem Impact (5H)
+
+Writes from /synthesize affect:
+
+- `/recall` SQLite index (rebuilt by Phase 5 step 4).
+- Phase 6 chain targets (`/brainstorm` etc).
+- `extraction-journal.jsonl` consumers (prior-art suppression in Phase 1).
+- `opportunities-ledger.jsonl` reader (Phase 5 step 5 upsert).
+
+### 14.7 Anti-Patterns (6G)
+
+- **Don't re-run analysis.** Consumer skill (Rule #1).
+- **Don't skip sources without logging.** Every excluded source gets a reason in
+  `state.sources_excluded[]`.
+- **Don't cap themes / candidates / sections.** Rule #6 — let evidence speak.
+- **Don't mutate handler artifacts** (except `last_synthesized_at` per 2B).
+- **Don't persist tier overrides.** `tier_overrides[]` is per-run only (4A).
+- **Don't bypass Convergence Gates** (Phase 2.5 / 4.5) without explicit user
+  override.
+
+### 14.8 Conventions Cited (9A, 9B)
+
+- Writer-not-filing-clerk framing — DECISIONS.md D#11.
+- Handler output location, error sanitization (`scripts/lib/sanitize-error.js`),
+  state file pattern — CLAUDE.md.
+- Stack: Zod 4.3.6 schemas per CLAUDE.md §1; script runners per sonash-context
+  (7I).
+
+### 14.9 Pre-commit (9I)
+
+`patterns:check` does not apply — /synthesize produces no code output. Future
+code additions (script extensions like `scripts/skills/synthesize/`) need
+pre-commit integration; the self-audit script itself IS already gated by the
+project pipeline.
+
+### 14.10 Auto-trigger from handlers (5O1)
+
+Out of scope for this audit; captured for future implementation. The intended
+shape is: handlers post-analysis emit a hint ("3+ analyzed sources detected —
+run /synthesize?") rather than calling /synthesize directly.
 
 ---
 
