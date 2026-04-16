@@ -79,7 +79,7 @@ Each skill is a self-contained command invokable via `/skill-name`. SKILL.md def
 - [/skill-ecosystem-audit](.claude/skills/skill-ecosystem-audit/SKILL.md): Comprehensive diagnostic of the skill ecosystem — 21 categories across 5 domains with composite health scoring, trend tracking, patch suggestions, and interactive finding-by-finding walkthrough. Covers all skills, cross-references, bloat de
 - [/sonarcloud](.claude/skills/sonarcloud/SKILL.md): Unified SonarCloud integration skill for fetching, syncing, reporting, and resolving code quality issues. This skill should be used when working with SonarCloud data: syncing new issues to TDMS, generating reports with code snippets, markin
 - [/sonash-context](.claude/skills/sonash-context/SKILL.md): SoNash project context injected into agent definitions via skills: field
-- [/synthesize](.claude/skills/synthesize/SKILL.md)
+- [/synthesize](.claude/skills/synthesize/SKILL.md): Write-only to `.research/analysis/synthesis/`. All 4 paradigms share an
 - [/system-test](.claude/skills/system-test/SKILL.md): recommended (can run as single long session) **Output:** Per-domain JSONL +
 - [/systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)
 - [/task-next](.claude/skills/task-next/SKILL.md): Show dependency-resolved next tasks from ROADMAP.md active sprint

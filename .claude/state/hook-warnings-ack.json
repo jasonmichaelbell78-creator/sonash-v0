@@ -1,9 +1,9 @@
 {
   "acknowledged": {
     "pr-creep": "2026-04-16T01:09:24.249Z",
-    "propagation-staged": "2026-04-16T01:09:24.249Z",
+    "propagation-staged": "2026-04-16T19:56:44.397Z",
     "trigger": "2026-04-15T19:47:02.382Z",
-    "session-end-missing": "2026-04-15T20:04:15.854Z",
+    "session-end-missing": "2026-04-16T19:39:12.047Z",
     "review-lifecycle": "2026-04-14T11:13:07.000Z",
     "tdms-s0": "2026-04-16T10:43:36.307Z",
     "mcp-secrets": "2026-04-13T13:00:54.473Z",
