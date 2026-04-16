@@ -92,14 +92,20 @@ function checkSlugCompleteness(slug) {
     const analysis = safeReadJson(analysisPath);
     if (!analysis) return { status: "FAIL", details: "analysis.json unreadable" };
 
-    // Check extraction-journal has entries for this slug
-    if (!fs.existsSync(EXTRACTION_JOURNAL)) {
-      return {
-        status: "WARN",
-        details: "analysis.json ok; extraction-journal.jsonl missing (no extractions exist yet)",
-      };
+    // Check extraction-journal has entries for this slug (try/catch covers
+    // TOCTOU between existsSync and readFileSync per CLAUDE.md Top 5 #4)
+    let journal;
+    try {
+      journal = fs.readFileSync(EXTRACTION_JOURNAL, "utf8");
+    } catch (err) {
+      if (err?.code === "ENOENT") {
+        return {
+          status: "WARN",
+          details: "analysis.json ok; extraction-journal.jsonl missing (no extractions exist yet)",
+        };
+      }
+      return { status: "FAIL", details: `extraction-journal read: ${sanitizeError(err)}` };
     }
-    const journal = fs.readFileSync(EXTRACTION_JOURNAL, "utf8");
     const journalEntries = journal
       .split("\n")
       .filter((line) => line.trim())
@@ -144,11 +150,17 @@ function checkHandoffContract() {
   const mismatches = [];
   for (const skill of HANDLER_SKILLS) {
     const skillMd = path.join(PROJECT_ROOT, ".claude", "skills", skill, "SKILL.md");
-    if (!fs.existsSync(skillMd)) {
-      missing.push(`${skill}/SKILL.md`);
+    let content;
+    try {
+      content = fs.readFileSync(skillMd, "utf8").slice(0, 3000);
+    } catch (err) {
+      if (err?.code === "ENOENT") {
+        missing.push(`${skill}/SKILL.md`);
+        continue;
+      }
+      mismatches.push(`${skill}: read error — ${sanitizeError(err)}`);
       continue;
     }
-    const content = fs.readFileSync(skillMd, "utf8").slice(0, 3000);
     const expectedType = skill.replace("-analysis", "");
     // Look for "auto_detected_type" and the expected type string in handshake area
     if (!content.includes("auto_detected_type")) {
