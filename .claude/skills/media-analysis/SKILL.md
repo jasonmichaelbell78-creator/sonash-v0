@@ -78,9 +78,12 @@ all other handlers.
 - User provides a podcast URL or audio file path
 - Evaluating media content as a knowledge source
 
-**When NOT to Use:** GitHub repo → `/repo-analysis` | Website →
-`/website-analysis` | PDF/document → `/document-analysis` | Testing webapp →
-`/webapp-testing`.
+## When NOT to Use
+
+- GitHub repo → `/repo-analysis`
+- Website → `/website-analysis`
+- PDF / document → `/document-analysis`
+- Testing webapp → `/webapp-testing`
 
 ## Input
 

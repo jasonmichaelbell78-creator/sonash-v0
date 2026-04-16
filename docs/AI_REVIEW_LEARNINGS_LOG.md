@@ -1345,8 +1345,8 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~5860 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 27    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~6130 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 29    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -2129,6 +2129,96 @@ deduplicated, non-overlapping ranges):
 - R2 disposition discipline: M1 had a workaround (baseline) AND a deferred fix
   (test suite). The canonical disposition is the underlying gap (deferred), not
   the workaround
+
+---
+
+### Review rev-92: PR #513 R1 - Mixed (Qodo Bugs/Rules + Qodo Suggestions + Qodo Compliance + SonarCloud Hotspots + SonarCloud Code Smells) (2026-04-15)
+
+**Date:** 2026-04-15 | **PR:** #513 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 11    | 0        | 1        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 8     | 1     | 2       |
+
+**Patterns:**
+
+- attempt-read-with-enoent-over-existsSync
+- process-execPath-eliminates-s4036-path-lookup
+- idxAny-multi-label-lookup-across-migration-windows
+- depth-aware-self-audit-for-multi-tier-skills
+- propagation-sweep-needs-per-site-classification
+
+**Learnings:**
+
+- Pattern 9 (existsSync→read TOCTOU) was reintroduced in 4 brand-new self-audit
+  wrappers; attempt-read with ENOENT classification is the correct default
+- spawnSync(process.execPath, ...) structurally resolves SonarCloud S4036
+  without suppression — always reach for process.execPath when spawning node
+  from node
+- Rejecting a reviewer suggestion that contradicts documented canon (Pattern 9)
+  is legitimate with explicit rule citation — NEVER-dismiss-as-preexisting is
+  about ducking work, not about technical disagreement
+- Self-audit wrappers for multi-tier skills MUST branch on tier before applying
+  MUSTs: Quick Scan for media-analysis does not require transcript artifacts, so
+  unconditional MUST checks silently fail valid runs
+- Substring phase-marker matching silently misses legacy labels during migration
+  windows — use explicit multi-label idxAny lookup, not prefix heuristics like
+  idx("phase-3") which can false-match adjacent phases
+- Propagation sweeps must classify per site: existsSync + readFileSync in
+  sequence = anti-pattern, existsSync alone for reporting/filtering = legitimate
+  and NOT a Pattern 9 violation
+
+---
+
+### Review rev-93: PR #513 R2 - Mixed (SonarCloud S6582 + CI test-coverage + Qodo Suggestions) (2026-04-15)
+
+**Date:** 2026-04-15 | **PR:** #513 | **Source:** mixed
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 19    | 19    | 0        | 0        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 15    | 2       |
+
+**Patterns:**
+
+- use-err-optional-chain-over-err-and-err-code
+- spawnSync-timeout-maxBuffer-for-ci-hang-prevention
+- main-preflight-for-documented-exit-code-contract
+- require-main-module-guard-for-testable-cli-scripts
+- baseline-high-churn-file-cc-when-propagating-style-fixes
+- structured-error-state-over-silent-swallow-when-multi-reviewer-flagged
+
+**Learnings:**
+
+- R1 ENOENT-classification using `err && err.code` syntax creates R2 SonarCloud
+  S6582 code smells — use `err?.code` on first write
+- Test coverage baseline auto-clean surfaces previously-masked pre-existing gaps
+  when new untested files enter — plan for small scope expansion
+- Touching a high-churn file (session-start.js) with 2 lines pulls the whole
+  file into staged CC check — add per-file entry to known-debt-baseline.json
+  precedent
+- readDepth silent-swallow flagged by TWO reviewers in succession (code-reviewer
+  R1 WARN + Qodo R2 #2+#3) — that consensus signals load-bearing information,
+  propagate the error state
+- main() preflight validation + process.exit(2) preserves documented exit-code
+  contract; without it, security refusals get misclassified as audit failures
+  (exit 1)
+- Test coverage via exported helpers + require.main === module guard — one-line
+  pattern on first write avoids late refactor
+- Consolidated single commit across 5 source files + 4 test files + 2 baselines
+  works when the fixes share a coherent narrative (R1 follow-up polish +
+  defensive hardening + test infrastructure)
 
 ## Key Patterns
 

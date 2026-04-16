@@ -73,9 +73,14 @@ ARGUES, and LINKS TO.
 - Evaluating a website as a knowledge source for ongoing work
 - Comparing a site's perspective to our documented approach
 
-**When NOT to Use:** Testing OUR webapp → `/webapp-testing` | Package docs →
-`context7` MCP | Simple URL fetch → WebFetch | GitHub repo → `/repo-analysis` |
-Cross-site synthesis → `/synthesize` | Topic research → `/deep-research`.
+## When NOT to Use
+
+- Testing OUR webapp → `/webapp-testing`
+- Package docs → `context7` MCP
+- Simple URL fetch → `WebFetch`
+- GitHub repo → `/repo-analysis`
+- Cross-site synthesis → `/synthesize`
+- Topic research → `/deep-research`
 
 ## Input
 

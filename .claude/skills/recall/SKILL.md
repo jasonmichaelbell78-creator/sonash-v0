@@ -17,6 +17,19 @@ description: >-
 Search and query your extracted knowledge. Everything analyzed via `/analyze` is
 searchable here.
 
+## When to Use
+
+- Query the CAS knowledge base after running `/analyze`
+- Filter extractions by tag, type, source, or date
+- Explore what's been extracted before starting new analysis
+- List all analyzed sources (`/recall --target=sources`)
+
+## When NOT to Use
+
+- Analyzing a new source → use `/analyze` or a direct handler first
+- Cross-source synthesis / patterns → use `/synthesize`
+- Raw filesystem search for arbitrary text → use Grep
+
 ## Input
 
 ```

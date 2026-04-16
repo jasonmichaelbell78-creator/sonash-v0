@@ -75,9 +75,12 @@ notes.
 - User provides a gist URL, arxiv URL, or article URL (not repo or site)
 - Evaluating a document as a knowledge source
 
-**When NOT to Use:** GitHub repo → `/repo-analysis` | Website →
-`/website-analysis` | Video/audio → `/media-analysis` | Testing webapp →
-`/webapp-testing`.
+## When NOT to Use
+
+- GitHub repo → `/repo-analysis`
+- Website → `/website-analysis`
+- Video / audio → `/media-analysis`
+- Testing webapp → `/webapp-testing`
 
 ## Input
 

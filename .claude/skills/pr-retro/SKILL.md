@@ -24,9 +24,16 @@ walkthrough.
 `/pr-review` | "Process health" -- `/pr-ecosystem-audit` | "What went
 well/wrong" -- `/pr-retro`
 
-**When to use:** User invokes `/pr-retro` AND PR is merged. **When NOT:** Active
-review -- `/pr-review` | Code quality -- `/code-reviewer` | Ecosystem audit --
-`/pr-ecosystem-audit`
+## When to Use
+
+- User invokes `/pr-retro` AND the target PR is merged
+- Retrospective analysis of a review cycle after merge
+
+## When NOT to Use
+
+- Active review in progress → `/pr-review`
+- Code quality check → `/code-reviewer`
+- Ecosystem audit → `/pr-ecosystem-audit`
 
 ---
 

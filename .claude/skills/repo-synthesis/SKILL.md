@@ -45,3 +45,18 @@ This redirect expires next session. The directory will be deleted after a
 one-session overlap to prevent breakage from habit or stale references.
 
 **Deprecated:** 2026-04-09 (Session #271, T29 Wave 3).
+
+## When to Use
+
+- Never — this skill is **DEPRECATED**. Use `/synthesize` instead.
+- Redirect stub exists only to surface the migration note for one session.
+
+## When NOT to Use
+
+- Any synthesis work → use `/synthesize` (direct replacement, superset).
+
+## Version History
+
+| Version | Date       | Description                                                              |
+| ------- | ---------- | ------------------------------------------------------------------------ |
+| 1.3-D   | 2026-04-09 | DEPRECATED — consolidated into `/synthesize` (Session #271, T29 Wave 3). |

@@ -28,6 +28,9 @@ const { loadConfigWithRegex } = require("./config/load-config");
 
 // Configuration — single source of truth: scripts/config/skill-config.json
 const SKILLS_DIR = ".claude/commands";
+const SKILL_MD_DIR = ".claude/skills";
+// Required sections for SKILL.md files under .claude/skills/<name>/ (enforces SKILL_STANDARDS.md §Required Sections)
+const REQUIRED_SKILL_MD_SECTIONS = ["## When to Use", "## When NOT to Use", "## Version History"];
 let skillConfig;
 try {
   skillConfig = loadConfigWithRegex("skill-config");
@@ -39,25 +42,65 @@ try {
 const REQUIRED_SECTIONS = skillConfig.requiredSections;
 const DEPRECATED_PATTERNS = skillConfig.deprecatedPatterns;
 
-// Parse YAML frontmatter (supports both LF and CRLF line endings)
+// Parse YAML frontmatter (supports LF/CRLF line endings + multi-line block
+// scalars using `>-`, `>`, `|-`, `|` markers — continuation lines must be
+// indented).
 function parseFrontmatter(content) {
-  // Handle both Unix (LF) and Windows (CRLF) line endings
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return null;
 
   const yaml = match[1];
   const frontmatter = {};
+  const lines = yaml.split(/\r?\n/);
 
-  // Split on \r?\n to handle both line ending styles
-  for (const line of yaml.split(/\r?\n/)) {
-    const colonIndex = line.indexOf(":");
-    if (colonIndex > 0) {
-      const key = line.slice(0, colonIndex).trim();
-      const value = line.slice(colonIndex + 1).trim();
-      frontmatter[key] = value;
+  let currentKey = null;
+  let currentBlockLines = null; // array of indented lines collected after a block-scalar marker
+
+  const flushBlock = () => {
+    if (currentKey && currentBlockLines !== null) {
+      // Join continuation lines with a single space, trim; preserves enough
+      // for description length / presence checks without full YAML semantics.
+      frontmatter[currentKey] = currentBlockLines
+        .map((l) => l.replace(/^\s+/, ""))
+        .join(" ")
+        .trim();
+      currentKey = null;
+      currentBlockLines = null;
     }
-  }
+  };
 
+  for (const rawLine of lines) {
+    // Indented lines belong to an in-progress block scalar
+    if (currentBlockLines !== null && /^\s+\S/.test(rawLine)) {
+      currentBlockLines.push(rawLine);
+      continue;
+    }
+    // New key line encountered — flush any in-progress block first
+    flushBlock();
+
+    const colonIndex = rawLine.indexOf(":");
+    if (colonIndex <= 0) continue;
+    const key = rawLine.slice(0, colonIndex).trim();
+    const rawValue = rawLine.slice(colonIndex + 1).trim();
+
+    // Block-scalar markers: >- | >-| |- | > | |  (possibly followed by nothing
+    // or chomp/keep indicators we don't need to distinguish for length checks)
+    if (/^[>|][+-]?\s*$/.test(rawValue)) {
+      currentKey = key;
+      currentBlockLines = [];
+      continue;
+    }
+
+    // Implicit multi-line: value empty, continuation lines indented on next
+    // lines. Common in skill frontmatter (`description:\n  Long text…`).
+    if (rawValue === "") {
+      currentKey = key;
+      currentBlockLines = [];
+      continue;
+    }
+    frontmatter[key] = rawValue;
+  }
+  flushBlock();
   return frontmatter;
 }
 
@@ -137,6 +180,21 @@ function validateSkillFile(filePath) {
     }
   }
 
+  // Check 3b: Required sections for SKILL.md files under .claude/skills/<name>/
+  // Matches SKILL_STANDARDS.md §Required Sections; errors (not warnings) for structural compliance.
+  const normalized = filePath.replace(/\\/g, "/");
+  const isSkillMd = filename === "SKILL.md" && normalized.includes("/.claude/skills/");
+  if (isSkillMd) {
+    for (const section of REQUIRED_SKILL_MD_SECTIONS) {
+      // Escape regex metachars in section heading (defensive — current sections have none)
+      const escaped = section.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const sectionRegex = new RegExp(String.raw`^${escaped}\s*$`, "mi");
+      if (!sectionRegex.test(content)) {
+        errors.push(`SKILL.md missing REQUIRED section: '${section}' (per SKILL_STANDARDS.md)`);
+      }
+    }
+  }
+
   // Check 4: File references exist
   const baseDir = path.dirname(filePath);
   const fileRefs = extractFileReferences(content);
@@ -165,7 +223,7 @@ function validateSkillFile(filePath) {
   return { errors, warnings };
 }
 
-// Get all skill files
+// Get all command files in .claude/commands/
 function getAllSkillFiles() {
   const skillsDir = path.join(process.cwd(), SKILLS_DIR);
   if (!fs.existsSync(skillsDir)) {
@@ -178,6 +236,25 @@ function getAllSkillFiles() {
     .map((f) => path.join(skillsDir, f));
 }
 
+// Get all SKILL.md files under .claude/skills/<name>/SKILL.md
+// These get the SKILL_STANDARDS.md §Required Sections check.
+function getAllSkillMdFiles() {
+  const skillsDir = path.join(process.cwd(), SKILL_MD_DIR);
+  if (!fs.existsSync(skillsDir)) {
+    return [];
+  }
+  const entries = fs.readdirSync(skillsDir, { withFileTypes: true });
+  const results = [];
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    // Skip shared/_shared (not skill dirs, contain shared assets/docs)
+    if (entry.name === "shared" || entry.name === "_shared") continue;
+    const skillMd = path.join(skillsDir, entry.name, "SKILL.md");
+    if (fs.existsSync(skillMd)) results.push(skillMd);
+  }
+  return results;
+}
+
 // Main execution
 function main() {
   const args = process.argv.slice(2);
@@ -185,7 +262,7 @@ function main() {
   let files = [];
 
   if (args.includes("--all") || args.length === 0) {
-    files = getAllSkillFiles();
+    files = [...getAllSkillFiles(), ...getAllSkillMdFiles()];
   } else {
     // Filter out flag arguments
     files = args.filter((a) => !a.startsWith("--"));

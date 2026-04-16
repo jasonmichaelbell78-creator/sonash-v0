@@ -51,15 +51,22 @@ produces structured output with downstream routing.
    gaps exist. **One round only** — gap agents' own gaps do NOT trigger
    recursion.
 
-## When to Use / When NOT to Use
+## When to Use
 
-**Use:** Explicit `/deep-research` invocation | Domain understanding before
-planning | Conflicting sources need evaluation | `/deep-plan` needs domain
-research | Skill creation via `/skill-creator` | GSD project research.
+- Explicit `/deep-research` invocation
+- Domain understanding is needed before planning
+- Conflicting sources need side-by-side evaluation
+- `/deep-plan` needs domain research
+- Skill creation via `/skill-creator`
+- GSD project research
 
-**Don't use:** Simple factual questions | Codebase-only (use `Explore`) | User
-wants confirmation | Mid-implementation lookups | Must complete in <2 minutes |
-Creative ideation without a research question (use `/brainstorm` first).
+## When NOT to Use
+
+- Simple factual questions (ask directly)
+- Codebase-only questions (use `Explore` agent)
+- User wants confirmation | Mid-implementation lookups | Must complete in <2
+  minutes | Creative ideation without a research question (use `/brainstorm`
+  first).
 
 ## Routing Guide
 
