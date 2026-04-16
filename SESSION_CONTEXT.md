@@ -1,10 +1,12 @@
 # Session Context
 
-**Document Version**: 8.35 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.36 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-15 (Session #282 — skill-audit batch `2026-04-15-analysis-quartet`
-executed: 7 waves, 9 commits on branch 41526, CAS handler quartet upgraded to
-v2.0/v5.0 + 4 self-audit scripts + shared foundations)
+2026-04-15 (Session #283 — sync to remote canon + full `/analyze` skill-audit
+with ecosystem scope-expansion: `/analyze` v1.2 → v2.0, new
+`scripts/skills/analyze/self-audit.js`, `validate-skill-config.js` extended to
+enforce SKILL_STANDARDS §Required Sections on all 78 `.claude/skills/*/SKILL.md`
+files, 11 other skills brought into compliance)
 
 ## Purpose
 
@@ -31,14 +33,16 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-15 (Session #282 — skill-audit batch COMPLETE, 9
-commits on branch 41526, ready to push + PR). **Branch**: `41526` (9 commits
-ahead of `origin/main`). **Working On**: COMPLETE — CAS handler quartet
-(repo/website/document/media-analysis) audited and rewritten. Batch ID
-`2026-04-15-analysis-quartet`. Status file
-`.claude/state/task-skill-audit-batch-2026-04-15-analysis-quartet.state.json`
-updated to `status: "complete"`. Follow-ups deferred: full `/analyze` audit, 5
-skill-creator gaps identified Phase 3, T28 Step B (/recall E2E).
+**Last Checkpoint**: 2026-04-15 (Session #283 — `/analyze` audit + ecosystem
+validator fix COMPLETE, committed `f1668a09`, ready to push). **Branch**:
+`41526` (1 commit ahead of `origin/main`, unpushed). **Working On**: COMPLETE —
+`/analyze` audit goal #2 from Session #282 handoff. `/analyze` v1.2 → v2.0 with
+67 decisions applied, new `scripts/skills/analyze/self-audit.js`, and ecosystem
+fix: `scripts/validate-skill-config.js` extended (scope .claude/skills/\*/
+SKILL.md + multi-line YAML parser + required-section enforcement). Validator
+baseline was 1 file scanned / silently passing; now 78 files / 0 errors / 8
+warnings. State file `.claude/state/task-skill-audit-analyze.state.json`
+(gitignored) status: "complete".
 
 **Session #280 work (summary)**:
 
@@ -157,7 +161,7 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 
 ## Session Tracking
 
-**Current Session Count**: 281 (since Jan 1, 2026)
+**Current Session Count**: 283 (since Jan 1, 2026)
 
 > **Session #281 handoff (skill-audit batch-mode plan + implementation,
 > 2026-04-14):** Full thread: sync to remote canon (branch `41426`,
@@ -224,6 +228,60 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 ---
 
 ## Recent Session Summaries
+
+**Session #283** (REMOTE SYNC + `/ANALYZE` SKILL-AUDIT + ECOSYSTEM VALIDATOR FIX
+— 1 COMMIT):
+
+- **Branch**: `41526` (1 commit ahead of `origin/main`, unpushed until
+  session-end)
+- **Commits**: `f1668a09` (feat(skills): /analyze v1.2 → v2.0 + ecosystem
+  SKILL_STANDARDS compliance — 21 files, +3893/-3189 lines).
+- **Arc**: /session-begin → goal #1 discovered DONE (PR #513 already merged) →
+  goal #2 `/analyze` audit executed via `/skill-audit analyze --mode=single` →
+  scope expansion approved mid-Phase 4 (USER-REQ-2 ii: fix ecosystem validator
+  gap surfaced during Phase 2.5).
+- **`/analyze` audit results**: 12 categories, 67 decisions, 0 rejected, 1
+  revised (Cat 5 C REJECTED at Phase 2.5 — line 15 path `shared/CONVENTIONS.md`
+  was already correct). Score 70/110 Fair → 98/110 Excellent (projected). Top
+  concerns remediated: Cat 12 Completion Verification 1/10 → 9/10 (new
+  self-audit.js), Cat 5 Integration 6/10 → 9/10 (required sections added), Cat 7
+  Prompt Engineering 6/10 → 9/10 (Critical Rules moved to top third, RFC 2119
+  MUST/SHOULD applied).
+- **New artifacts**: `scripts/skills/analyze/self-audit.js` (326 lines,
+  --target=\<slug\> + --all regression modes, dims 1/3/4/5/8/9 covered, 6+7
+  skipped with rationale), REFERENCE.md §6.6 Failure Recovery Matrix, §7
+  Routing-Decision Log schema at `.claude/state/analyze-routing-log.jsonl`.
+- **Ecosystem scope expansion (USER-REQ-2 ii)**: Phase 2.5 discovered
+  `npm run skills:validate` was silently passing 1 file for months due to two
+  compounding bugs — (a) scope-limited to `.claude/commands/` only; (b) YAML
+  parser treated `description: >-` and implicit multi-line continuations as
+  empty. Extended: (1) scope added `.claude/skills/*/SKILL.md`, (2) YAML parser
+  handles `>-`, `|`, and implicit multi-line, (3) REQUIRED_SKILL_MD_SECTIONS
+  enforced with errors (not warnings). 11 non-analyze SKILL.md files updated to
+  comply: deep-research (split combined heading), document/media/repo/website-
+  analysis (inline NOT → ##), pr-retro (inline → ##), recall (2 new sections),
+  frontend-design (title added), sonash-context (title + 3 sections), repo- and
+  website-synthesis DEPRECATED stubs (minimal sections).
+- **Verification**: `skills:validate` 1→78 files scanned; 51→0 errors.
+  `scripts/skills/skill-audit/self-audit.js --target=analyze` overall PASS (0
+  must_failed). `scripts/skills/analyze/self-audit.js --target=MinerU` PASS;
+  `--all` regression surfaces 3 pre-existing known-bad slugs (synthesis meta,
+  surya, tesseract) as FAILs — not new regressions.
+- **Skill-creator crosscheck**: NO content gaps found. skill-creator v3.3+
+  already requires self-audit.js scaffolding and required sections. Gap is
+  **enforcement-at-creation**, not creator spec. /analyze v1.0 created Session
+  #269 before v3.3 landed, explaining why it slipped through.
+- **Cross-cutting USER-REQs**: 5 captured, all resolved in session (shared vs
+  \_shared path verified correct; validator gap fixed; Cat 4 C/D/E walkback
+  available for future; --target=<slug> semantics = one slug, --all =
+  regression; v2.0 bump per handler pattern).
+- **Next session priorities**: (1) push commit `f1668a09` to `origin/41526`
+  - open PR with breaking-change callouts (SKILL_STANDARDS enforcement change
+    affects any skill that doesn't comply); (2) T28 Step A remaining CAS skills
+    (recall, synthesize); (3) T28 Step B E2E `/recall` verification; (4) T28
+    closure. `/analyze` audit no longer blocking T38.
+
+---
 
 **Session #282** (SKILL-AUDIT BATCH `2026-04-15-analysis-quartet` — 7 WAVES, 9
 COMMITS):
@@ -567,73 +625,66 @@ Actions, manual setup).
 
 ### Immediate Priority
 
-1. **Push branch 41526 + open PR** (Session #282). 9 commits ready, PR body in
-   `docs/PR-41526.md` or generate from `git log`. Covers Waves 1-7 of
-   skill-audit batch `2026-04-15-analysis-quartet`. **Breaking change alert**: 3
-   skills have phase-renumber breaking changes (repo, document, media —
-   state-file auto-migration windows through v2.2). PR should call these out
-   prominently.
+1. **Open PR for branch 41526 + push** — Session #283 commit `f1668a09` (21
+   files, +3893/-3189). PR body should call out: (a) `/analyze` v1.2 → v2.0
+   structural rewrite (67-decision audit); (b) NEW
+   `scripts/skills/analyze/ self-audit.js`; (c) **BREAKING** for ecosystem:
+   `scripts/validate-skill- config.js` now errors on `.claude/skills/*/SKILL.md`
+   missing REQUIRED sections (previously silently passing 1 file) — 11 other
+   SKILL.md files brought into compliance in this PR, but any in-flight skill
+   creation needs to include When to Use / When NOT to Use / Version History or
+   it fails validate. Session #282 breaking-change phase-renumber note
+   (repo/doc/media 4b → 3.5) already merged in PR #513.
 
-2. **Full `/analyze` audit** — deferred follow-up from batch Phase 3 decision.
-   Run `/skill-audit analyze --mode=single` now that its v1.2 handoff contract
-   is locked in. Should be lighter than handler audits since router is thin.
+2. **Close T28 — CAS Step A remaining skills** (recall, synthesize). /analyze
+   done in Session #283. /skill-audit infrastructure battle-tested. Tracker T38
+   still blocked on T28 closure.
 
-3. **5 skill-creator gap updates** — narrow update adding TAG_SUGGESTION
-   shared-template guidance, prior-feedback replay pattern, soft-prompt-vs-
-   hard-block distinction, /analyze router ack for router-dispatched skills,
-   Warm-up + PHASE N of M in UX checklist. Identified Phase 3 of the batch.
-   Separate narrow /skill-creator update, not blocking anything.
-
-4. **Close T28 — CAS Step A remaining skills** (analyze [now queued], recall,
-   synthesize). The 4 handler skills done in Session #282 were the hardest
-   slice. Tracker T38 remains blocked on T28 closure.
-
-5. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
+3. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
    `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries (tag,
    type, FTS5, cross-source) → verify extraction-journal + last_synthesized_at.
    ~15-30 min. See REMAINING_CAS_TASKS.md Step B.
 
-6. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
+4. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
    banner to ✅ COMPLETE, unblock T38, SESSION_CONTEXT note.
 
-7. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
+5. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
    2b to ~20 prior product-repo analyses (application/framework/tool-demo
    taxonomic). Parallelizable via agents (1 per repo). Could pair naturally with
    Step A skill-audit since both touch the same artifacts.
 
-8. **T49 — Fix /deep-plan template gap** (discovered Session #279). 3-part fix:
+6. **T49 — Fix /deep-plan template gap** (discovered Session #279). 3-part fix:
    (a) update REFERENCE.md PLAN.md template with status banner + per-step
    markers; (b) update SKILL.md Critical Rule for plan hygiene maintenance; (c)
    add `npm run plans:hygiene` checker. Prevents future drift in any new PLAN.md
    created via /deep-plan.
 
-9. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
+7. **T47 — Wave 6 CAS source seed** (created Session #277) — Queue 10 gap-fill
    sources (Sober Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase
    reference, TS MCP SDK, whisper.cpp, monolith, readable-cli, SBOM). Method:
    `/analyze` each, then `/synthesize --resume` to diff against current
    baseline.
 
-10. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
-    measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench
-    shape, per-instance cached by `(repo, commit)`. SoNash adaptation: curated
-    scenarios from review history + extraction journal, pattern-aware vs
-    pattern-unaware agent comparison.
+8. **/deep-plan Rank 1 opportunity: Build eval harness for agent-capability
+   measurement** — S-tier insight from GitNexus analysis. 3-mode SWE-bench
+   shape, per-instance cached by `(repo, commit)`. SoNash adaptation: curated
+   scenarios from review history + extraction journal, pattern-aware vs
+   pattern-unaware agent comparison.
 
-11. **GitNexus trial** (if license resolves permissive) — license check →
-    install on throwaway branch → use for one real task → adopt/extract
-    decision.
+9. **GitNexus trial** (if license resolves permissive) — license check → install
+   on throwaway branch → use for one real task → adopt/extract decision.
 
-12. **Remaining Wave 5 opportunity matrix items** — entries pending status
+10. **Remaining Wave 5 opportunity matrix items** — entries pending status
     update in ledger (marketplace.json distribution, bidirectional doc-feature
     validator, zero-schema MCP, OAuth-filter MCP, skill retirement spec, etc.).
 
-13. **T45** — Hook-based skill compliance enforcement (5 highest-risk skills).
-14. **T46** — Cross-locale memory sync STRATEGY (research only).
-15. **T42** — Nous Research Hermes model series research (P3).
-16. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
-17. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
-18. **Multi-layer memory (T4)** — Research done.
-19. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
+11. **T45** — Hook-based skill compliance enforcement (5 highest-risk skills).
+12. **T46** — Cross-locale memory sync STRATEGY (research only).
+13. **T42** — Nous Research Hermes model series research (P3).
+14. **Dev dashboard implementation (T2)** — IN-PROGRESS since Session #245, XL.
+15. **debt-runner `/deep-plan` (T3)** — Research done, needs plan.
+16. **Multi-layer memory (T4)** — Research done.
+17. **JASON-OS Domain 02a (T16)** — Brainstorm complete.
 
 ### Backlog (run `/todo` for full list — see TODOS.md, ~25 active, 48 total)
 
