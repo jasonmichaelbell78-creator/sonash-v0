@@ -126,8 +126,20 @@ function checkSlugCompleteness(slug) {
         details: `analysis.json ok (${journalEntries.length} journal entries); EXTRACTIONS.md missing`,
       };
     }
-    const analysisMtime = fs.statSync(analysisPath).mtimeMs;
-    const extractionsMtime = fs.statSync(EXTRACTIONS_MD).mtimeMs;
+    // TOCTOU guard per propagation rule lstat-symlink (PR #388, #397):
+    // use lstatSync + isSymbolicLink instead of bare statSync. Following a
+    // symlink for an mtime check could mask staleness if an attacker swapped
+    // a real artifact for a symlink to a fresh file.
+    const analysisStats = fs.lstatSync(analysisPath);
+    if (analysisStats.isSymbolicLink()) {
+      return { status: "FAIL", details: "analysis.json is a symlink — refused" };
+    }
+    const extractionsStats = fs.lstatSync(EXTRACTIONS_MD);
+    if (extractionsStats.isSymbolicLink()) {
+      return { status: "FAIL", details: "EXTRACTIONS.md is a symlink — refused" };
+    }
+    const analysisMtime = analysisStats.mtimeMs;
+    const extractionsMtime = extractionsStats.mtimeMs;
     if (extractionsMtime < analysisMtime) {
       return {
         status: "WARN",
