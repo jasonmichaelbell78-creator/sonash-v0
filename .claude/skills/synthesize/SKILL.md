@@ -242,43 +242,18 @@ The thematic paradigm produces 8 sections. Other paradigms reshape sections 3-6
 
 ## Self-Audit (D#27)
 
-10 dimensions. Each is PASS / FAIL / WARN. Any FAIL blocks present.
-
-| #   | Dimension             | Check                                                    |
-| --- | --------------------- | -------------------------------------------------------- |
-| 1   | Artifact existence    | Both `synthesis.md` and `synthesis.json` written         |
-| 2   | Schema validation     | `synthesis.json` validates against `synthesisRecord` Zod |
-| 3   | Section completeness  | All 8 sections present (or explicitly noted absent)      |
-| 4   | Evidence grounding    | Every theme has ≥1 evidence ref to a real source         |
-| 5   | Candidate integrity   | No duplicate candidates after dedup pass                 |
-| 6   | Convergence math      | Convergence counts match unique source list              |
-| 7   | Dedup check           | Re-running dedup produces no further merges              |
-| 8   | Gap validity          | Gap domains exist in home context, not in sources        |
-| 9   | Opportunity grounding | Each opportunity has ≥1 evidence reference               |
-| 10  | Changes accuracy      | (re-synthesis only) Diff against prior is correct        |
-
-See REFERENCE.md §8 for pass/fail criteria per dimension.
+Phase 4 runs 10 dimensions (PASS / FAIL / WARN) — any FAIL blocks Present until
+acknowledged or fixed. Dimensions cover artifact existence, schema validation,
+section completeness, evidence grounding, candidate integrity, convergence math,
+dedup, gap validity, opportunity grounding, and (re-synthesis) change accuracy.
+See REFERENCE.md §8 for per-dimension pass/fail criteria, WARN states, and the
+audit summary block appended to `synthesis.md`.
 
 ## State File & Resume
 
-`.claude/state/synthesize.state.json` (D#17, D#19):
-
-```json
-{
-  "schema_version": "1.0",
-  "started_at": "ISO timestamp",
-  "mode": "full|incremental|re-synthesis",
-  "paradigm": "thematic|narrative|matrix|meta-pattern",
-  "sources_loaded": ["slug1", "slug2", ...],
-  "sections_completed": ["themes", "gaps", ...],
-  "subagent_dispatches": [...],
-  "self_audit": { "dimension_1": "pass", ... },
-  "retros": [...]
-}
-```
-
-Resume reads this and skips completed sections. Single file — parallel synthesis
-runs are not supported.
+`.claude/state/synthesize.state.json` (D#17, D#19) tracks per-phase progress.
+Resume reads this and skips completed sections; parallel synthesis runs are not
+supported. See REFERENCE.md §9 for full schema and resume protocol.
 
 ## Integration
 
@@ -303,74 +278,17 @@ runs are not supported.
 
 ## Opportunities Ledger
 
-**File:** `.research/analysis/synthesis/opportunities-ledger.jsonl` (append or
-update in place; never truncated).
-
-The `opportunity_matrix` inside `synthesis.json` is a snapshot — it regenerates
-every run. The ledger is the **durable** record that tracks lifecycle status of
-every opportunity ever surfaced, across all synthesis runs.
-Extraction-journal.jsonl does the same job for per-source candidates; this
-ledger does it for cross-source opportunities.
-
-### Schema (per JSONL line)
-
-```json
-{
-  "title_key": "normalized_stable_key",
-  "rank": 1,
-  "title": "Human-readable opportunity title",
-  "first_seen_in_run": "YYYY-MM-DD",
-  "last_seen_in_run": "YYYY-MM-DD",
-  "runs_seen": 1,
-  "status": "pending",
-  "effort": "E0|E1|E2|E3",
-  "impact": "low|medium|high",
-  "suggested_route": "/brainstorm|/deep-plan|/deep-research|/analyze",
-  "evidence_sources": ["slug1", "slug2", "absence-signal:..."],
-  "adopted_at": null,
-  "adopted_to": null,
-  "commit_sha": null,
-  "deferred_to": null,
-  "notes": null
-}
-```
-
-### Status enum
-
-- `pending` — opportunity surfaced by synthesis, not yet acted upon
-- `adopted` — implemented; `adopted_at`, `adopted_to`, `commit_sha` filled
-- `skipped` — explicitly decided not to pursue; `notes` should explain
-- `deferred` — pushed to a todo or future milestone; `deferred_to` filled with
-  `{type: "todo"|"roadmap"|"milestone", id, file?}`
-- `stale` — auto-assigned to `pending` rows whose `last_seen_in_run` is 3+
-  synthesis runs old (optional future refinement)
-
-### `title_key` normalization
-
-Lowercase, strip all non-alphanumeric, spaces become underscores. Used as the
-dedup primary key across synthesis runs. Example:
-`"Publish SoNash /llms.txt from CLAUDE.md + SKILL.md corpus"` →
-`"publish_sonash_llms_txt_from_claude_md_skill_md_corpus"`. When this skill
-writes a key longer than 60 chars, truncate to first 60 chars.
-
-### Write path (during synthesis)
-
-See Phase 5 step 5. Summary: for each opportunity produced this run, upsert by
-`title_key`. New keys → insert with `status: "pending"`. Existing keys → update
-`last_seen_in_run` and `runs_seen` only.
-
-### Update path (adoption or deferral)
-
-Manual (or via a future helper script). Find the row by `title_key` or
-`rank+first_seen_in_run`, update `status` + the status-specific fields, atomic
-rewrite of the file. This skill does NOT mutate adopted/skipped/ deferred rows
-on re-synthesis.
-
-### Cross-references
-
-Synthesis runs with prior ledger data should suppress or annotate already-
-`adopted`/`skipped` opportunities in the interactive Opportunity Matrix menu.
-(Implementation deferred — first such run will add this.)
+`.research/analysis/synthesis/opportunities-ledger.jsonl` is the durable
+cross-run record of every opportunity surfaced. Unlike the per-run
+`opportunity_matrix` snapshot inside `synthesis.json`, the ledger tracks
+lifecycle status (`pending` / `adopted` / `skipped` / `deferred` / `stale`)
+keyed by normalized `title_key`. Phase 5 step 5 upserts: existing keys bump
+`last_seen_in_run` + `runs_seen`; new keys insert with `status: "pending"`.
+Adoption/skip/deferral updates come from manual edits or helper scripts —
+synthesis re-runs never mutate `status`, `adopted_at`, `adopted_to`,
+`commit_sha`, or `notes` on existing rows. See REFERENCE.md §13 for full schema,
+status enum, `title_key` normalization, write/update paths, and
+cross-references.
 
 ## Version History
 
