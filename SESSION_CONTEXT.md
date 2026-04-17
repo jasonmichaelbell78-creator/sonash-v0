@@ -229,6 +229,62 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 
 ## Recent Session Summaries
 
+**Session #285** (T28 CAS QUINTET CLOSURE — `/SKILL-AUDIT RECALL` + WAVE 4
+PROPAGATION + FIRST /SYNTHESIZE V2.0 RUN — 6 COMMITS):
+
+- **Branch**: `41526` (19 commits ahead of `origin/main`, pushed this session).
+- **Commits this session**: `03bd6b7e` (Wave 4 /synthesize propagation — 6
+  SKILL.md edits across /recall + 4 handlers + /session-end); `bffdc60b` (first
+  /synthesize v2.0 run — 35-source re-synthesis, schema-conformant output via
+  rewrite-synthesis-v2.js + rebuild-ledger + update-last-synthesized helper
+  scripts, self-audit 7/8 PASS); `85afd05b` (Session #285 resume doc);
+  `cc84d011` (/skill-audit recall — 106 decisions, 66/110 → est. 91/110 post-
+  inline, 98/110 post-HANDOFF, SKILL.md v1.1→v1.2, OPDEP-1 fix in recall.js,
+  ECO-1/ECO-2 honest-framing corrections, HANDOFF for Cat 12 self-audit.js);
+  `4bcc86a1` (SESSION_CONTEXT next-session sequence + hook drift); `bca36514`
+  (clarifying comment on --target=sources standalone check).
+- **Goal #1 — Wave 4 propagation**: 6 SKILL.md Integration notes added gating on
+  `synthesis.json.schema_version >= 1.0` (/recall) and MUST-preserve
+  `last_synthesized_at` (4 handlers) plus /session-end orphan-state check.
+  Completes deferred Wave 4 from Session #284 HANDOFF.
+- **Goal #3 — first /synthesize v2.0 run**: re-synthesis on 35-source corpus.
+  Iteration A failed self-audit on 3 dims due to 5 schema drifts between Wave 3
+  SKILL.md spec and Wave 2 self-audit.js Zod schema (synthesisModeEnum naming,
+  sources_included shape, themes[].evidence structure, opportunity_matrix shape,
+  title-key normalization regex). Fixed in iteration B by producing
+  schema-conformant synthesis.json via 5 helper scripts in `.claude/state/`.
+  Also fixed path drift (self-audit checks `.research/knowledge.sqlite`, rebuild
+  writes `.research/content-analysis.db` — bridged via copy). Result: 7 PASS / 1
+  WARN / 0 FAIL. 18 cross-corpus themes, 18 opportunities. Wave 4 contracts
+  validated on 35/35 analysis.json.
+- **Goal #4 — /skill-audit recall** (LAST UNAUDITED CAS QUINTET SKILL): full
+  12-category single-mode audit, 106 decisions (all accepted, 0 rejected, 6
+  deferred to separate scope). Cat 11 N/A (single-pass query, no convergence
+  needed). Cat 12 = 2/10 (no self-audit infrastructure — canonical fix deferred
+  to HANDOFF.md, est. 2-4 hrs). Top structural findings: primacy fix needed
+  (Critical Rules at 83% of file), no MUST/SHOULD/MAY hierarchy, no routing
+  block, CAS acronym never expanded, Wave 4 gate documented but not implemented
+  (ECO-2). Full Phase 4 inline + Phase 5 self-audit PASS (6 MUST dims).
+- **Bonus fixes**: OPDEP-1 bug in `scripts/cas/recall.js` — `--target=sources`
+  alone failed arg validation (missing from disjunction at line 444). 1-line +
+  usage-message fix, 4-invocation smoke-tested, code-reviewer APPROVED. ECO-1:
+  /deep-plan + /brainstorm don't actually use /recall — they access .research/
+  files directly (honest wording adopted). ECO-2: Wave 4 schema_version gate
+  reframed as aspirational (recall.js has 0 refs to synthesis.json; never
+  implemented).
+- **3 cross-skill learnings for next session**: (1) query skills systematically
+  score low on Cat 7 primacy/hierarchy — flag for /skill-audit skill-creator;
+  (2) Wave 4 contract divergence is a pattern risk (documented-but-unwired); (3)
+  SKILL.md invocation contracts need functional smoke tests at save time.
+- **Agent activity**: 1 `code-reviewer` run (APPROVE on recall.js OPDEP-1 fix).
+  Invocation tracking inv-1776442396608-36380-1 (skill-audit, 106 decisions).
+- **State files**: /recall audit state at
+  `.claude/state/task-skill-audit-recall.state.json` (gitignored, retained as
+  decision record). Parity-test state from Session #282 preserved separately.
+- **META_ROADMAP alignment**: Session #285 executed Lane 1 Item 4 (T28 CAS
+  /recall testing). Lane 2 resume-in-flight-deep-plans is next-session top
+  priority per updated SESSION_CONTEXT.
+
 **Session #284** (`/SKILL-AUDIT SYNTHESIZE` PHASE 4 WAVES 1-3 OF 4 — 4 COMMITS):
 
 - **Branch**: `41526` (5 commits ahead of `origin/main` counting #283's
@@ -672,31 +728,32 @@ HYGIENE):
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                                                              |
-| ---------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                                 |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                                |
-| **Repo Analysis Skill**            | v5.0 ACTIVE   | Phase 4b→3.5 breaking rewrite (Session #282). Warm-up + Routing Guide + Delegation + self-audit.js.   |
-| **Website Analysis Skill**         | v2.0 ACTIVE   | Session #282 rewrite: Warm-up + Routing Guide + scope-explosion (>50 pages) + self-audit.js.          |
-| **Document Analysis Skill**        | v2.0 ACTIVE   | Session #282 breaking rewrite: Cat 2-E + Pattern 10 phase renumber, NEW Integration/Retro/Invocation. |
-| **Media Analysis Skill**           | v2.0 ACTIVE   | Session #282 rewrite: transcript.md MUST per §13.3, NEW Integration/Retro/Invocation + self-audit.js. |
-| **T28 Content Analysis System**    | E2E DONE      | 33 Standard sources (GitNexus added #278), 343 unique candidates. Vocabulary 187 tags.                |
-| **T29 Synthesis Consolidation**    | STEP 12 DONE  | Steps 11-12 PASS. Step 14 effectively done. Remaining: Step 13 (paradigm/scoped), Step 15.            |
-| **/synthesize Skill**              | v2.0 ACTIVE   | Session #284 — 109-decision rewrite. Phase 2.5/4.5 convergence gates. self-audit.js. State schema v2. |
-| **Wave 5 Opportunity Ledger**      | 17 ENTRIES    | 12 Wave 5 + 5 new from #278 incremental. Rank 1 (eval harness) is the new S-tier.                     |
-| **T40 CAS tag quality**            | COMPLETE      | Session #276.                                                                                         |
-| **T39 Hook Drift Loop**            | CLOSED        | Session #275. Needs new PR (deferred).                                                                |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed.                                                                              |
-| **Plan Orchestration**             | WAVE 1 DONE   | Waves 2-3 blocked on debt-runner.                                                                     |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started #245, XL effort.                                                                              |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                                  |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                                |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                                |
-| **T48 Adoption Verdict Backfill**  | NEW #278      | Backfill Section 2b on ~20 prior product-repo analyses.                                               |
+| Item                               | Status          | Progress                                                                                                                                                              |
+| ---------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE    | 428 findings, 110 resolved. `npm run orphans:detect`.                                                                                                                 |
+| **Website Analysis (T23)**         | SKILLS BUILT    | /website-analysis + /website-synthesis skills created.                                                                                                                |
+| **Repo Analysis Skill**            | v5.0 ACTIVE     | Phase 4b→3.5 breaking rewrite (Session #282). Warm-up + Routing Guide + Delegation + self-audit.js.                                                                   |
+| **Website Analysis Skill**         | v2.0 ACTIVE     | Session #282 rewrite: Warm-up + Routing Guide + scope-explosion (>50 pages) + self-audit.js.                                                                          |
+| **Document Analysis Skill**        | v2.0 ACTIVE     | Session #282 breaking rewrite: Cat 2-E + Pattern 10 phase renumber, NEW Integration/Retro/Invocation.                                                                 |
+| **Media Analysis Skill**           | v2.0 ACTIVE     | Session #282 rewrite: transcript.md MUST per §13.3, NEW Integration/Retro/Invocation + self-audit.js.                                                                 |
+| **T28 Content Analysis System**    | QUINTET AUDITED | 35 sources, 343 candidates. /analyze + /synthesize + /repo + /website + /document + /media + /recall all audited through Session #285. T28 closure flip next session. |
+| **/recall Skill**                  | v1.2 ACTIVE     | Session #285 — 106-decision audit. Primacy fix, MUST/SHOULD hierarchy, Routing block, Tier declaration, OPDEP-1 bug fix in recall.js. Cat 12 self-audit.js deferred.  |
+| **T29 Synthesis Consolidation**    | STEP 12 DONE    | Steps 11-12 PASS. Step 14 effectively done. Remaining: Step 13 (paradigm/scoped), Step 15.                                                                            |
+| **/synthesize Skill**              | v2.0 ACTIVE     | Session #284 — 109-decision rewrite. Phase 2.5/4.5 convergence gates. self-audit.js. State schema v2.                                                                 |
+| **Wave 5 Opportunity Ledger**      | 17 ENTRIES      | 12 Wave 5 + 5 new from #278 incremental. Rank 1 (eval harness) is the new S-tier.                                                                                     |
+| **T40 CAS tag quality**            | COMPLETE        | Session #276.                                                                                                                                                         |
+| **T39 Hook Drift Loop**            | CLOSED          | Session #275. Needs new PR (deferred).                                                                                                                                |
+| **Research-Discovery-Standard v2** | IN-PROGRESS     | T13 plan updates needed.                                                                                                                                              |
+| **Plan Orchestration**             | WAVE 1 DONE     | Waves 2-3 blocked on debt-runner.                                                                                                                                     |
+| **Dev Dashboard**                  | IN-PROGRESS     | Started #245, XL effort.                                                                                                                                              |
+| **debt-runner Expansion**          | RESEARCH DONE   | /deep-plan next. Gates plan-orchestration Waves 2-3.                                                                                                                  |
+| **Multi-layer Memory**             | RESEARCH DONE   | 40 agents, 128 claims. Execution next.                                                                                                                                |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING     | Brainstorm + roadmap done. 16-domain research program.                                                                                                                |
+| **T48 Adoption Verdict Backfill**  | NEW #278        | Backfill Section 2b on ~20 prior product-repo analyses.                                                                                                               |
 
-**Current Branch**: `41526` (5 commits ahead of `origin/main` — Session #283
-`f1668a09` + Session #284 `04103db6` / `145c48ab` / `565937f2` / `9f3a07d2`,
-unpushed; Wave 4 + push deferred)
+**Current Branch**: `41526` (19 commits ahead of `origin/main`, pushed through
+Session #285 commit `bca36514`. PR to be created at /session-end; merging
+`origin/main` forward to catch up 2-commit lag (dependabot bumps) before PR.)
 
 **Test Status**: 3720 pass, 0 fail, 1 skip (last verified Session #275)
 

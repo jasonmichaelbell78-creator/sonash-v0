@@ -124,3 +124,4 @@
 {"agent":"general-purpose","description":"Synthesize slice 2: OCR/PDF/docs","outcome":"invoked","timestamp":"2026-04-17T10:59:58.054Z"}
 {"agent":"general-purpose","description":"Synthesize slice 1: scraping/crawling","outcome":"invoked","timestamp":"2026-04-17T11:00:28.201Z"}
 {"agent":"general-purpose","description":"Synthesize slice 4: AI/agents/gists","outcome":"invoked","timestamp":"2026-04-17T11:00:47.507Z"}
+{"agent":"code-reviewer","description":"Code review: recall.js OPDEP-1 fix","outcome":"invoked","timestamp":"2026-04-17T18:27:43.152Z"}
