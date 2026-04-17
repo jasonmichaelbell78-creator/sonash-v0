@@ -1,0 +1,461 @@
+{
+  "slice_id": 4,
+  "slice_name": "ai-agents-memory-gists",
+  "sources_read": [
+    "abhigyanpatwari-gitnexus",
+    "karpathy-autoresearch",
+    "viktoraxelsen-memskill",
+    "safishamsi-graphify",
+    "farzaa-gist-c35ac0cf",
+    "karpathy-gist-442a6bf",
+    "kieranklaassen-gist-4f2aba89",
+    "maharshi-pandya-gist-4aeccbe1"
+  ],
+  "sources_missing": [],
+  "themes": [
+    {
+      "name": "LLM Wiki / Knowledge-Compounding Architecture",
+      "description": "Karpathy's LLM Wiki gist names the pattern (raw sources -> wiki -> schema, with ingest/query/lint as the operational triad), and farzaa's Personal Wiki Skill is the concrete Claude Code instantiation of it (7 commands, anti-cramming/anti-thinning balance, 15-entry checkpoint cadence, writer-not-filing-clerk identity). Together they reframe SoNash's knowledge plumbing: .research/ already acts as 'sources', MEMORY.md+docs/ as 'wiki', CLAUDE.md as 'schema' — but the 'absorb' step that files good query answers back into the wiki is the missing edge in the loop, and the gap T24 should close so deep-research outputs stop dying in .research/ archives.",
+      "sources": ["karpathy-gist-442a6bf", "farzaa-gist-c35ac0cf"],
+      "evidence_refs": [
+        "karpathy-gist-442a6bf:analysis.json:candidates[0] three-layer-architecture",
+        "karpathy-gist-442a6bf:analysis.json:candidates[1] ingest-query-lint-triad",
+        "karpathy-gist-442a6bf:analysis.json:candidates[2] answers-compound-into-wiki",
+        "farzaa-gist-c35ac0cf:analysis.json:candidates[5] 7-command-skill-architecture",
+        "farzaa-gist-c35ac0cf:analysis.json:candidates[0] anti-cramming-anti-thinning",
+        "farzaa-gist-c35ac0cf:analysis.json:candidates[3] writer-not-filing-clerk"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Graph-Backed Code Intelligence with Confidence Tagging",
+      "description": "GitNexus and graphify converge on the same core bet: shift cognitive load from LLM exploration to a precomputed, typed relational graph, then expose that graph through MCP tools that return complete context in one call. Both ship AST-first deterministic extraction joined with LLM-inferred semantic edges, both tag every edge with confidence (GitNexus 0.7-1.0 exact/heuristic/fallback; graphify EXTRACTED/INFERRED/AMBIGUOUS), and both punt the schema-migration problem. For SoNash, the transferable primitive is confidence-tagging extraction candidates and /recall results so the Content Analysis System is honest about observed-vs-inferred; the graph topology itself is a larger bet that competes with SoNash's dimensional/SQLite-FTS5 model.",
+      "sources": ["abhigyanpatwari-gitnexus", "safishamsi-graphify"],
+      "evidence_refs": [
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[7] confidence-scored-edges",
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[8] precomputed-relational-intelligence",
+        "safishamsi-graphify:analysis.json:candidates[1] confidence-tagging-taxonomy",
+        "safishamsi-graphify:analysis.json:candidates[0] skill-orchestration-pipeline",
+        "abhigyanpatwari-gitnexus:analysis.json:absence_patterns[3] no-graph-schema-migration",
+        "safishamsi-graphify:creator-view.md:section-6 graph-only-persistence-without-versioning"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "MCP-as-Contract: One Server, Many IDEs, Explicit Rule Blocks",
+      "description": "GitNexus, graphify, and kieranklaassen's swarm gist all treat MCP as the canonical agent-surface contract rather than an implementation detail. GitNexus reaches five IDEs (Claude Code, Cursor, Codex, Windsurf, OpenCode) from one server and formalizes usage rules via the gitnexus:start/:end block in CLAUDE.md/AGENTS.md with MUST/NEVER/impact-risk levels; graphify ships seven platform-specific skill variants and a stateless stdio MCP server with token-budgeted output; the swarm gist documents TeammateTool's 13-operation protocol and the six orchestration patterns that shape how agents talk. The direct implication for SoNash: when it ever emits an MCP surface (currently it only consumes memory/sonarcloud/context7), the sonash:start contract block and platform-negotiated depth are the shape to copy, and naming MCP tools distinctly (sonash_search_patterns not grep) avoids the shadowing hazard GitNexus flagged.",
+      "sources": [
+        "abhigyanpatwari-gitnexus",
+        "safishamsi-graphify",
+        "kieranklaassen-gist-4f2aba89"
+      ],
+      "evidence_refs": [
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[1] gitnexus-start-mcp-contract-block",
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[5] multi-ide-mcp-negotiation",
+        "abhigyanpatwari-gitnexus:analysis.json:anti-pattern mcp-tool-shadowing",
+        "safishamsi-graphify:analysis.json:candidates[2] mcp-server-pattern",
+        "safishamsi-graphify:analysis.json:candidates[5] platform-specific-skill-variants",
+        "kieranklaassen-gist-4f2aba89:analysis.json:candidates[2] teammatetool-13-operation-reference"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Measurement Discipline: Eval Harness Before Skill N+1",
+      "description": "GitNexus and karpathy/autoresearch converge on the same discipline from opposite ends. GitNexus has roughly one core capability plus a full three-mode SWE-bench harness (baseline / native / native_augment, cached per (repo, commit)) that can measure whether meta-tooling actually lifts agent performance. Autoresearch distills the pattern into its bones: one file, one metric, one fixed time budget, infinite loop — 100 comparable experiments overnight. SoNash is the inverse shape — 77 skills, 38 agents, 450+ patterns, a learning metric 'in dispute' (89.2% vanity) and no eval harness. Both sources, read together, make the same case: the next highest-value investment is not skill N+1, it is the experimental apparatus (fixed benchmark, baseline-vs-enriched modes, per-instance metrics, commit-hash caching) that tells SoNash whether any given pattern or skill changes outcomes.",
+      "sources": ["abhigyanpatwari-gitnexus", "karpathy-autoresearch"],
+      "evidence_refs": [
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[0] swe-bench-3-mode-eval-harness",
+        "abhigyanpatwari-gitnexus:analysis.json:anti-pattern over-featuring-before-measurement",
+        "karpathy-autoresearch:analysis.json:candidates[1] fixed-budget-experimentation",
+        "karpathy-autoresearch:analysis.json:candidates[5] simplicity-criterion",
+        "karpathy-autoresearch:creator-view.md:section-4 the-challenge"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Meta-Skills: Learnable Rules About Memory, Recovery, and Self-Evolution",
+      "description": "MemSkill and GitNexus each surface a pattern where rules about how the agent should behave are treated as first-class, evolvable artifacts. MemSkill's 15 memory-skill templates (capture_activity_details, insert with duplicate avoidance and temporal context, etc.) are not memories but instructions for how to remember, and its skill-evolution loop (mine failures -> refine skills -> propose new) is a paradigm where skills emerge from observed breakage rather than human foresight. GitNexus's Signs pattern in GUARDRAILS.md is the same idea scoped to a single repo: once a failure has been observed twice, it is codified as a repo-visible rule. Both map directly onto SoNash's MEMORY.md feedback_*.md entries and its pattern-enforcement ratchet — the open question is whether those SoNash feedback memories should be exposed at the repo level (Signs-style) and whether the per-type memory files should themselves evolve from failures rather than be hand-authored.",
+      "sources": ["viktoraxelsen-memskill", "abhigyanpatwari-gitnexus"],
+      "evidence_refs": [
+        "viktoraxelsen-memskill:analysis.json:candidates[0] meta-memory-skills-framework",
+        "viktoraxelsen-memskill:analysis.json:candidates[1] skill-evolution-loop",
+        "viktoraxelsen-memskill:analysis.json:candidates[6] 15-memory-skill-templates",
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[2] signs-pattern",
+        "viktoraxelsen-memskill:creator-view.md:section-2 auto-memory-paradigm-shift"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Orchestration Patterns and the Subagent-vs-Teammate Axis",
+      "description": "Kieranklaassen's swarm gist names six orchestration patterns (Parallel Specialists, Pipeline, Swarm, Research+Implementation, Plan Approval, Coordinated Refactoring) and introduces a decision axis SoNash has not made explicit: fire-and-forget subagents versus persistent teammates with inbox messaging and declarative blockedBy dependencies. Farzaa's 5-agent batched audit is a worked example of Parallel Specialists for a cleanup workflow; graphify's 10-step skill pipeline with parallel agent dispatch is Pattern 2 (Pipeline) plus Pattern 4 (Research+Implementation); GitNexus's PreToolUse ambient grep enrichment hints at a seventh pattern — ambient/silent orchestration where the hook layer adds context the agent never had to request. SoNash's existing skills use subagents exclusively; the unexplored question is whether long workflows like deep-research's 40-agent pipeline or repo-synthesis across batches would benefit from persistent teammates, task auto-unblock, or ambient enrichment instead of manual sequential dispatch.",
+      "sources": [
+        "kieranklaassen-gist-4f2aba89",
+        "farzaa-gist-c35ac0cf",
+        "safishamsi-graphify",
+        "abhigyanpatwari-gitnexus"
+      ],
+      "evidence_refs": [
+        "kieranklaassen-gist-4f2aba89:analysis.json:candidates[0] 6-pattern-orchestration-taxonomy",
+        "kieranklaassen-gist-4f2aba89:analysis.json:candidates[4] subagent-vs-teammate-decision-framework",
+        "kieranklaassen-gist-4f2aba89:analysis.json:candidates[3] task-dependency-auto-unblock",
+        "farzaa-gist-c35ac0cf:analysis.json:candidates[2] parallel-subagent-cleanup-workflow",
+        "safishamsi-graphify:analysis.json:candidates[0] skill-orchestration-pipeline",
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[6] pretooluse-ambient-grep-enrichment"
+      ],
+      "convergence_count": 4
+    },
+    {
+      "name": "Exploration vs. Forced Convergence in Agent Reasoning",
+      "description": "Maharshi-Pandya's contemplative-reasoning prompt (now largely superseded by native extended-thinking at the model level) still offers a lens that sharpens a real tension in SoNash: convergence loops terminate as soon as the tally passes, but sometimes the last exploration pass is where surprising connections emerge. Karpathy's autoresearch makes the opposite bet (NEVER STOP within a loop, hard time budget to make experiments comparable), and MemSkill's failure-mining evolves skills from under-explored edges. Read together, these argue for an explicit 'don't converge yet' gate or minimum-exploration threshold in SoNash skills that currently rush to structure — particularly brainstorm's divergent phase and deep-research's gap-pursuit pass — rather than treating early threshold-crossing as task completion.",
+      "sources": [
+        "maharshi-pandya-gist-4aeccbe1",
+        "karpathy-autoresearch",
+        "viktoraxelsen-memskill"
+      ],
+      "evidence_refs": [
+        "maharshi-pandya-gist-4aeccbe1:analysis.json:candidates[0] exploration-over-conclusion",
+        "karpathy-autoresearch:analysis.json:candidates[0] program.md-agent-instruction-pattern",
+        "viktoraxelsen-memskill:analysis.json:candidates[1] skill-evolution-loop",
+        "maharshi-pandya-gist-4aeccbe1:creator-view.md:section-4 dont-converge-yet"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Distribution and Packaging as First-Class Concerns",
+      "description": "GitNexus ships as a Claude Code marketplace plugin (.claude-plugin/marketplace.json + plugin.json, plugin version 1.3.3, distinct marketplace owner); graphify publishes 7 platform-specific skill files with shared core and platform-negotiated MCP depth; autoresearch's 9,611 forks are the distribution mechanism (ship reference, community forks adapt). The two gists from Karpathy and farzaa are themselves distribution artifacts — a gist copy-pasted into an LLM agent instantiates the pattern. SoNash previously closed out Wave 5 Rank 3 (marketplace.json) as deprioritized, but GitNexus validates the shape is real and shippable, and the dependency-free gist-as-skill pattern is a second, lower-effort distribution axis (drop a gist into .claude/skills/).",
+      "sources": [
+        "abhigyanpatwari-gitnexus",
+        "safishamsi-graphify",
+        "karpathy-autoresearch",
+        "farzaa-gist-c35ac0cf",
+        "karpathy-gist-442a6bf"
+      ],
+      "evidence_refs": [
+        "abhigyanpatwari-gitnexus:analysis.json:candidates[3] marketplace.json-reference-impl",
+        "safishamsi-graphify:analysis.json:candidates[5] platform-specific-skill-variants",
+        "karpathy-autoresearch:analysis.json:candidates[9] hidden-multi-agent-architecture",
+        "farzaa-gist-c35ac0cf:creator-view.md:section-1 7-command-architecture",
+        "karpathy-gist-442a6bf:creator-view.md:section-3 copy-paste-to-your-llm-agent"
+      ],
+      "convergence_count": 5
+    },
+    {
+      "name": "Anti-Patterns: Shared Failure Modes in AI-Tooling Repos",
+      "description": "Across the four fuller repos, a consistent anti-pattern cluster emerges: graph/index schemas without migration paths (GitNexus, graphify), license ambiguity (autoresearch no-license, GitNexus NOASSERTION), oversized/duplicated skill files (graphify 15K-token per-variant duplication; SoNash already approaching this), single-contributor velocity outrunning external review (graphify 95.8% single-author, 20 releases in 6 days), aspirational docs leaking alongside shipped docs (GitNexus mitigates via .sisyphus/drafts/), and single-metric optimization traps (autoresearch's val_bpb works because the problem is single-objective). SoNash inherits risk on several of these — the SQLite index at .research/content-analysis.db has no documented migration path, skills are trending toward 15K+ tokens, and the learning metric is already flattening multi-objective work into one number.",
+      "sources": [
+        "abhigyanpatwari-gitnexus",
+        "safishamsi-graphify",
+        "karpathy-autoresearch",
+        "viktoraxelsen-memskill"
+      ],
+      "evidence_refs": [
+        "abhigyanpatwari-gitnexus:analysis.json:anti-pattern graph-schema-versioning-without-migration",
+        "safishamsi-graphify:analysis.json:candidates[6] graph-only-persistence-without-versioning",
+        "safishamsi-graphify:analysis.json:candidates[7] oversized-skill-files",
+        "karpathy-autoresearch:analysis.json:candidates[10] no-license-on-purpose-trap",
+        "karpathy-autoresearch:analysis.json:candidates[11] single-metric-optimization-trap",
+        "viktoraxelsen-memskill:analysis.json:candidates[10] academic-code-quality"
+      ],
+      "convergence_count": 4
+    }
+  ],
+  "candidates": [
+    {
+      "name": "SWE-bench 3-mode eval harness shape",
+      "source": "abhigyanpatwari-gitnexus",
+      "tags": ["evaluation-harness", "benchmarking", "measurement"],
+      "quality": 90,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "gitnexus:start MCP contract block",
+      "source": "abhigyanpatwari-gitnexus",
+      "tags": ["mcp-contract-block", "documentation-contract", "mcp"],
+      "quality": 88,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Signs pattern (recurring failures as codified rules)",
+      "source": "abhigyanpatwari-gitnexus",
+      "tags": ["enforcement", "memory", "feedback-loop"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": ".claude-plugin/marketplace.json reference impl",
+      "source": "abhigyanpatwari-gitnexus",
+      "tags": ["marketplace", "skill-distribution"],
+      "quality": 82,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "GitNexus product (use-as-is trial)",
+      "source": "abhigyanpatwari-gitnexus",
+      "tags": ["code-intelligence", "mcp", "graph-rag"],
+      "quality": 82,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "PreToolUse ambient grep enrichment pattern",
+      "source": "abhigyanpatwari-gitnexus",
+      "tags": ["hooks", "claude-code", "ambient-orchestration"],
+      "quality": 78,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "program.md agent instruction pattern",
+      "source": "karpathy-autoresearch",
+      "tags": ["protocol", "agent-loop", "single-file"],
+      "quality": 85,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Fixed-budget experimentation",
+      "source": "karpathy-autoresearch",
+      "tags": ["measurement", "comparability", "time-budget"],
+      "quality": 82,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Simplicity criterion for ecosystem growth",
+      "source": "karpathy-autoresearch",
+      "tags": ["discipline", "jason-os", "growth-policy"],
+      "quality": 80,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "3-file architecture (immutable/editable/instructions)",
+      "source": "karpathy-autoresearch",
+      "tags": ["architecture", "contract"],
+      "quality": 72,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Meta-memory skills framework",
+      "source": "viktoraxelsen-memskill",
+      "tags": ["memory", "meta-skill", "jason-os-t4"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Skill evolution loop (mine failures -> refine)",
+      "source": "viktoraxelsen-memskill",
+      "tags": ["self-improvement", "learning-system"],
+      "quality": 82,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "15 memory-skill templates (capture/insert/etc.)",
+      "source": "viktoraxelsen-memskill",
+      "tags": ["memory", "templates", "jason-os-t4"],
+      "quality": 80,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "arXiv 2602.02474 MemSkill paper",
+      "source": "viktoraxelsen-memskill",
+      "tags": ["research", "memory-theory"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Confidence tagging taxonomy (EXTRACTED/INFERRED/AMBIGUOUS)",
+      "source": "safishamsi-graphify",
+      "tags": ["confidence", "recall", "extraction-journal"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "10-step skill orchestration pipeline with parallel dispatch",
+      "source": "safishamsi-graphify",
+      "tags": ["skill-architecture", "orchestration"],
+      "quality": 80,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Stateless token-budgeted MCP server pattern",
+      "source": "safishamsi-graphify",
+      "tags": ["mcp", "stdio-server"],
+      "quality": 78,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Threat-vector-organized SECURITY.md format",
+      "source": "safishamsi-graphify",
+      "tags": ["security-docs", "format"],
+      "quality": 72,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "LanguageConfig dataclass (generic walker + per-type config)",
+      "source": "safishamsi-graphify",
+      "tags": ["extraction", "analysis-handler"],
+      "quality": 68,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Three-layer architecture (sources / wiki / schema)",
+      "source": "karpathy-gist-442a6bf",
+      "tags": ["knowledge-architecture", "jason-os", "t4", "t24"],
+      "quality": 88,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Ingest-Query-Lint operational triad",
+      "source": "karpathy-gist-442a6bf",
+      "tags": ["workflow", "knowledge-base", "t24"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Answers-compound-into-wiki principle",
+      "source": "karpathy-gist-442a6bf",
+      "tags": ["knowledge-compounding", "synthesis-adoption", "t24"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Index + Log dual navigation system",
+      "source": "karpathy-gist-442a6bf",
+      "tags": ["navigation", "index"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "qmd local markdown search (BM25+vector hybrid, CLI+MCP)",
+      "source": "karpathy-gist-442a6bf",
+      "tags": ["search", "tool", "mcp"],
+      "quality": 72,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Anti-cramming / anti-thinning balance",
+      "source": "farzaa-gist-c35ac0cf",
+      "tags": ["wiki-density", "extraction-journal", "design-principle"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "15-entry checkpoint cycle pattern",
+      "source": "farzaa-gist-c35ac0cf",
+      "tags": ["batch-maintenance", "convergence-loop"],
+      "quality": 80,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Parallel 5-batch subagent cleanup workflow",
+      "source": "farzaa-gist-c35ac0cf",
+      "tags": ["parallelization", "doc-optimizer", "skill-audit"],
+      "quality": 78,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "7-command Personal Wiki Skill (ingest/absorb/query/cleanup/breakdown/rebuild-index/reorganize)",
+      "source": "farzaa-gist-c35ac0cf",
+      "tags": ["skill-architecture", "t24", "reference-design"],
+      "quality": 85,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Writer-not-filing-clerk identity framing",
+      "source": "farzaa-gist-c35ac0cf",
+      "tags": ["identity", "design-principle", "synthesis"],
+      "quality": 72,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "6-pattern orchestration taxonomy",
+      "source": "kieranklaassen-gist-4f2aba89",
+      "tags": ["orchestration", "agent-orchestration-md", "taxonomy"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Subagent vs teammate decision framework",
+      "source": "kieranklaassen-gist-4f2aba89",
+      "tags": ["orchestration", "design-framework"],
+      "quality": 78,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Spawn backend comparison (in-process / tmux / iterm2)",
+      "source": "kieranklaassen-gist-4f2aba89",
+      "tags": ["worktree-management", "t5", "process-isolation"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "TeammateTool 13-operation reference",
+      "source": "kieranklaassen-gist-4f2aba89",
+      "tags": ["teammate", "agent-teams", "claude-code"],
+      "quality": 72,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Task dependency auto-unblock (declarative blockedBy)",
+      "source": "kieranklaassen-gist-4f2aba89",
+      "tags": ["pipeline", "deep-research", "orchestration"],
+      "quality": 70,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Exploration-over-conclusion principle",
+      "source": "maharshi-pandya-gist-4aeccbe1",
+      "tags": ["reasoning", "brainstorm", "convergence-gate"],
+      "quality": 58,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Contemplator tag pattern",
+      "source": "maharshi-pandya-gist-4aeccbe1",
+      "tags": ["historical", "prompt-engineering"],
+      "quality": 30,
+      "fit_hint": "reference"
+    }
+  ],
+  "gaps": [
+    {
+      "domain": "Measurement / eval harness",
+      "why_unfilled": "SoNash has 77 skills, 38 agents, 450+ patterns, and a 'learning metric in dispute' (89.2% flagged as vanity). Two sources in this slice (GitNexus, autoresearch) ship or distill an eval harness and make the same case: measurement infrastructure belongs ahead of skill N+1. No sibling source in this slice closes that gap for SoNash specifically.",
+      "suggested_action": "Design a SoNash-equivalent benchmark — curate recurring scenarios from review-metrics.jsonl + extraction-journal.jsonl — and implement a three-mode harness (baseline / pattern-aware / pattern-plus-skills) with per-instance metrics cached by commit hash. Treat as a cross-cutting deep-plan phase, not a single skill."
+    },
+    {
+      "domain": "Absorb step in knowledge pipeline",
+      "why_unfilled": "Karpathy and farzaa both name the step where good query answers file back into the living wiki. SoNash has ingest (/repo-analysis, /website-analysis, /document-analysis, /media-analysis), has query (/recall, /deep-research), has lint (/alerts, orphan detection, 10 health scripts), but absorb is effectively absent — deep-research outputs archive to .research/ and do not flow back into MEMORY.md or docs/.",
+      "suggested_action": "T24 (Content Intelligence) should treat 'absorb' as its primary goal: a skill that reads /deep-research and /synthesize outputs and proposes targeted edits to MEMORY.md, CLAUDE.md patterns, or docs/ entries, with user approval gating. Farzaa's 7-command skill is the concrete template."
+    },
+    {
+      "domain": "Confidence-tagging on extraction candidates and recall results",
+      "why_unfilled": "Both graphify and GitNexus tag every edge/result with confidence, but SoNash's extraction-journal.jsonl and /recall output do not currently distinguish observed-from-source vs inferred-by-agent. This creates silent over-confidence in synthesis.",
+      "suggested_action": "Add a confidence dimension (EXTRACTED/INFERRED/AMBIGUOUS or 0.7-1.0 numeric) to the extraction-candidate schema, populate it during /analyze, surface it in /recall output, and filter by threshold in /synthesize."
+    },
+    {
+      "domain": "Schema migration for knowledge indexes",
+      "why_unfilled": "GitNexus and graphify both punt schema migration; SoNash's .research/content-analysis.db and extraction-journal.jsonl inherit the same risk. No source in this slice provides a pattern for it — they all flag it as absent.",
+      "suggested_action": "Before the next schema touch of content-analysis.db or EXTRACTIONS.md, author MIGRATIONS.md with version/upgrade steps and integrate with session-begin preflight."
+    },
+    {
+      "domain": "Subagent-vs-teammate usage pattern in SoNash",
+      "why_unfilled": "Kieranklaassen documents the mechanical layer (TeammateTool 13 operations, task auto-unblock, six patterns); SoNash uses subagents exclusively and has no lived experience with persistent teammates or inbox messaging. The decision framework exists but SoNash has no corpus of when-to-use evidence.",
+      "suggested_action": "Pick one long-horizon workflow (deep-research 40-agent pipeline or T29 synthesis wave 4) and prototype as persistent teammates; measure coordination-mid-task vs fire-and-forget tradeoff; document decision framework in AGENT_ORCHESTRATION.md."
+    },
+    {
+      "domain": "Meta-memory evolution from observed failures",
+      "why_unfilled": "MemSkill's skill-evolution loop evolves memory rules from data; SoNash's feedback_*.md entries are hand-authored. No source in this slice shows how to bridge the two in production — MemSkill is a research artifact (393 stars, academic code quality), not a library.",
+      "suggested_action": "Treat T4 (Multi-layer memory) as the integration site. Read arXiv 2602.02474 before execution. Prototype: mine PR review outcomes + hook-warnings-log.jsonl for recurring failures; propose new feedback_*.md entries automatically; human approves before canon."
+    }
+  ],
+  "key_signals": [
+    "LLM Wiki pattern (Karpathy) and Personal Wiki Skill (farzaa) together name the missing 'absorb' step in SoNash's knowledge pipeline — the edge T24 should close.",
+    "GitNexus and autoresearch converge on the same discipline from opposite scales: measurement infrastructure must precede skill N+1, and SoNash is currently in the inverse ratio.",
+    "Confidence tagging (graphify EXTRACTED/INFERRED/AMBIGUOUS, GitNexus 0.7-1.0) is a cheap, high-novelty primitive that would make /recall and extraction-journal honest about observed vs inferred.",
+    "gitnexus:start MCP contract block is the template for sonash:start if SoNash ever emits (rather than only consumes) MCP tools — naming them distinctly avoids the tool-shadowing anti-pattern GitNexus flags.",
+    "MemSkill's 15 memory-skill templates plus the skill-evolution loop validate T4's research direction: meta-memory (rules about remembering) beats static memory-type lists.",
+    "Kieranklaassen's six orchestration patterns plus subagent-vs-teammate axis give SoNash vocabulary for the coordination it already does implicitly — and flag 'Swarm' and persistent-teammate patterns as unexplored.",
+    "GitNexus ships as a Claude Code marketplace plugin (plugin.json 1.3.3), validating Wave 5 Rank 3 (marketplace.json) as real and shippable if SoNash revisits distribution.",
+    "Karpathy's simplicity criterion ('removing something and getting equal or better results is a great outcome') is a growth-policy primitive SoNash can apply before authoring skill #78.",
+    "Maharshi-Pandya's contemplative-reasoning gist is largely superseded by native extended-thinking but surfaces one live SoNash question: should convergence loops enforce a minimum-exploration threshold before terminating?",
+    "Farzaa's anti-cramming/anti-thinning balance maps directly onto EXTRACTIONS.md density problems; some sources carry 17 candidates, others 5, and no skill currently rebalances."
+  ],
+  "status": "complete"
+}

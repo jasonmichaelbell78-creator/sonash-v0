@@ -441,9 +441,18 @@ function main() {
       return;
     }
 
-    if (!args.freeText && !args.tag && !args.type && !args.source && !args.sort) {
+    // --target=sources is a valid standalone mode (lists all sources);
+    // no free-text / tag / type / source / sort required.
+    if (
+      !args.freeText &&
+      !args.tag &&
+      !args.type &&
+      !args.source &&
+      !args.sort &&
+      args.target !== "sources"
+    ) {
       console.error(
-        "Usage: node scripts/cas/recall.js <query> [--tag=X] [--type=X] [--sort=X] [--source=X] [--stats]"
+        "Usage: node scripts/cas/recall.js <query> [--tag=X] [--type=X] [--sort=X] [--source=X] [--limit=N] [--target=sources] [--stats]"
       );
       process.exit(1);
     }

@@ -1,0 +1,426 @@
+{
+  "slice_id": 2,
+  "slice_name": "document-pdf-ocr-processing",
+  "sources_read": [
+    "MinerU",
+    "docling",
+    "surya",
+    "tesseract",
+    "unstructured",
+    "vikparuchuri-marker",
+    "outline",
+    "qmd",
+    "hkuds-cli-anything"
+  ],
+  "sources_missing": [],
+  "themes": [
+    {
+      "name": "Structured output as a product surface, not an implementation detail",
+      "description": "Across the mature document-intelligence projects, the single most consistent architectural move is treating the output schema as a versioned, human-readable contract rather than an artifact of whatever Pydantic/Zod validator happens to exist. MinerU's output_files.md, docling's DoclingDocument tree, and unstructured's typed Element hierarchy all exist as first-class specifications with enumerated block types, typed fields, and explicit breaking-change callouts. The shared thesis is that downstream consumers (including AI agents) need a contract they can read, and schema drift gets catastrophically worse once analysis pipelines start consuming each other's output.",
+      "sources": ["MinerU", "docling", "unstructured"],
+      "evidence_refs": [
+        "MinerU creator-view §1 'output_files.md is the best piece of documentation in the whole repo'",
+        "docling creator-view §1 'DoclingDocument — a tree-structured Pydantic model with body/furniture separation'",
+        "unstructured creator-view §1 'element type system... 1111 lines... shows deep thinking about what structured output means'"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Extraction is an orchestration problem — backend/pipeline/renderer separation",
+      "description": "The three serious PDF/document projects — MinerU, docling, and marker — all converge on a three-layer architecture that separates format-specific parsing (backends/providers) from content-processing stages (pipelines/processors) from output emission (serializers/renderers). MinerU routes across three backends with a factory; docling has 25+ backends + 5 pipeline types + a plugin system; marker has providers -> 25 processors -> renderers with six documented extension points. The pattern is the anti-monolith: projects that ship one parser spend their roadmap fighting that parser, while projects that ship a router can swap components as the ML landscape moves.",
+      "sources": ["MinerU", "docling", "vikparuchuri-marker"],
+      "evidence_refs": [
+        "MinerU creator-view §1 'three separate *_analyze.py entry points... string-dispatched factory with deferred importlib imports'",
+        "docling creator-view §1 'Backends handle format-specific parsing... Pipelines orchestrate... three-layer separation'",
+        "marker creator-view §1 '3-stage pipeline (extract with Surya models, transform with 25+ processors, render to Markdown/JSON/HTML)'"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Self-describing registries replace ad-hoc routing",
+      "description": "Unstructured's FileType enum (each member carries its partitioner path, deps, extras, extensions, MIME types), docling's pluggy-backed entrypoint registry, marker's METHOD_REGISTRY/SCORE_REGISTRY, CLI-Anything's registry.json (35 entries) powering a static hub, and outline's PluginManager hook registry are all solving the same meta-problem: how do you add a new capability without touching the routing layer? The common answer is that the capability itself declares its metadata, the framework discovers it, and the routing falls out of the discovery. For SoNash's 81 flat skills, this is the structural gap most directly named by the cluster.",
+      "sources": [
+        "unstructured",
+        "docling",
+        "vikparuchuri-marker",
+        "hkuds-cli-anything",
+        "outline"
+      ],
+      "evidence_refs": [
+        "unstructured creator-view §1 'FileType enum... masterclass in self-describing registration'",
+        "docling creator-view §1 'plugin system via pluggy... no forking required'",
+        "marker creator-view §2 'METHOD_REGISTRY maps names to converter implementations'",
+        "hkuds-cli-anything creator-view §2 'registry.json (35 entries) powers a live hub... agent-discoverable via meta-skill'",
+        "outline creator-view §2 'PluginManager + Hook enum... 10 hook types... priority-based ordering and auto-discovery'"
+      ],
+      "convergence_count": 5
+    },
+    {
+      "name": "Transport-agnostic command layer bridges HTTP, CLI, and MCP",
+      "description": "Outline's command pattern and qmd's three-transport MCP server arrive at the same conclusion from opposite directions: business logic must live above the transport, because the transport surface multiplies faster than the logic does. Outline built commands years ago for clean architecture, then got MCP 'for free' by routing MCP tools through buildAPIContext() into the same command layer as the HTTP API. Qmd ships MCP as a CLI subcommand with stdio/HTTP-foreground/HTTP-daemon transports sharing one implementation. CLI-Anything generalizes the pattern: wrap any backend (GUI app, MCP server, library) behind a CLI that an agent can invoke. The common teaching for SoNash's Cloud Functions — which currently couple transport and business logic in the same httpsCallable — is that a second surface (MCP) is architectural debt waiting to be paid.",
+      "sources": ["outline", "qmd", "hkuds-cli-anything"],
+      "evidence_refs": [
+        "outline creator-view §1 'command pattern... Both API routes and MCP tools delegate to the same commands'",
+        "qmd creator-view §2 'MCP server as a CLI subcommand... Three transports shown'",
+        "hkuds-cli-anything creator-view §2 'MCP backend pattern... wrap an MCP server as a CLI backend'"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Skill/plugin packaging as the distribution primitive",
+      "description": "Qmd, CLI-Anything, and (implicitly) docling-mcp all ship .claude-plugin/marketplace.json as the installable unit — one manifest declaring MCP server(s), skills, and metadata. Qmd goes further with skill-frontmatter enforcement (allowed-tools, disable-model-invocation) that moves guardrails from CLAUDE.md prose into mechanical gates. The cluster says: in the Claude Code ecosystem, a directory of SKILL.md files is a prototype, a marketplace.json plugin is the product. SoNash's 81 unpackaged skills sit exactly at that threshold, and the JASON-OS vision requires crossing it.",
+      "sources": ["qmd", "hkuds-cli-anything"],
+      "evidence_refs": [
+        "qmd creator-view §2 '.claude-plugin/marketplace.json bundles MCP server + skills + metadata'",
+        "qmd creator-view §2 'allowed-tools: Bash(qmd:*), mcp__qmd__*... disable-model-invocation: true'",
+        "hkuds-cli-anything creator-view §2 'First public Claude Code plugin reference... marketplace.json + 5 slash command definitions'"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "License and hostile-input discipline separate research code from adoptable code",
+      "description": "The OCR/document-parsing cluster is uniformly copyleft-encumbered (MinerU AGPL-3.0, marker GPL-3.0, surya GPL-3.0, docling MIT but IBM-dependent) and uniformly weak on HTTP security defaults (MinerU's mineru-api has no auth/rate limit/upload cap; marker has shell injection and path traversal in chunk_convert.py and file upload). Only qmd (MIT) and outline (BSL-1.1 shifting) are actually adoptable, and only outline treats the HTTP surface as adversarial by default. The teaching for SoNash — which already has pre-commit pattern enforcement, App Check, and a security-auditor agent — is that adopting a pattern from this cluster means inheriting the framing but not the defaults. Also: the progressive-extraction answer everyone expects from MinerU is actually crawl4ai's, because crawl4ai is the only Apache-2.0 member of the cluster and the only one whose task state survives a restart.",
+      "sources": ["MinerU", "vikparuchuri-marker", "surya", "tesseract", "docling"],
+      "evidence_refs": [
+        "MinerU creator-view §A15 'License matrix... crawl4ai is the one that can be imported as a dependency'",
+        "marker creator-view §6 'GPL_LICENSE_TRAP... SECURITY_AS_AFTERTHOUGHT — Shell injection, path traversal, credential exposure'",
+        "MinerU creator-view §1 'mineru-api has no authentication — not even an API key — no rate limiting, no upload size cap'"
+      ],
+      "convergence_count": 5
+    },
+    {
+      "name": "Quality/speed fallback chains generalize the Quick/Standard/Deep pattern",
+      "description": "Unstructured's AUTO -> HI_RES -> OCR_ONLY -> FAST cascade with graceful dependency fallback, MinerU's five-backend decision matrix, and marker's processor toggles (LLM vs heuristic) are all implementations of the same idea: the user declares a quality intent and the system degrades along a predictable ladder when dependencies or resources are missing. SoNash's Quick Scan / Standard / Deep depth system is the skill-level analogue, but it currently hard-fails when dependencies (Chrome extension, Whisper, gh CLI) are absent rather than logging and falling back. Unstructured's dependency_exists() discipline is the missing primitive.",
+      "sources": ["unstructured", "MinerU", "vikparuchuri-marker"],
+      "evidence_refs": [
+        "unstructured creator-view §1 'strategy system (AUTO/FAST/OCR_ONLY/HI_RES) with graceful dependency fallback'",
+        "MinerU creator-view §1 'quick_start/index.md page has a genuine decision matrix — five backends × eight constraints'",
+        "marker creator-view §1 'LLM processors (12 of them) exist for the cases where heuristics fail'"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Test and CI discipline diverges sharply from engineering discipline",
+      "description": "The cluster contains an uncomfortable inverse correlation between architectural sophistication and test coverage. MinerU has the cleanest backend/router architecture and one fuzzy-string test gated by a 0.2% coverage floor plus a silent-retry workflow that converts flake into green. Marker has 403 open issues, no CONTRIBUTING.md, and GPU-enforced CI that is the only enforced gate. CLI-Anything has 74 test files and zero CI enforcement. Outline has excellent server-side tests (TestServer pattern, 36 factory builders) and seven test files across 723 frontend files. Docling is the outlier with thread-safe pipelines and production-grade concurrency. The takeaway: in the ML/document-parsing ecosystem, architectural ambition is not correlated with test discipline, and adopting patterns means explicitly adding the test discipline these projects lack.",
+      "sources": ["MinerU", "vikparuchuri-marker", "hkuds-cli-anything", "outline", "docling"],
+      "evidence_refs": [
+        "MinerU creator-view §6 'test infrastructure pattern — One end-to-end fuzzy string test gated by a 0.2% coverage floor'",
+        "marker creator-view §6 'CONTRIBUTOR_HOSTILE_GOVERNANCE — 33.7K stars, 403 open issues, 27 contributors, no CONTRIBUTING.md'",
+        "hkuds-cli-anything creator-view §1 '74 test files with 0 conftest.py files... No CI runs tests (only deploy-pages.yml)'",
+        "outline creator-view §1 'Frontend testing is effectively absent. 7 test files for 723 frontend source files'",
+        "docling creator-view §1 'thread-safe PDF pipeline deserves special attention... per-run isolation, deterministic run identifiers'"
+      ],
+      "convergence_count": 5
+    },
+    {
+      "name": "The multi-format unified-output thesis converges on one answer",
+      "description": "Docling's ASR pipeline producing DoclingDocument from audio (same output as from PDF), MinerU's middle.json intermediate covering 109 languages and multiple backends, unstructured's typed Element hierarchy across 30+ formats, and qmd's insistence that search-across-heterogeneous-sources requires one unified representation all land on the same thesis: source-type heterogeneity should be absorbed at the extraction boundary, not propagated into the analysis and synthesis layers. This is directly the T28 Content Intelligence thesis, and the cluster is saying it's achievable because several projects have achieved it within narrower scopes.",
+      "sources": ["docling", "MinerU", "unstructured", "qmd"],
+      "evidence_refs": [
+        "docling creator-view §1 'ASR pipeline does the same for audio — Whisper Turbo -> DoclingDocument. Every source type, same output format'",
+        "MinerU creator-view §1 'middle.json intermediate representation with typed fields, a four-level block hierarchy'",
+        "unstructured creator-view §1 'unified abstraction that makes 30+ formats look identical to downstream consumers'"
+      ],
+      "convergence_count": 4
+    }
+  ],
+  "candidates": [
+    {
+      "name": "Structured output contract as first-class document (output_files.md pattern)",
+      "source": "MinerU",
+      "tags": ["documentation", "schema", "versioning"],
+      "quality": 90,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Async task state machine with four states + TTL sweep",
+      "source": "MinerU",
+      "tags": ["state-machine", "async", "progressive-extraction"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Environment variable catalog as single document",
+      "source": "MinerU",
+      "tags": ["documentation", "config"],
+      "quality": 85,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Backend + Pipeline + Serializer three-layer separation",
+      "source": "docling",
+      "tags": ["architecture", "pipeline"],
+      "quality": 90,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "pluggy-backed plugin system via setuptools entrypoints",
+      "source": "docling",
+      "tags": ["plugins", "extensibility"],
+      "quality": 80,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "docling-mcp as drop-in document extraction backend",
+      "source": "docling",
+      "tags": ["mcp", "integration"],
+      "quality": 85,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "DoclingDocument tree structure with body/furniture separation",
+      "source": "docling",
+      "tags": ["schema", "hierarchy"],
+      "quality": 80,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "ASR pipeline -> unified DoclingDocument output",
+      "source": "docling",
+      "tags": ["audio", "unified-output"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Enrichment pipeline (toggleable post-processing)",
+      "source": "docling",
+      "tags": ["pipeline", "enrichment"],
+      "quality": 70,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Auto-routing via libmagic type detection (partition())",
+      "source": "unstructured",
+      "tags": ["routing", "dispatch"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Self-describing FileType enum registry",
+      "source": "unstructured",
+      "tags": ["registry", "enum", "metadata"],
+      "quality": 90,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Strategy fallback chain with dependency_exists()",
+      "source": "unstructured",
+      "tags": ["fallback", "dependency-check"],
+      "quality": 85,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Golden-file snapshot testing for extraction",
+      "source": "unstructured",
+      "tags": ["testing", "regression"],
+      "quality": 75,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Element type hierarchy with DataSourceMetadata",
+      "source": "unstructured",
+      "tags": ["schema", "provenance"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Chunking with table isolation + header repetition",
+      "source": "unstructured",
+      "tags": ["chunking"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Benchmark registry (METHOD_REGISTRY + SCORE_REGISTRY)",
+      "source": "vikparuchuri-marker",
+      "tags": ["benchmark", "registry", "quality-measurement"],
+      "quality": 90,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "ConfigParser introspection for component discovery",
+      "source": "vikparuchuri-marker",
+      "tags": ["introspection", "discovery"],
+      "quality": 65,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Session-scoped test fixtures for expensive resources",
+      "source": "vikparuchuri-marker",
+      "tags": ["testing", "fixtures"],
+      "quality": 60,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "MCP OAuth scope-filtered tool registration",
+      "source": "outline",
+      "tags": ["mcp", "auth", "scopes"],
+      "quality": 90,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Command pattern (transport-agnostic business logic)",
+      "source": "outline",
+      "tags": ["architecture", "mcp", "cloud-functions"],
+      "quality": 95,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "PluginManager with 10 hook types + priority ordering",
+      "source": "outline",
+      "tags": ["plugins", "hooks", "registry"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "buildAPIContext() MCP-to-API bridge",
+      "source": "outline",
+      "tags": ["mcp", "bridge", "context"],
+      "quality": 85,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "@Encrypted field-level decorator",
+      "source": "outline",
+      "tags": ["encryption", "privacy"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "TestServer ephemeral-port integration testing",
+      "source": "outline",
+      "tags": ["testing", "integration"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": ".claude-plugin/marketplace.json packaging",
+      "source": "qmd",
+      "tags": ["plugin", "distribution", "claude-code"],
+      "quality": 95,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Skill frontmatter: allowed-tools + disable-model-invocation",
+      "source": "qmd",
+      "tags": ["skill", "frontmatter", "guardrails"],
+      "quality": 95,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "MCP server as CLI subcommand (3 transports: stdio/HTTP/daemon)",
+      "source": "qmd",
+      "tags": ["mcp", "cli", "transport"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Query DSL with typed sub-queries (EBNF grammar)",
+      "source": "qmd",
+      "tags": ["dsl", "search", "grammar"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Scored markdown chunking (H1=100, H2=90, code=80...)",
+      "source": "qmd",
+      "tags": ["chunking", "markdown"],
+      "quality": 85,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "RRF + position-aware hybrid retrieval blending",
+      "source": "qmd",
+      "tags": ["retrieval", "ranking"],
+      "quality": 80,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Fixture-based eval harness with difficulty tiers",
+      "source": "qmd",
+      "tags": ["evaluation", "testing"],
+      "quality": 80,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Release skill with disabled auto-invocation",
+      "source": "qmd",
+      "tags": ["skill", "release", "safety"],
+      "quality": 75,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "HARNESS.md 7-phase SOP for agent-native CLI wrapping",
+      "source": "hkuds-cli-anything",
+      "tags": ["methodology", "cli", "wrapping"],
+      "quality": 85,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Registry + CLI-Hub distribution model",
+      "source": "hkuds-cli-anything",
+      "tags": ["registry", "distribution"],
+      "quality": 75,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Session file locking (flock + r+ + truncate-inside-lock)",
+      "source": "hkuds-cli-anything",
+      "tags": ["concurrency", "jsonl", "locking"],
+      "quality": 80,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Skill auto-generation from Click --help via Jinja2",
+      "source": "hkuds-cli-anything",
+      "tags": ["skill-generation", "codegen"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "ReplSkin terminal UI (branded prompt_toolkit)",
+      "source": "hkuds-cli-anything",
+      "tags": ["repl", "ui"],
+      "quality": 60,
+      "fit_hint": "reference"
+    }
+  ],
+  "gaps": [
+    {
+      "domain": "progressive / resumable extraction for long-running analyses",
+      "why_unfilled": "MinerU's async task state machine is the shape match but its in-memory dict doesn't survive restart and AGPL blocks direct lift; docling has thread-safety but no resumable state; marker/surya have monolithic per-document extraction with no checkpointing. None of the cluster solves the 'resume after compaction or crash' problem that SoNash's .claude/state/repo-analysis.<slug>.state.json files already imply.",
+      "suggested_action": "Pair the MinerU state-machine shape (pending/processing/completed/failed + TTL sweep) with crawl4ai's resume_state + on_state_change (Apache-2.0, persists) when SoNash decides to add progressive extraction. Not a port target from this slice alone."
+    },
+    {
+      "domain": "cross-document / cross-source synthesis",
+      "why_unfilled": "Every document-parsing project in the slice is explicitly single-document: unstructured 'partitions one document at a time', docling 'no cross-document', marker per-document. Only outline approaches multi-document (as a knowledge-base product, not analytically) and qmd approaches multi-source (via retrieval, not synthesis).",
+      "suggested_action": "This slice confirms the T28 synthesis layer has no prior art in the document-parsing cluster. Look to retrieval/ranking patterns (qmd RRF+position blending) and graph-memory tooling (other slices) rather than expecting a document-parser to hand over a synthesis engine."
+    },
+    {
+      "domain": "HTTP security defaults for locally-exposed agent tooling",
+      "why_unfilled": "The cluster is uniformly weak — MinerU ships 0.0.0.0 compose services by default, marker has shell injection + path traversal, CLI-Anything explicitly names the 'agents constructing commands from untrusted input' threat but doesn't fully mitigate it. Only outline treats HTTP as adversarial.",
+      "suggested_action": "When SoNash (or JASON-OS) builds any HTTP/MCP surface, treat outline's OAuth-scoped tool registration and App Check-style gating as the baseline, not an addition. Do not inherit the cluster's default permissive posture."
+    },
+    {
+      "domain": "typed query language for content-analysis recall",
+      "why_unfilled": "qmd is the only source with a formal EBNF grammar for searching a knowledge base; the document-parsers treat retrieval as out of scope; CLI-Anything treats it as CLI flag parsing.",
+      "suggested_action": "Treat qmd's SYNTAX.md as the reference spec for a future /recall DSL; no competing pattern exists in this slice."
+    },
+    {
+      "domain": "skill/plugin quality measurement (comparative benchmarks)",
+      "why_unfilled": "Marker's benchmark registry (7 methods, 2 scorers) is the only implementation of comparative quality measurement in the cluster. Docling, unstructured, MinerU all self-report. CLI-Anything, outline, qmd have no comparative benchmarks for their own skills/plugins.",
+      "suggested_action": "Adopt marker's METHOD_REGISTRY + SCORE_REGISTRY shape for measuring skill versions (repo-analysis v4.3 vs v4.5 vs hypothetical v5.0). This is the highest-leverage pattern in the slice for SoNash's existing skill-audit gap."
+    }
+  ],
+  "key_signals": [
+    "Five of nine sources converge on self-describing registries as the routing primitive — the clearest cross-cluster signal in this slice.",
+    "Outline + qmd + CLI-Anything independently prove that transport-agnostic command layers pay for themselves the moment MCP becomes a second surface, which JASON-OS Domain 02a explicitly targets.",
+    "MinerU's output_files.md is the best single artifact in the slice for SoNash's next schema migration: it is the template for a v3->v4 ANALYSIS_OUTPUT_CONTRACT.md.",
+    "Adoption is license-gated: MinerU/marker/surya are pattern-extraction only (AGPL/GPL); docling (MIT), unstructured (Apache-2.0), qmd (MIT) are the only direct-dependency candidates.",
+    "Test discipline inversely correlates with architectural ambition — adopting patterns from this cluster means explicitly adding the test gates these projects lack.",
+    "The document-parser cluster cannot answer cross-document synthesis; that gap must be filled from retrieval/graph tooling in other slices.",
+    "qmd is the template for how SoNash should ship its 81 skills: marketplace.json + frontmatter-enforced guardrails (allowed-tools, disable-model-invocation) + pinned deps.",
+    "Progressive extraction is better served by crawl4ai (Apache-2.0, persistent resume_state) than by MinerU's in-memory ephemeral task dict — a cross-slice correction the Appendix §A15 already makes."
+  ],
+  "status": "complete"
+}

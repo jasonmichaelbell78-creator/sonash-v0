@@ -1,15 +1,15 @@
 {
-  "generated": "2026-04-15T18:18:13.632Z",
-  "generated_date": "2026-04-15",
+  "generated": "2026-04-17T18:36:14.389Z",
+  "generated_date": "2026-04-17",
   "summary": {
-    "total": 8505,
-    "open": 7304,
+    "total": 8506,
+    "open": 7305,
     "resolved": 1127,
     "false_positives": 74,
     "resolution_rate_pct": 13
   },
   "by_status": {
-    "NEW": 2154,
+    "NEW": 2155,
     "VERIFIED": 5150,
     "IN_PROGRESS": 0,
     "RESOLVED": 1127,
@@ -18,11 +18,11 @@
   "by_severity": {
     "S0": 26,
     "S1": 1374,
-    "S2": 3462,
+    "S2": 3463,
     "S3": 3643
   },
   "by_category": {
-    "code-quality": 4723,
+    "code-quality": 4724,
     "security": 731,
     "performance": 180,
     "documentation": 982,
@@ -37,7 +37,7 @@
     "sonarcloud": 2561,
     "review": 623,
     "audit": 2943,
-    "manual": 105,
+    "manual": 106,
     "intake": 64,
     "pr-review": 16,
     "pr-review-366-r2": 6,
@@ -147,9 +147,9 @@
     ]
   },
   "health": {
-    "avg_age_days": 61,
-    "oldest_age_days": 75,
+    "avg_age_days": 63,
+    "oldest_age_days": 77,
     "oldest_item_id": "DEBT-0002",
-    "verification_queue_size": 2154
+    "verification_queue_size": 2155
   }
 }

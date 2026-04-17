@@ -334,6 +334,22 @@ else
 fi
 ```
 
+**Orphaned `/synthesize` state check (v2.0 contract, Session #284):** If
+`.claude/state/synthesize.state.json` exists with a non-terminal `status` (i.e.,
+not `complete` / `no_signal` / `blocked`), warn the user — a prior `/synthesize`
+run did not reach a terminal state. Do not auto-delete; present options (resume
+via `/synthesize --resume`, archive to `history/`, or acknowledge and defer).
+
+```bash
+if [ -f .claude/state/synthesize.state.json ]; then
+  STATUS=$(node -e "try{console.log(JSON.parse(require('fs').readFileSync('.claude/state/synthesize.state.json','utf8')).status||'')}catch{console.log('')}")
+  case "$STATUS" in
+    complete|no_signal|blocked|"") : ;;
+    *) echo "WARN: orphaned synthesize.state.json (status=$STATUS) — see /synthesize --resume" ;;
+  esac
+fi
+```
+
 ### Step 9. Pre-Commit Review (MUST)
 
 Before committing, present a summary to the user:

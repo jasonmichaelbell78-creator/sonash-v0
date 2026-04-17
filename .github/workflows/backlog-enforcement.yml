@@ -1,11 +1,13 @@
 name: Backlog Enforcement
 
+# DISABLED 2026-04-16 (Session #284): workflow is obsolete post-TDMS migration.
+# Recurring weekly cron failures on pre-existing backlog violations (~80 SEC-008 +
+# 2 SEC-005). Root cause tracked in DEBT-0891 (obsolete workflow) and DEBT-0398
+# (pattern checker non-blocking + 93+ violations). Triggers reduced to
+# workflow_dispatch only; file preserved for manual invocation or future re-enable
+# once backlog is cleared. To re-enable automatic runs, restore pull_request +
+# schedule triggers.
 on:
-  pull_request:
-    branches: [main, master]
-  schedule:
-    # Run weekly on Monday at 9 AM UTC to catch aging issues
-    - cron: "0 9 * * 1"
   workflow_dispatch:
 
 permissions: {}

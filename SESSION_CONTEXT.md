@@ -1,10 +1,13 @@
 # Session Context
 
-**Document Version**: 8.35 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.37 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-15 (Session #282 — skill-audit batch `2026-04-15-analysis-quartet`
-executed: 7 waves, 9 commits on branch 41526, CAS handler quartet upgraded to
-v2.0/v5.0 + 4 self-audit scripts + shared foundations)
+2026-04-16 (Session #284 — `/skill-audit synthesize` Phase 4 Waves 1-3 of 4
+shipped: Opportunities Ledger + Self-Audit table extracted to REFERENCE.md (Wave
+1, `04103db6`); canonical `scripts/skills/synthesize/self-audit.js` created
+(Wave 2, `145c48ab`); pre-v2 legacy artifacts archived (`565937f2`); synthesize
+SKILL.md v1.2 → v2.0 rewrite implementing all 109 decisions across 12 categories
+(Wave 3, `9f3a07d2`). Wave 4 propagation deferred to next session.)
 
 ## Purpose
 
@@ -31,14 +34,15 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-15 (Session #282 — skill-audit batch COMPLETE, 9
-commits on branch 41526, ready to push + PR). **Branch**: `41526` (9 commits
-ahead of `origin/main`). **Working On**: COMPLETE — CAS handler quartet
-(repo/website/document/media-analysis) audited and rewritten. Batch ID
-`2026-04-15-analysis-quartet`. Status file
-`.claude/state/task-skill-audit-batch-2026-04-15-analysis-quartet.state.json`
-updated to `status: "complete"`. Follow-ups deferred: full `/analyze` audit, 5
-skill-creator gaps identified Phase 3, T28 Step B (/recall E2E).
+**Last Checkpoint**: 2026-04-16 (Session #284 — `/skill-audit synthesize` Waves
+1-3 of 4 COMPLETE, 4 commits ahead of `origin/main`, unpushed). **Branch**:
+`41526` (now 5 commits ahead of origin counting Session #283's `f1668a09` + this
+session's `04103db6` / `145c48ab` / `565937f2` / `9f3a07d2`). **Working On**:
+WAVE 4 PENDING (next session) — propagate synthesize v2.0 contracts to /recall
+(gates on `synthesis.json.schema_version` ≥ 1.0), 4 handler skills (MUST
+preserve `last_synthesized_at`), /session-end (orphaned `synthesize.state.json`
+check). Then final validation spot-check (cross-references, line counts). Wave 4
+effort: ~30 min, 6 file edits.
 
 **Session #280 work (summary)**:
 
@@ -157,7 +161,7 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 
 ## Session Tracking
 
-**Current Session Count**: 281 (since Jan 1, 2026)
+**Current Session Count**: 286 (since Jan 1, 2026)
 
 > **Session #281 handoff (skill-audit batch-mode plan + implementation,
 > 2026-04-14):** Full thread: sync to remote canon (branch `41426`,
@@ -224,6 +228,205 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 ---
 
 ## Recent Session Summaries
+
+**Session #285** (T28 CAS QUINTET CLOSURE — `/SKILL-AUDIT RECALL` + WAVE 4
+PROPAGATION + FIRST /SYNTHESIZE V2.0 RUN — 6 COMMITS):
+
+- **Branch**: `41526` (19 commits ahead of `origin/main`, pushed this session).
+- **Commits this session**: `03bd6b7e` (Wave 4 /synthesize propagation — 6
+  SKILL.md edits across /recall + 4 handlers + /session-end); `bffdc60b` (first
+  /synthesize v2.0 run — 35-source re-synthesis, schema-conformant output via
+  rewrite-synthesis-v2.js + rebuild-ledger + update-last-synthesized helper
+  scripts, self-audit 7/8 PASS); `85afd05b` (Session #285 resume doc);
+  `cc84d011` (/skill-audit recall — 106 decisions, 66/110 → est. 91/110 post-
+  inline, 98/110 post-HANDOFF, SKILL.md v1.1→v1.2, OPDEP-1 fix in recall.js,
+  ECO-1/ECO-2 honest-framing corrections, HANDOFF for Cat 12 self-audit.js);
+  `4bcc86a1` (SESSION_CONTEXT next-session sequence + hook drift); `bca36514`
+  (clarifying comment on --target=sources standalone check).
+- **Goal #1 — Wave 4 propagation**: 6 SKILL.md Integration notes added gating on
+  `synthesis.json.schema_version >= 1.0` (/recall) and MUST-preserve
+  `last_synthesized_at` (4 handlers) plus /session-end orphan-state check.
+  Completes deferred Wave 4 from Session #284 HANDOFF.
+- **Goal #3 — first /synthesize v2.0 run**: re-synthesis on 35-source corpus.
+  Iteration A failed self-audit on 3 dims due to 5 schema drifts between Wave 3
+  SKILL.md spec and Wave 2 self-audit.js Zod schema (synthesisModeEnum naming,
+  sources_included shape, themes[].evidence structure, opportunity_matrix shape,
+  title-key normalization regex). Fixed in iteration B by producing
+  schema-conformant synthesis.json via 5 helper scripts in `.claude/state/`.
+  Also fixed path drift (self-audit checks `.research/knowledge.sqlite`, rebuild
+  writes `.research/content-analysis.db` — bridged via copy). Result: 7 PASS / 1
+  WARN / 0 FAIL. 18 cross-corpus themes, 18 opportunities. Wave 4 contracts
+  validated on 35/35 analysis.json.
+- **Goal #4 — /skill-audit recall** (LAST UNAUDITED CAS QUINTET SKILL): full
+  12-category single-mode audit, 106 decisions (all accepted, 0 rejected, 6
+  deferred to separate scope). Cat 11 N/A (single-pass query, no convergence
+  needed). Cat 12 = 2/10 (no self-audit infrastructure — canonical fix deferred
+  to HANDOFF.md, est. 2-4 hrs). Top structural findings: primacy fix needed
+  (Critical Rules at 83% of file), no MUST/SHOULD/MAY hierarchy, no routing
+  block, CAS acronym never expanded, Wave 4 gate documented but not implemented
+  (ECO-2). Full Phase 4 inline + Phase 5 self-audit PASS (6 MUST dims).
+- **Bonus fixes**: OPDEP-1 bug in `scripts/cas/recall.js` — `--target=sources`
+  alone failed arg validation (missing from disjunction at line 444). 1-line +
+  usage-message fix, 4-invocation smoke-tested, code-reviewer APPROVED. ECO-1:
+  /deep-plan + /brainstorm don't actually use /recall — they access .research/
+  files directly (honest wording adopted). ECO-2: Wave 4 schema_version gate
+  reframed as aspirational (recall.js has 0 refs to synthesis.json; never
+  implemented).
+- **3 cross-skill learnings for next session**: (1) query skills systematically
+  score low on Cat 7 primacy/hierarchy — flag for /skill-audit skill-creator;
+  (2) Wave 4 contract divergence is a pattern risk (documented-but-unwired); (3)
+  SKILL.md invocation contracts need functional smoke tests at save time.
+- **Agent activity**: 1 `code-reviewer` run (APPROVE on recall.js OPDEP-1 fix).
+  Invocation tracking inv-1776442396608-36380-1 (skill-audit, 106 decisions).
+- **State files**: /recall audit state at
+  `.claude/state/task-skill-audit-recall.state.json` (gitignored, retained as
+  decision record). Parity-test state from Session #282 preserved separately.
+- **META_ROADMAP alignment**: Session #285 executed Lane 1 Item 4 (T28 CAS
+  /recall testing). Lane 2 resume-in-flight-deep-plans is next-session top
+  priority per updated SESSION_CONTEXT.
+
+**Session #284** (`/SKILL-AUDIT SYNTHESIZE` PHASE 4 WAVES 1-3 OF 4 — 4 COMMITS):
+
+- **Branch**: `41526` (5 commits ahead of `origin/main` counting #283's
+  `f1668a09`, unpushed; Wave 4 + push deferred to next session per user)
+- **Commits this session**: `04103db6` (Wave 1: refactor — extract Opportunities
+  Ledger + Self-Audit table from SKILL.md to REFERENCE.md §13 / §8 — 2 files,
+  +94/-102), `145c48ab` (Wave 2: feat —
+  `scripts/skills/synthesize/self-audit.js` canonical Cat 12 fix action, 873
+  lines, 8 scripted MUST dimensions per HANDOFF Wave 2 spec + 12C MANUAL block +
+  12H pre-run feedforward), `565937f2` (chore: archive pre-v2 legacy
+  synthesis.md/.json/state.json before Wave 3 since they predated v2 schema — 3
+  files), `9f3a07d2` (Wave 3: feat — synthesize v1.2 → v2.0 SKILL.md rewrite
+  implementing all 109 decisions across 12 categories + REFERENCE.md §9
+  v2-schema expansion + REFERENCE.md §14 Integration/Output-
+  Contracts/Anti-Patterns extraction — 3 files, +421/-197).
+- **Resumed paused `/skill-audit synthesize` from Phase 4** (state file at
+  `.claude/state/task-skill-audit-synthesize.state.json` had 109 accepted / 0
+  rejected / 0 modified decisions from Phases 1-3 in Session #283-pre/clear).
+  Followed `.planning/skill-audit-synthesize-phase4/HANDOFF.md` exactly. Per
+  user protocol, confirmed wave scope before each wave, flagged low-confidence
+  decisions, batch-approved 16 low-confidence decisions in Wave 3.
+- **Wave 1 (decision 7A keystone)**: SKILL.md 381 → 300 lines (target hit
+  exactly). Extracted Self-Audit 10-dim table (REFERENCE.md §8 already had it),
+  Opportunities Ledger full section (new REFERENCE.md §13), AND State File
+  schema block (REFERENCE.md §9 already had it) — three extractions, not two,
+  needed to hit 300.
+- **Wave 2 (decisions 12A-H + 12C MANUAL + 12H feedforward)**: 8 scripted
+  dimensions (artifacts / schema / sections / gaps / orphans / partial_recovery
+  / contract / preflight). Skipped SKILL.md dims 5/6/7/9/10 with rationale
+  (graph-traversal cost, judgment-only). Calibration tuning during validation:
+  loosened "Emergent Themes" needle to also accept "Themes" alias (matches
+  legacy heading); fixed `home_context_source` to recognize `memory:` prefix
+  - arbitrary `.md` filenames (not just hardcoded HOME_CONTEXT_FILES list).
+    Self-audit run against legacy state surfaced 4 MUST FAILs (schema type
+    drift, ungrounded gap citations, ledger out-of-sync) — accurately reporting
+    real pre-v2 data drift. User approved Path A: commit script as-is, don't
+    soften checks.
+- **Cleanup before Wave 3 (per user direction "b then wave 3")**: Path A+B —
+  archived `synthesis.md` + `synthesis.json` to
+  `history/synthesis-pre-v2- legacy.{md,json}`; renamed `synthesize.state.json`
+  → `synthesize.state.pre-v2-legacy.json`. Preserved
+  `opportunities-ledger.jsonl` (durable cross-run record by design). Skipped
+  Scope C (ledger truncation) and Scope D (in-place patch — would violate
+  writer-not-filing-clerk).
+- **Wave 3 (109 decisions, v1.2 → v2.0)**: Massive rewrite. SKILL.md 300 → 463
+  lines on first pass; user chose Path B (~400 natural Complex-tier size for v2
+  additions). Compressed back to 403 lines by extracting State File detail
+  prose, Output Contracts, Anti-Patterns, Integration sub-sections to
+  REFERENCE.md (new §14 with 10 sub-sections). REFERENCE.md 626 → 757 lines
+  (+131). Major SKILL.md additions: Scope quick-reference; Critical Rules with
+  "why" annotations + Rule #4 ledger + Rule #6 min*themes floor; Routing Guide
+  rows for /audit-*, /deep-research, /recall, /gsd:add-\_; Output Sections moved
+  earlier (7H) with table format + length floors; warm-up template + runtime
+  estimate + Pick paradigm + Delegate options + post-warm-up gate; PRE-FLIGHT
+  batch tier reviews + flag-vs-corpus sanity; Phase 1 MEMORY.md +
+  extraction-journal usage + dynamic home-context.json; Phase 2 Inter-Phase
+  Contracts + subagent failure protocol + scope sanity check; **NEW Phase 2.5
+  Convergence Pass** (11A keystone, T20 tally + gate); Phase 3 → "Canonicalize"
+  / Phase 4 → "Verify" rename; Phase 4 Dim 11 Contradiction WARN + Dim 12
+  cross-run drift + T20 tally vs prior + empty- result handling + audit-log
+  JSONL; **NEW Phase 4.5 Convergence Gate** (11D); Phase 5 cross-skill
+  last_synthesized_at contract + rebuild-index fallback + closure signal w/
+  ✅/⚠️/❌ + UTF-8/LF + backup/rollback; RETRO before Phase 6 (2C); Phase 6
+  selection criteria + ranking formula + handoff contract + routings[] capture.
+  State schema v2: tier_overrides[], routings[], invocation,
+  files_created/modified[], decisions[].file_modified, last_complete_run,
+  phase_costs[], blocked_reason/blocked_at, parallel-run lock, disengagement,
+  phase guards, encoding spec.
+- **Validation throughout**: `npm run skills:validate` 0 errors all 4 commits;
+  `npm run patterns:check` clean all 4 commits; pre-commit hooks 6/15 passed
+  (rest skipped as N/A) on each commit.
+- **Pre-existing schema drift confirmed**: Wave 2 self-audit run accurately
+  identified that legacy `synthesis.json` predates current Zod `synthesisRecord`
+  (sources*included strings vs object shape, opportunity* matrix missing
+  description/evidence). Cleanup commit `565937f2` archived this. Next
+  /synthesize run with v2.0 SKILL.md will produce conformant data.
+- **Wave 4 deferred — required for next session**: (1) /recall SKILL.md
+  Integration note "gates on synthesis.json.schema_version >= 1.0"; (2) update 4
+  handler SKILLs (/repo-analysis, /website-analysis, /document-analysis,
+  /media-analysis) with "MUST preserve last_synthesized_at"; (3) /session-end
+  SKILL.md add orphaned synthesize.state.json check (status !== terminal); (4)
+  `npm run skills:validate` + `patterns:check`; (5) spot-check no broken
+  cross-references. ~30 min, 6 file edits.
+- **Files modified this session**: SKILL.md, REFERENCE.md (synthesize),
+  scripts/skills/synthesize/self-audit.js (new), state files renamed/moved.
+- **Memory writes**: none this session (no new feedback patterns surfaced).
+
+---
+
+**Session #283** (REMOTE SYNC + `/ANALYZE` SKILL-AUDIT + ECOSYSTEM VALIDATOR FIX
+— 1 COMMIT):
+
+- **Branch**: `41526` (1 commit ahead of `origin/main`, unpushed until
+  session-end)
+- **Commits**: `f1668a09` (feat(skills): /analyze v1.2 → v2.0 + ecosystem
+  SKILL_STANDARDS compliance — 21 files, +3893/-3189 lines).
+- **Arc**: /session-begin → goal #1 discovered DONE (PR #513 already merged) →
+  goal #2 `/analyze` audit executed via `/skill-audit analyze --mode=single` →
+  scope expansion approved mid-Phase 4 (USER-REQ-2 ii: fix ecosystem validator
+  gap surfaced during Phase 2.5).
+- **`/analyze` audit results**: 12 categories, 67 decisions, 0 rejected, 1
+  revised (Cat 5 C REJECTED at Phase 2.5 — line 15 path `shared/CONVENTIONS.md`
+  was already correct). Score 70/110 Fair → 98/110 Excellent (projected). Top
+  concerns remediated: Cat 12 Completion Verification 1/10 → 9/10 (new
+  self-audit.js), Cat 5 Integration 6/10 → 9/10 (required sections added), Cat 7
+  Prompt Engineering 6/10 → 9/10 (Critical Rules moved to top third, RFC 2119
+  MUST/SHOULD applied).
+- **New artifacts**: `scripts/skills/analyze/self-audit.js` (326 lines,
+  --target=\<slug\> + --all regression modes, dims 1/3/4/5/8/9 covered, 6+7
+  skipped with rationale), REFERENCE.md §6.6 Failure Recovery Matrix, §7
+  Routing-Decision Log schema at `.claude/state/analyze-routing-log.jsonl`.
+- **Ecosystem scope expansion (USER-REQ-2 ii)**: Phase 2.5 discovered
+  `npm run skills:validate` was silently passing 1 file for months due to two
+  compounding bugs — (a) scope-limited to `.claude/commands/` only; (b) YAML
+  parser treated `description: >-` and implicit multi-line continuations as
+  empty. Extended: (1) scope added `.claude/skills/*/SKILL.md`, (2) YAML parser
+  handles `>-`, `|`, and implicit multi-line, (3) REQUIRED_SKILL_MD_SECTIONS
+  enforced with errors (not warnings). 11 non-analyze SKILL.md files updated to
+  comply: deep-research (split combined heading), document/media/repo/website-
+  analysis (inline NOT → ##), pr-retro (inline → ##), recall (2 new sections),
+  frontend-design (title added), sonash-context (title + 3 sections), repo- and
+  website-synthesis DEPRECATED stubs (minimal sections).
+- **Verification**: `skills:validate` 1→78 files scanned; 51→0 errors.
+  `scripts/skills/skill-audit/self-audit.js --target=analyze` overall PASS (0
+  must_failed). `scripts/skills/analyze/self-audit.js --target=MinerU` PASS;
+  `--all` regression surfaces 3 pre-existing known-bad slugs (synthesis meta,
+  surya, tesseract) as FAILs — not new regressions.
+- **Skill-creator crosscheck**: NO content gaps found. skill-creator v3.3+
+  already requires self-audit.js scaffolding and required sections. Gap is
+  **enforcement-at-creation**, not creator spec. /analyze v1.0 created Session
+  #269 before v3.3 landed, explaining why it slipped through.
+- **Cross-cutting USER-REQs**: 5 captured, all resolved in session (shared vs
+  \_shared path verified correct; validator gap fixed; Cat 4 C/D/E walkback
+  available for future; --target=<slug> semantics = one slug, --all =
+  regression; v2.0 bump per handler pattern).
+- **Next session priorities**: (1) push commit `f1668a09` to `origin/41526`
+  - open PR with breaking-change callouts (SKILL_STANDARDS enforcement change
+    affects any skill that doesn't comply); (2) T28 Step A remaining CAS skills
+    (recall, synthesize); (3) T28 Step B E2E `/recall` verification; (4) T28
+    closure. `/analyze` audit no longer blocking T38.
+
+---
 
 **Session #282** (SKILL-AUDIT BATCH `2026-04-15-analysis-quartet` — 7 WAVES, 9
 COMMITS):
@@ -525,29 +728,32 @@ HYGIENE):
 
 ## Quick Status
 
-| Item                               | Status        | Progress                                                                                              |
-| ---------------------------------- | ------------- | ----------------------------------------------------------------------------------------------------- |
-| **Orphan Detection (T21)**         | SCANNER DONE  | 428 findings, 110 resolved. `npm run orphans:detect`.                                                 |
-| **Website Analysis (T23)**         | SKILLS BUILT  | /website-analysis + /website-synthesis skills created.                                                |
-| **Repo Analysis Skill**            | v5.0 ACTIVE   | Phase 4b→3.5 breaking rewrite (Session #282). Warm-up + Routing Guide + Delegation + self-audit.js.   |
-| **Website Analysis Skill**         | v2.0 ACTIVE   | Session #282 rewrite: Warm-up + Routing Guide + scope-explosion (>50 pages) + self-audit.js.          |
-| **Document Analysis Skill**        | v2.0 ACTIVE   | Session #282 breaking rewrite: Cat 2-E + Pattern 10 phase renumber, NEW Integration/Retro/Invocation. |
-| **Media Analysis Skill**           | v2.0 ACTIVE   | Session #282 rewrite: transcript.md MUST per §13.3, NEW Integration/Retro/Invocation + self-audit.js. |
-| **T28 Content Analysis System**    | E2E DONE      | 33 Standard sources (GitNexus added #278), 343 unique candidates. Vocabulary 187 tags.                |
-| **T29 Synthesis Consolidation**    | STEP 12 DONE  | Steps 11-12 PASS. Step 14 effectively done. Remaining: Step 13 (paradigm/scoped), Step 15.            |
-| **Wave 5 Opportunity Ledger**      | 17 ENTRIES    | 12 Wave 5 + 5 new from #278 incremental. Rank 1 (eval harness) is the new S-tier.                     |
-| **T40 CAS tag quality**            | COMPLETE      | Session #276.                                                                                         |
-| **T39 Hook Drift Loop**            | CLOSED        | Session #275. Needs new PR (deferred).                                                                |
-| **Research-Discovery-Standard v2** | IN-PROGRESS   | T13 plan updates needed.                                                                              |
-| **Plan Orchestration**             | WAVE 1 DONE   | Waves 2-3 blocked on debt-runner.                                                                     |
-| **Dev Dashboard**                  | IN-PROGRESS   | Started #245, XL effort.                                                                              |
-| **debt-runner Expansion**          | RESEARCH DONE | /deep-plan next. Gates plan-orchestration Waves 2-3.                                                  |
-| **Multi-layer Memory**             | RESEARCH DONE | 40 agents, 128 claims. Execution next.                                                                |
-| **JASON-OS (Claude Code OS)**      | RESEARCHING   | Brainstorm + roadmap done. 16-domain research program.                                                |
-| **T48 Adoption Verdict Backfill**  | NEW #278      | Backfill Section 2b on ~20 prior product-repo analyses.                                               |
+| Item                               | Status          | Progress                                                                                                                                                              |
+| ---------------------------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Orphan Detection (T21)**         | SCANNER DONE    | 428 findings, 110 resolved. `npm run orphans:detect`.                                                                                                                 |
+| **Website Analysis (T23)**         | SKILLS BUILT    | /website-analysis + /website-synthesis skills created.                                                                                                                |
+| **Repo Analysis Skill**            | v5.0 ACTIVE     | Phase 4b→3.5 breaking rewrite (Session #282). Warm-up + Routing Guide + Delegation + self-audit.js.                                                                   |
+| **Website Analysis Skill**         | v2.0 ACTIVE     | Session #282 rewrite: Warm-up + Routing Guide + scope-explosion (>50 pages) + self-audit.js.                                                                          |
+| **Document Analysis Skill**        | v2.0 ACTIVE     | Session #282 breaking rewrite: Cat 2-E + Pattern 10 phase renumber, NEW Integration/Retro/Invocation.                                                                 |
+| **Media Analysis Skill**           | v2.0 ACTIVE     | Session #282 rewrite: transcript.md MUST per §13.3, NEW Integration/Retro/Invocation + self-audit.js.                                                                 |
+| **T28 Content Analysis System**    | QUINTET AUDITED | 35 sources, 343 candidates. /analyze + /synthesize + /repo + /website + /document + /media + /recall all audited through Session #285. T28 closure flip next session. |
+| **/recall Skill**                  | v1.2 ACTIVE     | Session #285 — 106-decision audit. Primacy fix, MUST/SHOULD hierarchy, Routing block, Tier declaration, OPDEP-1 bug fix in recall.js. Cat 12 self-audit.js deferred.  |
+| **T29 Synthesis Consolidation**    | STEP 12 DONE    | Steps 11-12 PASS. Step 14 effectively done. Remaining: Step 13 (paradigm/scoped), Step 15.                                                                            |
+| **/synthesize Skill**              | v2.0 ACTIVE     | Session #284 — 109-decision rewrite. Phase 2.5/4.5 convergence gates. self-audit.js. State schema v2.                                                                 |
+| **Wave 5 Opportunity Ledger**      | 17 ENTRIES      | 12 Wave 5 + 5 new from #278 incremental. Rank 1 (eval harness) is the new S-tier.                                                                                     |
+| **T40 CAS tag quality**            | COMPLETE        | Session #276.                                                                                                                                                         |
+| **T39 Hook Drift Loop**            | CLOSED          | Session #275. Needs new PR (deferred).                                                                                                                                |
+| **Research-Discovery-Standard v2** | IN-PROGRESS     | T13 plan updates needed.                                                                                                                                              |
+| **Plan Orchestration**             | WAVE 1 DONE     | Waves 2-3 blocked on debt-runner.                                                                                                                                     |
+| **Dev Dashboard**                  | IN-PROGRESS     | Started #245, XL effort.                                                                                                                                              |
+| **debt-runner Expansion**          | RESEARCH DONE   | /deep-plan next. Gates plan-orchestration Waves 2-3.                                                                                                                  |
+| **Multi-layer Memory**             | RESEARCH DONE   | 40 agents, 128 claims. Execution next.                                                                                                                                |
+| **JASON-OS (Claude Code OS)**      | RESEARCHING     | Brainstorm + roadmap done. 16-domain research program.                                                                                                                |
+| **T48 Adoption Verdict Backfill**  | NEW #278        | Backfill Section 2b on ~20 prior product-repo analyses.                                                                                                               |
 
-**Current Branch**: `41526` (9 commits ahead of origin, skill-audit batch
-complete)
+**Current Branch**: `41526` (19 commits ahead of `origin/main`, pushed through
+Session #285 commit `bca36514`. PR to be created at /session-end; merging
+`origin/main` forward to catch up 2-commit lag (dependabot bumps) before PR.)
 
 **Test Status**: 3720 pass, 0 fail, 1 skip (last verified Session #275)
 
@@ -565,36 +771,59 @@ Actions, manual setup).
 
 ## Next Session Goals
 
-### Immediate Priority
+### Session #285 Completed (2026-04-17)
 
-1. **Push branch 41526 + open PR** (Session #282). 9 commits ready, PR body in
-   `docs/PR-41526.md` or generate from `git log`. Covers Waves 1-7 of
-   skill-audit batch `2026-04-15-analysis-quartet`. **Breaking change alert**: 3
-   skills have phase-renumber breaking changes (repo, document, media —
-   state-file auto-migration windows through v2.2). PR should call these out
-   prominently.
+- ✅ **Goal #1** — Wave 4 of `/skill-audit synthesize` propagation (6 SKILL.md
+  edits, commit `03bd6b7e`)
+- ✅ **Goal #3** — First `/synthesize` v2.0 run on 35-source corpus + schema
+  drift fixes (commit `bffdc60b`)
+- ✅ **Goal #4** — `/skill-audit recall` — 106 decisions, 66/110 → post-inline
+  91/110, post-HANDOFF 98/110 (commit `cc84d011`). OPDEP-1 bug fixed in
+  `recall.js` (`--target=sources` standalone). ECO-1 + ECO-2 Integration
+  corrections. Self-audit PASS. Cat 12 self-audit.js creation deferred via
+  `.planning/skill-audit-recall-phase4/HANDOFF.md`.
+- Branch `41526`: 17 commits ahead of origin/main; pushed this session.
 
-2. **Full `/analyze` audit** — deferred follow-up from batch Phase 3 decision.
-   Run `/skill-audit analyze --mode=single` now that its v1.2 handoff contract
-   is locked in. Should be lighter than handler audits since router is thin.
+### Immediate Priority (Next Session)
 
-3. **5 skill-creator gap updates** — narrow update adding TAG_SUGGESTION
-   shared-template guidance, prior-feedback replay pattern, soft-prompt-vs-
-   hard-block distinction, /analyze router ack for router-dispatched skills,
-   Warm-up + PHASE N of M in UX checklist. Identified Phase 3 of the batch.
-   Separate narrow /skill-creator update, not blocking anything.
+1. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh unanalyzed
+   source. `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries
+   (tag, type, FTS5, cross-source) → verify extraction-journal +
+   `last_synthesized_at`. **~15-30 min.** Candidate seed list: T47 Wave 6 (Sober
+   Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase reference, TS MCP SDK,
+   whisper.cpp, monolith, readable-cli, SBOM) — or any fresh URL.
 
-4. **Close T28 — CAS Step A remaining skills** (analyze [now queued], recall,
-   synthesize). The 4 handler skills done in Session #282 were the hardest
-   slice. Tracker T38 remains blocked on T28 closure.
+2. **Step C — T28 closure flip**: mark T28 todo complete in
+   `.planning/todos.jsonl` (or via `/todo`), update T28 CAS PLAN.md banner to ✅
+   COMPLETE, unblock T38 tracker, add brief SESSION_CONTEXT.md note. **~10
+   min.**
 
-5. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
-   `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries (tag,
-   type, FTS5, cross-source) → verify extraction-journal + last_synthesized_at.
-   ~15-30 min. See REMAINING_CAS_TASKS.md Step B.
+3. **`/deep-plan skill-convergence` — Phase A execution** (META_ROADMAP Lane 2
+   Step 6, 7d stale at Session #285 close). Schema-as-code validation + shared
+   behavior library. **Directly informed by Session #285's 3 skill-audit
+   learnings:** (a) query skills systematically score low on Cat 7 primacy /
+   MUST-SHOULD hierarchy; (b) Wave 4 contract divergence is a cross-skill
+   pattern risk (documented gates not implemented); (c) SKILL.md invocation
+   contracts aren't functionally tested at save time. This plan addresses all
+   three. Phase A = 20 steps, 0 completed. State:
+   `.claude/state/deep-plan.skill-convergence.state.json`.
 
-6. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
-   banner to ✅ COMPLETE, unblock T38, SESSION_CONTEXT note.
+4. **`/deep-plan t28-intelligence-graph-v1` — Phase 1** (META_ROADMAP Lane 2
+   Step 8, 5d stale). Freshly unblocked by
+   `deep-research.t28-intelligence-graph-data-layer` completion. Same T28 family
+   — continuity with Session #285 work. State:
+   `.claude/state/deep-plan.t28-intelligence-graph-v1.state.json`.
+
+5. **`/deep-plan orphan-detection` — investigate state mismatch** (META_ROADMAP
+   Lane 2 Step 7, 8d stale). State file exists but todo T21 closed 2026-04-09.
+   Decision: resume, archive, or rehydrate. State:
+   `.claude/state/deep-plan.orphan-detection.state.json`.
+
+6. **Skill-creator audit** (flagged by Session #285 Goal #4 Phase 3 crosscheck).
+   4 gaps identified: no tagline-vs-body validation question, no prerequisite
+   sequencing (Step 0 pattern) authoring guidance, no enum inlining checklist,
+   no tier-declaration requirement. Invoke `/skill-audit skill-creator` to
+   address systemically.
 
 7. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
    2b to ~20 prior product-repo analyses (application/framework/tool-demo

@@ -118,3 +118,10 @@
 {"agent":"code-reviewer","description":"Code review skill-audit batch-mode diff","outcome":"invoked","timestamp":"2026-04-14T23:44:27.226Z"}
 {"agent":"security-auditor","description":"Security review of PR #512 fixes","outcome":"invoked","timestamp":"2026-04-15T00:31:07.277Z"}
 {"agent":"code-reviewer","description":"Code review — PR #513 R1 fixes","outcome":"invoked","timestamp":"2026-04-15T20:06:22.149Z"}
+{"agent":"code-reviewer","description":"Code review analyze self-audit + validator extension","outcome":"invoked","timestamp":"2026-04-16T01:16:38.996Z"}
+{"agent":"code-reviewer","description":"Review synthesize self-audit.js","outcome":"invoked","timestamp":"2026-04-16T19:49:14.516Z"}
+{"agent":"general-purpose","description":"Synthesize slice 3: media/learning","outcome":"invoked","timestamp":"2026-04-17T10:59:56.177Z"}
+{"agent":"general-purpose","description":"Synthesize slice 2: OCR/PDF/docs","outcome":"invoked","timestamp":"2026-04-17T10:59:58.054Z"}
+{"agent":"general-purpose","description":"Synthesize slice 1: scraping/crawling","outcome":"invoked","timestamp":"2026-04-17T11:00:28.201Z"}
+{"agent":"general-purpose","description":"Synthesize slice 4: AI/agents/gists","outcome":"invoked","timestamp":"2026-04-17T11:00:47.507Z"}
+{"agent":"code-reviewer","description":"Code review: recall.js OPDEP-1 fix","outcome":"invoked","timestamp":"2026-04-17T18:27:43.152Z"}

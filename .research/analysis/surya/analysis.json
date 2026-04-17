@@ -18,7 +18,7 @@
   "summary": "OCR + layout + reading order + table recognition in 90+ languages.  Paired with marker.",
   "creator_view": "OCR + layout + reading order + table recognition in 90+ languages. Paired with marker. Layout model integration patterns already covered by docling's analysis. GPL-3.0 limits adoption.",
   "candidates": [],
-  "last_synthesized_at": null,
+  "last_synthesized_at": "2026-04-17T11:09:28.149Z",
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "VikParuchuri/surya",

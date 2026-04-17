@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.0
-**Last Updated:** 2026-04-08
+**Document Version:** 1.1
+**Last Updated:** 2026-04-15
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -454,6 +454,18 @@ CONVENTIONS.md Section 13:
 **Slug derivation:** Each handler generates the slug from its input. The router
 reads the slug from the handler's output to pass to the index updater.
 
+**Slug path contract (LOCKED — do not change without router update):** Router
+reads the slug from `.research/analysis/<slug>/analysis.json`. If a handler
+renames its output directory or relocates `analysis.json`, this contract breaks
+silently — update this section and `scripts/cas/update-index.js` before changing
+any handler output path. All 4 handlers currently honor this path (verified via
+`/skill-audit analyze` Session #283).
+
+**Extraction-journal contract:** Handler-appended entries in
+`.research/extraction-journal.jsonl` follow the canonical JSONL format described
+in CONVENTIONS.md §11 (Extraction Context) and §13 (Handler Output Contract).
+`/analyze` does not write to the extraction-journal; handlers do.
+
 **Completion signal:** The handler presents its routing menu, which signals to
 the router that the pipeline is complete and it can proceed to index update.
 
@@ -635,10 +647,70 @@ All error messages presented to the user MUST be sanitized using
 values are never displayed. This prevents leaking file paths, stack traces, or
 sensitive system information.
 
+### 6.6 Failure Recovery Matrix
+
+One-line-per-class summary of all failure paths. All user-facing messages use
+the standardized format: `[/analyze] FAILED <class>: <sanitized>. Recovery:
+
+<option>`.
+
+| Failure class                                  | Trigger                              | Artifacts state                | Recovery options                                          |
+| ---------------------------------------------- | ------------------------------------ | ------------------------------ | --------------------------------------------------------- |
+| Ambiguous input (§6.1)                         | Pattern match uncertain              | No artifacts written           | (1) pick A, (2) pick B, (3) explicit `--type`, (4) Cancel |
+| Handler partial (§6.2)                         | Some artifacts produced              | `analysis.json` may exist      | Retry analysis / accept partial / defer                   |
+| Handler complete failure (§6.2)                | No artifacts produced                | None                           | Retry with different flags / skip source                  |
+| Handler not implemented (§6.2)                 | Type maps to planned handler         | None                           | Use `--type` to alternate handler / defer                 |
+| Index database missing (§6.3)                  | `.research/content-analysis.db` gone | Handler artifacts preserved    | Auto-rebuild via `rebuild-index.js`                       |
+| Malformed analysis output (§6.4)               | Zod validation fails                 | Artifacts on disk, not indexed | Retry / manual inspect / skip indexing                    |
+| Retry ceiling exceeded (SKILL.md Guard Rails)  | 2 consecutive retries fail           | Preserved per attempt          | Exit with message, inspect logs manually                  |
+| Invalid prompt response (SKILL.md Guard Rails) | User answer ≠ any option             | Unchanged                      | Re-present with "Invalid — please choose N"               |
+
+---
+
+## 7. Routing-Decision Log
+
+### 7.1 Purpose
+
+Lightweight operational signal captured on every `/analyze` invocation. Append-
+only JSONL at `.claude/state/analyze-routing-log.jsonl` (gitignored by the
+`.claude/state/` pattern). Feeds future detection-tuning work — e.g., if users
+repeatedly override `--type` on a pattern, the detection regex may be missing a
+case.
+
+### 7.2 Schema (per line)
+
+```json
+{
+  "ts": "2026-04-15T22:00:00Z",
+  "input": "<raw input (url or path, truncated to 256 chars)>",
+  "detected_type": "repo|website|document|media|synthesis|ambiguous",
+  "detection_reason": "<short reason string, e.g. 'github.com pattern'>",
+  "user_type_override": "repo|website|document|media|null",
+  "ambiguity_resolution": "A|B|explicit|cancel|null",
+  "handler_dispatched": "/repo-analysis|...|/synthesize|null",
+  "slug": "<resulting slug or null>",
+  "index_update_status": "ok|warn|fail|null",
+  "duration_ms": 1234
+}
+```
+
+### 7.3 Retention
+
+Append-only. No rotation; the file grows slowly (one line per invocation).
+Rotate manually if it exceeds ~10 MB (unlikely in practice). Never read by
+/analyze runtime — consumed only by offline detection-tuning analysis.
+
+### 7.4 Privacy
+
+No transcript content, no handler output, no URL query strings are logged — only
+the input (truncated), detection signals, and dispatch outcome. Respect
+CLAUDE.md §2 privacy defaults.
+
 ---
 
 ## Version History
 
-| Version | Date       | Description                              |
-| ------- | ---------- | ---------------------------------------- |
-| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269) |
+| Version | Date       | Description                                                                                                                                                                                               |
+| ------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.1     | 2026-04-15 | Session #283 skill-audit: locked slug path contract in §4.2, added extraction-journal JSONL reference (CONVENTIONS.md §11/§13), added §6.6 Failure Recovery Matrix, added §7 Routing-Decision Log schema. |
+| 1.0     | 2026-04-08 | Initial creation (T28 CAS, Session #269)                                                                                                                                                                  |

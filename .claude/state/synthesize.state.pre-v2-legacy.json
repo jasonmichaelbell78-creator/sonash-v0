@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "started_at": "2026-04-13T17:15:00Z",
+  "completed_at": "2026-04-13T20:04:33.948Z",
+  "session": "#277",
+  "mode": "full",
+  "paradigm": "thematic",
+  "preflight": {
+    "source_count": 32,
+    "by_type": {
+      "repo": 23,
+      "website": 6,
+      "document": 1,
+      "media": 2
+    },
+    "by_tier": {
+      "T1": 25,
+      "T2": 9
+    },
+    "excluded_quick": ["surya", "tesseract"],
+    "user_decisions": ["F", "N (no quick upgrade)", "no tier changes"]
+  },
+  "sources_loaded": [
+    "archivebox-archivebox",
+    "aws-media-extraction",
+    "bedrock-summarize-audio-video-text",
+    "bulk-transcribe-youtube-playlist",
+    "codecrafters-io-build-your-own-x",
+    "crawl4ai",
+    "docling",
+    "docs-composio-dev",
+    "errors-and-vulnerabilities-in-ai-generated-code",
+    "farzaa-gist-c35ac0cf",
+    "firecrawl",
+    "hkuds-cli-anything",
+    "jina-ai-reader",
+    "karpathy-autoresearch",
+    "karpathy-gist-442a6bf",
+    "kieranklaassen-gist-4f2aba89",
+    "lux-video-downloader",
+    "maharshi-pandya-gist-4aeccbe1",
+    "MinerU",
+    "outline",
+    "public-apis_public-apis",
+    "qmd",
+    "safishamsi-graphify",
+    "sidbharath-com-blog-claude-code-the-complete-guide",
+    "teng-lin_notebooklm-py",
+    "unstructured",
+    "vikparuchuri-marker",
+    "viktoraxelsen-memskill",
+    "youtube-oszdfnqmgrw",
+    "youtube-qinuqwl4e-k",
+    "youtube-transcript-api",
+    "zedeus-nitter"
+  ],
+  "subagent_dispatches": [
+    {
+      "slice": 1,
+      "agent_id": "a17cd5a021c6dea58",
+      "themes": 47,
+      "candidates": 72,
+      "status": "complete"
+    },
+    {
+      "slice": 2,
+      "agent_id": "a86bdd39be8207c01",
+      "themes": 49,
+      "candidates": 74,
+      "status": "complete"
+    },
+    {
+      "slice": 3,
+      "agent_id": "a4150f603cc038177",
+      "themes": 44,
+      "candidates": 70,
+      "status": "complete"
+    },
+    {
+      "slice": 4,
+      "agent_id": "affe34074c497cf54",
+      "themes": 52,
+      "candidates": 88,
+      "status": "complete"
+    }
+  ],
+  "sections_completed": [
+    "themes",
+    "ecosystem_gaps",
+    "reading_chain",
+    "mental_model",
+    "fit_portfolio",
+    "knowledge_map",
+    "opportunity_matrix",
+    "changes_since_previous_na"
+  ],
+  "self_audit": {
+    "dimension_1_artifact_existence": "pass",
+    "dimension_2_schema_validation": "pass",
+    "dimension_3_section_completeness": "pass",
+    "dimension_4_evidence_grounding": "pass",
+    "dimension_5_candidate_integrity": "pass",
+    "dimension_6_convergence_math": "pass",
+    "dimension_7_dedup_check": "pass",
+    "dimension_8_gap_validity": "pass",
+    "dimension_9_opportunity_grounding": "pass",
+    "dimension_10_changes_accuracy": "n/a"
+  },
+  "retros": [
+    {
+      "question": "Did synthesis surface anything new?",
+      "response": "Good overall. Many of these repos were chosen specifically for CAS research, so low adoption is expected — synthesis is useful for consolidation even without new surprises.",
+      "captured_at": "2026-04-13T18:30:00Z"
+    },
+    {
+      "question": "Was any section weak or missing?",
+      "response": "No, looks good for now. Only time will tell.",
+      "captured_at": "2026-04-13T18:45:00Z"
+    }
+  ]
+}

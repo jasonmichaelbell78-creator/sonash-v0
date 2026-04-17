@@ -84,9 +84,12 @@ Before any work begins, display:
 - Structured health report for a dependency decision
 - Triage of multiple candidates (Quick Scan each, then promote to Standard)
 
-**When NOT to Use:** Cross-repo synthesis → `/synthesize` | Home repo audit →
-`/audit-comprehensive` | Domain/technology research → `/deep-research` | Quick
-dependency check → `gh api` directly.
+## When NOT to Use
+
+- Cross-repo synthesis → `/synthesize`
+- Home repo audit → `/audit-comprehensive`
+- Domain / technology research → `/deep-research`
+- Quick dependency check → `gh api` directly
 
 > See [REFERENCE.md](./REFERENCE.md) for dimension catalog, tool stack, output
 > schemas, absence patterns, Creator View specification (§14), process details
@@ -504,6 +507,9 @@ phase-level resume.
 - **Upstream:** `/deep-research`, `/brainstorm`, `/analyze` (router)
 - **Downstream:** `/deep-plan`, `/synthesize`, TDMS, project memory
 - **Neighbors:** `/audit-comprehensive` (home repo), dimension agents
+- **Cross-skill contract:** MUST preserve `last_synthesized_at` field on
+  `analysis.json` when writing — this field is set by `/synthesize` Phase 5 and
+  must not be dropped by handler re-runs (v2.0 contract, Session #284).
 - **References:** [REFERENCE.md](./REFERENCE.md), [ARCHIVE.md](./ARCHIVE.md),
   [\_shared/TAG_SUGGESTION.md](../_shared/TAG_SUGGESTION.md)
 
@@ -561,3 +567,14 @@ drift fix, artifact path alignment, agent_budget removal, retro persistence,
 invocation tracking. Per DECISIONS.md #1-20._
 
 _v4.2 and earlier — see [ARCHIVE.md](./ARCHIVE.md)._
+
+## Version History
+
+| Version         | Date       | Description                                                                                  |
+| --------------- | ---------- | -------------------------------------------------------------------------------------------- |
+| 5.0             | 2026-04-15 | Skill-audit batch Wave 2 rewrite — phase renumber 4b → 3.5 (breaking).                       |
+| 4.6             | 2026-04-13 | Creator View §2b Use-As-Is Verdict MUST for product repos (application/framework/tool-demo). |
+| 4.5             | 2026-04-12 | Per-phase artifact gate + self-audit +4 checks.                                              |
+| 4.4             | 2026-04-10 | Split Process Overview into Standard/Deep + Quick Scan.                                      |
+| 4.3             | 2026-04-06 | Convergence: CONVENTIONS.md ref, self-audit phase, schema drift fix.                         |
+| 4.2 and earlier | —          | See [ARCHIVE.md](./ARCHIVE.md).                                                              |

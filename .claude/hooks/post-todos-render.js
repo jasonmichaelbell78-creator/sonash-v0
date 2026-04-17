@@ -176,10 +176,15 @@ function main(rawArg) {
 
   // Re-render — non-blocking on failure.
   try {
-    execFileSync("node", [path.resolve(projectDir, RENDERER)], {
+    // exec-path propagation rule (PR #420): use process.execPath, not bare
+    // 'node'. Avoids PATH-search ambiguity when the user has multiple Node
+    // installs and ensures the same Node binary running the hook runs the
+    // child.
+    execFileSync(process.execPath, [path.resolve(projectDir, RENDERER)], {
       cwd: projectDir,
       stdio: ["ignore", "pipe", "pipe"],
       timeout: 30_000,
+      maxBuffer: 10 * 1024 * 1024,
     });
     writeAudit(projectDir, { action: "rendered", file_path: safeRelPath, success: true });
   } catch (err) {

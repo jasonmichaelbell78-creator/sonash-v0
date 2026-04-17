@@ -73,9 +73,14 @@ ARGUES, and LINKS TO.
 - Evaluating a website as a knowledge source for ongoing work
 - Comparing a site's perspective to our documented approach
 
-**When NOT to Use:** Testing OUR webapp → `/webapp-testing` | Package docs →
-`context7` MCP | Simple URL fetch → WebFetch | GitHub repo → `/repo-analysis` |
-Cross-site synthesis → `/synthesize` | Topic research → `/deep-research`.
+## When NOT to Use
+
+- Testing OUR webapp → `/webapp-testing`
+- Package docs → `context7` MCP
+- Simple URL fetch → `WebFetch`
+- GitHub repo → `/repo-analysis`
+- Cross-site synthesis → `/synthesize`
+- Topic research → `/deep-research`
 
 ## Input
 
@@ -370,6 +375,9 @@ cd scripts/reviews && npx tsx write-invocation.ts --data '{
 - **Router:** `/analyze` (auto-detects website sources)
 - **Companion:** `/synthesize` (cross-site, requires 3+ sites)
 - **Consumers:** JASON-OS Domain 02a, `/deep-plan` (as research context)
+- **Cross-skill contract:** MUST preserve `last_synthesized_at` field on
+  `analysis.json` when writing — this field is set by `/synthesize` Phase 5 and
+  must not be dropped by handler re-runs (v2.0 contract, Session #284).
 - **Shared artifacts:** `.research/extraction-journal.jsonl`,
   `.research/EXTRACTIONS.md`, `.research/reading-chain.jsonl`
 

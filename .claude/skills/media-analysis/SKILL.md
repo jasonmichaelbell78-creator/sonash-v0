@@ -78,9 +78,12 @@ all other handlers.
 - User provides a podcast URL or audio file path
 - Evaluating media content as a knowledge source
 
-**When NOT to Use:** GitHub repo → `/repo-analysis` | Website →
-`/website-analysis` | PDF/document → `/document-analysis` | Testing webapp →
-`/webapp-testing`.
+## When NOT to Use
+
+- GitHub repo → `/repo-analysis`
+- Website → `/website-analysis`
+- PDF / document → `/document-analysis`
+- Testing webapp → `/webapp-testing`
 
 ## Input
 
@@ -419,6 +422,9 @@ transcripts are reusable non-CAS artifacts. State file stores `process_feedback`
 - **Router:** `/analyze` (auto-detects media sources)
 - **Companion:** `/synthesize` (cross-source, requires 3+ sources)
 - **Consumers:** `/deep-plan` (as research context), JASON-OS
+- **Cross-skill contract:** MUST preserve `last_synthesized_at` field on
+  `analysis.json` when writing — this field is set by `/synthesize` Phase 5 and
+  must not be dropped by handler re-runs (v2.0 contract, Session #284).
 - **Shared artifacts:** `.research/extraction-journal.jsonl`,
   `.research/EXTRACTIONS.md`, `.research/reading-chain.jsonl`
 - **Reusable artifact:** `transcript.md` is a non-CAS artifact usable by any
