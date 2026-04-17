@@ -147,6 +147,18 @@ Done. [N] sources, [M] extractions indexed.
 4. **Suggest refinements on empty results.** "No results for X. Try broader
    terms, or check /recall --stats for available tags."
 
+## Integration
+
+- **Producers:** `/synthesize`, `/analyze` (router), 4 analysis handler skills
+  (`/repo-analysis`, `/website-analysis`, `/document-analysis`,
+  `/media-analysis`)
+- **Consumers:** `/deep-plan`, `/brainstorm` (prior-art surfacing)
+- **Cross-skill contract:** `/recall` reads `synthesis.json` via the SQLite
+  index. Gates on `synthesis.json.schema_version >= 1.0`; older/unversioned
+  artifacts are ignored with a WARN (rebuild required via `/synthesize`).
+- **Shared artifacts:** `.research/extraction-journal.jsonl`,
+  `.research/analysis/synthesis/synthesis.json`, CAS SQLite index
+
 ## Version History
 
 | Version | Date       | Description                                                                                    |

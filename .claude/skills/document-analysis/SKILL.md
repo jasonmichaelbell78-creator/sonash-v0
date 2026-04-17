@@ -388,6 +388,9 @@ Re-run / Compare. State file stores `process_feedback` (nullable) from retro.
 - **Router:** `/analyze` (auto-detects document sources)
 - **Companion:** `/synthesize` (cross-source, requires 3+ sources)
 - **Consumers:** `/deep-plan` (as research context), JASON-OS
+- **Cross-skill contract:** MUST preserve `last_synthesized_at` field on
+  `analysis.json` when writing — this field is set by `/synthesize` Phase 5 and
+  must not be dropped by handler re-runs (v2.0 contract, Session #284).
 - **Shared artifacts:** `.research/extraction-journal.jsonl`,
   `.research/EXTRACTIONS.md`, `.research/reading-chain.jsonl`
 

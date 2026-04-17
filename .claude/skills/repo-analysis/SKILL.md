@@ -507,6 +507,9 @@ phase-level resume.
 - **Upstream:** `/deep-research`, `/brainstorm`, `/analyze` (router)
 - **Downstream:** `/deep-plan`, `/synthesize`, TDMS, project memory
 - **Neighbors:** `/audit-comprehensive` (home repo), dimension agents
+- **Cross-skill contract:** MUST preserve `last_synthesized_at` field on
+  `analysis.json` when writing — this field is set by `/synthesize` Phase 5 and
+  must not be dropped by handler re-runs (v2.0 contract, Session #284).
 - **References:** [REFERENCE.md](./REFERENCE.md), [ARCHIVE.md](./ARCHIVE.md),
   [\_shared/TAG_SUGGESTION.md](../_shared/TAG_SUGGESTION.md)
 
