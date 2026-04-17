@@ -1,0 +1,418 @@
+{
+  "slice_id": 1,
+  "slice_name": "scraping-crawling-archival",
+  "sources_read": [
+    "crawl4ai",
+    "firecrawl",
+    "archivebox-archivebox",
+    "jina-ai-reader",
+    "zedeus-nitter",
+    "youtube-transcript-api",
+    "bulk-transcribe-youtube-playlist",
+    "public-apis_public-apis",
+    "docs-composio-dev"
+  ],
+  "sources_missing": [],
+  "themes": [
+    {
+      "name": "Engine-fallback chain is the architecture of adversarial extraction",
+      "description": "Four of the web-extraction sources independently converged on the same shape: a named ordered list of extraction engines, tried in sequence, with a distinct failure mode when the list exhausts. Firecrawl's scrapeURL (fetch → fire-engine → playwright → pdf → utils, terminating in NoEnginesLeftError), crawl4ai's FilterChain plus extraction-strategy hierarchy, jina/reader's cachedScrap (Firestore cache → curl-impersonate → proxied curl → Puppeteer → stale cache), and youtube-transcript-api's proxy-rotation-on-RequestBlocked all encode the same insight — 'fetch a URL' is not one problem but a sequence of known failure modes, each with its own handler. The pattern is directly portable to SoNash's /website-analysis (currently single-path via superpowers-chrome) and to any future /analyze dispatch where a source might need multiple handlers before giving up.",
+      "sources": ["firecrawl", "crawl4ai", "jina-ai-reader", "youtube-transcript-api"],
+      "evidence_refs": [
+        "firecrawl/creator-view.md §2: 'scrapeURL engine-fallback pattern is the exact architecture you'd want'",
+        "crawl4ai/creator-view.md §2: 'FilterChain + Scorer pattern... directly applicable to content analysis pipeline'",
+        "jina-ai-reader/creator-view.md §1: 'fetch a URL is not one problem — it's a chain of failure modes'",
+        "youtube-transcript-api/value-map.json: 'Context-aware error hierarchy pattern, 15+ specific exception types'"
+      ],
+      "convergence_count": 4
+    },
+    {
+      "name": "Caption-first extraction beats transcription-always",
+      "description": "The two YouTube sources form a complete architectural conclusion when read together: bulk-transcribe-youtube-playlist fires up faster-whisper on every video, youtube-transcript-api shows that ~80% of YouTube videos already have captions that can be fetched instantly via the innertube API, and the cross-repo synthesis is explicit in both creator-views — a caption-first, Whisper-fallback pipeline is dramatically cheaper and faster than transcription-always. The same shape reappears in firecrawl's routing of PDFs through LlamaParse directly to markdown rather than plaintext-then-remarkdown, and in jina/reader treating headless Chrome as the escape hatch rather than the default. The meta-pattern: always check whether the structured form already exists before committing to the expensive extraction path.",
+      "sources": [
+        "youtube-transcript-api",
+        "bulk-transcribe-youtube-playlist",
+        "firecrawl",
+        "jina-ai-reader"
+      ],
+      "evidence_refs": [
+        "youtube-transcript-api/creator-view.md §4: 'Adopt this library as T27's primary extraction layer'",
+        "bulk-transcribe-youtube-playlist/creator-view.md §4: 'Build a caption-first, Whisper-fallback extraction pipeline'",
+        "firecrawl/creator-view.md §1: 'converts straight to markdown... learned from its own mistakes'",
+        "jina-ai-reader/creator-view.md §1: 'curl-impersonate as the default fetcher with Puppeteer as escape hatch'"
+      ],
+      "convergence_count": 4
+    },
+    {
+      "name": "Hook systems are the pluggable-extractor substrate — but governance and runtime are separate concerns",
+      "description": "Crawl4ai (8 ordered hooks with security-fixed CVEs), ArchiveBox (event-family naming on_{EventFamily}__{order}_{name}[.bg].{ext}, foreground/background, SIGTERM, JSONL stdout), and firecrawl (engine-pluggable via DI) all treat 'extraction step' as a first-class hook interface. The striking asymmetry across these three is that each got half of the solution: crawl4ai has ordered lifecycle but weak governance, ArchiveBox has the sharpest runtime semantics (explicit ordering, bg/fg, signal handling) but zero code review and 5.2/10 OpenSSF, and firecrawl has engine-level telemetry but no hook-naming discipline. SoNash's hook ecosystem — analytics, warnings, audits, 7+ categories, acknowledgment gates — leads on governance but has the least sophisticated runtime model (flat JSON arrays, no ordering guarantee, no bg/fg). The challenge posed in multiple creator-views: combine SoNash governance with ArchiveBox runtime semantics.",
+      "sources": ["crawl4ai", "archivebox-archivebox", "firecrawl"],
+      "evidence_refs": [
+        "crawl4ai/creator-view.md §2: 'Hook lifecycle ordering — 8 hooks with clear sequence'",
+        "archivebox-archivebox/creator-view.md §4: 'Consider whether your hook system should have an execution model, not just a governance model'",
+        "firecrawl/analysis.json candidates: 'scrapeURL engine-fallback chain... engine-level telemetry'"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Commercial-OSS tension produces matching anti-patterns",
+      "description": "Firecrawl, jina/reader, public-apis, and composio-docs all show what happens when open source meets a commercial revenue model. Firecrawl ships 1162 files with one mermaid diagram and no docs/ directory — architecture lives in the founding team. Jina/reader goes further: the public repo literally does not compile without the SSH-only private thinapps-shared submodule (auth, rate limits, secrets, DAOs), and 'How it works' in the README is a DeepWiki badge. Public-apis shows the late-stage version — sponsor-first README with 10 APILayer placements before community content, 1,197 unprocessed PRs, 14/15 CI runs 'action_required'. Composio makes the commercial layer explicit as a product (meta-tool hosted service). Across all four, the shared signal is: when the going concern is commercial, documentation-as-contract, self-host-as-real, and OSS-as-adopter-viable degrade in that order. SoNash's explicit non-commercial 'creation for joy' stance immunizes it from this specific decay pattern but should file these as evidence for any future OSS publication of JASON-OS.",
+      "sources": ["firecrawl", "jina-ai-reader", "public-apis_public-apis", "docs-composio-dev"],
+      "evidence_refs": [
+        "firecrawl/value-map.json anti-pattern: 'Zero architecture prose docs — 1162 files, one mermaid diagram'",
+        "jina-ai-reader/value-map.json anti-pattern: 'Public repo + private submodule requirement... Open source in license only'",
+        "public-apis_public-apis/summary.md: 'PR approval bottleneck — 14/15 runs action_required'",
+        "docs-composio-dev/creator-view.md §4: 'Dependency on hosted service... conflicts with the self-contained OS vision'"
+      ],
+      "convergence_count": 4
+    },
+    {
+      "name": "Dynamic tool/resource discovery is the answer to context-window scaling",
+      "description": "Two different contexts surface the same solution: composio's meta-tool architecture exposes 6 meta-tools (search, get-schema, auth, execute, workbench, bash) rather than loading 1000+ definitions into context, and ArchiveBox's MCP auto-discovery pattern introspects Click CLI metadata to generate MCP tools dynamically in ~200 lines. Composio cites concrete data (55K tokens for a 5-server MCP setup before conversation starts) as the cost driver; ArchiveBox demonstrates that the same discovery principle eliminates the manual-schema-duplication problem. For SoNash with 72+ skills and 38+ agents, the pattern converges on a single prescription — derive tool surfaces from existing metadata (skill frontmatter, CLI signatures, agent definitions) rather than maintaining parallel schema files, and provide search-at-runtime rather than load-everything. Both patterns are explicitly filed as JASON-OS Domain 02a (MCP-native tooling) candidates.",
+      "sources": ["docs-composio-dev", "archivebox-archivebox"],
+      "evidence_refs": [
+        "docs-composio-dev/value-map.json K1: 'Meta-tool pattern for dynamic tool discovery'",
+        "archivebox-archivebox/creator-view.md §2: 'MCP auto-discovery pattern... JASON-OS Domain 02a'",
+        "docs-composio-dev/creator-view.md §1: '5-server MCP setup consumes ~55K tokens before conversation starts'"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Curated-list projects decay on a predictable trajectory that validation infrastructure alone cannot prevent",
+      "description": "Public-apis is the clearest case in this slice, but the pattern is detectable elsewhere. Public-apis has 1,193 lines of Python validation scripts, 638 lines of tests, three CI workflows, a structured CONTRIBUTING.md, and yet 1 commit in 90 days, 1,197 open issues, and a PR approval bottleneck where 14/15 automation-passing PRs land in 'action_required'. The creator-view's explicit conclusion: automation is necessary but not sufficient; without lifecycle management (promotion, retirement, staleness flagging), curated lists rot regardless of how good the format-enforcement is. Zedeus/nitter shows the same shape from a different angle — 12.8K stars, active maintenance, but the adversarial-dependency on a hostile API means the project is effectively dead regardless of the quality of its infrastructure. The application to SoNash is direct: patterns:check prevents format decay of EXTRACTIONS.md and SKILL_INDEX.md, but cannot prevent content decay. The extraction-journal graduation pipeline is the missing lifecycle layer.",
+      "sources": ["public-apis_public-apis", "zedeus-nitter"],
+      "evidence_refs": [
+        "public-apis_public-apis/creator-view.md §6: 'The validation without maintenance trap'",
+        "zedeus-nitter/creator-view.md §6: 'ADVERSARIAL_DEPENDENCY... 12.8K stars but is effectively dead'",
+        "public-apis_public-apis/summary.md: 'automation alone doesn't prevent stagnation'"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Capability-gated testing and no-mocks testing each solve half of the adopter-ramp problem",
+      "description": "Firecrawl's 19-line CLAUDE.md mandates that tests gate by runtime capability via env vars (TEST_SUITE_SELF_HOSTED, OPENAI_API_KEY, OLLAMA_BASE_URL) so the same test file runs in all environments with the gate deciding whether assertions execute. ArchiveBox's 498-line CLAUDE.md mandates the inverse: NO MOCKS — real SQLite, real subprocess, strict == assertions not >= bounds, because mocks let tests pass without catching regressions. Jina/reader ships zero tests and relies on TypeScript strict + lint + traffic volume, which works for the originator but fails for every fork. The three positions map cleanly to a testing-philosophy axis: no mocks (strictness at the data layer) × capability gating (same file, any environment) × observability-as-quality-floor (no tests, trust traffic). SoNash currently mocks httpsCallable (correct per its Security Rule #1) and uses node:test. The extractable prescription is to add capability gating to the next Firebase Functions integration test added — three lines per file, eliminates an entire class of 'skip in CI' flake.",
+      "sources": ["firecrawl", "archivebox-archivebox", "jina-ai-reader"],
+      "evidence_refs": [
+        "firecrawl/creator-view.md §4: 'adopt the test-gating-by-capability pattern... eliminates an entire class of flaky-in-CI failures'",
+        "archivebox-archivebox/creator-view.md §3: 'NO MOCKS (real SQLite, real subprocess)... Strict assertions (== not >=)'",
+        "jina-ai-reader/creator-view.md §6: 'no tests as a choice requires compensating monitoring'"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Content-extraction convergence on Readability + Turndown + Puppeteer as the industry stack",
+      "description": "Jina/reader explicitly uses Puppeteer → linkedom → @mozilla/readability → Turndown with GFM plugin. Firecrawl's playwright engine follows the same shape (Readability narrowing, markdown emission). Crawl4ai inverts by extending extraction into LLM-based strategies but treats the DOM-narrowing step as equivalent. The library choices are not exotic — Readability is the Firefox Reader Mode engine, Turndown is the standard html-to-markdown converter. The observation worth carrying forward: when SoNash's /website-analysis needs a non-Chrome-extension fallback (static pages, anti-bot environments where superpowers-chrome cannot reach), this stack is pure Node, small dep footprint, and represents the rough consensus across three analyzed production extractors. It is not a pattern to invent — it is a pattern to adopt when needed.",
+      "sources": ["jina-ai-reader", "firecrawl", "crawl4ai"],
+      "evidence_refs": [
+        "jina-ai-reader/analysis.json: 'Readability + Turndown + Puppeteer extraction pipeline'",
+        "firecrawl/creator-view.md §1: 'PDFs route through LlamaParse... DOCXs route through mammoth to HTML and then to markdown'",
+        "crawl4ai/creator-view.md §1: '55+ extraction strategy classes from LXML to LLM-based'"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "CLAUDE.md as philosophy-document vs rules-document",
+      "description": "ArchiveBox ships a 498-line CLAUDE.md encoding grep-friendly naming, minimize-unique-names, NO MOCKS, and coverage-as-dead-code methodology — philosophy plus setup. Firecrawl ships a 19-line CLAUDE.md that is pure operational discipline: test-first, E2E preferred, capability-gating, harness usage. SoNash's current CLAUDE.md is ~135 lines and focused on rules and constraints. The contrast is instructive: the 19-line version is a checklist, the 498-line version is a worldview, and both are internally consistent. The analysis across both sources concludes the same thing from opposite sides — CLAUDE.md is not documentation, it is the contract the AI reads every turn, and the question is whether you want a contract that constrains behavior (short) or one that transmits philosophy (long). Applicable to SoNash: a companion PHILOSOPHY.md separate from the constraints CLAUDE.md may be a cleaner split than mixing both.",
+      "sources": ["archivebox-archivebox", "firecrawl"],
+      "evidence_refs": [
+        "archivebox-archivebox/value-map.json: 'CLAUDE.md as structured developer philosophy document... 498-line'",
+        "firecrawl/analysis.json: 'CLAUDE.md minimal-actionable exemplar... 19-line CLAUDE.md that beats most 200-line variants'"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Security posture is uneven where extraction meets arbitrary input",
+      "description": "Every source that handles arbitrary user-supplied URLs or content shows the same pattern: defenses exist at the front door and vanish at extension points. Jina/reader has a thoughtful SSRF validator, non-root Docker, per-request browser contexts — and then three S0 holes (unvalidated x-proxy-url piped to libcurl, injectFrameScript doing raw fetch with setBypassCSP(true), SSL_VERIFYPEER=false set globally). ArchiveBox has careful path-traversal checks in core but subprocess calls with f-string interpolation and ALLOWED_HOSTS='*' defaults. Zedeus/nitter has Docker hardening that is the best in the corpus (CAP_DROP ALL, read-only fs, non-root UID 998) but renders untrusted tweet content via Karax verbatim (XSS). Crawl4ai responded well to CVEs at the hook layer (restricted builtins, URL scheme validation, deserialization allowlists) but still has a default SECRET_KEY. The lesson for SoNash is not about any single vulnerability — it is that extraction surfaces accrue security debt unless the defense pattern is applied uniformly. The existing sanitizeError pattern and patterns:check enforcement model is exactly the right shape; extend it uniformly as new extractors are added.",
+      "sources": ["jina-ai-reader", "archivebox-archivebox", "zedeus-nitter", "crawl4ai"],
+      "evidence_refs": [
+        "jina-ai-reader/creator-view.md §1: 'three S0 holes: unvalidated x-proxy-url... setBypassCSP(true)... SSL_VERIFYPEER=false'",
+        "archivebox-archivebox/analysis.json ST-01: 'subprocess f-string interpolation... ALLOWED_HOSTS=*'",
+        "zedeus-nitter/creator-view.md §6: 'XSS_IN_CONTENT_RENDERER... Karax verbatim bypasses escaping'",
+        "crawl4ai/creator-view.md §1: 'Three critical vulnerabilities were fixed with proper mitigations'"
+      ],
+      "convergence_count": 4
+    }
+  ],
+  "candidates": [
+    {
+      "name": "FilterChain + Scorer composition",
+      "source": "crawl4ai",
+      "tags": ["architecture", "filtering", "engine-fallback"],
+      "quality": 88,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "3-tier resource pool (PERMANENT/HOT/COLD)",
+      "source": "crawl4ai",
+      "tags": ["infrastructure", "resource-pooling"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Hook lifecycle with 8 ordered hooks",
+      "source": "crawl4ai",
+      "tags": ["hooks", "execution-model"],
+      "quality": 82,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "scrapeURL engine-fallback chain",
+      "source": "firecrawl",
+      "tags": ["architecture", "extraction", "fallback"],
+      "quality": 90,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Capability-gated test pattern",
+      "source": "firecrawl",
+      "tags": ["testing", "ci", "capability-detection"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "58-example cookbook pattern",
+      "source": "firecrawl",
+      "tags": ["documentation-pattern", "cookbook"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "CLAUDE.md minimal-actionable exemplar",
+      "source": "firecrawl",
+      "tags": ["claude-md", "ai-instructions"],
+      "quality": 72,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "MCP auto-discovery from CLI metadata",
+      "source": "archivebox-archivebox",
+      "tags": ["mcp", "dynamic-discovery"],
+      "quality": 90,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Hook execution model with ordering and bg/fg lifecycle",
+      "source": "archivebox-archivebox",
+      "tags": ["hooks", "runtime-semantics"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "CLAUDE.md as structured developer philosophy document",
+      "source": "archivebox-archivebox",
+      "tags": ["documentation", "philosophy"],
+      "quality": 82,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Coverage-as-dead-code-detector methodology",
+      "source": "archivebox-archivebox",
+      "tags": ["testing", "dead-code", "orphan-detection"],
+      "quality": 72,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Multi-provider fallback generator (iterProviders)",
+      "source": "jina-ai-reader",
+      "tags": ["multi-provider-fallback", "strategy-pattern"],
+      "quality": 80,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "x-* request header protocol",
+      "source": "jina-ai-reader",
+      "tags": ["api-versioning", "mcp-surface"],
+      "quality": 72,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "r.jina.ai hosted service as fetch backend",
+      "source": "jina-ai-reader",
+      "tags": ["vendor-lock-in", "web-scraping"],
+      "quality": 65,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Tiered fetch fallback chain with sideLoad body hint",
+      "source": "jina-ai-reader",
+      "tags": ["engine-fallback", "caching"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Docker container hardening (RO fs + CAP_DROP ALL)",
+      "source": "zedeus-nitter",
+      "tags": ["docker", "security", "container-hardening"],
+      "quality": 85,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Session pool with per-endpoint rate limiting",
+      "source": "zedeus-nitter",
+      "tags": ["rate-limiting", "preemptive-backoff"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Parser versioning for unstable APIs",
+      "source": "zedeus-nitter",
+      "tags": ["blast-radius", "versioning"],
+      "quality": 68,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "youtube-transcript-api as primary extraction layer",
+      "source": "youtube-transcript-api",
+      "tags": ["tool", "media-extraction"],
+      "quality": 88,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Context-aware error hierarchy pattern",
+      "source": "youtube-transcript-api",
+      "tags": ["error-handling", "extraction"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Innertube API reverse-engineering approach",
+      "source": "youtube-transcript-api",
+      "tags": ["knowledge", "api-access"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Proxy rotation infrastructure (Webshare)",
+      "source": "youtube-transcript-api",
+      "tags": ["proxy-rotation", "bulk-extraction"],
+      "quality": 72,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "faster-whisper local transcription pipeline",
+      "source": "bulk-transcribe-youtube-playlist",
+      "tags": ["whisper", "transcription", "gpu"],
+      "quality": 82,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Caption-first + Whisper-fallback architecture",
+      "source": "bulk-transcribe-youtube-playlist",
+      "tags": ["media-pipeline", "extraction-strategy"],
+      "quality": 88,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Async download + sync GPU transcription pattern",
+      "source": "bulk-transcribe-youtube-playlist",
+      "tags": ["concurrency", "gpu"],
+      "quality": 75,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "compromise.js client-side NLP",
+      "source": "bulk-transcribe-youtube-playlist",
+      "tags": ["nlp", "frontend"],
+      "quality": 65,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Link validation workflow (validate_links.yml)",
+      "source": "public-apis_public-apis",
+      "tags": ["ci-cd", "docs-integrity"],
+      "quality": 75,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Structured catalog format (enum columns)",
+      "source": "public-apis_public-apis",
+      "tags": ["catalog", "machine-parseable"],
+      "quality": 60,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Google Calendar API integration",
+      "source": "public-apis_public-apis",
+      "tags": ["sonash-feature", "oauth"],
+      "quality": 72,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Open-Meteo Weather API (no auth)",
+      "source": "public-apis_public-apis",
+      "tags": ["sonash-feature", "mood-correlation"],
+      "quality": 65,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Google Cloud Natural Language API",
+      "source": "public-apis_public-apis",
+      "tags": ["sonash-feature", "sentiment"],
+      "quality": 65,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Meta-tool pattern for dynamic tool discovery",
+      "source": "docs-composio-dev",
+      "tags": ["mcp", "dynamic-discovery", "context-scaling"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Native vs MCP tradeoff framework",
+      "source": "docs-composio-dev",
+      "tags": ["mcp", "decision-framework"],
+      "quality": 75,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "llms.txt documentation standard",
+      "source": "docs-composio-dev",
+      "tags": ["documentation", "ai-discoverability"],
+      "quality": 60,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Event trigger dual model (webhook + polling)",
+      "source": "docs-composio-dev",
+      "tags": ["event-driven", "agents"],
+      "quality": 55,
+      "fit_hint": "reference"
+    }
+  ],
+  "gaps": [
+    {
+      "domain": "Extraction pipeline lifecycle management",
+      "why_unfilled": "Every source shows 'how to extract' but none has a clean answer to 'when has extracted content gone stale and needs refresh?' Public-apis makes this explicit (validation-without-maintenance trap) but offers no solution. SoNash's extraction-journal graduation pipeline is the closest analog and is reportedly broken (per active initiatives memory).",
+      "suggested_action": "Deep-research on content-decay detection: staleness signals (upstream pushed_at delta, link rot, extraction_date age) and graduation automation (route to active sprint vs archive)."
+    },
+    {
+      "domain": "Anti-bot resilience without self-hosted fetcher",
+      "why_unfilled": "Jina/reader's curl-impersonate + TLS fingerprint approach requires Docker + LD_PRELOAD + libcurl-impersonate as a base image. Firecrawl uses Playwright with Fire-Engine for the hardest cases. Neither is a drop-in for SoNash's Firebase-only, non-Docker architecture. The gap: is there a TLS-fingerprinting strategy that works from Node without containerization?",
+      "suggested_action": "Instrument current superpowers-chrome extraction gaps before choosing an adoption strategy; file r.jina.ai as a candidate backend only after measuring the gap."
+    },
+    {
+      "domain": "Shared extraction format for the four-repo web-extraction corpus",
+      "why_unfilled": "Crawl4ai, firecrawl, jina/reader, and (indirectly) ArchiveBox all output 'LLM-ready markdown' but with subtly different schemas (metadata fields, timestamp handling, structured-block representation). No single source proposes a canonical intermediate format.",
+      "suggested_action": "Propose an intermediate format for SoNash /analyze outputs that preserves enough structure to round-trip between extractors (e.g. adopt the JSONL + front-matter pattern already used in findings.jsonl)."
+    },
+    {
+      "domain": "MCP server creation tooling for skill ecosystems",
+      "why_unfilled": "ArchiveBox's MCP auto-discovery pattern solves 'expose existing CLI as MCP tools' cleanly in ~200 lines of Python/Click. Composio's meta-tool architecture solves 'expose 1000+ tools without context bloat' as a hosted product. Neither is a drop-in for SoNash's 72+ skills + 38 agents, which are not Click commands but markdown frontmatter files.",
+      "suggested_action": "Prototype a skill-frontmatter-to-MCP-tool auto-discovery layer as a JASON-OS Domain 02a candidate; measure current context overhead for the 3-MCP-server setup as a baseline."
+    },
+    {
+      "domain": "Caption-first media analysis in the SoNash /analyze dispatch",
+      "why_unfilled": "The youtube-transcript-api + bulk-transcribe-youtube-playlist pair yields a complete three-layer architecture (caption-API → pytubefix backup → faster-whisper fallback) but SoNash's current media-analysis handler's exact extraction path is not visible in this slice's artifacts.",
+      "suggested_action": "Audit /analyze media handler for caption-first routing; if absent, add youtube-transcript-api as Layer 1 with Whisper as documented fallback for uncaptioned videos."
+    }
+  ],
+  "key_signals": [
+    "The four web-extraction sources (crawl4ai, firecrawl, jina/reader, youtube-transcript-api) have reached enough convergence that a cross-source 'state of web content extraction' reading is now feasible — jina-ai-reader's creator-view explicitly flags this as synthesis-ready.",
+    "Jina/reader's public-repo-but-private-submodule pattern is the most aggressive example in the corpus of 'open source in licensing only' and stands as a direct anti-pattern for any future JASON-OS distribution.",
+    "The 55K-token overhead figure from composio is the first concrete cost data point for MCP context bloat found in this slice — worth capturing as a reference value when evaluating future MCP additions.",
+    "Bulk-transcribe-youtube-playlist's beam_size=10 + vad_filter=True combination is specifically a hallucination-prevention setting for Whisper-on-silence, not just a speed/accuracy tuning — this is the kind of operational wisdom that typically takes months to learn the hard way.",
+    "Public-apis at 420K stars with 1 commit in 90 days is the cleanest real-world evidence in the corpus that validation automation without lifecycle management does not prevent content decay — the exact shape of risk that applies to SoNash's EXTRACTIONS.md and skill indexes."
+  ],
+  "status": "complete"
+}

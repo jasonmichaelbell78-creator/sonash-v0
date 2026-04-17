@@ -1,0 +1,329 @@
+[
+  {
+    "slug": "abhigyanpatwari-gitnexus",
+    "type": "repo",
+    "depth": "standard",
+    "tags": [
+      "jason-os-relevant",
+      "cas-relevant",
+      "sonash-relevant",
+      "knowledge-management",
+      "ai-agents"
+    ],
+    "scoring": {
+      "quality": 82
+    }
+  },
+  {
+    "slug": "archivebox-archivebox",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "application", "mcp", "hooks", "claude-md"],
+    "scoring": {
+      "quality": 70
+    }
+  },
+  {
+    "slug": "aws-media-extraction",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "media", "extraction", "repository", "analysis"],
+    "scoring": {
+      "quality": 50
+    }
+  },
+  {
+    "slug": "bedrock-summarize-audio-video-text",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "tool-demo", "bedrock", "summarize", "audio"],
+    "scoring": {
+      "quality": 18
+    }
+  },
+  {
+    "slug": "bulk-transcribe-youtube-playlist",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "utility-tool", "bulk", "transcribe", "youtube"],
+    "scoring": {
+      "quality": 21
+    }
+  },
+  {
+    "slug": "codecrafters-io-build-your-own-x",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "curated-list", "codecrafters", "build", "your"],
+    "scoring": {
+      "quality": 44
+    }
+  },
+  {
+    "slug": "crawl4ai",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "library", "web-crawling", "architecture", "hooks"],
+    "scoring": {
+      "quality": 78
+    }
+  },
+  {
+    "slug": "docling",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "framework", "docling", "python", "ai"],
+    "scoring": {
+      "quality": 92
+    }
+  },
+  {
+    "slug": "docs-composio-dev",
+    "type": "website",
+    "depth": "standard",
+    "tags": ["website", "ai-agents", "tool-integration", "mcp", "authentication"],
+    "scoring": {
+      "quality": 70
+    }
+  },
+  {
+    "slug": "errors-and-vulnerabilities-in-ai-generated-code",
+    "type": "document",
+    "depth": "standard",
+    "tags": ["document", "pdf", "security", "ai-code-quality", "vulnerabilities"],
+    "scoring": {
+      "quality": 88
+    }
+  },
+  {
+    "slug": "farzaa-gist-c35ac0cf",
+    "type": "website",
+    "depth": "standard",
+    "tags": ["website", "claude-code", "skill", "personal-wiki", "knowledge-management"],
+    "scoring": {
+      "quality": 67
+    }
+  },
+  {
+    "slug": "firecrawl",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "framework", "firecrawl", "typescript", "ai"],
+    "scoring": {
+      "quality": 87
+    }
+  },
+  {
+    "slug": "hkuds-cli-anything",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "framework", "hkuds", "anything", "python"],
+    "scoring": {
+      "quality": 62
+    }
+  },
+  {
+    "slug": "jina-ai-reader",
+    "type": "repo",
+    "depth": "standard",
+    "tags": [
+      "web-scraping",
+      "llm-integration",
+      "application",
+      "commercial-oss",
+      "production-grade"
+    ],
+    "scoring": {
+      "quality": 72
+    }
+  },
+  {
+    "slug": "karpathy-autoresearch",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "research-tool", "karpathy", "autoresearch", "python"],
+    "scoring": {
+      "quality": 55
+    }
+  },
+  {
+    "slug": "karpathy-gist-442a6bf",
+    "type": "website",
+    "depth": "standard",
+    "tags": ["website", "llm", "knowledge-management", "obsidian", "claude-code"],
+    "scoring": {
+      "quality": 73
+    }
+  },
+  {
+    "slug": "kieranklaassen-gist-4f2aba89",
+    "type": "website",
+    "depth": "standard",
+    "tags": ["website", "claude-code", "multi-agent", "swarm", "teammatetool"],
+    "scoring": {
+      "quality": 70
+    }
+  },
+  {
+    "slug": "lux-video-downloader",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "application", "go", "video-downloader", "plugin"],
+    "scoring": {
+      "quality": 58
+    }
+  },
+  {
+    "slug": "maharshi-pandya-gist-4aeccbe1",
+    "type": "website",
+    "depth": "standard",
+    "tags": ["website", "prompt-engineering", "reasoning", "system-prompt", "claude"],
+    "scoring": {
+      "quality": 43
+    }
+  },
+  {
+    "slug": "MinerU",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "framework", "document-parsing", "python", "async-task-api"],
+    "scoring": {
+      "quality": 74
+    }
+  },
+  {
+    "slug": "outline",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "application", "typescript", "mcp-server", "plugin-architecture"],
+    "scoring": {
+      "quality": 78
+    }
+  },
+  {
+    "slug": "public-apis_public-apis",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "curated-list", "public", "apis", "python"],
+    "scoring": {
+      "quality": 42
+    }
+  },
+  {
+    "slug": "qmd",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["knowledge-management", "claude-code", "mcp", "llm", "local-inference"],
+    "scoring": {
+      "quality": 86
+    }
+  },
+  {
+    "slug": "safishamsi-graphify",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "library", "knowledge-graph", "claude-code", "skill"],
+    "scoring": {
+      "quality": 68
+    }
+  },
+  {
+    "slug": "sidbharath-com-blog-claude-code-the-complete-guide",
+    "type": "website",
+    "depth": "standard",
+    "tags": ["website", "blog", "claude-code", "tutorial", "ai-coding"],
+    "scoring": {
+      "quality": 72
+    }
+  },
+  {
+    "slug": "surya",
+    "type": "repo",
+    "depth": "quick",
+    "tags": ["repo", "library", "surya", "python", "repository"],
+    "scoring": {
+      "quality": 70
+    }
+  },
+  {
+    "slug": "teng-lin_notebooklm-py",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "library", "teng", "notebooklm", "python"],
+    "scoring": {
+      "quality": 60
+    }
+  },
+  {
+    "slug": "tesseract",
+    "type": "repo",
+    "depth": "quick",
+    "tags": ["repo", "library", "tesseract", "c++", "repository"],
+    "scoring": {
+      "quality": 74
+    }
+  },
+  {
+    "slug": "unstructured",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "framework", "unstructured", "python", "data-pipelines"],
+    "scoring": {
+      "quality": 91
+    }
+  },
+  {
+    "slug": "vikparuchuri-marker",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "library", "python", "pdf-conversion", "benchmarking"],
+    "scoring": {
+      "quality": 69
+    }
+  },
+  {
+    "slug": "viktoraxelsen-memskill",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "research-tool", "viktoraxelsen", "memskill", "python"],
+    "scoring": {
+      "quality": 38
+    }
+  },
+  {
+    "slug": "youtube-oszdfnqmgrw",
+    "type": "media",
+    "depth": "standard",
+    "tags": ["media", "youtube", "obsidian", "rag", "claude-code"],
+    "scoring": {
+      "quality": 65
+    }
+  },
+  {
+    "slug": "youtube-qinuqwl4e-k",
+    "type": "media",
+    "depth": "standard",
+    "tags": ["media", "youtube", "obsidian", "attachments", "knowledge-management"],
+    "scoring": {
+      "quality": 48
+    }
+  },
+  {
+    "slug": "youtube-transcript-api",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "library", "youtube", "transcript", "repository"],
+    "scoring": {
+      "quality": 63
+    }
+  },
+  {
+    "slug": "zedeus-nitter",
+    "type": "repo",
+    "depth": "standard",
+    "tags": ["repo", "application", "nim", "twitter", "anti-pattern"],
+    "scoring": {
+      "quality": 60
+    }
+  }
+]

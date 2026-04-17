@@ -1,0 +1,419 @@
+{
+  "slice_id": 3,
+  "slice_name": "media-video-audio-learning",
+  "sources_read": [
+    "aws-media-extraction",
+    "bedrock-summarize-audio-video-text",
+    "lux-video-downloader",
+    "teng-lin_notebooklm-py",
+    "youtube-oszdfnqmgrw",
+    "youtube-qinuqwl4e-k",
+    "codecrafters-io-build-your-own-x",
+    "sidbharath-com-blog-claude-code-the-complete-guide",
+    "errors-and-vulnerabilities-in-ai-generated-code"
+  ],
+  "sources_missing": [],
+  "themes": [
+    {
+      "name": "Extraction is a pipeline, not a monolith",
+      "description": "Both AWS reference architectures in this slice — aws-media-extraction and bedrock-summarize-audio-video-text — converge on the same architectural insight: separate extraction from analysis, and make extraction itself a composition of independently-toggleable stages (frame sample -> dedup -> per-frame feature -> transcription -> multi-granularity hierarchy; or reader -> processor -> writer chain). The pattern generalizes far beyond video: SoNash's Content Analysis System already treats analysis as pluggable handlers, and this slice supplies the missing media layer using the same composition grammar. The win is not any single stage but the interface contract that lets you swap cloud services for local-first tools (FAISS for OpenSearch, Whisper for Transcribe, spaCy for Comprehend) without rewriting the pipeline.",
+      "sources": [
+        "aws-media-extraction",
+        "bedrock-summarize-audio-video-text",
+        "lux-video-downloader"
+      ],
+      "evidence_refs": [
+        "aws-media-extraction/creator-view.md#section-2 (frame sampling + smart dedup + multi-granularity)",
+        "bedrock-summarize-audio-video-text/creator-view.md#section-1 (Chain of Responsibility + Factory auto-discovery)",
+        "lux-video-downloader/creator-view.md#section-1 (46-extractor init()-registry, single Extract(url, options) interface)"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "Local-first beats cloud-coupled for portable tools",
+      "description": "Every cloud-coupled media pipeline in this slice is flagged as an anti-pattern by its own analysis. aws-media-extraction ships both OpenSearch and FAISS dedup variants and the local one wins on simplicity with identical quality. bedrock-summarize-audio-video-text has a commented-out Whisper handler suggesting even its author was migrating off AWS. The through-line for SoNash/JASON-OS: build the extraction layer on pytubefix + moviepy + FAISS + Whisper + local Claude vision rather than inheriting AWS service lock-in. Cost and portability line up here — a 10-minute YouTube video costs ~$3 on AWS Rekognition/Bedrock per aws-media-extraction's own README; free-to-cheap with captions + local tools.",
+      "sources": ["aws-media-extraction", "bedrock-summarize-audio-video-text"],
+      "evidence_refs": [
+        "aws-media-extraction/analysis.json (OpenSearch dependency for similarity flagged as anti-pattern)",
+        "bedrock-summarize-audio-video-text/analysis.json (AWS-coupled extraction anti-pattern, 5+ service deps)",
+        "bedrock-summarize-audio-video-text/creator-view.md#section-6 (commented-out Whisper handler hint)"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Structured markdown is sufficient retrieval at solo-dev scale",
+      "description": "The Karpathy/Obsidian YouTube (oszdfnqmgrw) and the Obsidian attachments tutorial (qinuqwl4e-k) both argue that the retrieval stack most people reach for is premature optimization: folders + markdown + a CLAUDE.md navigation controller solves the thousands-of-docs regime without embeddings or vector DBs. This validates SoNash's own .research/ pipeline architecture — analysis.json + SQLite FTS + /recall is the matured, schema-validated version of what Karpathy describes. The interpretive lesson is not 'adopt Obsidian' but 'the simpler-than-you-think retrieval threshold is real' — and SoNash has crossed it with tracking (extraction-journal.jsonl), schemas (Zod v3.0), and multi-source synthesis the Obsidian variant lacks.",
+      "sources": ["youtube-oszdfnqmgrw", "youtube-qinuqwl4e-k"],
+      "evidence_refs": [
+        "youtube-oszdfnqmgrw/creator-view.md#section-2 (our .research/ IS this system, evolved)",
+        "youtube-oszdfnqmgrw/analysis.json (CLAUDE.md as knowledge traversal controller)",
+        "youtube-qinuqwl4e-k/creator-view.md#section-3 (manual metadata breaks at scale)"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Privacy-preserving AI via tokenize-round-trip",
+      "description": "bedrock-summarize-audio-video-text's PII tokenize/untokenize pattern (Comprehend detects PII -> replace with T1/T2/T3 tokens -> persist map -> LLM processes tokens -> untokenize on output) is the single most directly applicable pattern in this slice for SoNash's core mission. Journal entries in a sobriety app contain uniquely sensitive context — sponsors, meetings, substances, people — and a local NER pass (spaCy or regex) could apply the same token round-trip before any Cloud Function call. The errors-and-vulnerabilities paper reinforces this by flagging 'insecure access control' and 'hard-coded secrets' as top-tier AI-code risks; tokenization is a defense-in-depth layer on top of SoNash's existing App Check + Cloud Functions boundary.",
+      "sources": [
+        "bedrock-summarize-audio-video-text",
+        "errors-and-vulnerabilities-in-ai-generated-code"
+      ],
+      "evidence_refs": [
+        "bedrock-summarize-audio-video-text/creator-view.md#section-2 (PII round-trip relevant to SoNash privacy-first)",
+        "bedrock-summarize-audio-video-text/value-map.json (tokenize/untokenize high novelty, high relevance)",
+        "errors-and-vulnerabilities-in-ai-generated-code/creator-view.md (security taxonomy: 5 subcategories incl. access control, secrets)"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "AI-code quality is a first-class audit surface",
+      "description": "The errors-and-vulnerabilities paper (18-category taxonomy) and the sidbharath Claude Code guide together frame the governance problem SoNash has already partially solved. SoNash's CODE_PATTERNS.md (~450 patterns), patterns:check gate, and SECURITY_CHECKLIST.md cover roughly 8 of the 18 categories (architectural inconsistency, secrets, injection/XSS, error handling, prompt injection, naming, compilation errors, structural entropy). The gaps the paper surfaces — hallucinated dependencies (slopsquatting), license compliance scanning, and AI-origin debt classification — are concrete additions. The sidbharath guide identifies the broader enforcement gap: treating CLAUDE.md as 'memory' rather than as non-negotiable rules is the most common failure mode, and SoNash is ahead of published tutorials on that specific axis.",
+      "sources": [
+        "errors-and-vulnerabilities-in-ai-generated-code",
+        "sidbharath-com-blog-claude-code-the-complete-guide"
+      ],
+      "evidence_refs": [
+        "errors-and-vulnerabilities-in-ai-generated-code/creator-view.md#section-2 (18-category coverage matrix vs SoNash systems)",
+        "errors-and-vulnerabilities-in-ai-generated-code/creator-view.md#section-4 (add slopsquatting check to pre-commit)",
+        "sidbharath-com-blog-claude-code-the-complete-guide/creator-view.md#section-2 (enforcement gap: hooks as automation not gates)"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "Skill/plugin distribution is the unsolved distribution problem",
+      "description": "teng-lin/notebooklm-py, the sidbharath guide, and codecrafters/build-your-own-x all surface pieces of the same unresolved question: how do you distribute executable knowledge artifacts at scale? notebooklm-py solves intra-user distribution (skill.py install + version stamping + drift detection, exactly matching SoNash's cross_locale_config pain). sidbharath points to the Anthropic plugin marketplace (36 plugins, Dec 2025) and community marketplaces as the forming ecosystem layer. codecrafters is the cautionary case — 486K stars, 462 open issues, 1 commit/90 days, celebrity stagnation because there is no retirement process. Together they outline both the mechanism SoNash needs (stamp + install) and the lifecycle discipline SoNash will need (retirement, not just creation).",
+      "sources": [
+        "teng-lin_notebooklm-py",
+        "sidbharath-com-blog-claude-code-the-complete-guide",
+        "codecrafters-io-build-your-own-x"
+      ],
+      "evidence_refs": [
+        "teng-lin_notebooklm-py/creator-view.md#section-2 (skill.py install + version stamping retires cross_locale_config)",
+        "sidbharath-com-blog-claude-code-the-complete-guide/analysis.json (plugin marketplace ecosystem, 36 plugins)",
+        "codecrafters-io-build-your-own-x/creator-view.md#section-4 (skill retirement process — the catalog outgrows the curator)"
+      ],
+      "convergence_count": 3
+    },
+    {
+      "name": "External-contract monitoring as a first-class CI pattern",
+      "description": "notebooklm-py's rpc-health.yml (daily cron + 3 exit codes + auto-creates labeled GitHub issues on drift) and lux's per-extractor CI generation (Node script produces 45 workflows from one template, each with its own red/green badge) are two instances of the same insight: when you depend on an external contract (Google RPC, 46 video platforms, Claude API, MCP servers), you build CI that watches the contract, not just the code. SoNash has 17+ manually-maintained workflows and no equivalent external-contract monitor. The pattern activates any time JASON-OS identifies a contract worth guarding — Anthropic SDK drift, MCP server availability, Firebase API changes.",
+      "sources": ["teng-lin_notebooklm-py", "lux-video-downloader"],
+      "evidence_refs": [
+        "teng-lin_notebooklm-py/creator-view.md#section-2 (rpc-health.yml: daily cron, auto-issue on failure)",
+        "lux-video-downloader/creator-view.md#section-2 (CI workflow generation from template, 45 workflows from one)",
+        "lux-video-downloader/value-map.json (per-site CI isolation)"
+      ],
+      "convergence_count": 2
+    },
+    {
+      "name": "YouTube-as-content-source is tractable with today's tools",
+      "description": "Across the two AWS repos plus the two YouTube analyses themselves, the shape of a working YouTube ingestion pipeline emerges from existing tooling: pytubefix (1.5K stars, MIT, active Mar 2026) handles download + caption extraction + playlist enumeration + async; YouTube's own captions frequently remove the need for Whisper/Transcribe entirely; moviepy extracts audio when captions aren't available; the extracted text then feeds the same /analyze and /recall machinery SoNash already has. The two YouTube sources in this slice were themselves processed through this pipeline (transcript.md present, transcript_source: captions) — proof the approach works end-to-end at single-video scale.",
+      "sources": [
+        "bedrock-summarize-audio-video-text",
+        "aws-media-extraction",
+        "youtube-oszdfnqmgrw",
+        "youtube-qinuqwl4e-k"
+      ],
+      "evidence_refs": [
+        "bedrock-summarize-audio-video-text/value-map.json (pytubefix capabilities: SRT captions, async, playlist)",
+        "aws-media-extraction/creator-view.md#section-2 (YouTube pipeline pattern)",
+        "youtube-oszdfnqmgrw/analysis.json (transcript_source: captions)",
+        "youtube-qinuqwl4e-k/analysis.json (transcript_source: captions)"
+      ],
+      "convergence_count": 4
+    },
+    {
+      "name": "SKILL.md is evolving into an executable manifest",
+      "description": "notebooklm-py treats SKILL.md as a full executable contract: autonomy rules (22 auto-run + 7 ask-first with per-command reasons), embedded Task() subagent invocations, version stamp, install mechanism. codecrafters shows the opposite failure mode — a README that grew to 390 links with no structural enforcement. The interpretive thread: SKILL.md isn't documentation, it's a manifest, and the skills that treat it that way (autonomy rules, embedded invocations, versioning) survive scale. SoNash's SKILL_STANDARDS.md is moving in this direction; notebooklm-py's autonomy rules section is a drop-in retrofit for add-debt, pr-review, session-end, and audit-* skills.",
+      "sources": ["teng-lin_notebooklm-py", "codecrafters-io-build-your-own-x"],
+      "evidence_refs": [
+        "teng-lin_notebooklm-py/creator-view.md#section-2 (SKILL.md Autonomy Rules lines 94-128)",
+        "teng-lin_notebooklm-py/value-map.json (Embedded Task() Subagent Patterns)",
+        "codecrafters-io-build-your-own-x/creator-view.md#section-6 (single-file-everything anti-pattern)"
+      ],
+      "convergence_count": 2
+    }
+  ],
+  "candidates": [
+    {
+      "name": "Frame sampling + smart FAISS dedup pipeline",
+      "source": "aws-media-extraction",
+      "tags": ["media", "pipeline", "local-first"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Multi-granularity hierarchy (frame -> shot -> scene)",
+      "source": "aws-media-extraction",
+      "tags": ["media", "architecture"],
+      "quality": 80,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Toggleable per-frame ML feature extraction",
+      "source": "aws-media-extraction",
+      "tags": ["media", "extensibility"],
+      "quality": 75,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Subtitle-to-frame timestamp alignment",
+      "source": "aws-media-extraction",
+      "tags": ["media", "multimodal"],
+      "quality": 65,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "PII tokenize/untokenize round-trip pattern",
+      "source": "bedrock-summarize-audio-video-text",
+      "tags": ["privacy", "sonash-mission", "security"],
+      "quality": 90,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "YouTube audio extraction pipeline (pytubefix + moviepy)",
+      "source": "bedrock-summarize-audio-video-text",
+      "tags": ["media", "youtube", "local-first"],
+      "quality": 85,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Chain of Responsibility + Factory handler composition",
+      "source": "bedrock-summarize-audio-video-text",
+      "tags": ["architecture", "pipeline"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "pytubefix library adoption (captions, async, playlist)",
+      "source": "bedrock-summarize-audio-video-text",
+      "tags": ["media", "youtube", "library"],
+      "quality": 88,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Amazon Transcribe async job lifecycle reference",
+      "source": "bedrock-summarize-audio-video-text",
+      "tags": ["media", "reference"],
+      "quality": 60,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "CI workflow generation from template",
+      "source": "lux-video-downloader",
+      "tags": ["ci", "meta-tooling"],
+      "quality": 75,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "init()-based plugin registry (46 extractors)",
+      "source": "lux-video-downloader",
+      "tags": ["architecture", "plugin"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Skill install + version stamping (notebooklm)",
+      "source": "teng-lin_notebooklm-py",
+      "tags": ["skill-distribution", "cross-locale"],
+      "quality": 92,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Autonomy Rules section in SKILL.md",
+      "source": "teng-lin_notebooklm-py",
+      "tags": ["skill-standards", "governance"],
+      "quality": 85,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Nightly external-contract health check (rpc-health.yml)",
+      "source": "teng-lin_notebooklm-py",
+      "tags": ["ci", "external-contract"],
+      "quality": 78,
+      "fit_hint": "extraction-candidate"
+    },
+    {
+      "name": "Embedded Task() subagent patterns in SKILL.md",
+      "source": "teng-lin_notebooklm-py",
+      "tags": ["skill-standards", "subagent"],
+      "quality": 72,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Ambient CLAUDE.md PR workflow",
+      "source": "teng-lin_notebooklm-py",
+      "tags": ["workflow", "pr"],
+      "quality": 60,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "npx skills add ecosystem investigation",
+      "source": "teng-lin_notebooklm-py",
+      "tags": ["distribution", "jason-os"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Obsidian raw -> wiki pipeline (validates .research/)",
+      "source": "youtube-oszdfnqmgrw",
+      "tags": ["knowledge-base", "validation"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "CLAUDE.md as knowledge traversal controller",
+      "source": "youtube-oszdfnqmgrw",
+      "tags": ["claude-md", "navigation"],
+      "quality": 68,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Scale threshold: when to move to real RAG",
+      "source": "youtube-oszdfnqmgrw",
+      "tags": ["decision-framework"],
+      "quality": 60,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Context-over-filename retrieval principle",
+      "source": "youtube-qinuqwl4e-k",
+      "tags": ["retrieval", "metadata"],
+      "quality": 50,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Build Your Own React (Pomber) tutorial",
+      "source": "codecrafters-io-build-your-own-x",
+      "tags": ["learning", "react"],
+      "quality": 78,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Write Yourself a Git tutorial",
+      "source": "codecrafters-io-build-your-own-x",
+      "tags": ["learning", "git"],
+      "quality": 65,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Regex Matching Can Be Simple and Fast (Russ Cox)",
+      "source": "codecrafters-io-build-your-own-x",
+      "tags": ["learning", "regex", "performance"],
+      "quality": 70,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Skill retirement process design",
+      "source": "codecrafters-io-build-your-own-x",
+      "tags": ["lifecycle", "skill-standards"],
+      "quality": 82,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "'Build from scratch' framing for Domain 01",
+      "source": "codecrafters-io-build-your-own-x",
+      "tags": ["jason-os", "documentation"],
+      "quality": 60,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Cloud teleportation pattern (& prefix, --teleport)",
+      "source": "sidbharath-com-blog-claude-code-the-complete-guide",
+      "tags": ["claude-code", "workflow"],
+      "quality": 68,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "Plugin marketplace ecosystem tracking",
+      "source": "sidbharath-com-blog-claude-code-the-complete-guide",
+      "tags": ["ecosystem", "distribution"],
+      "quality": 55,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "'Junior engineer' framing validation",
+      "source": "sidbharath-com-blog-claude-code-the-complete-guide",
+      "tags": ["mental-model"],
+      "quality": 50,
+      "fit_hint": "reference"
+    },
+    {
+      "name": "18-category AI error taxonomy",
+      "source": "errors-and-vulnerabilities-in-ai-generated-code",
+      "tags": ["security", "taxonomy", "ai-code-quality"],
+      "quality": 92,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Hallucinated dependencies (slopsquatting) detection",
+      "source": "errors-and-vulnerabilities-in-ai-generated-code",
+      "tags": ["security", "supply-chain", "npm"],
+      "quality": 88,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Intentional vs unintentional debt classification",
+      "source": "errors-and-vulnerabilities-in-ai-generated-code",
+      "tags": ["tdms", "classification"],
+      "quality": 75,
+      "fit_hint": "adoption-candidate"
+    },
+    {
+      "name": "Context momentum / hallucinated-logic mitigation",
+      "source": "errors-and-vulnerabilities-in-ai-generated-code",
+      "tags": ["context", "workflow"],
+      "quality": 70,
+      "fit_hint": "reference"
+    }
+  ],
+  "gaps": [
+    {
+      "domain": "Local-first video processing in SoNash stack",
+      "why_unfilled": "All three media-extraction sources in this slice are Python/Go; SoNash is Node/TypeScript. The patterns are extractable but no Node equivalent of the moviepy + pytubefix + FAISS + Whisper stack has been evaluated.",
+      "suggested_action": "Scope a Node/TS media layer: evaluate @distube/ytdl-core or youtube-dl-exec, ffmpeg-static, node-whisper, hnswlib-node as the local-first equivalents."
+    },
+    {
+      "domain": "Hallucinated-dependency detection in pre-commit",
+      "why_unfilled": "Errors-paper flags slopsquatting as a high-priority AI-code risk with no SoNash mitigation. No skill or hook currently verifies new npm packages against the registry at install time.",
+      "suggested_action": "Add a pre-commit check that compares new package.json entries against npm registry + minimum download threshold; consider Dep-Hallucinator integration."
+    },
+    {
+      "domain": "Skill retirement / lifecycle discipline",
+      "why_unfilled": "SoNash has skill-creator, skill-audit, and SKILL_STANDARDS.md but no formal retirement process. codecrafters is the warning case at 486K stars + 462 issues + stagnation.",
+      "suggested_action": "Define a retirement skill or sub-flow in skill-audit that identifies deprecated/superseded skills and moves them to .claude/skills/_archived/ with a forwarding pointer."
+    },
+    {
+      "domain": "License compliance scanning of dependencies",
+      "why_unfilled": "Errors-paper identifies license compliance as a gap; SoNash has no automated license audit. SBOM data exists but is not cross-checked for license-policy violations.",
+      "suggested_action": "Add a license-audit checker that reads SBOM + dependency tree and flags copyleft or incompatible licenses against a project policy."
+    },
+    {
+      "domain": "PII tokenization for SoNash journal entries",
+      "why_unfilled": "The bedrock repo's tokenize/untokenize pattern is directly applicable to SoNash's privacy-first mission but has not been implemented in any Cloud Function path.",
+      "suggested_action": "Prototype a tokenizeBeforeLLM utility (local NER via compromise.js or regex-based) that wraps any journal-entry Cloud Function call before it reaches an AI model."
+    },
+    {
+      "domain": "External-contract monitoring for Anthropic SDK / MCP / Firebase",
+      "why_unfilled": "notebooklm-py's rpc-health.yml is a proven pattern, but SoNash has no equivalent workflow monitoring any of its external contracts (Anthropic API shape, MCP server availability, Firebase API).",
+      "suggested_action": "Port rpc-health.yml into a SoNash workflow that daily-pings Anthropic messages API + Firebase rules API + any active MCP servers, auto-filing labeled issues on drift."
+    },
+    {
+      "domain": "Skill distribution / cross-locale install mechanism",
+      "why_unfilled": "The cross_locale_config problem is tracked in project memory but has no shipped solution. notebooklm-py's skill.py is the proven pattern but is Python-specific.",
+      "suggested_action": "Port the SkillTarget dataclass + version stamp + drift detection pattern to a Node CLI (npx sonash-skill install / status) that writes to ~/.claude/skills/."
+    }
+  ],
+  "key_signals": [
+    "The PII tokenize/untokenize round-trip from bedrock-summarize-audio-video-text is the single highest-fit pattern for SoNash's privacy-first mission in this entire slice.",
+    "pytubefix is the T27 workhorse: MIT, 1.5K stars, active Mar 2026, ships SRT caption extraction, async, playlists — can replace Whisper/Transcribe for captioned videos.",
+    "Every cloud-coupled media pipeline in this slice is flagged as an anti-pattern by its own analysis; local-first (FAISS, Whisper, spaCy) is the convergent verdict.",
+    "Structured markdown + CLAUDE.md navigation is sufficient retrieval up to thousands of docs — .research/ is already the matured version, no Obsidian adoption warranted.",
+    "notebooklm-py's skill.py install + version stamping is a drop-in retirement of the cross_locale_config problem, pending Node port.",
+    "SoNash's pattern compliance system covers ~8 of 18 categories in the AI-code vulnerability taxonomy; clear gaps are slopsquatting, license compliance, and AI-origin debt classification.",
+    "codecrafters/build-your-own-x is the cautionary case for SoNash's 72-skill index: celebrity stagnation happens when growth outpaces retirement process.",
+    "rpc-health.yml + lux's per-extractor CI generation are two instances of the same meta-CI insight: monitor the contract, not just the code.",
+    "The sidbharath guide reveals SoNash is ahead of the published Claude Code tutorial frontier on enforcement (hooks as gates, CLAUDE.md as rules) but behind on cloud teleportation and plugin marketplace adoption."
+  ],
+  "status": "complete"
+}

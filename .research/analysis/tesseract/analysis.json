@@ -18,7 +18,7 @@
   "summary": "Foundational OCR engine used by both unstructured and docling.  Architectural lessons already captured via those analyses.",
   "creator_view": "Foundational OCR engine used by both unstructured and docling. Architectural lessons already captured via those analyses. No new T28 patterns to extract.",
   "candidates": [],
-  "last_synthesized_at": null,
+  "last_synthesized_at": "2026-04-17T11:09:28.149Z",
   "schemaVersion": "4.3",
   "skillVersion": "4.3",
   "repo": "tesseract-ocr/tesseract",
