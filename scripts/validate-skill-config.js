@@ -141,7 +141,7 @@ function extractFileReferences(content) {
 
 function checkFrontmatter(content) {
   const frontmatter = parseFrontmatter(content);
-  if (!frontmatter) return { error: "Missing YAML frontmatter (---\\n...\\n---)" };
+  if (!frontmatter) return { error: String.raw`Missing YAML frontmatter (---\n...\n---)` };
   if (!frontmatter.description) return { error: "Missing 'description' in frontmatter" };
   if (frontmatter.description.length < 10)
     return { warning: "Description is very short (< 10 chars)" };
@@ -220,11 +220,8 @@ function validateSkillFile(filePath) {
     }
   }
 
-  // Check 4: File references exist
-  warnings.push(...checkFileReferences(content, filePath));
-
-  // Check 5: Deprecated patterns
-  warnings.push(...checkDeprecatedPatterns(content));
+  // Check 4+5: File references + deprecated patterns
+  warnings.push(...checkFileReferences(content, filePath), ...checkDeprecatedPatterns(content));
 
   return { errors, warnings };
 }

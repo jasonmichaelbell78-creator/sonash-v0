@@ -16,7 +16,7 @@ const synthesis = {
   schema_version: "2.0",
   generated_at: new Date().toISOString(),
   paradigm: "thematic",
-  mode: "re-synthesize",
+  mode: "re-synthesis",
   parent_run_at: "2026-04-13T20:35:00Z",
   corpus_grew: true,
   sources_included: [

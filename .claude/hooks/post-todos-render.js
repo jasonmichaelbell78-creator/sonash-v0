@@ -184,6 +184,7 @@ function main(rawArg) {
       cwd: projectDir,
       stdio: ["ignore", "pipe", "pipe"],
       timeout: 30_000,
+      maxBuffer: 10 * 1024 * 1024,
     });
     writeAudit(projectDir, { action: "rendered", file_path: safeRelPath, success: true });
   } catch (err) {
