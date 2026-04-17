@@ -366,6 +366,24 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#87)</summary>
+
+- **Date:** 2026-04-17
+- **Reviews consolidated:** #review-pr493-r1-#rev-93
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
+<summary>Previous Consolidation (#86)</summary>
+
+- **Date:** 2026-04-17
+- **Reviews consolidated:** #review-pr493-r1-#rev-93
+- **Recurring patterns:**
+  - No recurring patterns above threshold
+
+</details>
+<details>
 <summary>Previous Consolidation (#85)</summary>
 
 - **Date:** 2026-04-16
@@ -1363,7 +1381,7 @@ accumulate.
 
 | Metric         | Value | Threshold | Action if Exceeded                       |
 | -------------- | ----- | --------- | ---------------------------------------- |
-| Main log lines | ~6150 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~6170 | 1500      | Run `npm run reviews:archive -- --apply` |
 | Active reviews | 29    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History

@@ -279,8 +279,8 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
   prose, Output Contracts, Anti-Patterns, Integration sub-sections to
   REFERENCE.md (new §14 with 10 sub-sections). REFERENCE.md 626 → 757 lines
   (+131). Major SKILL.md additions: Scope quick-reference; Critical Rules with
-  "why" annotations + Rule #4 ledger + Rule #6 min_themes floor; Routing Guide
-  rows for /audit-_, /deep-research, /recall, /gsd:add-_; Output Sections moved
+  "why" annotations + Rule #4 ledger + Rule #6 min*themes floor; Routing Guide
+  rows for /audit-*, /deep-research, /recall, /gsd:add-\_; Output Sections moved
   earlier (7H) with table format + length floors; warm-up template + runtime
   estimate + Pick paradigm + Delegate options + post-warm-up gate; PRE-FLIGHT
   batch tier reviews + flag-vs-corpus sanity; Phase 1 MEMORY.md +
@@ -714,53 +714,59 @@ Actions, manual setup).
 
 ## Next Session Goals
 
-### Immediate Priority
+### Session #285 Completed (2026-04-17)
 
-1. **Wave 4 of `/skill-audit synthesize` — propagation + final validation** (~30
-   min, 6 file edits, deferred from Session #284 by user). Edits per
-   `.planning/skill-audit-synthesize-phase4/HANDOFF.md` Wave 4 section: (a)
-   `/recall` SKILL.md Integration note "gates on
-   `synthesis.json.schema_version >= 1.0`"; (b) 4 handler SKILLs
-   (`/repo-analysis`, `/website-analysis`, `/document-analysis`,
-   `/media-analysis`) — Integration note "MUST preserve `last_synthesized_at`
-   field written by /synthesize"; (c) `/session-end` SKILL.md add orphaned
-   `synthesize.state.json` check (status !== terminal). Then
-   `npm run skills:validate` + `patterns:check` + spot-check no broken
-   cross-references in SKILL.md / REFERENCE.md. Commit:
-   `docs(skills): synthesize v2.0 propagation — /recall + 4 handlers + /session-end`.
+- ✅ **Goal #1** — Wave 4 of `/skill-audit synthesize` propagation (6 SKILL.md
+  edits, commit `03bd6b7e`)
+- ✅ **Goal #3** — First `/synthesize` v2.0 run on 35-source corpus + schema
+  drift fixes (commit `bffdc60b`)
+- ✅ **Goal #4** — `/skill-audit recall` — 106 decisions, 66/110 → post-inline
+  91/110, post-HANDOFF 98/110 (commit `cc84d011`). OPDEP-1 bug fixed in
+  `recall.js` (`--target=sources` standalone). ECO-1 + ECO-2 Integration
+  corrections. Self-audit PASS. Cat 12 self-audit.js creation deferred via
+  `.planning/skill-audit-recall-phase4/HANDOFF.md`.
+- Branch `41526`: 17 commits ahead of origin/main; pushed this session.
 
-2. **Open PR for branch 41526 + push** — covers BOTH Session #283's `f1668a09`
-   AND Session #284's `04103db6` / `145c48ab` / `565937f2` / `9f3a07d2` (and
-   Wave 4 commit when made). Push at end of next session, not mid-Wave-4. PR
-   body callouts: (a) `/analyze` v1.2 → v2.0 (67-decision audit); (b)
-   **`/synthesize` v1.2 → v2.0 (109-decision audit)** — new Phase 2.5 / 4.5
-   convergence gates, state schema v2, canonical self-audit.js, anti-pattern
-   doc; (c) **BREAKING** for ecosystem: `validate-skill-config.js` now errors on
-   `.claude/skills/*/SKILL.md` missing REQUIRED sections (Session #283); (d)
-   Wave 4 propagation forces handlers to preserve `last_synthesized_at`. Note:
-   legacy `synthesis.md/.json/state.json` archived to `history/` and
-   `state.pre-v2-legacy.json` — first /synthesize run on v2.0 SKILL.md will
-   produce conformant output.
+### Immediate Priority (Next Session)
 
-3. **First /synthesize run on v2.0 SKILL.md** — verify the rewrite actually
-   works end-to-end. Re-run synthesis on the existing 33-source corpus. Should
-   produce schema-conformant `synthesis.json`, populate state schema v2 fields
-   (tier_overrides[], routings[], invocation, phase_costs[], last_complete_run),
-   exercise Phase 2.5 + 4.5 convergence gates, demonstrate the new closure
-   signal with ✅/⚠️/❌. Run self-audit.js afterwards — should be PASS or
-   near-PASS on the new output.
+1. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh unanalyzed
+   source. `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries
+   (tag, type, FTS5, cross-source) → verify extraction-journal +
+   `last_synthesized_at`. **~15-30 min.** Candidate seed list: T47 Wave 6 (Sober
+   Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase reference, TS MCP SDK,
+   whisper.cpp, monolith, readable-cli, SBOM) — or any fresh URL.
 
-4. **Close T28 — CAS Step A remaining skill** (recall only — synthesize done
-   Session #284, /analyze done Session #283). /skill-audit infrastructure
-   battle-tested. Tracker T38 still blocked on T28 closure.
+2. **Step C — T28 closure flip**: mark T28 todo complete in
+   `.planning/todos.jsonl` (or via `/todo`), update T28 CAS PLAN.md banner to ✅
+   COMPLETE, unblock T38 tracker, add brief SESSION_CONTEXT.md note. **~10
+   min.**
 
-5. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh source.
-   `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries (tag,
-   type, FTS5, cross-source) → verify extraction-journal + last_synthesized_at.
-   ~15-30 min. See REMAINING_CAS_TASKS.md Step B.
+3. **`/deep-plan skill-convergence` — Phase A execution** (META_ROADMAP Lane 2
+   Step 6, 7d stale at Session #285 close). Schema-as-code validation + shared
+   behavior library. **Directly informed by Session #285's 3 skill-audit
+   learnings:** (a) query skills systematically score low on Cat 7 primacy /
+   MUST-SHOULD hierarchy; (b) Wave 4 contract divergence is a cross-skill
+   pattern risk (documented gates not implemented); (c) SKILL.md invocation
+   contracts aren't functionally tested at save time. This plan addresses all
+   three. Phase A = 20 steps, 0 completed. State:
+   `.claude/state/deep-plan.skill-convergence.state.json`.
 
-6. **Step C — T28 closure**: flip T28 todo to completed, update CAS PLAN.md
-   banner to ✅ COMPLETE, unblock T38, SESSION_CONTEXT note.
+4. **`/deep-plan t28-intelligence-graph-v1` — Phase 1** (META_ROADMAP Lane 2
+   Step 8, 5d stale). Freshly unblocked by
+   `deep-research.t28-intelligence-graph-data-layer` completion. Same T28 family
+   — continuity with Session #285 work. State:
+   `.claude/state/deep-plan.t28-intelligence-graph-v1.state.json`.
+
+5. **`/deep-plan orphan-detection` — investigate state mismatch** (META_ROADMAP
+   Lane 2 Step 7, 8d stale). State file exists but todo T21 closed 2026-04-09.
+   Decision: resume, archive, or rehydrate. State:
+   `.claude/state/deep-plan.orphan-detection.state.json`.
+
+6. **Skill-creator audit** (flagged by Session #285 Goal #4 Phase 3 crosscheck).
+   4 gaps identified: no tagline-vs-body validation question, no prerequisite
+   sequencing (Step 0 pattern) authoring guidance, no enum inlining checklist,
+   no tier-declaration requirement. Invoke `/skill-audit skill-creator` to
+   address systemically.
 
 7. **T48 Adoption Verdict backfill** — retroactively apply Creator View Section
    2b to ~20 prior product-repo analyses (application/framework/tool-demo
