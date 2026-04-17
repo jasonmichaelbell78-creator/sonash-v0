@@ -8,7 +8,7 @@
       "action": "Create PR: gh pr create",
       "timestamp": "2026-04-17T10:32:33.384Z",
       "occurrences": 7,
-      "occurrences_since_ack": 1
+      "occurrences_since_ack": 0
     },
     {
       "hook": "session-start",
@@ -18,7 +18,7 @@
       "action": "npm run debt:report --severity=S0",
       "timestamp": "2026-04-17T11:43:18.355Z",
       "occurrences": 5,
-      "occurrences_since_ack": 1
+      "occurrences_since_ack": 0
     },
     {
       "hook": "pre-push",
@@ -28,7 +28,8 @@
       "action": "npm audit",
       "timestamp": "2026-04-17T18:28:40.484Z",
       "occurrences": 1,
-      "occurrences_since_ack": 1
+      "occurrences_since_ack": 0
     }
-  ]
+  ],
+  "lastCleared": "2026-04-17T20:38:17.014Z"
 }

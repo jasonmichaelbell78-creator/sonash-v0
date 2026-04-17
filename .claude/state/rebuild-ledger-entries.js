@@ -1,16 +1,34 @@
 "use strict";
 const fs = require("fs");
+const { sanitizeError } = require("../../scripts/lib/security-helpers.js");
+
 const ledgerPath = ".research/analysis/synthesis/opportunities-ledger.jsonl";
-const synth = JSON.parse(fs.readFileSync(".research/analysis/synthesis/synthesis.json", "utf8"));
+let synth;
+try {
+  synth = JSON.parse(fs.readFileSync(".research/analysis/synthesis/synthesis.json", "utf8"));
+} catch (err) {
+  console.error("Cannot read synthesis.json:", sanitizeError(err));
+  process.exit(1);
+}
 const today = new Date().toISOString().slice(0, 10);
 
 // Load existing ledger; drop any row whose title_key is from today (the bad ones).
-const existing = fs
-  .readFileSync(ledgerPath, "utf8")
-  .trim()
-  .split(/\r?\n/)
-  .filter(Boolean)
-  .map((l) => JSON.parse(l));
+let existing;
+try {
+  existing = fs
+    .readFileSync(ledgerPath, "utf8")
+    .trim()
+    .split(/\r?\n/)
+    .filter(Boolean)
+    .map((l) => JSON.parse(l));
+} catch (err) {
+  if (err?.code === "ENOENT") {
+    existing = [];
+  } else {
+    console.error("Cannot read ledger:", sanitizeError(err));
+    process.exit(1);
+  }
+}
 const historic = existing.filter((r) => r.first_seen_in_run !== today);
 console.log(
   `Keeping ${historic.length} historic ledger rows; rebuilding ${existing.length - historic.length} today rows.`

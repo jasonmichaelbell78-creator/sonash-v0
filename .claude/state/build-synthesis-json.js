@@ -1,7 +1,12 @@
 const fs = require("fs");
-const slices = [1, 2, 3, 4].map((i) =>
-  JSON.parse(fs.readFileSync(`.claude/state/synthesize.slice-${i}.json`, "utf8"))
-);
+const slices = [1, 2, 3, 4].map((i) => {
+  try {
+    return JSON.parse(fs.readFileSync(`.claude/state/synthesize.slice-${i}.json`, "utf8"));
+  } catch (err) {
+    console.error(`Cannot read slice-${i}.json: ${err.code || "unknown"}`);
+    process.exit(1);
+  }
+});
 const allThemes = slices.flatMap((s, si) =>
   s.themes.map((t, ti) => ({ id: `T${si + 1}.${ti + 1}`, slice: si + 1, ...t }))
 );

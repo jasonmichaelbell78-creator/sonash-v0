@@ -384,7 +384,7 @@ refines skills, and proposes new ones. GitNexus's Signs pattern in
 `GUARDRAILS.md` is the same idea scoped to a single repo: once a failure has
 been observed twice, it is codified as a repo-visible rule. Both map directly
 onto SoNash's `MEMORY.md`
-`feedback*_`entries and the pattern-enforcement ratchet — but those are currently hand-authored. The open integration site: T4 Multi-layer memory should prototype mining PR review outcomes +`hook-warnings-log.jsonl`for recurring failures, propose new`feedback\__`entries automatically, human approves before canon. Composes with Theme T5 (measurement) — you cannot auto-evolve rules without measuring outcomes. Evidence:`viktoraxelsen-memskill/analysis.json
+`feedback*\_`entries and the pattern-enforcement ratchet — but those are currently hand-authored. The open integration site: T4 Multi-layer memory should prototype mining PR review outcomes +`hook-warnings-log.jsonl`for recurring failures, propose new`feedback\_\_`entries automatically, human approves before canon. Composes with Theme T5 (measurement) — you cannot auto-evolve rules without measuring outcomes. Evidence:`viktoraxelsen-memskill/analysis.json
 candidates[0-1,6]`, `abhigyanpatwari-gitnexus/analysis.json candidates[2]`.
 
 ---

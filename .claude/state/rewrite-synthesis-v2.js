@@ -1,6 +1,9 @@
 "use strict";
 const fs = require("fs");
 const path = require("path");
+const { validatePathInDir } = require("../../scripts/lib/security-helpers.js");
+
+const ANALYSIS_DIR = path.resolve(".research/analysis");
 
 const now = new Date().toISOString();
 const today = now.slice(0, 10);
@@ -15,23 +18,39 @@ const normalizeTitleKey = (title) =>
     .slice(0, 60);
 
 // Load source inventory.
-const sources = JSON.parse(fs.readFileSync(".claude/state/synthesize.sources.json", "utf8"));
+let sources;
+try {
+  sources = JSON.parse(fs.readFileSync(".claude/state/synthesize.sources.json", "utf8"));
+} catch (err) {
+  console.error("Cannot read synthesize.sources.json:", err.code || "unknown");
+  process.exit(1);
+}
 const sourceBySlug = new Map();
 for (const s of sources) {
-  const j = JSON.parse(fs.readFileSync(`.research/analysis/${s.slug}/analysis.json`, "utf8"));
-  sourceBySlug.set(s.slug, {
-    slug: s.slug,
-    source: j.source || j.repo || j.url || s.slug,
-    source_type: j.source_type || "repo",
-    source_tier: j.source_tier || "T1",
-    depth: j.depth || "standard",
-  });
+  try {
+    validatePathInDir(ANALYSIS_DIR, s.slug);
+    const j = JSON.parse(fs.readFileSync(path.join(ANALYSIS_DIR, s.slug, "analysis.json"), "utf8"));
+    sourceBySlug.set(s.slug, {
+      slug: s.slug,
+      source: j.source || j.repo || j.url || s.slug,
+      source_type: j.source_type || "repo",
+      source_tier: j.source_tier || "T1",
+      depth: j.depth || "standard",
+    });
+  } catch (err) {
+    console.error(`Skipping slug ${s.slug}: ${err.code || "invalid path"}`);
+  }
 }
 
 // Load slice outputs.
-const slices = [1, 2, 3, 4].map((i) =>
-  JSON.parse(fs.readFileSync(`.claude/state/synthesize.slice-${i}.json`, "utf8"))
-);
+const slices = [1, 2, 3, 4].map((i) => {
+  try {
+    return JSON.parse(fs.readFileSync(`.claude/state/synthesize.slice-${i}.json`, "utf8"));
+  } catch (err) {
+    console.error(`Cannot read slice-${i}.json: ${err.code || "unknown"}`);
+    process.exit(1);
+  }
+});
 
 // Convergence band helper.
 const convergenceConfidence = (n) => (n >= 5 ? "strong" : n >= 3 ? "medium" : "weak");

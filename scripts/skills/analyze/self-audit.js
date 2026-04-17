@@ -251,6 +251,75 @@ function listAllSlugs() {
     .map((d) => d.name);
 }
 
+function runTargetAudit(target) {
+  try {
+    validatePathInDir(ANALYSIS_DIR, target);
+  } catch (err) {
+    console.error(`Refusing to run: ${sanitizeError(err)}`);
+    process.exit(2);
+  }
+  if (!fs.existsSync(path.join(ANALYSIS_DIR, target))) {
+    console.error(
+      `Refusing to run: slug '${target}' not found in ${path.relative(PROJECT_ROOT, ANALYSIS_DIR)}`
+    );
+    process.exit(2);
+  }
+  return { [target]: auditOneSlug(target) };
+}
+
+function runAllAudit() {
+  const slugs = listAllSlugs();
+  if (slugs.length === 0) {
+    console.log("No slugs found in .research/analysis/ — nothing to audit in --all mode.");
+  }
+  const results = {};
+  for (const slug of slugs) {
+    results[slug] = auditOneSlug(slug);
+  }
+  return results;
+}
+
+function aggregateResults(globalResults, perSlugResults) {
+  const allDims = { ...globalResults };
+  for (const [slug, dims] of Object.entries(perSlugResults)) {
+    for (const [dim, r] of Object.entries(dims)) {
+      allDims[`${slug}::${dim}`] = r;
+    }
+  }
+  const mustFailed = Object.entries(allDims)
+    .filter(([, v]) => v.status === "FAIL")
+    .map(([k]) => k);
+  const warned = Object.entries(allDims)
+    .filter(([, v]) => v.status === "WARN")
+    .map(([k]) => k);
+  return { mustFailed, warned, overall: mustFailed.length === 0 ? "PASS" : "FAIL" };
+}
+
+function printHumanReport(globalResults, perSlugResults, target, { mustFailed, warned, overall }) {
+  console.log("[analyze self-audit]");
+  console.log("--- Router-global ---");
+  for (const [name, r] of Object.entries(globalResults)) {
+    console.log(`  [${name}] ${r.status}: ${r.details}`);
+  }
+  if (target) {
+    console.log(`--- Slug: ${target} ---`);
+    for (const [dim, r] of Object.entries(perSlugResults[target])) {
+      console.log(`  [${dim}] ${r.status}: ${r.details}`);
+    }
+  } else {
+    console.log(`--- Regression over ${Object.keys(perSlugResults).length} slugs ---`);
+    for (const [slug, dims] of Object.entries(perSlugResults)) {
+      const slugFails = Object.values(dims).filter((v) => v.status === "FAIL").length;
+      const slugWarns = Object.values(dims).filter((v) => v.status === "WARN").length;
+      console.log(
+        `  [${slug}] ${slugFails === 0 ? "PASS" : "FAIL"} (fail=${slugFails}, warn=${slugWarns})`
+      );
+    }
+  }
+  console.log(`\nOverall: ${overall} (failed=${mustFailed.length}, warned=${warned.length})`);
+  console.log("\n---SUMMARY---");
+}
+
 function main() {
   const { target, all, json } = parseArgs(process.argv);
   if (!target && !all) {
@@ -265,51 +334,13 @@ function main() {
     process.exit(2);
   }
 
-  // Router-global checks (run once regardless of mode)
   const globalResults = {
     handoff_contract: checkHandoffContract(),
     routing_log: checkRoutingLog(),
   };
 
-  let perSlugResults = {};
-  if (target) {
-    try {
-      validatePathInDir(ANALYSIS_DIR, target);
-    } catch (err) {
-      console.error(`Refusing to run: ${sanitizeError(err)}`);
-      process.exit(2);
-    }
-    if (!fs.existsSync(path.join(ANALYSIS_DIR, target))) {
-      console.error(
-        `Refusing to run: slug '${target}' not found in ${path.relative(PROJECT_ROOT, ANALYSIS_DIR)}`
-      );
-      process.exit(2);
-    }
-    perSlugResults[target] = auditOneSlug(target);
-  } else {
-    const slugs = listAllSlugs();
-    if (slugs.length === 0) {
-      console.log("No slugs found in .research/analysis/ — nothing to audit in --all mode.");
-    }
-    for (const slug of slugs) {
-      perSlugResults[slug] = auditOneSlug(slug);
-    }
-  }
-
-  // Aggregate status
-  const allDims = { ...globalResults };
-  for (const [slug, dims] of Object.entries(perSlugResults)) {
-    for (const [dim, r] of Object.entries(dims)) {
-      allDims[`${slug}::${dim}`] = r;
-    }
-  }
-  const mustFailed = Object.entries(allDims)
-    .filter(([, v]) => v.status === "FAIL")
-    .map(([k]) => k);
-  const warned = Object.entries(allDims)
-    .filter(([, v]) => v.status === "WARN")
-    .map(([k]) => k);
-  const overall = mustFailed.length === 0 ? "PASS" : "FAIL";
+  const perSlugResults = target ? runTargetAudit(target) : runAllAudit();
+  const agg = aggregateResults(globalResults, perSlugResults);
 
   const summary = {
     skill: "analyze",
@@ -318,9 +349,9 @@ function main() {
     slugs_audited: Object.keys(perSlugResults),
     global_dimensions: globalResults,
     per_slug_dimensions: perSlugResults,
-    overall,
-    must_failed: mustFailed,
-    should_warned: warned,
+    overall: agg.overall,
+    must_failed: agg.mustFailed,
+    should_warned: agg.warned,
     skipped_dimensions: {
       dim_6_multi_agent: "N/A — router is deterministic regex-priority",
       dim_7_regression: "light — no multi-run history state",
@@ -329,33 +360,12 @@ function main() {
   };
 
   if (!json) {
-    console.log("[analyze self-audit]");
-    console.log("--- Router-global ---");
-    for (const [name, r] of Object.entries(globalResults)) {
-      console.log(`  [${name}] ${r.status}: ${r.details}`);
-    }
-    if (target) {
-      console.log(`--- Slug: ${target} ---`);
-      for (const [dim, r] of Object.entries(perSlugResults[target])) {
-        console.log(`  [${dim}] ${r.status}: ${r.details}`);
-      }
-    } else {
-      console.log(`--- Regression over ${Object.keys(perSlugResults).length} slugs ---`);
-      for (const [slug, dims] of Object.entries(perSlugResults)) {
-        const slugMustFailed = Object.values(dims).filter((v) => v.status === "FAIL").length;
-        const slugWarned = Object.values(dims).filter((v) => v.status === "WARN").length;
-        console.log(
-          `  [${slug}] ${slugMustFailed === 0 ? "PASS" : "FAIL"} (fail=${slugMustFailed}, warn=${slugWarned})`
-        );
-      }
-    }
-    console.log(`\nOverall: ${overall} (failed=${mustFailed.length}, warned=${warned.length})`);
-    console.log("\n---SUMMARY---");
+    printHumanReport(globalResults, perSlugResults, target, agg);
   }
   console.log(JSON.stringify(summary, null, 2));
   if (!json) console.log("---END---");
 
-  process.exit(overall === "PASS" ? 0 : 1);
+  process.exit(agg.overall === "PASS" ? 0 : 1);
 }
 
 if (require.main === module) main();

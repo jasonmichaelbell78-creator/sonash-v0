@@ -1,8 +1,14 @@
 const fs = require("fs");
+const { sanitizeError } = require("../../scripts/lib/security-helpers.js");
+
 const ledgerPath = ".research/analysis/synthesis/opportunities-ledger.jsonl";
-const synthesis = JSON.parse(
-  fs.readFileSync(".research/analysis/synthesis/synthesis.json", "utf8")
-);
+let synthesis;
+try {
+  synthesis = JSON.parse(fs.readFileSync(".research/analysis/synthesis/synthesis.json", "utf8"));
+} catch (err) {
+  console.error("Cannot read synthesis.json:", sanitizeError(err));
+  process.exit(1);
+}
 
 const norm = (s) =>
   s
@@ -11,12 +17,22 @@ const norm = (s) =>
     .replace(/^_|_$/g, "")
     .slice(0, 60);
 
-const existing = fs
-  .readFileSync(ledgerPath, "utf8")
-  .trim()
-  .split("\n")
-  .filter(Boolean)
-  .map((l) => JSON.parse(l));
+let existing;
+try {
+  existing = fs
+    .readFileSync(ledgerPath, "utf8")
+    .trim()
+    .split("\n")
+    .filter(Boolean)
+    .map((l) => JSON.parse(l));
+} catch (err) {
+  if (err?.code === "ENOENT") {
+    existing = [];
+  } else {
+    console.error("Cannot read ledger:", sanitizeError(err));
+    process.exit(1);
+  }
+}
 
 const existingByKey = new Map(existing.map((e) => [e.title_key, e]));
 const runDate = new Date().toISOString().slice(0, 10);

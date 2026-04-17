@@ -70,8 +70,10 @@ function parseFrontmatter(content) {
   };
 
   for (const rawLine of lines) {
-    // Indented lines belong to an in-progress block scalar
-    if (currentBlockLines !== null && /^\s+\S/.test(rawLine)) {
+    // Indented lines belong to an in-progress block scalar (including blank
+    // lines within the block — whitespace-only indented lines are valid YAML
+    // block scalar content and must not terminate the block early).
+    if (currentBlockLines !== null && (/^\s+\S/.test(rawLine) || /^\s+$/.test(rawLine))) {
       currentBlockLines.push(rawLine);
       continue;
     }
@@ -137,12 +139,51 @@ function extractFileReferences(content) {
   return references;
 }
 
+function checkFrontmatter(content) {
+  const frontmatter = parseFrontmatter(content);
+  if (!frontmatter) return { error: "Missing YAML frontmatter (---\\n...\\n---)" };
+  if (!frontmatter.description) return { error: "Missing 'description' in frontmatter" };
+  if (frontmatter.description.length < 10)
+    return { warning: "Description is very short (< 10 chars)" };
+  return {};
+}
+
+function checkRequiredSections(content, sections, isError) {
+  const results = [];
+  for (const section of sections) {
+    const escaped = section.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+    const sectionRegex = new RegExp(String.raw`^${escaped}\s*$`, "mi");
+    if (!sectionRegex.test(content)) {
+      const msg = isError
+        ? `SKILL.md missing REQUIRED section: '${section}' (per SKILL_STANDARDS.md)`
+        : `Missing recommended section: '${section}'`;
+      results.push({ msg, isError });
+    }
+  }
+  return results;
+}
+
+function checkFileReferences(content, filePath) {
+  const warnings = [];
+  const baseDir = path.dirname(filePath);
+  const fileRefs = extractFileReferences(content);
+  for (const ref of fileRefs) {
+    const resolvedPath = path.resolve(baseDir, ref);
+    if (!fs.existsSync(resolvedPath)) {
+      const fromRoot = path.resolve(process.cwd(), ref);
+      if (!fs.existsSync(fromRoot)) {
+        warnings.push(`File reference may not exist: ${ref}`);
+      }
+    }
+  }
+  return warnings;
+}
+
 // Validate a single skill file
 function validateSkillFile(filePath) {
   const errors = [];
   const warnings = [];
 
-  // Read file
   let content;
   try {
     content = fs.readFileSync(filePath, "utf-8");
@@ -152,75 +193,50 @@ function validateSkillFile(filePath) {
   }
 
   const filename = path.basename(filePath);
-  const isAudit = filename.startsWith("audit-");
 
   // Check 1: YAML frontmatter
-  const frontmatter = parseFrontmatter(content);
-  if (!frontmatter) {
-    errors.push("Missing YAML frontmatter (---\\n...\\n---)");
-  } else if (!frontmatter.description) {
-    errors.push("Missing 'description' in frontmatter");
-  } else if (frontmatter.description.length < 10) {
-    warnings.push("Description is very short (< 10 chars)");
-  }
+  const fm = checkFrontmatter(content);
+  if (fm.error) errors.push(fm.error);
+  if (fm.warning) warnings.push(fm.warning);
 
   // Check 2: Title heading
-  const titleMatch = content.match(/^#\s+(.{1,500})$/m);
-  if (!titleMatch) {
+  if (!content.match(/^#\s+(.{1,500})$/m)) {
     errors.push("Missing title heading (# Title)");
   }
 
   // Check 3: Required sections for audit commands
-  if (isAudit) {
-    for (const section of REQUIRED_SECTIONS.audit) {
-      const sectionRegex = new RegExp(String.raw`^#+\s+${section}`, "mi");
-      if (!sectionRegex.test(content)) {
-        warnings.push(`Missing recommended section: '${section}'`);
-      }
+  if (filename.startsWith("audit-")) {
+    for (const r of checkRequiredSections(content, REQUIRED_SECTIONS.audit, false)) {
+      warnings.push(r.msg);
     }
   }
 
   // Check 3b: Required sections for SKILL.md files under .claude/skills/<name>/
-  // Matches SKILL_STANDARDS.md §Required Sections; errors (not warnings) for structural compliance.
-  const normalized = filePath.replace(/\\/g, "/");
+  const normalized = path.resolve(filePath).replaceAll("\\", "/");
   const isSkillMd = filename === "SKILL.md" && normalized.includes("/.claude/skills/");
   if (isSkillMd) {
-    for (const section of REQUIRED_SKILL_MD_SECTIONS) {
-      // Escape regex metachars in section heading (defensive — current sections have none)
-      const escaped = section.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const sectionRegex = new RegExp(String.raw`^${escaped}\s*$`, "mi");
-      if (!sectionRegex.test(content)) {
-        errors.push(`SKILL.md missing REQUIRED section: '${section}' (per SKILL_STANDARDS.md)`);
-      }
+    for (const r of checkRequiredSections(content, REQUIRED_SKILL_MD_SECTIONS, true)) {
+      errors.push(r.msg);
     }
   }
 
   // Check 4: File references exist
-  const baseDir = path.dirname(filePath);
-  const fileRefs = extractFileReferences(content);
-
-  for (const ref of fileRefs) {
-    // Resolve relative to the markdown file's directory
-    const resolvedPath = path.resolve(baseDir, ref);
-
-    // Check if file exists (allow some flexibility for generated paths)
-    if (!fs.existsSync(resolvedPath)) {
-      // Check from project root as fallback
-      const fromRoot = path.resolve(process.cwd(), ref);
-      if (!fs.existsSync(fromRoot)) {
-        warnings.push(`File reference may not exist: ${ref}`);
-      }
-    }
-  }
+  warnings.push(...checkFileReferences(content, filePath));
 
   // Check 5: Deprecated patterns
+  warnings.push(...checkDeprecatedPatterns(content));
+
+  return { errors, warnings };
+}
+
+function checkDeprecatedPatterns(content) {
+  const warnings = [];
   for (const { pattern, message } of DEPRECATED_PATTERNS) {
     if (pattern.test(content)) {
       warnings.push(`Deprecated pattern: ${message}`);
     }
   }
-
-  return { errors, warnings };
+  return warnings;
 }
 
 // Get all command files in .claude/commands/

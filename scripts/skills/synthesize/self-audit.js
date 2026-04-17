@@ -323,6 +323,30 @@ function findSectionInMarkdown(content, needles) {
   return false;
 }
 
+function findStubMarkers(text) {
+  const hits = [];
+  const lines = text.split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    for (const re of STUB_MARKERS) {
+      if (re.test(lines[i])) {
+        hits.push(`synthesis.md:${i + 1}  ${lines[i].trim().slice(0, 80)}`);
+      }
+    }
+  }
+  return hits;
+}
+
+function findMissingSections(text, mode) {
+  const missing = [];
+  for (const section of REQUIRED_SECTIONS) {
+    if (!findSectionInMarkdown(text, section.needles)) missing.push(section.needles[0]);
+  }
+  if (mode === "re-synthesis" && !findSectionInMarkdown(text, RESYNTHESIS_SECTION.needles)) {
+    missing.push(RESYNTHESIS_SECTION.needles[0]);
+  }
+  return missing;
+}
+
 function dim3Sections(state) {
   const findings = { pass: [], fail: [], warn: [] };
   const synthMdPath = path.join(SYNTHESIS_DIR, "synthesis.md");
@@ -336,25 +360,9 @@ function dim3Sections(state) {
     return findings;
   }
 
-  const missing = [];
-  for (const section of REQUIRED_SECTIONS) {
-    if (!findSectionInMarkdown(text, section.needles)) missing.push(section.needles[0]);
-  }
+  const missing = findMissingSections(text, state.mode);
 
-  if (state.mode === "re-synthesis" && !findSectionInMarkdown(text, RESYNTHESIS_SECTION.needles)) {
-    missing.push(RESYNTHESIS_SECTION.needles[0]);
-  }
-
-  // Stub-marker sub-check (build integrity for the prose itself).
-  const stubHits = [];
-  const lines = text.split(/\r?\n/);
-  for (let i = 0; i < lines.length; i++) {
-    for (const re of STUB_MARKERS) {
-      if (re.test(lines[i])) {
-        stubHits.push(`synthesis.md:${i + 1}  ${lines[i].trim().slice(0, 80)}`);
-      }
-    }
-  }
+  const stubHits = findStubMarkers(text);
   if (stubHits.length > 0) {
     findings.fail.push(`${stubHits.length} stub marker(s) in synthesis.md:`);
     for (const h of stubHits.slice(0, 5)) findings.fail.push(`  ${h}`);
@@ -388,6 +396,35 @@ const HOME_CONTEXT_FILES = [
   ".research/research-index.jsonl",
 ];
 
+function isRecognizedCitation(ref) {
+  const knownFile = HOME_CONTEXT_FILES.some((f) => {
+    const base = f.split("/").pop();
+    return ref.includes(base);
+  });
+  if (knownFile) return true;
+  if (/\bmemory:/i.test(ref)) return true;
+  if (/\b[a-z0-9_-]+\.md\b/i.test(ref)) return true;
+  return false;
+}
+
+function classifyGaps(gaps) {
+  const ungrounded = [];
+  const schemaGaps = [];
+  for (const gap of gaps) {
+    const domain = typeof gap?.domain === "string" ? gap.domain : null;
+    if (!domain) continue;
+    const ref = typeof gap?.home_context_source === "string" ? gap.home_context_source : null;
+    if (ref) {
+      if (!isRecognizedCitation(ref)) {
+        ungrounded.push(`${domain} (citation format unrecognized: "${ref.slice(0, 60)}")`);
+      }
+    } else {
+      schemaGaps.push(domain);
+    }
+  }
+  return { ungrounded, schemaGaps };
+}
+
 function dim4Gaps() {
   const findings = { pass: [], fail: [], warn: [] };
   const synthJsonPath = path.join(SYNTHESIS_DIR, "synthesis.json");
@@ -403,51 +440,7 @@ function dim4Gaps() {
     return findings;
   }
 
-  // Cache home context contents (read once, scan many).
-  const homeCorpus = new Map();
-  for (const rel of HOME_CONTEXT_FILES) {
-    const abs = path.join(PROJECT_ROOT, rel);
-    const { text, error: readError } = safeReadText(abs);
-    if (!readError) homeCorpus.set(rel, text.toLowerCase());
-  }
-
-  if (homeCorpus.size === 0) {
-    findings.warn.push(`no home context files readable — cannot validate gap domains`);
-    return findings;
-  }
-
-  // Prefer the explicit home_context_source field per REFERENCE.md §2.2 schema.
-  // Fall back to substring search of the domain string itself when missing —
-  // but emit WARN (not FAIL) because a missing home_context_source is a
-  // schema-population gap, not a synthesis-quality gap. Real domain phrases
-  // are too long to reliably substring-match in CLAUDE.md prose.
-  const ungrounded = [];
-  const schemaGaps = [];
-  for (const gap of gaps) {
-    const domain = typeof gap?.domain === "string" ? gap.domain : null;
-    if (!domain) continue;
-    const ref = typeof gap?.home_context_source === "string" ? gap.home_context_source : null;
-    if (ref) {
-      // home_context_source is free-form prose (REFERENCE.md §2.2 doesn't
-      // pin a strict format). Accept the citation if it mentions any known
-      // home context file by basename, OR a `memory:` prefix (per decision
-      // 9D — MEMORY.md auto-loaded entries), OR any other `.md` basename
-      // (research-index, project notes). Substring check is intentional —
-      // mis-citations are caught downstream by Phase 5 manual review; the
-      // script's job here is to catch hallucinated/empty citations only.
-      const knownFile = HOME_CONTEXT_FILES.some((f) => {
-        const base = f.split("/").pop();
-        return ref.includes(base);
-      });
-      const hasMemory = /\bmemory:/i.test(ref);
-      const hasMdFile = /\b[a-z0-9_-]+\.md\b/i.test(ref);
-      if (!knownFile && !hasMemory && !hasMdFile) {
-        ungrounded.push(`${domain} (citation format unrecognized: "${ref.slice(0, 60)}")`);
-      }
-    } else {
-      schemaGaps.push(domain);
-    }
-  }
+  const { ungrounded, schemaGaps } = classifyGaps(gaps);
 
   if (ungrounded.length > 0) {
     findings.fail.push(
@@ -473,25 +466,32 @@ function dim4Gaps() {
 // fit_portfolio.candidates[].finding_refs source_slugs, opportunity_matrix
 // .evidence[]) MUST exist as analyzed sources under .research/analysis/.
 
-function collectReferencedSlugs(data) {
+function collectSlugsFromThemes(themes) {
   const slugs = new Set();
-  const themes = Array.isArray(data?.themes) ? data.themes : [];
   for (const theme of themes) {
     const evidence = Array.isArray(theme?.evidence) ? theme.evidence : [];
     for (const e of evidence) {
       if (typeof e?.source_slug === "string") slugs.add(e.source_slug);
     }
   }
-  const opps = Array.isArray(data?.opportunity_matrix) ? data.opportunity_matrix : [];
+  return slugs;
+}
+
+function collectSlugsFromOpportunities(opps) {
+  const slugs = new Set();
   for (const opp of opps) {
     const evidence = Array.isArray(opp?.evidence) ? opp.evidence : [];
     for (const slug of evidence) {
-      if (typeof slug === "string" && !slug.startsWith("absence-signal:")) {
-        slugs.add(slug);
-      }
+      if (typeof slug === "string" && !slug.startsWith("absence-signal:")) slugs.add(slug);
     }
   }
   return slugs;
+}
+
+function collectReferencedSlugs(data) {
+  const themes = Array.isArray(data?.themes) ? data.themes : [];
+  const opps = Array.isArray(data?.opportunity_matrix) ? data.opportunity_matrix : [];
+  return new Set([...collectSlugsFromThemes(themes), ...collectSlugsFromOpportunities(opps)]);
 }
 
 function dim5Orphans() {
@@ -619,6 +619,32 @@ function normalizeTitleKey(title) {
     .slice(0, 60);
 }
 
+function checkLedgerConsistency(matrix, ledgerByKey, lastCompleteRun) {
+  const unledgered = [];
+  const stale = [];
+  for (const opp of matrix) {
+    const key = typeof opp?.title_key === "string" ? opp.title_key : normalizeTitleKey(opp?.title);
+    if (!key) {
+      unledgered.push("(unkeyable opportunity)");
+      continue;
+    }
+    const row = ledgerByKey.get(key);
+    if (!row) {
+      unledgered.push(key);
+      continue;
+    }
+    if (lastCompleteRun && typeof row.last_seen_in_run === "string") {
+      if (row.last_seen_in_run < lastCompleteRun) stale.push(key);
+    }
+  }
+  return { unledgered, stale };
+}
+
+function formatSliceList(items, limit) {
+  const shown = items.slice(0, limit).join(", ");
+  return items.length > limit ? `${shown}...` : shown;
+}
+
 function dim7Contract(state) {
   const findings = { pass: [], fail: [], warn: [] };
   const synthJsonPath = path.join(SYNTHESIS_DIR, "synthesis.json");
@@ -649,38 +675,36 @@ function dim7Contract(state) {
     if (typeof row?.title_key === "string") ledgerByKey.set(row.title_key, row);
   }
 
-  const unledgered = [];
-  for (const opp of matrix) {
-    const key = typeof opp?.title_key === "string" ? opp.title_key : normalizeTitleKey(opp?.title);
-    if (!key) {
-      unledgered.push("(unkeyable opportunity)");
-      continue;
-    }
-    if (!ledgerByKey.has(key)) unledgered.push(key);
-  }
+  const lastCompleteRun = state?.last_complete_run
+    ? new Date(state.last_complete_run).toISOString().slice(0, 10)
+    : null;
+  const { unledgered, stale } = checkLedgerConsistency(matrix, ledgerByKey, lastCompleteRun);
 
   if (unledgered.length > 0) {
     findings.fail.push(
-      `${unledgered.length} of ${matrix.length} opportunities not in ledger: ${unledgered.slice(0, 3).join(", ")}${unledgered.length > 3 ? "..." : ""}`
+      `${unledgered.length} of ${matrix.length} opportunities not in ledger: ${formatSliceList(unledgered, 3)}`
     );
-  } else {
-    findings.pass.push(`all ${matrix.length} opportunities present in ledger`);
+  }
+  if (stale.length > 0) {
+    findings.fail.push(
+      `${stale.length} of ${matrix.length} opportunities have stale ledger rows (last_seen < last_complete_run): ${formatSliceList(stale, 3)}`
+    );
+  }
+  if (unledgered.length === 0 && stale.length === 0) {
+    findings.pass.push(`all ${matrix.length} opportunities present and fresh in ledger`);
   }
 
   // /recall SQLite check is informational — synthesize doesn't own the DB
   // schema, only invokes rebuild-index.js. Surface as a hint.
   const sqlitePath = path.join(PROJECT_ROOT, ".research", "knowledge.sqlite");
-  if (!fs.existsSync(sqlitePath)) {
+  if (fs.existsSync(sqlitePath)) {
+    findings.pass.push(`/recall SQLite index present`);
+  } else {
     findings.warn.push(
       `.research/knowledge.sqlite absent — /recall index not built (run scripts/cas/rebuild-index.js)`
     );
-  } else {
-    findings.pass.push(`/recall SQLite index present`);
   }
 
-  // Suppress unused-var noise — state hook reserved for future contract checks
-  // (e.g., schema_version gating once handlers adopt it per decision 3O1).
-  void state;
   return findings;
 }
 
