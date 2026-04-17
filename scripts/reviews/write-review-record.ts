@@ -39,29 +39,34 @@ const { safeParseLine } = require(
 };
 
 /**
- * Read reviews.jsonl and determine the next auto-assigned review ID.
- * Returns "rev-1" if the file is empty or missing.
+ * Generate a canonical review ID from PR number and round.
+ * Format: review-pr{N}-r{M} (per Decision D4, 2026-04-17).
+ *
+ * Falls back to rev-{N} sequential format if pr/round not provided
+ * (backward compat for non-PR review records like retros).
  */
-export function getNextReviewId(projectRoot: string): string {
-  const filePath = path.join(projectRoot, ".claude", "state", "reviews.jsonl");
+export function generateReviewId(projectRoot: string, data: Record<string, unknown>): string {
+  const pr = typeof data.pr === "number" ? data.pr : null;
+  const round = typeof data.round === "number" ? data.round : null;
+  if (pr && round) return `review-pr${pr}-r${round}`;
+  return getNextRevId(projectRoot);
+}
 
+/** Legacy sequential ID fallback for non-PR records. */
+function getNextRevId(projectRoot: string): string {
+  const filePath = path.join(projectRoot, ".claude", "state", "reviews.jsonl");
   let content: string;
   try {
     content = fs.readFileSync(filePath, "utf8").trim();
   } catch {
-    // File doesn't exist or can't be read -- start at 1
     return "rev-1";
   }
-
   if (!content) return "rev-1";
-
-  const lines = content.split("\n");
   let maxNum = 0;
-  for (const line of lines) {
+  for (const line of content.split("\n")) {
     const num = parseRevNumber(line);
     if (num > maxNum) maxNum = num;
   }
-
   return `rev-${maxNum + 1}`;
 }
 
@@ -69,7 +74,7 @@ export function getNextReviewId(projectRoot: string): string {
 function parseRevNumber(rawLine: string): number {
   const record = safeParseLine(rawLine) as { id?: string } | null;
   if (!record?.id) return 0;
-  const match = /^rev-(\d+)(?:-|$)/.exec(record.id);
+  const match = /^rev-(\d+)(?:-|$)/.exec(String(record.id));
   if (!match) return 0;
   return Number.parseInt(match[1], 10);
 }
@@ -135,7 +140,7 @@ export function writeReviewRecord(
 
   const recordData: Record<string, unknown> = {
     ...data,
-    id: data.id ?? getNextReviewId(projectRoot),
+    id: data.id ?? generateReviewId(projectRoot, data),
   };
 
   const validated = ReviewRecord.parse(recordData);
