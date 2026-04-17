@@ -441,6 +441,8 @@ function main() {
       return;
     }
 
+    // --target=sources is a valid standalone mode (lists all sources);
+    // no free-text / tag / type / source / sort required.
     if (
       !args.freeText &&
       !args.tag &&
