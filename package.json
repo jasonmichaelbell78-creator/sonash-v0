@@ -176,7 +176,7 @@
     "@modelcontextprotocol/server-memory": "^2026.1.26",
     "@tailwindcss/postcss": "^4.2.2",
     "@types/leaflet": "^1.9.21",
-    "@types/node": "^22.19.2",
+    "@types/node": "^25.6.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@typescript/native-preview": "^7.0.0-dev.20260326.1",
