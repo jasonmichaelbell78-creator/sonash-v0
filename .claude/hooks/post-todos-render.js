@@ -14,6 +14,20 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
+// safe-fs helpers for symlink-guarded writes (PR #517 R1 propagation sweep:
+// refuse-symlink pattern requires safeAppendFileSync / isSafeToWrite /
+// refuseSymlinkWithParents on files that mutate fs state).
+let safeAppendFileSync = null;
+try {
+  ({ safeAppendFileSync } = require(
+    path.join(__dirname, "..", "..", "scripts", "lib", "safe-fs.js")
+  ));
+} catch {
+  // safe-fs unavailable during bootstrap — leave null. writeAudit() gates
+  // on safeAppendFileSync before any fs mutation, preserving non-blocking
+  // hook semantics without resorting to an unguarded fs.appendFileSync.
+}
+
 const TODOS_JSONL = ".planning/todos.jsonl";
 const TODOS_MD = ".planning/TODOS.md";
 const RENDERER = "scripts/planning/render-todos.js";
@@ -107,6 +121,9 @@ function toSafeRelPath(projectDir, filePath) {
 }
 
 function writeAudit(projectDir, entry) {
+  // Skip audit write entirely if safe-fs is unavailable. Non-blocking:
+  // audit logging is best-effort, never worth an unguarded fs mutation.
+  if (!safeAppendFileSync) return;
   try {
     const auditPath = path.join(projectDir, AUDIT_LOG);
     fs.mkdirSync(path.dirname(auditPath), { recursive: true });
@@ -118,7 +135,7 @@ function writeAudit(projectDir, entry) {
       platform: process.platform,
       ...entry,
     };
-    fs.appendFileSync(auditPath, JSON.stringify(record) + "\n");
+    safeAppendFileSync(auditPath, JSON.stringify(record) + "\n");
   } catch {
     // Non-blocking: audit failure must never block hook completion.
   }

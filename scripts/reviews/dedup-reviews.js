@@ -223,7 +223,7 @@ function findTitleBackfill(entries) {
   return null;
 }
 
-function printReport(entries, byId, toDrop, toRekey, actions, titleBackfilled) {
+function printDedupReport(entries, byId, toDrop, toRekey, actions, titleBackfilled) {
   console.log(`[dedup] Loaded ${entries.length} records, ${byId.size} unique IDs`);
   console.log(
     `[dedup] Actions: ${toDrop.size} drop, ${toRekey.size} re-key, ${titleBackfilled ? 1 : 0} title backfill`
@@ -266,7 +266,7 @@ function main() {
   const { toDrop, toRekey, actions } = computeEdits(byId, entries);
   const titleBackfilled = findTitleBackfill(entries);
 
-  printReport(entries, byId, toDrop, toRekey, actions, titleBackfilled);
+  printDedupReport(entries, byId, toDrop, toRekey, actions, titleBackfilled);
 
   if (DRY_RUN) {
     console.log("[dedup] --dry-run: no changes written");

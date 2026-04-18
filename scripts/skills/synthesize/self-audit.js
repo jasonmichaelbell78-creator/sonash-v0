@@ -576,7 +576,12 @@ function dim6PartialRecovery(state) {
   ]) {
     let stat;
     try {
-      stat = fs.statSync(abs);
+      // Use lstatSync first so a symlink doesn't silently redirect the mtime
+      // check (isSymbolicLink guard). Fall through to size/mtime resolution
+      // via statSync only when the path is confirmed to be a regular file.
+      const lstat = fs.lstatSync(abs);
+      if (lstat.isSymbolicLink()) continue; // refuse to inspect symlinked artifacts
+      stat = lstat;
     } catch {
       continue; // missing artifact already reported by Dim 1
     }
