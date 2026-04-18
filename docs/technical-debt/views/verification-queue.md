@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2157
+**Items Needing Verification:** 2158
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -172,6 +172,7 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...    | S1       | doc-header                                                                       | 0         |
 | DEBT-45647 | CAS family: parent-chain symlink guards missing on reads        | S1       | scripts/cas/backfill-tags.js                                                     | 45        |
 | DEBT-45657 | SonarCloud hotspots cleanup sprint — 217 remaining (1 HIG...    | S1       | scripts/,components/                                                             | 0         |
+| DEBT-45661 | Hook bypass threshold: doc-header overridden 15+ times in...    | S1       | scripts/log-override.js                                                          | 0         |
 | DEBT-2132  | Untitled finding                                                | S2       | N/A                                                                              | 0         |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | src/components                                                                   | 0         |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | src/components                                                                   | 0         |

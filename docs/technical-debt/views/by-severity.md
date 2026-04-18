@@ -40,7 +40,7 @@
 | DEBT-11283 | CRITICAL: fast-xml-parser DoS vulnerability (transitive v... | package-lock.json              | 0    | security | E1     |
 | DEBT-45612 | Review this potentially hard-coded password.                 | lib/utils/errors.ts            | 71   | security | E0     |
 
-## S1 - High (1375)
+## S1 - High (1376)
 
 | ID         | Title                                                         | File                                                                                                                                               | Line | Category                 | Effort    |
 | ---------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- | ---- | ------------------------ | --------- |
@@ -1419,6 +1419,7 @@
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...  | doc-header                                                                                                                                         | 0    | process                  | E2        |
 | DEBT-45647 | CAS family: parent-chain symlink guards missing on reads      | scripts/cas/backfill-tags.js                                                                                                                       | 45   | security                 | E1        |
 | DEBT-45657 | SonarCloud hotspots cleanup sprint — 217 remaining (1 HIG...  | scripts/,components/                                                                                                                               | 0    | security                 | E3        |
+| DEBT-45661 | Hook bypass threshold: doc-header overridden 15+ times in...  | scripts/log-override.js                                                                                                                            | 0    | process                  | E2        |
 
 ## S2 - Medium (3466)
 

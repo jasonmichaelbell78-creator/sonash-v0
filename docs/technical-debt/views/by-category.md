@@ -6407,7 +6407,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (740)
+## process (741)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6504,6 +6504,7 @@
 | DEBT-45611 | Hook bypass threshold: cross-doc-deps overridden 15+ time...  | S1       | cross-doc-deps                                                          | 0    |
 | DEBT-45641 | Hook bypass threshold: doc-header overridden 15+ times in...  | S1       | scripts/log-override.js                                                 | 0    |
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...  | S1       | doc-header                                                              | 0    |
+| DEBT-45661 | Hook bypass threshold: doc-header overridden 15+ times in...  | S1       | scripts/log-override.js                                                 | 0    |
 | DEBT-0444  | GitHub Actions using version tags instead of commit SHAs      | S2       | .github/workflows/auto-label-review-tier.yml                            | 18   |
 | DEBT-0456  | 28 scripts have 715 console.log/error/warn calls without ...  | S2       | scripts/                                                                | 0    |
 | DEBT-0457  | Artifact upload without retention policy                      | S2       | .github/workflows/ci.yml                                                | 99   |

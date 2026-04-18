@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2157)
+## NEW (2158)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -169,6 +169,7 @@
 | DEBT-45644 | Hook bypass threshold: doc-header overridden 15+ times in...    | S1       | process                  |
 | DEBT-45647 | CAS family: parent-chain symlink guards missing on reads        | S1       | security                 |
 | DEBT-45657 | SonarCloud hotspots cleanup sprint — 217 remaining (1 HIG...    | S1       | security                 |
+| DEBT-45661 | Hook bypass threshold: doc-header overridden 15+ times in...    | S1       | process                  |
 | DEBT-2132  | Untitled finding                                                | S2       | code-quality             |
 | DEBT-2180  | Date formats inconsistent across the app                        | S2       | enhancements             |
 | DEBT-2186  | Missing ARIA labels on critical navigation tabs                 | S2       | enhancements             |
