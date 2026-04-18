@@ -79,7 +79,7 @@ const { safeParseLine } = require("./lib/parse-jsonl-line");
 
 const ROOT = join(__dirname, "..");
 const REVIEWS_JSONL = join(ROOT, ".claude", "state", "reviews.jsonl");
-const REVIEWS_ARCHIVE_JSONL = join(ROOT, ".claude", "state", "reviews-archive.jsonl");
+// reviews-archive.jsonl was merged into reviews.jsonl (2026-04-17)
 const CONSOLIDATION_JSON = join(ROOT, ".claude", "state", "consolidation.json");
 const FORWARD_FINDINGS_JSONL = join(ROOT, ".claude", "state", "forward-findings.jsonl");
 const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
@@ -87,38 +87,14 @@ const LEARNINGS_LOG = join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const cliArgs = process.argv.slice(2);
 const jsonMode = cliArgs.includes("--json");
 
-// Known-skipped review IDs: numbers that were never assigned to individual reviews.
-// These gaps come from numbering skips, batch consolidations, or PR rounds that
-// weren't individually documented. Verified via git log -S "#### Review #N".
-// Last verified: Session #170 (2026-02-18)
-const KNOWN_SKIPPED_IDS = new Set([
-  41, 64, 65, 66, 67, 68, 69, 70, 71, 80, 83, 84, 85, 86, 90, 91,
-  // #92-#97, #101-#116, #121-#136: Historical gaps — review IDs never assigned during early sessions
-  92,
-  93, 94, 95, 96, 97, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115,
-  116, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 117, 118,
-  119, 120, 157, 158, 159, 160, 166, 167, 168, 169, 170, 172, 173, 174, 175, 176, 177, 178, 185,
-  203, 205, 206, 207, 208, 209, 210, 220, 228, 229, 230, 231, 232, 233, 234, 240, 241, 242, 243,
-  244, 245, 246, 247, 248, 323, 335, 349, 375,
-  // #460-#461, #463-#464, #466-#467: Phantom IDs from collision renumbering loop (fixed Session #214)
-  460,
-  461, 463, 464, 466, 467,
-  // #441-#451, #458-#459, #462, #465, #468-#469, #477-#479: Collision renumbering artifacts from old sync script (discovered during JSONL-canonical migration)
-  441,
-  442, 443, 444, 445, 446, 447, 448, 449, 450, 451, 458, 459, 462, 465, 468, 469, 477, 478, 479,
-  // #505: Gap in backfill sequence — ID never assigned (Session #268)
-  505,
-  // #508: Spurious ID from prose-derived total in historical entry at line 2170
-  // of AI_REVIEW_LEARNINGS_LOG.md (parser regex matched "4 items" → total=4).
-  // Stub removed + parser tightened (Session #279). Real review for PR #499 R1
-  // is rev-66 (string-id, not in numeric gap scan).
-  508,
-]);
+// Sequential ID gap checking removed (2026-04-17, Decision D11).
+// With PR-based canonical IDs (review-pr{N}-r{M}), sequential numbering
+// gaps are meaningless. Real validation is commit-to-record reconciliation
+// in review-lifecycle.js RECONCILE-COMMITS step.
 
 // Known-duplicate review IDs: IDs that legitimately appear multiple times in JSONL
 // due to historical ID reuse across different PR cycles. Both entries contain unique
 // learnings and should be preserved.
-// - #366-#369: PR #383 R5-R8 reassigned to PRs #384/#389/#394. Verified Session #195.
 const KNOWN_DUPLICATE_IDS = new Set([366, 367, 368, 369]);
 
 /** @type {Array<{severity: string, category: string, description: string, fix: string}>} */
@@ -578,93 +554,12 @@ function main() {
     }
   }
 
-  // Also include archived review IDs so archived records don't appear as gaps
-  let archivedCount = 0;
-  try {
-    if (existsSync(REVIEWS_ARCHIVE_JSONL)) {
-      const archiveContent = readTextWithSizeGuard(REVIEWS_ARCHIVE_JSONL).replaceAll("\r\n", "\n");
-      for (const rawLine of archiveContent.trim().split("\n")) {
-        const parsed = safeParseLine(rawLine);
-        if (!parsed) continue;
-        if (
-          typeof parsed === "object" &&
-          typeof parsed.id === "number" &&
-          Number.isFinite(parsed.id) &&
-          !numericIds.has(parsed.id)
-        ) {
-          numericIds.add(parsed.id);
-          archivedCount++;
-        }
-      }
-    }
-  } catch {
-    // Archive read failure is non-fatal for gap checking
-  }
-
+  // Sequential gap scanning removed (D11) — PR-based IDs have no expected
+  // sequence. Report total numeric IDs found for informational purposes.
   if (numericIds.size > 0) {
-    const MAX_GAP_SCAN_SPAN = 10_000;
-    const sortedIds = [...numericIds].sort((a, b) => a - b);
-    // nosemgrep: sonash.correctness.no-unchecked-array-access
-    const minId = sortedIds[0];
-    const maxId = sortedIds.at(-1);
-    const span = maxId - minId + 1;
-
-    if (!Number.isFinite(span) || span <= 0 || span > MAX_GAP_SCAN_SPAN) {
-      addFinding(
-        "S1",
-        "gap-scan-overflow",
-        `Gap scan range #${minId}-#${maxId} (${span} entries) exceeds cap of ${MAX_GAP_SCAN_SPAN}`,
-        "Investigate JSONL for corrupted IDs"
-      );
-    } else {
-      const knownSkipped = [];
-      const trulyMissing = [];
-
-      for (let id = minId; id <= maxId; id++) {
-        if (!numericIds.has(id)) {
-          if (KNOWN_SKIPPED_IDS.has(id)) {
-            knownSkipped.push(id);
-          } else {
-            trulyMissing.push(id);
-          }
-        }
-      }
-
-      if (trulyMissing.length > 0) {
-        const ranges = groupConsecutive(trulyMissing);
-        addFinding(
-          "S2",
-          "coverage-gap",
-          `${trulyMissing.length} review IDs missing from JSONL: ${ranges.join(", ")}`,
-          "Add missing reviews to reviews.jsonl or add IDs to KNOWN_SKIPPED_IDS"
-        );
-      }
-
-      if (knownSkipped.length > 0 && !jsonMode) {
-        console.log(`  INFO: ${knownSkipped.length} known-skipped IDs (never assigned, not a gap)`);
-      }
-
-      if (trulyMissing.length === 0 && knownSkipped.length === 0) {
-        const archiveNote = archivedCount > 0 ? `, ${archivedCount} archived` : "";
-        ok(
-          `Complete coverage: #${minId}-#${maxId} (${numericIds.size} numeric reviews${archiveNote})`
-        );
-      } else if (trulyMissing.length === 0) {
-        const archiveNote = archivedCount > 0 ? `, ${archivedCount} archived` : "";
-        ok(
-          `Full coverage: #${minId}-#${maxId} (${numericIds.size} reviews, ${knownSkipped.length} known-skipped${archiveNote})`
-        );
-      }
-
-      if (!jsonMode) {
-        const archiveNote = archivedCount > 0 ? `, ${archivedCount} archived` : "";
-        console.log(
-          `    Total range: #${minId}-#${maxId} (${numericIds.size} found, ${knownSkipped.length} skipped, ${trulyMissing.length} missing${archiveNote})`
-        );
-      }
-    }
+    ok(`${numericIds.size} numeric review IDs found (sequential gap scan disabled — PR-based IDs)`);
   } else {
-    ok("No numeric review IDs found (nothing to gap-check)");
+    ok("No numeric review IDs found");
   }
   if (!jsonMode) console.log();
 

@@ -1,17 +1,17 @@
 {
-  "timestamp": "2026-04-13T12:40:05.164Z",
+  "timestamp": "2026-04-18T17:22:11.588Z",
   "healthScore": {
-    "grade": "A",
-    "score": 94,
-    "measuredPct": 86,
+    "grade": "B",
+    "score": 89,
+    "measuredPct": 76,
     "breakdown": {
       "code": {
-        "score": 100,
+        "score": 60,
         "weight": 0.15,
         "measured": true
       },
       "security": {
-        "score": 90,
+        "score": 100,
         "weight": 0.15,
         "measured": true
       },
@@ -21,9 +21,9 @@
         "measured": true
       },
       "test-results": {
-        "score": null,
+        "score": 80,
         "weight": 0.1,
-        "measured": false
+        "measured": true
       },
       "learning": {
         "score": 100,
@@ -31,7 +31,7 @@
         "measured": true
       },
       "skip-abuse": {
-        "score": 50,
+        "score": 100,
         "weight": 0.02,
         "measured": true
       },
@@ -46,19 +46,19 @@
         "measured": true
       },
       "hook-health": {
-        "score": 50,
+        "score": 70,
         "weight": 0.03,
         "measured": true
       },
       "hook-completeness": {
-        "score": 80,
+        "score": 90,
         "weight": 0.02,
         "measured": true
       },
       "session-state": {
-        "score": null,
+        "score": 100,
         "weight": 0.03,
-        "measured": false
+        "measured": true
       },
       "pattern-hotspots": {
         "score": 100,
@@ -71,64 +71,64 @@
         "measured": true
       },
       "review-quality": {
-        "score": 100,
+        "score": null,
         "weight": 0.03,
-        "measured": true
+        "measured": false
       },
       "docs": {
-        "score": 100,
+        "score": null,
         "weight": 0.03,
-        "measured": true
+        "measured": false
       },
       "debt-intake": {
-        "score": 90,
+        "score": null,
         "weight": 0.02,
-        "measured": true
+        "measured": false
       },
       "roadmap-hygiene": {
-        "score": 100,
+        "score": null,
         "weight": 0.02,
-        "measured": true
+        "measured": false
       },
       "trigger-compliance": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "pattern-sync": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "doc-placement": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "external-links": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "unused-deps": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "review-churn": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "backlog-health": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "github-actions": {
-        "score": 100,
+        "score": null,
         "weight": 0.02,
-        "measured": true
+        "measured": false
       },
       "sonarcloud": {
         "score": null,
@@ -151,56 +151,56 @@
         "measured": true
       },
       "hook-warnings": {
-        "score": 30,
+        "score": 100,
         "weight": 0.01,
         "measured": true
       },
       "roadmap": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "consolidation": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "roadmap-health": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "debt-resolution": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "session-activity": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       },
       "commit-activity": {
-        "score": 100,
+        "score": null,
         "weight": 0.01,
-        "measured": true
+        "measured": false
       }
     }
   },
   "summary": {
     "errors": 2,
-    "warnings": 568,
-    "info": 118
+    "warnings": 164,
+    "info": 2
   },
   "categoryScores": {
     "code": {
-      "errors": 0,
-      "warnings": 0,
+      "errors": 1,
+      "warnings": 1,
       "info": 0
     },
     "security": {
       "errors": 0,
-      "warnings": 1,
+      "warnings": 0,
       "info": 0
     },
     "session": {
@@ -225,27 +225,27 @@
     },
     "hook-warnings": {
       "errors": 0,
-      "warnings": 7,
-      "info": 1
-    },
-    "skip-abuse": {
-      "errors": 1,
-      "warnings": 2,
+      "warnings": 0,
       "info": 0
     },
-    "test-results": {
+    "skip-abuse": {
       "errors": 0,
       "warnings": 0,
       "info": 0
     },
+    "test-results": {
+      "errors": 0,
+      "warnings": 2,
+      "info": 1
+    },
     "hook-health": {
       "errors": 1,
-      "warnings": 2,
+      "warnings": 0,
       "info": 0
     },
     "hook-completeness": {
       "errors": 0,
-      "warnings": 2,
+      "warnings": 1,
       "info": 0
     },
     "session-state": {
@@ -278,124 +278,9 @@
       "warnings": 0,
       "info": 0
     },
-    "docs": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "roadmap": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "review-quality": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "consolidation": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "session-activity": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 2
-    },
-    "commit-activity": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 2
-    },
-    "roadmap-health": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "debt-intake": {
-      "errors": 0,
-      "warnings": 1,
-      "info": 0
-    },
-    "debt-resolution": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "roadmap-hygiene": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "trigger-compliance": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "pattern-sync": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "doc-placement": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "external-links": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "unused-deps": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "review-churn": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "backlog-health": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "github-actions": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "sonarcloud": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "planning-data": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "deferred-items": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "commit-patterns": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
-    "enforcement-verification": {
-      "errors": 0,
-      "warnings": 0,
-      "info": 0
-    },
     "pending-refinements": {
       "errors": 0,
-      "warnings": 553,
+      "warnings": 160,
       "info": 0
     }
   }

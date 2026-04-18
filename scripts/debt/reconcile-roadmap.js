@@ -182,7 +182,7 @@ function replaceCanonIds(text, canonMap) {
   return {
     text: lines.join("\n"),
     replaced,
-    unmapped: [...unmappedSet].sort(),
+    unmapped: [...unmappedSet].sort((a, b) => a.localeCompare(b)),
     details,
     skippedFenced,
   };
@@ -217,7 +217,9 @@ function parseJsonFiles(contents) {
 function printVerbose9a(result9a) {
   if (result9a.replaced.size > 0) {
     console.log("\nReplacements:");
-    for (const [canon, debt] of [...result9a.replaced.entries()].sort()) {
+    for (const [canon, debt] of [...result9a.replaced.entries()].sort((a, b) =>
+      a[0].localeCompare(b[0])
+    )) {
       console.log(`  ${canon} -> ${debt}`);
     }
   }

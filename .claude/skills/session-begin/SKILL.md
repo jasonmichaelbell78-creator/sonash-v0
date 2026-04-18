@@ -64,7 +64,7 @@ already completed a step (check its output), skip it.
 
 ## Warm-Up (MUST — first output after duplicate detection passes)
 
-"Starting Session #N pre-flight on [branch]. Will load context, run 9 health
+"Starting Session #N pre-flight on [branch]. Will load context, run 8 health
 scripts, and surface any warnings."
 
 ---
@@ -144,7 +144,7 @@ purpose is to surface prior `/repo-analysis`, `/website-analysis`, and
 
 ## Phase 3: Health Scripts (MUST)
 
-**Output:** "Running 10 health scripts..."
+**Output:** "Running 8 health scripts..."
 
 ```bash
 npm run patterns:check
@@ -152,9 +152,7 @@ npm run review:check
 npm run lessons:surface
 npm run session:gaps
 npm run roadmap:hygiene
-npm run reviews:sync -- --apply
-npm run reviews:check-archive
-npm run reviews:archive
+npm run reviews:lifecycle
 npm run hooks:analytics -- --since=$(date -d '7 days ago' +%Y-%m-%d)
 node scripts/run-github-health.js --quick
 ```

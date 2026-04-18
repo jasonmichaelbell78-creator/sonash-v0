@@ -1,0 +1,52 @@
+{
+  "topic": "Self-updating file registry with tags + upstream/downstream graph + JASON-OS portability tracking",
+  "slug": "file-registry-portability-graph",
+  "date": "2026-04-17",
+  "depth": "L1",
+  "questionType": "tool-technology-comparison + feasibility",
+  "domain": "developer-tooling + knowledge-management + portability",
+  "agentCount": 9,
+  "searchRounds": 8,
+  "sourceCount": 106,
+  "claimCount": 120,
+  "confidenceDistribution": {
+    "HIGH": 61,
+    "MEDIUM": 44,
+    "LOW": 8,
+    "UNVERIFIED": 7
+  },
+  "topThemes": [
+    "No composite tool satisfies all five criteria simultaneously — custom thin build required",
+    "@optave/codegraph (March 2026) is the best single primitive covering graph + watch + multi-repo",
+    "Portability classification schema (scope: universal/user/project/machine/ephemeral) is novel and immediately actionable",
+    "KuzuDB abandoned Oct 2025 — affects CodeGraphContext and any custom build using KuzuDB on Windows",
+    "MCP protocol cannot push change events between turns — watcher daemon + SQLite + MCP poll is the viable architecture",
+    "44 JASON-OS memory files are auto-classifiable by filename prefix heuristic with HIGH confidence"
+  ],
+  "status": "complete-post-challenge-v1.1",
+  "recommendation": "Option D — minimum-viable JSONL + PostToolUse hook + scope-tags",
+  "subQuestionsInvestigated": ["D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8"],
+  "keyNegativeFindings": [
+    "No single tool combines file-graph + user-defined tags + self-update + cross-project + solo-Windows",
+    "No tool tracks file portability provenance across projects",
+    "No academic or industry standard portability schema exists for files/skills",
+    "MCP protocol fundamentally cannot push change events between Claude turns"
+  ],
+  "keyPositiveFindings": [
+    "@optave/codegraph satisfies 4 of 5 criteria (March 2026, npm, tree-sitter+SQLite+MCP+watch+registry)",
+    "Obsidian+FolderBridge+Breadcrumbs+Dataview satisfies 4 of 5 criteria for .md-based skill/agent docs",
+    "@parcel/watcher getEventsSince snapshot pattern is ideal for session-start change detection on Windows",
+    "D7 scope enum has implicit consensus across 5 independent systems (chezmoi, VSCode, Nx, XDG, Agent Skills)",
+    "JASON-OS memory file naming convention already implicitly encodes portability scope"
+  ],
+  "risksAndCaveats": [
+    "KuzuDB abandoned Oct 2025 — avoid CodeGraphContext on Windows",
+    "@optave/codegraph is March 2026 — maturity unproven",
+    "obsidian-skill-graph is April 2026 v0.1.0 — visual only, not production query layer",
+    "Obsidian v0.9.1 blocked symlinks outside vault — FolderBridge required, old tutorials broken",
+    "Chokidar v5 ESM-only — use v4 for mixed CJS/ESM codebases"
+  ],
+  "cross_model_verified": "Gemini CLI concurred independently",
+  "completedAt": "2026-04-17",
+  "version": "1.1"
+}

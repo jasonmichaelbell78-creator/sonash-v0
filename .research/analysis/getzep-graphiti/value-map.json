@@ -1,0 +1,287 @@
+{
+  "source": "https://github.com/getzep/graphiti",
+  "slug": "getzep-graphiti",
+  "classification": "framework",
+  "primary_lens": "creator",
+  "analyzed_at": "2026-04-17",
+  "patterns": [
+    {
+      "id": "pat-001",
+      "name": "cursor_rules.md operating protocol for AI memory clients",
+      "description": "34-line prescriptive doc handed to every MCP client telling it HOW to use the knowledge graph: search-first, filter-by-entity-type, capture-immediately, follow-procedures.",
+      "location": "mcp_server/docs/cursor_rules.md",
+      "novelty": "high",
+      "effort": "low",
+      "relevance": "high",
+      "home_gap": "Home CLAUDE.md §4 has 16 behavioral guardrails about Claude's meta-behavior but no operating protocol for memory-MCP + episodic-memory skill usage."
+    },
+    {
+      "id": "pat-002",
+      "name": "Versioned LLM model catalog in CLAUDE.md",
+      "description": "Dated table (as of Nov 2025) of current OpenAI/Anthropic/Gemini model names with pinned dates and notes (e.g., GPT-5 requires temperature=0). Defense against AI assistants 'correcting' current model names to older ones.",
+      "location": "CLAUDE.md §'LLM Provider Support'",
+      "novelty": "medium",
+      "effort": "low",
+      "relevance": "high",
+      "home_gap": "Home CLAUDE.md v6.0 §1 Stack Versions only covers JS framework deps; no LLM model catalog."
+    },
+    {
+      "id": "pat-003",
+      "name": "Opt-out telemetry with explicit content exclusions",
+      "description": "'What we collect / what we don't' block in README. Local anon UUID, PostHog-backed, pytest auto-disable, points at source file. Explicit exclusions: content, API keys, IPs, hostnames, file paths, queries, graph data.",
+      "location": "README.md §Telemetry + graphiti_core/telemetry/telemetry.py",
+      "novelty": "medium",
+      "effort": "low",
+      "relevance": "medium",
+      "home_gap": "Statusline has some telemetry but no transparent 'what-we-collect' block."
+    },
+    {
+      "id": "pat-004",
+      "name": "Structured Output as hard floor for pluggable LLMs",
+      "description": "Explicit README warning: 'Graphiti works best with LLM services that support Structured Output (OpenAI, Gemini). Using other services may result in incorrect output schemas and ingestion failures.' Names the floor instead of burying it.",
+      "location": "README.md §Installation",
+      "novelty": "medium",
+      "effort": "low",
+      "relevance": "medium",
+      "home_gap": "Home deep-research dispatches agents assuming any Claude model works; no posture yet for 'pluggable but not equal'."
+    },
+    {
+      "id": "pat-005",
+      "name": "SEMAPHORE_LIMIT per-provider tuning table",
+      "description": "Tier-by-tier concurrency guidance for LLM rate limits (OpenAI Tier 1-4, Anthropic default/high, Azure, Ollama). Symptom→dial diagnosis (429 = too high, slow throughput = too low).",
+      "location": "mcp_server/README.md §'Concurrency and LLM Provider 429'",
+      "novelty": "medium",
+      "effort": "low",
+      "relevance": "medium",
+      "home_gap": "CLAUDE.md §2.3 mandates 429 handling but gives no operational tuning guidance."
+    },
+    {
+      "id": "pat-006",
+      "name": "Opt-in OpenTelemetry with NoOp default",
+      "description": "Tracer injected via constructor kwarg; zero overhead when absent. Span prefix configurable. Works with in-memory Kuzu driver for local dev tracing.",
+      "location": "graphiti_core/tracer.py + OTEL_TRACING.md",
+      "novelty": "low",
+      "effort": "medium",
+      "relevance": "low",
+      "home_gap": "Home has no unified tracing; low immediate applicability."
+    },
+    {
+      "id": "pat-007",
+      "name": "Dual Claude-Code-Review CI workflows (auto + manual)",
+      "description": "Graphiti's .github/workflows/ includes claude-code-review.yml + claude-code-review-manual.yml + claude.yml — auto-trigger on PR + manual dispatch + generic catchall.",
+      "location": ".github/workflows/",
+      "novelty": "medium",
+      "effort": "low",
+      "relevance": "medium",
+      "home_gap": "Home pr-review skill is session-local; no CI-automated equivalent."
+    },
+    {
+      "id": "pat-008",
+      "name": "Driver Operations Redesign (namespace pattern)",
+      "description": "In-progress architecture spec for moving from data-class methods (node.save(driver)) to namespace-pattern (graphiti.nodes.entity.save(node)). 3-layer: Client → Namespace → Operations ABCs → QueryExecutor.",
+      "location": "spec/driver-operations-redesign.md",
+      "novelty": "low",
+      "effort": "high",
+      "relevance": "low",
+      "home_gap": "Pattern quality reference; home firestore-service.ts is simpler repository pattern."
+    },
+    {
+      "id": "pat-009",
+      "name": "Chunking gated by entity density",
+      "description": "Content chunked only when density exceeds threshold (default 0.15 entities per 1000 tokens). Preserves context for prose; handles bulk data.",
+      "location": "graphiti_core/helpers.py:41-55 (CHUNK_DENSITY_THRESHOLD env var)",
+      "novelty": "medium",
+      "effort": "medium",
+      "relevance": "low",
+      "home_gap": "Home content-analysis doesn't chunk by density currently."
+    }
+  ],
+  "knowledge": [
+    {
+      "id": "kn-001",
+      "name": "Bi-temporal fact model for agent memory",
+      "description": "Facts have validity windows (valid_from, valid_to). Contradictions invalidate but preserve. Point-in-time queries supported. Provenance via episodes.",
+      "tier": "E0",
+      "novelty": "high",
+      "effort": "high",
+      "relevance": "high",
+      "home_gap": "Home MEMORY.md overwrites on correction; 'corrected 4+ times' counter is a tombstone without history. Challenge: add history sub-field to feedback memories."
+    },
+    {
+      "id": "kn-002",
+      "name": "9-type action-oriented entity ontology",
+      "description": "Preference, Requirement, Procedure, Location, Event, Organization, Document, Topic, Object. Action-oriented (what to do) vs reference-oriented (who to be).",
+      "tier": "E1",
+      "novelty": "medium",
+      "effort": "medium",
+      "relevance": "medium",
+      "home_gap": "Home 4-type ontology (user/feedback/project/reference) is document-oriented. Cross-walk opportunity for episodic-memory skill."
+    },
+    {
+      "id": "kn-003",
+      "name": "Memory-access protocol for AI clients",
+      "description": "Cursor_rules.md concept: every AI client that wires into memory receives an explicit protocol doc telling it when and how to search, filter, and save. Agent behavior prescribed, not assumed.",
+      "tier": "E0",
+      "novelty": "medium",
+      "effort": "low",
+      "relevance": "high",
+      "home_gap": "Home relies on system-prompt instructions in auto-memory block. No auditable, editable protocol file."
+    },
+    {
+      "id": "kn-004",
+      "name": "Hybrid retrieval without LLM summarization",
+      "description": "Semantic + BM25 + graph traversal + cross-encoder reranking. Sub-second latency target. No batch LLM summarization step (unlike GraphRAG).",
+      "tier": "E1",
+      "novelty": "medium",
+      "effort": "high",
+      "relevance": "low",
+      "home_gap": "Home recall skill uses simpler semantic search; this is advanced territory if recall ever needs scale."
+    }
+  ],
+  "content": [
+    {
+      "id": "c-001",
+      "name": "cursor_rules.md (memory protocol template)",
+      "url": "https://github.com/getzep/graphiti/blob/main/mcp_server/docs/cursor_rules.md",
+      "category": "agent-docs",
+      "relevance": "high",
+      "novelty": "high",
+      "effort": "low",
+      "home_connection": "Direct template for home MEMORY_PROTOCOL.md or episodic-memory skill protocol doc."
+    },
+    {
+      "id": "c-002",
+      "name": "Root CLAUDE.md (graphiti)",
+      "url": "https://github.com/getzep/graphiti/blob/main/CLAUDE.md",
+      "category": "agent-docs",
+      "relevance": "high",
+      "novelty": "medium",
+      "effort": "low",
+      "home_connection": "Versioned LLM model catalog pattern — lift the dated-table approach."
+    },
+    {
+      "id": "c-003",
+      "name": "arXiv 2501.13956 — Zep paper",
+      "url": "https://arxiv.org/abs/2501.13956",
+      "category": "research",
+      "relevance": "high",
+      "novelty": "high",
+      "effort": "medium",
+      "home_connection": "Foundational reading for temporal agent memory; adjacent to episodic-memory skill territory."
+    },
+    {
+      "id": "c-004",
+      "name": "MCP entity types config (9-type ontology)",
+      "url": "https://github.com/getzep/graphiti/blob/main/mcp_server/config/config.yaml",
+      "category": "ontology",
+      "relevance": "high",
+      "novelty": "medium",
+      "effort": "low",
+      "home_connection": "Cross-walk against home MEMORY.md 4-type ontology for episodic-memory skill evolution."
+    },
+    {
+      "id": "c-005",
+      "name": "Telemetry design (graphiti_core/telemetry/)",
+      "url": "https://github.com/getzep/graphiti/tree/main/graphiti_core/telemetry",
+      "category": "technical-pattern",
+      "relevance": "high",
+      "novelty": "medium",
+      "effort": "low",
+      "home_connection": "Transparency template for any home tool that phones home."
+    },
+    {
+      "id": "c-006",
+      "name": "SEMAPHORE_LIMIT tuning guide",
+      "url": "https://github.com/getzep/graphiti/blob/main/mcp_server/README.md#concurrency-and-llm-provider-429-rate-limit-errors",
+      "category": "technical-pattern",
+      "relevance": "medium",
+      "novelty": "medium",
+      "effort": "low",
+      "home_connection": "Per-Claude-tier concurrency guidance for deep-research searcher dispatch."
+    },
+    {
+      "id": "c-007",
+      "name": "Structured Output hard-floor warning",
+      "url": "https://github.com/getzep/graphiti/blob/main/README.md#installation",
+      "category": "technical-pattern",
+      "relevance": "high",
+      "novelty": "medium",
+      "effort": "low",
+      "home_connection": "Named-floor pattern for any pluggable-LLM home skill."
+    },
+    {
+      "id": "c-008",
+      "name": ".github/workflows/claude*.yml (3 workflows)",
+      "url": "https://github.com/getzep/graphiti/tree/main/.github/workflows",
+      "category": "ci-workflow",
+      "relevance": "medium",
+      "novelty": "medium",
+      "effort": "medium",
+      "home_connection": "Dual-trigger pattern (auto + manual) + generic catchall for CI Claude reviews."
+    },
+    {
+      "id": "c-009",
+      "name": "examples/opentelemetry/",
+      "url": "https://github.com/getzep/graphiti/tree/main/examples/opentelemetry",
+      "category": "example-scenario",
+      "relevance": "medium",
+      "novelty": "low",
+      "effort": "low",
+      "home_connection": "Opt-in tracer constructor pattern usable in any home CLI/tool."
+    },
+    {
+      "id": "c-010",
+      "name": "examples/podcast/ — transcript ingestion",
+      "url": "https://github.com/getzep/graphiti/tree/main/examples/podcast",
+      "category": "example-scenario",
+      "relevance": "medium",
+      "novelty": "low",
+      "effort": "medium",
+      "home_connection": "Home media-analysis produces transcripts; pattern for piping them into a graph memory sink."
+    }
+  ],
+  "anti_patterns": [
+    {
+      "id": "ap-001",
+      "name": "Shipping a REST server with zero auth as the default",
+      "description": "Graphiti's server/ exposes DELETE /clear, DELETE /group/{group_id}, POST /messages etc. with no auth middleware. Stance: 'wrap in your own gateway.' Honest but risky for anyone running defaults.",
+      "tier": "E0",
+      "home_connection": "If home ever fronts a service with FastAPI or any web framework, do not treat auth as someone else's job.",
+      "source": "Creator View §6 + dim-security.md High-severity finding"
+    },
+    {
+      "id": "ap-002",
+      "name": "Claim 'pluggable LLMs' without naming the floor",
+      "description": "Graphiti does this right (names Structured Output as the floor), but the framing is a warning: anything claiming pluggable providers hides a floor somewhere. Don't let the convenience story swallow the caveat.",
+      "tier": "E0",
+      "home_connection": "If a home skill dispatches multiple LLM providers, name what breaks with smaller models before listing them as options.",
+      "source": "Creator View §6"
+    },
+    {
+      "id": "ap-003",
+      "name": "Examples that assume infrastructure is pre-running",
+      "description": "Graphiti's 9 examples all require Neo4j or FalkorDB to be running before `python quickstart.py` works. No 'Hello World in 5 minutes' path.",
+      "tier": "E0",
+      "home_connection": "Home skills should state infrastructure dependencies in the first sentence of their README, or be self-contained.",
+      "source": "Creator View §6 + dim-docs.md gaps"
+    },
+    {
+      "id": "ap-004",
+      "name": "Single 2053-line mock test file",
+      "description": "tests/test_graphiti_mock.py is 2053 LOC. May reflect deep coverage OR mock-brittleness one refactor away from a rewrite. Watchlist item.",
+      "tier": "E0",
+      "home_connection": "When home test files grow past a few hundred lines, split them before they reach mock-brittleness.",
+      "source": "Creator View §6 + dim-tests.md inventory"
+    }
+  ],
+  "related_repos": [
+    "getzep/zep (managed platform; same team)",
+    "langchain-ai/langgraph (integration shown in examples/langgraph-agent/)",
+    "jlowin/fastmcp (MCP server framework used in mcp_server/)",
+    "neo4j/neo4j",
+    "FalkorDB/falkordb",
+    "kuzudb/kuzu",
+    "aws/amazon-neptune"
+  ],
+  "cross_repo_connections": []
+}

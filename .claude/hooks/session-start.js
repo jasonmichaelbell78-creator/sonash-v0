@@ -725,34 +725,8 @@ try {
   }
 }
 
-// Unified JSONL rotation (D11/D25: tiered rotation per config/rotation-policy.json)
-try {
-  execFileSync(process.execPath, ["scripts/rotate-jsonl.js"], {
-    cwd: projectDir,
-    stdio: ["ignore", "ignore", "pipe"],
-    timeout: 10000,
-  });
-} catch (rotateErr) {
-  // Non-fatal: log but don't block session start
-  const rotateMsg = rotateErr instanceof Error ? rotateErr.message : String(rotateErr);
-  if (rotateMsg && !rotateMsg.includes("exit code 0")) {
-    const redactedMsg = rotateMsg
-      .replaceAll(/C:\\Users\\[^\\]+/gi, "[USER_PATH]")
-      .replaceAll(/\/home\/[^/\s]+/gi, "[HOME]")
-      .replaceAll(/\/Users\/[^/\s]+/gi, "[HOME]")
-      .replaceAll(/[A-Z]:\\[^\s]+/gi, "[PATH]");
-    console.log(
-      "   ⚠️ JSONL rotation: " +
-        sanitizeInput(redactedMsg.split("\n")[0].replace(/\r$/, "")) +
-        ". Fix: node scripts/rotate-jsonl.js --verbose"
-    );
-    addWarning(
-      "jsonl-rotation",
-      sanitizeInput(redactedMsg.split("\n")[0].replace(/\r$/, "")),
-      "node scripts/rotate-jsonl.js --verbose"
-    );
-  }
-}
+// JSONL rotation removed (2026-04-17) — reviews.jsonl is now a single
+// canonical store. rotate-jsonl.js deleted per review-data-architecture D10.
 
 // =============================================================================
 // D16: Regenerate hook-warnings.json from canonical JSONL + ack state

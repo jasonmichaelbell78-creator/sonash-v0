@@ -188,7 +188,7 @@ function canonicalize(v, seen = new WeakSet(), depth = 0) {
   try {
     if (Array.isArray(v)) return v.map((x) => canonicalize(x, seen, depth + 1));
     const out = Object.create(null);
-    for (const k of Object.keys(v).sort()) {
+    for (const k of Object.keys(v).sort((a, b) => a.localeCompare(b))) {
       if (k === "__proto__" || k === "constructor" || k === "prototype") continue;
       out[k] = canonicalize(v[k], seen, depth + 1);
     }
@@ -207,7 +207,9 @@ function evidenceToKey(e) {
   } catch {
     const keys = (() => {
       try {
-        return Object.keys(e).sort().join(",");
+        return Object.keys(e)
+          .sort((a, b) => a.localeCompare(b))
+          .join(",");
       } catch {
         return "";
       }

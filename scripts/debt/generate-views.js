@@ -436,7 +436,7 @@ function generateSeverityView(bySeverity, today) {
 function generateCategoryView(byCategory, today) {
   let categoryMd = generateHeader("Technical Debt by Category", today);
 
-  for (const cat of Object.keys(byCategory).sort()) {
+  for (const cat of Object.keys(byCategory).sort((a, b) => a.localeCompare(b))) {
     const catItems = byCategory[cat];
     categoryMd += `## ${cat} (${catItems.length})\n\n`;
     categoryMd += "| ID | Title | Severity | File | Line |\n|---|---|---|---|---|\n";

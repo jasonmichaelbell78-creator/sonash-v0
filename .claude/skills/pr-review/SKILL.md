@@ -26,6 +26,8 @@ Every item is either fixed or tracked — no silent dismissals.
    framework. Never auto-decide on DAS 3-4 items. Never skip the DAS block.
 7. **Propagation is MANDATORY** — after fixing a pattern-based issue, grep the
    entire codebase for the same pattern and fix ALL instances in one commit.
+8. **NEVER commit fix code without a JSONL record** — Step 6 MUST complete
+   before Step 8 commit. If Step 6 fails, do not proceed.
 
 ## When to Use
 
@@ -370,6 +372,10 @@ with correct review number, (2) JSONL record written via
 `write-review-record.js` with all fields populated (pr, round, total, fixed,
 rejected, deferred, source). Missing either artifact causes data gaps in
 `/pr-retro` analysis.
+
+**Step 6 verification (MUST):** Confirm `reviews.jsonl` contains a record
+matching this PR+round before proceeding to Step 7. If missing, Step 6 is
+incomplete — do not proceed.
 
 **Done when:** Learning entry + JSONL record created, both verified.
 

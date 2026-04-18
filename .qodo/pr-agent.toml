@@ -174,7 +174,16 @@ When reviewing files in scripts/ or .claude/hooks/:
     section triggers this even when reviewer suppressions already exist,
     because compliance rules use a separate engine from the reviewer.)
 
-28. Do NOT flag "Symlink TOCTOU" on scripts/lib/safe-fs.js writers
+28. Do NOT flag "escalating compliance" or "repeat compliance failure" on
+    CAS handler files (.claude/skills/*/SKILL.md, scripts/cas/*.js,
+    scripts/skills/*/self-audit.js). These files undergo multi-round
+    skill-audit cycles where review bot suggestions are domain-irrelevant.
+    Skill definition files follow their own structural standards
+    (SKILL_STANDARDS), not general code quality heuristics.
+    (Rejected 54 times in PR #504 R1-R4, 15 times in PR #503 R1-R5 — CAS
+    handler patterns are systematically rejected at 23% rate across 8 PRs)
+
+29. Do NOT flag "Symlink TOCTOU" on scripts/lib/safe-fs.js writers
     (safeWriteFileSync / safeAppendFileSync / safeAtomicWriteSync /
     safeRenameSync). The isSafeToWrite check followed by the fs operation
     leaves a theoretical TOCTOU window, but the module is explicitly

@@ -211,7 +211,7 @@ async function main() {
     byCategory[item.category] = (byCategory[item.category] || 0) + 1;
   }
   console.log("\n📂 Summary by category:");
-  for (const cat of Object.keys(byCategory).sort()) {
+  for (const cat of Object.keys(byCategory).sort((a, b) => a.localeCompare(b))) {
     console.log(`   ${cat}: ${byCategory[cat]}`);
   }
 }

@@ -71,13 +71,15 @@ well/wrong" -- `/pr-retro`
 gh pr list --state merged --limit 100 --json number,title,mergedAt,author
 ```
 
-**D2.** Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`,
-`.claude/state/retros.jsonl` for existing retros. **D3.** Skip: PR# < 395, zero
-review entries, bot PRs (`[bot]`, `chore(deps)`, `build(deps)`, `Bump`). **D4.**
-Count review rounds per missing PR. **D5.** Display table: PR# | Title | Merged
-| Author | Rounds. Include action item summary from retros.jsonl. **D6.** "Which
-PRs to retro? [numbers / all / none]" If multiple, see REFERENCE.md: Batch Retro
-Scope.
+**D2.** Search `.claude/state/reviews.jsonl` (canonical, single store) and
+`.claude/state/retros.jsonl` for existing reviews and retros. Parse JSONL — do
+NOT search markdown files (markdown is a rendered view, not a data source).
+**D3.** Skip: PR# < 395, zero review entries, bot PRs (`[bot]`, `chore(deps)`,
+`build(deps)`, `Bump`). **D4.** Count review rounds per missing PR from JSONL
+`pr` + `round` fields (or extract round from `title` field via `R(\d+)`
+pattern). **D5.** Display table: PR# | Title | Merged | Author | Rounds. Include
+action item summary from retros.jsonl. **D6.** "Which PRs to retro? [numbers /
+all / none]" If multiple, see REFERENCE.md: Batch Retro Scope.
 
 For each selected PR, proceed to Step 1 (deliverable verification), then Step 2.
 **Dashboard ends here -- do NOT continue without selection.**
@@ -141,8 +143,8 @@ Save state. Warn if unverified > 0.
 
 ## STEP 2: GATHER REVIEW DATA (MUST)
 
-**2.1** Search `docs/AI_REVIEW_LEARNINGS_LOG.md`, `docs/archive/REVIEWS_*.md`,
-`.claude/state/reviews.jsonl`. Read EVERY entry. Check CLAUDE.md Section 5+6.
+**2.1** Search `.claude/state/reviews.jsonl` (canonical single store). Parse
+JSONL records — filter by `pr` field. Check CLAUDE.md Section 5+6.
 
 **2.2** Per round: number, date, source, items by severity, fixed/deferred/
 rejected, pattern categories, files modified, new issues from prior fixes.

@@ -268,6 +268,35 @@ function fetchCacheUsage(repo) {
   });
 }
 
+/**
+ * 4d. Check-runs on the default branch tip. Used to distinguish real-CI
+ * failures (build/test/lint) from Dependabot auto-update maintenance and
+ * external quality gates (SonarCloud, etc.) — the GraphQL statusCheckRollup
+ * flattens all three into a single FAILURE state, which over-penalizes the
+ * grade. See analyzeCIState for the categorization.
+ */
+function fetchMainCheckRuns(repo) {
+  // URL-encode branch name — default branches can contain "/" (release/1.0,
+  // etc.) which would otherwise break the path segment (Qodo R1 #4).
+  const ref = encodeURIComponent(repo.defaultBranch || "main");
+  // --paginate walks the Link header and concatenates results, preventing
+  // silent data loss for commits with >100 check-runs (Gemini R1 #5).
+  const raw = gh(
+    [
+      "api",
+      "--paginate",
+      "--slurp",
+      `repos/${repo.owner}/${repo.name}/commits/${ref}/check-runs?per_page=100`,
+    ],
+    { json: true, timeout: 15000 }
+  );
+  // --slurp returns an array of response pages; flatten their check_runs.
+  if (!Array.isArray(raw)) {
+    return Array.isArray(raw.check_runs) ? raw.check_runs : [];
+  }
+  return raw.flatMap((page) => (Array.isArray(page.check_runs) ? page.check_runs : []));
+}
+
 // -- Analyzers (extracted for CC reduction) ----------------------------------
 
 function analyzeDependabot(snapshot, issues, details) {
@@ -291,13 +320,74 @@ function analyzeDependabot(snapshot, issues, details) {
   }
 }
 
-function analyzeCIState(snapshot, issues, details) {
-  const ciState = snapshot.defaultBranchRef?.target?.statusCheckRollup?.state;
-  if (ciState === "FAILURE" || ciState === "ERROR") {
-    issues.p0++;
-    details.push(`  P0  CI ${ciState.toLowerCase()} on main`);
+// Dependabot auto-update runs (as opposed to real CI gates). The
+// /check-runs REST endpoint exposes these as job-name "Dependabot" (not the
+// workflow name like "npm_and_yarn in /. for dompurify - Update #N"). The
+// "Auto-merge Dependabot" helper workflow also surfaces as the workflow's
+// job name. Both are maintenance scheduling failures, not build/test
+// regressions, and should not tank the health grade.
+const DEPENDABOT_MAINTENANCE_NAME = /^Dependabot$|^Auto-merge Dependabot/i;
+
+function categorizeCheckRun(run) {
+  const app = run.app?.slug || "";
+  const name = run.name || "";
+  if (app !== "github-actions") return "EXTERNAL";
+  if (DEPENDABOT_MAINTENANCE_NAME.test(name)) return "MAINTENANCE";
+  return "REAL_CI";
+}
+
+function analyzeCIState(snapshot, checkRuns, issues, details) {
+  const rollup = snapshot.defaultBranchRef?.target?.statusCheckRollup?.state;
+
+  // Fallback path: if we couldn't fetch check-runs, trust the rollup as today
+  // so the skill still surfaces SOMETHING rather than silently under-reporting.
+  if (!Array.isArray(checkRuns) || checkRuns.length === 0) {
+    if (rollup === "FAILURE" || rollup === "ERROR") {
+      issues.p0++;
+      details.push(`  P0  CI ${rollup.toLowerCase()} on main (rollup; check-runs unavailable)`);
+    }
+    return rollup || "UNKNOWN";
   }
-  return ciState;
+
+  // GitHub Check Run conclusion enum: success | failure | neutral | cancelled
+  // | skipped | timed_out | action_required | startup_failure. Everything
+  // except success/neutral/skipped indicates a non-passing run (Qodo R2 #8).
+  // Previously only failure/timed_out were counted — cancelled and
+  // startup_failure silently passed as success, causing false GREEN grades.
+  const FAILING_CONCLUSIONS = new Set([
+    "failure",
+    "timed_out",
+    "cancelled",
+    "action_required",
+    "startup_failure",
+  ]);
+  const buckets = { REAL_CI: [], MAINTENANCE: [], EXTERNAL: [] };
+  for (const run of checkRuns) {
+    if (!FAILING_CONCLUSIONS.has(run.conclusion)) continue;
+    buckets[categorizeCheckRun(run)].push(run.name);
+  }
+
+  if (buckets.REAL_CI.length > 0) {
+    // Count per failing job (parity with analyzeDependabot's per-alert p0+=)
+    // so a 10-job CI failure doesn't score identical to 1-job failure.
+    issues.p0 += buckets.REAL_CI.length;
+    details.push(`  P0  CI failure on main: ${buckets.REAL_CI.join(", ")}`);
+  }
+  if (buckets.MAINTENANCE.length > 0) {
+    issues.p2 += buckets.MAINTENANCE.length;
+    details.push(
+      `  P2  ${buckets.MAINTENANCE.length} Dependabot auto-update run(s) failed on main (maintenance noise, not CI)`
+    );
+  }
+  if (buckets.EXTERNAL.length > 0) {
+    issues.p2 += buckets.EXTERNAL.length;
+    details.push(`  P2  External quality gate failure on main: ${buckets.EXTERNAL.join(", ")}`);
+  }
+
+  // Return a derived state that reflects actual CI health, not rollup noise.
+  if (buckets.REAL_CI.length > 0) return "FAILURE";
+  if (buckets.MAINTENANCE.length + buckets.EXTERNAL.length > 0) return "NON_CI_FAILURE";
+  return "SUCCESS";
 }
 
 function analyzeStalePRs(snapshot, issues, details) {
@@ -374,9 +464,10 @@ function analyzeCacheUsage(cacheData, issues, details) {
 
 // -- Output + trend detection ------------------------------------------------
 
-function buildSummaryParts(snapshot, issues, cachePercent) {
-  const ciState = snapshot?.defaultBranchRef?.target?.statusCheckRollup?.state;
-  // Single literal array avoids repeated Array#push() calls (SonarCloud S6661).
+function buildSummaryParts(snapshot, ciState, issues, cachePercent) {
+  // ciState is the derived real-CI state from analyzeCIState (not the raw
+  // statusCheckRollup) — so the one-liner reflects actual build health,
+  // not Dependabot/external noise that's already bucketed into details.
   const parts = [
     `${issues.p0} P0`,
     `CI ${ciState ? ciState.toLowerCase() : "unknown"}`,
@@ -548,10 +639,21 @@ function runApiCalls(repo) {
     errors.push(`Cache usage: ${sanitizeError(err)}`);
   }
 
-  return { snapshot, secretCount, cacheData, errors };
+  let checkRuns = null;
+  try {
+    checkRuns = fetchMainCheckRuns({
+      ...repo,
+      defaultBranch: snapshot?.defaultBranchRef?.name,
+    });
+  } catch (err) {
+    // Non-fatal — analyzeCIState falls back to the rollup state.
+    errors.push(`Main branch check-runs: ${sanitizeError(err)}`);
+  }
+
+  return { snapshot, secretCount, cacheData, checkRuns, errors };
 }
 
-function analyzeSnapshot(snapshot, issues, details) {
+function analyzeSnapshot(snapshot, checkRuns, issues, details) {
   // A null snapshot is itself a P2 issue — prevents falsely reporting GREEN
   // when the core GraphQL call failed.
   if (!snapshot) {
@@ -560,7 +662,7 @@ function analyzeSnapshot(snapshot, issues, details) {
     return null;
   }
   analyzeDependabot(snapshot, issues, details);
-  const ciState = analyzeCIState(snapshot, issues, details);
+  const ciState = analyzeCIState(snapshot, checkRuns, issues, details);
   analyzeStalePRs(snapshot, issues, details);
   analyzeConfigHygiene(snapshot, issues, details);
   return ciState;
@@ -596,19 +698,19 @@ function main() {
   const lastEntry = checkDedup();
   const repo = resolveRepoOrExit();
 
-  const { snapshot, secretCount, cacheData, errors } = runApiCalls(repo);
+  const { snapshot, secretCount, cacheData, checkRuns, errors } = runApiCalls(repo);
 
   const issues = { p0: 0, p1: 0, p2: 0, p3: 0 };
   const details = [];
 
-  const ciState = analyzeSnapshot(snapshot, issues, details);
+  const ciState = analyzeSnapshot(snapshot, checkRuns, issues, details);
   analyzeSecretAlerts(secretCount, issues, details);
   const cachePercent = analyzeCacheUsage(cacheData, issues, details);
 
   const grade = computeGrade(issues);
   const color = gradeToColor(grade);
   const totalIssues = issues.p0 + issues.p1 + issues.p2 + issues.p3;
-  const parts = buildSummaryParts(snapshot, issues, cachePercent);
+  const parts = buildSummaryParts(snapshot, ciState, issues, cachePercent);
   printResult({ color, grade, totalIssues, parts, details, errors });
 
   const trends = detectTrends(lastEntry, snapshot, cachePercent, grade, issues);

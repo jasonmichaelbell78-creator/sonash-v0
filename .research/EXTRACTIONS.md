@@ -4,7 +4,7 @@ Auto-generated from `extraction-journal.jsonl` by
 `scripts/cas/generate-extractions-md.js`. Do not edit directly — run
 `node scripts/cas/generate-extractions-md.js` to rebuild.
 
-**Total:** 343 candidates across 33 sources | **By decision:** defer: 319,
+**Total:** 370 candidates across 34 sources | **By decision:** defer: 346,
 investigate: 2, extract: 20, skip: 2
 
 ---
@@ -20,6 +20,7 @@ investigate: 2, extract: 20, skip: 2
 | [Dicklesworthstone/bulk_transcribe_youtube_videos_from_playlist](#dicklesworthstone-bulk-transcribe-youtube-videos-from-playlist-repo)                                                                                   | repo     | 12    | 4       | 3         | 3            | 2       |
 | [DS4SD/docling](#ds4sd-docling-repo)                                                                                                                                                                                     | repo     | 13    | 4       | 5         | 3            | 1       |
 | [Errors and Vulnerabilities in AI-Generated Code.pdf](#errors-and-vulnerabilities-in-ai-generated-code-pdf-document)                                                                                                     | document | 6     | 0       | 4         | 2            | 0       |
+| [getzep/graphiti](#getzep-graphiti-repo)                                                                                                                                                                                 | repo     | 27    | 9       | 4         | 4            | 10      |
 | [HKUDS/CLI-Anything](#hkuds-cli-anything-repo)                                                                                                                                                                           | repo     | 17    | 7       | 3         | 3            | 4       |
 | [iawia002/lux](#iawia002-lux-repo)                                                                                                                                                                                       | repo     | 6     | 1       | 2         | 3            | 0       |
 | [jdepoix/youtube-transcript-api](#jdepoix-youtube-transcript-api-repo)                                                                                                                                                   | repo     | 11    | 5       | 3         | 2            | 1       |
@@ -180,6 +181,40 @@ investigate: 2, extract: 20, skip: 2
 | Context momentum / hallucinated logic            | knowledge    | defer    | 2026-04-09 | medium  | E0     | high      | -            | Early AI misinterpretations steer project wrong. We mitigate with /clear and SESSION_CONTEXT.md but no explicit detectio |
 | Structural entropy (code bloat)                  | anti-pattern | defer    | 2026-04-09 | low     | E0     | high      | -            | AI generates verbose, redundant code. CLAUDE.md guardrail covers this but pattern check doesn't gate it.                 |
 | Deployment fragility (happy path only)           | anti-pattern | defer    | 2026-04-09 | low     | E0     | medium    | -            | AI code works locally, fails in production. Enforce reproducible builds, observability.                                  |
+
+<a id="getzep-graphiti-repo"></a>
+
+## getzep/graphiti (repo)
+
+| Candidate                                                | Type         | Decision | Date       | Novelty | Effort | Relevance | Extracted To | Notes                                                                                                                    |
+| -------------------------------------------------------- | ------------ | -------- | ---------- | ------- | ------ | --------- | ------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| cursor_rules.md operating protocol for AI memory clients | pattern      | defer    | 2026-04-17 | high    | E0     | high      | -            | 34-line prescriptive doc telling AI clients HOW to use the knowledge graph: search-first, filter-by-entity-type, capture |
+| Versioned LLM model catalog in CLAUDE.md                 | pattern      | defer    | 2026-04-17 | medium  | E0     | high      | -            | Dated table (Nov 2025) of current OpenAI/Anthropic/Gemini model names with pinned dates. Defense against AI correcting m |
+| Opt-out telemetry with explicit content exclusions       | pattern      | defer    | 2026-04-17 | medium  | E0     | medium    | -            | Transparent what-we-collect block. Local anon UUID, PostHog, pytest auto-disable, source-file pointer. Usable template f |
+| Structured Output as hard floor for pluggable LLMs       | pattern      | defer    | 2026-04-17 | medium  | E0     | medium    | -            | Named-floor pattern: README warns works best with LLM services that support Structured Output; smaller models may fail.  |
+| SEMAPHORE_LIMIT per-provider tuning table                | pattern      | defer    | 2026-04-17 | medium  | E0     | medium    | -            | Tier-by-tier concurrency guidance: OpenAI Tier 1-4, Anthropic default/high, Ollama hardware-dependent. Symptom-to-dial d |
+| Opt-in OpenTelemetry with NoOp default                   | pattern      | defer    | 2026-04-17 | low     | E1     | low       | -            | Tracer injected via constructor kwarg; zero overhead when absent. graphiti_core/tracer.py plus OTEL_TRACING.md           |
+| Dual Claude-Code-Review CI workflows (auto + manual)     | pattern      | defer    | 2026-04-17 | medium  | E0     | medium    | -            | claude-code-review.yml plus claude-code-review-manual.yml plus claude.yml. Auto-trigger on PR plus manual dispatch plus  |
+| Driver Operations Redesign namespace pattern             | pattern      | defer    | 2026-04-17 | low     | E2     | low       | -            | 3-layer: Client to Namespace to Operations ABCs to QueryExecutor. Pure-data Pydantic models. Non-breaking Phase 1. spec/ |
+| Chunking gated by entity density                         | pattern      | defer    | 2026-04-17 | medium  | E1     | low       | -            | Chunk only when density exceeds threshold (0.15 entities per 1k tokens default). Preserves context for prose; handles bu |
+| Bi-temporal fact model for agent memory                  | knowledge    | defer    | 2026-04-17 | high    | E0     | high      | -            | Facts have validity windows (valid_from, valid_to). Contradictions invalidate but preserve. Point-in-time queries. Chall |
+| 9-type action-oriented entity ontology                   | knowledge    | defer    | 2026-04-17 | medium  | E1     | medium    | -            | Preference / Requirement / Procedure / Location / Event / Organization / Document / Topic / Object. Action-oriented vs h |
+| Memory-access protocol for AI clients concept            | knowledge    | defer    | 2026-04-17 | medium  | E0     | high      | -            | Every AI client gets an explicit protocol doc alongside tools. Prescribed, not assumed.                                  |
+| Hybrid retrieval without LLM summarization               | knowledge    | defer    | 2026-04-17 | medium  | E1     | low       | -            | Semantic plus BM25 plus graph traversal plus cross-encoder reranking. Sub-second latency. No batch LLM summarization (un |
+| cursor_rules.md (memory protocol template)               | content      | defer    | 2026-04-17 | high    | E0     | high      | -            | https://github.com/getzep/graphiti/blob/main/mcp_server/docs/cursor_rules.md. Direct template for home MEMORY_PROTOCOL.m |
+| Root CLAUDE.md (graphiti repo)                           | content      | defer    | 2026-04-17 | medium  | E0     | high      | -            | https://github.com/getzep/graphiti/blob/main/CLAUDE.md. Versioned LLM model catalog pattern — lift the dated-table appro |
+| arXiv 2501.13956 — Zep paper                             | content      | defer    | 2026-04-17 | high    | E1     | high      | -            | https://arxiv.org/abs/2501.13956. Foundational reading for temporal agent memory; adjacent to episodic-memory skill terr |
+| MCP entity types config (9-type ontology)                | content      | defer    | 2026-04-17 | medium  | E0     | high      | -            | https://github.com/getzep/graphiti/blob/main/mcp_server/config/config.yaml. Cross-walk against home MEMORY.md 4-type ont |
+| Telemetry design (graphiti_core/telemetry/)              | content      | defer    | 2026-04-17 | medium  | E0     | high      | -            | https://github.com/getzep/graphiti/tree/main/graphiti_core/telemetry. Transparency template.                             |
+| SEMAPHORE_LIMIT tuning guide                             | content      | defer    | 2026-04-17 | medium  | E0     | medium    | -            | https://github.com/getzep/graphiti/blob/main/mcp_server/README.md. Per-Claude-tier concurrency guidance for deep-researc |
+| Structured Output hard-floor warning                     | content      | defer    | 2026-04-17 | medium  | E0     | high      | -            | https://github.com/getzep/graphiti/blob/main/README.md#installation. Named-floor pattern for pluggable-LLM home skills.  |
+| .github/workflows/claude\*.yml (3 workflows)             | content      | defer    | 2026-04-17 | medium  | E1     | medium    | -            | https://github.com/getzep/graphiti/tree/main/.github/workflows. Dual-trigger (auto + manual) plus generic catchall for C |
+| examples/opentelemetry/ — opt-in tracer pattern          | content      | defer    | 2026-04-17 | low     | E0     | medium    | -            | https://github.com/getzep/graphiti/tree/main/examples/opentelemetry. Opt-in tracer constructor pattern usable in any hom |
+| examples/podcast/ — transcript ingestion                 | content      | defer    | 2026-04-17 | low     | E1     | medium    | -            | https://github.com/getzep/graphiti/tree/main/examples/podcast. Pattern for piping media-analysis transcripts into a grap |
+| Shipping REST server with zero auth as default           | anti-pattern | defer    | 2026-04-17 | medium  | E0     | high      | -            | server/ exposes DELETE /clear, DELETE /group/{group_id}, POST /messages etc. with no auth middleware. Wrap-in-your-own-g |
+| Claim pluggable LLMs without naming the floor            | anti-pattern | defer    | 2026-04-17 | medium  | E0     | medium    | -            | Graphiti does this right (names Structured Output floor), but framing is a warning: pluggability claims always hide a fl |
+| Examples that assume infrastructure is pre-running       | anti-pattern | defer    | 2026-04-17 | low     | E0     | medium    | -            | All 9 examples require Neo4j or FalkorDB running before quickstart.py works. No Hello World in 5 minutes path. Home skil |
+| Single 2053-line mock test file                          | anti-pattern | defer    | 2026-04-17 | low     | E0     | low       | -            | tests/test_graphiti_mock.py is 2053 LOC. Watchlist item. When home test files grow past a few hundred lines, split them  |
 
 <a id="hkuds-cli-anything-repo"></a>
 

@@ -10,14 +10,16 @@
  *   1. SYNC      - parse markdown reviews -> append new entries to reviews.jsonl
  *                  (transition period; once all callers use write-review-record.ts,
  *                   this step becomes a no-op)
- *   2. ARCHIVE   - if reviews.jsonl > threshold entries, archive oldest to
- *                  reviews-archive.jsonl (JSONL append, atomic)
- *   3. VALIDATE  - run check-review-archive.js against JSONL state;
+ *   2. VALIDATE  - run check-review-archive.js against JSONL state;
  *                  if issues found -> structured output, exit non-zero
- *   3b. RECONCILE - dedup review-metrics.jsonl & reconcile round counts
+ *   2b. RECONCILE-COMMITS - find PRs with fix commits but no JSONL records
+ *   3. RECONCILE - dedup review-metrics.jsonl & reconcile round counts
  *                   from reviews.jsonl (source of truth). Auto-fixes
  *                   cross-database drift detected in VALIDATE.
  *   4. RENDER    - run render-reviews-to-md.ts to regenerate markdown view
+ *
+ * NOTE: ARCHIVE step removed (2026-04-17). reviews.jsonl is now the single
+ * canonical store. reviews-archive.jsonl was merged into reviews.jsonl.
  *
  * Exit codes:
  *   0 = All steps succeeded, no issues
@@ -40,15 +42,15 @@ const { execFileSync } = require("node:child_process");
 
 const ROOT = pathMod.join(__dirname, "..");
 const REVIEWS_JSONL = pathMod.join(ROOT, ".claude", "state", "reviews.jsonl");
+// NOTE: reviews-archive.jsonl was merged into reviews.jsonl (2026-04-17).
+// This constant is retained only for the SYNC step's backward-compat dedup.
 const REVIEWS_ARCHIVE_JSONL = pathMod.join(ROOT, ".claude", "state", "reviews-archive.jsonl");
 const REVIEW_METRICS_JSONL = pathMod.join(ROOT, ".claude", "state", "review-metrics.jsonl");
 const LEARNINGS_LOG = pathMod.join(ROOT, "docs", "AI_REVIEW_LEARNINGS_LOG.md");
 const RENDER_SCRIPT = pathMod.join(ROOT, "scripts", "reviews", "render-reviews-to-md.ts");
 const CHECK_ARCHIVE_SCRIPT = pathMod.join(ROOT, "scripts", "check-review-archive.js");
 
-// Thresholds
-const ARCHIVE_THRESHOLD = 30; // archive when > 30 entries
-const KEEP_NEWEST = 20; // keep 20 newest after archiving
+// Archive thresholds removed — single-file store since 2026-04-17
 
 // ── Load dependencies with guarded imports ────────────────────────────────
 
@@ -86,6 +88,7 @@ const cliArgs = new Set(process.argv.slice(2));
 const syncOnly = cliArgs.has("--sync-only");
 const validateOnly = cliArgs.has("--validate");
 const reconcileOnly = cliArgs.has("--reconcile");
+const reconcileCommitsOnly = cliArgs.has("--reconcile-commits");
 const renderOnly = cliArgs.has("--render");
 const dryRun = cliArgs.has("--dry-run");
 
@@ -339,7 +342,7 @@ function parseMarkdownReviews(content) {
   //   2. Empty placeholders: zero everything and no patterns/learnings.
   //      These are markdown header-only entries with no real review content.
   return reviews.filter((r) => {
-    // Coerce to numbers so undefined/NaN fields don't poison arithmetic.
+    // Coerce to numbers so undefined / Number.NaN fields don't poison arithmetic.
     // Parser can legitimately omit fields on malformed or partial entries.
     const total = Number(r.total ?? 0) || 0;
     const fixed = Number(r.fixed ?? 0) || 0;
@@ -475,120 +478,150 @@ function runSync() {
   return { synced: missing.length, total: existingIds.size + missing.length };
 }
 
-// ── STEP 2: ARCHIVE ───────────────────────────────────────────────────────
+// ── STEP 2b: RECONCILE-COMMITS helpers ────────────────────────────────────
+
+const RECONCILE_CANONICAL_ID = /^review-pr(\d+)-r(\d+)$/i;
+const RECONCILE_TITLE_ROUND = /R(\d+)/i;
+
+function toFinitePositiveInt(v) {
+  if (typeof v === "number" && Number.isFinite(v) && v > 0) return v;
+  if (typeof v === "string") {
+    const n = Number.parseInt(v, 10);
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  return null;
+}
+
+// Narrow an id value to a safe string for pattern matching. Returns "" for
+// null/undefined/objects to avoid Object's default "[object Object]" string
+// leaking into regex matches (SonarCloud R2 #4 propagation).
+function idToSafeString(v) {
+  if (typeof v === "string") return v;
+  if (typeof v === "number" && Number.isFinite(v)) return String(v);
+  return "";
+}
+
+function matchCanonicalId(id) {
+  const m = RECONCILE_CANONICAL_ID.exec(idToSafeString(id));
+  return m ? `${m[1]}-${m[2]}` : null;
+}
+
+function matchTitleRound(title) {
+  const m = RECONCILE_TITLE_ROUND.exec(title);
+  if (!m) return null;
+  const r = Number.parseInt(m[1], 10);
+  return Number.isFinite(r) && r > 0 ? r : null;
+}
+
+// Build the Set of "{pr}-{round}" keys from reviews.jsonl records. Qodo+Gemini
+// R1 #10: supports canonical id precedence, int coercion on legacy string-
+// stored fields, and title fallback. Extracted from runReconcileCommits to
+// reduce CC and make canonical-ID precedence unit-testable.
+function buildJsonlKeys(records) {
+  const keys = new Set();
+  for (const rec of records) {
+    const idKey = matchCanonicalId(rec.id);
+    if (idKey) {
+      keys.add(idKey);
+      continue;
+    }
+    const pr = toFinitePositiveInt(rec.pr);
+    const round = toFinitePositiveInt(rec.round);
+    if (pr !== null && round !== null) {
+      keys.add(`${pr}-${round}`);
+      continue;
+    }
+    if (pr !== null && typeof rec.title === "string") {
+      const roundFromTitle = matchTitleRound(rec.title);
+      if (roundFromTitle !== null) keys.add(`${pr}-${roundFromTitle}`);
+    }
+  }
+  return keys;
+}
+
+// ── STEP 2b: RECONCILE-COMMITS ────────────────────────────────────────────
 
 /**
- * ARCHIVE step: if reviews.jsonl > ARCHIVE_THRESHOLD entries, move oldest
- * to reviews-archive.jsonl, keeping KEEP_NEWEST newest entries.
+ * RECONCILE-COMMITS: find PRs with fix commits but no JSONL records.
+ * Scans git log for "fix: PR #N R" patterns and cross-references
+ * against reviews.jsonl to detect missing review records.
  *
- * Atomic archive protocol:
- *   1. Write archive entries to temp file
- *   2. Write kept entries to reviews.jsonl (atomic)
- *   3. If step 2 fails, delete temp and abort
- *   4. Append temp contents to reviews-archive.jsonl
- *   5. Delete temp
+ * Uses execFileSync (not exec) with hardcoded args — no shell injection risk.
  *
- * Returns { archived: number, remaining: number }.
+ * Returns { fixCommits: number, matched: number, gaps: string[] }.
  */
-function runArchive() {
-  logStep("ARCHIVE", "Checking archive threshold...");
-
-  const records = loadReviews();
-  logStep("ARCHIVE", `Current entries: ${records.length}, threshold: ${ARCHIVE_THRESHOLD}`);
-
-  if (records.length <= ARCHIVE_THRESHOLD) {
-    logStep("ARCHIVE", "Below threshold - no archiving needed");
-    return { archived: 0, remaining: records.length };
-  }
-
-  // Sort by date (primary) then ID (secondary) for correct archival order
-  const ordered = [...records].sort((a, b) => {
-    const aDate = typeof a.date === "string" ? Date.parse(a.date) : Number.NaN;
-    const bDate = typeof b.date === "string" ? Date.parse(b.date) : Number.NaN;
-    // Undated records sort as OLDEST (archive first) via NEGATIVE_INFINITY
-    const aSortDate = Number.isFinite(aDate) ? aDate : Number.NEGATIVE_INFINITY;
-    const bSortDate = Number.isFinite(bDate) ? bDate : Number.NEGATIVE_INFINITY;
-    if (aSortDate !== bSortDate) return aSortDate - bSortDate;
-    const aId = typeof a.id === "number" && Number.isFinite(a.id) ? a.id : Number.NaN;
-    const bId = typeof b.id === "number" && Number.isFinite(b.id) ? b.id : Number.NaN;
-    if (Number.isFinite(aId) && Number.isFinite(bId) && aId !== bId) return aId - bId;
-    return String(a.id ?? "").localeCompare(String(b.id ?? ""));
-  });
-  const toKeep = ordered.slice(-KEEP_NEWEST);
-  const toArchive = ordered.slice(0, ordered.length - KEEP_NEWEST);
-
-  logStep("ARCHIVE", `Archiving ${toArchive.length} entries, keeping ${toKeep.length} newest`);
-
-  if (dryRun) {
-    logStep("ARCHIVE", `DRY RUN: Would archive ${toArchive.length} entries`);
-    return { archived: toArchive.length, remaining: toKeep.length };
-  }
-
-  // Security checks
-  if (!isSafeToWrite(REVIEWS_JSONL)) {
-    throw new Error("Refusing to write: symlink detected at reviews.jsonl");
-  }
-  if (!isSafeToWrite(REVIEWS_ARCHIVE_JSONL)) {
-    throw new Error("Refusing to write: symlink detected at reviews-archive.jsonl");
-  }
-
-  const archiveLines = toArchive.map((r) => JSON.stringify(r)).join("\n") + "\n";
-  const keepLines = toKeep.map((r) => JSON.stringify(r)).join("\n") + "\n";
-  const tmpArchive = REVIEWS_ARCHIVE_JSONL + ".tmp." + process.pid;
-
-  // Step 1: Write archive entries to temp file (durable staging artifact)
-  if (!isSafeToWrite(tmpArchive)) {
-    throw new Error("Refusing to write: symlink detected at archive temp path");
-  }
-  safeWriteFileSync(tmpArchive, archiveLines, "utf8");
-
-  // Step 2: Atomically update reviews.jsonl with kept entries only
+// Run the git log scan for fix commits; returns parsed output or null on error.
+// SonarCloud S4036 PATH hotspot reviewed 2026-04-18 and marked SAFE:
+// hardcoded binary "git", array args, PATH hijack requires prior compromise.
+function fetchFixCommitLog() {
   try {
-    safeAtomicWriteSync(REVIEWS_JSONL, keepLines, { encoding: "utf8" });
-  } catch (writeErr) {
-    // Rollback: delete temp archive file since reviews.jsonl wasn't modified
-    try {
-      fs.rmSync(tmpArchive, { force: true });
-    } catch {
-      /* best-effort cleanup */
-    }
-    throw new Error(`Failed to update reviews.jsonl during archive: ${sanitizeError(writeErr)}`);
-  }
-
-  // Step 3: Read temp file back and append to reviews-archive.jsonl
-  // Reading from temp (not in-memory) ensures crash recovery: if process died
-  // between step 2 and step 3, temp file is the recovery artifact.
-  let stagedContent;
-  try {
-    stagedContent = fs.readFileSync(tmpArchive, "utf8");
-  } catch (readErr) {
-    // Temp file lost between step 2 and step 3 — data loss scenario
-    throw new Error(
-      `CRITICAL: reviews.jsonl already trimmed but temp archive unreadable. ` +
-        `Recovery: check reviews-archive.jsonl.tmp.${process.pid} — ${sanitizeError(readErr)}`
+    // Use --perl-regexp with alternation to match both fix prefixes:
+    //   "fix: PR #N R..."             (unscoped)
+    //   "fix(pr-review): PR #N R..."  (scoped)
+    // Qodo R1 #7: previous --grep=fix: PR # missed scoped commits.
+    return execFileSync(
+      "git",
+      // String.raw avoids JS-level escape stacking on the perl-regexp source;
+      // the pattern sent to git is literally: ^fix(\(pr-review\))?: PR #
+      ["log", "--all", "--oneline", "--perl-regexp", String.raw`--grep=^fix(\(pr-review\))?: PR #`],
+      {
+        cwd: ROOT,
+        encoding: "utf8",
+        timeout: 30000,
+        maxBuffer: 5 * 1024 * 1024,
+      }
     );
+  } catch (err) {
+    if (err?.stdout) return err.stdout.toString();
+    logStep("RECONCILE-COMMITS", `git log failed: ${sanitizeError(err)}`);
+    return null;
+  }
+}
+
+// Parse the git-log oneline output into a Map of "{pr}-{round}" -> short sha.
+// Qodo R3 #8: extract the SHA via a capture group instead of line.slice(0, 8)
+// so varying Git abbreviation lengths (--abbrev-commit can emit 7-40 chars)
+// and any leading whitespace don't contaminate the stored sha.
+function parseCommitPRs(gitOutput) {
+  const commitPRs = new Map();
+  for (const line of gitOutput.trim().split("\n").filter(Boolean)) {
+    const m = /^([0-9a-f]{7,40})\s+.*PR #(\d+)\s+R(\d+)/i.exec(line);
+    if (!m) continue;
+    const key = `${m[2]}-${m[3]}`;
+    if (!commitPRs.has(key)) commitPRs.set(key, m[1]);
+  }
+  return commitPRs;
+}
+
+function runReconcileCommits() {
+  logStep("RECONCILE-COMMITS", "Scanning git log for review fix commits...");
+
+  const gitOutput = fetchFixCommitLog();
+  if (gitOutput === null) return { fixCommits: 0, matched: 0, gaps: [] };
+
+  const commitPRs = parseCommitPRs(gitOutput);
+  if (commitPRs.size === 0) {
+    logStep("RECONCILE-COMMITS", "No fix commits found");
+    return { fixCommits: 0, matched: 0, gaps: [] };
   }
 
-  try {
-    safeAppendFileSync(REVIEWS_ARCHIVE_JSONL, stagedContent);
-  } catch (appendErr) {
-    // FATAL: reviews.jsonl already trimmed, archive append failed.
-    // Leave temp file in place as crash-recovery artifact.
-    throw new Error(
-      `CRITICAL: Archive append failed after reviews.jsonl was trimmed. ` +
-        `Recovery artifact preserved at reviews-archive.jsonl.tmp.${process.pid} — ${sanitizeError(appendErr)}`
-    );
+  const jsonlKeys = buildJsonlKeys(loadReviews());
+  const gaps = [];
+  let matched = 0;
+  for (const [key] of commitPRs) {
+    if (jsonlKeys.has(key)) matched++;
+    else gaps.push(`PR #${key.replace("-", " R")}`);
   }
 
-  // Step 4: Clean up temp only AFTER archive append succeeded
-  try {
-    fs.rmSync(tmpArchive, { force: true });
-  } catch {
-    /* best-effort cleanup */
+  logStep(
+    "RECONCILE-COMMITS",
+    `${commitPRs.size} fix commits, ${matched} have JSONL records, ${gaps.length} gaps`
+  );
+  if (gaps.length > 0) {
+    logStep("RECONCILE-COMMITS", `Missing records for: ${gaps.slice(0, 10).join(", ")}`);
   }
 
-  logStep("ARCHIVE", `Archived ${toArchive.length} entries to reviews-archive.jsonl`);
-  return { archived: toArchive.length, remaining: toKeep.length };
+  return { fixCommits: commitPRs.size, matched, gaps };
 }
 
 // ── STEP 3: VALIDATE ──────────────────────────────────────────────────────
@@ -732,8 +765,28 @@ function coerceInt(v) {
   return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0;
 }
 
+// Legacy records whose disposition data is too broken for heuristic recovery.
+// Per session #286 Q4 review: diff between stated total and disposition sum
+// exceeds 10 items AND commit lookup cannot reliably reconstruct counts.
+// These records remain counted (loadReviews still sees them) but skip the
+// integrity check. Stored as strings so `String(rec.id)` normalizes numeric
+// and string IDs to a single lookup surface.
+const KNOWN_DISPOSITION_GAPS = new Set([
+  "181",
+  "194",
+  "316",
+  "317",
+  "321",
+  "324",
+  "336",
+  "358",
+  "383",
+]);
+
 function checkDisposition(rec) {
   if (!rec || typeof rec !== "object") return null;
+  if (KNOWN_DISPOSITION_GAPS.has(String(rec.id))) return null;
+
   const total = coerceInt(rec.total);
   if (total <= 0) return null;
 
@@ -751,8 +804,19 @@ function checkDisposition(rec) {
   };
 
   if (dispositionSum === 0) return base;
-  if (dispositionSum !== total) return { ...base, reason: "sum_mismatch" };
-  return null;
+  if (dispositionSum === total) return null;
+
+  // Accept double-classification: a single reviewable item can appear in both
+  // `fixed` and `rejected` counts across rounds (same SonarCloud finding is
+  // rejected in R1, then fixed in R2 via a code change). When that overlap
+  // exists, dispositionSum > total by the overlap size. Gemini R1 #13: use
+  // `fixed === total` rather than `fixed >= total` — `fixed > total` is itself
+  // a data error (more items fixed than reviewed) and should surface rather
+  // than be absorbed by the double-classification bypass. Deferred excluded
+  // because deferred items are distinct dispositions (not double-counted).
+  if (dispositionSum > total && fixed === total && rejected > 0 && deferred === 0) return null;
+
+  return { ...base, reason: "sum_mismatch" };
 }
 
 function validateDispositions(records) {
@@ -1175,6 +1239,11 @@ function main() {
       return;
     }
 
+    if (reconcileCommitsOnly) {
+      runReconcileCommits();
+      return;
+    }
+
     if (reconcileOnly) {
       runReconcile();
       return;
@@ -1190,13 +1259,13 @@ function main() {
     // Step 1: SYNC
     const syncResult = runSync();
 
-    // Step 2: ARCHIVE
-    const archiveResult = runArchive();
-
-    // Step 3: VALIDATE
+    // Step 2: VALIDATE
     const validateResult = runValidate();
 
-    // Step 3b: RECONCILE (fix cross-db drift detected by VALIDATE)
+    // Step 2b: RECONCILE-COMMITS (find fix commits without JSONL records)
+    const commitResult = runReconcileCommits();
+
+    // Step 3: RECONCILE (fix cross-db drift detected by VALIDATE)
     const reconcileResult = runReconcile();
 
     // Step 4: RENDER
@@ -1206,11 +1275,15 @@ function main() {
     const elapsed = Date.now() - startTime;
     log(`Lifecycle complete in ${elapsed}ms`);
     log(`  SYNC:     ${syncResult.synced} new entries (${syncResult.total} total)`);
-    log(`  ARCHIVE:  ${archiveResult.archived} archived (${archiveResult.remaining} remaining)`);
     const validateMsg = validateResult.valid
       ? "PASS"
       : "FAIL (" + validateResult.findings.length + " findings)";
     log(`  VALIDATE: ${validateMsg}`);
+    const commitMsg =
+      commitResult.gaps.length > 0
+        ? `${commitResult.gaps.length} gap(s) — fix commits without JSONL records`
+        : `OK (${commitResult.matched}/${commitResult.fixCommits} matched)`;
+    log(`  RECONCILE-COMMITS: ${commitMsg}`);
     const reconcileMsg =
       reconcileResult.deduped + reconcileResult.reconciled + reconcileResult.added > 0
         ? `${reconcileResult.deduped} deduped, ${reconcileResult.reconciled} reconciled, ${reconcileResult.added} added`
@@ -1241,7 +1314,7 @@ module.exports = {
   loadExistingIds,
   buildCompositeKeys,
   runSync,
-  runArchive,
+  runReconcileCommits,
   runValidate,
   runRender,
   // New validation functions (Session #218)
@@ -1249,7 +1322,4 @@ module.exports = {
   validateDispositions,
   // Reconciliation (Session #238)
   runReconcile,
-  // Constants for testing
-  ARCHIVE_THRESHOLD,
-  KEEP_NEWEST,
 };

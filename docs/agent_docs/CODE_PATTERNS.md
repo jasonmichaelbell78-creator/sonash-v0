@@ -1,6 +1,6 @@
 # Code Review Patterns Reference
 
-**Document Version:** 4.2 **Source:** Distilled from 347 AI code reviews **Last
+**Document Version:** 4.4 **Source:** Distilled from 347 AI code reviews **Last
 Updated:** 2026-02-26
 
 ---
@@ -1241,6 +1241,126 @@ Rejected. — recurring pattern from 3 reviews (#65)
 
 **Source:** Consolidation #36 (Reviews #64-#rev-65)
 
+### Replaceall Migration
+
+🟡 **Rule:** Replaceall Migration — recurring pattern from 5 reviews (#413,
+#421, #427, #433, #408)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Mapfn Passes Element
+
+🟡 **Rule:** Mapfn Passes Element — recurring pattern from 4 reviews (#415,
+#424, #430, #397)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Array Never Pass Functions
+
+🟡 **Rule:** Array Never Pass Functions — recurring pattern from 4 reviews
+(#415, #424, #430, #397)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Pattern Checker Cant Detect Rmsync Within Nested Trycatch
+
+🟡 **Rule:** Pattern Checker Cant Detect Rmsync Within Nested Trycatch —
+recurring pattern from 3 reviews (#422, #428, #402)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Isretrosectionend Logic Inversion Prheadingretestline
+
+🟡 **Rule:** Isretrosectionend Logic Inversion Prheadingretestline — recurring
+pattern from 3 reviews (#425, #431, #417)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Already Fixed Stale
+
+🟡 **Rule:** Already Fixed Stale — recurring pattern from 3 reviews (#426, #432,
+#416)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Root Cause
+
+🟡 **Rule:** Root Cause — recurring pattern from 147 reviews (#44, #1, #10, #11,
+#12, #2, #3, #4, #5, #6, #7, #8, #9, #13, #24, #25, #26, #27, #28, #29, #30,
+#31, #32, #33, #34, #35, #36, #37, #38, #39, #40, #42, #43, #45, #46, #47, #48,
+#49, #50, #51, #52, #53, #54, #55, #56, #57, #58, #59, #60, #61, #62, #63, #452,
+#73, #74, #75, #76, #77, #78, #79, #81, #82, #87, #88, #89, #100, #98, #99,
+#137, #138, #139, #164, #165, #171, #142, #180, #192, #193, #194, #195, #196,
+#453, #197, #198, #199, #200, #201, #215, #216, #217, #218, #219, #221, #250,
+#251, #252, #253, #254, #255, #256, #257, #258, #259, #301, #260, #261, #262,
+#263, #264, #265, #266, #300, #267, #273, #274, #275, #276, #278, #279, #280,
+#281, #295, #296, #283, #284, #298, #299, #302, #303, #304, #305, #310, #311,
+#312, #313, #314, #315, #383, #444, #475, #476, #474, #353, #354, #480, #356,
+#357)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Trade Off
+
+🟡 **Rule:** Trade Off — recurring pattern from 3 reviews (#31, #32, #53)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Lesson
+
+🟡 **Rule:** Lesson — recurring pattern from 3 reviews (#79, #99, #358)
+
+**Source:** Consolidation #89 (Reviews #366-#rev-95)
+
+### Volatile State Tracking
+
+🟡 **Rule:** Volatile State Tracking — recurring pattern from 3 reviews (#70,
+#review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Reviews Jsonl Integrity
+
+🟡 **Rule:** Reviews Jsonl Integrity — recurring pattern from 3 reviews (#70,
+#review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Extraction Journal Normalize
+
+🟡 **Rule:** Extraction Journal Normalize — recurring pattern from 3 reviews
+(#70, #review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Skill Schema Consistency
+
+🟡 **Rule:** Skill Schema Consistency — recurring pattern from 3 reviews (#70,
+#review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Slug Algorithm Separator Preservation
+
+🟡 **Rule:** Slug Algorithm Separator Preservation — recurring pattern from 3
+reviews (#70, #review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Research Doc Schema Consistency
+
+🟡 **Rule:** Research Doc Schema Consistency — recurring pattern from 3 reviews
+(#71, #rev-68)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Research Design Feedback Vs Bugs
+
+🟡 **Rule:** Research Design Feedback Vs Bugs — recurring pattern from 3 reviews
+(#71, #rev-68)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
 ## Enforcement
 
 These patterns are automatically enforced by:
@@ -1262,6 +1382,8 @@ helpers.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.4     | 2026-04-18 | **CONSOLIDATION #90:** Auto-added 7 patterns (volatile-state-tracking, reviews-jsonl-integrity, extraction-journal-normalize, skill-schema-consistency, slug-algorithm-separator-preservation, research-doc-schema-consistency, research-design-feedback-vs-bugs). Source: Reviews #366-#rev-94.                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| 4.3     | 2026-04-17 | **CONSOLIDATION #89:** Auto-added 9 patterns (replaceall-migration, mapfn-passes-element, array-never-pass-functions, pattern-checker-cant-detect-rmsync-within-nested-trycatch-, isretrosectionend-logic-inversion-prheadingretestline, already-fixed-stale, root-cause, trade-off, lesson). Source: Reviews #366-#rev-95.                                                                                                                                                                                                                                                                                                                                                                                             |
 | 4.2     | 2026-04-03 | **CONSOLIDATION #36:** Auto-added 6 patterns (cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on, shell:true removal: `execfilesync` with `shell: true` unnecessary, creates, validategitdir tightened: reject filesystem roots, scope to cwd parent., gsd-check-update toctou: existssync + lstatsync → lstatsync + enoent catch., cc extraction: logresolveresult() helper reduced runresolvechecks cc 17→<15., gemini stale detection: 5 comments referenced pre-r1 commit. auto-rejected.). Source: Reviews #64-#rev-65.                                                                                                                                                                  |
 | 4.1     | 2026-03-09 | **CONSOLIDATION #2:** Auto-added 9 patterns (verify-doc-math-before-commit, clarify-ai-implementation-time, secret-packaging-denylist, yaml-boundary-detection, cache-counting-bug, restore-continueonerror, fp-1fp-4-test-assertions, global-settings-deterministic-testing, --tests-without-assertions-are-worse-than-no-tests-they-prov). Source: Reviews #452-#470.                                                                                                                                                                                                                                                                                                                                                 |
 | 4.0     | 2026-03-05 | **CONSOLIDATION #2:** Auto-added 52 patterns (suppress-internal-tooling-security-noise, add-security-checklist-to-ecosystem-audit-checker-template, when-adding-escapesanitization-functions, escapecell-propagation, efficiency, pre-push-hook, blocking-implement-cc-pre-push-check, cc-pre-push-check, critical-implement-cc-pre-push-check, ci-1 …(+42 more)). Source: Reviews #448-#458.                                                                                                                                                                                                                                                                                                                           |

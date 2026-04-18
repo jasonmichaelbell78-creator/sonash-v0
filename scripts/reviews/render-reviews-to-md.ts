@@ -399,7 +399,10 @@ export interface RenderResult {
 
 /**
  * Update the Document Health Monitoring metrics table in the assembled doc.
- * - Active reviews: canonical record count (unfiltered)
+ * - Active reviews: count of records rendered into the "## Active Reviews"
+ *   section (excludes retrospectives, which live in their own section).
+ *   Must align with the section-split predicate at renderAllRecords so that
+ *   check-review-archive's heading-count verification matches.
  * - Main log lines: rounded to nearest 10 to minimize diff churn
  *
  * Regexes are line-anchored (prevents mid-document matches) and whitespace-
@@ -409,10 +412,10 @@ export interface RenderResult {
  *
  * Bounded inputs (single-line table cells), no ReDoS risk.
  */
-function updateDocumentHealthMetrics(doc: string, totalRecordCount: number): string {
+function updateDocumentHealthMetrics(doc: string, activeReviewCount: number): string {
   let updated = doc.replace(
     /^(\|\s*Active reviews\s*\|\s*)~?\d+(\s*\|)/m,
-    `$1${totalRecordCount}$2`
+    `$1${activeReviewCount}$2`
   );
   const lineCount = updated.split("\n").length;
   // Round to nearest 10 to keep diffs minimal across runs that don't change content
@@ -488,11 +491,12 @@ export function renderReviews(
   const rawRecords = readJsonl(inputPath, { safe: true, quiet: true });
   let records = parseRecords(rawRecords);
 
-  // Snapshot the unfiltered count — the Document Health "Active reviews" metric
-  // must reflect the canonical dataset size, not a filtered subset. Computing
-  // before filters prevents silent metric drift when --filter-pr/--last run
-  // against the canonical output path.
-  const totalRecordCount = records.length;
+  // Snapshot the unfiltered count of records that render into the
+  // "## Active Reviews" section — uses the same predicate as the split at
+  // the section boundary (retrospectives render into a separate section).
+  // Computing before filters prevents silent metric drift when
+  // --filter-pr/--last run against the canonical output path.
+  const activeReviewCount = records.filter((r) => r.type !== "retrospective").length;
 
   // Apply filters
   if (options?.filterPr != null) {
@@ -534,7 +538,7 @@ export function renderReviews(
   // misrepresent document health.
   const filtersActive = options?.filterPr != null || options?.lastN != null;
   if (!filtersActive) {
-    fullDocument = updateDocumentHealthMetrics(fullDocument, totalRecordCount);
+    fullDocument = updateDocumentHealthMetrics(fullDocument, activeReviewCount);
   }
 
   // Ensure output directory exists

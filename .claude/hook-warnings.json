@@ -4,32 +4,12 @@
       "hook": "pre-commit",
       "type": "pr-creep",
       "severity": "info",
-      "message": "Branch has >=10 commits  create PR soon",
+      "message": "Branch has >=10 commits — create PR soon",
       "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-17T10:32:33.384Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 0
-    },
-    {
-      "hook": "session-start",
-      "type": "tdms-s0",
-      "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-17T11:43:18.355Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 0
-    },
-    {
-      "hook": "pre-push",
-      "type": "audit",
-      "severity": "warning",
-      "message": "npm audit found security vulnerabilities",
-      "action": "npm audit",
-      "timestamp": "2026-04-17T18:28:40.484Z",
-      "occurrences": 1,
-      "occurrences_since_ack": 0
+      "timestamp": "2026-04-18T19:20:25.262Z",
+      "occurrences": 4,
+      "occurrences_since_ack": 1,
+      "count": "10"
     }
-  ],
-  "lastCleared": "2026-04-17T20:38:17.014Z"
+  ]
 }
