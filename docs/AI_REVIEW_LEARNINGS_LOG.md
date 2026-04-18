@@ -1457,8 +1457,8 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~19340 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 559    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~19370 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 560    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -15482,6 +15482,49 @@ deduplicated, non-overlapping ranges):
   avoid false GREEN grades.
 - generateReviewId should accept numeric strings (CLI inputs) — toPositiveInt
   helper covers both native numbers and string inputs.
+
+---
+
+### Review review-pr517-r3: PR #517 R3 — Qodo Compliance + Suggestions (no new SonarCloud issues) (2026-04-18)
+
+**Date:** 2026-04-18 | **PR:** #517 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 3     | 3       |
+
+**Patterns:**
+
+- sandbox-path-filter-before-persisting-state
+- narrow-type-before-coerce-to-avoid-object-collisions
+- isInteger-over-trunc-for-positive-int-validation
+- shallow-copy-over-in-place-record-mutation
+- capture-group-sha-parse-over-slice
+
+**Learnings:**
+
+- State files shared across commits should filter ephemeral sandbox paths
+  (.temp-test-\*) before persistence — test runs can leak developer-env paths
+  into committed JSON otherwise.
+- Qodo R3 reinforces R2 item: typeof narrow BEFORE coercing rawId prevents
+  object types from collapsing to [object Object] and hash-equaling into the
+  same dedup bucket (data loss).
+- Use Number.isInteger, not Math.trunc, for positive-int validation — the whole
+  point of the check is to reject non-integers, not silently round them.
+- Shallow-copy before field mutation keeps functions referentially transparent
+  even when the script terminates immediately after; cheap safety for future
+  refactors.
+- Commit SHA from git log oneline should be extracted via regex capture group,
+  not line.slice(0, 8), since --abbrev-commit can emit 7-40 chars.
+- SonarCloud QG duplication persists at ~8% despite R2 sonar.cpd.exclusions.
+  Either scan caching or pattern mismatch. R3 push should re-scan; if
+  persistent, escalate to code-level helper extraction or threshold raise.
 
 ## Key Patterns
 

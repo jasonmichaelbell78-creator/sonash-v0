@@ -46,10 +46,11 @@ const { safeParseLine } = require(
  * (backward compat for non-PR review records like retros).
  */
 // Coerce a value to a finite positive integer, or null. Accepts native
-// numbers and numeric strings (CLI inputs) but rejects floats, NaN, negative,
-// and other types. Qodo R2 #9.
+// integers and numeric strings (CLI inputs) but rejects floats, NaN, negative,
+// and other types. Qodo R2 #9 + R3 #5: floats MUST be rejected, not truncated,
+// to avoid silently generating ids like "review-pr5-r1" from round=1.7.
 function toPositiveInt(v: unknown): number | null {
-  if (typeof v === "number" && Number.isFinite(v) && v > 0) return Math.trunc(v);
+  if (typeof v === "number" && Number.isFinite(v) && v > 0 && Number.isInteger(v)) return v;
   if (typeof v === "string") {
     const n = Number.parseInt(v, 10);
     if (Number.isFinite(n) && n > 0) return n;

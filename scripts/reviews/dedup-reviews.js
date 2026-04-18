@@ -35,7 +35,7 @@ const { safeAtomicWriteSync } = require("../lib/safe-fs.js");
 const { refuseSymlinkWithParents } = require("../lib/security-helpers.js");
 
 const DRY_RUN = process.argv.includes("--dry-run");
-const PROJECT_ROOT = path.resolve(__dirname, "..", "..");
+const PROJECT_ROOT = path.resolve(__dirname, "..", ".."); // validatePathInDir bootstrap — constant path, all downstream fs ops use PROJECT_ROOT-joined paths
 const REVIEWS_PATH = path.join(PROJECT_ROOT, ".claude", "state", "reviews.jsonl");
 const BACKUP_PATH = `${REVIEWS_PATH}.bak`;
 
@@ -66,15 +66,18 @@ function groupById(entries) {
   const byId = new Map();
   for (const entry of entries) {
     const rawId = entry.record?.id;
-    // Qodo R2 #7: records with missing/empty ids must NOT be collapsed into
-    // a single "undefined" bucket (would cause unrelated records to be
-    // classified as duplicates and dropped). Give each missing-id record a
-    // unique synthetic key tied to its lineIndex so dedup treats them as
-    // distinct, and warn so the data can be repaired.
-    const id =
-      rawId === undefined || rawId === null || String(rawId).trim() === ""
-        ? `__missing_id__:${entry.lineIndex}`
-        : String(rawId);
+    // Qodo R3 #4: narrow rawId to string or finite number BEFORE coercing.
+    // Prior String(rawId) would stringify arbitrary objects to "[object Object]",
+    // which would then hash-equal each other and cause distinct records to
+    // collide into the same bucket (data loss via incorrect dedup).
+    let idString;
+    if (typeof rawId === "string") idString = rawId;
+    else if (typeof rawId === "number" && Number.isFinite(rawId)) idString = String(rawId);
+    else idString = "";
+    // Qodo R2 #7: records with missing/empty ids must NOT collapse into a
+    // single bucket. Assign a unique synthetic key tied to lineIndex so
+    // dedup treats them as distinct, and warn so the data can be repaired.
+    const id = idString.trim() === "" ? `__missing_id__:${entry.lineIndex}` : idString;
     if (id.startsWith("__missing_id__")) {
       console.warn(
         `[dedup] Record missing id at line ${entry.lineIndex + 1} — treating as unique (manual repair recommended)`
@@ -262,7 +265,7 @@ function writeBackup() {
   // in-depth, consistent with safeAtomicWriteSync guard below).
   refuseSymlinkWithParents(REVIEWS_PATH);
   refuseSymlinkWithParents(BACKUP_PATH);
-  fs.copyFileSync(REVIEWS_PATH, BACKUP_PATH);
+  fs.copyFileSync(REVIEWS_PATH, BACKUP_PATH); // refuseSymlinkWithParents guards above
   console.log(`[dedup] Backup: ${BACKUP_PATH}`);
 }
 
@@ -270,8 +273,14 @@ function serializeEntries(entries, toDrop, toRekey) {
   const outLines = [];
   for (const entry of entries) {
     if (toDrop.has(entry.lineIndex)) continue;
-    if (toRekey.has(entry.lineIndex)) entry.record.id = toRekey.get(entry.lineIndex);
-    outLines.push(JSON.stringify(entry.record));
+    // Qodo R3 #7: shallow-copy when re-keying instead of mutating entry.record.
+    // The script terminates immediately after write, but avoiding in-place
+    // mutation keeps the function referentially transparent and safe against
+    // future refactors that may reuse the entries array downstream.
+    const record = toRekey.has(entry.lineIndex)
+      ? { ...entry.record, id: toRekey.get(entry.lineIndex) }
+      : entry.record;
+    outLines.push(JSON.stringify(record));
   }
   return outLines;
 }

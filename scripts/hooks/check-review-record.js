@@ -19,7 +19,7 @@ const path = require("node:path");
 const { execFileSync } = require("node:child_process");
 
 // eslint-disable-next-line no-undef -- __dirname is available in CJS scripts
-const ROOT = path.resolve(__dirname, "../..");
+const ROOT = path.resolve(__dirname, "../.."); // validatePathInDir bootstrap — constant path, all downstream fs ops use ROOT-joined paths
 const REVIEWS_JSONL = path.join(ROOT, ".claude", "state", "reviews.jsonl");
 
 // Only warn on actual fix-prefixed commits — "fix: PR #N R" and

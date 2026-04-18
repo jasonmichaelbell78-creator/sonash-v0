@@ -342,7 +342,7 @@ function parseMarkdownReviews(content) {
   //   2. Empty placeholders: zero everything and no patterns/learnings.
   //      These are markdown header-only entries with no real review content.
   return reviews.filter((r) => {
-    // Coerce to numbers so undefined/NaN fields don't poison arithmetic.
+    // Coerce to numbers so undefined / Number.NaN fields don't poison arithmetic.
     // Parser can legitimately omit fields on malformed or partial entries.
     const total = Number(r.total ?? 0) || 0;
     const fixed = Number(r.fixed ?? 0) || 0;
@@ -579,14 +579,16 @@ function fetchFixCommitLog() {
 }
 
 // Parse the git-log oneline output into a Map of "{pr}-{round}" -> short sha.
+// Qodo R3 #8: extract the SHA via a capture group instead of line.slice(0, 8)
+// so varying Git abbreviation lengths (--abbrev-commit can emit 7-40 chars)
+// and any leading whitespace don't contaminate the stored sha.
 function parseCommitPRs(gitOutput) {
   const commitPRs = new Map();
   for (const line of gitOutput.trim().split("\n").filter(Boolean)) {
-    const match = /PR #(\d+)\s+R(\d+)/i.exec(line);
-    if (match) {
-      const key = `${match[1]}-${match[2]}`;
-      if (!commitPRs.has(key)) commitPRs.set(key, line.slice(0, 8));
-    }
+    const m = /^([0-9a-f]{7,40})\s+.*PR #(\d+)\s+R(\d+)/i.exec(line);
+    if (!m) continue;
+    const key = `${m[2]}-${m[3]}`;
+    if (!commitPRs.has(key)) commitPRs.set(key, m[1]);
   }
   return commitPRs;
 }

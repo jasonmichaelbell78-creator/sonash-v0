@@ -2618,8 +2618,15 @@ function main() {
 
   const { warnings, blocks } = applyGraduation(allViolations);
 
-  // DS-4: Persist warned files so alerts checker can read them
-  // Schema: { [file]: count } — alerts checker expects numeric counts (>=3 = hotspot)
+  // DS-4: Persist warned files so alerts checker can read them.
+  // Schema: { [file]: count } — alerts checker expects numeric counts (>=3 = hotspot).
+  // Qodo R3 #1: filter out ephemeral test-sandbox paths before persistence.
+  // Test harnesses create randomized .temp-test-*  dirs during compliance
+  // checks; those paths leak developer-environment info if committed and are
+  // not meaningful hotspots. Sandbox paths never need to survive past the
+  // current test run.
+  const SANDBOX_PATTERNS = [/(^|[\\/])\.temp-test[^\\/]*(?:[\\/]|$)/, /(^|[\\/])\.tmp[\\/]/];
+  const isSandboxPath = (p) => SANDBOX_PATTERNS.some((re) => re.test(p));
   if (warnings.length > 0) {
     let existing = {};
     try {
@@ -2627,12 +2634,18 @@ function main() {
     } catch {
       // No existing file or invalid JSON — start fresh
     }
-    // Migrate any legacy timestamp values to count=1
+    // Migrate any legacy timestamp values to count=1.
+    // Drop sandbox paths from existing too, in case a prior run recorded one.
     for (const [key, val] of Object.entries(existing)) {
+      if (isSandboxPath(key)) {
+        delete existing[key];
+        continue;
+      }
       if (typeof val !== "number") existing[key] = 1;
     }
     for (const w of warnings) {
-      if (w.file) existing[w.file] = (existing[w.file] || 0) + 1;
+      if (!w.file || isSandboxPath(w.file)) continue;
+      existing[w.file] = (existing[w.file] || 0) + 1;
     }
     saveWarnedFiles(existing);
   }
