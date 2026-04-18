@@ -1,23 +1,24 @@
 {
   "pr": 517,
   "round": 1,
-  "review_number": "TBD",
-  "source": "mixed",
+  "review_number": "review-pr517-r1",
+  "source": "sonarcloud+qodo+gemini+ci",
   "total": 23,
-  "fixed": 0,
+  "fixed": 20,
   "deferred": 0,
-  "rejected": 2,
+  "rejected": 3,
   "accepted_with_reason": 1,
-  "severity": { "critical": 3, "major": 9, "minor": 8, "trivial": 1 },
-  "completed_steps": [0, 1, 2, 3],
-  "status": "in_progress",
-  "started_at": "2026-04-18T18:45:00Z",
-  "pass_progress": {
-    "pass_1_mechanical": "pending",
-    "pass_2_bugs": "pending",
-    "pass_3_cc": "pending",
-    "pass_4_tests": "pending",
-    "pass_5_logging": "pending",
-    "pass_6_sonarcloud_review": "pending"
-  }
+  "severity": { "critical": 3, "major": 9, "minor": 8, "trivial": 3 },
+  "completed_steps": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+  "status": "complete",
+  "commit_shas": ["0dc52ffc", "600be6ca"],
+  "pre_existing_propagation_fixes": [
+    ".claude/hooks/post-todos-render.js — refuse-symlink (safeAppendFileSync adoption)",
+    "scripts/skills/analyze/self-audit.js — validate-path (inline comment + bootstrap note)",
+    "scripts/skills/synthesize/self-audit.js — lstat-symlink (lstatSync + isSymbolicLink guard)"
+  ],
+  "surfaced_during_fix": [
+    "PR #516 R2 gap surfaced by grep fix — backfilled inline as review-pr516-r2"
+  ],
+  "completed_at": "2026-04-18T19:30:00Z"
 }

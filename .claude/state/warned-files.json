@@ -1,1 +1,6 @@
-{}
+{
+  "scripts\\hooks\\check-review-record.js": 1,
+  "scripts\\review-lifecycle.js": 1,
+  "scripts\\skills\\analyze\\self-audit.js": 1,
+  "scripts\\skills\\synthesize\\self-audit.js": 1
+}

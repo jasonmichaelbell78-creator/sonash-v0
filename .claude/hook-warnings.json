@@ -1,14 +1,15 @@
 {
   "warnings": [
     {
-      "hook": "pre-push",
-      "type": "trigger",
-      "severity": "warning",
-      "message": "Skill/agent files modified",
-      "action": "Validate",
-      "timestamp": "2026-04-18T18:38:17.008Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 1
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "info",
+      "message": "Branch has >=10 commits — create PR soon",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-18T19:20:25.262Z",
+      "occurrences": 4,
+      "occurrences_since_ack": 1,
+      "count": "10"
     }
   ]
 }
