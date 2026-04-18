@@ -256,11 +256,35 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit|multiedit)$",
+        "matcher": "^(?i)write$",
         "hooks": [
           {
             "type": "command",
-            "if": "Write(.planning/todos.jsonl)|Edit(.planning/todos.jsonl)|MultiEdit(.planning/todos.jsonl)",
+            "if": "Write(.planning/todos.jsonl)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js $ARGUMENTS",
+            "statusMessage": "Re-rendering TODOS.md from todos.jsonl...",
+            "continueOnError": true
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)edit$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Edit(.planning/todos.jsonl)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js $ARGUMENTS",
+            "statusMessage": "Re-rendering TODOS.md from todos.jsonl...",
+            "continueOnError": true
+          }
+        ]
+      },
+      {
+        "matcher": "^(?i)multiedit$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "MultiEdit(.planning/todos.jsonl)",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js $ARGUMENTS",
             "statusMessage": "Re-rendering TODOS.md from todos.jsonl...",
             "continueOnError": true

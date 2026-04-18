@@ -366,6 +366,26 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#91)</summary>
+
+- **Date:** 2026-04-18
+- **Reviews consolidated:** #366-#review-pr517-r4
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#90)</summary>
 
 - **Date:** 2026-04-18
@@ -1457,7 +1477,7 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~19400 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~19420 | 1500      | Run `npm run reviews:archive -- --apply` |
 | Active reviews | 561    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History

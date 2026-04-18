@@ -1,0 +1,6 @@
+{"item":"src/*.rs module bodies (cache/core/css/html/js/session/url)","category":"source-code","reason":"Structure-only read in Phase 2; module-level behavior not extracted","user_decision":"skip","rationale":"Standard depth; bodies unnecessary for Creator/Engineer verdicts. Deep depth would cover."}
+{"item":".github/ISSUE_TEMPLATE / PULL_REQUEST_TEMPLATE","category":"governance","reason":"Not scanned","user_decision":"skip","rationale":"Governance already noted as absent via README/top-level scan; low additional signal."}
+{"item":"CHANGELOG / RELEASES notes","category":"history","reason":"Not fetched","user_decision":"skip","rationale":"Depth=1 clone; Deep depth with git log would cover."}
+{"item":"CD workflow (cd.yml) + per-OS build workflows","category":"ci-cd","reason":"Only ci.yml inspected in detail","user_decision":"skip","rationale":"Finding 'CI matrix + CD' already at S3; no decision hinges on CD body."}
+{"item":"GUI-mode specifics (src/gui.rs + feature-gated deps)","category":"source-code","reason":"Feature flag noted but gui.rs contents not read","user_decision":"skip","rationale":"Secondary surface; CLI is primary. Scoped out."}
+{"item":"tests/_data_/ fixtures","category":"test-fixtures","reason":"Directory noted, contents not enumerated","user_decision":"skip","rationale":"Pattern insight (colocated fixtures) captured without enumeration."}

@@ -1,0 +1,113 @@
+{
+  "slug": "y2z-monolith",
+  "source": "https://github.com/Y2Z/monolith",
+  "generated_at": "2026-04-18T22:00:00Z",
+  "patterns": [
+    {
+      "name": "Per-module test mirror",
+      "type": "pattern",
+      "description": "tests/<module>/ 1:1 mirrors src/<module>/ with colocated _data_/ fixtures. Removes the 'where does this test live?' decision.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["testing", "project-layout", "rust", "convention"],
+      "url": "https://github.com/Y2Z/monolith/tree/master/tests",
+      "finding_refs": ["f-test-01"]
+    },
+    {
+      "name": "Optional feature flag for secondary binary",
+      "type": "pattern",
+      "description": "Cargo.toml marks clap + directories deps as optional=true; Makefile build-gui target activates --features='gui'. Keeps default binary lean.",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "tags": ["build-system", "feature-flag", "rust"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/Cargo.toml",
+      "finding_refs": ["f-arch-02"]
+    },
+    {
+      "name": "Strict dependency pinning (=X.Y.Z)",
+      "type": "pattern",
+      "description": "Every direct dep uses = prefix, refusing caret/tilde auto-upgrade. Reproducibility over convenience. Candidate for SoNash meta-pipeline scripts (scripts/reviews, scripts/skills).",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["supply-chain", "dependency-management", "reproducibility"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/Cargo.toml",
+      "finding_refs": ["f-proc-02"]
+    },
+    {
+      "name": "Multi-channel distribution catalog",
+      "type": "workflow-pattern",
+      "description": "18 install channels documented inline in README, each as a one-line reproducible install. Treats packaging as a product dimension.",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["distribution", "packaging", "cli-tooling", "release-engineering"],
+      "url": "https://github.com/Y2Z/monolith#installation",
+      "finding_refs": ["f-doc-02"]
+    }
+  ],
+  "knowledge": [
+    {
+      "name": "Single-file archival as a content type",
+      "type": "knowledge",
+      "description": "Data-URL inlining of CSS/images/JS into one HTML5 document. Reference implementation for 'capture this article inside the journal' feature, when SoNash external-references storage decision surfaces.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["archival", "content-storage", "offline-first", "design-pattern"],
+      "url": "https://github.com/Y2Z/monolith",
+      "finding_refs": []
+    },
+    {
+      "name": "CLI + managed-service wrapper (Apify Actor)",
+      "type": "knowledge",
+      "description": "Same CLI wrapped as Apify Actor SaaS. Validates the 'deterministic worker + authenticated callable wrapper' pattern SoNash already uses (httpsCallable in front of Firestore logic).",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["architecture", "cli-pattern", "serverless", "wrapper-pattern"],
+      "url": "https://apify.com/snshn/monolith",
+      "finding_refs": []
+    },
+    {
+      "name": "CC0-1.0 public-domain licensing for tooling",
+      "type": "knowledge",
+      "description": "Zero-friction extract/fork permission. Informational for any future SoNash extract decision from this repo.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["licensing", "open-source"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/LICENSE",
+      "finding_refs": ["f-proc-03"]
+    }
+  ],
+  "content": [],
+  "anti_patterns": [
+    {
+      "name": "Pinning philosophy contradicted by Dockerfile",
+      "type": "anti-pattern",
+      "description": "Cargo.toml pins every dep with =X.Y.Z, but Dockerfile fetches the latest release via unpinned curl to api.github.com/releases/latest. Reproducibility claim broken at the container layer. Lesson: supply-chain discipline must be uniform across artifacts, not per-file.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["supply-chain", "docker", "anti-pattern", "inconsistency"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/Dockerfile",
+      "finding_refs": ["f-sec-01"]
+    },
+    {
+      "name": "Mono-README without SECURITY.md",
+      "type": "anti-pattern",
+      "description": "Tool that fetches arbitrary web content ships zero vulnerability-disclosure channel. 15k stars × arbitrary URL input = attack surface; no SECURITY.md means no coordinated disclosure path. Lesson: SECURITY.md earns its cost at ~1k stars, not at 100k.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["security", "governance", "documentation", "anti-pattern"],
+      "url": "https://github.com/Y2Z/monolith",
+      "finding_refs": ["f-doc-01"]
+    }
+  ],
+  "related_repos": [],
+  "cross_repo_connections": []
+}

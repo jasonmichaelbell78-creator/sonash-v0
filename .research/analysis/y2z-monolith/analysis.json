@@ -1,0 +1,186 @@
+{
+  "id": "815c3cba-dd51-4bfd-b556-33cf4edb75bb",
+  "schema_version": "3.0",
+  "source_type": "repo",
+  "source": "https://github.com/Y2Z/monolith",
+  "slug": "y2z-monolith",
+  "title": "Y2Z/monolith — CLI for saving web pages as a single HTML file",
+  "analyzed_at": "2026-04-18T22:00:00Z",
+  "depth": "standard",
+  "tags": [
+    "archival",
+    "offline-first",
+    "cli",
+    "supply-chain",
+    "distribution-model",
+    "documentation",
+    "governance",
+    "testing",
+    "rust",
+    "packaging",
+    "cas-relevant",
+    "content-storage",
+    "tool-demo"
+  ],
+  "scoring": {
+    "quality_band": "Healthy",
+    "quality_score": 83,
+    "personal_fit_band": "Needs Work",
+    "personal_fit_score": 35,
+    "classification": "park-for-later"
+  },
+  "summary": "Rust CLI (15k★, CC0-1.0) that bundles any web page into a single HTML file by inlining CSS/images/JS as data URLs. 18 install channels document packaging as a product dimension. Strict =X.Y.Z dep pinning signals supply-chain discipline but the Dockerfile contradicts it with unpinned releases/latest curl. Direct adoption path is zero (Rust vs Node/Firebase stack); reference value is high for archival file-format and distribution-catalog patterns.",
+  "creator_view": "creator-view.md",
+  "candidates": [
+    {
+      "name": "Per-module test mirror",
+      "type": "pattern",
+      "description": "tests/<module>/ 1:1 mirrors src/<module>/ with colocated _data_/ fixtures.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["testing", "convention", "project-layout", "rust"],
+      "url": "https://github.com/Y2Z/monolith/tree/master/tests",
+      "finding_refs": ["f-test-01"]
+    },
+    {
+      "name": "Optional feature flag for secondary binary",
+      "type": "pattern",
+      "description": "Cargo.toml optional deps + Makefile --features='gui' target keeps default binary lean.",
+      "novelty": "low",
+      "effort": "E1",
+      "relevance": "low",
+      "tags": ["build-system", "feature-flags", "rust"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/Cargo.toml",
+      "finding_refs": ["f-arch-02"]
+    },
+    {
+      "name": "Strict dependency pinning (=X.Y.Z)",
+      "type": "pattern",
+      "description": "Every direct dep uses = prefix. Candidate for SoNash meta-pipeline scripts.",
+      "novelty": "medium",
+      "effort": "E1",
+      "relevance": "medium",
+      "tags": ["supply-chain", "version-pinning", "reproducibility", "rust"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/Cargo.toml",
+      "finding_refs": ["f-proc-02"]
+    },
+    {
+      "name": "Multi-channel distribution catalog",
+      "type": "workflow-pattern",
+      "description": "18 install channels documented inline; packaging treated as a product dimension.",
+      "novelty": "high",
+      "effort": "E2",
+      "relevance": "medium",
+      "tags": ["distribution-model", "packaging", "cli", "release-workflow"],
+      "url": "https://github.com/Y2Z/monolith#installation",
+      "finding_refs": ["f-doc-02"]
+    },
+    {
+      "name": "Single-file archival as a content type",
+      "type": "knowledge",
+      "description": "Data-URL inlining of CSS/images/JS into one HTML5 document. Reference for SoNash 'archive this article' journal feature.",
+      "novelty": "high",
+      "effort": "E1",
+      "relevance": "high",
+      "tags": ["archival", "content-storage", "offline-first", "design-pattern", "cas-relevant"],
+      "url": "https://github.com/Y2Z/monolith",
+      "finding_refs": []
+    },
+    {
+      "name": "CLI + managed-service wrapper (Apify Actor)",
+      "type": "knowledge",
+      "description": "Same CLI wrapped as Apify Actor SaaS — validates httpsCallable-over-CLI pattern.",
+      "novelty": "low",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["cli-wrapping", "wrapper-pattern", "cli"],
+      "url": "https://apify.com/snshn/monolith",
+      "finding_refs": []
+    },
+    {
+      "name": "CC0-1.0 public-domain licensing for tooling",
+      "type": "knowledge",
+      "description": "Zero-friction extract/fork permission. Informational for any SoNash extract decision.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "low",
+      "tags": ["licensing", "open-source", "governance"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/LICENSE",
+      "finding_refs": ["f-proc-03"]
+    },
+    {
+      "name": "Pinning philosophy contradicted by Dockerfile",
+      "type": "anti-pattern",
+      "description": "Cargo pins everything with =X.Y.Z but Dockerfile curls releases/latest. Lesson: supply-chain discipline must be uniform across artifacts.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["supply-chain", "docker", "anti-pattern", "inconsistency"],
+      "url": "https://github.com/Y2Z/monolith/blob/master/Dockerfile",
+      "finding_refs": ["f-sec-01"]
+    },
+    {
+      "name": "Mono-README without SECURITY.md",
+      "type": "anti-pattern",
+      "description": "Tool fetching arbitrary web content ships zero vuln-disclosure path. Lesson: SECURITY.md earns its cost well before 15k stars.",
+      "novelty": "medium",
+      "effort": "E0",
+      "relevance": "medium",
+      "tags": ["governance", "documentation", "anti-pattern", "security"],
+      "url": "https://github.com/Y2Z/monolith",
+      "finding_refs": ["f-doc-01"]
+    }
+  ],
+  "last_synthesized_at": "2026-04-18T22:15:00Z",
+  "source_tier": "T1",
+  "metadata": {
+    "stars": 15009,
+    "language": "Rust",
+    "license": "CC0-1.0",
+    "last_push": "2026-02-05T18:44:04Z",
+    "archived": false,
+    "fork": false,
+    "topics": ["web", "http", "html", "download", "command-line"]
+  },
+  "dimensions": {
+    "security": {
+      "band": "Healthy",
+      "score": 75,
+      "findings": ["f-sec-01", "f-sec-02", "f-sec-03"]
+    },
+    "reliability": {
+      "band": "Excellent",
+      "score": 88,
+      "findings": ["f-test-01"]
+    },
+    "maintainability": {
+      "band": "Healthy",
+      "score": 80,
+      "findings": ["f-arch-01", "f-arch-02"]
+    },
+    "documentation": {
+      "band": "Healthy",
+      "score": 72,
+      "findings": ["f-doc-01", "f-doc-02"]
+    },
+    "process": {
+      "band": "Excellent",
+      "score": 90,
+      "findings": ["f-proc-01", "f-proc-02", "f-proc-03"]
+    },
+    "velocity": {
+      "band": "Excellent",
+      "score": 92,
+      "findings": ["f-vel-01"]
+    }
+  },
+  "absence_patterns": [
+    {"pattern": "no-security-md", "confidence": "high", "evidence": "no SECURITY.md at repo root"},
+    {"pattern": "no-contributing-md", "confidence": "high", "evidence": "no CONTRIBUTING.md at repo root"},
+    {"pattern": "no-code-of-conduct", "confidence": "high", "evidence": "no CODE_OF_CONDUCT.md at repo root"},
+    {"pattern": "mono-readme", "confidence": "high", "evidence": "no docs/ directory; all user docs in README.md (293 lines, 29 sections)"},
+    {"pattern": "unpinned-docker-release", "confidence": "high", "evidence": "Dockerfile fetches releases/latest via unpinned curl"}
+  ],
+  "adoption_verdict": "Trial — reference implementation and out-of-process CLI only. Do not adopt as SoNash dependency: Rust binary vs Node/Firebase stack is a hard blocker. Use as one-off script when building journal external-reference archival feature."
+}

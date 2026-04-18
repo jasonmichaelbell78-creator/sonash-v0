@@ -1,7 +1,8 @@
 # Implementation Plan: T28 Content Analysis System
 
-> **Status:** ⏳ **NEAR-COMPLETE** — 13 of 15 steps done (Sessions #267–#279).
-> Steps 14 (Audit) + 15 (E2E verification) remain.
+> **Status:** ✅ **COMPLETE** — 14 of 15 steps done; Step 14 (skill-audits)
+> rolls forward as tracker T38 per REMAINING_CAS_TASKS.md Step C protocol.
+> Closed Session #287 (2026-04-18) on Step B verification.
 >
 > Wave 1 (Sessions #267–#268): Steps 1, 2, 3, 12 — backups, unified Zod schema,
 > CONVENTIONS §13/14/16, .gitignore. Wave 2 (Session #269): Steps 4, 5 —
@@ -10,12 +11,13 @@
 > SQLite+FTS5 index infrastructure (`content-analysis.db`). Wave 4 (Sessions
 > #270–#278): Steps 9, 10, 11, 13 — `/analyze` router, directory migration,
 > `/recall` skill, synthesis merge (T29 sub-plan: closed Session #279, all 15
-> sub-steps complete). Wave 5 (PENDING): Steps 14 (skill-audit on all 7 CAS
-> skills — blocked tracker T38) + 15 (E2E `/recall` verification on fresh
-> source).
+> sub-steps complete). Wave 5: Step 15 (Session #287 — E2E `/recall`
+> verification on y2z-monolith: 6/6 handoff points, 4/4 recall queries,
+> `last_synthesized_at` mutation mechanism validated, SQLite rebuild OK). Step
+> 14 (skill-audits) → T38 follow-up (unblocked by this closure).
 >
-> **Current corpus:** 35 sources (26 repo, 6 website, 1 doc, 2 media), 343
-> extraction candidates, 280 tags, 17 opportunities ledger entries.
+> **Current corpus:** 37 sources (27 repo, 6 website, 1 doc, 2 media + 1
+> monolith added Session #287), 379 extraction candidates, 332 tags.
 >
 > See per-step ✅ markers below for evidence anchors.
 
@@ -623,7 +625,7 @@ on:** Steps 4, 5, 6, 7, 10 (needs all handlers + migrated data)
 
 ---
 
-## Step 14: Audit Checkpoint ⏳ PENDING (tracker T38 — `/skill-audit` on all 7 CAS skills: analyze, recall, repo-analysis, website-analysis, document-analysis, media-analysis, synthesize)
+## Step 14: Audit Checkpoint ⏳ DEFERRED TO T38 (tracker T38 — `/skill-audit` on all 7 CAS skills: analyze, recall, repo-analysis, website-analysis, document-analysis, media-analysis, synthesize). T28 closed Session #287 without this step per REMAINING_CAS_TASKS.md Step C protocol; T38 unblocked for follow-up.
 
 Run code-reviewer agent on all new and modified files:
 
@@ -649,7 +651,7 @@ previous steps
 
 ---
 
-## Step 15: End-to-End Verification ⏳ PENDING (functional `/recall` testing; full pipeline run on a fresh source; corpus integrity audit)
+## Step 15: End-to-End Verification ✅ COMPLETE (Session #287, 2026-04-18 — fresh source `y2z-monolith`, all 6 handoff points pass; 4/4 recall queries; `last_synthesized_at` mutation validated; SQLite rebuild OK 37 sources/379 extractions)
 
 Test the complete flow:
 
