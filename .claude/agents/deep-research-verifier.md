@@ -5,7 +5,7 @@ description: >-
   verification (filesystem for codebase claims, web search for external claims).
   Produces per-claim verdicts with 4-type taxonomy. Spawned by /deep-research
   during Phase 2.5 and Phase 3.9.
-tools: Read, Bash, Grep, Glob, WebSearch, WebFetch
+tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch
 disallowedTools: Agent
 skills: [sonash-context]
 model: sonnet

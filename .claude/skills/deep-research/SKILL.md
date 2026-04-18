@@ -252,14 +252,27 @@ VERIFIED, REFUTED, UNVERIFIABLE, CONFLICTED) with evidence.
 "+80% improvement") MUST cite its measurement methodology, benchmark, or source.
 Unsubstantiated % claims are flagged as UNVERIFIABLE by verifiers.
 
+**Persistence safety net (post-spawn — applies to verifier and Phase 3 / 3.96
+agents):** After each verifier or challenger agent returns, orchestrator MUST
+verify the expected `findings/<file>` (or `challenges/<file>`) is non-empty
+(non-zero bytes; substantive content beyond a header). If the agent failed to
+write OR returned a truncated `<result>`, orchestrator captures the agent's full
+return text and writes it to the expected path as a fallback. Never proceed
+silently — if both agent-write AND fallback are empty, re-spawn the agent (max 1
+retry) then escalate to user. This addresses the Windows 0-byte agent-write bug
+(CLAUDE.md Critical Rule 15) and response truncation observed during
+piece-1a-discovery-scan-jason-os.
+
 ---
 
 ## Phase 3: Mandatory Challenges
 
 Spawn `Agent(subagent_type="contrarian-challenger")` and
 `Agent(subagent_type="otb-challenger")` **in parallel**. Scale: L1-L2 (1+1), L3
-(2+2), L4 (3+3 + red team + pre-mortem). Agent definitions contain full
-methodology; REFERENCE.md Sections 8-9 provide supplementary templates.
+(2+2), L4 (3+3 + red team + pre-mortem). Each writes
+`challenges/contrarian-<N>.md` and `challenges/otb-<N>.md` respectively. **Apply
+Phase 2.5 persistence safety net** to every spawn. Agent definitions contain
+full methodology; REFERENCE.md Sections 8-9 provide supplementary templates.
 Cross-model + CL verification: REFERENCE.md Sections 13-14. Re-synthesize if
 more than 20% of claims changed. If `gemini` CLI unavailable or fails more than
 50% of calls, proceed with independent assessment. Record "cross-model:
@@ -306,8 +319,8 @@ Details: REFERENCE.md Section 22 (source list, dedup/actionability rules).
 
 Same pattern as Phase 2.5 — spawn
 `Agent(subagent_type="deep-research-verifier")`. Agent count: L1 (2), L2 (2), L3
-(3), L4 (4). Each writes `findings/GV<N>-<scope>.md`. Details: REFERENCE.md
-Section 22.
+(3), L4 (4). Each writes `findings/GV<N>-<scope>.md`. **Apply Phase 2.5
+persistence safety net** to every spawn. Details: REFERENCE.md Section 22.
 
 ---
 

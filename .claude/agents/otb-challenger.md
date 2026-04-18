@@ -4,7 +4,7 @@ description: >-
   Out-of-the-box challenger for deep-research pipeline. Identifies unconsidered
   approaches, adjacent-domain solutions, and alternative framings. Spawned by
   /deep-research during Phase 3.
-tools: Read, Grep, Glob, WebSearch
+tools: Read, Write, Grep, Glob, WebSearch
 disallowedTools: Agent
 skills: [sonash-context]
 model: sonnet
