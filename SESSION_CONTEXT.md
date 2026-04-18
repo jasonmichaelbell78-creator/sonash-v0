@@ -1,14 +1,14 @@
 # Session Context
 
-**Document Version**: 8.38 **Purpose**: Quick session-to-session handoff **When
+**Document Version**: 8.39 **Purpose**: Quick session-to-session handoff **When
 to Use**: **START OF EVERY SESSION** (read this first!) **Last Updated**:
-2026-04-18 (Session #286 — triage sweep + housecleaning + reviews data
-integrity. 3 commits: `3bf33c70` (triage: Dependabot path-dep, npm audit fix,
-reviews dedup, github-health refactor, SonarCloud reliability bugs), `326bdad2`
-(housecleaning: ESLint `.research/**` regression fix, 3 DEBT items — later 2
-rescinded), `307b3d17` (reviews: 61 backfilled records, 84 disposition
-violations resolved, checker improvements). Health B(89) → A(97). 2 new DEBT
-items (DEBT-45657 SonarCloud hotspots, DEBT-45658 duplication).)
+2026-04-18 (Session #287 — T28 CAS CLOSED via Step B+C bundle on fresh source
+y2z-monolith: 6/6 handoff points, 4/4 recall queries, last_synthesized_at
+mutation validated, SQLite rebuild OK. PLUS triage: T48/T49 duplicate-ID
+collision resolved via renumber to T50, post-todos-render hook matcher split
+3-way (broken `(?i)` pipe-OR → per-tool pattern), TAG_SUGGESTION.md workflow
+documented. Corpus: 35 → 37 sources, 370 → 379 extractions, 280 → 332 tags, 187
+→ 201 tag vocabulary. Step 14 skill-audits deferred to T38 (now unblocked).)
 
 ## Purpose
 
@@ -35,11 +35,13 @@ sessions move to [SESSION_HISTORY.md](docs/SESSION_HISTORY.md) during
 
 > **Use `/checkpoint` to update this section. Update before risky operations.**
 
-**Last Checkpoint**: 2026-04-18 (Session #286 — triage sweep + housecleaning
-COMPLETE, 3 commits ahead of `origin/CAS-41726`). **Branch**: `CAS-41726` (new
-branch cut from main post-PR #516 merge; 3 commits ahead of `origin/CAS-41726`).
-**Working On**: Session #286 closed with health A(97/100). Next session pickup
-per Next Session Goals below.
+**Last Checkpoint**: 2026-04-18 (Session #287 — T28 CAS CLOSED via Step B+C
+bundle). **Branch**: `CAS-41826` (new branch cut from main post-PR #517 merge).
+**Working On**: Session #287 in progress — T28 closed (Step 15 E2E verified on
+y2z-monolith; 6/6 handoff points + 4/4 recall queries + last_synthesized_at
+mutation validated). Corpus: 37 sources, 379 candidates, 332 tags. Step 14
+skill-audits deferred to T38 (unblocked). Remaining goals per Next Session Goals
+below.
 
 **Session #280 work (summary)**:
 
@@ -225,6 +227,68 @@ Each audit will likely add a `scripts/skills/<name>/self-audit.js` per the Cat
 ---
 
 ## Recent Session Summaries
+
+**Session #287** (T28 CAS CLOSED + TRIAGE: DUP-ID + HOOK MATCHER SPLIT — 1
+COMMIT):
+
+- **Branch**: `CAS-41826` (new branch cut from main post-PR #517 merge).
+- **Goal #1: T28 Step B + C bundle (close the Content Analysis System plan).**
+  Step B = E2E verification on fresh source `y2z-monolith` (Rust CLI, 15k★,
+  CC0-1.0): `/analyze` routed to `/repo-analysis` → 8 artifacts + 9 extractions
+  - 13 tags approved → SQLite rebuild 35→37 sources / 370→379 extractions /
+    280→332 tags. 4/4 `/recall` queries pass (tag=archival, type=repo, FTS5
+    single-word, cross-source). `last_synthesized_at` mutation contract
+    validated end-to-end (analysis.json → SQLite). Step C closure: PLAN.md
+    banner ⏳ NEAR-COMPLETE → ✅ COMPLETE, Step 15 header ⏳ PENDING → ✅
+    COMPLETE, Step 14 → DEFERRED TO T38 (now unblocked), T28 todo completed,
+    SESSION_CONTEXT Quick Recovery updated,
+    `.claude/state/analyze-routing-log.jsonl` appended. FTS5 edge case surfaced:
+    multi-word phrase "single HTML file" → 0 results (tokenization quirk,
+    single-word queries work fine — consider documenting in /recall SKILL.md).
+- **Tag vocabulary +14 entries** (187→201): `archival`, `offline-first`, `rust`,
+  `packaging`, `anti-pattern`, `content-storage`, `wrapper-pattern`,
+  `inconsistency`, `reproducibility`, `convention`, `project-layout`,
+  `build-system`, `design-pattern`, `open-source` (user-approved Phase 6c batch;
+  `tool-demo` already existed so 14 net-new).
+- **Triage: 3 issues surfaced + fixed**. (1) **T48 duplicate-ID collision**:
+  commit `9fada7b9` (Session #286) accidentally assigned T48 to "File registry
+  portability graph" — collided with pre-existing T48 "Adoption Verdict
+  backfill" (2026-04-14, SESSION_CONTEXT Goal #7 + feedback memory). Fix: kept
+  older T48 canonical, renumbered File-registry entry → **T50** with
+  renumbered_from/\_at/\_reason provenance. todos-cli validate now PASSES
+  (previously blocked on "duplicate id: T48"). TODOS.md regen shows all three
+  (T48, T49, T50). (2) **post-todos-render hook never auto-firing**: audit log
+  had only manual-test entries, 0 auto-invocations across sessions. Root cause
+  hypothesis: `^(?i)(write|edit|multiedit)$` combined matcher + `(?i)` inline
+  flag not evaluated by Claude Code's dispatcher. Fix: split into 3 per-tool
+  matchers (Write/Edit/MultiEdit each with narrowed `if:` filter) — mirrors
+  working pattern at lines 163/173/183 for post-write-validator. **Validation
+  deferred to next session** — Claude Code caches settings.json at session
+  start, no hot-reload. Test protocol: trivial round-trip Edit on todos.jsonl,
+  check `wc -l .claude/state/post-todos-render-audit.jsonl` grows. (3)
+  **Hook-denied tag-vocabulary writes** (`jq --slurpfile + heredoc`;
+  `Write scripts/tmp-*.js + node + rm`): both flagged as "unverifiable
+  parameters/execution". Direct Edit tool worked. Documented in
+  `.claude/skills/_shared/TAG_SUGGESTION.md` as canonical pattern + anti-pattern
+  list.
+- **Files touched (uncommitted)**: SESSION_CONTEXT.md, `.planning/todos.jsonl`,
+  `.planning/TODOS.md`, `.planning/content-analysis-system/PLAN.md`,
+  `.claude/settings.json`, `.claude/skills/_shared/TAG_SUGGESTION.md`,
+  `.claude/state/*.json/.jsonl` (hook drift), `.research/analysis/y2z-monolith/`
+  (new), `.research/extraction-journal.jsonl`, `.research/EXTRACTIONS.md`,
+  `.research/tag-vocabulary.json`, `.research/content-analysis.db` (rebuilt).
+- **Known issues surfaced, not fixed**: (a) governance-logger hook (line 247)
+  has same suspicious `^(?i)(write|edit)$` pattern — untouched to limit blast
+  radius; candidate for future fix. (b) `.planning/todos.jsonl` has two
+  different JSON formatting styles (line 47 space-formatted, lines 48-49
+  compact) — cosmetic, works fine. (c) FTS5 multi-word tokenization (see above).
+- **Next session goals**: Goals #2-#19 from prior session unchanged; T28 Step B
+  is ✅ removed; Goal #1 advances to hook matcher validation (1 min) then one of
+  #3-#7 (`/deep-plan skill-convergence`, `/deep-plan t28-intelligence-graph-v1`,
+  `/deep-plan orphan-detection`, skill-creator audit, T48 Adoption Verdict
+  backfill).
+
+---
 
 **Session #286** (TRIAGE SWEEP + HOUSECLEANING + REVIEWS DATA INTEGRITY — 3
 COMMITS):
@@ -832,6 +896,18 @@ Actions, manual setup).
 
 ## Next Session Goals
 
+### Session #287 Completed (2026-04-18)
+
+- ✅ **Goal #1 — T28 CAS CLOSED** via Step B+C bundle. Fresh source
+  `y2z-monolith` analyzed, 6/6 handoff points, 4/4 recall queries,
+  `last_synthesized_at` mutation validated. PLAN.md banner → ✅ COMPLETE. Step
+  14 deferred to T38 (now unblocked).
+- ✅ **Triage 3 issues** — T48 duplicate-ID renumbered to T50 (todos-cli
+  unblocked), post-todos-render hook matcher split 3-way (validation deferred to
+  next session — settings.json cache), TAG_SUGGESTION.md workflow documented.
+- ✅ **Tag vocabulary** — +14 new entries (187 → 201).
+- Branch `CAS-41826`: 1 commit ahead of `origin/main` at /session-end push.
+
 ### Session #286 Completed (2026-04-18)
 
 - ✅ **Triage sweep** — 12 findings resolved (Dependabot path-dep, 4 npm vulns,
@@ -862,17 +938,24 @@ Actions, manual setup).
 
 ### Immediate Priority (Next Session)
 
-1. **Close T28 — CAS Step B: E2E `/recall` verification** on a fresh unanalyzed
-   source. `/analyze <new-url>` → handler → SQLite refresh → `/recall` queries
-   (tag, type, FTS5, cross-source) → verify extraction-journal +
-   `last_synthesized_at`. **~15-30 min.** Candidate seed list: T47 Wave 6 (Sober
-   Grid, I Am Sober, InTheRooms, 42 CFR Part 2, Firebase reference, TS MCP SDK,
-   whisper.cpp, monolith, readable-cli, SBOM) — or any fresh URL.
+1. **Hook matcher split validation** (1 min) — Session #287 split
+   post-todos-render matcher (combined `(?i)` pipe-OR → 3 per-tool entries) but
+   Claude Code caches settings.json, so the fix hasn't been verified
+   mid-session. Test protocol: trivial round-trip Edit on
+   `.planning/todos.jsonl`, then check
+   `wc -l .claude/state/post-todos-render-audit.jsonl` grew. If it did, split
+   worked. If not, investigate hypothesis #2 (matcher pattern broken another
+   way). Candidate follow-up: apply same split to governance-logger hook
+   (line 247) if fix confirmed.
 
-2. **Step C — T28 closure flip**: mark T28 todo complete in
-   `.planning/todos.jsonl` (or via `/todo`), update T28 CAS PLAN.md banner to ✅
-   COMPLETE, unblock T38 tracker, add brief SESSION_CONTEXT.md note. **~10
-   min.**
+2. **T38 — `/skill-audit` on the 7 CAS skills** (unblocked by T28 closure
+   Session #287). Order: handlers first (repo-analysis, website-analysis,
+   document-analysis, media-analysis), then synthesize, recall, analyze. W2
+   approach: parallel agents producing findings JSON, lead presents per-target
+   menu for user decisions. Each audit may add a
+   `scripts/skills/<name>/self- audit.js` per Cat 12 canonical fix action. See
+   `.planning/content-analysis-system/REMAINING_CAS_TASKS.md` Step A for full
+   spec.
 
 3. **`/deep-plan skill-convergence` — Phase A execution** (META_ROADMAP Lane 2
    Step 6, 7d stale at Session #285 close). Schema-as-code validation + shared
