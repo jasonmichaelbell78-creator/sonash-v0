@@ -1457,8 +1457,8 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~19370 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 560    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~19400 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 561    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -15525,6 +15525,46 @@ deduplicated, non-overlapping ranges):
 - SonarCloud QG duplication persists at ~8% despite R2 sonar.cpd.exclusions.
   Either scan caching or pattern mismatch. R3 push should re-scan; if
   persistent, escalate to code-level helper extraction or threshold raise.
+
+---
+
+### Review review-pr517-r4: PR #517 R4 (2026-04-18)
+
+**Date:** 2026-04-18 | **PR:** #517 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 3     | 0        | 1        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 2     | 1     | 1       |
+
+**Patterns:**
+
+- extract-helpers-from-scripts-import-in-tests
+- regex-validation-before-parseInt
+- trim-string-ids-before-map-key
+- require-main-guard-for-testable-scripts
+- find-project-root-walker-for-compiled-tests
+
+**Learnings:**
+
+- sonar.cpd.exclusions had limited effect on SonarCloud new-code duplication.
+  Definitive fix is code-level: extract pure helpers from scripts with
+  require.main guard, have tests import them.
+- CLI-runnable + testable scripts need the require.main === module guard
+  pattern.
+- Tests compiled via tsc land in dist-tests, so relative paths break. Use a
+  findProjectRoot walker that looks for package.json upward.
+- parseInt silently accepts leading-integer strings, defeating Number.isInteger.
+  Gate strings through integer regex before parseInt.
+- Trim string IDs before using as Map key so whitespace-prefixed records do not
+  bucket separately.
+- SonarCloud default quality gate is read-only via API. Threshold adjustments
+  require UI or gate-copy flow.
 
 ## Key Patterns
 

@@ -136,4 +136,19 @@ function main() {
   }
 }
 
-main();
+// Guard main() behind require.main check so tests can require() this module
+// to exercise the pure helpers without triggering a git call (PR #517 R4 #1).
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  parseReviewFixCommit,
+  toInt,
+  idToString,
+  recordMatches,
+  hasReviewRecord,
+  REVIEW_FIX_PATTERN,
+  CANONICAL_ID_PATTERN,
+  TITLE_ROUND_PATTERN,
+};

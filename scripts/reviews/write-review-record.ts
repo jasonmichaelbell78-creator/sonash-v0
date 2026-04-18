@@ -47,12 +47,16 @@ const { safeParseLine } = require(
  */
 // Coerce a value to a finite positive integer, or null. Accepts native
 // integers and numeric strings (CLI inputs) but rejects floats, NaN, negative,
-// and other types. Qodo R2 #9 + R3 #5: floats MUST be rejected, not truncated,
-// to avoid silently generating ids like "review-pr5-r1" from round=1.7.
+// and other types. Qodo R2 #9 + R3 #5 + R4 #3: floats MUST be rejected, not
+// truncated, including string floats like "1.7" (prior code: parseInt("1.7")
+// → 1 silently passed, violating the function's docs).
+const INTEGER_STRING = /^\d+$/;
 function toPositiveInt(v: unknown): number | null {
   if (typeof v === "number" && Number.isFinite(v) && v > 0 && Number.isInteger(v)) return v;
   if (typeof v === "string") {
-    const n = Number.parseInt(v, 10);
+    const s = v.trim();
+    if (!INTEGER_STRING.test(s)) return null;
+    const n = Number.parseInt(s, 10);
     if (Number.isFinite(n) && n > 0) return n;
   }
   return null;

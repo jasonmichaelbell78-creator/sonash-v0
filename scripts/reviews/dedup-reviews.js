@@ -71,13 +71,16 @@ function groupById(entries) {
     // which would then hash-equal each other and cause distinct records to
     // collide into the same bucket (data loss via incorrect dedup).
     let idString;
-    if (typeof rawId === "string") idString = rawId;
+    // Qodo R4 #4: trim string IDs before using as Map key so "  123  " and
+    // "123" don't bucket separately. Numbers are always rendered without
+    // surrounding whitespace.
+    if (typeof rawId === "string") idString = rawId.trim();
     else if (typeof rawId === "number" && Number.isFinite(rawId)) idString = String(rawId);
     else idString = "";
     // Qodo R2 #7: records with missing/empty ids must NOT collapse into a
     // single bucket. Assign a unique synthetic key tied to lineIndex so
     // dedup treats them as distinct, and warn so the data can be repaired.
-    const id = idString.trim() === "" ? `__missing_id__:${entry.lineIndex}` : idString;
+    const id = idString === "" ? `__missing_id__:${entry.lineIndex}` : idString;
     if (id.startsWith("__missing_id__")) {
       console.warn(
         `[dedup] Record missing id at line ${entry.lineIndex + 1} — treating as unique (manual repair recommended)`
@@ -324,4 +327,22 @@ function main() {
   console.log(`[dedup] Next: npm run reviews:render && npm run reviews:check-archive`);
 }
 
-main();
+// Guard main() so tests can require() this module to exercise pure helpers
+// without triggering fs reads or mutations (PR #517 R4 #1).
+if (require.main === module) {
+  main();
+}
+
+module.exports = {
+  contentSignature,
+  weight,
+  classifyGroup,
+  pickKeeper,
+  nextRevId,
+  groupById,
+  backfillMissingTitle,
+  actionsForGroup,
+  computeEdits,
+  findTitleBackfill,
+  serializeEntries,
+};
