@@ -1,0 +1,139 @@
+{
+  "schemaVersion": "3.0",
+  "skillVersion": "5.0",
+  "source": "https://github.com/getzep/graphiti",
+  "slug": "getzep-graphiti",
+  "source_tier": "T1",
+  "source_type": "repo",
+  "classification": "framework",
+  "primary_lens": "creator",
+  "analyzed_at": "2026-04-17",
+  "depth": "standard",
+  "last_synthesized_at": null,
+  "repo_meta": {
+    "stars": 25065,
+    "forks": 2491,
+    "language": "Python",
+    "license": "Apache-2.0",
+    "description": "Build Real-Time Knowledge Graphs for AI Agents",
+    "topics": ["agents", "graph", "llms", "rag"],
+    "pushed_at": "2026-04-14",
+    "archived": false,
+    "fork": false,
+    "default_branch": "main",
+    "size_kb": 14166,
+    "homepage": "https://help.getzep.com/graphiti"
+  },
+  "bands": {
+    "security": { "band": "solid", "score": 7.0 },
+    "reliability": { "band": "solid", "score": 7.5 },
+    "maintainability": { "band": "strong", "score": 8.5 },
+    "documentation": { "band": "strong", "score": 8.5 },
+    "process": { "band": "strong", "score": 8.0 },
+    "velocity": { "band": "strong", "score": 9.0 }
+  },
+  "dual_lens": {
+    "creator": { "band": "extract-only", "score": 8.0, "primary": true },
+    "adoption": { "band": "avoid-for-home", "score": 2.0, "primary": false }
+  },
+  "adoption_verdict": "extract-only",
+  "adoption_blockers": [
+    "Language mismatch (Python 3.10+ vs home Next.js/TypeScript/Firebase)",
+    "Infrastructure requirement (external graph DB: Neo4j, FalkorDB, Kuzu, or Neptune)",
+    "LLM API spend (OpenAI default; structured-output-native LLM required for reliable operation)",
+    "No home use case justifying the operational load"
+  ],
+  "adoption_recommendation": "Extract specific patterns (cursor_rules protocol, versioned model catalog, telemetry framing, SEMAPHORE guidance, structured-output-as-floor posture) into home CC-OS. Optionally run mcp_server/ standalone against Claude Desktop as a personal-memory experiment.",
+  "findings": {
+    "high": 1,
+    "medium": 4,
+    "low": 2,
+    "info": 2,
+    "absence": 9
+  },
+  "key_strengths": [
+    "Clean provider abstractions (GraphDriver / LLMClient / EmbedderClient ABCs) across 4 graph DBs + 6 LLMs + 4 embedders",
+    "Semaphore-bounded async with per-provider tuning guidance",
+    "Opt-in OpenTelemetry with zero-overhead NoOp default",
+    "Transparent opt-out telemetry with explicit content exclusions",
+    "Bi-temporal fact model: invalidate, never delete",
+    "Core / server / MCP package separation",
+    "Structured-output-native LLM clients (not string parsing)",
+    "13 CI workflows including CodeQL + CLA + dual Claude Code review"
+  ],
+  "key_concerns": [
+    "REST server has zero authentication by default (DELETE /clear exposed on port 8000)",
+    "No REST server test suite",
+    "No performance or benchmark tests",
+    "No architecture overview document / no migration guide",
+    "Examples require pre-running database infrastructure",
+    "Single Python version in CI (3.10 only)",
+    "Mock test file at 2053 LOC (watchlist)"
+  ],
+  "absence_patterns": [
+    "No authentication on REST server",
+    "No REST server test suite",
+    "No performance / benchmark tests",
+    "No LLM response snapshot tests",
+    "No multi-DB parity tests",
+    "No architecture overview document",
+    "No migration guide",
+    "No coverage reporting",
+    "No multi-Python-version CI matrix"
+  ],
+  "phases_completed": [
+    "validate",
+    "phase-1-clone-repomix",
+    "phase-2-dimension-wave",
+    "phase-2b-deep-read",
+    "phase-3.5-content-eval",
+    "phase-4-creator-view",
+    "phase-5-engineer-view",
+    "phase-6-value-map",
+    "phase-6b-coverage-audit",
+    "phase-6c-tags"
+  ],
+  "artifacts": {
+    "analysis_json": "analysis.json",
+    "value_map": "value-map.json",
+    "creator_view": "creator-view.md",
+    "engineer_view": "engineer-view.md",
+    "deep_read": "deep-read.md",
+    "content_eval": "content-eval.jsonl",
+    "coverage_audit": "coverage-audit.jsonl",
+    "summary": "summary.md",
+    "dim_security": "dim-security.md",
+    "dim_architecture": "dim-architecture.md",
+    "dim_docs": "dim-docs.md",
+    "dim_tests": "dim-tests.md",
+    "repomix": "repomix-output.txt"
+  },
+  "tags_proposed": {
+    "domain": ["agent-memory", "temporal-knowledge-graph", "llm-orchestration"],
+    "technology": ["python", "neo4j", "falkordb", "mcp-protocol", "opentelemetry"],
+    "pattern_type": ["bi-temporal", "provider-abstraction", "pluggable-backends"],
+    "home_fit": ["extract-only"],
+    "relevance": ["high"],
+    "classification": ["framework"],
+    "lens": ["creator-primary"],
+    "author": ["getzep"]
+  },
+  "tags": [],
+  "tags_approved": false,
+  "content_candidates_count": 10,
+  "pattern_candidates_count": 9,
+  "knowledge_candidates_count": 4,
+  "anti_pattern_candidates_count": 4,
+  "related_repos": [
+    "getzep/zep",
+    "langchain-ai/langgraph",
+    "jlowin/fastmcp",
+    "neo4j/neo4j",
+    "FalkorDB/falkordb",
+    "kuzudb/kuzu",
+    "aws/amazon-neptune"
+  ],
+  "cross_repo_connections": [],
+  "process_feedback": null,
+  "prior_feedback_shown": false
+}

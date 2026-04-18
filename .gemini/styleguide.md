@@ -184,6 +184,17 @@ cycles:
   verification" on binary downloads from version-pinned URLs in scripts or
   tools. Version-pinned HTTPS URLs from known sources (e.g., GitHub releases)
   are acceptable for dev tooling. (Rejected across PRs #448-#470)
+- **Skill definition files** — Do NOT flag general code quality suggestions
+  (error handling, logging, type safety, constant extraction) on skill SKILL.md
+  files under `.claude/skills/` or self-audit scripts under `scripts/skills/`.
+  These follow SKILL_STANDARDS structural conventions, not general code quality
+  heuristics. Review bot suggestions are rejected at 23-68% rates on CAS handler
+  PRs. (Rejected across PRs #461-#516 — 190 rejections in 26 PRs)
+- **Deep-research skill patterns** — Do NOT flag orchestration patterns
+  (parallel agent dispatch, multi-phase workflows, convergence loops) in
+  `.claude/skills/deep-research/` as "overly complex" or suggest simplification.
+  These patterns are intentional multi-agent coordination. (Rejected 68% in PR
+  #461)
 
 ## Code Standards
 

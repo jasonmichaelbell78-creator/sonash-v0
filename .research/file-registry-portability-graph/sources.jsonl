@@ -1,0 +1,106 @@
+{"id":"S-001","url":"https://sourcegraph.com/docs/admin/how-to/lsif-scip-migration","title":"LSIF to SCIP Migration","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-002","url":"https://github.com/sourcegraph/scip/blob/main/scip.proto","title":"SCIP Protobuf Schema","type":"official-source","trust_level":"HIGH"}
+{"id":"S-003","url":"https://github.com/sourcegraph/scip-clang/blob/main/docs/CrossRepo.md","title":"SCIP Cross-Repo Design","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-004","url":"https://sourcegraph.com/blog/announcing-scip","title":"SCIP Announcement Blog","type":"official-blog","trust_level":"HIGH"}
+{"id":"S-005","url":"https://sourcegraph.com/blog/cross-repository-code-navigation","title":"Cross-Repository Code Navigation","type":"official-blog","trust_level":"HIGH"}
+{"id":"S-006","url":"https://kythe.io/contributing/","title":"Kythe Contributing Guide","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-007","url":"https://github.com/kythe/kythe","title":"Kythe GitHub Repository","type":"official-source","trust_level":"HIGH"}
+{"id":"S-008","url":"https://aider.chat/docs/repomap.html","title":"Aider Repomap Docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-009","url":"https://aider.chat/2023/10/22/repomap.html","title":"Aider Repomap Blog","type":"official-blog","trust_level":"HIGH"}
+{"id":"S-010","url":"https://deepwiki.com/Aider-AI/aider/4.1-repository-mapping","title":"Aider Repository Mapping (DeepWiki)","type":"community","trust_level":"MEDIUM"}
+{"id":"S-011","url":"https://ast-grep.github.io/guide/api-usage/js-api.html","title":"ast-grep JS API","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-012","url":"https://github.com/ast-grep/ast-grep/issues/2519","title":"ast-grep graph query feature request","type":"community","trust_level":"MEDIUM"}
+{"id":"S-013","url":"https://github.com/sverweij/dependency-cruiser","title":"dependency-cruiser GitHub","type":"official-source","trust_level":"HIGH"}
+{"id":"S-014","url":"https://docs.ctags.io/en/latest/man/ctags-json-output.5.html","title":"ctags JSON output docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-015","url":"https://github.com/CoatiSoftware/Sourcetrail/releases","title":"Sourcetrail Releases","type":"official-source","trust_level":"HIGH"}
+{"id":"S-016","url":"https://en.wikipedia.org/wiki/Sourcetrail","title":"Sourcetrail Wikipedia","type":"tertiary","trust_level":"MEDIUM"}
+{"id":"S-017","url":"https://docs.github.com/en/rest/dependency-graph","title":"GitHub Dependency Graph API","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-018","url":"https://github.com/mikewcasale/repominify","title":"repominify GitHub","type":"community","trust_level":"LOW"}
+{"id":"S-019","url":"https://cursor.com/docs/context/codebase-indexing","title":"Cursor Codebase Indexing Docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-020","url":"https://cursor.com/blog/secure-codebase-indexing","title":"Securely Indexing Large Codebases","type":"official-blog","trust_level":"HIGH"}
+{"id":"S-021","url":"https://forum.cursor.com/t/how-can-we-access-the-embeddings-for-the-codebase-indexing-if-already-done/121021","title":"Cursor Forum: Embeddings API Access","type":"community","trust_level":"MEDIUM"}
+{"id":"S-022","url":"https://read.engineerscodex.com/p/how-cursor-indexes-codebases-fast","title":"How Cursor Indexes Codebases Fast","type":"blog","trust_level":"MEDIUM"}
+{"id":"S-023","url":"https://deepwiki.com/continuedev/continue/3.4-codebase-indexing","title":"Continue Codebase Indexing (DeepWiki)","type":"community","trust_level":"MEDIUM"}
+{"id":"S-024","url":"https://blog.lancedb.com/lancedb-x-continue","title":"LanceDB x Continue","type":"blog","trust_level":"MEDIUM"}
+{"id":"S-025","url":"https://github.com/continuedev/continue/issues/1232","title":"Continue Windows LanceDB Native Module Issue","type":"community","trust_level":"MEDIUM"}
+{"id":"S-026","url":"https://github.com/pdavis68/RepoMapper","title":"RepoMapper GitHub","type":"community","trust_level":"MEDIUM"}
+{"id":"S-027","url":"https://githubnext.com/projects/copilot-workspace/","title":"GitHub Copilot Workspace","type":"official","trust_level":"HIGH"}
+{"id":"S-028","url":"https://zed.dev/docs/ai/tools","title":"Zed AI Tools Docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-029","url":"https://sourcegraph.com/docs/code_intelligence/explanations/precise_code_intelligence","title":"Sourcegraph Precise Code Intelligence","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-030","url":"https://aiforcode.io/tools/sourcegraph-cody","title":"Cody review (2026)","type":"community","trust_level":"MEDIUM"}
+{"id":"S-031","url":"https://www.augmentcode.com/context-engine","title":"Augment Code Context Engine","type":"product","trust_level":"MEDIUM"}
+{"id":"S-032","url":"https://blog.codacy.com/ai-giants-how-augment-code-solved-the-large-codebase-problem","title":"Augment Code Context Engine Analysis","type":"blog","trust_level":"MEDIUM"}
+{"id":"S-033","url":"https://www.greptile.com/docs/how-greptile-works/graph-based-codebase-context","title":"Greptile Graph Context Docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-034","url":"https://www.greptile.com/docs/security/selfhost","title":"Greptile Self-Host Docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-035","url":"https://tabby.tabbyml.com/docs/roadmap/","title":"TabbyML Roadmap","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-036","url":"https://github.com/CodeGraphContext/CodeGraphContext","title":"CodeGraphContext GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-037","url":"https://nx.dev/docs/extending-nx/project-graph-plugins","title":"Extending the Project Graph - Nx","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-038","url":"https://nx.dev/docs/reference/devkit/CreateNodesV2","title":"CreateNodesV2 - Nx","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-039","url":"https://nx.dev/docs/reference/devkit/ProjectGraph","title":"ProjectGraph - Nx","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-040","url":"https://lerna.js.org/docs/features/project-graph","title":"Explore the Project Graph - Lerna","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-041","url":"https://nx.dev/blog/nx-cloud-workspace-graph","title":"Nx Cloud Workspace Graph","type":"official-blog","trust_level":"HIGH"}
+{"id":"S-042","url":"https://nx.dev/blog/nx-2026-roadmap","title":"Nx 2026 Roadmap","type":"official-blog","trust_level":"HIGH"}
+{"id":"S-043","url":"https://turborepo.dev/docs/reference/query","title":"turbo query reference","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-044","url":"https://turborepo.dev/docs/core-concepts/package-and-task-graph","title":"Package and Task Graphs - Turborepo","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-045","url":"https://bazel.build/query/language","title":"The Bazel Query Reference","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-046","url":"https://bazel.build/query/guide","title":"Query guide - Bazel","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-047","url":"https://www.pantsbuild.org/dev/docs/using-pants/project-introspection","title":"Project introspection - Pants","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-048","url":"https://pnpm.io/cli/why","title":"pnpm why","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-049","url":"https://github.com/pahen/madge","title":"madge GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-050","url":"https://github.com/gabotechs/dep-tree","title":"dep-tree GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-051","url":"https://backstage.io/docs/getting-started/","title":"Backstage Getting Started","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-052","url":"https://backstage.io/docs/features/software-catalog/descriptor-format/","title":"Backstage Descriptor Format","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-053","url":"https://backstage.io/docs/features/software-catalog/configuration/","title":"Backstage Catalog Configuration","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-054","url":"https://roadie.io/blog/kinds-and-types-in-backstage/","title":"Customizing Backstage Kinds and Types","type":"blog","trust_level":"MEDIUM"}
+{"id":"S-055","url":"https://roadie.io/blog/roadie-local-self-hosted-backstage-ready-in-minutes/","title":"Roadie Local: Self-hosted Backstage","type":"blog","trust_level":"MEDIUM"}
+{"id":"S-056","url":"https://www.port.io/pricing","title":"Port Pricing","type":"official-product","trust_level":"HIGH"}
+{"id":"S-057","url":"https://docs.port.io/build-your-software-catalog/customize-integrations/configure-data-model/setup-blueprint/","title":"Port Blueprint Setup","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-058","url":"https://www.port.io/blog/announcing-the-software-catalog-dependency-graph","title":"Port Dependency Graph Announcement","type":"blog","trust_level":"MEDIUM"}
+{"id":"S-059","url":"https://www.cortex.io/pricing","title":"Cortex Pricing","type":"official-product","trust_level":"HIGH"}
+{"id":"S-060","url":"https://www.opslevel.com/pricing","title":"OpsLevel Pricing","type":"official-product","trust_level":"HIGH"}
+{"id":"S-061","url":"https://backstage.io/docs/integrations/github/discovery/","title":"Backstage GitHub Discovery","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-062","url":"https://github.com/tescolopio/Obsidian_FolderBridge","title":"Obsidian FolderBridge","type":"official-source","trust_level":"HIGH"}
+{"id":"S-063","url":"https://forum.obsidian.md/t/new-plugin-folder-bridge-mount-your-folders-into-obsidian/111496","title":"FolderBridge Forum","type":"community","trust_level":"MEDIUM"}
+{"id":"S-064","url":"https://forum.obsidian.md/t/obsidian-safe-symlinks/100873","title":"Obsidian Symlink Security","type":"community","trust_level":"MEDIUM"}
+{"id":"S-065","url":"https://deepwiki.com/SkepticMystic/breadcrumbs","title":"Breadcrumbs DeepWiki","type":"community","trust_level":"MEDIUM"}
+{"id":"S-066","url":"https://github.com/SkepticMystic/breadcrumbs/blob/master/V4.md","title":"Breadcrumbs V4 Changelog","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-067","url":"https://blacksmithgu.github.io/obsidian-dataview/","title":"Dataview Official Docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-068","url":"https://github.com/hanamizuki/obsidian-skill-graph","title":"obsidian-skill-graph","type":"community","trust_level":"MEDIUM"}
+{"id":"S-069","url":"https://discuss.logseq.com/t/logseq-db-unofficial-faq/32508","title":"Logseq DB FAQ","type":"community","trust_level":"MEDIUM"}
+{"id":"S-070","url":"https://outliner.tana.inc/docs/local-api-mcp","title":"Tana Local API/MCP","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-071","url":"https://tana.inc/docs/supertags","title":"Tana Supertags","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-072","url":"https://randomgeekery.org/post/2023/02/dendron-is-officially-in-maintenance-mode/","title":"Dendron Maintenance Mode","type":"community","trust_level":"MEDIUM"}
+{"id":"S-073","url":"https://github.com/foambubble/foam","title":"Foam GitHub","type":"official-source","trust_level":"HIGH"}
+{"id":"S-074","url":"https://github.com/athensresearch/athens","title":"Athens (archived)","type":"official-source","trust_level":"HIGH"}
+{"id":"S-075","url":"https://github.com/navfa/skills-md-graph","title":"skills-md-graph CLI","type":"community","trust_level":"MEDIUM"}
+{"id":"S-076","url":"https://www.orgroam.com/manual.html","title":"Org-roam Manual","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-077","url":"https://github.com/parcel-bundler/watcher","title":"@parcel/watcher GitHub","type":"official-source","trust_level":"HIGH"}
+{"id":"S-078","url":"https://github.com/paulmillr/chokidar/blob/main/README.md","title":"Chokidar README","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-079","url":"https://github.com/facebook/watchman/wiki/Changes-required-for-Windows-support","title":"Watchman Windows Support","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-080","url":"https://github.com/modelcontextprotocol/servers/blob/main/src/filesystem/README.md","title":"Official MCP filesystem README","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-081","url":"https://github.com/bsmi021/mcp-file-operations-server","title":"bsmi021/mcp-file-operations-server","type":"community","trust_level":"MEDIUM"}
+{"id":"S-082","url":"https://nodejs.org/docs/latest/api/fs.html","title":"Node.js fs docs","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-083","url":"https://nx.dev/docs/features/enforce-module-boundaries","title":"Nx enforce-module-boundaries","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-084","url":"https://www.chezmoi.io/reference/source-state-attributes/","title":"chezmoi Source State Attributes","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-085","url":"https://code.visualstudio.com/api/references/contribution-points","title":"VSCode Contribution Points","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-086","url":"https://specifications.freedesktop.org/basedir/latest/","title":"XDG Base Directory Spec","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-087","url":"https://agentskills.io/specification","title":"Agent Skills Specification","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-088","url":"https://manpages.ubuntu.com/manpages/jammy/man7/rcm.7.html","title":"rcm man page","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-089","url":"https://12factor.net/config","title":"12-factor: Config","type":"reference","trust_level":"HIGH"}
+{"id":"S-090","url":"https://www.npmjs.com/package/@optave/codegraph","title":"@optave/codegraph npm","type":"official-source","trust_level":"HIGH"}
+{"id":"S-091","url":"https://github.com/optave/codegraph","title":"optave/codegraph GitHub","type":"official-source","trust_level":"HIGH"}
+{"id":"S-092","url":"https://github.com/DeusData/codebase-memory-mcp","title":"codebase-memory-mcp GitHub","type":"official-source","trust_level":"HIGH"}
+{"id":"S-093","url":"https://www.theregister.com/2025/10/14/kuzudb_abandoned/","title":"KuzuDB abandoned — The Register","type":"journalism","trust_level":"MEDIUM"}
+{"id":"S-094","url":"https://github.com/QuivrHQ/quivr","title":"Quivr GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-095","url":"https://github.com/danswer-ai/danswer","title":"Onyx (Danswer) GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-096","url":"https://nix.dev/concepts/flakes.html","title":"Nix Flakes","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-097","url":"https://github.com/zylon-ai/private-gpt","title":"PrivateGPT GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-098","url":"https://github.com/gastownhall/beads","title":"Beads GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-099","url":"https://github.com/wmt-mobile/localnest","title":"LocalNest GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-100","url":"https://github.com/meetdhanani17/xgmem","title":"xgmem GitHub","type":"official-source","trust_level":"MEDIUM"}
+{"id":"S-101","url":"https://cocoindex.io/blogs/knowledge-graph-for-docs","title":"CocoIndex KG docs blog","type":"official-blog","trust_level":"MEDIUM"}
+{"id":"S-102","url":"https://buck2.build/docs/bxl/explanation/basics/","title":"BXL Basics - Buck2","type":"official-docs","trust_level":"HIGH"}
+{"id":"S-103","url":"https://roadie.io/blog/the-true-cost-of-self-hosting-backstage/","title":"True Cost of Self-Hosting Backstage","type":"blog","trust_level":"MEDIUM"}
+{"id":"S-104","url":"https://medium.com/@arpablo/the-needle-in-the-haystack-3886de9b5448","title":"Dataview Non-MD article","type":"community-blog","trust_level":"MEDIUM"}
+{"id":"S-105","url":"https://practicalpkm.com/bases-plugin-overview/","title":"Obsidian Bases overview","type":"community-blog","trust_level":"MEDIUM"}
+{"id":"S-106","url":"https://github.com/foambubble/foam/issues/915","title":"Foam non-markdown link bug","type":"community","trust_level":"MEDIUM"}

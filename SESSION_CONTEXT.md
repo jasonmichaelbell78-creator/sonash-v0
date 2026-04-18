@@ -893,7 +893,19 @@ Actions, manual setup).
 
 ### Open
 
-4. **Persistent cognitive-cc + trigger hook warnings** — tracked as
+4. **CAS PRs should split handlers from skill wiring** — Large CAS feature PRs
+   (e.g., PR #503 with 5 rounds, PR #504 with 4 rounds) create review churn when
+   handlers + skill wiring + tests ship together. Split CAS work into: (a)
+   handlers/scripts in one PR, (b) skill SKILL.md wiring in another. Reduces
+   per-PR scope and review noise. (Bulk retro finding, 2026-04-17)
+
+5. **CC extraction is a systemic review tax** — `cc-extraction` pattern appeared
+   in 17 review entries across 4+ PRs. Every large PR triggers cognitive
+   complexity warnings requiring helper extraction. Consider: CC extraction
+   helper library or adjusted SonarCloud CC threshold for `scripts/`. (Bulk
+   retro finding, 2026-04-17)
+
+6. **Persistent cognitive-cc + trigger hook warnings** — tracked as
    **DEBT-45635**. Pre-push reports `cognitive-cc` errored (exit 2) and
    `triggers` flagged "Skill/agent files modified" on commits that don't touch
    skill/agent files. Trigger detector matches commit history beyond the current

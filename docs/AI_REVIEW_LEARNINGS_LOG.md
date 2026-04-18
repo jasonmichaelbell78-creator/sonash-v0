@@ -366,6 +366,46 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#89)</summary>
+
+- **Date:** 2026-04-17
+- **Reviews consolidated:** #366-#rev-95
+- **Recurring patterns:**
+  - root-cause (147x)
+  - prevention (146x)
+  - note (30x)
+  - example (16x)
+  - learnings (13x)
+  - cc-extraction (11x)
+  - wrong (9x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (8x)
+  - right (8x)
+  - impact (5x)
+  - replaceall-migration (5x)
+  - verification (5x)
+  - array-never-pass-functions (4x)
+  - examples (4x)
+  - files (4x)
+  - index (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - atomic-file-writes (3x)
+  - avoidable- (3x)
+  - avoidable-rounds (3x)
+  - cognitive-complexity-extraction (3x)
+  - efficiency (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - lesson (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+  - qodopr-agenttoml (3x)
+  - score (3x)
+  - severity (3x)
+  - single-highest-impact-change (3x)
+  - trade-off (3x)
+  - trend (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#88)</summary>
 
 - **Date:** 2026-04-17
@@ -1390,7 +1430,7 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~20100 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~20140 | 1500      | Run `npm run reviews:archive -- --apply` |
 | Active reviews | 545    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
@@ -20122,3 +20162,54 @@ smells), CI (1 test-coverage blocker), Qodo PR Code Suggestions (6)
   phases guard + test suites + baselines are cohesive.
 - No rejections this round (cross-round dedup armed correctly; R1's one reject
   on Qodo #12 did not recur).
+
+---
+
+### Bulk Retro — 26 PRs (#434–#516, 2026-04-17)
+
+**Scope:** PRs #434–#516 (2026-03-15 to 2026-04-17, 33 days). Batch analysis by
+thematic category, not per-PR.
+
+**Aggregate:** 61 rounds, 915 items — 706 fixed (77%), 19 deferred (2%), 190
+rejected (21%). Avg 35.2 items/PR, 2.3 rounds/PR.
+
+**Categories:**
+
+| Category                    | PRs | Fixed | Rejected | Rej% |
+| --------------------------- | --- | ----- | -------- | ---- |
+| CAS / Content Analysis      | 8   | 285   | 88       | 23%  |
+| Infrastructure / Hooks / CI | 6   | 184   | 27       | 13%  |
+| Synthesis / Planning        | 6   | 64    | 8        | 9%   |
+| Skills / Research           | 5   | 76    | 35       | 31%  |
+| Session Hygiene             | 1   | 97    | 32       | 25%  |
+
+**8 Findings (7 actionable, all implemented):**
+
+1. **[HIGH] CAS rejection spiral** — PR #504 had 55% rejection rate across 4
+   rounds. Added Qodo suppression rule #28 for CAS handler patterns.
+2. **[MEDIUM] CAS churn** — PR #503 needed 5 rounds. Documented CAS PR split
+   guidance in SESSION_CONTEXT.md.
+3. **[HIGH] Skills rejection rate** — PR #461 had 68% rejection. Added skill
+   files to Gemini styleguide Do NOT Flag list.
+4. **[MEDIUM] Infra ping-pong** — 4 PRs hit 3+ rounds. No action — 13% rejection
+   reflects genuine security-first review. Working as intended.
+5. **[MEDIUM] CC extraction tax** — 17 occurrences across 4+ PRs. Documented as
+   systemic issue in SESSION_CONTEXT.md.
+6. **[MEDIUM] PR #466 deferrals** — 14 items deferred. Verified: 160 entries in
+   MASTER_DEBT.jsonl. Tracked.
+7. **[LOW] Mega-PR pattern** — PR #448 had 97 fixes, 5 rounds. Escalated prior
+   retro action item from deferred to tracked.
+8. **[LOW] JSONL duplicates** — 280 duplicate review entries removed (545 → 265
+   records).
+
+**Verdict: B+** — Pipeline healthy, catching real issues. CAS/Skills categories
+need continued suppression tuning.
+
+**Learnings:**
+
+- Skill definition files (SKILL.md, self-audit.js) systematically attract
+  irrelevant review bot suggestions — suppression is the correct fix.
+- reviews.jsonl had 51% inflation from duplicate entries — multiple append paths
+  were writing the same round data.
+- cc-extraction is the most common cross-PR pattern — systemic threshold
+  adjustment needed, not per-PR fixes.

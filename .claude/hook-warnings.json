@@ -2,23 +2,23 @@
   "warnings": [
     {
       "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "info",
-      "message": "Branch has >=10 commits  create PR soon",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-17T10:32:33.384Z",
-      "occurrences": 7,
-      "occurrences_since_ack": 0
+      "type": "agent",
+      "severity": "warning",
+      "message": "Agent compliance warnings - code changed without agent review",
+      "action": "Use code-reviewer agent for modified code",
+      "timestamp": "2026-04-17T23:30:47.992Z",
+      "occurrences": 3,
+      "occurrences_since_ack": 1
     },
     {
       "hook": "session-start",
-      "type": "tdms-s0",
+      "type": "review-lifecycle",
       "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-17T11:43:18.355Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 0
+      "message": "Review lifecycle validation issues found",
+      "action": "npm run reviews:lifecycle",
+      "timestamp": "2026-04-17T22:37:56.236Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
     },
     {
       "hook": "pre-push",
@@ -28,8 +28,27 @@
       "action": "npm audit",
       "timestamp": "2026-04-17T18:28:40.484Z",
       "occurrences": 1,
-      "occurrences_since_ack": 0
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "tdms-s0",
+      "severity": "warning",
+      "message": "S0: 26 critical debt items",
+      "action": "npm run debt:report --severity=S0",
+      "timestamp": "2026-04-17T11:43:18.355Z",
+      "occurrences": 5,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "session-start",
+      "type": "session-end-missing",
+      "severity": "warning",
+      "message": "Previous session started 1h ago without session-end",
+      "action": "Review with /alerts",
+      "timestamp": "2026-04-17T23:45:20.247Z",
+      "occurrences": 8,
+      "occurrences_since_ack": 1
     }
-  ],
-  "lastCleared": "2026-04-17T20:38:17.014Z"
+  ]
 }

@@ -125,3 +125,21 @@
 {"agent":"general-purpose","description":"Synthesize slice 1: scraping/crawling","outcome":"invoked","timestamp":"2026-04-17T11:00:28.201Z"}
 {"agent":"general-purpose","description":"Synthesize slice 4: AI/agents/gists","outcome":"invoked","timestamp":"2026-04-17T11:00:47.507Z"}
 {"agent":"code-reviewer","description":"Code review: recall.js OPDEP-1 fix","outcome":"invoked","timestamp":"2026-04-17T18:27:43.152Z"}
+{"agent":"Explore","description":"Explore review data architecture","outcome":"invoked","timestamp":"2026-04-17T22:35:12.018Z"}
+{"agent":"Explore","description":"Graphiti security audit","outcome":"invoked","timestamp":"2026-04-17T22:43:57.038Z"}
+{"agent":"Explore","description":"Graphiti architecture analysis","outcome":"invoked","timestamp":"2026-04-17T22:44:09.052Z"}
+{"agent":"Explore","description":"Graphiti docs quality audit","outcome":"invoked","timestamp":"2026-04-17T22:44:22.407Z"}
+{"agent":"Explore","description":"Graphiti test infrastructure audit","outcome":"invoked","timestamp":"2026-04-17T22:44:33.677Z"}
+{"agent":"deep-research-searcher","description":"D1 code-graph indexers","outcome":"invoked","timestamp":"2026-04-17T23:30:35.825Z"}
+{"agent":"deep-research-searcher","description":"D2 codebase-RAG tools","outcome":"invoked","timestamp":"2026-04-17T23:30:51.342Z"}
+{"agent":"deep-research-searcher","description":"D3 build-system graphs","outcome":"invoked","timestamp":"2026-04-17T23:31:07.141Z"}
+{"agent":"deep-research-searcher","description":"D4 dev-portal catalogs","outcome":"invoked","timestamp":"2026-04-17T23:31:22.334Z"}
+{"agent":"deep-research-searcher","description":"D5 doc knowledge-graph tools","outcome":"invoked","timestamp":"2026-04-17T23:36:54.294Z"}
+{"agent":"deep-research-searcher","description":"D6 change-detection infra","outcome":"invoked","timestamp":"2026-04-17T23:37:13.319Z"}
+{"agent":"deep-research-searcher","description":"D7 portability classification","outcome":"invoked","timestamp":"2026-04-17T23:37:35.166Z"}
+{"agent":"deep-research-searcher","description":"D8 composite hybrid systems","outcome":"invoked","timestamp":"2026-04-17T23:38:01.023Z"}
+{"agent":"deep-research-synthesizer","description":"Synthesize 8 findings into RESEARCH_OUTPUT","outcome":"invoked","timestamp":"2026-04-17T23:54:36.710Z"}
+{"agent":"deep-research-verifier","description":"V1 codebase/filesystem claims","outcome":"invoked","timestamp":"2026-04-17T23:55:14.405Z"}
+{"agent":"deep-research-verifier","description":"V2 external web claims","outcome":"invoked","timestamp":"2026-04-17T23:55:34.090Z"}
+{"agent":"contrarian-challenger","description":"Contrarian pre-mortem challenge","outcome":"invoked","timestamp":"2026-04-18T00:07:57.888Z"}
+{"agent":"otb-challenger","description":"OTB alternative framings","outcome":"invoked","timestamp":"2026-04-18T00:08:21.806Z"}
