@@ -587,7 +587,7 @@ _Claude Code skills_
 | [script-ecosystem-audit](.claude/skills/script-ecosystem-audit/SKILL.md)                                                            | Deep diagnostic of `scripts/**/*.js` infrastructure — shared...   | ↓0 ↑0      | 2026-04-11    |
 | [Self-Audit Pattern](.claude/skills/_shared/SELF_AUDIT_PATTERN.md)                                                                  | <!-- prettier-ignore-start -->                                    | ↓5 ↑1      | 2026-04-14    |
 | [Session Begin Reference](.claude/skills/session-begin/REFERENCE.md)                                                                | Supporting reference material for the session-begin skill. T...   | ↓1 ↑2      | 2026-03-16    |
-| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-04-16    |
+| [session-begin](.claude/skills/session-begin/SKILL.md)                                                                              | Pre-flight checklist that orients the session: loads context...   | ↓0 ↑4      | 2026-04-18    |
 | [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)                                                          | Deep diagnostic of the entire Session Ecosystem — lifecycle ...   | ↓0 ↑0      | 2026-03-26    |
 | [session-end](.claude/skills/session-end/SKILL.md)                                                                                  | Structured closure workflow that preserves session context f...   | ↓0 ↑0      | 2026-04-17    |
 | [Shared Audit Template](.claude/skills/_shared/AUDIT_TEMPLATE.md)                                                                   | <!-- prettier-ignore-start -->                                    | ↓2 ↑0      | 2026-03-05    |
@@ -640,7 +640,7 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-17    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-18    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
 | [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-04-17    |
 
@@ -3882,11 +3882,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-17    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-17    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-17    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-17    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
 
 ---
 

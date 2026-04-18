@@ -9,7 +9,7 @@
 
 ---
 
-**Items Needing Verification:** 2157
+**Items Needing Verification:** 2159
 
 This queue contains items with status=NEW that require verification. Review
 items manually or use `tdms-ecosystem-audit` to process this queue.
@@ -756,6 +756,8 @@ items manually or use `tdms-ecosystem-audit` to process this queue.
 | DEBT-45655 | Add unit tests for self-audit reference implementation (8...    | S2       | scripts/skills/skill-audit/self-audit.js                                         | 0         |
 | DEBT-45656 | Test suite for gsd-prompt-guard.js and gsd-workflow-guard.js    | S2       | .claude/hooks/gsd-prompt-guard.js                                                | 0         |
 | DEBT-45658 | SonarCloud new-code duplication exceeds threshold (4.3% >...    | S2       | package.json                                                                     | 0         |
+| DEBT-45659 | Reviews reconcile-commits backfill — 61 PR rounds have fi...    | S2       | .claude/state/reviews.jsonl                                                      | 0         |
+| DEBT-45660 | Reviews disposition-integrity violations — 84 records (56...    | S2       | .claude/state/reviews.jsonl                                                      | 0         |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                               | 0         |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | docs/PLAN_MAP.md                                                                 | 0         |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | scripts/check-review-triggers.sh                                                 | 0         |

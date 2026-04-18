@@ -1,14 +1,3 @@
 {
-  "warnings": [],
-  "lastCleared": "2026-04-18T15:50:00.000Z",
-  "acknowledgedBy": "session-286 triage sweep",
-  "acknowledgedTypes": {
-    "jsonl-sync": "2026-04-18T15:50:00.000Z",
-    "agent": "2026-04-18T15:50:00.000Z",
-    "review-lifecycle": "2026-04-18T15:50:00.000Z",
-    "audit": "2026-04-18T15:50:00.000Z",
-    "tdms-s0": "2026-04-18T15:50:00.000Z",
-    "session-end-missing": "2026-04-18T15:50:00.000Z",
-    "pipeline-ratchet-baselines": "2026-04-18T15:50:00.000Z"
-  }
+  "warnings": []
 }

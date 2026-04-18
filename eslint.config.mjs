@@ -37,6 +37,7 @@ export default [
       "tests/semgrep/**",
       ".temp-test-*/**",
       ".planning/**",
+      ".research/**",
       ".claude/get-shit-done/**",
       ".claude/commands/gsd/**",
       ".claude/agents/gsd-*",

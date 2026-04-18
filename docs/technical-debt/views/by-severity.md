@@ -1420,7 +1420,7 @@
 | DEBT-45647 | CAS family: parent-chain symlink guards missing on reads      | scripts/cas/backfill-tags.js                                                                                                                       | 45   | security                 | E1        |
 | DEBT-45657 | SonarCloud hotspots cleanup sprint — 217 remaining (1 HIG...  | scripts/,components/                                                                                                                               | 0    | security                 | E3        |
 
-## S2 - Medium (3464)
+## S2 - Medium (3466)
 
 | ID         | Title                                                             | File                                                                                                                                                                        | Line      | Category                 | Effort    |
 | ---------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------------------ | --------- |
@@ -4888,6 +4888,8 @@
 | DEBT-45655 | Add unit tests for self-audit reference implementation (8...      | scripts/skills/skill-audit/self-audit.js                                                                                                                                    | 0         | process                  | E2        |
 | DEBT-45656 | Test suite for gsd-prompt-guard.js and gsd-workflow-guard.js      | .claude/hooks/gsd-prompt-guard.js                                                                                                                                           | 0         | code-quality             | E2        |
 | DEBT-45658 | SonarCloud new-code duplication exceeds threshold (4.3% >...      | package.json                                                                                                                                                                | 0         | code-quality             | E2        |
+| DEBT-45659 | Reviews reconcile-commits backfill — 61 PR rounds have fi...      | .claude/state/reviews.jsonl                                                                                                                                                 | 0         | process                  | E3        |
+| DEBT-45660 | Reviews disposition-integrity violations — 84 records (56...      | .claude/state/reviews.jsonl                                                                                                                                                 | 0         | code-quality             | E3        |
 
 ## S3 - Low (3643)
 

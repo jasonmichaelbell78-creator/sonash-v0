@@ -268,7 +268,7 @@
 | DEBT-10931 | Shell script hooks may be redundant with Node.js versions         | S3       | .claude/hooks/session-start.sh                                                                   | 0    |
 | DEBT-10933 | Filesystem MCP server configured but noted as unused              | S3       | .mcp.json                                                                                        | 0    |
 
-## code-quality (4725)
+## code-quality (4726)
 
 | ID         | Title                                                           | Severity | File                                                                                                                                                                        | Line |
 | ---------- | --------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
@@ -3452,6 +3452,7 @@
 | DEBT-45648 | CAS scripts: 6 cyclomatic CC violations baselined (PR #505)     | S2       | scripts/cas/migrate-schemas.js                                                                                                                                              | 84   |
 | DEBT-45656 | Test suite for gsd-prompt-guard.js and gsd-workflow-guard.js    | S2       | .claude/hooks/gsd-prompt-guard.js                                                                                                                                           | 0    |
 | DEBT-45658 | SonarCloud new-code duplication exceeds threshold (4.3% >...    | S2       | package.json                                                                                                                                                                | 0    |
+| DEBT-45660 | Reviews disposition-integrity violations — 84 records (56...    | S2       | .claude/state/reviews.jsonl                                                                                                                                                 | 0    |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | components/notebook/features/quick-actions-fab.tsx                                                                                                                          | 0    |
 | DEBT-0554  | Prefer `String#replaceAll()` over `String#replace()`.           | S3       | components/admin/errors-tab.tsx                                                                                                                                             | 37   |
 | DEBT-0555  | Visible, non-interactive elements with click handlers mus...    | S3       | components/admin/users-tab.tsx                                                                                                                                              | 563  |
@@ -6406,7 +6407,7 @@
 | DEBT-11034 | All 117+ components marked 'use client' — redundant when ... | S3       | components/notebook/book-cover.tsx                    | 1    |
 | DEBT-45520 | Bound JSONL log reads to tail 512KB for hook performance     | S3       | scripts/append-hook-warning.js                        | 69   |
 
-## process (739)
+## process (740)
 
 | ID         | Title                                                         | Severity | File                                                                    | Line |
 | ---------- | ------------------------------------------------------------- | -------- | ----------------------------------------------------------------------- | ---- |
@@ -6789,6 +6790,7 @@
 | DEBT-45653 | Dependabot npm_and_yarn auto-update workflow failing on m...  | S2       | .github/workflows/auto-merge-dependabot.yml                             | 0    |
 | DEBT-45654 | JSONL append hooks don't dedupe by id — learning-routes/p...  | S2       | .claude/hooks/                                                          | 0    |
 | DEBT-45655 | Add unit tests for self-audit reference implementation (8...  | S2       | scripts/skills/skill-audit/self-audit.js                                | 0    |
+| DEBT-45659 | Reviews reconcile-commits backfill — 61 PR rounds have fi...  | S2       | .claude/state/reviews.jsonl                                             | 0    |
 | DEBT-0811  | tj-actions/changed-files without CVE-pinned version           | S3       | .github/workflows/docs-lint.yml                                         | 36   |
 | DEBT-0812  | lint-staged using npx --no-install may fail if not in cache   | S3       | .husky/pre-commit                                                       | 21   |
 | DEBT-0813  | Multiple trap commands may override each other                | S3       | .claude/hooks/session-start.sh                                          | 245  |

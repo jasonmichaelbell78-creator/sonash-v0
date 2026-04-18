@@ -112,3 +112,5 @@
 {"timestamp":"2026-04-15T20:34:33.432Z","action":"intake-manual","item_id":"DEBT-45656","file":".claude/hooks/gsd-prompt-guard.js","severity":"S2","category":"code-quality"}
 {"timestamp":"2026-04-18T17:05:16.584Z","action":"intake-manual","item_id":"DEBT-45657","file":"scripts/,components/","severity":"S1","category":"security"}
 {"timestamp":"2026-04-18T17:05:27.367Z","action":"intake-manual","item_id":"DEBT-45658","file":"package.json","severity":"S2","category":"code-quality"}
+{"timestamp":"2026-04-18T17:34:46.630Z","action":"intake-manual","item_id":"DEBT-45659","file":".claude/state/reviews.jsonl","severity":"S2","category":"process"}
+{"timestamp":"2026-04-18T17:36:20.638Z","action":"intake-manual","item_id":"DEBT-45660","file":".claude/state/reviews.jsonl","severity":"S2","category":"code-quality"}
