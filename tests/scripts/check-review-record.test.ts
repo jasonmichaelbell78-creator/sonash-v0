@@ -26,12 +26,18 @@ function toInt(v: unknown): number | null {
   return null;
 }
 
+function idToString(v: unknown): string {
+  if (typeof v === "string") return v;
+  if (typeof v === "number" && Number.isFinite(v)) return String(v);
+  return "";
+}
+
 function recordMatches(
   rec: { id?: unknown; pr?: unknown; round?: unknown; title?: unknown },
   pr: number,
   round: number
 ): boolean {
-  const idMatch = CANONICAL_ID_PATTERN.exec(String(rec.id ?? ""));
+  const idMatch = CANONICAL_ID_PATTERN.exec(idToString(rec.id));
   if (
     idMatch &&
     Number.parseInt(idMatch[1], 10) === pr &&

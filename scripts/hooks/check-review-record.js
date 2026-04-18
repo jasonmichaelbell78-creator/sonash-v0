@@ -50,10 +50,19 @@ function toInt(v) {
   return null;
 }
 
+// Narrow an id value to a safe string for pattern matching. Returns "" for
+// null/undefined/objects to avoid Object's default "[object Object]" string
+// leaking into regex matches (SonarCloud R2 #4). Accepts number + string.
+function idToString(v) {
+  if (typeof v === "string") return v;
+  if (typeof v === "number" && Number.isFinite(v)) return String(v);
+  return "";
+}
+
 // Does a single JSONL record match the target PR/round? Extracted to
 // reduce hasReviewRecord cognitive complexity (SonarCloud R1 #1).
 function recordMatches(rec, pr, round) {
-  const idMatch = CANONICAL_ID_PATTERN.exec(String(rec.id ?? ""));
+  const idMatch = CANONICAL_ID_PATTERN.exec(idToString(rec.id));
   if (
     idMatch &&
     Number.parseInt(idMatch[1], 10) === pr &&

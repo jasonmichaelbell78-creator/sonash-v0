@@ -1457,8 +1457,8 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~19300 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 558    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~19340 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 559    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -15431,6 +15431,57 @@ deduplicated, non-overlapping ranges):
   --paginate/--slurp for >100 runs.
 - security-auditor pre-task dispatch useful for fresh security assessment of
   review-flagged items.
+
+---
+
+### Review review-pr517-r2: PR #517 R2 — Mixed (SonarCloud QG + Qodo Suggestions + Qodo Compliance + CI Prettier) (2026-04-18)
+
+**Date:** 2026-04-18 | **PR:** #517 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 8     | 0        | 2        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 5     | 3     | 2       |
+
+**Patterns:**
+
+- sonar-cpd-exclusions-for-tests
+- prettier-ignore-research-artifacts
+- options-object-to-reduce-param-count
+- narrow-id-stringification-no-object-default
+- string-raw-for-perl-regex-escapes
+- unique-lineindex-keys-for-missing-ids
+- github-checkrun-conclusion-enum-completeness
+- positive-int-coercion-accepts-numeric-strings
+
+**Learnings:**
+
+- Tests that re-implement subject-under-test logic (project convention) trigger
+  SonarCloud CPD duplication blocks on new-code percentage gate. Fix:
+  sonar.cpd.exclusions for tests + test-like globs. Preserves quality+bugs
+  checks on tests; removes only the structural-duplicate false positive.
+- prettierignore must mirror eslint.config.mjs ignores for .research/ extraction
+  artifacts — Prettier checks blocked CI on author-authored markdown that ESLint
+  already skipped.
+- Functions with >7 params are SonarCloud MAJOR; options-object refactor is
+  trivial and cheaper than accepting the warning.
+- String(v ?? '') stringifies objects to [object Object] which accidentally
+  matches some regex patterns. Narrow via typeof guard: string | finite number
+  else empty. Applied to 3 sites via propagation sweep.
+- String.raw for perl-regexp grep patterns — double-escaping is easy to miss and
+  the embedded backslashes are noise.
+- Records with missing/empty ids must NOT collapse to a single undefined bucket
+  during dedup. Use unique lineIndex-based key + warn.
+- GitHub check-run conclusion enum has more failing states than
+  failure+timed_out: include cancelled, action_required, startup_failure to
+  avoid false GREEN grades.
+- generateReviewId should accept numeric strings (CLI inputs) — toPositiveInt
+  helper covers both native numbers and string inputs.
 
 ## Key Patterns
 

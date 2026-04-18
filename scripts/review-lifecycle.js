@@ -492,8 +492,17 @@ function toFinitePositiveInt(v) {
   return null;
 }
 
+// Narrow an id value to a safe string for pattern matching. Returns "" for
+// null/undefined/objects to avoid Object's default "[object Object]" string
+// leaking into regex matches (SonarCloud R2 #4 propagation).
+function idToSafeString(v) {
+  if (typeof v === "string") return v;
+  if (typeof v === "number" && Number.isFinite(v)) return String(v);
+  return "";
+}
+
 function matchCanonicalId(id) {
-  const m = RECONCILE_CANONICAL_ID.exec(String(id ?? ""));
+  const m = RECONCILE_CANONICAL_ID.exec(idToSafeString(id));
   return m ? `${m[1]}-${m[2]}` : null;
 }
 
@@ -552,7 +561,9 @@ function fetchFixCommitLog() {
     // Qodo R1 #7: previous --grep=fix: PR # missed scoped commits.
     return execFileSync(
       "git",
-      ["log", "--all", "--oneline", "--perl-regexp", "--grep=^fix(\\(pr-review\\))?: PR #"],
+      // String.raw avoids JS-level escape stacking on the perl-regexp source;
+      // the pattern sent to git is literally: ^fix(\(pr-review\))?: PR #
+      ["log", "--all", "--oneline", "--perl-regexp", String.raw`--grep=^fix(\(pr-review\))?: PR #`],
       {
         cwd: ROOT,
         encoding: "utf8",

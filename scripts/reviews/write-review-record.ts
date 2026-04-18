@@ -45,16 +45,26 @@ const { safeParseLine } = require(
  * Falls back to rev-{N} sequential format if pr/round not provided
  * (backward compat for non-PR review records like retros).
  */
-export function generateReviewId(projectRoot: string, data: Record<string, unknown>): string {
-  // Qodo R1 #11: Validate pr and round are finite positive integers before
-  // generating a canonical ID. Prior truthy check (pr && round) admitted
-  // floats, NaN, and negative numbers, producing malformed ids like
-  // "review-pr1.5-rNaN" or "review-pr-1-r0".
-  const pr = typeof data.pr === "number" ? data.pr : Number.NaN;
-  const round = typeof data.round === "number" ? data.round : Number.NaN;
-  if (Number.isFinite(pr) && pr > 0 && Number.isFinite(round) && round > 0) {
-    return `review-pr${Math.trunc(pr)}-r${Math.trunc(round)}`;
+// Coerce a value to a finite positive integer, or null. Accepts native
+// numbers and numeric strings (CLI inputs) but rejects floats, NaN, negative,
+// and other types. Qodo R2 #9.
+function toPositiveInt(v: unknown): number | null {
+  if (typeof v === "number" && Number.isFinite(v) && v > 0) return Math.trunc(v);
+  if (typeof v === "string") {
+    const n = Number.parseInt(v, 10);
+    if (Number.isFinite(n) && n > 0) return n;
   }
+  return null;
+}
+
+export function generateReviewId(projectRoot: string, data: Record<string, unknown>): string {
+  // Qodo R1 #11 + R2 #9: validate pr and round are finite positive integers
+  // before generating a canonical ID. Accepts numeric strings commonly
+  // provided via CLI. Prior truthy check admitted floats, NaN, and negatives,
+  // producing malformed ids like "review-pr1.5-rNaN".
+  const pr = toPositiveInt(data.pr);
+  const round = toPositiveInt(data.round);
+  if (pr !== null && round !== null) return `review-pr${pr}-r${round}`;
   return getNextRevId(projectRoot);
 }
 

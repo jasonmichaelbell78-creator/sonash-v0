@@ -65,7 +65,21 @@ function loadReviews() {
 function groupById(entries) {
   const byId = new Map();
   for (const entry of entries) {
-    const id = String(entry.record.id);
+    const rawId = entry.record?.id;
+    // Qodo R2 #7: records with missing/empty ids must NOT be collapsed into
+    // a single "undefined" bucket (would cause unrelated records to be
+    // classified as duplicates and dropped). Give each missing-id record a
+    // unique synthetic key tied to its lineIndex so dedup treats them as
+    // distinct, and warn so the data can be repaired.
+    const id =
+      rawId === undefined || rawId === null || String(rawId).trim() === ""
+        ? `__missing_id__:${entry.lineIndex}`
+        : String(rawId);
+    if (id.startsWith("__missing_id__")) {
+      console.warn(
+        `[dedup] Record missing id at line ${entry.lineIndex + 1} — treating as unique (manual repair recommended)`
+      );
+    }
     if (!byId.has(id)) byId.set(id, []);
     byId.get(id).push(entry);
   }
@@ -167,9 +181,12 @@ function backfillMissingTitle(record) {
   return true;
 }
 
-// Produce re-key and drop actions for a single group. Returns the list of
-// action entries so caller can update toDrop/toRekey Sets in place.
-function actionsForGroup(id, group, keeper, strategy, entries, usedNewIds, toDrop, toRekey) {
+// Produce re-key and drop actions for a single group. Accepts an options
+// object to stay under the 7-parameter SonarCloud threshold (R2 #3). Returns
+// the list of action entries; mutates ctx.toDrop / ctx.toRekey / ctx.usedNewIds
+// in place so the caller accumulates state across groups.
+function actionsForGroup(ctx) {
+  const { id, group, keeper, strategy, entries, usedNewIds, toDrop, toRekey } = ctx;
   const out = [];
   for (const entry of group) {
     if (entry === keeper) continue;
@@ -208,7 +225,7 @@ function computeEdits(byId, entries) {
     const { strategy } = classifyGroup(group);
     const keeper = pickKeeper(group, strategy);
     actions.push(
-      ...actionsForGroup(id, group, keeper, strategy, entries, usedNewIds, toDrop, toRekey)
+      ...actionsForGroup({ id, group, keeper, strategy, entries, usedNewIds, toDrop, toRekey })
     );
   }
   return { toDrop, toRekey, actions };

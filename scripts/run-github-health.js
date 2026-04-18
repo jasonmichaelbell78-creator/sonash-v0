@@ -349,9 +349,21 @@ function analyzeCIState(snapshot, checkRuns, issues, details) {
     return rollup || "UNKNOWN";
   }
 
+  // GitHub Check Run conclusion enum: success | failure | neutral | cancelled
+  // | skipped | timed_out | action_required | startup_failure. Everything
+  // except success/neutral/skipped indicates a non-passing run (Qodo R2 #8).
+  // Previously only failure/timed_out were counted — cancelled and
+  // startup_failure silently passed as success, causing false GREEN grades.
+  const FAILING_CONCLUSIONS = new Set([
+    "failure",
+    "timed_out",
+    "cancelled",
+    "action_required",
+    "startup_failure",
+  ]);
   const buckets = { REAL_CI: [], MAINTENANCE: [], EXTERNAL: [] };
   for (const run of checkRuns) {
-    if (run.conclusion !== "failure" && run.conclusion !== "timed_out") continue;
+    if (!FAILING_CONCLUSIONS.has(run.conclusion)) continue;
     buckets[categorizeCheckRun(run)].push(run.name);
   }
 
