@@ -1457,8 +1457,8 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~17940 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 495    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~19240 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 556    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -2077,7 +2077,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 20    | 2025  | 0        | 0        |
+| 20    | 20    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -2114,7 +2114,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 5     | 5     | 0        | 5        |
+| 5     | 0     | 0        | 5        |
 
 **Severity Breakdown:**
 
@@ -2146,7 +2146,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 11    | 1        | 0        |
+| 11    | 10    | 1        | 0        |
 
 **Severity Breakdown:**
 
@@ -2180,7 +2180,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
+| 8     | 8     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -2209,7 +2209,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 4     | 202   | 0        | 0        |
+| 4     | 4     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -2271,7 +2271,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 32    | 27    | 0        | 1        |
+| 32    | 31    | 0        | 1        |
 
 **Severity Breakdown:**
 
@@ -2369,7 +2369,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 1     | 0        | 0        |
+| 8     | 8     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -2420,7 +2420,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 0        |
+| 12    | 12    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -2549,7 +2549,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 10    | 10    | 2        | 1        |
+| 10    | 7     | 2        | 1        |
 
 **Severity Breakdown:**
 
@@ -2648,7 +2648,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 19    | 16    | 0        | 0        |
+| 19    | 19    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -2810,7 +2810,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 8     | 0        | 0        |
+| 11    | 11    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -2871,7 +2871,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 8     | 0        | 2        |
+| 8     | 6     | 0        | 2        |
 
 **Severity Breakdown:**
 
@@ -2902,7 +2902,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 9     | 0        | 4        |
+| 9     | 5     | 0        | 4        |
 
 **Severity Breakdown:**
 
@@ -2933,7 +2933,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 9     | 0        | 4        |
+| 13    | 9     | 0        | 4        |
 
 **Severity Breakdown:**
 
@@ -3055,7 +3055,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 2        |
+| 12    | 10    | 0        | 2        |
 
 **Severity Breakdown:**
 
@@ -3075,7 +3075,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 3        |
+| 12    | 9     | 0        | 3        |
 
 **Severity Breakdown:**
 
@@ -3101,7 +3101,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 0     | 0        | 7        |
+| 11    | 4     | 0        | 7        |
 
 **Severity Breakdown:**
 
@@ -3181,7 +3181,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 15    | 13    | 2        | 1        |
+| 16    | 13    | 2        | 1        |
 
 **Severity Breakdown:**
 
@@ -3278,7 +3278,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 8     | 2        | 0        |
+| 12    | 10    | 2        | 0        |
 
 **Severity Breakdown:**
 
@@ -3502,7 +3502,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 10    | 1        | 0        |
+| 12    | 11    | 1        | 0        |
 
 **Severity Breakdown:**
 
@@ -3535,7 +3535,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 11    | 1        | 0        |
+| 12    | 11    | 1        | 0        |
 
 **Severity Breakdown:**
 
@@ -3638,7 +3638,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 0     | 0        | 0        |
+| 11    | 11    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -3665,7 +3665,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 17    | 17    | 1        | 0        |
+| 17    | 16    | 1        | 0        |
 
 **Severity Breakdown:**
 
@@ -3697,7 +3697,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 23    | 18    | 0        | 0        |
+| 23    | 23    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -3757,7 +3757,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 20    | 10    | 0        | 5        |
+| 20    | 15    | 0        | 5        |
 
 **Severity Breakdown:**
 
@@ -3817,7 +3817,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 0     | 0        | 0        |
+| 9     | 9     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -3847,7 +3847,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 0     | 0        | 0        |
+| 11    | 11    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -3876,7 +3876,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 0     | 0        | 0        |
+| 9     | 9     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -3905,7 +3905,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 18    | 0     | 0        | 0        |
+| 18    | 18    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -3934,7 +3934,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
+| 8     | 8     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -3961,7 +3961,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 33    | 33    | 0        | 1        |
+| 34    | 33    | 0        | 1        |
 
 **Severity Breakdown:**
 
@@ -4164,7 +4164,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 15    | 0     | 4        | 1        |
+| 15    | 10    | 4        | 1        |
 
 **Severity Breakdown:**
 
@@ -4193,7 +4193,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 0     | 0        | 0        |
+| 9     | 9     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -4222,7 +4222,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 0     | 0        | 0        |
+| 9     | 9     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -4322,7 +4322,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 40    | 21    | 6        | 5        |
+| 40    | 29    | 6        | 5        |
 
 **Severity Breakdown:**
 
@@ -4501,7 +4501,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 13    | 12    | 0        | 0        |
+| 13    | 13    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -4562,7 +4562,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 13    | 8     | 0        | 4        |
+| 13    | 9     | 0        | 4        |
 
 **Severity Breakdown:**
 
@@ -4593,7 +4593,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 10    | 8     | 0        | 3        |
+| 11    | 8     | 0        | 3        |
 
 **Severity Breakdown:**
 
@@ -4655,7 +4655,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 3     | 7     | 0        | 5        |
+| 12    | 7     | 0        | 5        |
 
 **Severity Breakdown:**
 
@@ -4683,7 +4683,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 6     | 0        | 6        |
+| 12    | 6     | 0        | 6        |
 
 **Severity Breakdown:**
 
@@ -4781,7 +4781,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 3     | 8     | 0        | 5        |
+| 13    | 8     | 0        | 5        |
 
 **Severity Breakdown:**
 
@@ -4943,7 +4943,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 2     | 31    | 0        | 3        |
+| 45    | 38    | 4        | 3        |
 
 **Severity Breakdown:**
 
@@ -5056,7 +5056,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 49    | 0     | 0        | 0        |
+| 49    | 49    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5186,7 +5186,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 197   | 197   | 3        | 6        |
+| 206   | 197   | 3        | 6        |
 
 **Severity Breakdown:**
 
@@ -5273,7 +5273,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
+| 8     | 8     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5293,7 +5293,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
+| 7     | 7     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5313,7 +5313,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 6     | 0     | 0        | 0        |
+| 6     | 6     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5333,7 +5333,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
+| 4     | 4     | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5480,7 +5480,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 7     | 8     | 0        | 3        |
+| 11    | 8     | 0        | 3        |
 
 **Severity Breakdown:**
 
@@ -5534,7 +5534,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 32    | 0     | 0        | 0        |
+| 32    | 32    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5554,7 +5554,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 42    | 0     | 0        | 0        |
+| 42    | 42    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5570,7 +5570,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
+| 20    | 20    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5586,7 +5586,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
+| 20    | 20    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5602,7 +5602,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 13    | 0     | 0        | 0        |
+| 13    | 13    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5618,7 +5618,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 19    | 0     | 0        | 0        |
+| 19    | 19    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5671,7 +5671,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
+| 20    | 20    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5760,7 +5760,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 38    | 0     | 0        | 0        |
+| 38    | 38    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5822,7 +5822,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 18    | 0     | 0        | 0        |
+| 18    | 18    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5863,7 +5863,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 14    | 0     | 0        | 0        |
+| 14    | 14    | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -5988,7 +5988,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 436   | 0     | 0        | 0        |
+| 436   | 436   | 0        | 0        |
 
 **Severity Breakdown:**
 
@@ -6081,7 +6081,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 21    | 18    | 0        | 2        |
+| 21    | 19    | 0        | 2        |
 
 **Severity Breakdown:**
 
@@ -6680,7 +6680,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
+| 2     | 2     | 0        | 0        |
 
 ---
 
@@ -6692,7 +6692,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 1     | 0     | 0        | 0        |
+| 1     | 1     | 0        | 0        |
 
 ---
 
@@ -6752,7 +6752,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 8     | 0        | 3        |
+| 12    | 9     | 0        | 3        |
 
 ---
 
@@ -6772,7 +6772,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 0        |
+| 8     | 8     | 0        | 0        |
 
 **Patterns:**
 
@@ -11424,7 +11424,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 11    | 11    | 1        | 0        |
+| 12    | 11    | 1        | 0        |
 
 **Patterns:**
 
@@ -11476,7 +11476,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 12    | 12    | 3        | 0        |
+| 15    | 12    | 3        | 0        |
 
 **Patterns:**
 
@@ -11634,7 +11634,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 3     | 3     | 2        | 2        |
+| 7     | 3     | 2        | 2        |
 
 **Learnings:**
 
@@ -11653,7 +11653,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 4     | 4     | 0        | 3        |
+| 7     | 4     | 0        | 3        |
 
 **Learnings:**
 
@@ -11767,7 +11767,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 3     | 1     | 0        | 0        |
+| 3     | 3     | 0        | 0        |
 
 **Learnings:**
 
@@ -11865,7 +11865,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 14    | 14    | 0        | 7        |
+| 21    | 14    | 0        | 7        |
 
 **Learnings:**
 
@@ -12398,7 +12398,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 8     | 5     | 0        | 0        |
+| 8     | 8     | 0        | 0        |
 
 **Patterns:**
 
@@ -12497,7 +12497,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 10    | 4     | 0        | 0        |
+| 10    | 10    | 0        | 0        |
 
 **Patterns:**
 
@@ -12618,7 +12618,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 2     | 2     | 0        | 8        |
+| 10    | 2     | 0        | 8        |
 
 **Learnings:**
 
@@ -12680,7 +12680,7 @@ deduplicated, non-overlapping ranges):
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 9     | 0        | 4        |
+| 13    | 9     | 0        | 4        |
 
 **Learnings:**
 
@@ -13966,6 +13966,1401 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 0     | 14    | 0        | 2        |
+
+---
+
+### Review review-pr350-r2: PR #350 R2 — fork protection, fix link path, timing API, test stability (2026-02-07)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-07 | **PR:** #350 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Block fork PRs from accessing secrets (pull_request_target guard)
+- Remove unnecessary checks:write permission from preview job
+- Revert CODE_PATTERNS.md link to correct ../../CLAUDE.md path
+- Fix page_load_under: use nav.duration instead of raw loadEventEnd timestamp
+- Fix deprecated performance.timing in Phase 4 → Navigation Timing API
+- Add wait_for: network_idle to responsive scroll check (reduce flakiness)
+- Improve security header check with tool reference and skip fallback
+
+---
+
+### Review review-pr350-r3: PR #350 R3 — case-sensitive link, secrets hardening, workflow optimization (2026-02-07)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-07 | **PR:** #350 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Fix claude.md link case: CLAUDE.md → claude.md (Linux CI is case-sensitive)
+- Use vars instead of secrets for public NEXT*PUBLIC* Firebase config in preview
+- Add persist-credentials: false to prevent git credential leakage
+- Add pull_request_target types filter (opened, synchronize, reopened)
+- Add concurrency group to cancel outdated preview deploys
+- Add navigate path resolution docs (relative → absolute URL)
+- Revert responsive wait_for to null (network_idle can cause timeouts)
+
+---
+
+### Review review-pr351-r2: PR #351 R2 — CRLF handling, fuzzyMatch normalization, npx -y flag (2026-02-08)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-08 | **PR:** #351 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Learnings:**
+
+- Handle CRLF line endings in readFirstLine and readSkillDescription
+- Normalize hyphens/underscores in fuzzyMatch keywords (not just names)
+- Add -y flag to npx to prevent interactive prompt hangs in CI
+
+---
+
+### Review review-pr354-r2: PR #354 R2 — Qodo code suggestions + compliance fixes (2026-02-09)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-09 | **PR:** #354 | **Source:** qodo+sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- ai-pattern-checks.js: Fix incomplete path traversal — detect .. mid-path
+- sync-sonarcloud.js: Validate org before using it to derive project key
+- validate-phase-completion.js: Use dynamic header length instead of hardcoded
+  10
+- transform-jsonl-schema.js: Single reduce loop in categorizeVerificationSteps
+- test-geocode.ts: Mask API key in console log output
+- retry-failures.ts: execSync→execFileSync, redact addresses from logs
+- enrich-addresses.ts: Null guard for result.address, early return, sanitize
+  error logging, redact addresses from logs and failure file
+
+---
+
+### Review review-pr355-r1: PR #355 R1 — Qodo + SonarCloud + CI compliance fixes (Review #274) (2026-02-10)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-10 | **PR:** #355 | **Source:** qodo+sonarcloud+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 33    | 28    | 0        | 5        |
+
+**Learnings:**
+
+- CRITICAL: dedup-multi-pass.js merge audit logging reflects actual swap
+  direction
+- MAJOR: retry-failures.ts PII removal from geocoding logs, NaN coordinate guard
+- MAJOR: ai-pattern-checks.js ENOENT-only catch in isContainedRealPath
+- MAJOR: intake-manual.js rollback race condition fix
+- MINOR: assign-roadmap-refs.js atomicRename EPERM/EEXIST-only fallback
+- REJECTED: top-level await (Node v22 ESM auto-detect, tsx), early return on
+  validation, Set.freeze
+
+---
+
+### Review review-pr356-r1: PR #356 R1 — doc lint, pattern compliance, code quality fixes (2026-02-10)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-10 | **PR:** #356 | **Source:** sonarcloud+ci+doc-lint
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Learnings:**
+
+- Add Purpose/Version History sections to claude.md, AGENT_ORCHESTRATION.md,
+  CONTEXT_PRESERVATION.md (CI doc lint compliance)
+- Wrap readFileSync in try/catch in resolve-dependencies.js and
+  generate-report.js (pattern compliance)
+- Add 3 new scripts to verified-patterns.json exclusion list
+- Fix suggestStderr premature exit bug in analyze-user-request.js — low-
+  confidence matches no longer prevent checking lower-priority categories
+- Deduplicate security weak match hints (auth+token no longer emits twice)
+- Replace silent catch blocks with stderr logging in track-session.js and
+  generate-report.js
+- Tighten regex quantifiers in resolve-dependencies.js to bounded ranges
+  (SonarCloud S5852 DoS prevention)
+- Upgrade matchesPhrase to use word boundaries instead of includes()
+
+---
+
+### Review review-pr356-r2: PR #356 R2 — Qodo high-impact code quality improvements (2026-02-10)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-10 | **PR:** #356 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Learnings:**
+
+- Missing deps now block tasks (not silently treated as ready)
+- Implement true Kahn's topological sort for dependency-resolved ordering
+- Ready tasks returned in correct execution order
+- Only count checkbox state transitions (removed [ ] → added [x]) instead of any
+  added [x] line (prevents false counts from new tasks)
+- Diff against last commit that actually modified ROADMAP.md via git rev-list,
+  not just HEAD~1 (prevents undercounting)
+- Scope burn-down to Active Sprint section, not entire ROADMAP.md
+- Fix per-track double counting: derive counts from item_ids instead of adding
+  total items_completed to each track
+- Add JSONL parse failure logging to stderr (was silently dropping)
+
+---
+
+### Review review-pr356-r3: PR #356 R3 — dependency graph, velocity tracking, and hook refinements (2026-02-10)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-10 | **PR:** #356 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Fix circular dependency detection using shared stack (avoid O(n) array copies)
+- Support wrapped [depends:] annotations spanning next indented line
+- Optimize topological sort: shift→index pointer, includes→Set for O(1) lookup
+- Improve matchesPhrase tokenization for varied spacing/punctuation
+- Wrap velocity log writes in try/catch for resilience
+- Add velocity-log.jsonl to .gitignore (ephemeral session state)
+- Untrack velocity-log.jsonl from git
+
+---
+
+### Review review-pr356-r4: PR #356 R4 — CRLF regex, input validation, cycle blocking (2026-02-10)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-10 | **PR:** #356 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Fix CRLF line ending regex in generate-report.js (pattern compliance)
+- Validate --session CLI input: reject NaN/negative/Infinity values
+- Guard matchesPhrase against empty/whitespace phrases (false positives)
+- Support multi-line [depends:] annotations spanning up to 4 lines
+- Block cycle-dependent tasks from ready list (move to blocked)
+- Handle missing Active Sprint section: return scoped flag, skip burn-down
+- Improve log write: statSync directory check, set process.exitCode on failure
+
+---
+
+### Review review-pr366-r8: PR #366 R8 — tmpPath symlink guards + Firestore regex bypass fix (2026-02-14)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-14 | **PR:** #366 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 4     | 0        | 0        |
+
+**Learnings:**
+
+- Add isSafeToWrite(tmpPath) guards on 5 atomic write paths:
+  post-write-validator.js (statePath, reviewQueuePath), alerts-reminder.js,
+  analyze-user-request.js, user-prompt-handler.js
+- Fix Firestore regex hyphen bypass: \w+ → [A-Za-z0-9_-]+
+- Resolve log-override.js OVERRIDE_LOG with path.resolve()
+- Add Review #323 learning entry (7 fixed, 5 rejected)
+
+---
+
+### Review review-pr369-r1: PR #369 R1 — execSync→execFileSync, CC reduction, data quality fixes (Review #335) (2026-02-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-16 | **PR:** #369 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 16    | 16    | 0        | 0        |
+
+**Learnings:**
+
+- track-resolutions.js: execSync→execFileSync with args array, add
+  isPathContained() (SEC-001/S4721)
+- count-commits-since.js: execSync→execFileSync with args array (SEC-001/S4721)
+- post-audit.js: execSync→execFileSync, refactor runStep(label,cmd,args)
+  (SEC-001/S4721)
+- generate-results-index.js: add symlink guard before writeFileSync
+- compare-audits.js: CC 37→<15 via SEVERITY_LABELS constant, extract
+  jaccardSimilarity, significantWords, collectNewAndResolvedKeys, 6
+  generateMarkdownReport helpers
+- track-resolutions.js: extract printJsonReport/printHumanReport from main()
+- count-commits-since.js: extract parseTableRow, extractLastAuditDate,
+  extractThreshold, printNoData, filterCategories helpers
+- intake-audit.js: extract detectAndMapFormat, checkRequiredFields from
+  validateAndNormalize
+- audit-health-check.js: fix regex grouping bug, filter(Boolean), negated
+  condition flip, rename shadowed variable
+- pre-audit-check.js: rewrite parseArgs loop to use indexOf (no loop var
+  mutation)
+- validate-templates.js: EXCLUDED_FILES as Set with .has()
+- generate-results-index.js: require("fs")→require("node:fs")
+- compare-audits.js: findingKey collision resistance with id/content_hash/line
+  prefixes
+- count-commits-since.js: replaceAll, Number.parseInt
+- normalized-all.jsonl: fix 3 malformed lines (file:"1", file:"multiple",
+  untitled finding)
+- .gitignore: add \*.bak pattern
+
+---
+
+### Review review-pr369-r5: PR #369 R5 — CC extraction, tmpFile symlink, ISO date normalization (Review #339) (2026-02-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-16 | **PR:** #369 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- Extract validateInputPath() from post-audit.js main() to reduce CC 20→~10
+- Add tmpFile symlink guard + cross-platform rename fallback in
+  generate-results-index.js
+- Normalize ISO timestamps in track-resolutions.js sinceDate handling
+- Guard --apply loop against closed/filtered items in track-resolutions.js
+- Strip :lineNumber suffix from file in compare-audits.js findingKey
+- Safe error.message in audit-health-check.js Stale Baselines catch
+
+---
+
+### Review review-pr369-r6: PR #369 R6 — CC extraction x2, wx flag, atomic writeMasterDebt, collision detection (Review #340) (2026-02-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-16 | **PR:** #369 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Extract guardSymlink() + atomicWrite() from generate-results-index.js main()
+  (CC 17→~5)
+- Extract classifyOpenItems() + applyResolutions() from track-resolutions.js
+  main() (CC 22→~8)
+- Use exclusive-create flag "wx" for tmp files to prevent TOCTOU/symlink races
+- Atomic write (tmp+rename) for writeMasterDebt() in track-resolutions.js
+- Return canonical inputReal path from validateInputPath() in post-audit.js
+- Add finding key collision detection in compare-audits.js compareFindings()
+- Type guard on extractLastAuditDate() in count-commits-since.js
+
+---
+
+### Review review-pr369-r7: PR #369 R7 — CC indexByKey, ancestor symlink, fstatSync forward scan, error -1 (Review #341) (2026-02-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-16 | **PR:** #369 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- Extract indexByKey() from compare-audits.js compareFindings() (CC 17→~10)
+- Add ancestor symlink containment via realpathSync in generate-results-index.js
+- Add dir+dest symlink guards in track-resolutions.js fallback rename path
+- Add fstatSync forward scan in check-pattern-compliance.js symlink guard check
+- startsWith("never") for robust date parsing in count-commits-since.js
+- Return -1 on git error in countCommitsSince() instead of masking as 0
+
+---
+
+### Review review-pr369-r8: PR #369 R8 — CC buildResults+safeRename, symlink walk, detectAndMapFormat, error strings (Review #342) (2026-02-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-16 | **PR:** #369 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- count-commits-since.js: Extract buildResults()+statusIcon() (CC 17→~8), error
+  field as string, printNoData outputs {"error":"..."} not {}
+- track-resolutions.js: Extract guardSymlink()+safeRename() (CC 20→~6)
+- generate-results-index.js: Skip symlinks in walk() traversal
+- check-pattern-compliance.js: Restrict fstatSync forward scan to hasOpenSync,
+  start from line i not backStart
+- intake-audit.js: Refactor detectAndMapFormat to early-return pattern
+
+---
+
+### Review review-pr369-r9: PR #369 R9 — fail-closed guardSymlink, non-object guard, pattern recognizer, source ID regex (Review #343) (2026-02-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-16 | **PR:** #369 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 4     | 0        | 0        |
+
+**Learnings:**
+
+- track-resolutions.js + generate-results-index.js: guardSymlink fail-closed
+  (only ignore ENOENT/ENOTDIR, treat other errors as fatal)
+- intake-audit.js: detectAndMapFormat non-object guard + file path normalization
+  warning for unnormalizable paths
+- check-pattern-compliance.js: recognize guardSymlink as valid guard pattern
+- validate-schema.js: tighten source_id regex to colon-only separators
+
+---
+
+### Review review-pr371-r2: PR #371 R2 — CC extraction, options object, for-of, negated conditions (2026-02-17)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-17 | **PR:** #371 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Extract tryLabelColonNumber/tryNumberBeforeLabel from parseSeverityCount (CC
+  33→~8)
+- Extract createRetroEntry/isSectionEndHeading/enrichRetroEntries from
+  parseRetrospectives (CC 17→~8)
+- Convert executeArchival 10 params to single options object
+- Convert toSlug indexed for loop to for-of
+- Flip negated conditions in promote-patterns and sync-reviews
+- Replace .indexOf() !== -1 with .includes()
+- Update learning entry #348 with R2 stats
+
+---
+
+### Review review-pr371-r3: PR #371 R3 — argument injection in CC gate, suppression scope, pipeline robustness (2026-02-17)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-17 | **PR:** #371 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 4     | 0        | 0        |
+
+**Learnings:**
+
+- Replace unquoted $staged_js with printf|xargs + -- separator to prevent
+  argument injection via crafted filenames and word-splitting on spaces
+- Add || true to grep|head pipeline for fail-safety under set -e
+- Expand pr_compliance_checker scope to include docs/technical-debt/
+- Reject reviews.jsonl id type change (string IDs for retros are intentional)
+
+---
+
+### Review review-pr374-r4: PR #374 R4 — ancestor containment, fresh repo guard, gitExec trim, CI doc fixes (Review #353) (2026-02-17)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-17 | **PR:** #374 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- Restore bidirectional containment in resolveProjectDir (ancestor + descendant)
+- Use path.resolve instead of realpathSync for state/hooks dirs (fresh repo
+  safe)
+- Add opts.trim flag to gitExec for NUL-delimited output preservation
+- Add DEBUG-gated logging for silent catch, sanitize error.message in
+  session-start
+- Fix CI docs:check: add Purpose/Version History to 7 pre-existing docs, fix 16
+  broken links
+- Add review entries #350-#353 to learnings log, sync 40 entries to
+  reviews.jsonl
+
+---
+
+### Review review-pr374-r5: PR #374 R5 — saveJson guard bypass, NUL trim propagation, ancestor depth limit (Review #354) (2026-02-17)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-17 | **PR:** #374 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- Hoist safeToWrite flag to function scope so fallback catch path respects guard
+- Auto-detect NUL bytes in gitExec to skip trim on -z output
+- Add {trim: false} to all 4 git -z calls in post-read-handler +
+  pre-compaction-save
+- Cap ancestor containment at 10 levels depth (defense-in-depth)
+- Improve debug error logging robustness in session-start
+
+---
+
+### Review review-pr378-r1: PR #378 R1 — exit code coercion, TOCTOU race, absolute paths, checklist gaps (Review #355) (2026-02-18)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-18 | **PR:** #378 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Fix exit code string coercion bug in commit-failure-reporter (Number() +
+  isFinite guard)
+- Remove TOCTOU race: single statSync with ENOENT catch instead of existsSync +
+  statSync
+- Strip 41 absolute paths from agent-research-results.md (relative paths only)
+- Add Domain 9 check 9.10 (Firestore query complexity/DoS)
+- Add Domain 3 check 3.7 (skipped/todo tests)
+- Add Domain 0 check 0.6 (PLAN_INDEX.md written)
+- Fix finding ID P-001 → D01-001 in WORKFLOW.md
+
+---
+
+### Review review-pr378-r2: PR #378 R2 — GIT_DIR resolution, broken table row (Review #356) (2026-02-18)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-18 | **PR:** #378 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 2     | 2     | 0        | 0        |
+
+**Learnings:**
+
+- Use GIT_DIR env var with fallback for git directory resolution in
+  commit-failure-reporter
+- Fix broken markdown table row in DOCUMENTATION_INDEX.md
+
+---
+
+### Review review-pr379-r1: PR #379 R1 — EXIT trap, evidence dedup, mktemp guards (Review #355) (2026-02-19)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** gemini
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 4     | 0        | 0        |
+
+**Learnings:**
+
+- pre-commit: Add EXIT trap to display log on failure — POSIX migration made
+  hook output silent, now dumps log to stderr on non-zero exit
+- dedup-multi-pass.js: Fix evidence array dedup using JSON.stringify instead of
+  Array.includes() (reference equality fails for objects). Fixed 27 items with
+  duplicate evidence entries in MASTER_DEBT.jsonl.
+- pre-push: Add error guards to mktemp/mv POSIX portability pattern
+- DEBT-3214: Hook warning logs missing user context field (S3)
+
+---
+
+### Review review-pr379-r2: PR #379 R2 — evidence canonicalization, TDMS data quality (Review #356) (2026-02-19)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** gemini
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Learnings:**
+
+- dedup-multi-pass.js: Canonicalize evidence object keys before stringify for
+  order-independent comparison. Added try/catch + Array.isArray guard.
+- normalize-all.js: Normalize backslash source_file paths at ingestion
+- normalize-all.js: Strip absolute repo-root paths from file field
+- MASTER_DEBT.jsonl: Fixed 246 backslash paths, 50 absolute paths, 1 verified_by
+  boolean, 1 file/line swap (DEBT-2548)
+- intake-log.jsonl: Fixed 1 absolute path in input_file
+- DEBT-3164: Escalated to VERIFIED status (rate limiter key mismatch)
+- Sentry DSN redaction: NEXT*PUBLIC*\* is a public client DSN
+- reCAPTCHA site key redaction: Public site key, not secret
+
+---
+
+### Review review-pr379-r3: PR #379 R3 — prototype pollution, path normalization, type-stable keys (Review #357) (2026-02-19)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Harden canonicalize() against prototype pollution (Object.create(null), skip
+  **proto**)
+- Add circular reference protection (WeakSet)
+- Use normalizeFilePath() for source_file (was only replacing backslashes)
+- Use replaceAll() per SonarCloud es2021 rule
+- Path-segment-boundary regex for repo root stripping (prevents false matches)
+- Type-stable dedup keys with str:/prim:/json: prefixes
+- Regenerated TDMS views with fully normalized source_file paths
+
+---
+
+### Review review-pr379-r4: PR #379 R4 — circular ref fix, regex escaping, internal dedup (Review #358) (2026-02-19)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Learnings:**
+
+- Fix canonicalize() circular ref detection: try/finally to clean WeakSet
+  (shared refs were misidentified as cycles)
+- Escape REPO_DIRNAME env var before RegExp constructor (prevents metachar bugs)
+- Deduplicate within incoming secondary.evidence array, not just against
+  existing
+
+---
+
+### Review review-pr379-r5: PR #379 R5 — CC extraction, String coercion, String.raw (Review #359) (2026-02-19)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Learnings:**
+
+- Extract canonicalize, evidenceToKey, mergeEvidence from mergeItems (CC 18→<15)
+- Add String coercion + empty env var trim guard in normalizeFilePath
+- Use String.raw + replaceAll per SonarCloud es2021 rules
+
+---
+
+### Review review-pr379-r6: PR #379 R6 — depth cap, evidence wrapping, fallback keys (Review #360) (2026-02-19)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Learnings:**
+
+- Add depth=20 cap on canonicalize to prevent algorithmic DoS
+- Wrap non-array existing evidence as [value] instead of discarding
+- Richer fallback keys for unserializable objects (include sorted keys)
+
+---
+
+### Review review-pr379-r7: PR #379 R7 — nested ternary extraction, incoming evidence wrapping (Review #361) (2026-02-19)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 2     | 2     | 0        | 0        |
+
+**Learnings:**
+
+- Extract nested ternary into toArray() helper per SonarCloud
+- Wrap non-array incoming evidence symmetrically with existing handling
+
+---
+
+### Review review-pr381-r1: PR #381 R1 — empty catch logging, filter safety, regex broadening (2026-02-20)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-20 | **PR:** #381 | **Source:** qodo+gemini
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- [MAJOR] Fix r.id truthy filter to typeof check (id:0 safety)
+- Log warning in empty catch for execFileSync reviews:sync
+- Move execFileSync require to top-level destructure
+- Change stdio:"pipe" to "inherit" (prevent buffer overflow)
+- Log warning in empty catch for archive scanning
+- Broaden regex \bid: pattern for ID matching
+
+---
+
+### Review review-pr381-r2: PR #381 R2 — truthy filter propagation, dedup metrics, defensive error access (2026-02-20)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-20 | **PR:** #381 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- [MAJOR] Deduplicate automated IDs with Set (inflated metrics)
+- [MAJOR] Fix r.pr_number || r.pr truthy filter at lines 152, 274 (propagation
+  miss from R1 — same class as r.id fix)
+- [MINOR] Safe err.message via instanceof Error check
+- [MINOR] Remove id field from deduped.jsonl raw intake (schema consistency)
+- [TRIVIAL] Align step numbering 0g → Step 0g
+
+---
+
+### Review review-pr384-r2: PR #384 R2 — 112 CI blocking violations, 3 SonarCloud, 8 Qodo fixes across 17 files (2026-02-22)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-22 | **PR:** #384 | **Source:** qodo+sonarcloud+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Learnings:**
+
+- Resolve all 112 pattern compliance blocking violations (44 Array.isArray, 41
+  loadConfig try/catch, 8 symlink guard, 5 renameSync, 4 atomic write, 4 exec /g
+  flag, 2 rename fallback, 2 tmp guard, 1 error.message, 1 path)
+- SonarCloud: reduce CC in check-pattern-compliance, place-unassigned-debt;
+  simplify sql-injection-risk test regex
+- Replace happy-path-only regex with testFn (80-line window scan)
+- Fix || vs ?? for zero-value metrics in pattern-lifecycle.js
+- Add fenced-block-aware heading counter in data-state-health.js
+- Re-export isSafeToWrite from security-helpers.js for consistent imports
+- Sprint file format resilience in place-unassigned-debt.js
+- Review #367 learning entry added
+
+---
+
+### Review review-pr384-r3: PR #384 R3 — 10 SonarCloud + 7 Qodo fixes across 6 files (2026-02-22)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-22 | **PR:** #384 | **Source:** qodo+sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 9     | 0        | 0        |
+
+**Learnings:**
+
+- Reduce CC: simplifyPlacements 19→8, loadSprintFiles 20→10,
+  placeItemsIntoSprints 24→12
+- Extract nested ternaries into independent statements (4 instances)
+- Replace complex regex (complexity 35) with string-based detection in tests
+- Add symlink guard on destination writes in archive-reviews.js
+- Use renameSync-first atomic writes in archive-reviews.js and
+  run-consolidation.js
+- Add sprint metadata path traversal guard (trust filename over JSON)
+- Add path containment check on sprint file writes
+- Fix TOCTOU regex to detect same-line && patterns
+- Use replaceAll() over replace() with /g flag
+
+---
+
+### Review review-pr384-r4: PR #384 R4 — CI security excludes, CC extract, EXDEV guard, 6 Qodo fixes across 9 files (2026-02-22)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-22 | **PR:** #384 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- CI security excludes, CC extract, EXDEV guard, 6 Qodo fixes across 9 files
+
+---
+
+### Review review-pr386-r1: PR #386 R1 — PR #386 R1 review fixes — SonarCloud regex, seed-commit-log hardening, CI Prettier (2026-02-23)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-23 | **PR:** #386 | **Source:** qodo+sonarcloud+gemini+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 12    | 0        | 0        |
+
+**Learnings:**
+
+- Replace 2 complex regexes (S5852) with string-parsing testFn functions
+- Use optional chaining (?.) for 3 pattern test calls
+- Non-mutating sort: [...keys].sort() instead of keys.sort()
+- Fix sticky boolean false positive in unsection-scoped-table-regex
+- Replace regex DoS in getSessionCounter with line-by-line parsing
+- Fix git log parsing: parts.length < 6 (was < 4 for 6-field format)
+- Use --max-count instead of shorthand -N
+- Add try/catch cleanup for atomic write with tmp file
+- Add rmSync before renameSync for Windows compat
+- Add copy/unlink fallback for cross-drive rename
+- Use git rev-parse --show-toplevel for repo root
+- Add error context to catch blocks
+
+---
+
+### Review review-pr386-r2: PR #386 R2 — S5852 string parsing, CC reduction, concurrency-safe tmp (2026-02-23)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-23 | **PR:** #386 | **Source:** qodo+sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Replace /(\d+)\s\*$/ regex with backward digit walk (S5852)
+- Extract parseCommitLines + writeEntries from main() (CC 16→6)
+- Concurrency-safe tmp filename with pid+timestamp
+- try/catch on fallback unlinkSync
+- IIFE-wrap logical-or-numeric-fallback testFn with extracted helpers (CC 24→8)
+- String.raw for backslash literal
+- Add match snippets to both testFn results
+
+---
+
+### Review review-pr388-r2: PR #388 R2 — broken ref detection, pattern overlap, hash stability (2026-02-23)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-23 | **PR:** #388 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 11    | 0        | 0        |
+
+**Learnings:**
+
+- Fix broken reference detection logic (self-referential set always returned
+  true)
+- Add word boundaries to prevent readFile/readFileSync overlap in pattern
+  matching
+- Stabilize fallback hash with undefined-safe JSON.stringify
+- Strip commas from formatted numbers before parseInt
+- Skip regex scanning on files >1MB, cap state file reads at 2MB
+- Fix nested parens in console.log regex, warning emoji regex
+- Full regex escape in compaction-resilience filename matching
+- Report unreadable sprint files instead of silent skip
+- Verify actual file write targets in pipeline correctness checker
+- Include .ts files in hook source dependency scan
+- Bound regex argument scanning to prevent backtracking
+
+---
+
+### Review review-pr388-r3: PR #388 R3 — heuristic accuracy, regex safety, false positive reduction (2026-02-23)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-23 | **PR:** #388 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 14    | 14    | 0        | 0        |
+
+**Learnings:**
+
+- Fix isInsideTryCatch brace counting direction (was producing false positives)
+- Fix cleanup trap regex to handle $VAR and ${VAR} forms
+- Detect all is_skipped call styles (shell function and parenthesized)
+- Remove weak writesMaster fallback that caused false positives
+- Surface invalid JSONL lines in metrics-reporting (TMR-103A)
+- Handle future-dated Last Updated in lifecycle-management (LCM-402A)
+- Skip markdown table header rows in metrics extraction
+- Strengthen glob path check with specific raw/ path regex
+- Handle non-serializable values in hash computation
+- Prevent regex backtracking with [^)\n] and reduced MAX_ARG_CHARS
+- Remove word boundaries from callsite detection for bracket access
+- Detect warning lines with emoji variation selectors and WARNING text
+- Anchor session counter regex to line start
+- Add size guard for large hook source files in dependency scan
+
+---
+
+### Review review-pr388-r4: PR #388 R4 — CI blocker, brace depth, iterative DFS, null safety (2026-02-23)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-23 | **PR:** #388 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 9     | 0        | 0        |
+
+**Learnings:**
+
+- file-io-safety: Replace RegExp constructor with indexOf (CI blocker)
+- code-quality-security: Correct isInsideTryCatch brace direction
+- data-quality-dedup: Iterative DFS with color map, BigInt handling
+- metrics-reporting: invalidCount early returns, null vs falsy (5 locations)
+- state-integration: Size guard before readFileSync
+- precommit-pipeline: Scoped function body checks, nearest stage attribution,
+  paired quotes in cleanup pattern
+- pipeline-correctness: Refined raw path regex, removed writesDeduped fallback
+- compaction-resilience: Regex-based matcher validation
+- functional-correctness: Hook filename extraction with .claude/hooks/ priority
+
+---
+
+### Review review-pr388-r5: PR #388 R5 — PR #388 R5 review fixes — SonarCloud, CI, Gemini, Qodo (14 items) (2026-02-24)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-24 | **PR:** #388 | **Source:** qodo+sonarcloud+gemini+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 11    | 0        | 0        |
+
+**Learnings:**
+
+- Reduce searchForFunction CC 26→~10 via 3 extracted helpers (escapeForRegex,
+  shouldSkipMatch, parseGrepLine) + escape funcName for regex safety +
+  String.raw
+- Fix silent error swallowing in getChangedFiles (distinguish git errors vs no
+  upstream)
+- Remove unused imports (readFileSync, path) in check-propagation.js
+- Fix incorrect test predicate logic in checker-regression.test.js
+- Extract duplicated deduplicateFindings helper to module scope
+- Add optional chaining in test-hooks.js
+- Sanitize error messages in session-start.js (2 spots) + state-utils.js (1
+  spot)
+- Add typeof guard on isSafeToWrite in track-agent-invocation.js
+- Add symlink guard on filePath in state-utils.js writeState
+- Add verified-patterns.json exceptions for 3 new files + state-utils.js guards
+- Review #376 learning log entry
+
+---
+
+### Review review-pr388-r6: PR #388 R6 — PR #388 R6 review fixes — CI blocking, security, portability (11 items) (2026-02-24)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-24 | **PR:** #388 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- CI blockers: pre-push xargs -r, mktemp trap ordering, grep simplification
+- Security: statSync→lstatSync + symlink checks across 4 state-managers
+- Portability: grep→git grep in check-propagation.js
+- Code quality: replaceAll(), dedup logic improvements, error truncation
+- Data: normalized-all.jsonl deduped (removed 1685 duplicate entries)
+- Review #377 learning entry
+
+---
+
+### Review review-pr388-r7: PR #388 R7 — PR #388 R7 review fixes — typeof guard on lazy-loaded imports (1+2 items) (2026-02-24)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-24 | **PR:** #388 | **Source:** sonarcloud+gemini+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Learnings:**
+
+- Add typeof check on isSafeToWrite after require() in track-agent-invocation.js
+  to handle edge case where module loads but export is undefined
+- Propagate same fix to commit-failure-reporter.js (isSafeToWrite +
+  sanitizeInput)
+- Fix pre-existing startsWith() pattern violation in commit-failure-reporter.js
+
+---
+
+### Review review-pr389-r2: PR #389 R2 — resolve 31 items from Qodo + Compliance (Review #368) (2026-02-25)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-25 | **PR:** #389 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 34    | 31    | 0        | 3        |
+
+**Learnings:**
+
+- CRITICAL(7): Path traversal guards, symlink skip via lstatSync, DoS depth/file
+  limits
+- MAJOR(12): Anchor + image containment, isInsideTryCatch brace-balancing,
+  unique finding IDs
+- MINOR(7): unsafe-path error messages, validateContainedFile input guard,
+  statSync isFile
+- LOW(6): file-type dedup, symlink-guard path fix, state write skip in
+  check/summary
+- REJECTED(3): safeRequire error surfacing, silent catches (intentional)
+
+---
+
+### Review review-pr390-r1: PR #390 R1 — metrics consistency, pattern syntax, section numbering (7 items) (2026-02-24)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-02-24 | **PR:** #390 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- metrics consistency, pattern syntax, section numbering (7 items)
+
+---
+
+### Review review-pr430-r1: PR #430 R1 — claude.md casing, SHA-pin grep logic, metrics dedup (2026-03-13)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-13 | **PR:** #430 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 4     | 0        | 0        |
+
+**Learnings:**
+
+- Fix 4 CLAUDE.md → claude.md references in DOCUMENTATION_INDEX.md (broken on
+  case-sensitive filesystems)
+- Fix SHA-pin enforcement grep command in 2 plan docs: replace flawed
+  `grep && exit 1 || true` with proper `if/then/fi` that actually fails CI
+- Deduplicate review-metrics.jsonl: 903 → 15 entries (keep latest per PR)
+- Add review learning #474
+
+---
+
+### Review review-pr430-r2: PR #430 R2 — rename claude.md→CLAUDE.md, archive dedup, grep hardening (2026-03-13)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-13 | **PR:** #430 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- git mv claude.md CLAUDE.md: root fix for R1 regression where pre-commit hook
+  regenerated DOCUMENTATION_INDEX.md using Windows NTFS casing
+- Deduplicate reviews.jsonl.archive: 521 → 403 entries (118 duplicates)
+- Fix records 478/479: set pr=419 (was null), populate totals from patterns
+- Harden SHA-pin grep: -RIn -- flags, ^\s\*# comment filter (both plan docs)
+- Re-sort review-metrics.jsonl by timestamp (was PR number order)
+- Add review learning #475
+
+---
+
+### Review review-pr432-r1: PR #432 R1 — PR #432 R1 code review — escalation integrity, pipeline safety, DRY refactor (2026-03-14)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-14 | **PR:** #432 | **Source:** qodo+sonarcloud+gemini+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 16    | 16    | 0        | 0        |
+
+**Learnings:**
+
+- CRITICAL: Remove fs.writeFileSync fallback in ratchet-baselines.js (CI
+  blocker)
+- Fix escalation dropping queue items without creating DEBT (run-alerts.js)
+- Fix misleading "auto-created" alert text → "candidate" language
+- Fix verification always failing by setting null test/metrics on promotion
+- Fix non-atomic writes in refine-scaffolds (routes first, then pending)
+- Refactor 5 duplicated session-start catch blocks into helper function
+- Use centralized sanitizeError instead of raw err.message
+- Sanitize id in buildEnforcementTestPath to prevent path traversal
+- Add error logging to empty catch block in run-alerts write-back
+- Remove generated_code from alert metadata (leak prevention)
+- Filter pending refinements to only surface actionable items
+- Track malformed JSONL line count instead of silent skip
+- Use relative path for VP_PATH in classifier action objects
+- Flatten if-only-in-else to else-if (SonarCloud)
+- Move validLearningRoute to outer scope (SonarCloud)
+- Update tests to match new null-start promotion behavior
+
+---
+
+### Review review-pr432-r2: PR #432 R2 — PR #432 R2 code review — safe writes, error sanitization, fail-fast appends (2026-03-14)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-14 | **PR:** #432 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- run-alerts.js: use safeWriteFileSync + sanitizeError for pending-refinements
+  write-back
+- run-alerts.js: truncate pattern/reason in alert text to prevent data leakage
+- refine-scaffolds.js: fail fast on append errors (return success:false)
+- refine-scaffolds.js: add entry validation (require id field) + audit trail log
+- confidence-classifier.js: log VP load failure + retry cache on transient
+  failure
+- check-pending-refinements.test.ts: wrap file reads in try/catch per compliance
+- Rejected: prototype pollution (JSON.parse+spread is not a pollution vector)
+
+---
+
+### Review review-pr432-r3: PR #432 R3 — PR #432 R3 code review — cache retry bug, alert truncation, TOCTOU removal (2026-03-14)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-14 | **PR:** #432 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- Fix cache retry bug: loadVerifiedPatterns() re-throws after logging so
+  getCachedVerifiedPatterns() can distinguish failure from empty (items #6/#7)
+- Truncate entry.pattern in critical alerts for consistent sanitization (#1)
+- Add actor context (USER/USERNAME) to refine-scaffolds audit trail (#2)
+- Document substring match design intent in matchesVerifiedPattern (#3)
+- Fix Prettier formatting on 3 files (#4)
+- Remove unnecessary \_vpCache = undefined initialization (#5)
+
+---
+
+### Review review-pr432-r4: PR #432 R4 — PR #432 R4 code review — terminal injection, CodeQL env fix, schema alignment (2026-03-14)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-14 | **PR:** #432 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Learnings:**
+
+- Strip control characters in truncate() to prevent ANSI/terminal injection (#1)
+- Replace process.env.USER with by=cli per CodeQL sensitive data finding (#7)
+- Add audit trail log for pending-refinements.jsonl writes (#2)
+- Rename \_pending_test to pending_enforcement_test + add to schema (#4)
+- Safe error.code access in readJsonl catch block (#5)
+- Fix docs:check errors: add Purpose/Version History to 2 docs (#8)
+
+---
+
+### Review review-pr433-r1: PR #433 R1 — PR #433 R1 code review — PII redaction, T11 contradiction, Mermaid alignment (2026-03-14)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-14 | **PR:** #433 | **Source:** qodo+gemini
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 9     | 0        | 0        |
+
+**Learnings:**
+
+- Redact PII filesystem paths in conversation transcript (C:\Users\jason →
+  [PROJECT_ROOT])
+- Fix T11 auto-DEBT contradiction: "auto-escalate" → interactive blocking
+  decision (no automatic DEBT)
+- Correct Mermaid graph Phase 0 labels to match actual step descriptions
+- Add doc headers to conversation spec (title, version, purpose, version
+  history)
+- Fix forward-findings schema ref (Step 1.2 → 1.1)
+- Fix T7 path.posix → path.join/normalize/resolve for cross-platform
+- Remove leftover Part 1/2 assembly comment
+- Fix \_Previous formatting typo in PLAN-v2.md
+- Fix backslash path in conversation spec
+
+---
+
+### Review review-pr435-r1: PR #435 R1 — Prettier CI, stderr routing, data quality fixes (2026-03-15)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-15 | **PR:** #435 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 9     | 0        | 0        |
+
+**Learnings:**
+
+- Fix Prettier formatting across 43 files (CI format:check failure)
+- Route review lifecycle errors to stderr (console.warn/error not console.log)
+- Propagate stderr pattern to patterns, consolidation, and TDMS error paths
+- Fix retro-427 data (127/15/1 from review records) and retro-428 (10/0/0)
+- Remove duplicate rev-485 from reviews.jsonl (appended twice at end)
+- Fix audits.jsonl: normalize file paths, populate empty recommendations
+- Clarify severity breakdown scope labels across learning log
+- Add review #495 learning entry and JSONL record
+- Defer: DEBT-45530 (3 learning-route enforcement test files missing)
+
+---
+
+### Review review-pr435-r2: PR #435 R2 — log injection, section-scoped parsing, forward-findings dedup (2026-03-15)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-15 | **PR:** #435 | **Source:** qodo+sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 10    | 0        | 0        |
+
+**Learnings:**
+
+- Remove dead sanitizeInput ternary branches (always truthy via fallback)
+- Add maxBuffer + encoding to review-lifecycle execFileSync call
+- Constrain pattern/learning extraction to markdown section boundaries
+- Cap review ID log output to 25 entries
+- Redact absolute filesystem paths in archive error messages
+- Fix negated condition (SonarCloud code smell L660)
+- Fix forward-findings dedup: add within-batch dedup + fix key mismatch
+- Remove 2 duplicate entries from forward-findings.jsonl
+- Prettier formatting (7 files from TDMS views)
+- Rejected: S5852 regex (bounded quantifiers), audit trails (local tool),
+  missing enforcement tests (cross-round dedup, DEBT-45530)
+
+---
+
+### Review review-pr443-r1: PR #443 R1 — invocation schema, 3 deferred to TDMS, learning #478 (2026-03-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-16 | **PR:** #443 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- Fixed: invocation records missing duration_ms/error fields
+- Fixed: CI docs:check passes locally (stale CI run on older commit)
+- Fixed: Archive links already correct in current branch
+- Deferred: DEBT-45531 (learning route repair), DEBT-45532 (JSONL dedup),
+  DEBT-45533 (report headers + path normalization)
+- Rejected: \_failure_reason exposure (internal state only), Testing no_data
+  handling (already handled by consumers)
+
+---
+
+### Review review-pr443-r2: PR #443 R2 — relative link depth, session counter, learning #479 (2026-03-16)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-16 | **PR:** #443 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 0        | 0        |
+
+**Learnings:**
+
+- Fixed: session-begin SKILL.md + REFERENCE.md links ../../ -> ../../../ (5
+  links to repo-root docs were resolving under .claude/)
+- Fixed: SESSION_CONTEXT.md counter 224 -> 223 (matched active session)
+- Rejected: doc-linter exclusion scoping (directories specific enough, would
+  increase CC in already-complex function)
+
+---
+
+### Review review-pr447-r1: PR #447 R1 — 8 fixes (security, workflows, hooks) (2026-03-18)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-18 | **PR:** #447 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 8     | 0        | 0        |
+
+**Learnings:**
+
+- Strip ANSI escape sequences + control chars
+- Add Bearer token pattern to secret redaction
+- Fix Windows path regex (C:\Users\<name>)
+- Add POSIX path redaction (/home/<name>, /Users/<name>)
+- Cap excerpt at 2000 chars Added explicit parentheses to prevent operator
+  precedence issues Prevents crash in non-critical reporting from disrupting
+  hook flow Both pre-commit and pre-push now emit warning on report failure
+- Semgrep unchecked-array-access: false positive (bounds check at L245)
+- DOCUMENTATION_INDEX.md count/section: correct behavior (GSD files gitignored)
+- CI docs:check failure (DAS 5/6): README sections — docs maintenance scope
+- Audit trails partial (DAS 6/6): system-wide concern, not this PR's scope
+
+---
+
+### Review review-pr447-r2: PR #447 R2 — exit code 1 on hook-report usage error (2026-03-18)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-18 | **PR:** #447 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 1     | 1        | 2        |
+
+**Learnings:**
+
+- process.exit(0) masked misconfiguration when hook-report.js called without
+  required arguments — changed to exit(1)
+- R2 rejected: sanitizeError (ESM module, CJS file — incompatible)
+- R2 stale: sensitive log exposure (fixed in R1)
+- R2 dedup: audit trails (deferred R1 DAS 6/6)
+
+---
+
+### Review review-pr457-r2: PR #457 R2 — warning-lifecycle diagnostic, worktrees exclusion, Codecov fork guard (2026-03-20)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-20 | **PR:** #457 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- Add diagnostic output to getWarningStats test for CI debugging (3 !== 2 on
+  Linux)
+- Move case-sensitivity FS detection to os.tmpdir() (avoid repo pollution)
+- Use working-directory for reviews tsc build step
+- Gate Codecov upload on non-fork PRs (secrets unavailable on forks)
+- Exclude .worktrees from doc index generator
+
+---
+
+### Review review-pr457-r4: PR #457 R4 — Codecov precedence, UUID IDs, sanitize test output, fetch-depth (2026-03-20)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-03-20 | **PR:** #457 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- Fix operator precedence in Codecov if: condition (push could bypass success())
+- Use crypto.randomUUID() for warning IDs (replaces Date.now() + counter)
+- Remove raw JSONL diagnostic from test assertions (sensitive log exposure)
+- Remove unused os import from case-sensitivity test
+- Set fetch-depth: 0 in validate job for reliable changed-file detection
+
+---
+
+### Review review-pr494-r2: PR #494 R2 — 7 fixes (diagnostics, path normalization, resilience) (2026-04-06)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-04-06 | **PR:** #494 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 7     | 7     | 0        | 0        |
+
+**Learnings:**
+
+- Security: sanitize diagnostic payload (remove argv/cwd, sanitize stack)
+- Correctness: normalize path separators in resolveAsFilePath +
+  mergeResolvedEdges
+- Resilience: per-line JSONL parsing in applyDiff, remove misleading RESOLVED
+  count
+- Performance: cache CLAUDE.md read in scanAgents (was re-read per iteration)
+- Style: annotate intentional catch blocks with reason comments
+
+---
+
+### Review review-pr494-r3: PR #494 R3 — 5 fixes (resilience, correctness, perf) (2026-04-06)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-04-06 | **PR:** #494 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- Correctness: word-boundary regex for agent name matching in CLAUDE.md
+- Resilience: try/catch validatePathInDir in workflow + YAML scanners
+- Security: guard raw ref keys (empty, >500 chars, traversal)
+- Performance: cache getGitRecency results per file path
 
 ## Key Patterns
 

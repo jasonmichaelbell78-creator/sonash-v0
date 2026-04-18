@@ -9,7 +9,7 @@
 
 ---
 
-## NEW (2159)
+## NEW (2157)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -753,8 +753,6 @@
 | DEBT-45655 | Add unit tests for self-audit reference implementation (8...    | S2       | process                  |
 | DEBT-45656 | Test suite for gsd-prompt-guard.js and gsd-workflow-guard.js    | S2       | code-quality             |
 | DEBT-45658 | SonarCloud new-code duplication exceeds threshold (4.3% >...    | S2       | code-quality             |
-| DEBT-45659 | Reviews reconcile-commits backfill — 61 PR rounds have fi...    | S2       | process                  |
-| DEBT-45660 | Reviews disposition-integrity violations — 84 records (56...    | S2       | code-quality             |
 | DEBT-0001  | Make action buttons customizable by user (save preference...    | S3       | code-quality             |
 | DEBT-2443  | PLAN_MAP.md version history table                               | S3       | code-quality             |
 | DEBT-2447  | check-review-triggers.sh - Dead shell script for multi-AI...    | S3       | code-quality             |
@@ -7332,7 +7330,7 @@
 
 _No items_
 
-## RESOLVED (1127)
+## RESOLVED (1129)
 
 | ID         | Title                                                           | Severity | Category                 |
 | ---------- | --------------------------------------------------------------- | -------- | ------------------------ |
@@ -7713,6 +7711,8 @@ _No items_
 | DEBT-11312 | Add JSONL schema validation to intake scripts                   | S2       | process                  |
 | DEBT-11330 | Auto-increment review numbers from JSONL max to prevent c...    | S2       | process                  |
 | DEBT-45615 | Sanitize PII (username, absolute paths) from override-log...    | S2       | security                 |
+| DEBT-45659 | Reviews reconcile-commits backfill — 61 PR rounds have fi...    | S2       | process                  |
+| DEBT-45660 | Reviews disposition-integrity violations — 84 records (56...    | S2       | code-quality             |
 | DEBT-0786  | Template docs located outside docs/templates/ directory         | S3       | code-quality             |
 | DEBT-0787  | Test count mismatch between DEVELOPMENT.md and actual tes...    | S3       | code-quality             |
 | DEBT-0848  | Unused dependencies remain in runtime dependencies (tool-...    | S3       | code-quality             |
