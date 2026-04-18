@@ -46,9 +46,15 @@ const { safeParseLine } = require(
  * (backward compat for non-PR review records like retros).
  */
 export function generateReviewId(projectRoot: string, data: Record<string, unknown>): string {
-  const pr = typeof data.pr === "number" ? data.pr : null;
-  const round = typeof data.round === "number" ? data.round : null;
-  if (pr && round) return `review-pr${pr}-r${round}`;
+  // Qodo R1 #11: Validate pr and round are finite positive integers before
+  // generating a canonical ID. Prior truthy check (pr && round) admitted
+  // floats, NaN, and negative numbers, producing malformed ids like
+  // "review-pr1.5-rNaN" or "review-pr-1-r0".
+  const pr = typeof data.pr === "number" ? data.pr : Number.NaN;
+  const round = typeof data.round === "number" ? data.round : Number.NaN;
+  if (Number.isFinite(pr) && pr > 0 && Number.isFinite(round) && round > 0) {
+    return `review-pr${Math.trunc(pr)}-r${Math.trunc(round)}`;
+  }
   return getNextRevId(projectRoot);
 }
 

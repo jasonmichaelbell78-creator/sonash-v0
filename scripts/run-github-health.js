@@ -276,14 +276,25 @@ function fetchCacheUsage(repo) {
  * grade. See analyzeCIState for the categorization.
  */
 function fetchMainCheckRuns(repo) {
+  // URL-encode branch name — default branches can contain "/" (release/1.0,
+  // etc.) which would otherwise break the path segment (Qodo R1 #4).
+  const ref = encodeURIComponent(repo.defaultBranch || "main");
+  // --paginate walks the Link header and concatenates results, preventing
+  // silent data loss for commits with >100 check-runs (Gemini R1 #5).
   const raw = gh(
     [
       "api",
-      `repos/${repo.owner}/${repo.name}/commits/${repo.defaultBranch || "main"}/check-runs?per_page=100`,
+      "--paginate",
+      "--slurp",
+      `repos/${repo.owner}/${repo.name}/commits/${ref}/check-runs?per_page=100`,
     ],
-    { json: true, timeout: 10000 }
+    { json: true, timeout: 15000 }
   );
-  return Array.isArray(raw.check_runs) ? raw.check_runs : [];
+  // --slurp returns an array of response pages; flatten their check_runs.
+  if (!Array.isArray(raw)) {
+    return Array.isArray(raw.check_runs) ? raw.check_runs : [];
+  }
+  return raw.flatMap((page) => (Array.isArray(page.check_runs) ? page.check_runs : []));
 }
 
 // -- Analyzers (extracted for CC reduction) ----------------------------------

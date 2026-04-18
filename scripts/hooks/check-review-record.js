@@ -22,10 +22,53 @@ const { execFileSync } = require("node:child_process");
 const ROOT = path.resolve(__dirname, "../..");
 const REVIEWS_JSONL = path.join(ROOT, ".claude", "state", "reviews.jsonl");
 
+// Only warn on actual fix-prefixed commits — "fix: PR #N R" and
+// "fix(scope): PR #N R". Qodo R1 #6: prior regex warned on any commit whose
+// subject mentioned "PR #N Rm" (merge summaries, chore commits referencing
+// prior PRs, etc.), producing noise that eroded trust in the enforcement signal.
+const REVIEW_FIX_PATTERN = /^fix(?:\([^)]*\))?:\s+PR #(\d+)\s+R(\d+)/i;
+const CANONICAL_ID_PATTERN = /^review-pr(\d+)-r(\d+)$/i;
+const TITLE_ROUND_PATTERN = /R(\d+)/i;
+
 function parseReviewFixCommit(message) {
-  const match = /PR #(\d+)\s+R(\d+)/i.exec(message);
+  const match = REVIEW_FIX_PATTERN.exec(message);
   if (!match) return null;
-  return { pr: parseInt(match[1], 10), round: parseInt(match[2], 10) };
+  return {
+    pr: Number.parseInt(match[1], 10),
+    round: Number.parseInt(match[2], 10),
+  };
+}
+
+// Coerce a value to a finite positive integer, or return null. Handles both
+// native number and legacy string-stored record fields (Qodo+Gemini R1 #9).
+function toInt(v) {
+  if (typeof v === "number" && Number.isFinite(v) && v > 0) return v;
+  if (typeof v === "string") {
+    const n = Number.parseInt(v, 10);
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  return null;
+}
+
+// Does a single JSONL record match the target PR/round? Extracted to
+// reduce hasReviewRecord cognitive complexity (SonarCloud R1 #1).
+function recordMatches(rec, pr, round) {
+  const idMatch = CANONICAL_ID_PATTERN.exec(String(rec.id ?? ""));
+  if (
+    idMatch &&
+    Number.parseInt(idMatch[1], 10) === pr &&
+    Number.parseInt(idMatch[2], 10) === round
+  ) {
+    return true;
+  }
+  const recPr = toInt(rec.pr);
+  const recRound = toInt(rec.round);
+  if (recPr === pr && recRound === round) return true;
+  if (recPr === pr && typeof rec.title === "string") {
+    const roundMatch = TITLE_ROUND_PATTERN.exec(rec.title);
+    if (roundMatch && Number.parseInt(roundMatch[1], 10) === round) return true;
+  }
+  return false;
 }
 
 function hasReviewRecord(pr, round) {
@@ -35,18 +78,24 @@ function hasReviewRecord(pr, round) {
   } catch {
     return false;
   }
+  // Aggregate malformed-line count so parse failures surface once per run
+  // rather than silently swallowed (Qodo R1 #20).
+  let parseFailures = 0;
   for (const line of content.split("\n")) {
     if (!line.trim()) continue;
+    let rec;
     try {
-      const rec = JSON.parse(line);
-      if (rec.pr === pr && rec.round === round) return true;
-      if (rec.pr === pr && rec.title) {
-        const roundMatch = /R(\d+)/i.exec(rec.title);
-        if (roundMatch && parseInt(roundMatch[1], 10) === round) return true;
-      }
+      rec = JSON.parse(line);
     } catch {
-      // Skip unparseable lines
+      parseFailures++;
+      continue;
     }
+    if (recordMatches(rec, pr, round)) return true;
+  }
+  if (parseFailures > 0) {
+    console.error(
+      `\u26a0\ufe0f  check-review-record: skipped ${parseFailures} malformed JSONL line(s) in reviews.jsonl`
+    );
   }
   return false;
 }
@@ -54,7 +103,10 @@ function hasReviewRecord(pr, round) {
 function main() {
   let message;
   try {
-    // execFileSync with hardcoded args — safe, no shell interpolation
+    // execFileSync with hardcoded args — safe, no shell interpolation.
+    // SonarCloud S4036 PATH hotspot reviewed 2026-04-18 and marked SAFE:
+    // local dev post-commit hook, hardcoded binary "git", array args prevent
+    // shell interpretation, PATH hijack requires prior filesystem compromise.
     message = execFileSync("git", ["log", "-1", "--format=%s"], {
       cwd: ROOT,
       encoding: "utf8",

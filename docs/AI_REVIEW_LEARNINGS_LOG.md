@@ -1457,8 +1457,8 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~19240 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 556    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~19300 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 558    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -15361,6 +15361,76 @@ deduplicated, non-overlapping ranges):
 - Resilience: try/catch validatePathInDir in workflow + YAML scanners
 - Security: guard raw ref keys (empty, >500 chars, traversal)
 - Performance: cache getGitRecency results per file path
+
+---
+
+### Review review-pr516-r2: PR #516 R2 — 4 fixes, 6 rejected (3 dedup + 3 out-of-scope) (2026-04-17)
+
+> **Completeness:** backfilled-from-commit
+
+**Date:** 2026-04-17 | **PR:** #516 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 4     | 0        | 6        |
+
+**Learnings:**
+
+- SonarCloud + Qodo R2: String.raw for escaped backslash, Array#push batch, mode
+  enum typo re-synthesize → re-synthesis, maxBuffer on execFileSync
+- 3 cross-round dedup rejects (validatePathInDir slug pattern verified R1)
+- 3 rejected: symlink-unsafe writes in one-shot .claude/state/ scripts with
+  hardcoded paths — outside refuse-symlink enforcement scope
+
+---
+
+### Review review-pr517-r1: PR #517 R1 — Mixed (SonarCloud + Qodo + Gemini + CI) (2026-04-18)
+
+**Date:** 2026-04-18 | **PR:** #517 | **Source:** sonarcloud+qodo+gemini+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 23    | 20    | 0        | 3        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 3        | 9     | 8     | 3       |
+
+**Patterns:**
+
+- canonical-id-parsing-with-legacy-coercion
+- cognitive-complexity-via-helper-extraction
+- hook-prefix-guard
+- perl-regexp-alternation-for-fix-scopes
+- url-encoded-default-branch
+- paginated-check-runs-fetch
+- symlink-guard-before-copyFileSync
+- finite-positive-int-validation
+- tightened-disposition-equals-total
+- aggregate-parse-failures-to-stderr
+
+**Learnings:**
+
+- Post-commit enforcement hooks must guard on ^fix prefix. Substring PR # match
+  created noise.
+- Canonical review IDs require Number.isFinite + positive-int validation, not
+  truthy.
+- reconcile-commits grep must match both fix: and fix(pr-review): scopes. Narrow
+  grep caused silent false OK with missing records (PR #516 R2 surfaced only
+  after fix).
+- CC reductions via extracted helpers: computeEdits / findTitleBackfill /
+  writeBackup / serializeEntries (dedup main 40 -> <15). fetchFixCommitLog /
+  parseCommitPRs in review-lifecycle.
+- Disposition double-classification must gate on fixed === total (not >=).
+  fixed > total is a data error.
+- copyFileSync follows symlinks — pair with refuseSymlinkWithParents at
+  source+dest.
+- GitHub check-runs endpoint needs encodeURIComponent on branch ref +
+  --paginate/--slurp for >100 runs.
+- security-auditor pre-task dispatch useful for fresh security assessment of
+  review-flagged items.
 
 ## Key Patterns
 

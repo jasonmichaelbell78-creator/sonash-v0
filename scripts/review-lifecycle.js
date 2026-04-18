@@ -478,6 +478,58 @@ function runSync() {
   return { synced: missing.length, total: existingIds.size + missing.length };
 }
 
+// ── STEP 2b: RECONCILE-COMMITS helpers ────────────────────────────────────
+
+const RECONCILE_CANONICAL_ID = /^review-pr(\d+)-r(\d+)$/i;
+const RECONCILE_TITLE_ROUND = /R(\d+)/i;
+
+function toFinitePositiveInt(v) {
+  if (typeof v === "number" && Number.isFinite(v) && v > 0) return v;
+  if (typeof v === "string") {
+    const n = Number.parseInt(v, 10);
+    if (Number.isFinite(n) && n > 0) return n;
+  }
+  return null;
+}
+
+function matchCanonicalId(id) {
+  const m = RECONCILE_CANONICAL_ID.exec(String(id ?? ""));
+  return m ? `${m[1]}-${m[2]}` : null;
+}
+
+function matchTitleRound(title) {
+  const m = RECONCILE_TITLE_ROUND.exec(title);
+  if (!m) return null;
+  const r = Number.parseInt(m[1], 10);
+  return Number.isFinite(r) && r > 0 ? r : null;
+}
+
+// Build the Set of "{pr}-{round}" keys from reviews.jsonl records. Qodo+Gemini
+// R1 #10: supports canonical id precedence, int coercion on legacy string-
+// stored fields, and title fallback. Extracted from runReconcileCommits to
+// reduce CC and make canonical-ID precedence unit-testable.
+function buildJsonlKeys(records) {
+  const keys = new Set();
+  for (const rec of records) {
+    const idKey = matchCanonicalId(rec.id);
+    if (idKey) {
+      keys.add(idKey);
+      continue;
+    }
+    const pr = toFinitePositiveInt(rec.pr);
+    const round = toFinitePositiveInt(rec.round);
+    if (pr !== null && round !== null) {
+      keys.add(`${pr}-${round}`);
+      continue;
+    }
+    if (pr !== null && typeof rec.title === "string") {
+      const roundFromTitle = matchTitleRound(rec.title);
+      if (roundFromTitle !== null) keys.add(`${pr}-${roundFromTitle}`);
+    }
+  }
+  return keys;
+}
+
 // ── STEP 2b: RECONCILE-COMMITS ────────────────────────────────────────────
 
 /**
@@ -489,27 +541,34 @@ function runSync() {
  *
  * Returns { fixCommits: number, matched: number, gaps: string[] }.
  */
-function runReconcileCommits() {
-  logStep("RECONCILE-COMMITS", "Scanning git log for review fix commits...");
-
-  let gitOutput = "";
+// Run the git log scan for fix commits; returns parsed output or null on error.
+// SonarCloud S4036 PATH hotspot reviewed 2026-04-18 and marked SAFE:
+// hardcoded binary "git", array args, PATH hijack requires prior compromise.
+function fetchFixCommitLog() {
   try {
-    // execFileSync with hardcoded args — safe, no shell interpolation
-    gitOutput = execFileSync("git", ["log", "--all", "--oneline", "--grep=fix: PR #"], {
-      cwd: ROOT,
-      encoding: "utf8",
-      timeout: 30000,
-      maxBuffer: 5 * 1024 * 1024,
-    });
+    // Use --perl-regexp with alternation to match both fix prefixes:
+    //   "fix: PR #N R..."             (unscoped)
+    //   "fix(pr-review): PR #N R..."  (scoped)
+    // Qodo R1 #7: previous --grep=fix: PR # missed scoped commits.
+    return execFileSync(
+      "git",
+      ["log", "--all", "--oneline", "--perl-regexp", "--grep=^fix(\\(pr-review\\))?: PR #"],
+      {
+        cwd: ROOT,
+        encoding: "utf8",
+        timeout: 30000,
+        maxBuffer: 5 * 1024 * 1024,
+      }
+    );
   } catch (err) {
-    if (err && err.stdout) gitOutput = err.stdout.toString();
-    else {
-      logStep("RECONCILE-COMMITS", `git log failed: ${sanitizeError(err)}`);
-      return { fixCommits: 0, matched: 0, gaps: [] };
-    }
+    if (err?.stdout) return err.stdout.toString();
+    logStep("RECONCILE-COMMITS", `git log failed: ${sanitizeError(err)}`);
+    return null;
   }
+}
 
-  // Parse PR+round from commit messages matching "PR #N R<digit>"
+// Parse the git-log oneline output into a Map of "{pr}-{round}" -> short sha.
+function parseCommitPRs(gitOutput) {
   const commitPRs = new Map();
   for (const line of gitOutput.trim().split("\n").filter(Boolean)) {
     const match = /PR #(\d+)\s+R(\d+)/i.exec(line);
@@ -518,32 +577,27 @@ function runReconcileCommits() {
       if (!commitPRs.has(key)) commitPRs.set(key, line.slice(0, 8));
     }
   }
+  return commitPRs;
+}
 
+function runReconcileCommits() {
+  logStep("RECONCILE-COMMITS", "Scanning git log for review fix commits...");
+
+  const gitOutput = fetchFixCommitLog();
+  if (gitOutput === null) return { fixCommits: 0, matched: 0, gaps: [] };
+
+  const commitPRs = parseCommitPRs(gitOutput);
   if (commitPRs.size === 0) {
     logStep("RECONCILE-COMMITS", "No fix commits found");
     return { fixCommits: 0, matched: 0, gaps: [] };
   }
 
-  // Cross-reference against reviews.jsonl
-  const records = loadReviews();
-  const jsonlKeys = new Set();
-  for (const rec of records) {
-    if (rec.pr && rec.round) {
-      jsonlKeys.add(`${rec.pr}-${rec.round}`);
-    } else if (rec.pr && rec.title) {
-      const roundMatch = /R(\d+)/i.exec(rec.title);
-      if (roundMatch) jsonlKeys.add(`${rec.pr}-${roundMatch[1]}`);
-    }
-  }
-
+  const jsonlKeys = buildJsonlKeys(loadReviews());
   const gaps = [];
   let matched = 0;
   for (const [key] of commitPRs) {
-    if (jsonlKeys.has(key)) {
-      matched++;
-    } else {
-      gaps.push(`PR #${key.replace("-", " R")}`);
-    }
+    if (jsonlKeys.has(key)) matched++;
+    else gaps.push(`PR #${key.replace("-", " R")}`);
   }
 
   logStep(
@@ -742,12 +796,12 @@ function checkDisposition(rec) {
   // Accept double-classification: a single reviewable item can appear in both
   // `fixed` and `rejected` counts across rounds (same SonarCloud finding is
   // rejected in R1, then fixed in R2 via a code change). When that overlap
-  // exists, dispositionSum > total by the overlap size. If fixed >= total AND
-  // rejected > 0 AND deferred === 0, treat the rejected as double-counted
-  // (semantic overlap). Deferred is intentionally excluded — a deferred item
-  // is a distinct disposition (not double-counted), so its presence means the
-  // sum imbalance is not explained by double-classification and should surface.
-  if (dispositionSum > total && fixed >= total && rejected > 0 && deferred === 0) return null;
+  // exists, dispositionSum > total by the overlap size. Gemini R1 #13: use
+  // `fixed === total` rather than `fixed >= total` — `fixed > total` is itself
+  // a data error (more items fixed than reviewed) and should surface rather
+  // than be absorbed by the double-classification bypass. Deferred excluded
+  // because deferred items are distinct dispositions (not double-counted).
+  if (dispositionSum > total && fixed === total && rejected > 0 && deferred === 0) return null;
 
   return { ...base, reason: "sum_mismatch" };
 }

@@ -32,6 +32,7 @@ const path = require("node:path");
 const { safeParseLine } = require("../lib/parse-jsonl-line.js");
 const { sanitizeError } = require("../lib/sanitize-error.js");
 const { safeAtomicWriteSync } = require("../lib/safe-fs.js");
+const { refuseSymlinkWithParents } = require("../lib/security-helpers.js");
 
 const DRY_RUN = process.argv.includes("--dry-run");
 const PROJECT_ROOT = path.resolve(__dirname, "..", "..");
@@ -130,12 +131,12 @@ function nextRevId(records, used) {
   let max = 0;
   for (const { record } of records) {
     const id = String(record.id);
-    const m = id.match(/^rev-(\d+)$/);
-    if (m) max = Math.max(max, parseInt(m[1], 10));
+    const m = /^rev-(\d+)$/.exec(id);
+    if (m) max = Math.max(max, Number.parseInt(m[1], 10));
   }
   for (const id of used) {
-    const m = id.match(/^rev-(\d+)$/);
-    if (m) max = Math.max(max, parseInt(m[1], 10));
+    const m = /^rev-(\d+)$/.exec(id);
+    if (m) max = Math.max(max, Number.parseInt(m[1], 10));
   }
   return `rev-${max + 1}`;
 }
@@ -166,62 +167,67 @@ function backfillMissingTitle(record) {
   return true;
 }
 
-function main() {
-  const entries = loadReviews();
-  const byId = groupById(entries);
+// Produce re-key and drop actions for a single group. Returns the list of
+// action entries so caller can update toDrop/toRekey Sets in place.
+function actionsForGroup(id, group, keeper, strategy, entries, usedNewIds, toDrop, toRekey) {
+  const out = [];
+  for (const entry of group) {
+    if (entry === keeper) continue;
+    if (strategy === "namespace-collision") {
+      const newId = nextRevId(entries, usedNewIds);
+      usedNewIds.add(newId);
+      toRekey.set(entry.lineIndex, newId);
+      out.push({
+        kind: "rekey",
+        oldId: id,
+        newId,
+        lineIndex: entry.lineIndex,
+        title: entry.record.title,
+      });
+    } else {
+      toDrop.add(entry.lineIndex);
+      out.push({
+        kind: "drop",
+        strategy,
+        id,
+        lineIndex: entry.lineIndex,
+        title: entry.record.title,
+      });
+    }
+  }
+  return out;
+}
 
+function computeEdits(byId, entries) {
   const toDrop = new Set();
   const toRekey = new Map();
   const usedNewIds = new Set();
   const actions = [];
-
   for (const [id, group] of byId) {
     if (group.length < 2) continue;
     const { strategy } = classifyGroup(group);
     const keeper = pickKeeper(group, strategy);
-
-    if (strategy === "namespace-collision") {
-      for (const entry of group) {
-        if (entry === keeper) continue;
-        const newId = nextRevId(entries, usedNewIds);
-        usedNewIds.add(newId);
-        toRekey.set(entry.lineIndex, newId);
-        actions.push({
-          kind: "rekey",
-          oldId: id,
-          newId,
-          lineIndex: entry.lineIndex,
-          title: entry.record.title,
-        });
-      }
-    } else {
-      for (const entry of group) {
-        if (entry === keeper) continue;
-        toDrop.add(entry.lineIndex);
-        actions.push({
-          kind: "drop",
-          strategy,
-          id,
-          lineIndex: entry.lineIndex,
-          title: entry.record.title,
-        });
-      }
-    }
+    actions.push(
+      ...actionsForGroup(id, group, keeper, strategy, entries, usedNewIds, toDrop, toRekey)
+    );
   }
+  return { toDrop, toRekey, actions };
+}
 
-  let titleBackfilled = null;
+function findTitleBackfill(entries) {
   for (const entry of entries) {
     if (backfillMissingTitle(entry.record)) {
-      titleBackfilled = { id: entry.record.id, title: entry.record.title };
-      break;
+      return { id: entry.record.id, title: entry.record.title };
     }
   }
+  return null;
+}
 
+function printReport(entries, byId, toDrop, toRekey, actions, titleBackfilled) {
   console.log(`[dedup] Loaded ${entries.length} records, ${byId.size} unique IDs`);
   console.log(
     `[dedup] Actions: ${toDrop.size} drop, ${toRekey.size} re-key, ${titleBackfilled ? 1 : 0} title backfill`
   );
-
   for (const a of actions) {
     if (a.kind === "rekey") {
       console.log(`  re-key id=${a.oldId} -> ${a.newId} (${a.title || "(no title)"})`);
@@ -232,33 +238,53 @@ function main() {
   if (titleBackfilled) {
     console.log(`  title  id=${titleBackfilled.id} -> "${titleBackfilled.title}"`);
   }
+}
+
+function writeBackup() {
+  // Qodo Security R1 #14: reject symlinks at source and destination (defense-
+  // in-depth, consistent with safeAtomicWriteSync guard below).
+  refuseSymlinkWithParents(REVIEWS_PATH);
+  refuseSymlinkWithParents(BACKUP_PATH);
+  fs.copyFileSync(REVIEWS_PATH, BACKUP_PATH);
+  console.log(`[dedup] Backup: ${BACKUP_PATH}`);
+}
+
+function serializeEntries(entries, toDrop, toRekey) {
+  const outLines = [];
+  for (const entry of entries) {
+    if (toDrop.has(entry.lineIndex)) continue;
+    if (toRekey.has(entry.lineIndex)) entry.record.id = toRekey.get(entry.lineIndex);
+    outLines.push(JSON.stringify(entry.record));
+  }
+  return outLines;
+}
+
+function main() {
+  const entries = loadReviews();
+  const byId = groupById(entries);
+
+  const { toDrop, toRekey, actions } = computeEdits(byId, entries);
+  const titleBackfilled = findTitleBackfill(entries);
+
+  printReport(entries, byId, toDrop, toRekey, actions, titleBackfilled);
 
   if (DRY_RUN) {
     console.log("[dedup] --dry-run: no changes written");
     return;
   }
-
   if (toDrop.size === 0 && toRekey.size === 0 && !titleBackfilled) {
     console.log("[dedup] No changes needed (idempotent). Exiting without touching file.");
     return;
   }
 
   try {
-    fs.copyFileSync(REVIEWS_PATH, BACKUP_PATH);
-    console.log(`[dedup] Backup: ${BACKUP_PATH}`);
+    writeBackup();
   } catch (err) {
     console.error(`[dedup] Failed to create backup: ${sanitizeError(err)}`);
     process.exit(1);
   }
 
-  const outLines = [];
-  for (const entry of entries) {
-    if (toDrop.has(entry.lineIndex)) continue;
-    if (toRekey.has(entry.lineIndex)) {
-      entry.record.id = toRekey.get(entry.lineIndex);
-    }
-    outLines.push(JSON.stringify(entry.record));
-  }
+  const outLines = serializeEntries(entries, toDrop, toRekey);
 
   try {
     safeAtomicWriteSync(REVIEWS_PATH, outLines.join("\n") + "\n", { encoding: "utf8" });
