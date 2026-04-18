@@ -702,12 +702,23 @@ function coerceInt(v) {
 // Per session #286 Q4 review: diff between stated total and disposition sum
 // exceeds 10 items AND commit lookup cannot reliably reconstruct counts.
 // These records remain counted (loadReviews still sees them) but skip the
-// integrity check.
-const KNOWN_DISPOSITION_GAPS = new Set([181, 194, 316, 317, 321, 324, 336, 358, 383]);
+// integrity check. Stored as strings so `String(rec.id)` normalizes numeric
+// and string IDs to a single lookup surface.
+const KNOWN_DISPOSITION_GAPS = new Set([
+  "181",
+  "194",
+  "316",
+  "317",
+  "321",
+  "324",
+  "336",
+  "358",
+  "383",
+]);
 
 function checkDisposition(rec) {
   if (!rec || typeof rec !== "object") return null;
-  if (KNOWN_DISPOSITION_GAPS.has(rec.id)) return null;
+  if (KNOWN_DISPOSITION_GAPS.has(String(rec.id))) return null;
 
   const total = coerceInt(rec.total);
   if (total <= 0) return null;
@@ -732,8 +743,11 @@ function checkDisposition(rec) {
   // `fixed` and `rejected` counts across rounds (same SonarCloud finding is
   // rejected in R1, then fixed in R2 via a code change). When that overlap
   // exists, dispositionSum > total by the overlap size. If fixed >= total AND
-  // rejected > 0, treat the rejected as double-counted (semantic overlap).
-  if (dispositionSum > total && fixed >= total && rejected > 0) return null;
+  // rejected > 0 AND deferred === 0, treat the rejected as double-counted
+  // (semantic overlap). Deferred is intentionally excluded — a deferred item
+  // is a distinct disposition (not double-counted), so its presence means the
+  // sum imbalance is not explained by double-classification and should surface.
+  if (dispositionSum > total && fixed >= total && rejected > 0 && deferred === 0) return null;
 
   return { ...base, reason: "sum_mismatch" };
 }

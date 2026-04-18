@@ -143,3 +143,4 @@
 {"agent":"deep-research-verifier","description":"V2 external web claims","outcome":"invoked","timestamp":"2026-04-17T23:55:34.090Z"}
 {"agent":"contrarian-challenger","description":"Contrarian pre-mortem challenge","outcome":"invoked","timestamp":"2026-04-18T00:07:57.888Z"}
 {"agent":"otb-challenger","description":"OTB alternative framings","outcome":"invoked","timestamp":"2026-04-18T00:08:21.806Z"}
+{"agent":"code-reviewer","description":"Review session #286 script changes","outcome":"invoked","timestamp":"2026-04-18T18:36:19.723Z"}

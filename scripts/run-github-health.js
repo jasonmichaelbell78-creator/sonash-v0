@@ -345,7 +345,9 @@ function analyzeCIState(snapshot, checkRuns, issues, details) {
   }
 
   if (buckets.REAL_CI.length > 0) {
-    issues.p0++;
+    // Count per failing job (parity with analyzeDependabot's per-alert p0+=)
+    // so a 10-job CI failure doesn't score identical to 1-job failure.
+    issues.p0 += buckets.REAL_CI.length;
     details.push(`  P0  CI failure on main: ${buckets.REAL_CI.join(", ")}`);
   }
   if (buckets.MAINTENANCE.length > 0) {
