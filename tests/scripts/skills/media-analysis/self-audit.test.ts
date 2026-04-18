@@ -86,7 +86,10 @@ describe("readDepth (Qodo R2 #2+#3 structured return)", () => {
 
 describe("VALID_SOURCES", () => {
   test("enumerates expected transcript sources", () => {
-    assert.deepEqual([...mod.VALID_SOURCES].sort(), ["captions", "manual", "whisper"]);
+    assert.deepEqual(
+      [...mod.VALID_SOURCES].sort((a, b) => a.localeCompare(b)),
+      ["captions", "manual", "whisper"]
+    );
   });
 });
 

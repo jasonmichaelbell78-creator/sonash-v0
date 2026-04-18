@@ -387,7 +387,7 @@ _AI agent reference docs_
 | Document                                                                                     | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [Agent Orchestration Reference](docs/agent_docs/AGENT_ORCHESTRATION.md)                      | Detailed guidance for parallelizing agents, forming teams, a... | ↓1 ↑0      | 2026-03-24    |
-| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-04-03    |
+| [Code Review Patterns Reference](docs/agent_docs/CODE_PATTERNS.md)                           | This document contains detailed code patterns and anti-patte... | ↓7 ↑2      | 2026-04-18    |
 | [Coding Tools Reference](docs/agent_docs/CODING_TOOLS_REFERENCE.md)                          | <!-- prettier-ignore-start -->                                  | ↓1 ↑0      | 2026-04-12    |
 | [Context Preservation & Compaction Safety](docs/agent_docs/CONTEXT_PRESERVATION.md)          | Detailed guidance for preventing loss of important decisions... | ↓2 ↑0      | 2026-02-23    |
 | [Fix Templates for Qodo PR Review Findings](docs/agent_docs/FIX_TEMPLATES.md)                | Copy-paste fix templates for the top 30 most common Qodo PR ... | ↓1 ↑0      | 2026-03-19    |
@@ -436,7 +436,7 @@ _Planning & Active_
 | Document                                                                                               | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [Admin Panel Security & Monitoring Requirements](docs/ADMIN_PANEL_SECURITY_MONITORING_REQUIREMENTS.md) | -                                                               | ↓3 ↑4      | 2026-03-19    |
-| [Learning Metrics (Minimum Viable)](docs/LEARNING_METRICS.md)                                          | -                                                               | ↓0 ↑0      | 2026-04-17    |
+| [Learning Metrics (Minimum Viable)](docs/LEARNING_METRICS.md)                                          | -                                                               | ↓0 ↑0      | 2026-04-18    |
 | [Monetization Strategy Research Initiative](docs/MONETIZATION_RESEARCH.md)                             | -                                                               | ↓2 ↑1      | 2026-03-19    |
 | [Operational Visibility Sprint](docs/OPERATIONAL_VISIBILITY_SPRINT.md)                                 | -                                                               | ↓1 ↑2      | 2026-03-19    |
 | [Testing Plan](docs/TESTING_CHECKLIST.md)                                                              | Comprehensive testing guidance for the SoNash application, i... | ↓5 ↑1      | 2026-03-19    |
@@ -3787,7 +3787,7 @@ _Uncategorized_
 
 | Document                                                                      | Description | References | Last Modified |
 | ----------------------------------------------------------------------------- | ----------- | ---------- | ------------- |
-| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-04-17    |
+| [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md) | -           | ↓0 ↑0      | 2026-04-18    |
 
 ### Core Documentation (Tier 4)
 
@@ -3796,7 +3796,7 @@ _Reference_
 | Document                                                                          | Description                                                       | References | Last Modified |
 | --------------------------------------------------------------------------------- | ----------------------------------------------------------------- | ---------- | ------------- |
 | [🤖 AI Code Review Process](docs/AI_REVIEW_PROCESS.md)                            | Each AI review is an opportunity to improve future work. Sys...   | ↓8 ↑2      | 2026-03-19    |
-| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-04-17    |
+| [AI Review Learnings Log](docs/AI_REVIEW_LEARNINGS_LOG.md)                        | This document is the **audit trail** of all AI code review l...   | ↓3 ↑3      | 2026-04-18    |
 | [Document Dependencies](docs/DOCUMENT_DEPENDENCIES.md)                            | Track template-instance relationships,                            | ↓3 ↑1      | 2026-03-12    |
 | [Documentation Inventory](docs/README.md)                                         | This document provides a complete inventory of project docum...   | ↓0 ↑11     | 2026-04-05    |
 | [Incident Response Runbook](docs/INCIDENT_RESPONSE.md)                            | Documented procedures for responding to security incidents, ...   | ↓7 ↑0      | 2026-03-19    |
@@ -3956,7 +3956,6 @@ Documents with no inbound links (not referenced by any other document):
 
 - [Deploy to Production](.agent/workflows/deploy-prod.md)
 - [find-skills](.agents/skills/find-skills/SKILL.md)
-- [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)
 - [backend-architect](.claude/agents/backend-architect.md)
 - [code-reviewer](.claude/agents/code-reviewer.md)
 - [contrarian-challenger](.claude/agents/contrarian-challenger.md)
@@ -4009,12 +4008,12 @@ Documents with no inbound links (not referenced by any other document):
 - [ui-ux-designer](.claude/agents/ui-ux-designer.md)
 - [Auto Memory - sonash-v0](.claude/canonical-memory/MEMORY.md)
 - [Commands Folder - DEPRECATED](.claude/commands/README.md)
-- [Audit Ecosystem Full Health Remediation Plan](.claude/plans/archive/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
-- [ESLint + Pattern Compliance Fix Plan — PR #394 Unblock](.claude/plans/archive/ESLINT_AND_COMPLIANCE_FIX_PLAN.md)
 - [AI Optimization Audit Plan](.claude/plans/archive/ai-optimization-audit.md)
+- [Audit Ecosystem Full Health Remediation Plan](.claude/plans/archive/AUDIT_ECOSYSTEM_HEALTH_PLAN.md)
 - [Audit Template & Schema Full Overhaul Plan](.claude/plans/archive/audit-template-schema-overhaul.md)
 - [Deep Plan: Automation & File Overwrite Fixes](.claude/plans/archive/deep-plan-automation-overwrite-fixes.md)
 - [Implementation Plan: Ecosystem Audit Expansion](.claude/plans/archive/ecosystem-audit-expansion.md)
+- [ESLint + Pattern Compliance Fix Plan — PR #394 Unblock](.claude/plans/archive/ESLINT_AND_COMPLIANCE_FIX_PLAN.md)
 - [Plan: Manifest JSON Refactors](.claude/plans/archive/manifest-json-refactors.md)
 - [Implementation Plan: AI Review Learnings System Overhaul](.claude/plans/archive/review-learnings-overhaul.md)
 - [SWS Re-Evaluation Conversation Transcript](.claude/plans/archive/sws%20reevaluation%20conversation.md)
@@ -4030,7 +4029,6 @@ Documents with no inbound links (not referenced by any other document):
 - [No autonomous deferrals](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/feedback_no_autonomous_deferrals.md)
 - [Routing menu adds value](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/feedback_routing_menu_value.md)
 - [Contrarian/OTB agent design task](.claude/projects/C--Users-jason-Workspace-dev-projects-sonash-v0/memory/project_contrarian_agent_design.md)
-- [Skill Index](.claude/skills/SKILL_INDEX.md)
 - [Ecosystem Audit: Closure & Guard Rails](.claude/skills/_shared/ecosystem-audit/CLOSURE_AND_GUARDRAILS.md)
 - [Ecosystem Audit: Compaction Guard](.claude/skills/_shared/ecosystem-audit/COMPACTION_GUARD.md)
 - [Ecosystem Audit: Critical Rules](.claude/skills/_shared/ecosystem-audit/CRITICAL_RULES.md)
@@ -4053,16 +4051,16 @@ Documents with no inbound links (not referenced by any other document):
 - [audit-enhancements](.claude/skills/audit-enhancements/SKILL.md)
 - [audit-health](.claude/skills/audit-health/SKILL.md)
 - [audit-performance](.claude/skills/audit-performance/SKILL.md)
-- [audit-process](.claude/skills/audit-process/SKILL.md)
 - [Audit-Process Agent Prompts](.claude/skills/audit-process/prompts.md)
+- [audit-process](.claude/skills/audit-process/SKILL.md)
 - [audit-refactoring](.claude/skills/audit-refactoring/SKILL.md)
 - [audit-security](.claude/skills/audit-security/SKILL.md)
 - [brainstorm](.claude/skills/brainstorm/SKILL.md)
 - [checkpoint](.claude/skills/checkpoint/SKILL.md)
-- [code-reviewer](.claude/skills/code-reviewer/SKILL.md)
 - [Code Review Checklist](.claude/skills/code-reviewer/references/code_review_checklist.md)
 - [Coding Standards](.claude/skills/code-reviewer/references/coding_standards.md)
 - [Common Antipatterns](.claude/skills/code-reviewer/references/common_antipatterns.md)
+- [code-reviewer](.claude/skills/code-reviewer/SKILL.md)
 - [comprehensive-ecosystem-audit](.claude/skills/comprehensive-ecosystem-audit/SKILL.md)
 - [content-research-writer](.claude/skills/content-research-writer/SKILL.md)
 - [Convergence Loop — Reference](.claude/skills/convergence-loop/REFERENCE.md)
@@ -4077,8 +4075,8 @@ Documents with no inbound links (not referenced by any other document):
 - [deep-research](.claude/skills/deep-research/SKILL.md)
 - [developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md)
 - [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)
-- [doc-optimizer](.claude/skills/doc-optimizer/SKILL.md)
 - [Doc-Optimizer Agent Prompts](.claude/skills/doc-optimizer/prompts.md)
+- [doc-optimizer](.claude/skills/doc-optimizer/SKILL.md)
 - [docs-maintain](.claude/skills/docs-maintain/SKILL.md)
 - [Document Analysis Reference](.claude/skills/document-analysis/REFERENCE.md)
 - [document-analysis](.claude/skills/document-analysis/SKILL.md)
@@ -4094,11 +4092,11 @@ Documents with no inbound links (not referenced by any other document):
 - [health-ecosystem-audit](.claude/skills/health-ecosystem-audit/SKILL.md)
 - [Hook Ecosystem Audit — Reference](.claude/skills/hook-ecosystem-audit/REFERENCE.md)
 - [hook-ecosystem-audit](.claude/skills/hook-ecosystem-audit/SKILL.md)
-- [market-research-reports](.claude/skills/market-research-reports/SKILL.md)
 - [Market Research Report Formatting Guide](.claude/skills/market-research-reports/assets/FORMATTING_GUIDE.md)
 - [Data Analysis Patterns for Market Research](.claude/skills/market-research-reports/references/data_analysis_patterns.md)
 - [Market Research Report Structure Guide](.claude/skills/market-research-reports/references/report_structure_guide.md)
 - [Visual Generation Guide for Market Research Reports](.claude/skills/market-research-reports/references/visual_generation_guide.md)
+- [market-research-reports](.claude/skills/market-research-reports/SKILL.md)
 - [Market Research Reports — Section Templates & Structure Guide](.claude/skills/market-research-reports/structure.md)
 - [mcp-builder](.claude/skills/mcp-builder/SKILL.md)
 - [Media Analysis Reference](.claude/skills/media-analysis/REFERENCE.md)
@@ -4108,8 +4106,8 @@ Documents with no inbound links (not referenced by any other document):
 - [pr-ecosystem-audit](.claude/skills/pr-ecosystem-audit/SKILL.md)
 - [PR Retro — Reference](.claude/skills/pr-retro/REFERENCE.md)
 - [pr-retro](.claude/skills/pr-retro/SKILL.md)
-- [pr-review](.claude/skills/pr-review/SKILL.md)
 - [PR Review Pre-Checks](.claude/skills/pr-review/reference/PRE_CHECKS.md)
+- [pr-review](.claude/skills/pr-review/SKILL.md)
 - [pre-commit-fixer](.claude/skills/pre-commit-fixer/SKILL.md)
 - [quick-fix](.claude/skills/quick-fix/SKILL.md)
 - [Recall Reference](.claude/skills/recall/REFERENCE.md)
@@ -4121,6 +4119,7 @@ Documents with no inbound links (not referenced by any other document):
 - [session-ecosystem-audit](.claude/skills/session-ecosystem-audit/SKILL.md)
 - [session-end](.claude/skills/session-end/SKILL.md)
 - [Shared Skill Conventions](.claude/skills/shared/CONVENTIONS.md)
+- [Skill Index](.claude/skills/SKILL_INDEX.md)
 - [Skill Audit Reference](.claude/skills/skill-audit/REFERENCE.md)
 - [skill-audit](.claude/skills/skill-audit/SKILL.md)
 - [Skill Creator Reference](.claude/skills/skill-creator/REFERENCE.md)
@@ -4129,13 +4128,13 @@ Documents with no inbound links (not referenced by any other document):
 - [sonarcloud](.claude/skills/sonarcloud/SKILL.md)
 - [sonash-context](.claude/skills/sonash-context/SKILL.md)
 - [/synthesize — Reference Material](.claude/skills/synthesize/REFERENCE.md)
-- [system-test](.claude/skills/system-test/SKILL.md)
 - [System Test — 23-Domain Test Plan](.claude/skills/system-test/domains.md)
-- [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md)
-- [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)
+- [system-test](.claude/skills/system-test/SKILL.md)
 - [Condition-Based Waiting](.claude/skills/systematic-debugging/condition-based-waiting.md)
+- [Creation Log: Systematic Debugging Skill](.claude/skills/systematic-debugging/CREATION-LOG.md)
 - [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)
 - [Root Cause Tracing](.claude/skills/systematic-debugging/root-cause-tracing.md)
+- [systematic-debugging](.claude/skills/systematic-debugging/SKILL.md)
 - [Academic Test: Systematic Debugging Skill](.claude/skills/systematic-debugging/test-academic.md)
 - [Pressure Test 1: Emergency Production Fix](.claude/skills/systematic-debugging/test-pressure-1.md)
 - [Pressure Test 2: Sunk Cost + Exhaustion](.claude/skills/systematic-debugging/test-pressure-2.md)
@@ -4152,6 +4151,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Website Analysis Reference](.claude/skills/website-analysis/REFERENCE.md)
 - [website-analysis](.claude/skills/website-analysis/SKILL.md)
 - [website-synthesis](.claude/skills/website-synthesis/SKILL.md)
+- [Hook & Session State Files Schema](.claude/STATE_SCHEMA.md)
 - [agent research results](.claude/state/agent-research-results.md)
 - [Findings: Claude Code Worktrees, Parallel Instances, and Shared State](.claude/state/brainstorm-t5-research.md)
 - [Pre-push Report](.claude/state/last-hook-report.md)
@@ -4164,14 +4164,9 @@ Documents with no inbound links (not referenced by any other document):
 - [pr body](.claude/tmp/pr-body.md)
 - [pr492 new body](.claude/tmp/pr492-new-body.md)
 - [SoNash Code Review Style Guide](.gemini/styleguide.md)
-- [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
 - [Security Instructions for Copilot](.github/instructions/security.instructions.md)
 - [Test Instructions for Copilot](.github/instructions/tests.instructions.md)
-- [Todos](.planning/TODOS.md)
-- [Project Milestones: PR Review Ecosystem v2](.planning/archive/MILESTONES.md)
-- [PR Review Ecosystem v2](.planning/archive/PROJECT.md)
-- [Roadmap: PR Review Ecosystem](.planning/archive/ROADMAP-pr-v2.md)
-- [Project State](.planning/archive/STATE.md)
+- [ISSUE TEMPLATE APP CHECK REENABLE](.github/ISSUE_TEMPLATE_APP_CHECK_REENABLE.md)
 - [AGENT INVENTORY — SoNash-v0](.planning/archive/agent-environment-analysis/AGENT_INVENTORY.md)
 - [Agent Teams Research](.planning/archive/agent-environment-analysis/AGENT_TEAMS_RESEARCH.md)
 - [External Agent Research](.planning/archive/agent-environment-analysis/EXTERNAL_RESEARCH.md)
@@ -4188,13 +4183,13 @@ Documents with no inbound links (not referenced by any other document):
 - [Statusline Deep-Plan: DIAGNOSIS](.planning/archive/custom-statusline/DIAGNOSIS.md)
 - [Implementation Plan: Custom Statusline (Go Binary)](.planning/archive/custom-statusline/PLAN.md)
 - [Diagnosis: Deep Research Skill/Agent(s)](.planning/archive/deep-research-skill/DIAGNOSIS.md)
-- [Implementation Plan: \`/deep-research\` Skill](.planning/archive/deep-research-skill/PLAN.md)
 - [Dynamic Agent Allocation Model](.planning/archive/deep-research-skill/discovery/AGENT_ALLOCATION_MODEL.md)
 - [Exhaustive Depth Level Definitions](.planning/archive/deep-research-skill/discovery/DEPTH_LEVELS.md)
 - [Determination Phase Analysis](.planning/archive/deep-research-skill/discovery/DETERMINATION_PHASE.md)
 - [Implementation Phases: P0/P1/P2/P3 Specification](.planning/archive/deep-research-skill/discovery/IMPLEMENTATION_PHASES.md)
 - [Note: Cross-Model Verification — Broader Opportunities](.planning/archive/deep-research-skill/discovery/NOTE_CROSS_MODEL_VERIFICATION.md)
 - [Searcher Variants Comparison](.planning/archive/deep-research-skill/discovery/SEARCHER_VARIANTS.md)
+- [Implementation Plan: \`/deep-research\` Skill](.planning/archive/deep-research-skill/PLAN.md)
 - [Completeness Audit: Deep-Research Skill Research Corpus](.planning/archive/deep-research-skill/research/AUDIT_COMPLETENESS.md)
 - [Cross-Reference Audit: Deep Research Skill](.planning/archive/deep-research-skill/research/AUDIT_CROSS_REFERENCE.md)
 - [Contrarian Analysis: Challenging the Deep Research Consensus](.planning/archive/deep-research-skill/research/CONTRARIAN_ANALYSIS.md)
@@ -4239,6 +4234,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Decision Record: Memory System Audit](.planning/archive/memory-system-audit/DECISIONS.md)
 - [Diagnosis: Memory System Audit](.planning/archive/memory-system-audit/DIAGNOSIS.md)
 - [Implementation Plan: Memory System Audit](.planning/archive/memory-system-audit/PLAN.md)
+- [Project Milestones: PR Review Ecosystem v2](.planning/archive/MILESTONES.md)
 - [Milestone Audit: PR Review Ecosystem v2](.planning/archive/milestones/v1.0-MILESTONE-AUDIT.md)
 - [Requirements Archive: v1.0 PR Review Ecosystem v2](.planning/archive/milestones/v1.0-REQUIREMENTS.md)
 - [Milestone v1.0: PR Review Ecosystem v2 Rebuild](.planning/archive/milestones/v1.0-ROADMAP.md)
@@ -4322,10 +4318,10 @@ Documents with no inbound links (not referenced by any other document):
 - [Dependency graph](.planning/archive/phases-v1.0/07-integration-cutover/07-06-SUMMARY.md)
 - [Phase 7: Integration & Cutover - Research](.planning/archive/phases-v1.0/07-integration-cutover/07-RESEARCH.md)
 - [Phase 7: Integration and Cutover Verification Report](.planning/archive/phases-v1.0/07-integration-cutover/07-VERIFICATION.md)
+- [PR Review Ecosystem v2](.planning/archive/PROJECT.md)
 - [DECISIONS: 3-Layer Propagation Enforcement](.planning/archive/propagation-enforcement/DECISIONS.md)
 - [DIAGNOSIS: 3-Layer Propagation Enforcement](.planning/archive/propagation-enforcement/DIAGNOSIS.md)
 - [PLAN: 3-Layer Propagation Enforcement](.planning/archive/propagation-enforcement/PLAN.md)
-- [Plan: Propagation Patterns Remediation](.planning/archive/propagation-research/PLAN.md)
 - [Propagation Detection Gaps Analysis](.planning/archive/propagation-research/findings/01-DETECTION_GAPS.md)
 - [PR #453 Deferred Propagation Patterns — Research Findings](.planning/archive/propagation-research/findings/02-PR453_DEFERRED.md)
 - [03 - CI Pipeline Cascade Failure Analysis](.planning/archive/propagation-research/findings/03-CI_CASCADES.md)
@@ -4336,6 +4332,7 @@ Documents with no inbound links (not referenced by any other document):
 - [08 - Remediation Strategies for Propagation Pattern Failures](.planning/archive/propagation-research/findings/08-REMEDIATION.md)
 - [09 - Contrarian Analysis: Challenging the Research Claims](.planning/archive/propagation-research/findings/09-CONTRARIAN.md)
 - [Finding 10: Outside-the-Box Analysis](.planning/archive/propagation-research/findings/10-OUTSIDE_THE_BOX.md)
+- [Plan: Propagation Patterns Remediation](.planning/archive/propagation-research/PLAN.md)
 - [Diagnosis: Repo Analysis Skill — Unified (Defensive + Value Extraction)](.planning/archive/repo-analysis-skill/DIAGNOSIS.md)
 - [Plan: /repo-analysis Skill Implementation](.planning/archive/repo-analysis-skill/PLAN.md)
 - [Repo Cleanup Implementation: DECISIONS](.planning/archive/repo-cleanup/DECISIONS.md)
@@ -4345,8 +4342,8 @@ Documents with no inbound links (not referenced by any other document):
 - [DIAGNOSIS: Research Integrity Fix](.planning/archive/research-integrity-fix/DIAGNOSIS.md)
 - [PLAN: Research Integrity Fix](.planning/archive/research-integrity-fix/PLAN.md)
 - [Implementation Plan: Review Lifecycle Pipeline Overhaul](.planning/archive/review-lifecycle-overhaul/PLAN.md)
-- [Statusline Research: Synthesis](.planning/archive/statusline-research/RESEARCH_OUTPUT.md)
-- [Statusline Widget Catalog](.planning/archive/statusline-research/WIDGET_CATALOG.md)
+- [Roadmap: PR Review Ecosystem](.planning/archive/ROADMAP-pr-v2.md)
+- [Project State](.planning/archive/STATE.md)
 - [Statusline Current Implementation Analysis](.planning/archive/statusline-research/findings/01-CURRENT_IMPL.md)
 - [External Claude Code Statusline Implementations](.planning/archive/statusline-research/findings/02-EXTERNAL_REPOS.md)
 - [Build vs. Adopt vs. Fork: Statusline Decision Analysis](.planning/archive/statusline-research/findings/03-BUILD_ADOPT_FORK.md)
@@ -4355,6 +4352,8 @@ Documents with no inbound links (not referenced by any other document):
 - [Statusline Architecture Research](.planning/archive/statusline-research/findings/06-ARCHITECTURE.md)
 - [07 - Contrarian Review: Challenging the Research Conclusions](.planning/archive/statusline-research/findings/07-CONTRARIAN.md)
 - [08 - Outside the Box: What the Structured Research Missed](.planning/archive/statusline-research/findings/08-OUTSIDE_THE_BOX.md)
+- [Statusline Research: Synthesis](.planning/archive/statusline-research/RESEARCH_OUTPUT.md)
+- [Statusline Widget Catalog](.planning/archive/statusline-research/WIDGET_CATALOG.md)
 - [/synthesize Subagent Spec](.planning/archive/synthesis-wave5-agents/AGENT_SPEC.md)
 - [Home Context Brief for /synthesize Subagents](.planning/archive/synthesis-wave5-agents/HOME_CONTEXT.md)
 - [Diagnosis: Website-Analysis Skill](.planning/archive/website-analysis/DIAGNOSIS.md)
@@ -4385,10 +4384,10 @@ Documents with no inbound links (not referenced by any other document):
 - [Decision Record: Plan Orchestration](.planning/plan-orchestration/DECISIONS.md)
 - [Plan Orchestration: DIAGNOSIS](.planning/plan-orchestration/DIAGNOSIS.md)
 - [Implementation Plan: Plan Orchestration](.planning/plan-orchestration/PLAN.md)
+- [Repo Cleanup Plan — Pre-Execution Verification Report](.planning/plan-orchestration/wave0/repo-cleanup-verification.md)
 - [S0 App Check Cluster -- Triage Assessment](.planning/plan-orchestration/wave0/S0-appcheck-triage.md)
 - [S0 CI/Scripts Triage — DEBT-1878, DEBT-2121, DEBT-4403](.planning/plan-orchestration/wave0/S0-ci-scripts-triage.md)
 - [S0 Triage: Data Quality, SonarCloud Finding, Dependency Vulnerability](.planning/plan-orchestration/wave0/S0-data-dep-triage.md)
-- [Repo Cleanup Plan — Pre-Execution Verification Report](.planning/plan-orchestration/wave0/repo-cleanup-verification.md)
 - [Wave 0 Audit Report](.planning/plan-orchestration/wave0/wave0-audit.md)
 - [pr body session 279](.planning/pr-body-session-279.md)
 - [Review Data Architecture — Decisions](.planning/review-data-architecture/DECISIONS.md)
@@ -4403,26 +4402,26 @@ Documents with no inbound links (not referenced by any other document):
 - [/synthesize Skill Audit — Phase 4 Implementation Handoff](.planning/skill-audit-synthesize-phase4/HANDOFF.md)
 - [Diagnosis: Analysis/Synthesis Skill Convergence](.planning/skill-convergence/DIAGNOSIS.md)
 - [Plan: Analysis/Synthesis Skill Convergence](.planning/skill-convergence/PLAN.md)
+- [T29 Step 10.5 — Per-Source Audit Spec](.planning/synthesis-consolidation/audit-step-10.5/AUDIT_SPEC.md)
 - [Decision Record: Synthesis Consolidation](.planning/synthesis-consolidation/DECISIONS.md)
 - [Diagnosis: Synthesis Consolidation](.planning/synthesis-consolidation/DIAGNOSIS.md)
 - [T29 Wave 4 — Resume Handoff (Session #275 → Next)](.planning/synthesis-consolidation/WAVE4_RESUME.md)
-- [T29 Step 10.5 — Per-Source Audit Spec](.planning/synthesis-consolidation/audit-step-10.5/AUDIT_SPEC.md)
 - [Capture Manifest: Folded Planning Documents](.planning/system-wide-standardization/CAPTURE_MANIFEST.md)
+- [Decision Record: Repo-Wide Code Quality Overhaul](.planning/system-wide-standardization/code-quality-overhaul/DECISIONS.md)
+- [Diagnosis: Repo-Wide Code Quality Overhaul](.planning/system-wide-standardization/code-quality-overhaul/DIAGNOSIS.md)
+- [Implementation Plan: Repo-Wide Code Quality Overhaul](.planning/system-wide-standardization/code-quality-overhaul/PLAN.md)
 - [SWS Decisions by Phase — Index](.planning/system-wide-standardization/DECISIONS_BY_PHASE.md)
 - [Diagnosis: System-Wide Standardization — Ecosystem Mapping](.planning/system-wide-standardization/DIAGNOSIS.md)
 - [Discovery Record: System-Wide Standardization](.planning/system-wide-standardization/DISCOVERY_RECORD.md)
 - [Gap Analysis: PLAN.md v1.0](.planning/system-wide-standardization/GAP-ANALYSIS.md)
-- [System-Wide Standardization — Implementation Plan (v2)](.planning/system-wide-standardization/PLAN-v2.md)
-- [System-Wide Standardization — Implementation Plan (v3)](.planning/system-wide-standardization/PLAN-v3.md)
-- [System-Wide Standardization — Implementation Plan](.planning/system-wide-standardization/PLAN.md)
-- [Decision Record: Repo-Wide Code Quality Overhaul](.planning/system-wide-standardization/code-quality-overhaul/DECISIONS.md)
-- [Diagnosis: Repo-Wide Code Quality Overhaul](.planning/system-wide-standardization/code-quality-overhaul/DIAGNOSIS.md)
-- [Implementation Plan: Repo-Wide Code Quality Overhaul](.planning/system-wide-standardization/code-quality-overhaul/PLAN.md)
 - [Data Effectiveness Audit — Comprehensive Summary](.planning/system-wide-standardization/learnings-effectiveness-audit/AUDIT_SUMMARY.md)
 - [Data Effectiveness Audit — DECISIONS](.planning/system-wide-standardization/learnings-effectiveness-audit/DECISIONS.md)
 - [Learnings Effectiveness Audit — DIAGNOSIS](.planning/system-wide-standardization/learnings-effectiveness-audit/DIAGNOSIS.md)
 - [Lifecycle Scores — Data Effectiveness Audit](.planning/system-wide-standardization/learnings-effectiveness-audit/LIFECYCLE_SCORES.md)
 - [Data Effectiveness Audit — PLAN](.planning/system-wide-standardization/learnings-effectiveness-audit/PLAN.md)
+- [System-Wide Standardization — Implementation Plan (v2)](.planning/system-wide-standardization/PLAN-v2.md)
+- [System-Wide Standardization — Implementation Plan (v3)](.planning/system-wide-standardization/PLAN-v3.md)
+- [System-Wide Standardization — Implementation Plan](.planning/system-wide-standardization/PLAN.md)
 - [Ecosystem v2 — Discovery Q&A Record](.planning/system-wide-standardization/reference/sonash-source/DISCOVERY_QA.md)
 - [GSD Project Context: PR Review Ecosystem v2](.planning/system-wide-standardization/reference/sonash-source/GSD_CONTEXT.md)
 - [PR Review Ecosystem Diagnosis](.planning/system-wide-standardization/reference/sonash-source/PR_ECOSYSTEM_DIAGNOSIS.md)
@@ -4434,11 +4433,8 @@ Documents with no inbound links (not referenced by any other document):
 - [Diagnosis: Tooling & Infrastructure Audit](.planning/system-wide-standardization/tooling-infrastructure-audit/DIAGNOSIS.md)
 - [Implementation Plan: Tooling & Infrastructure Audit](.planning/system-wide-standardization/tooling-infrastructure-audit/PLAN.md)
 - [Diagnosis: T28 Intelligence Graph V1](.planning/t28-intelligence-graph-v1/DIAGNOSIS.md)
+- [Todos](.planning/TODOS.md)
 - [Qodo Rejected Patterns Tracker](.qodo/REJECTED_PATTERNS.md)
-- [Extraction Candidates — Cross-Entity Summary](.research/EXTRACTIONS.md)
-- [Creator View — opendatalab/MinerU](.research/analysis/MinerU/creator-view.md)
-- [Deep Read — opendatalab/MinerU](.research/analysis/MinerU/deep-read.md)
-- [Engineer View Summary — opendatalab/MinerU](.research/analysis/MinerU/summary.md)
 - [T29 Step 10.5 — Remediation Proposals](.research/analysis/_audit-fixes.md)
 - [T29 Step 10.5 — Full-Corpus Audit Report](.research/analysis/_audit-report.md)
 - [Quick Scan → Standard Upgrade Checklist](.research/analysis/_quick-scan-upgrade.md)
@@ -4498,13 +4494,11 @@ Documents with no inbound links (not referenced by any other document):
 - [Contribution Process](.research/analysis/archivebox-archivebox/source/.github/CONTRIBUTING.md)
 - [Summary](.research/analysis/archivebox-archivebox/source/.github/PULL_REQUEST_TEMPLATE.md)
 - [Security Policy](.research/analysis/archivebox-archivebox/source/.github/SECURITY.md)
-- [Claude Code Development Guide for ArchiveBox](.research/analysis/archivebox-archivebox/source/CLAUDE.md)
-- [docker compose run archivebox add 'https://example.com'](.research/analysis/archivebox-archivebox/source/README.md)
-- [README](.research/analysis/archivebox-archivebox/source/archivebox/README.md)
 - [ArchiveBox MCP Server](.research/analysis/archivebox-archivebox/source/archivebox/mcp/README.md)
+- [README](.research/analysis/archivebox-archivebox/source/archivebox/README.md)
+- [Claude Code Development Guide for ArchiveBox](.research/analysis/archivebox-archivebox/source/CLAUDE.md)
 - [Example etc files for deploying ArchiveBox](.research/analysis/archivebox-archivebox/source/etc/README.md)
 - [ArchiveBox UI](.research/analysis/archivebox-archivebox/source/old/Architecture.md)
-- [Process Model Integration Plan](.research/analysis/archivebox-archivebox/source/old/TODO_Process_cleanup_unification.md)
 - [ArchiveBox CLI Pipeline Architecture](.research/analysis/archivebox-archivebox/source/old/TODO_archivebox_jsonl_cli.md)
 - [Chrome Plugin Consolidation - COMPLETED ✓](.research/analysis/archivebox-archivebox/source/old/TODO_chrome_plugin_cleanup.md)
 - [ArchiveBox CLI Refactor TODO](.research/analysis/archivebox-archivebox/source/old/TODO_cli_refactor.md)
@@ -4513,10 +4507,12 @@ Documents with no inbound links (not referenced by any other document):
 - [ArchiveBox Hook Architecture](.research/analysis/archivebox-archivebox/source/old/TODO_hook_architecture.md)
 - [ArchiveBox Hook Script Concurrency & Execution Plan](.research/analysis/archivebox-archivebox/source/old/TODO_hook_concurrency.md)
 - [Hook & State Machine Cleanup - Unified Pattern](.research/analysis/archivebox-archivebox/source/old/TODO_hook_statemachine_cleanup.md)
+- [Process Model Integration Plan](.research/analysis/archivebox-archivebox/source/old/TODO_Process_cleanup_unification.md)
 - [Process Hierarchy Tracking Implementation Plan](.research/analysis/archivebox-archivebox/source/old/TODO_process_tracking.md)
 - [TODO: Rename Extractor to Plugin - Implementation Progress](.research/analysis/archivebox-archivebox/source/old/TODO_rename_extractor_to_plugin.md)
-- [README](.research/analysis/archivebox-archivebox/source/website/README.md)
+- [docker compose run archivebox add 'https://example.com'](.research/analysis/archivebox-archivebox/source/README.md)
 - [assets/](.research/analysis/archivebox-archivebox/source/website/assets/README.md)
+- [README](.research/analysis/archivebox-archivebox/source/website/README.md)
 - [summary](.research/analysis/archivebox-archivebox/summary.md)
 - [Creator View — AWS Media Extraction Framework](.research/analysis/aws-media-extraction/creator-view.md)
 - [Deep Read — AWS Media Extraction Framework](.research/analysis/aws-media-extraction/deep-read.md)
@@ -4566,17 +4562,17 @@ Documents with no inbound links (not referenced by any other document):
 - [Repository Guidelines](.research/analysis/getzep-graphiti/source/AGENTS.md)
 - [CLAUDE.md](.research/analysis/getzep-graphiti/source/CLAUDE.md)
 - [Contributor Covenant Code of Conduct](.research/analysis/getzep-graphiti/source/CODE_OF_CONDUCT.md)
-- [OpenTelemetry Tracing in Graphiti](.research/analysis/getzep-graphiti/source/OTEL_TRACING.md)
-- [Security Policy](.research/analysis/getzep-graphiti/source/SECURITY.md)
-- [Contributor License Agreement (CLA)](.research/analysis/getzep-graphiti/source/Zep-CLA.md)
 - [Azure OpenAI with Neo4j Example](.research/analysis/getzep-graphiti/source/examples/azure-openai/README.md)
 - [GLiNER2 Hybrid LLM Client Example (Experimental)](.research/analysis/getzep-graphiti/source/examples/gliner2/README.md)
 - [OpenTelemetry Stdout Tracing Example](.research/analysis/getzep-graphiti/source/examples/opentelemetry/README.md)
 - [Docker Deployment for Graphiti MCP Server](.research/analysis/getzep-graphiti/source/mcp_server/docker/README.md)
 - [cursor rules](.research/analysis/getzep-graphiti/source/mcp_server/docs/cursor_rules.md)
 - [Graphiti MCP Server Integration Tests](.research/analysis/getzep-graphiti/source/mcp_server/tests/README.md)
+- [OpenTelemetry Tracing in Graphiti](.research/analysis/getzep-graphiti/source/OTEL_TRACING.md)
+- [Security Policy](.research/analysis/getzep-graphiti/source/SECURITY.md)
 - [Driver Operations Redesign Spec](.research/analysis/getzep-graphiti/source/spec/driver-operations-redesign.md)
 - [README](.research/analysis/getzep-graphiti/source/tests/evals/data/longmemeval_data/README.md)
+- [Contributor License Agreement (CLA)](.research/analysis/getzep-graphiti/source/Zep-CLA.md)
 - [Summary — getzep/graphiti](.research/analysis/getzep-graphiti/summary.md)
 - [Standard Analysis: HKUDS/CLI-Anything (v2.0)](.research/analysis/hkuds-cli-anything/_v3-archive/summary.md)
 - [Creator View: HKUDS/CLI-Anything](.research/analysis/hkuds-cli-anything/creator-view.md)
@@ -4610,14 +4606,17 @@ Documents with no inbound links (not referenced by any other document):
 - [Contemplative Reasoning — Maharshi-Pandya's LLM Reasoning Prompt](.research/analysis/maharshi-pandya-gist-4aeccbe1/creator-view.md)
 - [Deep Read — Contemplative Reasoning Response Style for LLMs](.research/analysis/maharshi-pandya-gist-4aeccbe1/deep-read.md)
 - [Contemplative Reasoning Response Style for LLMs — Summary](.research/analysis/maharshi-pandya-gist-4aeccbe1/summary.md)
+- [Creator View — opendatalab/MinerU](.research/analysis/MinerU/creator-view.md)
+- [Deep Read — opendatalab/MinerU](.research/analysis/MinerU/deep-read.md)
+- [Engineer View Summary — opendatalab/MinerU](.research/analysis/MinerU/summary.md)
 - [Creator View: Outline (outline/outline)](.research/analysis/outline/creator-view.md)
 - [Deep Read: outline/outline](.research/analysis/outline/deep-read.md)
 - [AGENTS](.research/analysis/outline/source/AGENTS.md)
 - [CLAUDE](.research/analysis/outline/source/CLAUDE.md)
-- [Installation](.research/analysis/outline/source/README.md)
 - [Contributor Covenant Code of Conduct](.research/analysis/outline/source/docs/CODE_OF_CONDUCT.md)
 - [Security Policy](.research/analysis/outline/source/docs/SECURITY.md)
 - [Backend Services](.research/analysis/outline/source/docs/SERVICES.md)
+- [Installation](.research/analysis/outline/source/README.md)
 - [Getting Started](.research/analysis/outline/source/server/onboarding/Getting%20Started.md)
 - [Integrations & API](.research/analysis/outline/source/server/onboarding/Integrations%20&%20API.md)
 - [Our Editor](.research/analysis/outline/source/server/onboarding/Our%20Editor.md)
@@ -4678,7 +4677,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Creator View: zedeus/nitter](.research/analysis/zedeus-nitter/creator-view.md)
 - [Deep Read: zedeus/nitter](.research/analysis/zedeus-nitter/deep-read.md)
 - [summary](.research/analysis/zedeus-nitter/summary.md)
-- [Research Output: Website-Analysis/Synthesis vs Repo-Analysis/Synthesis — Full Comparative Analysis](.research/archive/analysis-synthesis-comparison/RESEARCH_OUTPUT.md)
 - [Contrarian Challenges: Claims C-001 through C-030](.research/archive/analysis-synthesis-comparison/challenges/contrarian-1.md)
 - [Contrarian Challenges: Claims C-031 through C-060](.research/archive/analysis-synthesis-comparison/challenges/contrarian-2.md)
 - [OTB Challenges: Analysis-Synthesis Comparison (First Half)](.research/archive/analysis-synthesis-comparison/challenges/otb-1.md)
@@ -4695,8 +4693,8 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Integration & Downstream Routing Comparison](.research/archive/analysis-synthesis-comparison/findings/D10-integration.md)
 - [Verification Report: Claims C-001 through C-030](.research/archive/analysis-synthesis-comparison/findings/V1-claims-001-030.md)
 - [Verification Report: Claims C-031 through C-060](.research/archive/analysis-synthesis-comparison/findings/V2-claims-031-060.md)
+- [Research Output: Website-Analysis/Synthesis vs Repo-Analysis/Synthesis — Full Comparative Analysis](.research/archive/analysis-synthesis-comparison/RESEARCH_OUTPUT.md)
 - [Findings: Claude Code Permission System — Complete Reference](.research/archive/claude-code-permissions/findings/claude-code-permission-system-FINDINGS.md)
-- [CLI Tools for AI-Directed Workflow: Research Report](.research/archive/cli-tools/RESEARCH_OUTPUT.md)
 - [Claim Verification Report](.research/archive/cli-tools/challenges/CLAIM_VERIFICATION.md)
 - [Contrarian Challenges: CLI Tools Research Report](.research/archive/cli-tools/challenges/CONTRARIAN.md)
 - [Outside the Box: What the Research Didn't Ask](.research/archive/cli-tools/challenges/OUTSIDE_THE_BOX.md)
@@ -4712,7 +4710,7 @@ Documents with no inbound links (not referenced by any other document):
 - [SQ-009: CLI Tools for the SoNash Stack](.research/archive/cli-tools/findings/SQ-009-sonash-stack-tools.md)
 - [SQ-010: Emerging & Cutting-Edge CLI Tools (2025-2026)](.research/archive/cli-tools/findings/SQ-010-emerging-tools.md)
 - [User-Requested Research: Ruflo & Claude-Peers-MCP](.research/archive/cli-tools/findings/USER-REQUESTED-ruflo-claude-peers.md)
-- [OpenAI Codex Plugin for Claude Code — Research Report](.research/archive/codex-claude-code-plugin/RESEARCH_OUTPUT.md)
+- [CLI Tools for AI-Directed Workflow: Research Report](.research/archive/cli-tools/RESEARCH_OUTPUT.md)
 - [D1: OpenAI Codex Product Overview](.research/archive/codex-claude-code-plugin/findings/D1-codex-product.md)
 - [Findings: Multi-Model AI Coding Tools — The Trend Behind the Codex Claude Code Plugin](.research/archive/codex-claude-code-plugin/findings/D10-multi-model-trend.md)
 - [Findings: OpenAI Codex — Pricing, Models, and Usage Limits (April 2026)](.research/archive/codex-claude-code-plugin/findings/D11-codex-pricing.md)
@@ -4726,7 +4724,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Community Reception — Real-World Usage Reports, Reviews, Known Issues, Roadmap](.research/archive/codex-claude-code-plugin/findings/D8-community-reception.md)
 - [Findings: Claude Code Plugin System — Internal Architecture Deep Dive](.research/archive/codex-claude-code-plugin/findings/D9-architecture-deep-dive.md)
 - [Verification Report: Claims C-026 through C-050](.research/archive/codex-claude-code-plugin/findings/V2-claims-26-50.md)
-- [Research Output: Custom Agents for Deep-Research and General Duty](.research/archive/custom-agents/RESEARCH_OUTPUT.md)
+- [OpenAI Codex Plugin for Claude Code — Research Report](.research/archive/codex-claude-code-plugin/RESEARCH_OUTPUT.md)
 - [Challenge Analysis: Contrarian Review — Consolidation and Infrastructure Recommendations](.research/archive/custom-agents/challenges/CH1-contrarian-consolidation.md)
 - [Challenge Report: CH2 — Contrarian Attack on New Agent Recommendations](.research/archive/custom-agents/challenges/CH2-contrarian-new-agents.md)
 - [OTB Alternatives Challenge: Custom Agents Research](.research/archive/custom-agents/challenges/CH3-otb-alternatives.md)
@@ -4772,6 +4770,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Prior-Research Archive Comparison](.research/archive/custom-agents/findings/PR2-prior-research-archive.md)
 - [Verification Report: Claims C-001 to C-050](.research/archive/custom-agents/findings/V1-claims-1-50.md)
 - [Findings: Filesystem Verification of Claims C-051 through C-100](.research/archive/custom-agents/findings/V2-claims-51-100.md)
+- [Research Output: Custom Agents for Deep-Research and General Duty](.research/archive/custom-agents/RESEARCH_OUTPUT.md)
 - [Contrarian Challenge: Statusline Research Report](.research/archive/custom-statusline/challenges/CONTRARIAN.md)
 - [Statusline Research: What the Structured Research Didn't Ask](.research/archive/custom-statusline/challenges/OUTSIDE_THE_BOX.md)
 - [SQ-002: Terminal Statusline/Status-Bar Frameworks Outside Claude Code](.research/archive/custom-statusline/findings/SQ-002-terminal-statusbar-frameworks.md)
@@ -4780,8 +4779,6 @@ Documents with no inbound links (not referenced by any other document):
 - [SQ-006: Implementation Approaches for a Custom Claude Code Statusline](.research/archive/custom-statusline/findings/SQ-006-implementation-approaches.md)
 - [SQ-007: Design Inspiration from Best Statusline/Status Bar Implementations](.research/archive/custom-statusline/findings/SQ-007-design-inspiration.md)
 - [SQ-008: Non-Development, Lifestyle & Productivity Statusline Widgets](.research/archive/custom-statusline/findings/SQ-008-nondev-widgets.md)
-- [GitHub Health Skill — Research Report](.research/archive/github-health/RESEARCH_OUTPUT.md)
-- [Research Plan: GitHub Health Skill](.research/archive/github-health/RESEARCH_PLAN.md)
 - [Findings: Repo Metadata, Community Profile, Labels, Issue Templates, and Settings](.research/archive/github-health/findings/D10-repo-metadata.md)
 - [Findings: Why Release Please Is Failing and What the Correct Release Strategy Is](.research/archive/github-health/findings/D11-release-please.md)
 - [Findings: Deploy Pipeline and Environment Configuration Gaps](.research/archive/github-health/findings/D12-deploy-environments.md)
@@ -4802,21 +4799,22 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Ruleset Overlap/Conflict Analysis and Optimal Consolidated Configuration](.research/archive/github-health/findings/D9-rulesets.md)
 - [V2: API & Configuration Verification](.research/archive/github-health/findings/V2-api-config.md)
 - [V3: Skill Design, Metrics, and Integration Verification](.research/archive/github-health/findings/V3-skill-metrics.md)
-- [Research Report: Claude Code Hook \`if\` Conditions — Comprehensive Analysis](.research/archive/hook-if-conditions/RESEARCH_OUTPUT.md)
+- [GitHub Health Skill — Research Report](.research/archive/github-health/RESEARCH_OUTPUT.md)
+- [Research Plan: GitHub Health Skill](.research/archive/github-health/RESEARCH_PLAN.md)
 - [Contrarian Challenge Round 1](.research/archive/hook-if-conditions/challenges/contrarian-1.md)
 - [Contrarian Challenge #2: Methodology and Blind Spots](.research/archive/hook-if-conditions/challenges/contrarian-2.md)
 - [OTB Challenge #1: Unconventional Uses of the \`if\` Field](.research/archive/hook-if-conditions/challenges/otb-1.md)
 - [OTB Challenge 2: The \`if\` Field as an Architectural Pattern](.research/archive/hook-if-conditions/challenges/otb-2.md)
 - [Findings: Claude Code Hook \`if\` Field — Complete Specification](.research/archive/hook-if-conditions/findings/D1-spec.md)
 - [Findings: Hook Fire Rates, Spawn Costs, and Bail-out Patterns](.research/archive/hook-if-conditions/findings/D2-inventory.md)
-- [Findings: \`if\` Field Tool Compatibility — Contradiction Resolution](.research/archive/hook-if-conditions/findings/D3-S-tool-compatibility.md)
 - [Findings: \`if\` Conditions for Existing Hooks — Optimization Analysis](.research/archive/hook-if-conditions/findings/D3-optimization.md)
+- [Findings: \`if\` Field Tool Compatibility — Contradiction Resolution](.research/archive/hook-if-conditions/findings/D3-S-tool-compatibility.md)
 - [Findings: gsd-context-monitor.js — Script Analysis and Scoping Assessment](.research/archive/hook-if-conditions/findings/D4-gsd.md)
-- [Findings: gsd-context-monitor.js — Optimal Scoping Strategy](.research/archive/hook-if-conditions/findings/D5-S-gsd-scoping.md)
 - [Findings: New Hooks Using \`if\` for Deploy Safeguards, Test Tracking, and Security-File Guards](.research/archive/hook-if-conditions/findings/D5-new-security-deploy.md)
+- [Findings: gsd-context-monitor.js — Optimal Scoping Strategy](.research/archive/hook-if-conditions/findings/D5-S-gsd-scoping.md)
 - [Findings: New Hooks for File-Type Validation, Config Alerts, and Branch-Specific Behavior](.research/archive/hook-if-conditions/findings/D6-new-validation-config.md)
-- [Findings: ensure-fnm.sh Wrapper Overhead Analysis](.research/archive/hook-if-conditions/findings/D7-S-fnm-overhead.md)
 - [Findings: Hook Execution Performance Baseline](.research/archive/hook-if-conditions/findings/D7-performance.md)
+- [Findings: ensure-fnm.sh Wrapper Overhead Analysis](.research/archive/hook-if-conditions/findings/D7-S-fnm-overhead.md)
 - [Findings: Cross-Locale Constraints and Hook \`if\` Proposals](.research/archive/hook-if-conditions/findings/D8-locale.md)
 - [Findings: Risks, Failure Modes, and Anti-Patterns of \`if\` Conditions in Claude Code Hooks](.research/archive/hook-if-conditions/findings/D9-risks.md)
 - [G1: Cross-Model Verification — Hook \`if\` Conditions Research](.research/archive/hook-if-conditions/findings/G1-cross-model.md)
@@ -4831,8 +4829,8 @@ Documents with no inbound links (not referenced by any other document):
 - [V2: Codebase Verification (D2, D3, D4, D6)](.research/archive/hook-if-conditions/findings/V2-codebase-verification.md)
 - [Verification: Performance Claims (D7, D7-S)](.research/archive/hook-if-conditions/findings/V3-performance-verification.md)
 - [Verification: Cross-Claim Consistency Across All Findings](.research/archive/hook-if-conditions/findings/V4-cross-claim-consistency.md)
+- [Research Report: Claude Code Hook \`if\` Conditions — Comprehensive Analysis](.research/archive/hook-if-conditions/RESEARCH_OUTPUT.md)
 - [Brainstorm: Behavioral Compliance Measurement](.research/archive/learning-analysis/BRAINSTORM.md)
-- [Research Report: Learning System Effectiveness in AI-Directed Development](.research/archive/learning-system-effectiveness/RESEARCH_OUTPUT.md)
 - [Findings: Knowledge Management Theory Applied to AI-Directed Development](.research/archive/learning-system-effectiveness/findings/D10-km-theory.md)
 - [Findings: Case Studies of Teams Measuring and Improving Learning/Quality Systems](.research/archive/learning-system-effectiveness/findings/D11-case-studies.md)
 - [Findings: How AI Coding Tools Handle Learning From Mistakes — Features and Approaches](.research/archive/learning-system-effectiveness/findings/D1a-ai-tool-features.md)
@@ -4846,7 +4844,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Is SoNash's learning-router graduation pipeline working? What's stuck and why?](.research/archive/learning-system-effectiveness/findings/D7c-learning-router.md)
 - [Findings: Anti-Patterns in Developer Tooling Measurement](.research/archive/learning-system-effectiveness/findings/D8-anti-patterns.md)
 - [Findings: What "Effective" Looks Like for a Solo Non-Developer Director Using AI-Directed Development](.research/archive/learning-system-effectiveness/findings/D9-cross-cutting.md)
-- [Research Output: Optimal Sequencing and Interleaving of 7 Active Plans](.research/archive/plan-orchestration/RESEARCH_OUTPUT.md)
+- [Research Report: Learning System Effectiveness in AI-Directed Development](.research/archive/learning-system-effectiveness/RESEARCH_OUTPUT.md)
 - [Contrarian Challenge: Plan Orchestration Research Claims](.research/archive/plan-orchestration/challenges/CONTRARIAN.md)
 - [Methodology Critique: Plan Orchestration Research](.research/archive/plan-orchestration/challenges/METHODOLOGY.md)
 - [Outside-the-Box Analysis: Plan Orchestration](.research/archive/plan-orchestration/challenges/OUTSIDE_THE_BOX.md)
@@ -4869,10 +4867,8 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Documentation Cascade & Git/Branch Strategy](.research/archive/plan-orchestration/findings/S-15-doc-git-strategy.md)
 - [Findings: SWS Decomposition into Schedulable Chunks](.research/archive/plan-orchestration/findings/S-16-sws-decomposition.md)
 - [Findings: Risk Assessment and Rollback Blast Radius](.research/archive/plan-orchestration/findings/S-17-risk-rollback.md)
+- [Research Output: Optimal Sequencing and Interleaving of 7 Active Plans](.research/archive/plan-orchestration/RESEARCH_OUTPUT.md)
 - [Brainstorm: Repo Analysis Knowledge/Insight Layer](.research/archive/repo-analysis-knowledge/BRAINSTORM.md)
-- [Repo Analysis Skill — Definitive Research Report](.research/archive/repo-analysis-skill/RESEARCH_OUTPUT.md)
-- [External Research Synthesis: Repo Analysis Skill](.research/archive/repo-analysis-skill/SYNTHESIS_EXTERNAL.md)
-- [SYNTHESIS_INTERNAL — What Our Codebase Teaches About Building a Repo Analysis Skill](.research/archive/repo-analysis-skill/SYNTHESIS_INTERNAL.md)
 - [Contrarian Challenge: Repo Analysis Skill Research](.research/archive/repo-analysis-skill/challenges/contrarian-1.md)
 - [Outside-the-Box Challenges: Repo Analysis Skill](.research/archive/repo-analysis-skill/challenges/otb-1.md)
 - [Findings: Medium-Confidence Claim Verification (C-035, C-036, C-038, C-G010)](.research/archive/repo-analysis-skill/findings/CL1-medium-claim-verification.md)
@@ -4902,7 +4898,9 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Temporal Fingerprint and Absence Pattern Classifier](.research/archive/repo-analysis-skill/findings/G2-temporal-absence-patterns.md)
 - [Findings: Tool and API Claim Verification](.research/archive/repo-analysis-skill/findings/V1-tool-api-verification.md)
 - [Findings: Internal Synthesis Verification — Claims C-INT-001 through C-INT-008](.research/archive/repo-analysis-skill/findings/V2-internal-verification.md)
-- [Repo Analysis Value-Extraction Lens — Supplemental Research Report](.research/archive/repo-analysis-value-extraction/RESEARCH_OUTPUT.md)
+- [Repo Analysis Skill — Definitive Research Report](.research/archive/repo-analysis-skill/RESEARCH_OUTPUT.md)
+- [External Research Synthesis: Repo Analysis Skill](.research/archive/repo-analysis-skill/SYNTHESIS_EXTERNAL.md)
+- [SYNTHESIS_INTERNAL — What Our Codebase Teaches About Building a Repo Analysis Skill](.research/archive/repo-analysis-skill/SYNTHESIS_INTERNAL.md)
 - [Contrarian Challenge: Repo Analysis Value-Extraction Research](.research/archive/repo-analysis-value-extraction/challenges/Contrarian-1.md)
 - [Contrarian Challenge: Repo Analysis Value-Extraction Lens](.research/archive/repo-analysis-value-extraction/challenges/Contrarian-2.md)
 - [Outside-the-Box Challenge: Repo Analysis Value-Extraction Skill](.research/archive/repo-analysis-value-extraction/challenges/OTB-1.md)
@@ -4926,7 +4924,7 @@ Documents with no inbound links (not referenced by any other document):
 - [D5: Internal Capabilities Delta Analysis](.research/archive/repo-analysis-value-extraction/findings/D5-internal-delta-analysis.md)
 - [V1 Verification: Claims C-VE-01 through C-DS-15 (first 40 claims)](.research/archive/repo-analysis-value-extraction/findings/V1-verification.md)
 - [V2 Claim Verification — Claims 41–80](.research/archive/repo-analysis-value-extraction/findings/V2-verification.md)
-- [Repo Cleanup: Comprehensive Research Report](.research/archive/repo-cleanup/RESEARCH_OUTPUT.md)
+- [Repo Analysis Value-Extraction Lens — Supplemental Research Report](.research/archive/repo-analysis-value-extraction/RESEARCH_OUTPUT.md)
 - [Contrarian Challenge: Repo Cleanup Research](.research/archive/repo-cleanup/challenges/contrarian.md)
 - [Outside-The-Box Challenge: Repo Cleanup Research](.research/archive/repo-cleanup/challenges/otb.md)
 - [Deepening: Test File Orphan Sweep](.research/archive/repo-cleanup/findings/DEEPEN-test-orphans.md)
@@ -4942,6 +4940,7 @@ Documents with no inbound links (not referenced by any other document):
 - [SQ-009: Script & Hook Wiring Audit](.research/archive/repo-cleanup/findings/SQ-009-script-hook-wiring.md)
 - [SQ-010: Planning Directory Health Audit](.research/archive/repo-cleanup/findings/SQ-010-planning-health.md)
 - [SQ-GAP1: Contradiction Resolution](.research/archive/repo-cleanup/findings/SQ-GAP1-contradiction-resolution.md)
+- [Repo Cleanup: Comprehensive Research Report](.research/archive/repo-cleanup/RESEARCH_OUTPUT.md)
 - [T39 Continuation Plan — V2 (post-clear handoff)](.research/archive/t39-hook-ecosystem/T39_CONTINUATION_PLAN.md)
 - [T39 — Hook Drift Loop Deep Dive](.research/archive/t39-hook-ecosystem/T39_DRIFT_LOOP_DEEP_DIVE.md)
 - [T39 — Hook Failure Taxonomy (Concern #2)](.research/archive/t39-hook-ecosystem/T39_HOOK_FAILURE_TAXONOMY.md)
@@ -4951,9 +4950,6 @@ Documents with no inbound links (not referenced by any other document):
 - [T28 Unified Content Intelligence System — Brainstorm](.research/archive/unified-content-intelligence/BRAINSTORM.md)
 - [Brainstorm: Worktree Management + Parallel Claude Code Instances](.research/archive/worktree-management/BRAINSTORM.md)
 - [Brainstorm: T28 Content Analysis System](.research/content-analysis-system/BRAINSTORM.md)
-- [Pre-Plan Decisions: debt-runner Expansion](.research/debt-runner-expansion/DECISIONS_PRE_PLAN.md)
-- [Research Report: debt-runner Hybrid Expansion — CLI Write-Side + Web Dashboard Read-Side](.research/debt-runner-expansion/RESEARCH_OUTPUT.md)
-- [Dev Dashboard Cross-Tab Synergies Report](.research/debt-runner-expansion/SYNERGIES.md)
 - [Contrarian Challenge: debt-runner Expansion Research](.research/debt-runner-expansion/challenges-v1/contrarian.md)
 - [Outside-the-Box Challenge Analysis: debt-runner Expansion](.research/debt-runner-expansion/challenges-v1/otb.md)
 - [SQ10 Verification: AI-Driven Debt Discovery Layer](.research/debt-runner-expansion/challenges-v1/sq10-verification.md)
@@ -4961,6 +4957,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Contrarian Challenge #2: Web Dashboard Design Decisions](.research/debt-runner-expansion/challenges/contrarian-2.md)
 - [OTB Challenge #1: Missed Opportunities and Creative Alternatives](.research/debt-runner-expansion/challenges/otb-1.md)
 - [Product Strategy Challenge: debt-runner Expansion Scope and Sequencing](.research/debt-runner-expansion/challenges/otb-2.md)
+- [Pre-Plan Decisions: debt-runner Expansion](.research/debt-runner-expansion/DECISIONS_PRE_PLAN.md)
 - [Findings: What does the debt-runner skill currently do?](.research/debt-runner-expansion/findings-v1/SQ1-debt-runner-current.md)
 - [Findings: AI-Driven Debt Discovery Layer for Debt-Runner](.research/debt-runner-expansion/findings-v1/SQ10-discovery-layer.md)
 - [Findings: TDMS Scripts Documentation (scripts/debt/ — Scripts 1–15)](.research/debt-runner-expansion/findings-v1/SQ2a-scripts-1-15.md)
@@ -4974,6 +4971,9 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Comprehensive Intake Gap Matrix — All Disconnected and Partial Paths](.research/debt-runner-expansion/findings-v1/SQ8a-intake-gaps.md)
 - [Findings: Defer-to-TDMS Path Audit — Every Location Where a User Can Defer to TDMS](.research/debt-runner-expansion/findings-v1/SQ8b-defer-path-audit.md)
 - [Findings: Interactive Skill Patterns — Menu Design, Navigation, and UX Conventions](.research/debt-runner-expansion/findings-v1/SQ9-interactive-patterns.md)
+- [Data Directory Inventory](.research/debt-runner-expansion/findings/data-dir-inventory.md)
+- [Dispute Resolutions -- debt-runner Expansion Research](.research/debt-runner-expansion/findings/dispute-resolutions.md)
+- [Skill Inventory Part 2: Skills F-Z + Data Directories](.research/debt-runner-expansion/findings/skill-inventory-part2.md)
 - [Findings: CLI Interactive Patterns — Write-Side Only (Debt-Runner Expansion)](.research/debt-runner-expansion/findings/SQ10-cli-patterns-updated.md)
 - [Findings: Cross-Tab Synergies — Debt Tab and Dev Dashboard](.research/debt-runner-expansion/findings/SQ11-synergies.md)
 - [Findings: SQLite Schema for tdms.db — Read-Optimized Mirror of MASTER_DEBT.jsonl](.research/debt-runner-expansion/findings/SQ1a-sqlite-schema.md)
@@ -4987,25 +4987,25 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Scripts Inventory, Data Pipeline, and Verified Bugs — Updated with SQLite Dimension](.research/debt-runner-expansion/findings/SQ7-scripts-bugs-updated.md)
 - [Findings: Intake Gaps, Defer-Path Audit, and Dark Debt — Updated for Hybrid Architecture](.research/debt-runner-expansion/findings/SQ8-gaps-debt-updated.md)
 - [Findings: Discovery Agent Layer — Hybrid CLI + Web Integration Design](.research/debt-runner-expansion/findings/SQ9-discovery-agents.md)
+- [State File Inventory — \`.claude/state/\`](.research/debt-runner-expansion/findings/state-file-inventory.md)
 - [V1 Codebase Verification — debt-runner Expansion Research Claims](.research/debt-runner-expansion/findings/V1-codebase-verification.md)
 - [V2 Data Verification](.research/debt-runner-expansion/findings/V2-data-verification.md)
 - [Cross-Claim Consistency Check: RESEARCH_OUTPUT.md](.research/debt-runner-expansion/findings/V3-consistency.md)
 - [Cross-Claim Consistency Check (Part A — Checks 1-5)](.research/debt-runner-expansion/findings/V3a-consistency.md)
-- [Data Directory Inventory](.research/debt-runner-expansion/findings/data-dir-inventory.md)
-- [Dispute Resolutions -- debt-runner Expansion Research](.research/debt-runner-expansion/findings/dispute-resolutions.md)
-- [Skill Inventory Part 2: Skills F-Z + Data Directories](.research/debt-runner-expansion/findings/skill-inventory-part2.md)
-- [State File Inventory — \`.claude/state/\`](.research/debt-runner-expansion/findings/state-file-inventory.md)
-- [Pre-Research Decisions: Dev Dashboard Command Center](.research/dev-dashboard/DECISIONS_PRE_RESEARCH.md)
-- [Dev Dashboard Command Center — Unified Research Report](.research/dev-dashboard/RESEARCH_OUTPUT.md)
-- [Research Plan: Dev Dashboard Command Center](.research/dev-dashboard/RESEARCH_PLAN.md)
+- [Research Report: debt-runner Hybrid Expansion — CLI Write-Side + Web Dashboard Read-Side](.research/debt-runner-expansion/RESEARCH_OUTPUT.md)
+- [Dev Dashboard Cross-Tab Synergies Report](.research/debt-runner-expansion/SYNERGIES.md)
 - [Contrarian Review: Dev Dashboard Command Center](.research/dev-dashboard/challenges/CONTRARIAN-1.md)
 - [Out-of-the-Box Review: Dev Dashboard Command Center](.research/dev-dashboard/challenges/OTB-1.md)
+- [Pre-Research Decisions: Dev Dashboard Command Center](.research/dev-dashboard/DECISIONS_PRE_RESEARCH.md)
+- [Admin vs Dev Dashboard Audit](.research/dev-dashboard/findings/admin-audit.md)
 - [User Checkpoint: Tab Grouping Decisions](.research/dev-dashboard/findings/CHECKPOINT-tab-decisions.md)
+- [Dispute Resolutions — Dev Dashboard Research](.research/dev-dashboard/findings/dispute-resolutions.md)
 - [Findings: Gap Hunter — Wave 3 Coverage Audit](.research/dev-dashboard/findings/GAP-1-coverage-audit.md)
 - [GAP-2: Decision Completeness Audit](.research/dev-dashboard/findings/GAP-2-decision-completeness.md)
 - [Findings: Cross-Wave Consistency Check](.research/dev-dashboard/findings/GAP-3-cross-wave-consistency.md)
 - [Findings: Open Questions Resolved — Dev Dashboard Research](.research/dev-dashboard/findings/INV-1-open-questions-resolved.md)
 - [Open Question Answers — Session #245](.research/dev-dashboard/findings/Q-ANSWERS-session245.md)
+- [Reframing Analysis: Debt-Runner Research v1 → v2](.research/dev-dashboard/findings/reframing-analysis.md)
 - [Findings: Catalog of 13 audit-\\\* Skills — Data/Output for Web Dashboard](.research/dev-dashboard/findings/SQ1a-1-audit-skills.md)
 - [Findings: Ecosystem Audit Skills -- Data Catalog for Dev Dashboard](.research/dev-dashboard/findings/SQ1a-2-ecosystem-audit-skills.md)
 - [Findings: Catalog of Operational Skills A-M and Their Dashboard Data](.research/dev-dashboard/findings/SQ1a-3-operational-skills-am.md)
@@ -5041,10 +5041,9 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Governance & Audits Tab — CLI Handoff Design](.research/dev-dashboard/findings/W3-T5B-audits-cli-handoff.md)
 - [Findings: Planning & Research Tab — Data Design](.research/dev-dashboard/findings/W3-T6A-planning-data-design.md)
 - [Findings: Planning & Research Tab — CLI Handoff Design](.research/dev-dashboard/findings/W3-T6B-planning-cli-handoff.md)
-- [Admin vs Dev Dashboard Audit](.research/dev-dashboard/findings/admin-audit.md)
-- [Dispute Resolutions — Dev Dashboard Research](.research/dev-dashboard/findings/dispute-resolutions.md)
-- [Reframing Analysis: Debt-Runner Research v1 → v2](.research/dev-dashboard/findings/reframing-analysis.md)
-- [File Registry + Portability Graph — Research Output](.research/file-registry-portability-graph/RESEARCH_OUTPUT.md)
+- [Dev Dashboard Command Center — Unified Research Report](.research/dev-dashboard/RESEARCH_OUTPUT.md)
+- [Research Plan: Dev Dashboard Command Center](.research/dev-dashboard/RESEARCH_PLAN.md)
+- [Extraction Candidates — Cross-Entity Summary](.research/EXTRACTIONS.md)
 - [Contrarian Challenge — file-registry-portability-graph](.research/file-registry-portability-graph/challenges/contrarian-1.md)
 - [OTB Challenges — File Registry Portability Graph](.research/file-registry-portability-graph/challenges/otb-1.md)
 - [D1: Code-Graph Indexers — Findings](.research/file-registry-portability-graph/findings/D1-code-graph-indexers.md)
@@ -5057,7 +5056,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Composite / Hybrid Systems — File-Graph + Tags + Self-Update + Cross-Project Portability](.research/file-registry-portability-graph/findings/D8-composite-hybrid-systems.md)
 - [V1: Codebase/Filesystem Verification](.research/file-registry-portability-graph/findings/V1-codebase-verification.md)
 - [V2: External/Web Verification](.research/file-registry-portability-graph/findings/V2-external-verification.md)
-- [Multi-Layer Memory System for Claude Code — Research Output](.research/multi-layer-memory/RESEARCH_OUTPUT.md)
+- [File Registry + Portability Graph — Research Output](.research/file-registry-portability-graph/RESEARCH_OUTPUT.md)
 - [Contrarian Challenge: Multi-Layer Memory Research](.research/multi-layer-memory/challenges/contrarian-1.md)
 - [Outside-The-Box Challenge: Multi-Layer Memory Research](.research/multi-layer-memory/challenges/otb-1.md)
 - [Findings: Current Claude Code Memory Ecosystem Inventory](.research/multi-layer-memory/findings/D1-codebase-memory-inventory.md)
@@ -5098,13 +5097,13 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: External Claim Verification (Spot-Check)](.research/multi-layer-memory/findings/V2-external-verification.md)
 - [V3: Recommendations Claims Verification (C-200 through C-243)](.research/multi-layer-memory/findings/V3-recommendations-verification.md)
 - [V4: A-MAC Paper Verification](.research/multi-layer-memory/findings/V4-amac-paper-verification.md)
-- [T28 Pre-Brainstorm Analysis Plan](.research/repo-analysis/_T28-analysis-plan.md)
+- [Multi-Layer Memory System for Claude Code — Research Output](.research/multi-layer-memory/RESEARCH_OUTPUT.md)
 - [Gap Agent A: Multi-Format Extraction Cluster](.research/repo-analysis/_gap-agent-A.md)
 - [Gap Agent B: PDF/Document + Image/OCR Cluster](.research/repo-analysis/_gap-agent-B.md)
 - [Gap Agent C: Web Crawling Cluster](.research/repo-analysis/_gap-agent-C.md)
 - [Gap Agent E+F: Wiki, Knowledge Base, Web Archive, Social Media](.research/repo-analysis/_gap-agent-EF.md)
+- [T28 Pre-Brainstorm Analysis Plan](.research/repo-analysis/_T28-analysis-plan.md)
 - [Phase A Workflow State — repo-analysis Creator View Gap Fixes](.research/repo-analysis/_workflow-phase-a.md)
-- [RESUME: research-discovery-standard-v2](.research/research-discovery-standard-v2/RESUME.md)
 - [Findings: State Machine for /rnd Pipeline](.research/research-discovery-standard-v2/findings/D1-state-machine.md)
 - [Findings: Auto-Advance Architecture for R&D Stage Tracking](.research/research-discovery-standard-v2/findings/D2-auto-advance.md)
 - [Findings: Cross-Project Findings Flow — findings_refs Pattern, Lookup Mechanism, and Surfacing](.research/research-discovery-standard-v2/findings/D3-findings-refs.md)
@@ -5115,6 +5114,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Convergence-Loop Integration with the R&D Pipeline](.research/research-discovery-standard-v2/findings/D8-cl-integration.md)
 - [V1 Verification: SQ1-SQ4 Claims](.research/research-discovery-standard-v2/findings/V1-sq1-to-sq4.md)
 - [V2 Verification: SQ5-SQ8 Claims](.research/research-discovery-standard-v2/findings/V2-sq5-to-sq8.md)
+- [RESUME: research-discovery-standard-v2](.research/research-discovery-standard-v2/RESUME.md)
 - [AUDIT: research-discovery-standard](.research/research-discovery-standard/AUDIT.md)
 - [Brainstorm: Research & Discovery Standard (v2 supplement)](.research/research-discovery-standard/BRAINSTORM.md)
 - [Contrarian Challenge: External Research Findings & Transferability](.research/research-discovery-standard/challenges/contrarian-external.md)
@@ -5135,7 +5135,6 @@ Documents with no inbound links (not referenced by any other document):
 - [W4a: Internal Gap Synthesis](.research/research-discovery-standard/findings/W4a-internal-gap-synthesis.md)
 - [W4b: External-to-Internal Mapping — Adoption Matrix, Tier Proposal, Verification Model](.research/research-discovery-standard/findings/W4b-external-internal-mapping.md)
 - [W4c: Research & Discovery Standard -- Proposed Architecture](.research/research-discovery-standard/findings/W4c-standard-architecture.md)
-- [T28 Intelligence Graph Data Layer — Research Report](.research/t28-intelligence-graph-data-layer/RESEARCH_OUTPUT.md)
 - [Contrarian Challenge: T28 Intelligence Graph Data Layer](.research/t28-intelligence-graph-data-layer/challenges/contrarian-challenge.md)
 - [OTB Challenge 1: Unconsidered Approaches](.research/t28-intelligence-graph-data-layer/challenges/otb-challenge-1.md)
 - [OTB Challenge 2: Process and Assumption Challenges](.research/t28-intelligence-graph-data-layer/challenges/otb-challenge-2.md)
@@ -5172,18 +5171,6 @@ Documents with no inbound links (not referenced by any other document):
 - [Findings: Architecture Tradeoffs for T28 Data Layer](.research/t28-intelligence-graph-data-layer/findings/D8-architecture-tradeoffs.md)
 - [Findings: File-Graph Coexistence Patterns](.research/t28-intelligence-graph-data-layer/findings/D9-file-graph-coexistence.md)
 - [Gap Audit: Neuromcp Capability Assessment](.research/t28-intelligence-graph-data-layer/findings/G1-neuromcp-audit.md)
-- [V1a Backend Verification - Claims C-001 to C-012](.research/t28-intelligence-graph-data-layer/findings/V1a-backend.md)
-- [V1b schema](.research/t28-intelligence-graph-data-layer/findings/V1b-schema.md)
-- [Verification Findings: C-019 to C-024](.research/t28-intelligence-graph-data-layer/findings/V1b2-verify.md)
-- [Verification: C-025 to C-030](.research/t28-intelligence-graph-data-layer/findings/V1c1-verify.md)
-- [Verification Batch V1c2 — Claims C-031 to C-035](.research/t28-intelligence-graph-data-layer/findings/V1c2-verify.md)
-- [Verifier V2a: Claims C-036 to C-053](.research/t28-intelligence-graph-data-layer/findings/V2a-operations.md)
-- [Verifier V2a1 -- Claims C-036 through C-041](.research/t28-intelligence-graph-data-layer/findings/V2a1-verify.md)
-- [Verifier V2a2 -- Claims C-042 through C-047](.research/t28-intelligence-graph-data-layer/findings/V2a2-verify.md)
-- [Verifier V2a3 -- Claims C-048 through C-053](.research/t28-intelligence-graph-data-layer/findings/V2a3-verify.md)
-- [Verifier V2b1: Claims C-054 to C-058](.research/t28-intelligence-graph-data-layer/findings/V2b1-verify.md)
-- [Verifier V2b2 -- Claims C-059 through C-062](.research/t28-intelligence-graph-data-layer/findings/V2b2-verify.md)
-- [Verifier V2c -- Claims C-063 through C-070](.research/t28-intelligence-graph-data-layer/findings/V2c-risk.md)
 - [D10: Cross-Source Synthesis Operations via Knowledge Graphs](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D10-synthesis-operations.md)
 - [D1a: Embedded/Serverless Relational Databases for Graph Storage](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D1a-relational-embedded.md)
 - [D1b: Graph-Native Embedded Databases](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D1b-graph-native-embedded.md)
@@ -5196,13 +5183,25 @@ Documents with no inbound links (not referenced by any other document):
 - [D6: Entity/Relation Schema Patterns for T28](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D6-schema-patterns.md)
 - [D7: Codebase Prior Art Synthesis for T28 Retrieval Design](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D7-codebase-prior-art.md)
 - [Findings: T28 Intelligence Graph + .research/ File Artifact Coexistence](.research/t28-intelligence-graph-data-layer/findings/v1-prior-art/D9-file-coexistence.md)
+- [V1a Backend Verification - Claims C-001 to C-012](.research/t28-intelligence-graph-data-layer/findings/V1a-backend.md)
+- [V1b schema](.research/t28-intelligence-graph-data-layer/findings/V1b-schema.md)
+- [Verification Findings: C-019 to C-024](.research/t28-intelligence-graph-data-layer/findings/V1b2-verify.md)
+- [Verification: C-025 to C-030](.research/t28-intelligence-graph-data-layer/findings/V1c1-verify.md)
+- [Verification Batch V1c2 — Claims C-031 to C-035](.research/t28-intelligence-graph-data-layer/findings/V1c2-verify.md)
+- [Verifier V2a: Claims C-036 to C-053](.research/t28-intelligence-graph-data-layer/findings/V2a-operations.md)
+- [Verifier V2a1 -- Claims C-036 through C-041](.research/t28-intelligence-graph-data-layer/findings/V2a1-verify.md)
+- [Verifier V2a2 -- Claims C-042 through C-047](.research/t28-intelligence-graph-data-layer/findings/V2a2-verify.md)
+- [Verifier V2a3 -- Claims C-048 through C-053](.research/t28-intelligence-graph-data-layer/findings/V2a3-verify.md)
+- [Verifier V2b1: Claims C-054 to C-058](.research/t28-intelligence-graph-data-layer/findings/V2b1-verify.md)
+- [Verifier V2b2 -- Claims C-059 through C-062](.research/t28-intelligence-graph-data-layer/findings/V2b2-verify.md)
+- [Verifier V2c -- Claims C-063 through C-070](.research/t28-intelligence-graph-data-layer/findings/V2c-risk.md)
 - [T28 Query Pattern Audit — OTB-2 CRITICAL Response](.research/t28-intelligence-graph-data-layer/query-pattern-audit.md)
+- [T28 Intelligence Graph Data Layer — Research Report](.research/t28-intelligence-graph-data-layer/RESEARCH_OUTPUT.md)
 - [S1: Backend Landscape — T28 Intelligence Graph](.research/t28-intelligence-graph-data-layer/synthesis/S1-backend-landscape.md)
 - [S2: Design Patterns — T28 Intelligence Graph](.research/t28-intelligence-graph-data-layer/synthesis/S2-design-patterns.md)
 - [S3: Operations & Migration Synthesis](.research/t28-intelligence-graph-data-layer/synthesis/S3-operations-migration.md)
 - [T28 Intelligence Graph Data Layer — Research Report](.research/t28-intelligence-graph-data-layer/v1-synthesis/RESEARCH_OUTPUT.md)
 - [Brainstorm: Website Analysis](.research/website-analysis/BRAINSTORM.md)
-- [Research Output: Website Analysis Skill Design for Claude Code](.research/website-analysis/RESEARCH_OUTPUT.md)
 - [Contrarian Challenges: Skill Design Stress-Test](.research/website-analysis/challenges/contrarian-1.md)
 - [Contrarian Challenges: Research Claims Quality](.research/website-analysis/challenges/contrarian-2.md)
 - [OTB Challenges: Alternative Approaches](.research/website-analysis/challenges/otb-1.md)
@@ -5243,48 +5242,49 @@ Documents with no inbound links (not referenced by any other document):
 - [Verification Report: Claims C-065 to C-127](.research/website-analysis/findings/V2-claims-65-127.md)
 - [V2a claims 65 96](.research/website-analysis/findings/V2a-claims-65-96.md)
 - [Verification: C-097 to C-127](.research/website-analysis/findings/V2b-claims-97-127.md)
-- [Changelog](CHANGELOG.md)
-- [Contributing to SoNash](CONTRIBUTING.md)
-- [Meta-Roadmap](META_ROADMAP.md)
-- [SoNash - Sober Nashville Recovery Notebook](README.md)
-- [ROADMAP Full Analysis Summary](analysis/FULL_ANALYSIS_SUMMARY.md)
-- [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)
-- [ROADMAP Analysis](analysis/README.md)
+- [Research Output: Website Analysis Skill Design for Claude Code](.research/website-analysis/RESEARCH_OUTPUT.md)
 - [ROADMAP Effort Estimates - Missing Items](analysis/effort_estimates.md)
+- [ROADMAP Full Analysis Summary](analysis/FULL_ANALYSIS_SUMMARY.md)
 - [Full Categorization Analysis](analysis/full_categorization.md)
 - [SoNash ROADMAP Deduplication Analysis](analysis/full_deduplication.md)
 - [Full Dependency Analysis](analysis/full_dependencies.md)
 - [SoNash ROADMAP.md Full Inventory](analysis/full_inventory.md)
+- [ROADMAP Deep Analysis - Integration Summary](analysis/INTEGRATION_SUMMARY.md)
 - [Pass 1: Structural Inventory & Baseline](analysis/pass1_inventory.md)
 - [ROADMAP Deep Analysis - Pass 2: Deduplication Analysis](analysis/pass2_deduplication.md)
 - [Pass 2 Deduplication - Executive Summary](analysis/pass2_summary.md)
 - [ROADMAP Deep Analysis - Pass 3: Dependency Graph Reconciliation](analysis/pass3_dependencies.md)
 - [Pass 4: Categorization & Feature Group Alignment](analysis/pass4_categorization.md)
 - [Pass 5: Effort Estimation Alignment](analysis/pass5_effort.md)
+- [ROADMAP Analysis](analysis/README.md)
+- [Changelog](CHANGELOG.md)
 - [Suggested Compliance Checker Rules](consolidation-output/suggested-rules.md)
+- [Contributing to SoNash](CONTRIBUTING.md)
+- [Positive Pattern Templates](docs/agent_docs/POSITIVE_PATTERNS.md)
+- [Skill Ecosystem Audit — Conversation Notes](docs/agent_docs/SKILL_ECOSYSTEM_AUDIT_IDEAS.md)
+- [Testing System](docs/agent_docs/TESTING_SYSTEM.md)
+- [Token Monitoring Pipeline](docs/agent_docs/TOKEN_MONITORING.md)
 - [CLI User Guide](docs/CLI_USER_GUIDE.md)
 - [GitHub Repository Guide](docs/GITHUB_GUIDE.md)
 - [Claude Code CLI Reference](docs/HELP.md)
 - [Learning Metrics (Minimum Viable)](docs/LEARNING_METRICS.md)
 - [MCP Server Setup Guide](docs/MCP_SETUP.md)
-- [PR Review Ecosystem v2 — Comprehensive Changelog](docs/PR_ECOSYSTEM_V2_CHANGELOG.md)
-- [Documentation Inventory](docs/README.md)
-- [Positive Pattern Templates](docs/agent_docs/POSITIVE_PATTERNS.md)
-- [Skill Ecosystem Audit — Conversation Notes](docs/agent_docs/SKILL_ECOSYSTEM_AUDIT_IDEAS.md)
-- [Testing System](docs/agent_docs/TESTING_SYSTEM.md)
-- [Token Monitoring Pipeline](docs/agent_docs/TOKEN_MONITORING.md)
 - [Context Preservation Pattern](docs/patterns/context-preservation-pattern.md)
 - [Implementation Plan](docs/plans/IMPLEMENTATION_PLAN.md)
+- [PR Review Ecosystem v2 — Comprehensive Changelog](docs/PR_ECOSYSTEM_V2_CHANGELOG.md)
+- [Documentation Inventory](docs/README.md)
 - [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md)
-- [\[Document Title\]](docs/templates/CANONICAL_DOC_TEMPLATE.md)
 - [CANON Quick Reference Card](docs/templates/CANON_QUICK_REFERENCE.md)
+- [\[Document Title\]](docs/templates/CANONICAL_DOC_TEMPLATE.md)
 - [\[Document Title\]](docs/templates/FOUNDATION_DOC_TEMPLATE.md)
 - [How to \[Accomplish Task\]](docs/templates/GUIDE_DOC_TEMPLATE.md)
 - [\[Feature/Initiative Name\] Plan](docs/templates/PLANNING_DOC_TEMPLATE.md)
 - [\[Workflow/Reference Name\]](docs/templates/REFERENCE_DOC_TEMPLATE.md)
+- [Meta-Roadmap](META_ROADMAP.md)
+- [SoNash - Sober Nashville Recovery Notebook](README.md)
 - [release notes](release-notes.md)
-- [Scripts Reference](scripts/README.md)
 - [scripts/archive/](scripts/archive/README.md)
+- [Scripts Reference](scripts/README.md)
 - [Setup](src/dataconnect-generated/.guides/setup.md)
 - [Basic Usage](src/dataconnect-generated/.guides/usage.md)
 
@@ -6863,8 +6863,8 @@ reference but not actively tracked in the reference graph._
 | 9   | [docs/archive/2025-dec-reports/ESLINT_WARNINGS_PLAN.md](docs/archive/2025-dec-reports/ESLINT_WARNINGS_PLAN.md)                                                                                                                               |
 | 10  | [docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md](docs/archive/2025-dec-reports/JOURNAL_SYSTEM_UPDATE.md)                                                                                                                             |
 | 11  | [docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md](docs/archive/2025-dec-reports/LIBRARY_ANALYSIS.md)                                                                                                                                       |
-| 12  | [docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md](docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md)                                                                                                                         |
-| 13  | [docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md](docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md)                                                                                                                                       |
+| 12  | [docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md](docs/archive/2025-dec-reports/REFACTOR_SUMMARY.md)                                                                                                                                       |
+| 13  | [docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md](docs/archive/2025-dec-reports/REFACTORING_ACTION_PLAN.md)                                                                                                                         |
 | 14  | [docs/archive/2025-dec-reports/ROADMAP_COMPARISON_ANALYSIS.md](docs/archive/2025-dec-reports/ROADMAP_COMPARISON_ANALYSIS.md)                                                                                                                 |
 | 15  | [docs/archive/2025-dec-reports/ROADMAP_INTEGRATION_SUMMARY.md](docs/archive/2025-dec-reports/ROADMAP_INTEGRATION_SUMMARY.md)                                                                                                                 |
 | 16  | [docs/archive/2025-dec-reports/ULTRA_THINKING_REVIEW.md](docs/archive/2025-dec-reports/ULTRA_THINKING_REVIEW.md)                                                                                                                             |
@@ -6872,118 +6872,118 @@ reference but not actively tracked in the reference graph._
 | 18  | [docs/archive/2026-02-21-sprint-workflow-skill-design.md](docs/archive/2026-02-21-sprint-workflow-skill-design.md)                                                                                                                           |
 | 19  | [docs/archive/2026-jan-deprecated/ANTIGRAVITY_GUIDE.md](docs/archive/2026-jan-deprecated/ANTIGRAVITY_GUIDE.md)                                                                                                                               |
 | 20  | [docs/archive/2026-jan-deprecated/ARCHIVE_NOTE.md](docs/archive/2026-jan-deprecated/ARCHIVE_NOTE.md)                                                                                                                                         |
-| 21  | [docs/archive/2026-jan-deprecated/CUSTOM_SLASH_COMMANDS_GUIDE.md](docs/archive/2026-jan-deprecated/CUSTOM_SLASH_COMMANDS_GUIDE.md)                                                                                                           |
-| 22  | [docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md](docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md)                                                                                                               |
-| 23  | [docs/archive/2026-jan-deprecated/ROADMAP_INTEGRATION.md](docs/archive/2026-jan-deprecated/ROADMAP_INTEGRATION.md)                                                                                                                           |
-| 24  | [docs/archive/2026-jan-deprecated/SLASH_COMMANDS.md](docs/archive/2026-jan-deprecated/SLASH_COMMANDS.md)                                                                                                                                     |
-| 25  | [docs/archive/2026-jan-deprecated/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md](docs/archive/2026-jan-deprecated/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md)                                                                                 |
-| 26  | [docs/archive/2026-jan-deprecated/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md](docs/archive/2026-jan-deprecated/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md)                                                                                 |
-| 27  | [docs/archive/AI_HANDOFF-2026-01-02.md](docs/archive/AI_HANDOFF-2026-01-02.md)                                                                                                                                                               |
-| 28  | [docs/archive/AI_STANDARDIZED_REPORT.md](docs/archive/AI_STANDARDIZED_REPORT.md)                                                                                                                                                             |
-| 29  | [docs/archive/APPCHECK_FRESH_SETUP.md](docs/archive/APPCHECK_FRESH_SETUP.md)                                                                                                                                                                 |
-| 30  | [docs/archive/ARCHIVE_INDEX.md](docs/archive/ARCHIVE_INDEX.md)                                                                                                                                                                               |
-| 31  | [docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md)                                                                                                                             |
-| 32  | [docs/archive/EXPANSION_EVALUATION_TRACKER.md](docs/archive/EXPANSION_EVALUATION_TRACKER.md)                                                                                                                                                 |
-| 33  | [docs/archive/FEATURE_DECISIONS_ANSWERS.MD](docs/archive/FEATURE_DECISIONS_ANSWERS.MD)                                                                                                                                                       |
-| 34  | [docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md](docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md)                                                                                                                             |
-| 35  | [docs/archive/HOOKIFY_STRATEGY.md](docs/archive/HOOKIFY_STRATEGY.md)                                                                                                                                                                         |
-| 36  | [docs/archive/IMPLEMENTATION_PROMPTS.md](docs/archive/IMPLEMENTATION_PROMPTS.md)                                                                                                                                                             |
-| 37  | [docs/archive/MCP_SERVER_AUDIT.md](docs/archive/MCP_SERVER_AUDIT.md)                                                                                                                                                                         |
-| 38  | [docs/archive/Monetization_Research_Phase1_Results.md](docs/archive/Monetization_Research_Phase1_Results.md)                                                                                                                                 |
-| 39  | [docs/archive/PLAN_MAP.md](docs/archive/PLAN_MAP.md)                                                                                                                                                                                         |
-| 40  | [docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md](docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md)                                                                                                                                                       |
-| 41  | [docs/archive/RETROS_378-416.md](docs/archive/RETROS_378-416.md)                                                                                                                                                                             |
-| 42  | [docs/archive/Refactoring_PR_Plan.md](docs/archive/Refactoring_PR_Plan.md)                                                                                                                                                                   |
-| 43  | [docs/archive/SUPABASE_MIGRATION_ANALYSIS.md](docs/archive/SUPABASE_MIGRATION_ANALYSIS.md)                                                                                                                                                   |
-| 44  | [docs/archive/SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)                                                                                                       |
-| 45  | [docs/archive/SoNash_Technical_Ideation_Multi_AI 1.20.26.md](docs/archive/SoNash_Technical_Ideation_Multi_AI%201.20.26.md)                                                                                                                   |
-| 46  | [docs/archive/SoNash**AdminPanelEnhancement**v1_0\_\_2024-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md)                                                                                                         |
-| 47  | [docs/archive/SoNash**AdminPanelEnhancement**v1_1\_\_2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)                                                                                                         |
-| 48  | [docs/archive/SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)                                                                                                         |
-| 49  | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__2025-12-22.md)                                                                                                                 |
-| 50  | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_2\_\_2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)                                                                                                   |
-| 51  | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)                                                                                                   |
-| 52  | [docs/archive/TESTING_CHECKLIST.md](docs/archive/TESTING_CHECKLIST.md)                                                                                                                                                                       |
-| 53  | [docs/archive/aggregation/MASTER_ISSUE_LIST.md](docs/archive/aggregation/MASTER_ISSUE_LIST.md)                                                                                                                                               |
-| 54  | [docs/archive/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md](docs/archive/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md)                                                                                                                                     |
-| 55  | [docs/archive/aggregation/mining-agent1-data-quality.md](docs/archive/aggregation/mining-agent1-data-quality.md)                                                                                                                             |
-| 56  | [docs/archive/aggregation/mining-agent2-pipeline-flow.md](docs/archive/aggregation/mining-agent2-pipeline-flow.md)                                                                                                                           |
-| 57  | [docs/archive/aggregation/mining-agent3-retro-actions.md](docs/archive/aggregation/mining-agent3-retro-actions.md)                                                                                                                           |
-| 58  | [docs/archive/aggregation/mining-agent4-integration.md](docs/archive/aggregation/mining-agent4-integration.md)                                                                                                                               |
-| 59  | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md)                                                                                           |
-| 60  | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md)                                                                                         |
-| 61  | [docs/archive/audits/comprehensive/audit-2026-02-22/COMPREHENSIVE_AUDIT_REPORT.md](docs/archive/audits/comprehensive/audit-2026-02-22/COMPREHENSIVE_AUDIT_REPORT.md)                                                                         |
-| 62  | [docs/archive/audits/comprehensive/audit-2026-02-22/DEDUP_VS_MASTER_DEBT.md](docs/archive/audits/comprehensive/audit-2026-02-22/DEDUP_VS_MASTER_DEBT.md)                                                                                     |
-| 63  | [docs/archive/audits/comprehensive/audit-2026-02-22/MASTER_DEBT_DEDUP_REPORT.md](docs/archive/audits/comprehensive/audit-2026-02-22/MASTER_DEBT_DEDUP_REPORT.md)                                                                             |
-| 64  | [docs/archive/audits/comprehensive/audit-2026-02-22/REVIEW_DECISIONS.md](docs/archive/audits/comprehensive/audit-2026-02-22/REVIEW_DECISIONS.md)                                                                                             |
-| 65  | [docs/archive/audits/comprehensive/audit-2026-02-22/ai-optimization-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/ai-optimization-audit.md)                                                                                   |
-| 66  | [docs/archive/audits/comprehensive/audit-2026-02-22/code-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/code-audit.md)                                                                                                         |
-| 67  | [docs/archive/audits/comprehensive/audit-2026-02-22/documentation-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/documentation-audit.md)                                                                                       |
-| 68  | [docs/archive/audits/comprehensive/audit-2026-02-22/engineering-productivity-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/engineering-productivity-audit.md)                                                                 |
-| 69  | [docs/archive/audits/comprehensive/audit-2026-02-22/enhancements-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/enhancements-audit.md)                                                                                         |
-| 70  | [docs/archive/audits/comprehensive/audit-2026-02-22/performance-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/performance-audit.md)                                                                                           |
-| 71  | [docs/archive/audits/comprehensive/audit-2026-02-22/process-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/process-audit.md)                                                                                                   |
-| 72  | [docs/archive/audits/comprehensive/audit-2026-02-22/refactoring-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/refactoring-audit.md)                                                                                           |
-| 73  | [docs/archive/audits/comprehensive/audit-2026-02-22/security-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/security-audit.md)                                                                                                 |
-| 74  | [docs/archive/audits/multi-ai/maa-2026-02-17-182d43/final/SUMMARY.md](docs/archive/audits/multi-ai/maa-2026-02-17-182d43/final/SUMMARY.md)                                                                                                   |
-| 75  | [docs/archive/audits/single-session/agent-quality/audit-2026-03-17/AGENT_QUALITY_REPORT.md](docs/archive/audits/single-session/agent-quality/audit-2026-03-17/AGENT_QUALITY_REPORT.md)                                                       |
-| 76  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-12-legacy/SUMMARY.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-12-legacy/SUMMARY.md)                                                               |
-| 77  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-13/SUMMARY.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-13/SUMMARY.md)                                                                             |
-| 78  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md)                                   |
-| 79  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/REVIEW_DECISIONS.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/REVIEW_DECISIONS.md)                                                           |
-| 80  | [docs/archive/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md](docs/archive/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md)                                                             |
-| 81  | [docs/archive/audits/system-test/audit-2026-02-19/PLAN_INDEX.md](docs/archive/audits/system-test/audit-2026-02-19/PLAN_INDEX.md)                                                                                                             |
-| 82  | [docs/archive/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md](docs/archive/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md)                                                                                                 |
-| 83  | [docs/archive/completed-decisions/ADR-001-integrated-improvement-plan-approach.md](docs/archive/completed-decisions/ADR-001-integrated-improvement-plan-approach.md)                                                                         |
-| 84  | [docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md](docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md)                                                                                                     |
-| 85  | [docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md](docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)                                                                                                                       |
-| 86  | [docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)                                                                                                                   |
-| 87  | [docs/archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](docs/archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)                                                                                               |
-| 88  | [docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)                                                                                                                       |
-| 89  | [docs/archive/completed-plans/sonarcloud-cleanup-sprint.md](docs/archive/completed-plans/sonarcloud-cleanup-sprint.md)                                                                                                                       |
-| 90  | [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF.md)                                                                                                                                     |
-| 91  | [docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md)                                                                                                               |
-| 92  | [docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md](docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md)                                                                                                                               |
-| 93  | [docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md](docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md)                                                                                                                       |
-| 94  | [docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md](docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md)                                                                                                           |
-| 95  | [docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md](docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md)                                                                                                                             |
-| 96  | [docs/archive/consolidated-2025-12-19/ROADMAP_V3.md](docs/archive/consolidated-2025-12-19/ROADMAP_V3.md)                                                                                                                                     |
-| 97  | [docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md](docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md)                                                                                                 |
-| 98  | [docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md](docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md)                                                                                                         |
-| 99  | [docs/archive/expansion-ideation/README.md](docs/archive/expansion-ideation/README.md)                                                                                                                                                       |
-| 100 | [docs/archive/expansion-ideation/SoNash Expansion - Module 1 - Step Work Depth.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%201%20-%20Step%20Work%20Depth.md)                                                         |
-| 101 | [docs/archive/expansion-ideation/SoNash Expansion - Module 10 – Safety &amp; Harm Reduction.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%2010%20%E2%80%93%20Safety%20&%20Harm%20Reduction.md)                         |
-| 102 | [docs/archive/expansion-ideation/SoNash Expansion - Module 11 – Visionary - Dream Big Bets.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%2011%20%E2%80%93%20Visionary%20-%20Dream%20Big%20Bets.md)                     |
-| 103 | [docs/archive/expansion-ideation/SoNash Expansion - Module 2 – Sponsor Tooling &amp; Connection.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%202%20%E2%80%93%20Sponsor%20Tooling%20&%20Connection.md)                 |
-| 104 | [docs/archive/expansion-ideation/SoNash Expansion - Module 3 – Nashville Advantage \(Local Utility\).md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%203%20%E2%80%93%20Nashville%20Advantage%20%28Local%20Utility%29.md) |
-| 105 | [docs/archive/expansion-ideation/SoNash Expansion - Module 4 – Offline, Privacy &amp; Trust.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%204%20%E2%80%93%20Offline,%20Privacy%20&%20Trust.md)                         |
-| 106 | [docs/archive/expansion-ideation/SoNash Expansion - Module 5 – Journaling &amp; Insights.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%205%20%E2%80%93%20Journaling%20&%20Insights.md)                                 |
-| 107 | [docs/archive/expansion-ideation/SoNash Expansion - Module 6 – Recovery Knowledge Base.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%206%20%E2%80%93%20Recovery%20Knowledge%20Base.md)                                 |
-| 108 | [docs/archive/expansion-ideation/SoNash Expansion - Module 7 – Exports &amp; Reports.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%207%20%E2%80%93%20Exports%20&%20Reports.md)                                         |
-| 109 | [docs/archive/expansion-ideation/SoNash Expansion - Module 8 – Personalization.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%208%20%E2%80%93%20Personalization.md)                                                     |
-| 110 | [docs/archive/expansion-ideation/SoNash Expansion - Module 9 – Daily Engagement &amp; Habits.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%209%20%E2%80%93%20Daily%20Engagement%20&%20Habits.md)                       |
-| 111 | [docs/archive/expansion-ideation/SoNash Expansion - Modules 12-14 The Final Gaps.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Modules%2012-14%20The%20Final%20Gaps.md)                                                       |
-| 112 | [docs/archive/expansion-ideation/SoNash Expansion - Technical Modules.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Technical%20Modules.md)                                                                                   |
-| 113 | [docs/archive/expansion-ideation/SoNash Expansion Full Ideation All Modules 1.20.26.md](docs/archive/expansion-ideation/SoNash%20Expansion%20Full%20Ideation%20All%20Modules%201.20.26.md)                                                   |
-| 114 | [docs/archive/firestore-rules.md](docs/archive/firestore-rules.md)                                                                                                                                                                           |
-| 115 | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md)                                                                                                                             |
-| 116 | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md)                                                                                                                             |
-| 117 | [docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md](docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md)                                                                                                                             |
-| 118 | [docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md)                                                                                                                                   |
-| 119 | [docs/archive/legacy_task_list_2025_12_12.md](docs/archive/legacy_task_list_2025_12_12.md)                                                                                                                                                   |
-| 120 | [docs/archive/local-resources-review.md](docs/archive/local-resources-review.md)                                                                                                                                                             |
-| 121 | [docs/archive/reviews-markdown-legacy/REVIEWS_1-40.md](docs/archive/reviews-markdown-legacy/REVIEWS_1-40.md)                                                                                                                                 |
-| 122 | [docs/archive/reviews-markdown-legacy/REVIEWS_139-195.md](docs/archive/reviews-markdown-legacy/REVIEWS_139-195.md)                                                                                                                           |
-| 123 | [docs/archive/reviews-markdown-legacy/REVIEWS_196-259.md](docs/archive/reviews-markdown-legacy/REVIEWS_196-259.md)                                                                                                                           |
-| 124 | [docs/archive/reviews-markdown-legacy/REVIEWS_260-299.md](docs/archive/reviews-markdown-legacy/REVIEWS_260-299.md)                                                                                                                           |
-| 125 | [docs/archive/reviews-markdown-legacy/REVIEWS_300-341.md](docs/archive/reviews-markdown-legacy/REVIEWS_300-341.md)                                                                                                                           |
-| 126 | [docs/archive/reviews-markdown-legacy/REVIEWS_342-383.md](docs/archive/reviews-markdown-legacy/REVIEWS_342-383.md)                                                                                                                           |
-| 127 | [docs/archive/reviews-markdown-legacy/REVIEWS_384-423.md](docs/archive/reviews-markdown-legacy/REVIEWS_384-423.md)                                                                                                                           |
-| 128 | [docs/archive/reviews-markdown-legacy/REVIEWS_390-476.md](docs/archive/reviews-markdown-legacy/REVIEWS_390-476.md)                                                                                                                           |
-| 129 | [docs/archive/reviews-markdown-legacy/REVIEWS_42-138.md](docs/archive/reviews-markdown-legacy/REVIEWS_42-138.md)                                                                                                                             |
-| 130 | [docs/archive/reviews-markdown-legacy/REVIEWS_424-457.md](docs/archive/reviews-markdown-legacy/REVIEWS_424-457.md)                                                                                                                           |
-| 131 | [docs/archive/superseded-plans/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md](docs/archive/superseded-plans/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)                                                                                                 |
-| 132 | [docs/archive/superseded-plans/M1.6_SUPPORT_TAB_PLAN.md](docs/archive/superseded-plans/M1.6_SUPPORT_TAB_PLAN.md)                                                                                                                             |
+| 21  | [docs/archive/2026-jan-deprecated/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md](docs/archive/2026-jan-deprecated/brainstorm/PR_REVIEW_IMPROVEMENT_OPTIONS.md)                                                                                 |
+| 22  | [docs/archive/2026-jan-deprecated/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md](docs/archive/2026-jan-deprecated/brainstorm/REVIEW_POLICY_EXPANSION_DRAFT.md)                                                                                 |
+| 23  | [docs/archive/2026-jan-deprecated/CUSTOM_SLASH_COMMANDS_GUIDE.md](docs/archive/2026-jan-deprecated/CUSTOM_SLASH_COMMANDS_GUIDE.md)                                                                                                           |
+| 24  | [docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md](docs/archive/2026-jan-deprecated/PR_REVIEW_PROMPT_TEMPLATE.md)                                                                                                               |
+| 25  | [docs/archive/2026-jan-deprecated/ROADMAP_INTEGRATION.md](docs/archive/2026-jan-deprecated/ROADMAP_INTEGRATION.md)                                                                                                                           |
+| 26  | [docs/archive/2026-jan-deprecated/SLASH_COMMANDS.md](docs/archive/2026-jan-deprecated/SLASH_COMMANDS.md)                                                                                                                                     |
+| 27  | [docs/archive/aggregation/MASTER_ISSUE_LIST.md](docs/archive/aggregation/MASTER_ISSUE_LIST.md)                                                                                                                                               |
+| 28  | [docs/archive/aggregation/mining-agent1-data-quality.md](docs/archive/aggregation/mining-agent1-data-quality.md)                                                                                                                             |
+| 29  | [docs/archive/aggregation/mining-agent2-pipeline-flow.md](docs/archive/aggregation/mining-agent2-pipeline-flow.md)                                                                                                                           |
+| 30  | [docs/archive/aggregation/mining-agent3-retro-actions.md](docs/archive/aggregation/mining-agent3-retro-actions.md)                                                                                                                           |
+| 31  | [docs/archive/aggregation/mining-agent4-integration.md](docs/archive/aggregation/mining-agent4-integration.md)                                                                                                                               |
+| 32  | [docs/archive/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md](docs/archive/aggregation/PR_ECOSYSTEM_DIAGNOSIS.md)                                                                                                                                     |
+| 33  | [docs/archive/AI_HANDOFF-2026-01-02.md](docs/archive/AI_HANDOFF-2026-01-02.md)                                                                                                                                                               |
+| 34  | [docs/archive/AI_STANDARDIZED_REPORT.md](docs/archive/AI_STANDARDIZED_REPORT.md)                                                                                                                                                             |
+| 35  | [docs/archive/APPCHECK_FRESH_SETUP.md](docs/archive/APPCHECK_FRESH_SETUP.md)                                                                                                                                                                 |
+| 36  | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_ANALYSIS.md)                                                                                           |
+| 37  | [docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md](docs/archive/architecture-reviews-dec-2025/AI_FEATURE_IDEAS_REFERENCE.md)                                                                                         |
+| 38  | [docs/archive/ARCHIVE_INDEX.md](docs/archive/ARCHIVE_INDEX.md)                                                                                                                                                                               |
+| 39  | [docs/archive/audits/comprehensive/audit-2026-02-22/ai-optimization-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/ai-optimization-audit.md)                                                                                   |
+| 40  | [docs/archive/audits/comprehensive/audit-2026-02-22/code-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/code-audit.md)                                                                                                         |
+| 41  | [docs/archive/audits/comprehensive/audit-2026-02-22/COMPREHENSIVE_AUDIT_REPORT.md](docs/archive/audits/comprehensive/audit-2026-02-22/COMPREHENSIVE_AUDIT_REPORT.md)                                                                         |
+| 42  | [docs/archive/audits/comprehensive/audit-2026-02-22/DEDUP_VS_MASTER_DEBT.md](docs/archive/audits/comprehensive/audit-2026-02-22/DEDUP_VS_MASTER_DEBT.md)                                                                                     |
+| 43  | [docs/archive/audits/comprehensive/audit-2026-02-22/documentation-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/documentation-audit.md)                                                                                       |
+| 44  | [docs/archive/audits/comprehensive/audit-2026-02-22/engineering-productivity-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/engineering-productivity-audit.md)                                                                 |
+| 45  | [docs/archive/audits/comprehensive/audit-2026-02-22/enhancements-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/enhancements-audit.md)                                                                                         |
+| 46  | [docs/archive/audits/comprehensive/audit-2026-02-22/MASTER_DEBT_DEDUP_REPORT.md](docs/archive/audits/comprehensive/audit-2026-02-22/MASTER_DEBT_DEDUP_REPORT.md)                                                                             |
+| 47  | [docs/archive/audits/comprehensive/audit-2026-02-22/performance-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/performance-audit.md)                                                                                           |
+| 48  | [docs/archive/audits/comprehensive/audit-2026-02-22/process-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/process-audit.md)                                                                                                   |
+| 49  | [docs/archive/audits/comprehensive/audit-2026-02-22/refactoring-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/refactoring-audit.md)                                                                                           |
+| 50  | [docs/archive/audits/comprehensive/audit-2026-02-22/REVIEW_DECISIONS.md](docs/archive/audits/comprehensive/audit-2026-02-22/REVIEW_DECISIONS.md)                                                                                             |
+| 51  | [docs/archive/audits/comprehensive/audit-2026-02-22/security-audit.md](docs/archive/audits/comprehensive/audit-2026-02-22/security-audit.md)                                                                                                 |
+| 52  | [docs/archive/audits/multi-ai/maa-2026-02-17-182d43/final/SUMMARY.md](docs/archive/audits/multi-ai/maa-2026-02-17-182d43/final/SUMMARY.md)                                                                                                   |
+| 53  | [docs/archive/audits/single-session/agent-quality/audit-2026-03-17/AGENT_QUALITY_REPORT.md](docs/archive/audits/single-session/agent-quality/audit-2026-03-17/AGENT_QUALITY_REPORT.md)                                                       |
+| 54  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-12-legacy/SUMMARY.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-12-legacy/SUMMARY.md)                                                               |
+| 55  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-13/SUMMARY.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-13/SUMMARY.md)                                                                             |
+| 56  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/AI_OPTIMIZATION_AUDIT_REPORT.md)                                   |
+| 57  | [docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/REVIEW_DECISIONS.md](docs/archive/audits/single-session/ai-optimization/audit-2026-02-14/REVIEW_DECISIONS.md)                                                           |
+| 58  | [docs/archive/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md](docs/archive/audits/single-session/process/audit-2026-02-09/AUTOMATION_AUDIT_REPORT.md)                                                             |
+| 59  | [docs/archive/audits/system-test/audit-2026-02-19/PLAN_INDEX.md](docs/archive/audits/system-test/audit-2026-02-19/PLAN_INDEX.md)                                                                                                             |
+| 60  | [docs/archive/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md](docs/archive/audits/system-test/audit-2026-02-19/REVIEW_DECISIONS.md)                                                                                                 |
+| 61  | [docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md](docs/archive/ChatGPT_Multi_AI_Refactoring_Plan_Chat.md)                                                                                                                             |
+| 62  | [docs/archive/completed-decisions/ADR-001-integrated-improvement-plan-approach.md](docs/archive/completed-decisions/ADR-001-integrated-improvement-plan-approach.md)                                                                         |
+| 63  | [docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md](docs/archive/completed-plans/DOCUMENTATION_STANDARDIZATION_PLAN.md)                                                                                                     |
+| 64  | [docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md](docs/archive/completed-plans/EIGHT_PHASE_REFACTOR_PLAN.md)                                                                                                                       |
+| 65  | [docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md](docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md)                                                                                                                   |
+| 66  | [docs/archive/completed-plans/sonarcloud-cleanup-sprint.md](docs/archive/completed-plans/sonarcloud-cleanup-sprint.md)                                                                                                                       |
+| 67  | [docs/archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md](docs/archive/completed-plans/TECHNICAL_DEBT_MANAGEMENT_SYSTEM_PLAN.md)                                                                                               |
+| 68  | [docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md](docs/archive/completed-plans/TRACK_A_TESTING_CHECKLIST.md)                                                                                                                       |
+| 69  | [docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF_2024-12-19.md)                                                                                                               |
+| 70  | [docs/archive/consolidated-2025-12-19/AI_HANDOFF.md](docs/archive/consolidated-2025-12-19/AI_HANDOFF.md)                                                                                                                                     |
+| 71  | [docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md](docs/archive/consolidated-2025-12-19/ARCHIVE_INDEX.md)                                                                                                                               |
+| 72  | [docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md](docs/archive/consolidated-2025-12-19/FEATURE_DECISIONS.md)                                                                                                                       |
+| 73  | [docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md](docs/archive/consolidated-2025-12-19/JOURNAL_SYSTEM_PROPOSAL.md)                                                                                                           |
+| 74  | [docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md](docs/archive/consolidated-2025-12-19/PROJECT_STATUS.md)                                                                                                                             |
+| 75  | [docs/archive/consolidated-2025-12-19/ROADMAP_V3.md](docs/archive/consolidated-2025-12-19/ROADMAP_V3.md)                                                                                                                                     |
+| 76  | [docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md](docs/archive/consolidated-2025-12-19/UNIFIED_JOURNAL_ARCHITECTURE.md)                                                                                                 |
+| 77  | [docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md](docs/archive/consolidated-2025-12-19/WEB_ENHANCEMENTS_ROADMAP.md)                                                                                                         |
+| 78  | [docs/archive/EXPANSION_EVALUATION_TRACKER.md](docs/archive/EXPANSION_EVALUATION_TRACKER.md)                                                                                                                                                 |
+| 79  | [docs/archive/expansion-ideation/README.md](docs/archive/expansion-ideation/README.md)                                                                                                                                                       |
+| 80  | [docs/archive/expansion-ideation/SoNash Expansion - Module 1 - Step Work Depth.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%201%20-%20Step%20Work%20Depth.md)                                                         |
+| 81  | [docs/archive/expansion-ideation/SoNash Expansion - Module 10 – Safety &amp; Harm Reduction.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%2010%20%E2%80%93%20Safety%20&%20Harm%20Reduction.md)                         |
+| 82  | [docs/archive/expansion-ideation/SoNash Expansion - Module 11 – Visionary - Dream Big Bets.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%2011%20%E2%80%93%20Visionary%20-%20Dream%20Big%20Bets.md)                     |
+| 83  | [docs/archive/expansion-ideation/SoNash Expansion - Module 2 – Sponsor Tooling &amp; Connection.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%202%20%E2%80%93%20Sponsor%20Tooling%20&%20Connection.md)                 |
+| 84  | [docs/archive/expansion-ideation/SoNash Expansion - Module 3 – Nashville Advantage \(Local Utility\).md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%203%20%E2%80%93%20Nashville%20Advantage%20%28Local%20Utility%29.md) |
+| 85  | [docs/archive/expansion-ideation/SoNash Expansion - Module 4 – Offline, Privacy &amp; Trust.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%204%20%E2%80%93%20Offline,%20Privacy%20&%20Trust.md)                         |
+| 86  | [docs/archive/expansion-ideation/SoNash Expansion - Module 5 – Journaling &amp; Insights.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%205%20%E2%80%93%20Journaling%20&%20Insights.md)                                 |
+| 87  | [docs/archive/expansion-ideation/SoNash Expansion - Module 6 – Recovery Knowledge Base.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%206%20%E2%80%93%20Recovery%20Knowledge%20Base.md)                                 |
+| 88  | [docs/archive/expansion-ideation/SoNash Expansion - Module 7 – Exports &amp; Reports.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%207%20%E2%80%93%20Exports%20&%20Reports.md)                                         |
+| 89  | [docs/archive/expansion-ideation/SoNash Expansion - Module 8 – Personalization.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%208%20%E2%80%93%20Personalization.md)                                                     |
+| 90  | [docs/archive/expansion-ideation/SoNash Expansion - Module 9 – Daily Engagement &amp; Habits.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Module%209%20%E2%80%93%20Daily%20Engagement%20&%20Habits.md)                       |
+| 91  | [docs/archive/expansion-ideation/SoNash Expansion - Modules 12-14 The Final Gaps.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Modules%2012-14%20The%20Final%20Gaps.md)                                                       |
+| 92  | [docs/archive/expansion-ideation/SoNash Expansion - Technical Modules.md](docs/archive/expansion-ideation/SoNash%20Expansion%20-%20Technical%20Modules.md)                                                                                   |
+| 93  | [docs/archive/expansion-ideation/SoNash Expansion Full Ideation All Modules 1.20.26.md](docs/archive/expansion-ideation/SoNash%20Expansion%20Full%20Ideation%20All%20Modules%201.20.26.md)                                                   |
+| 94  | [docs/archive/FEATURE_DECISIONS_ANSWERS.MD](docs/archive/FEATURE_DECISIONS_ANSWERS.MD)                                                                                                                                                       |
+| 95  | [docs/archive/firestore-rules.md](docs/archive/firestore-rules.md)                                                                                                                                                                           |
+| 96  | [docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md](docs/archive/GitHub_Code_Analysis_and_Review_Prompt.md)                                                                                                                             |
+| 97  | [docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md](docs/archive/handoffs-2025-12/AI_HANDOFF_2025_12_15.md)                                                                                                                             |
+| 98  | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-16.md)                                                                                                                             |
+| 99  | [docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/AI_HANDOFF-2025-12-17.md)                                                                                                                             |
+| 100 | [docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md](docs/archive/handoffs-2025-12/HANDOFF-2025-12-17.md)                                                                                                                                   |
+| 101 | [docs/archive/HOOKIFY_STRATEGY.md](docs/archive/HOOKIFY_STRATEGY.md)                                                                                                                                                                         |
+| 102 | [docs/archive/IMPLEMENTATION_PROMPTS.md](docs/archive/IMPLEMENTATION_PROMPTS.md)                                                                                                                                                             |
+| 103 | [docs/archive/legacy_task_list_2025_12_12.md](docs/archive/legacy_task_list_2025_12_12.md)                                                                                                                                                   |
+| 104 | [docs/archive/local-resources-review.md](docs/archive/local-resources-review.md)                                                                                                                                                             |
+| 105 | [docs/archive/MCP_SERVER_AUDIT.md](docs/archive/MCP_SERVER_AUDIT.md)                                                                                                                                                                         |
+| 106 | [docs/archive/Monetization_Research_Phase1_Results.md](docs/archive/Monetization_Research_Phase1_Results.md)                                                                                                                                 |
+| 107 | [docs/archive/PLAN_MAP.md](docs/archive/PLAN_MAP.md)                                                                                                                                                                                         |
+| 108 | [docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md](docs/archive/RECAPTCHA_PROBLEM_SUMMARY.md)                                                                                                                                                       |
+| 109 | [docs/archive/Refactoring_PR_Plan.md](docs/archive/Refactoring_PR_Plan.md)                                                                                                                                                                   |
+| 110 | [docs/archive/RETROS_378-416.md](docs/archive/RETROS_378-416.md)                                                                                                                                                                             |
+| 111 | [docs/archive/reviews-markdown-legacy/REVIEWS_1-40.md](docs/archive/reviews-markdown-legacy/REVIEWS_1-40.md)                                                                                                                                 |
+| 112 | [docs/archive/reviews-markdown-legacy/REVIEWS_139-195.md](docs/archive/reviews-markdown-legacy/REVIEWS_139-195.md)                                                                                                                           |
+| 113 | [docs/archive/reviews-markdown-legacy/REVIEWS_196-259.md](docs/archive/reviews-markdown-legacy/REVIEWS_196-259.md)                                                                                                                           |
+| 114 | [docs/archive/reviews-markdown-legacy/REVIEWS_260-299.md](docs/archive/reviews-markdown-legacy/REVIEWS_260-299.md)                                                                                                                           |
+| 115 | [docs/archive/reviews-markdown-legacy/REVIEWS_300-341.md](docs/archive/reviews-markdown-legacy/REVIEWS_300-341.md)                                                                                                                           |
+| 116 | [docs/archive/reviews-markdown-legacy/REVIEWS_342-383.md](docs/archive/reviews-markdown-legacy/REVIEWS_342-383.md)                                                                                                                           |
+| 117 | [docs/archive/reviews-markdown-legacy/REVIEWS_384-423.md](docs/archive/reviews-markdown-legacy/REVIEWS_384-423.md)                                                                                                                           |
+| 118 | [docs/archive/reviews-markdown-legacy/REVIEWS_390-476.md](docs/archive/reviews-markdown-legacy/REVIEWS_390-476.md)                                                                                                                           |
+| 119 | [docs/archive/reviews-markdown-legacy/REVIEWS_42-138.md](docs/archive/reviews-markdown-legacy/REVIEWS_42-138.md)                                                                                                                             |
+| 120 | [docs/archive/reviews-markdown-legacy/REVIEWS_424-457.md](docs/archive/reviews-markdown-legacy/REVIEWS_424-457.md)                                                                                                                           |
+| 121 | [docs/archive/SoNash**AdminPanelEnhancement**v1_0\_\_2024-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_0__2024-12-22.md)                                                                                                         |
+| 122 | [docs/archive/SoNash**AdminPanelEnhancement**v1_1\_\_2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_1__2025-12-22.md)                                                                                                         |
+| 123 | [docs/archive/SoNash**AdminPanelEnhancement**v1_2\_\_2025-12-22.md](docs/archive/SoNash__AdminPanelEnhancement__v1_2__2025-12-22.md)                                                                                                         |
+| 124 | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__2025-12-22.md)                                                                                                                 |
+| 125 | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_2\_\_2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_2__2025-12-22.md)                                                                                                   |
+| 126 | [docs/archive/SoNash**Phase1_ClaudeCode_Prompt**v1_3\_\_2025-12-22.md](docs/archive/SoNash__Phase1_ClaudeCode_Prompt__v1_3__2025-12-22.md)                                                                                                   |
+| 127 | [docs/archive/SoNash_Code_Review_Consolidated**v1_0**2025-12-23.md](docs/archive/SoNash_Code_Review_Consolidated__v1_0__2025-12-23.md)                                                                                                       |
+| 128 | [docs/archive/SoNash_Technical_Ideation_Multi_AI 1.20.26.md](docs/archive/SoNash_Technical_Ideation_Multi_AI%201.20.26.md)                                                                                                                   |
+| 129 | [docs/archive/SUPABASE_MIGRATION_ANALYSIS.md](docs/archive/SUPABASE_MIGRATION_ANALYSIS.md)                                                                                                                                                   |
+| 130 | [docs/archive/superseded-plans/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md](docs/archive/superseded-plans/LOCAL_RESOURCES_IMPLEMENTATION_PLAN.md)                                                                                                 |
+| 131 | [docs/archive/superseded-plans/M1.6_SUPPORT_TAB_PLAN.md](docs/archive/superseded-plans/M1.6_SUPPORT_TAB_PLAN.md)                                                                                                                             |
+| 132 | [docs/archive/TESTING_CHECKLIST.md](docs/archive/TESTING_CHECKLIST.md)                                                                                                                                                                       |
 
 </details>
 

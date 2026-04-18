@@ -15,6 +15,10 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # Firebase Data Connect generated SDK — local path dep, gitignored,
+      # unreachable from Dependabot's sandboxed checkout.
+      - dependency-name: "@dataconnect/generated"
     labels:
       - "dependencies"
     commit-message:

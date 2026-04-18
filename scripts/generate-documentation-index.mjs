@@ -934,7 +934,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
   const orphaned = [...referenceGraph.entries()]
     .filter(([, refs]) => refs.inbound.length === 0)
     .map(([path]) => path)
-    .sort();
+    .sort((a, b) => a.localeCompare(b));
 
   if (orphaned.length === 0) {
     lines.push("*No orphaned documents found.*");
@@ -994,7 +994,7 @@ function generateMarkdown(docs, referenceGraph, archivedFiles = []) {
       "| # | Path |",
       "|---|------|"
     );
-    const sortedArchived = [...archivedFiles].sort();
+    const sortedArchived = [...archivedFiles].sort((a, b) => a.localeCompare(b));
     let archiveNum = 1;
     for (const filePath of sortedArchived) {
       const linkPath = encodeMarkdownPath(filePath);

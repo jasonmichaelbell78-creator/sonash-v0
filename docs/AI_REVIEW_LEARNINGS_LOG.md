@@ -366,6 +366,33 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#90)</summary>
+
+- **Date:** 2026-04-18
+- **Reviews consolidated:** #366-#rev-94
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - extraction-journal-normalize (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+  - research-design-feedback-vs-bugs (3x)
+  - research-doc-schema-consistency (3x)
+  - reviews-jsonl-integrity (3x)
+  - skill-schema-consistency (3x)
+  - slug-algorithm-separator-preservation (3x)
+  - volatile-state-tracking (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#89)</summary>
 
 - **Date:** 2026-04-17
@@ -1430,8 +1457,8 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~20140 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 545    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~17940 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 495    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -2044,1289 +2071,6 @@ deduplicated, non-overlapping ranges):
 
 ## Active Reviews
 
-### Review 1: Phase 1 Documentation Templates (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 14    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 2     | 10    | 0       |
-
-**Patterns:**
-
-- self-compliance-failure
-- status-synchronization-gap
-- template-placeholder-ambiguity
-- redundant-wording
-- missing-cross-reference-validation
-- metadata-inconsistency
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: DOCUMENTATION_STANDARDS.md created without validating against
-- Prevention: Added "Document follows its own standards" to Pre-Commit
-- Root cause: Updated PLAN document but didn't sync SESSION_CONTEXT.md (62% →
-- Prevention: Added Status Synchronization Protocol matrix to
-- Root cause: Placeholders like `[Step 1]`, `[Brief description]` too generic
-- Prevention: Added concrete examples and clarifying text to all templates
-- Root cause: No static analysis run during creation
-
----
-
-### Review 2: File Rename & Cross-Reference Updates (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 4     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- tool-specific-language-persistence
-- incomplete-link-format-coverage
-- missing-forward-reference-annotations
-- template-contradictions
-- broken-shell-commands-in-examples
-- generic-examples-lacking-concrete-mappings
-- root-cause
-- prevention
-- files
-
-**Learnings:**
-
-- CodeRabbit 🐰 + Qodo (first multi-tool review)
-- Root cause: After renaming CODERABBIT_REVIEW_PROCESS.md →
-- Prevention: When renaming files, grep for old terminology in
-- Files: AI_HANDOFF.md:61, ROADMAP_LOG.md:21
-- Root cause: Cross-Reference Validation protocol only listed inline links
-- Prevention: Expanded protocol to cover all Markdown link formats
-- Files: DOCUMENTATION_STANDARDS.md:558-570
-
----
-
-### Review 3: Mandatory Learning Enforcement (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 2     | 0       |
-
-**Patterns:**
-
-- phase-assignment-inconsistency
-- document-type-classification-ambiguity
-- root-cause
-- prevention
-- files
-
-**Learnings:**
-
-- CodeRabbit 🐰 (review of learning system additions)
-- Root cause: "Phase 1 or 4" placeholder left from template, not updated when
-- Prevention: When documenting forward references, commit to single phase or
-- Files: AI_REVIEW_PROCESS.md:448
-- Root cause: Related Documents section mixes Markdown docs with
-- Prevention: Could separate "Documentation" vs "Tools/Automation"
-- Files: AI_REVIEW_PROCESS.md:418-422 (deferred - functional as-is)
-
----
-
-### Review 4: Phase 1.5 Multi-AI Review System (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 46    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- process-overheadcomplexity-creep
-- script-robustness-gaps
-- documentation-accuracy-drift
-- unused-code-artifacts
-- root-cause
-- example
-- prevention
-- examples
-- -git-command-guards-check-commit-count-before-headn
-- -command-availability-checks-command--v-before-using-tools
-- -accurate-completion-messages-track-warningsfailures
-
-**Learnings:**
-
-- CodeRabbit 🐰 + Qodo (comprehensive review of governance
-- Root cause: Layering governance procedures without considering cumulative
-- Example: "1% chance" threshold creates decision fatigue; multiple mandatory
-- Prevention: During reviews, explicitly analyze complexity/overhead impact.
-- Resolution: Softened "1% chance" to "clearly applies" - maintains intent
-- Root cause: Scripts written for happy-path only without edge case guards
-- Examples: HEAD~10 fails on repos with <10 commits; timeout command not
-
----
-
-### Review 5: CodeRabbit Round 2 - Minor Fixes (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- npm-install-robustness
-- markdown-lint-violations
-- misleading-variable-names
-- overly-broad-pattern-matching
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- Root cause: npm install can fail on peer dependency conflicts in sandboxed
-- Example: Missing --legacy-peer-deps flag in session-start.sh
-- Prevention: Always include --legacy-peer-deps in automated npm install
-- Resolution: Added flag to both npm install commands in session-start.sh
-- Root cause: Blank lines between consecutive blockquotes flagged by
-- Example: Blockquotes in AI_WORKFLOW.md separated by blank lines
-- Prevention: Use `>` continuation for consecutive blockquotes, or join into
-
----
-
-### Review 6: CodeRabbit Round 3 - Process Gaps (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- -learning-capture-failure
-- scope-creep-documentation-gap
-- acceptance-criteria-inconsistency
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- Root cause: Review #5 was processed but learning entry was NOT added before
-- Example: Addressed 4 CodeRabbit suggestions, committed fix, but skipped
-- Prevention: **MANDATORY ENFORCEMENT NEEDED** - see "Learning Capture
-- Resolution: Adding Review #5 and #6 retroactively; implementing enforcement
-- Root cause: Phase deliverables section not updated when additional work
-- Example: Phase 1.5 deliverables list 5 items, but "What Was Accomplished"
-- Prevention: When adding bonus deliverables, update both sections OR
-
----
-
-### Review 7: CodeRabbit Round 4 - Off-by-One Bug (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- off-by-one-in-git-history-commands
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- Root cause: HEAD~N requires N+1 commits in history; if COMMIT_COUNT=10,
-- Example: `LOOKBACK=$((COMMIT_COUNT < 10 ? COMMIT_COUNT : 10))` allows
-- Prevention: Always use `COMMIT_COUNT - 1` as upper bound for HEAD~N
-- Resolution: Fixed LOOKBACK calculation to ensure LOOKBACK < COMMIT_COUNT
-- Edge cases in git commands compound - the original guard for
-
----
-
-### Review 8: CI Fix & Reference Corrections (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- missing-explicit-dependency
-- section-reference-inaccuracy
-- document-archival-conflict
-- undocumented-advisory-content
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- Root cause: eslint required as peer dependency but not installed explicitly
-- Example: `npm ci` failed with "Missing: eslint@9.39.2 from lock file"
-- Prevention: When adding packages that require eslint (e.g.,
-- Resolution: Added eslint ^9.39.2 to devDependencies
-- Root cause: Referenced section by abbreviated name instead of full title
-- Example: "Enforcement Mechanism" instead of "Learning Capture Enforcement
-
----
-
-### Review 9: CodeRabbit Round 6 - Documentation Clarity (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- conflicting-code-examples
-- retrospective-context-ambiguity
-- forward-looking-enforcement-vagueness
-- ambiguous-version-history-phrasing
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- Root cause: Review #4 pattern for HEAD~N guard was incorrect, Review #7
-- Example: Two different LOOKBACK formulas in same document created confusion
-- Prevention: When fixing bugs in documented patterns, annotate the original
-- Resolution: Added correction note to Review #4 with corrected code inline
-- Root cause: Review #6 read as contemporaneous discovery of Review #5's gap
-- Example: "Adding Review #5 and #6 retroactively" wasn't clear about
-- Prevention: Explicitly label retrospective analyses upfront
-
----
-
-### Review 10: Session Hook Robustness & CI Fixes (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- npm-install-modifies-lockfile
-- missing-transitive-dependencies
-- lockfile-existence-not-checked
-- emptycorrupted-lockfile-edge-case
-- unsafe-variable-increment
-- missing---legacy-peer-deps
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- ROOT CAUSE of repeated CI
-- Root cause: Session hook used `npm install` which modifies
-- Example: Every session start created lockfile drift, breaking CI's `npm ci`
-- Prevention: Always use `npm ci` in automated scripts; never `npm install`
-- Resolution: Changed session-start.sh to use `npm ci`
-- Root cause: External deployment check expected jest, not in package.json
-
----
-
-### Review 11: Lockfile Sync & Workflow Configuration (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- lockfile-structural-inconsistencies
-- feature-branches-in-workflow-triggers
-- missing-firebase-environment-variables
-- npm-cache-keyed-on-wrong-lockfile
-- secrets-validation-missing
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- Root cause: Lockfile generated with duplicated/invalid entries that npm ci
-- Example: CI failed with "Missing jest@30.2.0" but package-lock.json HAD
-- Prevention: After ANY lockfile changes, verify with
-- Resolution: Complete regeneration (`rm package-lock.json && npm install`)
-- Root cause: Adding feature branch to deploy-firebase.yml for testing
-- Example: `claude/review-repo-docs-D4nYF` in triggers is temporary
-
----
-
-### Review 12: The Jest Incident - Understanding WHY Before Fixing (2026-01-01)
-
-**Date:** 2026-01-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- -fixing-without-understanding-critical---anti-pattern
-- npm-ci-vs-npm-install-vs-cloud-build
-- peer-dependencies-are-real-dependencies
-- cascade-effect-of-wrong-fixes
-- root-cause
-- example
-- prevention
-- does-this-project-actually-use-x
-- what-is-the-real-root-cause
-- is-this-symptom-or-cause
-- details
-- npm-ci---legacy-peer-deps
-- npm-ci-plain
-- npm-install
-- timeline
-- added-jest-lockfile-bloated
-- lockfile-sync-issues-more-regeneration-attempts
-- multiple-commits-user-frustration-wasted-time
-
-**Learnings:**
-
-- CI failures across multiple commits **Tools:** Qodo + CI +
-- A cascade of CI failures over multiple hours, caused by
-- Root cause: Saw "jest" in error message → assumed project needed jest →
-- Example: "an external CI check expects jest" - but this was WRONG
-- Prevention: **ALWAYS ask "WHY?" before making changes:**
-- Resolution: Removed jest from root package.json; fixed actual issue (peer
-- Root cause: Different npm commands have different peer dependency behavior
-
----
-
-### Review 13: Phase 2 Automation Scripts (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- -command-injection-vulnerability
-- -arbitrary-file-deletion
-- -exit-code-capture-bug
-- filename-with-spaces-breaks-loop
-- missing-workflow-permissions
-- unused-parameters-not-cleaned
-- dry-violation---duplicated-helpers
-- double-script-execution
-- brittle-output-parsing
-- regex-with-global-flag-in-loop
-- root-cause
-- example
-- prevention
-- examples
-- files
-
-**Learnings:**
-
-- CodeRabbit 🐰 + Qodo + GitHub Actions CI
-- Root cause: Shell command interpolation without sanitization
-- Example: `git rev-list --count --since="${sinceDate}" HEAD` in
-- Prevention: Sanitize all external inputs before shell interpolation; use
-- Resolution: Add input validation for date strings (regex match ISO format
-
----
-
-### Review 14: CodeRabbit/Qodo Fix Implementation (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 15    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- exit-code-capture
-- file-iteration
-- regex-with-test-in-loops
-- input-validation-patterns
-- unused-variables
-- the-latter-captures-assignment-exit-code-always-0-not-comman
-- spaces-in-filenames-break-word-splitting-in-for-loops
-- global-flag-makes-lastindex-stateful-causing-missed-matches
-- dates
-- paths
-
-**Learnings:**
-
-- Implementation session following Review #13 findings **Scope:** All
-- DRY violation: Extract `safeReadFile`/`safeWriteFile` to
-- ESLint JSON output parsing (requires jq dependency)
-- Cross-platform path normalization for Windows compatibility
-- The latter captures assignment exit code (always 0), not command exit code
-- `while IFS= read -r file` NOT `for file in $list`
-- Spaces in filenames break word-splitting in for loops
-
----
-
-### Review 15: CI Workflow and Documentation Fixes (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- subshell-variable-scope
-- yaml-template-literal-safety
-- github-actions-bot-detection
-- documentation-compliance
-- wrong
-- right
-
-**Learnings:**
-
-- CI failure feedback + continuation of Review #14 fixes **Scope:**
-- Variables set in `while` loop fed by pipe (`|`)
-- Template literals with `${}` at line start
-- Wrong: Template literal spanning multiple lines in YAML
-- Right: `['line1', 'line2', variable].join('\n')`
-- Wrong: `c.user.type === 'Bot'` (GitHub Actions may not set this)
-- Right: `c.user.login === 'github-actions[bot]'`
-
----
-
-### Review 16: Security Hardening and Robustness (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- markdown-injection-prevention
-- safe-github-actions-interpolation
-- filename-safe-file-lists
-- exit-code-over-output-parsing
-- escape-triple-backticks
-- escape-github-actions-syntax
-- wrong
-- right
-- add-separator
-- update-parsing-to-use-same-separator
-
-**Learnings:**
-
-- CodeRabbit/Qodo continued feedback on Review #15 commit **Scope:**
-- Always sanitize user/tool output before
-- Escape triple backticks: `sed 's/\`\`\`/\\\\`\\\\`\\\\`/g'`
-- Escape GitHub Actions syntax: `sed 's/\${{/\\${{/g'`
-- Never use `${{ }}` in JavaScript
-- Wrong: `const x = \`${{ steps.foo.outputs.bar }}\`;`
-- Right: Use `env:` block and `process.env.VAR`
-
----
-
-### Review 17: Remaining Qodo/CodeRabbit Fixes (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- cross-platform-path-handling
-- safe-error-handling-for-non-error-throws
-- yaml-expression-parsing-gotcha
-- markdown-link-portability
-- husky-ci-compatibility
-- stderr-corrupts-json-parsing
-- wrong
-- right
-
-**Learnings:**
-
-- Full Qodo compliance feedback + CodeRabbit suggestions from Review
-- Cross-platform compatibility, robustness, workflow YAML fixes
-- Use `path.relative()` instead of string
-- Wrong: `resolvedPath.startsWith(resolvedRoot)` (fails on Windows
-- Right: `path.relative(root, path).startsWith('..')` (works everywhere)
-- JavaScript allows throwing any
-- Wrong: `error.message` (crashes if non-Error thrown)
-
----
-
-### Review 18: Security Hardening and Temp File Cleanup (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- windows-cross-drive-security
-- accurate-path-traversal-detection
-- shell-temp-file-cleanup
-- exit-code-differentiation
-- retry-loops-for-race-conditions
-- secure-error-handling
-- secure-logging-practices
-- check
-- wrong
-- right
-- works-even-if-script-exits-early-due-to-error
-- 0-successno-action-needed
-- 1-action-recommended-not-an-error
-- 2-actual-error
-- check-exit-code-explicitly-not-just-if-command-failed
-
-**Learnings:**
-
-- Qodo compliance feedback + CodeRabbit PR suggestions **Scope:**
-- Check: Compare drive letters before using relative path check
-- Simple `startsWith('..')` has false
-- Wrong: `rel.startsWith('..')` matches filenames like `..hidden.md`
-- Right: `/^\.\.(?:[\\/]|$)/.test(rel)` ensures it's actually traversing up
-- Always use trap for guaranteed cleanup
-- Pattern: `TMPFILE=$(mktemp); trap 'rm -f "$TMPFILE"' EXIT`
-
----
-
-### Review 19: Follow-up Refinements (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- retry-loop-failure-tracking
-- block-dangerous-paths-early
-- guarantee-valid-json-output
-- proper-nouns-in-documentation
-- wrong
-- right
-- block-absolute-unix-paths
-- block-absolute-windows-paths
-- block-unc-paths
-- markdown-not-markdown-language-name-is-a-proper-noun
-- javascript-not-javascript-github-not-github-etc
-
-**Learnings:**
-
-- CodeRabbit and Qodo follow-up suggestions after Review #18 fixes.
-- Don't assume loop exit means success
-- Wrong: `for i in 1 2 3; do cmd && break; sleep 5; done`
-- Right: Track `SUCCESS=false`, set `SUCCESS=true` on success, fail if still
-- Check user input before path resolution
-- Block absolute Unix paths: `filePath.startsWith('/')`
-- Block absolute Windows paths: `/^[A-Za-z]:/.test(filePath)`
-
----
-
-### Review 20: Security Error Handling & Cross-Platform Fixes (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- recurring-issues-must-be-fixed-not-noted
-- error-sanitization-pattern
-- extensionless-file-detection-by-shebang
-- unique-delimiter-for-githuboutput
-- preserve-stderr-for-debugging-while-checking-exit-code
-
-**Learnings:**
-
-- FINALLY addressing the recurring Qodo compliance findings for
-- Reusable error sanitization utility that:
-- Strips sensitive patterns (home directories, credentials, connection
-- Works with Error objects, strings, and unknown throws
-- Provides `sanitizeError()`, `sanitizeErrorForJson()`, `createSafeLogger()`,
-- Qodo compliance findings for
-- Pattern #1 (error sanitization) - This is now a
-
----
-
-### Review 21: Robust Error Handling & Centralized Sanitization (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- incomplete-sanitization-patterns
-- code-duplication
-- silent-error-swallowing
-- ip-regex-bug
-- centralized-utilities-must-be-used-not-just-created
-- aborterror-handling-for-web-share-api
-- path-traversal-prevention
-- robust-file-reading
-- github-actions-expression-defaults
-- creating-sanitize-errorjs-was-not-enough
-- typescript-files-continued-using-incomplete-inline-regex
-
-**Learnings:**
-
-- Follow-up to Review #20 addressing recurring compliance findings
-- Why Error Handling Issues Kept Getting Flagged:\*\*
-- TypeScript re-export wrapper providing
-- Creating `sanitize-error.js` was not enough
-- TypeScript files continued using incomplete inline regex
-- Fix: Import shared utility in ALL files, create TS wrapper for type safety
-- Pattern #1 (centralized utilities) - reinforced
-
----
-
-### Review 22: Phase 3 CodeRabbit Reviews (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- documentation-must-match-codebase-state
-- sequential-numbering-must-be-verified
-- link-references-must-be-consistent
-- warning-terminology-should-be-meaningful
-- ai-instructions-should-be-document-specific
-- when-copyingediting-sections-check-for-duplicate-numbers
-- easy-to-miss
-- if-a-file-is-archived-all-references-should-use-the-archived
-- dont-mix-plain-text-references-with-markdown-links
-- reserve-blocker-for-actual-blockers
-- use-note-for-informational-notices
-- use-critical-sparingly-for-actual-critical-items
-
-**Learnings:**
-
-- CodeRabbit automated reviews during Phase 3 documentation
-- When copying/editing sections, check for duplicate numbers
-- Easy to miss: "Layer 5" appearing twice in security layers
-- If a file is archived, ALL references should use the archived path
-- Don't mix plain text references with markdown links
-- Reserve "⚠️ BLOCKER" for actual blockers
-- Use "📌 NOTE" for informational notices
-
----
-
-### Review 23: Link Text Consistency (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- CodeRabbit review of TRIGGERS.md addition and prior Phase 3
-- Link display text should show clean filename; actual path goes in the
-- Consistency in documentation formatting matters even for small
-
----
-
-### Review 24: Pattern Automation Script Security (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- secure-logging-for-code-analysis-tools
-- existssync-before-readfilesync
-- fallback-regex-wildcards
-- content-based-hashing-for-stable-ids
-- root-cause
-- example
-- prevention
-
-**Learnings:**
-
-- Qodo PR Compliance Review of `suggest-pattern-automation.js` **PR:**
-- Qodo Compliance Checker
-- Root cause: Script logged extracted code snippets directly, potentially
-- Example: `console.log(\`Code: ${code.slice(0, 60)}\`)` - could log API keys
-- Prevention: Always sanitize before logging extracted code: redact long
-- Resolution: Added `sanitizeCodeForLogging()` with secret/path redaction
-- Root cause: `readFileSync()` without existence check crashes with unhelpful
-
----
-
-### Review 25: Pattern Automation Script Robustness (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- path-disclosure-prevention
-- regex-key-matching
-- review-metadata-preservation
-- original-flag-preservation
-- parse-failure-abort
-- basename-for-error-messages
-- regex-keys-vs-literal-keys
-- capture-groups-for-metadata
-- preserve-original-semantics
-- fail-fast-on-parse-errors
-- root-cause
-- prevention
-- example
-
-**Learnings:**
-
-- Qodo/CodeRabbit Second Review of `suggest-pattern-automation.js`
-- Qodo Compliance Checker, CodeRabbit
-- Wrong: `console.error(\`File not found: ${LEARNINGS_FILE}\`)`
-- Right: `const LEARNINGS_FILENAME = basename(LEARNINGS_FILE);` then use
-- Why: Full paths can expose filesystem structure, usernames, deployment
-- Wrong: `if (code.toLowerCase().includes(key.toLowerCase()))`
-- Right: `const keyRegex = new RegExp(key, 'i'); if (keyRegex.test(code))`
-
----
-
-### Review 26: Pattern Automation Script - Third Round (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sanitize-pattern-output
-- improved-path-redaction
-- original-flag-preservation
-- lazy-quantifiers-in-retry-loop-pattern
-- derived-data-needs-same-sanitization
-- path-regex-completeness
-- nullish-coalescing-for-semantic-defaults
-- lazy-quantifiers-for-bounded-patterns
-- root-cause
-- prevention
-- example
-
-**Learnings:**
-
-- Qodo/CodeRabbit Third Review of `suggest-pattern-automation.js`
-- Qodo Compliance Checker, CodeRabbit
-- Wrong: `suggested.pattern.slice(0, 50)` - truncates but doesn't sanitize
-- Right: `sanitizeCodeForLogging(suggested.pattern, 50)` - sanitizes AND
-- Why: Patterns are derived from code and may contain embedded secrets
-- Wrong: `/\/[A-Za-z]\/[^/\s]+\/[^/\s]+/g` - only matches `/A/path/segments`
-- Right: Unix: `/(?:^|[\s"'\`(])\/(?:[^/\s]+\/){2,}[^/\s]+/g`
-
----
-
-### Review 27: Pattern Automation Script - Fourth Round (2026-01-02)
-
-**Date:** 2026-01-02 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sanitize-originalcode-before-persistence
-- capture-groups-for-path-redaction
-- multiline-regex-lookahead
-- regex-flags-sanitization
-- stateful-global-regex-with-test
-- restrictive-file-permissions
-- artifact-vs-console-sanitization
-- capture-groups-for-replacements
-- global-flag-with-test
-- multiline-lookahead
-- flag-validation-for-dynamic-regexp
-- root-cause
-- prevention
-- example
-
-**Learnings:**
-
-- Qodo/CodeRabbit Fourth Review of `suggest-pattern-automation.js`
-- Qodo Compliance Checker, CodeRabbit
-- Wrong: `originalCode: code` - raw code written to JSON file
-- Right: `originalCode: sanitizeCodeForLogging(code, 120)`
-- Why: Artifacts (JSON files) persist beyond the session and can leak secrets
-- Wrong: `.replace(/pattern/g, (m) => m[0] + 'replacement')` - callback
-- Right: `.replace(/(prefix)(path)/g, '$1/[REDACTED]')` - capture groups
-
----
-
-### Review 28: Documentation & Process Planning Improvements (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 44    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- document-consistency-for-severity-levels
-- avoid-brittle-line-number-references
-- explicit-security-item-tracking
-- avoid-planning-document-fragmentation
-- verify-counts-when-referencing-external-docs
-- root-cause
-- prevention
-
-**Learnings:**
-
-- CodeRabbit PR Review + technical-writer Agent Review **PR:**
-- CodeRabbit, technical-writer agent
-- Created INTEGRATED_IMPROVEMENT_PLAN.md to consolidate fragmented
-- Root cause: claude.md and AI_WORKFLOW.md used different MUST/SHOULD for
-- Prevention: When creating parallel checklists in multiple docs, ensure
-- Resolution: SHOULD for quality-improvement tools (technical-writer,
-
----
-
-### Review 29: Documentation Consistency & Verification Refinements (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- make-acceptance-criteria-objectively-verifiable
-- clarify-trigger-ordering-when-multiple-apply
-- specify-workflow-ordering-in-multi-step-triggers
-- keep-cross-document-references-current
-- root-cause
-- prevention
-
-**Learnings:**
-
-- CodeRabbit Third Round Review **PR:** `claude/session-start-h9O9F`
-- Follow-up review after addressing second round feedback. Focus on
-- Root cause: "Broken links fixed" is subjective; no verification step
-- Prevention: Always include verification command in acceptance criteria
-- Pattern: "- [ ] X completed (validated by `npm run Y`)"
-- Root cause: Both systematic-debugging and debugger could apply to complex
-- Prevention: When triggers can overlap, specify ordering explicitly
-
----
-
-### Review 30: Claude Hooks PR Compliance & Security (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- move-complex-hook-logic-to-scripts
-- prioritize-security-over-general-patterns
-- validate-and-sanitize-hook-arguments
-- never-expose-config-secrets-in-hook-output
-- order-file-type-detection-by-specificity
-- use-case-insensitive-matching-for-security-keywords
-- cover-all-related-tools-in-hooks
-- root-cause
-- prevention
-- benefit
-- example
-- check-for-empty-input
-- sanitize
-- truncate
-- wrong
-- applies-to
-
-**Learnings:**
-
-- Qodo Code Review + CodeRabbit **PR:**
-- PR adding PostToolUse and UserPromptSubmit hooks to
-- Root cause: Inline prompts with 400+ char decision trees are unmaintainable
-- Prevention: Create dedicated `.claude/hooks/*.sh` scripts
-- Benefit: Scripts are testable, maintainable, and can use proper control
-
----
-
-### Review 31: CodeRabbit CLI Hook Improvements (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- iterate-over-all-arguments-in-hooks
-- unquoted-arguments-for-multi-value
-- timeout-external-commands
-- bash-parameter-expansion-over-external-commands
-- root-cause
-- prevention
-- wrong
-- right
-- applies-to
-- trade-off
-- note
-
-**Learnings:**
-
-- Qodo + CodeRabbit PR (combined) **PR:**
-- First review of the new CodeRabbit CLI integration hook.
-- Root cause: Only `$1` was processed, ignoring rest of `$@`
-- Prevention: Use `for FILE in "$@"; do ... done` loop
-- Wrong: `FILE="${1:-}"`
-- Right: `for FILE in "$@"; do ... done`
-
----
-
-### Review 32: CodeRabbit CLI Robustness (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- capture-exit-status-dont-swallow-errors
-- use-set--f-to-prevent-glob-expansion
-- portable-bash-version-compatibility
-- bound-hook-runtime-with-file-limits
-- keep-protocol-output-clean-stdout-vs-stderr
-- root-cause
-- prevention
-- wrong
-- right
-- note
-- trade-off
-- principle
-
-**Learnings:**
-
-- Qodo + CodeRabbit PR **PR:**
-- Second round of feedback on CodeRabbit CLI integration addressing
-- Root cause: `|| true` hides whether command failed
-- Prevention: Use `|| STATUS=$?` and check status explicitly
-- Wrong: `OUTPUT=$(cmd) || true`
-- Right: `OUTPUT=$(cmd) || STATUS=$?; if [[ $STATUS -eq 124 ]]; then ...`
-
----
-
-### Review 33: Qodo PR Compliance + Script Security & Documentation Fixes (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- path-traversal-prevention-with-containment-check
-- distinguish-enoent-from-other-errors
-- always-close-readline-interface
-- fail-ci-fast-on-missing-required-config
-- cross-platform-exec-with-stdio-options
-- root-cause
-- prevention
-- wrong
-- right
-- note
-- principle
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #12 (code
-- Comprehensive code review addressing security vulnerabilities,
-- Root cause: User-controlled paths used with `fs.statSync`/`fs.readFileSync`
-- Prevention: Resolve path with `path.resolve()`, then verify it stays within
-- Wrong: `fs.readFileSync(path.join(projectRoot, userPath))`
-- Note: Also check edge case where resolved path equals projectRoot exactly
-
----
-
-### Review 34: Qodo PR Compliance Follow-up - Security Hardening & Documentation (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- use-pathrelative-for-containment-checks
-- validate-cli-arguments-at-entry-point
-- redact-secrets-from-historical-docs
-- include-all-working-tree-changes-in-detection
-- preserve-multi-group-regex-matches
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #12
-- Second round of feedback following Review #33, addressing remaining
-- Root cause: String-based `startsWith()` can be bypassed on different OS
-- Prevention: Use `path.relative()` - if result starts with `..` or is
-- Note: `rel === ''` means path equals root exactly (may or may not be
-- Root cause: User-supplied paths passed directly to filesystem operations
-
----
-
 ### Review 35: Qodo PR Compliance + CodeRabbit Documentation & Script Fixes (2026-01-03)
 
 **Date:** 2026-01-03 | **Source:** qodo+coderabbit
@@ -3364,1632 +2108,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 36: Qodo PR Compliance + CodeRabbit Script & Documentation Fixes (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- wrap-all-file-operations-in-trycatch
-- sanitize-error-output-for-ci-logs
-- directories-are-valid-deliverables
-- dont-suppress-script-errors
-- deduplicate-user-input
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #14 **Tools:**
-- Fourth round of feedback addressing error handling robustness,
-- Root cause: fs.existsSync followed by fs.readFileSync without try/catch
-- Prevention: Always wrap filesystem operations that can fail with
-- Note: existsSync doesn't guarantee readFileSync success (race conditions,
-- Root cause: main().catch exposing full error messages and stack traces
-- Prevention: Redact home directories and omit stack traces in production/CI
-
----
-
-### Review 37: Qodo PR Compliance + CodeRabbit Script Security & Documentation (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- use-splitn0-for-error-first-line
-- wrap-all-planconfig-file-reads
-- use-relative-paths-in-logs
-- normalize-quotedprefixed-paths
-- never-recommend-committing-env-files
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #15 **Tools:**
-- Fifth round of feedback addressing plan file error handling, stack
-- Root cause: String(err) can include multi-line stack traces with file paths
-- Prevention: Extract first line before sanitizing paths
-- Note: Stack traces often contain full paths that reveal environment details
-- Root cause: fs.readFileSync can fail with permission/encoding errors
-- Prevention: Try/catch with structured failure response for CI mode
-
----
-
-### Review 38: CodeRabbit Security Hardening + Regex Accuracy (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- reject-path-traversal-before-processing
-- strip-control-characters-from-errors
-- consistent-return-shapes-for-audit-results
-- match-actual-heading-levels-in-regex
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- CodeRabbit **PR:** Session #16 **Tools:** CodeRabbit
-- Sixth round of feedback addressing path traversal vulnerabilities,
-- Root cause: Paths from documents could contain `..` to escape intended
-- Prevention: Filter out paths containing `..` segments before any file
-- Pattern: `.filter(d => !d.path.split('/').includes('..'))`
-- Note: Check after normalization but before file existence checks
-- Root cause: Error messages could contain ANSI escape codes for terminal
-
----
-
-### Review 39: Qodo Script Robustness + Terminal Sanitization (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- explicit-requests-should-fail-explicitly
-- cross-platform-path-security
-- preserve-safe-whitespace-in-sanitization
-- sanitize-file-derived-terminal-output
-- regex-must-match-actual-content-structure
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide **PR:** Session #17 **Tools:** Qodo
-- Seventh round of feedback addressing explicit plan failure
-- Root cause: --plan flag accepts path but missing file silently passes in
-- Prevention: Track `planWasProvided` flag, fail even in interactive if
-- Note: Silent success on explicit request violates principle of least
-- Root cause: Path traversal check split on `/` but Windows uses `\`
-- Prevention: Normalize path separators before security checks
-
----
-
-### Review 40: Qodo Archive Security + Cross-Platform Robustness (2026-01-03)
-
-**Date:** 2026-01-03 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- archive-paths-need-containment-checks
-- invalid-files-are-worse-than-missing-files
-- windows-crlf-requires-explicit-handling
-- empty-path-after-resolution-must-be-rejected
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide **PR:** Session #18 **Tools:** Qodo
-- Eighth round of feedback addressing archive path traversal, invalid
-- Root cause: Archive fallback lookup joined untrusted path with archive root
-- Prevention: Verify resolved path is within archive root before fs
-- Pattern: `path.relative(archiveRoot, resolved)` must not start with `..`
-- Note: Same pattern as projectRoot checks; apply to all secondary roots
-- Root cause: Required file exists but is empty/invalid, yet check passes
-
----
-
-### Review 42: Qodo/CodeRabbit Hook Hardening Round 2 (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- block-cli-option-like-paths
-- use-specific-traversal-patterns
-- portable-path-resolution
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #19
-- Follow-up review with additional security hardening for
-- Root cause: Path starting with `-` could be interpreted as CLI option
-- Prevention: Reject paths matching `-*` before further processing
-- Pattern: `case "$path" in -*) exit 0 ;; esac`
-- Note: Also block newlines to prevent multi-line spoofing
-
----
-
-### Review 43: Qodo/CodeRabbit Additional Hardening (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- grep--e-for-alternation
-- block-post-normalization-absolute-paths
-- alternative-rejected
-- integratedimprovementplanmd
-- adr-folder-structure
-- adr-001
-- preserve-investment-adjust-course
-- validate-before-acting-on-stale-plans
-- single-source-of-truth-for-improvement-work
-- explicit-what-we-decided-not-to-do
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #19
-- Third round of hardening for pattern-check.sh and
-- Root cause: Basic grep treats `\|` literally, not as alternation
-- Prevention: Always use `grep -E` for alternation patterns
-- Pattern: `grep -E "a|b|c"` not `grep "a\|b\|c"`
-- Note: This was silently failing, outputting nothing
-
----
-
-### Review 45: Comprehensive Security & Compliance Hardening (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- toctou-prevention
-- safe-error-property-access
-- block-list-vs-allow-list-conflicts
-- space-to-newline-for-grep-anchors
-- event-specific-actions-in-ci
-- defensive-error-handler-wrappers
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23 (continued
-- Comprehensive multi-pass review of all scripts for security and
-- Root cause: Using original path for existsSync after security check allows
-- Prevention: Resolve path once at validation, use resolved path for all
-- Note: Attacker could swap file between security check and read
-- Root cause: Catch blocks assume `error.message` exists, but throws can be
-
----
-
-### Review 46: Advanced Security Hardening & Script Robustness (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- symlink-escape-prevention-with-realpathsync
-- maxbuffer-for-execsync
-- ansi-escape-sequence-stripping
-- jq-array-counting-pattern
-- awk-vs-sed-for-multi-section-extraction
-- argument-parsing-with-values
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
-- Second round of fixes from PR Compliance Guide, addressing symlink
-- Root cause: resolve() creates canonical path, but file could be symlink
-- Prevention: After resolve(), use realpathSync() and verify relative path
-- Note: Falls back to resolved path when file doesn't exist yet
-- Root cause: Default maxBuffer is 1MB, large outputs cause ENOBUFS error
-
----
-
-### Review 47: PII Protection & Workflow Robustness (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- pii-masking-for-logs
-- sensitive-directory-detection
-- printf-vs-echo-in-shell-scripts
-- fault-tolerant-api-calls-in-workflows
-- drive-agnostic-windows-path-sanitization
-- relative-path-navigation-in-docs
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
-- Third round of compliance fixes addressing PII logging, sensitive
-- Root cause: Console.log/error directly output user email addresses
-- Prevention: Create maskEmail() helper that preserves structure but hides
-- Pattern: `u***@e***.com` format - shows first char of local/domain, masks
-- Note: Even in error cases, mask the email before logging
-
----
-
-### Review 48: Security Hardening & Documentation Fixes (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- explicit-filename-blocklists
-- fail-closed-security-for-realpath
-- osc-escape-sequence-stripping
-- edge-case-handling-in-string-functions
-- string-vs-number-comparison-in-yaml
-- git-pathspec-separator
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
-- Fourth round of compliance fixes addressing secret exfiltration
-- Root cause: Regex patterns with wildcards can miss common exact filenames
-- Prevention: Add explicit exact-match patterns for known sensitive files
-- Pattern: `/^firebase-service-account\.json$/i` alongside
-- Note: Defense-in-depth - both pattern-based and exact-match protection
-
----
-
-### Review 49: Workflow Hardening & Code Cleanup (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- critical-file-pattern-coverage
-- path-boundary-anchoring-in-regex
-- robust-main-module-detection
-- log-file-reading-direction
-- relative-path-context-in-docs
-- dead-code-from-security-hardening
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
-- Fifth round of compliance fixes addressing workflow tier detection
-- Root cause: Tier 4 patterns missing next.config.js/mjs which is a critical
-- Prevention: When defining tier patterns, cross-reference with documented
-- Pattern: `next\.config\.(js|mjs)$` - covers both CommonJS and ESM configs
-- Note: Temporary workflow patterns should match the authoritative script
-
----
-
-### Review 50: Audit Trails & Comprehensive Hardening (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- structured-audit-logging
-- label-auto-creation-in-workflows
-- multi-segment-env-pattern
-- explicit-flag-validation
-- uid-masking-for-logs
-- biome-ignore-for-security-regexes
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
-- Sixth round of compliance fixes addressing audit trail
-- Root cause: Admin actions logged only human-readable messages without
-- Prevention: Emit JSON audit entries with timestamp, operator, action,
-- Note: Mask all identifiers (email, uid) in audit entries too
-- Root cause: addLabels fails if label doesn't exist in fresh repos/forks
-
----
-
-### Review 51: ESLint Audit Follow-up & Pattern Checker Fixes (2026-01-04)
-
-**Date:** 2026-01-04 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 0     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 5     | 5     | 0       |
-
-**Patterns:**
-
-- global-flag-required-for-exec-loops
-- regex-scope-limits-miss-multi-line-catch-blocks
-- crlf-cross-platform-regex
-- path-boundary-anchoring-in-exclusions
-- redundant-regex-alternatives
-- command-output-caching-in-hooks
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance + CodeRabbit **PR:** Session #23 (ESLint audit
-- Follow-up review of ESLint warning audit commit (71a4390) and
-- AST-based linting migration (architectural suggestion for future)
-- Root cause: Pattern without `/g` flag used in `while (exec())` loop never
-- Prevention: Every pattern used with exec() must have `/g` flag
-- Pattern: Always add `/g` when pattern will be used in a loop
-
----
-
-### Review 52: Document Health & Archival Fixes (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 5     | 2       |
-
-**Patterns:**
-
-- path-boundary-anchoring
-- document-archival-standards
-- portable-shell-commands-in-templates
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance + CodeRabbit **PR:** Session after tiered
-- Review of tiered access model implementation and planning doc
-- None new (AST-based linting already deferred from #51)
-- Root cause: pathExclude patterns without anchors match substrings
-- Prevention: Always use `(?:^|[\\/])` for path-based exclusions
-- Note: Same pattern from #51 applied to validate-phase-completion.js
-
----
-
-### Review 53: CI Fix & Security Pattern Corrections (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 4     | 1       |
-
-**Patterns:**
-
-- pathrelative-security-misconception
-- regex-scope-in-pattern-checkers
-- ci-reference-updates-after-archival
-- root-cause
-- reality
-- prevention
-- trade-off
-
-**Learnings:**
-
-- Qodo PR Compliance + CodeRabbit + CI Feedback **PR:** Session after
-- Review of document archival commit that broke CI
-- Pre-push set +e/set -e: Script doesn't use set -e, current code works
-- Root cause: False belief that path.relative() never returns bare ".."
-- Reality: `path.relative('/a', '/')` returns ".." (no separator)
-- Prevention: Never exclude files from security scans based on this
-
----
-
-### Review 54: Step 4B Addition & Slash Commands Reference (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 1     | 6     | 1       |
-
-**Patterns:**
-
-- archive-link-updates
-- nested-code-fences-in-markdown
-- step-range-in-effort-tracking
-- root-cause
-- prevention
-
-**Learnings:**
-
-- GitHub Actions docs-lint + Qodo PR Compliance + CodeRabbit **PR:**
-- Review of Step 4B (Remediation Sprint) addition to
-- Critical/High sections (256-778); Medium/Template sections (803+) fixed in
-  Review #56 |
-- Root cause: Links to archived files not updated when files moved
-- Prevention: `grep -r "FILENAME" docs/` before marking archival complete
-- Pattern: Always update references when archiving
-
----
-
-### Review 55: Comprehensive Nested Code Fence Fix & Schema Clarity (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 7     | 2       |
-
-**Patterns:**
-
-- comprehensive-code-fence-audit
-- artifact-naming-consistency
-- acceptance-criteria-completeness
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo PR Compliance + CodeRabbit **PR:** Commit after e0444ee (PR
-- Qodo (4 suggestions), CodeRabbit (6 suggestions)
-- Follow-up review after Review #54 fixes. Identified that nested
-- Root cause: Fixing one instance doesn't fix all - must search
-- Prevention: `grep -n '^\`\`\`' FILE | wc -l` to count all fence lines
-- Pattern: After fixing code fences, audit entire file for other instances
-- Root cause: Output file format suffix not always explicit
-
----
-
-### Review 56: Effort Estimate Accuracy & Complete Code Fence Fix (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 1     | 6     | 0       |
-
-**Patterns:**
-
-- effort-estimate-verification
-- complete-pattern-fix-audit
-- stub-link-strategy
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo PR Compliance + CodeRabbit **PR:** Commit after a525c01 (PR
-- Qodo (4 suggestions), CodeRabbit (1 critical +
-- Follow-up review after Review #55 fixes. Identified that Step 4
-- Root cause: Estimate stated without summing detailed task breakdown
-- Prevention: Always verify rollup matches sum of component estimates
-- Pattern: `grep -o "hours)" FILE | wc -l` to count task hours, then verify
-- Root cause: Fixing critical sections, missing lower-priority sections
-
----
-
-### Review 57: CI Failure Fix & Effort Estimate Accuracy (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 0     | 4     | 0       |
-
-**Patterns:**
-
-- verify-ai-suggestions-about-file-paths
-- effort-estimate-arithmetic-verification
-- optional-vs-required-artifact-semantics
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo PR Compliance + CodeRabbit + CI docs-lint failure **PR:**
-- Qodo (3 suggestions),
-- CI docs-lint workflow failed due to broken links introduced in
-- Root cause: Qodo suggested using stub files that don't exist
-- Prevention: Always verify target files exist before changing link paths:
-- Pattern: AI path suggestions are hypothetical until verified
-- Root cause: Range estimate (24-30h) didn't match exact sum (28h)
-
----
-
-### Review 58: Template Compliance & Documentation Consistency (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 10    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 6     | 3       |
-
-**Patterns:**
-
-- renamed-files-need-compliance-check
-- link-format-consistency
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Mixed - GitHub Actions CI + Qodo PR Suggestions + CodeRabbit PR
-- Document cleanup PR introduced a renamed file
-- S3 is appropriate for defensive
-- Grep command alternative syntax - Current `--exclude` format is acceptable and
-- Root cause: File renamed without adding required template sections
-- Prevention: After renaming, run `npm run docs:lint` on changed files
-
----
-
-### Review 59: Prompt Schema & Documentation Consistency (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 9     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 5     | 4       |
-
-**Patterns:**
-
-- prompt-schema-clarity
-- grep-file-exclusion
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo PR Suggestions + CodeRabbit PR **PR:**
-- Follow-up review after broken link fixes found additional
-- Root cause: JSON examples in prompts can confuse AI about output format
-- Prevention: Use bullet list format for schemas when showing structure
-- Pattern: "Reference only" labels help prevent format copying
-- Root cause: `grep -v "pattern"` filters by line content, not filename
-- Prevention: Use `--exclude="filename"` for file-based filtering
-
----
-
-### Review 60: Document Sync & Documentation Clarity (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 7     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 5     | 3       |
-
-**Patterns:**
-
-- document-counter-synchronization
-- grep---exclude-path-behavior
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo PR Suggestions + CodeRabbit PR **PR:**
-- Follow-up review after Review #59 found document synchronization
-- Non-existent file references - SESSION_CONTEXT.md and ROADMAP.md exist at root
-- Root cause: Adding reviews without updating range references
-- Prevention: After adding review, grep for range patterns and update all
-- Pattern: `grep -n "#[0-9]*-[0-9]*" docs/AI_REVIEW_LEARNINGS_LOG.md`
-- Root cause: `--exclude` matches filename, not full path
-
----
-
-### Review 61: Stale Review Assessment & Path/Terminology Fixes (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 2     | 2     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- stale-review-detection
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Review feedback was 10 commits behind HEAD
-- Most issues (grep exclusion, code fence clarity, duplicate links, review
-- Only 2 current issues identified
-- SESSION_CONTEXT.md and ROADMAP.md exist at
-- Root cause: Reviews queued while development continues
-- Prevention: Check HEAD vs review commit before processing
-
----
-
-### Review 62: Multi-AI Template & Security Doc Fixes (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 10    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 5     | 4     | 11      |
-
-**Patterns:**
-
-- security-documentation-must-be-explicit
-- archived-document-path-handling
-- template-schema-completeness
-- model-name-accuracy
-- technology-appropriate-security-checks
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Review of Multi-AI audit template additions and documentation
-- Several trivial suggestions were duplicates or not relevant to current files
-- Root cause: Ambiguous comment could imply unsafe practice
-- Prevention: Security docs must explicitly state prohibitions, not just hint
-- Pattern: "NOTE: Service account credentials must NEVER be used in
-- Note: Even comments can create security misconceptions
-
----
-
-### Review 63: Documentation Link Fixes & Template Updates (2026-01-05)
-
-**Date:** 2026-01-05 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 28    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 7     | 0     | 10      |
-
-**Patterns:**
-
-- relative-path-context-in-templates
-- template-placeholder-hygiene
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Review of Multi-AI template additions and documentation updates.
-- Root cause: Templates in `docs/templates/` using `docs/` paths instead of
-- Prevention: When in subdirectory, use `../` to reference sibling
-- Pattern: Files in `docs/templates/` should use `../file.md` not
-- Note: Applies to all templates referencing other docs
-- Root cause: Placeholder values (YYYY-MM-DD, [Author]) left in version
-
----
-
-### Review 72: 2026 Q1 Multi-AI Audit Plans - Documentation Lint & AI Review Fixes (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 12       | 5     | 4     | 0       |
-
-**Patterns:**
-
-- scope
-- trigger
-- session
-- branch
-- jsonlschemastandardmd-broken-links
-- globalsecuritystandardsmd-broken-links
-- securitymd-broken-link
-- eightphaserefactorplanmd-broken-links
-- codereview-version-placeholders
-- documentation-audit-structure-placeholders
-- process-automation-inventory-placeholders
-- process-stack-placeholders
-- refactoring-stack-placeholders
-- codereview-absolute-paths
-- documentation-greedy-regex
-- performance-non-portable-du-command
-- readme-model-names-and-output-clarifications
-- documentation-audit-history-table
-- documentation-known-issues-section
-- relative-path-calculation
-- documentation-link-hygiene
-- template-completion-checklist
-- multi-pass-review-effectiveness
-- link-validation-is-critical
-- placeholder-discipline
-- from-docsreviews2026-q1-to-docs
-- from-docsreviews2026-q1-to-root
-- always-verify-with-test--f-from-target-directory
-- all-internal-links-must-use-relative-paths
-- verify-link-targets-exist-before-committing
-- use-standard-markdown-link-syntax-consistently-bracket-text-
-- replace-all-placeholder-tokens-before-using-template
-- fill-version-numbers-with-actual-values
-- update-directoryfile-inventories-with-project-specifics
-- verify-all-referenced-files-exist
-
-**Learnings:**
-
-- Documentation Lint, Qodo PR suggestions, CodeRabbit PR review
-- Step 4.2 completion - comprehensive multi-AI review feedback
-- Broken Documentation Links (12 fixes)\*\*
-- Root cause: All 6 plan files referenced `./JSONL_SCHEMA_STANDARD.md` but
-- Files: SECURITY_AUDIT, CODE_REVIEW, PROCESS, PERFORMANCE, DOCUMENTATION,
-- Fix: Changed all to `../../templates/JSONL_SCHEMA_STANDARD.md`
-- Prevention: Verify relative paths match actual file location in directory
-
----
-
-### Review 73: Multi-AI Audit Plan Scaffold (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- path-containment-at-shell-level
-- robust-json-parsing-in-shell
-- terminal-output-sanitization
-- root-cause
-- prevention
-- note
-
-**Learnings:**
-
-- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #19 **Tools:**
-- Ninth round of feedback addressing pattern-check.sh security (path
-- Root cause: Hook accepts file_path from JSON and passes to node script
-- Prevention: Validate path is relative AND within project root using
-- Pattern: `realpath -m "$path"` must start with
-- Note: Shell scripts need same containment discipline as JS
-- Root cause: sed-based parsing fails on escaped quotes, backslashes
-
----
-
-### Review 74: Multi-AI Audit Plan Polish (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- relative-path-calculation-from-subdirectories
-- schema-progress-tracking-fields
-- explicit-deduplication-rules
-- no-repo-mode-output-completeness
-- environment-context-for-performance-metrics
-- structured-humansummary-requirements
-- root-cause
-- prevention
-- note
-- fields
-- sections
-
-**Learnings:**
-
-- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
-- Qodo Code Suggestions, CodeRabbit PR Review
-- Comprehensive review of 6 Multi-AI Audit Plan files (2026-Q1) after
-- Root cause: Files in `docs/reviews/2026-Q1/` linking to `docs/` need
-- Prevention: Count directory levels when creating relative links
-- Pattern: From `docs/reviews/2026-Q1/FILE.md` to `docs/TARGET.md` =
-- Note: Already established in Consolidation #6, reinforced here
-
----
-
-### Review 75: Multi-AI Audit Plan Methodology Enhancement (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- conflicting-pr-review-suggestions
-- methodology-ambiguity-in-multi-ai-workflows
-- schema-category-enum-clarity
-- regex-robustness-for-markdown-links
-- jsonl-validation-robustness
-- false-positive-issue-detection
-- root-cause
-- prevention
-- note
-- decisions
-- examples
-
-**Learnings:**
-
-- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
-- Qodo Code Suggestions, CodeRabbit PR Review
-- Second-round review of Multi-AI Audit Plan files (2026-Q1)
-- Root cause: Qodo and CodeRabbit provided contradictory path corrections for
-- Prevention: Verify actual file structure before applying path fixes
-- Resolution: Used `find` to locate actual file, confirmed current path
-- Note: AI reviewers can hallucinate incorrect paths without repo context
-
----
-
-### Review 76: Multi-AI Audit Plan Polish - Round 3 (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- shell-script-exit-code-propagation
-- relative-path-calculation-errors
-- model-name-standardization
-- methodology-edge-case-handling
-- version-metadata-consistency
-- cross-file-consistency-for-enums
-- root-cause
-- prevention
-- note
-- reference
-- examples
-- codereviewplan-claudemd-claudemd-was-going-up-3
-- performanceauditplan-missing-prefix-on-related-documents-lin
-- verification
-- chatgpt-4o-gpt-4o-openais-official-name-excludes-chat
-- gpt-52-codex-gpt-5-codex-standardized-version-format
-- division-by-zero
-- root-cause-merges
-- transitive-closure
-- no-repo-mode
-- vulnerability-type
-- example
-
-**Learnings:**
-
-- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
-- Qodo Code Suggestions, CodeRabbit PR Review
-- Third-round review of Multi-AI Audit Plan files (2026-Q1)
-- Automation Robustness)
-- Root cause: Pipes don't propagate exit codes in bash; `grep | while`
-- Prevention: Use process substitution
-- Pattern: Exit codes preserved through process substitution, not through
-
----
-
-### Review 77: Multi-AI Audit Plan Refinement (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 9     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 5     | 2       |
-
-**Patterns:**
-
-- shell-script-portability-bash-specific-constructs
-- relative-path-calculation-from-nested-directories
-- jsonl-schema-validity
-- documentation-consistency-severity-scales
-- version-history-date-logic
-- schema-completeness-for-reproducibility
-- relative-path-errors-persist
-- shell-script-portability-matters
-- schema-validity-critical
-- pattern-repetition-indicates-systematic-issue
-- root-cause
-- prevention
-- note
-- reference
-- verification
-
-**Learnings:**
-
-- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
-- Qodo Code Suggestions, CodeRabbit PR Review
-- Fourth-round review of Multi-AI Audit Plan files (2026-Q1)
-- Root cause: Used bash-specific `< <(...)` process substitution which is not
-- Prevention: Use standard pipe + `nl -ba` for line numbers instead of
-- Pattern: `grep ... | nl -ba | while IFS=$'\t' read -r n line` for portable
-- Note: Also improved error messages with line numbers and filtered
-
----
-
-### Review 78: Multi-AI Audit Plan Quality & Validation (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 12    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 7     | 3       |
-
-**Patterns:**
-
-- jsonl-validity-in-no-repo-mode-instructions
-- shell-script-fail-fast-reliability
-- json-schema-placeholder-validity
-- model-name-standardization
-- metadata-accuracy-dates-counts-ranges
-- no-repo-mode-output-contract-completeness
-- critical-automation-pattern
-- schema-design-principle
-- no-repo-mode-consistency
-- metadata-synchronization-gap
-- root-cause
-- prevention
-- note
-- impact
-- verification
-- automation
-- related
-- recommendation
-
-**Learnings:**
-
-- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #28 **Commit:**
-- Qodo Code Suggestions (9 items), CodeRabbit PR Review (4
-- Fifth-round review of Multi-AI Audit Plan files (2026-Q1)
-- Root cause: Instructed AI to output literal non-JSON text
-- Prevention: NO-REPO MODE instructions must specify truly empty output or
-- Pattern: Empty JSONL sections should have zero lines, not placeholder text
-- Note: Related to Review #77 pattern #3 (JSONL Schema Validity)
-
----
-
-### Review 79: Multi-AI Audit Plan JSONL & Schema Corrections (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 10    | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 4     | 3       |
-
-**Patterns:**
-
-- no-repo-mode-parser-breaking-output-instructions
-- schema-contradiction-in-no-repo-instructions
-- bash-specific-features-in-documentation-scripts
-- invalid-json-tokens-in-schema-examples
-- model-name-canonical-format-establishment
-- metadata-drift-across-reviews
-- critical-pattern-completion
-- schema-first-principle
-- canonical-format-enforcement
-- bash-portability-trade-off
-- metadata-synchronization-gap-persists
-- root-cause
-- prevention
-- note
-- impact
-- cross-reference
-- verification
-- related
-- automation-opportunity
-- lesson
-- recommendation
-
-**Learnings:**
-
-- Qodo PR Code Suggestions **PR:** Session #28 **Commit:** 7753d6a
-- Qodo PR (10 suggestions)
-- Sixth-round review of Multi-AI Audit Plan files (2026-Q1)
-- Critical Schema Issue)
-- Root cause: Instructions told AI to output literal non-JSON text in JSONL
-- Prevention: NO-REPO MODE instructions must specify header + zero lines, not
-- Pattern: "Print the header `FINDINGS_JSONL` and then output zero lines —
-
----
-
-### Review 452: Multi-AI Audit Plan Polish (2026-01-06)
-
-**Date:** 2026-01-06 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 9     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 4     | 3       |
-
-**Patterns:**
-
-- self-inconsistency-detection
-- shell-command-portability
-- documentation-metadata-consistency
-- self-consistency-check
-- shell-portability-matters
-- metadata-discipline
-- provider-neutral-specs
-- root-cause
-- prevention
-- file-size-sorting
-- line-reading
-- regex-character-classes
-
-**Learnings:**
-
-- Mixed - Qodo PR Code Suggestions + CodeRabbit PR Review
-- Post-Review #72 feedback on the updated multi-AI audit plan files.
-- Root cause: PR adds documentation rule in CODE_PATTERNS.md while violating
-- Prevention: Cross-check new rules against files being modified in same PR
-- Pattern: When adding/updating pattern rules, grep for violations in PR diff
-- Fix: Made all model names provider-neutral ("Claude Opus (verify at
-- Root cause: Using non-portable commands (`ls -lh | sort -k5`,
-
----
-
-### Review 81: Capability-Tiered Context & NO-REPO MODE Standardization (2026-01-07)
-
-**Date:** 2026-01-07 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 11    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 5     | 5     | 1       |
-
-**Patterns:**
-
-- cross-template-consistency-required
-- inline-context-must-be-complete
-- grep-commands-need-full-file-coverage
-- terminology-drift-detection
-- output-contract-clarity
-- file-type-coverage
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Post-implementation review of capability-tiered PRE-REVIEW CONTEXT
-- Root cause: Each template evolved independently, creating terminology drift
-- Prevention: When adding features to multiple templates, audit all for
-- Pattern: "NO-REPO MODE" is canonical; "LIMITED MODE" deprecated
-- Root cause: Inline summaries only covered highlights, not full inventory
-- Prevention: When providing fallback context, list ALL relevant items
-
----
-
-### Review 82: Inline-Context Completeness & Schema Definitions (2026-01-07)
-
-**Date:** 2026-01-07 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 8     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 5     | 1       |
-
-**Patterns:**
-
-- inline-context-must-have-exact-counts
-- schema-must-precede-usage
-- verify-before-documenting
-- schema-first
-- grep-coverage-consistency
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Post-implementation review of PR Review #81 fixes. Review
-- Root cause: Initial inline-context used approximations like "2-3 locations"
-- Prevention: Always use grep to verify exact counts before documenting
-- Pattern: "DailyQuoteCard: 2 locations" not "DailyQuoteCard: 2-3 locations"
-- Root cause: NO-REPO MODE referenced REFACTORING_METRICS_JSON without
-- Prevention: When adding new JSON outputs, define schema immediately
-
----
-
-### Review 87: Schema Symmetry & Markdown Syntax (2026-01-07)
-
-**Date:** 2026-01-07 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 4     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 3     | 0       |
-
-**Patterns:**
-
-- schema-symmetry-across-plans
-- validate-markdown-after-code-block-edits
-- cross-plan-consistency
-- markdown-fence-hygiene
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Review identified missing QUALITY_METRICS_JSON null schema in
-- Root cause: Added REFACTORING_METRICS_JSON in Review #82 but forgot
-- Prevention: When adding schema to one plan, check all similar plans for
-- Pattern: All audit plans with metrics output need explicit null-structure
-- Root cause: Adding content above code blocks left orphan closing fences
-- Prevention: When editing near fenced blocks, verify open/close matching
-
----
-
-### Review 88: Phase 4.2 Multi-AI Security Audit (2026-01-07)
-
-**Date:** 2026-01-07 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- defense-in-depth-gaps
-- legacy-path-bypass
-- fail-open-security-controls
-- multi-model-agreement
-- risk-acceptance-documentation
-- compensating-controls
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Multi-AI Security Audit (Claude Opus 4.5 + ChatGPT 5.2)
-- Phase 4.2 Execution - SECURITY_AUDIT_PLAN_2026_Q1 **Findings:**
-- Comprehensive security audit aggregating findings from Claude Opus
-- Root cause: Multiple security layers incomplete (rate limiting, bot gating,
-- Prevention: Security checklist for each endpoint (auth + rate limit +
-- Pattern: Every callable needs: rate limit + schema validation + bot gating
-- Root cause: Old Firestore rules allow direct writes that bypass new
-
----
-
-### Review 89: b: Audit Plan Placeholder Validation (2026-01-07)
-
-**Date:** 2026-01-07 | **Source:** coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 1     | 3     | 2       |
-
-**Patterns:**
-
-- placeholder-content-validation
-- scope-boundary-definition
-- documentation-consistency
-- template-instantiation-validation
-- example-vs-actual
-- cross-file-consistency
-- root-cause
-- prevention
-
-**Learnings:**
-
-- CodeRabbit review of placeholder replacement fixes in
-- Root cause: Template-derived files populated with example data not
-- Prevention: After replacing placeholders, verify all referenced
-- Pattern: SCOPE sections must reference actual app routes, not example paths
-- Root cause: Performance audit scope incorrectly included test files
-- Prevention: Audit scopes should match audit purpose (performance ≠ tests)
-
----
-
-### Review 98: Document Sync Validation Script - Security & Quality Fixes (2026-01-08)
-
-**Date:** 2026-01-08 | **Source:** sonarcloud+qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 5        | 1     | 8     | 4       |
-
-**Patterns:**
-
-- regex-state-leak
-- path-traversal-in-dependency-files
-- redos-vulnerabilities
-- unimplemented-cli-flags
-- regex-security-triad
-- documentation-validation
-- timestamp-precision
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Mixed (Qodo Compliance + Qodo PR + CodeRabbit PR x2 + SonarQube)
-- Multi-source review of Session #35 commits implementing document
-- Root cause: Global regex patterns reused across forEach iterations without
-- Prevention: Reset lastIndex before each line or use non-global patterns in
-- Pattern: `/g` flag + .exec() in loops = stateful lastIndex causes missed
-
----
-
-### Review 99: Document Sync Validator - Follow-up Security & Quality Issues (2026-01-08)
-
-**Date:** 2026-01-08 | **Source:** qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 3     | 0     | 1       |
-
-**Patterns:**
-
-- silent-error-handling
-- path-traversal-in-link-checker
-- overly-broad-regex-scope
-- non-portable-path-validation
-- ai-review-tool-false-positive-detection
-- error-visibility
-- defense-in-depth
-- scope-before-match
-- verify-ai-claims
-- claim
-- verification
-- result
-- lesson
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Follow-up review of Review #98 commit (555c3d8 + 80fa31e)
-- Root cause: checkStaleness returns `{isStale: false}` when date
-- Prevention: Surface parse errors to caller; invalid data should fail
-- Pattern: Treating parse failure as "valid but not stale" = silent data
-- Root cause: checkBrokenLinks doesn't validate that link targets stay within
-
----
-
-### Review 100: Review #99 Post-Commit Refinements (2026-01-08)
-
-**Date:** 2026-01-08 | **Source:** sonarcloud+qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 4     | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 2     | 1       |
-
-**Patterns:**
-
-- dead-code-after-exception-throwing-calls
-- error-severity-mismatches
-- ineffective-validation-conditions
-- review-numbering-conflicts
-- exception-semantics
-- error-type-differentiation
-- validation-redundancy
-- audit-trail-integrity
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Follow-up review of Review #99 commit (e06b918) identified dead
-- Root cause: existsSync check placed after successful realpathSync (which
-- Prevention: Remember realpathSync throws on non-existent paths; success =
-- Pattern: Code after try/catch with throwing functions may be unreachable
-- Root cause: Invalid date format treated as MINOR staleness issue instead of
-- Prevention: Use parseError flag to escalate severity for data validation
-
----
-
 ### Review 137: PR #243 SonarQube Security Hotspots & Qodo Suggestions (2026-01-13)
 
 **Date:** 2026-01-13 | **PR:** #243 | **Source:** sonarcloud+qodo
@@ -5019,698 +2137,6 @@ deduplicated, non-overlapping ranges):
 - Root cause: Greedy `[\s\S]*` can backtrack on malformed input
 - Prevention: Use `[\s\S]*?` for bounded matching
 - Pattern: Already in CODE_PATTERNS.md as "Regex brace matching"
-
----
-
-### Review 138: PR #243 Step 4C Qodo Compliance Review (2026-01-13)
-
-**Date:** 2026-01-13 | **PR:** #243 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 4     | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 3     | 0       |
-
-**Patterns:**
-
-- feature-flag-allowlist
-- nextjs-env-var-client-bundling
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Post-commit review of Step 4C SonarCloud Issue Triage changes.
-- Root cause: `process.env[featureId]` with dynamic key could probe env vars
-- Prevention: Allowlist valid feature flag names, reject unknown keys
-- Root cause: Dynamic `process.env[key]` is NOT inlined by Next.js on client
-- Prevention: Use static map with explicit `process.env.NEXT_PUBLIC_*`
-- Pattern: For client-side env access, always use explicit string literals
-
----
-
-### Review 139: PR Cherry-Pick Security Audit CI Fixes (2026-01-13)
-
-**Date:** 2026-01-13 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 11    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 8     | 1       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Some commands were created without proper frontmatter structure
-- Prevention: Always add frontmatter when creating new commands
-- Root cause: Audit reports were missing standard sections
-- Prevention: Include Purpose, Version History, and Last Updated in all audit
-- All `.claude/commands/*.md` files MUST have YAML frontmatter with a
-- The frontmatter must be at the very start of the file:
-
----
-
-### Review 140: PR Review Processing Round 2 (2026-01-13)
-
-**Date:** 2026-01-13 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Pipe to `while read` instead of `xargs` to prevent hangs on empty input
-- Category names in Focus Areas should match schema enum values
-- Use POSIX character classes `[[:space:]]` for portable regex
-- Always include both .ts and .tsx in grep patterns for React projects
-
----
-
-### Review 141: PR Review Processing Round 3 (2026-01-13)
-
-**Date:** 2026-01-13 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Schema category enums should be single CamelCase tokens (no spaces/multiline)
-- Always use `grep -E` for patterns with alternation (`|`)
-- Include all relevant file types (.ts, .tsx, .js, .mjs, .json) in grep patterns
-
----
-
-### Review 143: CI Pattern Compliance and Command Injection Fix (2026-01-13)
-
-**Date:** 2026-01-13 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 6     | 8     | 0       |
-
-**Learnings:**
-
-- Qodo PR Compliance + SonarCloud + Pattern Compliance CI
-- Shell interpolation with env vars is command injection - use execFileSync with
-- When security checks can't determine state, fail-closed (block) not fail-open
-- Error objects in JS are not guaranteed - non-Error values can be thrown
-- CSS imports from transitive dependencies need explicit package.json entries
-- Pattern compliance false positives: add verified files to pathExclude with
-
----
-
-### Review 144: Step 6-7 PR CI Fixes (2026-01-14)
-
-**Date:** 2026-01-14 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 0     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 4     | 0       |
-
-**Learnings:**
-
-- Parse dependency rules from DOCUMENT_DEPENDENCIES.md (architectural - tracked)
-- When archiving files, update ALL scripts that reference them
-- Shell scripts in pre-commit hooks may run with `/bin/sh`, avoid bash-only
-- Cross-document dependency checks should be updated when archiving source docs
-
----
-
-### Review 145: Settings Page Accessibility & Security (2026-01-14)
-
-**Date:** 2026-01-14 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 14    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 5     | 9     | 0       |
-
-**Patterns:**
-
-- accessible-toggle-pattern
-- local-date-formatting
-- preference-preservation
-
-**Learnings:**
-
-- Custom interactive elements (toggles) must use native button or add role +
-- When updating nested objects (preferences), spread existing values to preserve
-- Input validation must happen before Firestore writes - NaN checks, range
-- Audit logging should capture action type and changed fields, not sensitive
-
----
-
-### Review 146: Operational Visibility Sprint PR Feedback (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 7     | 8     | 2       |
-
-**Patterns:**
-
-- useeffect-dependency-on-state-causes-re-subscriptions
-- firestore-timestamps-need-type-handling
-- auth-protected-routes-fail-lighthouse-audits
-
-**Learnings:**
-
-- Documentation Lint + Qodo Compliance + CI + PR Suggestions
-- Separate dev dashboard as distinct app (architectural - valid but out of scope
-- Client-side DSNs (like Sentry) are acceptable to commit as they're public by
-- Non-sensitive config (org names, project names) should use env vars, not GCP
-
----
-
-### Review 147: CI Blocker Fixes + Firebase Error Handling (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 3     | 0       |
-
-**Patterns:**
-
-- prettier-can-override-linter-requirements
-- firestore-implicit-deny-needs-explicit-rules
-- force-token-refresh-for-admin-checks
-
-**Learnings:**
-
-- The logger module only has info/warn/error methods - no debug level
-- Firestore denies access by default but explicit rules improve auditability
-- Show specific error types (permission-denied, network) for better UX
-
----
-
-### Review 148: Dev Dashboard Security Hardening (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 5     | 0       |
-
-**Patterns:**
-
-- never-expose-raw-errormessage-to-users
-- client-side-read-only-for-dev-data
-- defensive-null-guards
-
-**Learnings:**
-
-- Firestore allows client writes | Major | Security | Changed to read-only
-  (write: if false) |
-- Access control bypass - Already fixed in #147 (Firestore rules)
-- Chrome sandbox disabled - Acceptable for local dev scripts (#146)
-- No ticket provided - N/A for dev branch
-- Prettier may want blank lines after prettier-ignore-end comments
-- Dev dashboards should be read-only for clients - CI writes the data
-
----
-
-### Review 149: Robustness & Error Handling Improvements (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 4     | 0       |
-
-**Patterns:**
-
-- react-strict-mode-double-invoke
-- runtime-data-validation
-- consistent-state-cleanup
-
-**Learnings:**
-
-- CI cache issue |
-- Pattern compliance CI can flag safe code if regex doesn't understand context
-- React Strict Mode runs effects twice in dev - guard initialization with flags
-- Firestore Partial<T> + validation is safer than direct type assertion
-
----
-
-### Review 150: Deployment Safety & Async Cleanup (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 5     | 0       |
-
-**Patterns:**
-
-- definestring-for-deployment-safety
-- async-cleanup-pattern
-- optional-chaining-for-external-data
-- use-chain-with-fallback-to-0
-
-**Learnings:**
-
-- Firebase Functions don't have access to .env files in production - only
-- React Strict Mode double-invokes effects - but isCancelled pattern handles
-- Firestore failed-precondition usually means missing index, not missing data
-
----
-
-### Review 151: ErrorsTab Expandable Details PR Feedback (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 0     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 5     | 0       |
-
-**Patterns:**
-
-- url-protocol-validation
-- date-validation-before-formatting
-- memoize-derived-render-data
-
-**Learnings:**
-
-- CI Feedback + Qodo PR Compliance + PR Code Suggestions
-- Move knowledge base to Firestore (architectural change - tracked for separate
-- Sentry permalinks should only ever be https://sentry.io URLs, but defensive
-- Interactive table rows cause accessibility issues - use semantic button
-
----
-
-### Review 152: Admin Error Utils PR Feedback (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 1     | 1     | 2       |
-
-**Patterns:**
-
-- regex-redos-prevention
-- security-test-false-positives
-- whitespace-validation
-
-**Learnings:**
-
-- SonarCloud Security Hotspots + Qodo PR Code Suggestions + CI
-- Test validates security function
-- Email regex per RFC 5321: local-part max 64 chars, domain max 253 chars
-- SonarCloud security hotspots in test files often flag the test inputs, not
-
----
-
-### Review 153: Admin Error Utils Follow-up (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 0     | 5     | 0       |
-
-**Patterns:**
-
-- tld-length-limit
-- large-input-guards
-- nullable-type-signatures
-
-**Learnings:**
-
-- Full email regex RFC compliance: local `{1,64}` + domain `{1,253}` + TLD
-- Large payload protection prevents both performance issues and ensures
-- Explicit nullable types make API contracts clearer even when implementation
-
----
-
-### Review 154: Admin Error Utils Security Hardening (2026-01-15)
-
-**Date:** 2026-01-15 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 5     | 0       |
-
-**Patterns:**
-
-- url-credential-rejection
-- jwt-token-detection
-- phone-regex-precision
-
-**Learnings:**
-
-- URL API provides parsed username/password/port - check all three for security
-- JWT tokens use base64url encoding (alphanumeric + hyphen + underscore)
-- Test data should avoid matching production patterns (use 'x' not 'a' for
-
----
-
-### Review 155: Security Check Self-Detection & CI Fix (2026-01-16)
-
-**Date:** 2026-01-16 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 2     | 0       |
-
-**Patterns:**
-
-- self-referential-exclusion
-- multiline-output-comparison
-
-**Learnings:**
-
-- Regex patterns like `/\beval\s*\(/` will match message strings containing
-- GitHub Actions `${{ steps.x.outputs.y }}` for multiline values returns all
-
----
-
-### Review 156: Security Hardening & Pre-Push Fix (2026-01-16)
-
-**Date:** 2026-01-16 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 2     | 0       |
-
-**Patterns:**
-
-- pre-push-vs-pre-commit-file-selection
-- path-traversal-in-cli-args
-- cross-platform-regex
-
-**Learnings:**
-
-- CLI tools accepting file paths need path traversal protection even for
-- Windows uses backslash, POSIX uses forward slash - regex patterns matching
-
----
-
-### Review 161: lint-staged PR Feedback (2026-01-16)
-
-**Date:** 2026-01-16 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 1     | 0       |
-
-**Patterns:**
-
-- supply-chain-security-with-npx
-- hook-error-visibility
-
-**Learnings:**
-
-- Suppressing stderr (`2>/dev/null`) in hooks hides actionable failure context
-- CI checks formatting after local hooks - ensure lint-staged formats before
-
----
-
-### Review 162: Track A Admin Panel PR Feedback (2026-01-16)
-
-**Date:** 2026-01-16 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 22    | 0     | 2        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 8     | 11    | 0       |
-
-**Patterns:**
-
-- metadata-redaction
-- preserve-custom-claims
-- collection-group-queries
-- batch-auth-operations
-- complete-cleanup-loops
-
-**Learnings:**
-
-- Qodo PR Compliance + PR Code Suggestions + CI Feedback
-- Firebase custom claims are replaced entirely by setCustomUserClaims - always
-- Storage file orphan detection using publicUrl() is brittle - prefer file.name
-- N+1 patterns in Cloud Functions can cause timeouts at scale - batch where
-- CI formatting checks run after local hooks - ensure consistent formatting
-
----
-
-### Review 163: Track A PR Follow-up Compliance (2026-01-17)
-
-**Date:** 2026-01-17 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 5     | 5     | 2       |
-
-**Patterns:**
-
-- per-item-error-handling-in-jobs
-- firestore-transactions-for-multi-read-write
-- schema-validation-for-admin-apis
-- listdocuments-for-id-only-queries
-- null-to-remove-claims
-- error-propagation-over-swallowing
-
-**Learnings:**
-
-- Function names should reflect what they clean up, not the collection they
-- Per-item error handling makes jobs resilient to transient failures
-- Always validate admin API inputs with schemas, not just presence checks
-- Transactions prevent concurrent admin updates from corrupting data
-
----
-
-### Review 164: Track A Cherry-Pick PR Qodo Compliance (2026-01-17)
-
-**Date:** 2026-01-17 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 7     | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 0     | 3     | 0       |
-
-**Patterns:**
-
-- firestore-index-query-scope
-- storage-pagination-for-scalability
-- defense-in-depth-metadata-redaction
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Configuration mismatch between index definition and query usage
-- Prevention: Validate indexes match query patterns (collectionGroup queries
-- Root cause: Loading all files into memory can exhaust resources at scale
-- Prevention: Use `maxResults` + `pageToken` pagination pattern, process in
-- Root cause: Legacy data may bypass write-time redaction
-- Prevention: Add read-time redaction as safety net for UI exposure
-
----
-
-### Review 165: Track A Follow-up Qodo Compliance (2026-01-17)
-
-**Date:** 2026-01-17 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 8     | 0        | 4        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 0     | 2     | 1       |
-
-**Patterns:**
-
-- -ai-reviewer-contradiction
-- isplainobject-guard
-- pagination-loop-guard
-- critical
-- root-cause
-- prevention
-- actual-code
-
-**Learnings:**
-
-- Root cause: AI reviewers don't have full context between reviews
-- Prevention: Check actual query code before applying index scope changes
-- Actual code: `db.collection("security_logs")` → needs COLLECTION scope
-- Root cause: typeof obj === "object" matches Date, Timestamp, etc.
-- Prevention: Check Object.getPrototypeOf() === Object.prototype
-- Root cause: pageToken could theoretically repeat
-
----
-
-### Review 171: aggregate-audit-findings.js PR Hardening (2026-01-17)
-
-**Date:** 2026-01-17 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 29    | 17    | 2        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 6     | 13    | 10      |
-
-**Patterns:**
-
-- bounded-regex-for-redos-prevention
-- on-algorithm-dos-protection
-- cognitive-complexity-extraction
-- error-sanitization-for-cli-tools
-- root-cause
-- prevention
-
-**Learnings:**
-
-- SonarCloud Security Hotspots + SonarCloud Issues + Qodo PR
-- O(n²) Levenshtein pairwise | Major | Performance | Add
-  MAX_LEVENSHTEIN_LENGTH=500, truncate inputs |
-- Root cause: Backtracking regex with unbounded quantifiers on alternations
-- Prevention: Use explicit character class with length limits
-- Root cause: Algorithmic complexity becomes exploitable with large inputs
-- Prevention: Define MAX_LENGTH constant, truncate before processing
-- Root cause: Functions accumulating nested conditionals over time
 
 ---
 
@@ -5839,68 +2265,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 182: SonarCloud Sprint PR 1 - Mechanical Fixes (2026-01-19)
-
-**Date:** 2026-01-19 | **PR:** #284 | **Source:** sonarcloud
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- nodejs-import-inconsistency
-- shell-script-modernization
-- repeated-string-literals
-- sonarcloud-fixes-can-introduce-bugs
-- esm-namespace-imports
-- path-containment-patterns
-- shell-variable-order
-
-**Learnings:**
-
-- All mechanical/automatable SonarCloud issues including Node.js
-- Run syntax validation after batch find-replace operations
-- Node.js built-ins need namespace imports in ESM (`import * as fs`)
-- Path security checks need robust regex patterns, not simple string methods
-- Shell variable order matters with strict mode (`set -u`)
-
----
-
-### Review 183: SonarCloud Sprint PR 2 - Critical Issues Partial (2026-01-19)
-
-**Date:** 2026-01-19 | **PR:** #284 | **Source:** sonarcloud
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- cognitive-complexity-in-job-functions
-- void-operator-pattern
-- mutable-exports-for-ssr
-
-**Learnings:**
-
-- High-impact critical issues including cognitive complexity
-- Each helper function should do one thing; names should describe the
-- Firebase job functions grow organically without refactoring - set complexity
-
----
-
 ### Review 184: PR #286 SonarCloud + Qodo Combined Review (2026-01-19)
 
 **Date:** 2026-01-19 | **PR:** #286 | **Source:** sonarcloud+qodo
@@ -5965,230 +2329,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 187: Cherry-Pick PR Qodo Compliance Review (2026-01-20)
-
-**Date:** 2026-01-20 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 20    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 6     | 11    | 3       |
-
-**Patterns:**
-
-- global-regex-flag-for-scanning
-- promiseresolve-for-sync-errors
-- ip-hash-still-privacy-sensitive
-- lstatsync-for-symlink-detection
-- error-type-over-message
-
-**Learnings:**
-
-- Security scanners must detect ALL matches - non-global regex is a critical bug
-- Use `Promise.resolve().then(() => fn())` pattern to catch sync exceptions
-- Even anonymized data should stay out of third-party services (privacy best
-- Error messages may contain API keys, paths, or PII - log type/code only
-
----
-
-### Review 188: Cherry-Pick PR Qodo Follow-up Review (2026-01-20)
-
-**Date:** 2026-01-20 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 7     | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 5     | 1       |
-
-**Patterns:**
-
-- type-guards-before-string-methods
-- stateful-regex-cloning
-- set-for-deduplication
-- cli-argument-flexibility
-
-**Learnings:**
-
-- Qodo can flag issues that are already handled elsewhere - always verify with
-- Adjacent-only deduplication (`arr[arr.length-1] !== value`) doesn't prevent
-- API responses may return numbers as strings - use explicit coercion
-- Event type allowlists prevent malformed log entries and improve error messages
-- Rejected: 1 item (false positive - check exists)
-
----
-
-### Review 189: Cherry-Pick PR Qodo Second Follow-up (2026-01-20)
-
-**Date:** 2026-01-20 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 10    | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 5     | 2       |
-
-**Patterns:**
-
-- set-vs-array-iteration
-- regex-lastindex-reset
-- cross-platform-line-endings
-- firestore-timestamp-safety
-
-**Learnings:**
-
-- Changing data structures (Array→Set) has ripple effects on iteration code
-- Regex with g/y flags maintain state between calls - reset before each use
-- Windows files processed on Unix (or vice versa) can have mismatched line
-- Firestore timestamps may be null, undefined, or even plain objects in edge
-- Rejected: 1 item (high-level PR criticism - intentional work)
-
----
-
-### Review 190: Cherry-Pick PR Qodo Third Follow-up (2026-01-20)
-
-**Date:** 2026-01-20 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 10    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 5     | 2     | 0       |
-
-**Patterns:**
-
-- symlink-traversal-protection
-- deterministic-set-iteration
-- bulk-fix-conflict-detection
-- helper-extraction-for-safety
-
-**Learnings:**
-
-- Symlink attacks can bypass path traversal checks - always use lstatSync first
-- Set iteration order is undefined in JS - sort after Array.from() for
-- Bulk operations need to validate against individual entries to prevent
-- Magic numbers should be named constants for clarity and maintainability
-
----
-
-### Review 191: Encrypted Secrets PR CI + Qodo Compliance (2026-01-21)
-
-**Date:** 2026-01-21 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 17    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- hidden-passphrase-input
-- secure-file-permissions
-- atomic-file-writes
-- buffer-validation
-- terminal-state-cleanup
-- placeholder-detection
-
-**Learnings:**
-
-- CI Pattern Compliance + Qodo PR Suggestions (2 rounds)
-- CI Pattern Compliance):\*\*
-- Qodo Security Compliance):\*\*
-- Node.js readline doesn't hide input by default - need raw mode for passwords
-- Pattern compliance catches issues that linters miss
-- Shell history exposure: prefer --stdin over env var for sensitive values
-- Always validate input buffers before crypto operations
-
----
-
-### Review 192: PR Documentation Lint + Qodo Suggestions (2026-01-21)
-
-**Date:** 2026-01-21 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 3     | 0       |
-
-**Patterns:**
-
-- documentation-linting
-- static-audit-reports-anti-pattern
-- sensitive-ide-configuration
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Document created without proper structure/frontmatter
-- Prevention: Follow Tier 2 doc template (Purpose + Version History + AI
-- Root cause: Audit reports hardcoded instead of using live dashboard
-- Prevention: Use SonarCloud dashboard + issue tracker, not static markdown
-- Root cause: IDE-specific config committed to shared workspace settings
-- Prevention: Keep user settings in .vscode/settings.json, not shared config
-
----
-
-### Review 193: Qodo PR Security Compliance + Code Suggestions (2026-01-21)
-
-**Date:** 2026-01-21 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 4        | 0     | 2     | 0       |
-
-**Patterns:**
-
-- local-config-committed
-- duplicate-documentation-content
-- invalid-markdown-structure
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: .local.json files are user-specific, not for shared repository
-- Prevention: Ensure .local.json in .gitignore, never commit user-specific
-- Root cause: Manual content editing without verification
-- Prevention: Review diff before committing, use unique section markers
-- Root cause: Line continuation without proper list syntax
-- Prevention: Validate markdown structure, add newlines between list items
-
----
-
 ### Review 194: PR #296 Hookify Infrastructure - Qodo + CI Pattern Compliance (2026-01-22)
 
 **Date:** 2026-01-22 | **PR:** #296 | **Source:** qodo+ci
@@ -6220,159 +2360,6 @@ deduplicated, non-overlapping ranges):
 - Prevention: Always validate environment variables with path.relative()
 - Root cause: startsWith() doesn't handle Windows paths or edge cases
 - Prevention: Use path.relative() and check for ".." prefix with proper regex
-
----
-
-### Review 195: PR #334f459 Expansion Placement Metadata - CI Lint + Qodo Suggestions (2026-01-22)
-
-**Date:** 2026-01-22 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 4     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 4     | 0       |
-
-**Patterns:**
-
-- documentation-lint-violations
-- non-deterministic-insertion-order
-- major-added-purpose-section
-- minor-added-ai-instructions-section
-- minor-added-quick-start-section
-- minor-refined-insert-after-column
-- tracker-format-migration
-- documentation-compliance
-- deterministic-metadata
-- markdown-as-database-technical-debt
-- architectural-decisions
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Review of placement metadata framework added to
-- Root cause: New tracker document lacked required Tier-2 sections
-- Prevention: All Tier-2 docs require Purpose/Overview, AI Instructions,
-- Pattern: EXPANSION_EVALUATION_TRACKER is state tracking doc, needs
-- Root cause: Multiple items using "Create M4.5" instead of referencing
-- Prevention: Use linked-list style insertion (each item references previous
-
----
-
-### Review 196: PR #036fab3 Expansion Metadata Refinement - Qodo Follow-up (2026-01-22)
-
-**Date:** 2026-01-22 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 11    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 0     | 10    | 0       |
-
-**Patterns:**
-
-- broken-insertion-chain-logic
-- inconsistent-command-namespace
-- ambiguous-metadata-values
-- critical-fixed-broken-insertion-chain
-- minor-standardized-command-namespace
-- minor-fixed-suggestion-count
-- minor-fixed-placement-count
-- minor-made-end-of-list-deterministic
-- minor-added-type-prefixes-to-insert-after
-- minor-normalized-relationship-column
-- minor-added-feature-group-registry
-- cross-list-reference-integrity
-- command-namespace-consistency
-- type-prefix-disambiguation
-- controlled-vocabularies
-- registry-formalization
-- arithmetic-vigilance
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Follow-up review of fixes applied in Review #195, identifying
-- Root cause: F4.2 references F4.4 in Insert After, but F4.4 is in deferred
-- Prevention: Insertion chains must only reference items within same list
-- Pattern: Cross-list references break linked-list integrity
-- Root cause: Mixed use of `/expansion` and `/expansion-evaluation` commands
-- Prevention: Use full namespace consistently across all documentation
-
----
-
-### Review 453: GitHub Actions Documentation Lint + Qodo MCP Audit Contradiction (2026-01-22)
-
-**Date:** 2026-01-22 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 6     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 3     | 0       |
-
-**Patterns:**
-
-- documentation-moved-without-standardization
-- self-contradictory-audit-documentation
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Moved .serena memory file without adding required documentation
-- Prevention: Always check documentation linter requirements when moving
-- Root cause: Initial analysis assumed permissions = usage; actual
-- Prevention: Verify usage before making recommendations; update
-- Fixed: 6 items (1 Critical, 2 Major, 3 Minor)
-
----
-
-### Review 197: PR claude/new-session-z2qIR Expansion Evaluation Tracker - Qodo Consistency Check (2026-01-23)
-
-**Date:** 2026-01-23 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 10    | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 6     | 5       |
-
-**Patterns:**
-
-- cross-document-count-synchronization
-- stale-handoff-next-steps
-- placement-status-consistency
-- false-positive-detection---qodo-limitations
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Follow-up review of expansion evaluation tracker after F1
-- Root cause: Evaluation totals in EXPANSION_EVALUATION_TRACKER (Technical:
-- Prevention: After evaluation milestones, verify all summary counts match
-- Pattern: Multi-document tracking requires explicit sync checkpoints
-- Root cause: SESSION_CONTEXT Next Step described completed work ("Update
-- Prevention: Update Next Step field when transitioning between evaluation
 
 ---
 
@@ -6424,55 +2411,6 @@ deduplicated, non-overlapping ranges):
 - Pattern: Session hooks must support all platforms (Windows, macOS, Linux)
 - Root cause: Blind process termination without verification could kill wrong
 - Prevention: Allowlist-based validation (`PROCESS_ALLOWLIST`) + process name
-
----
-
-### Review 199: PR #308 Round 4 - CI Security Scanner + Qodo Hardening (2026-01-23)
-
-**Date:** 2026-01-23 | **PR:** #308 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 10    | 15    | 4       |
-
-**Patterns:**
-
-- security-scanner-context-limitations
-- file-type-validation-for-log-targets
-- error-code-semantics-in-process-signals
-- process-discovery-race-conditions
-- args-arrays-over-template-interpolation
-- log-target-type-validation
-- process-signal-error-code-semantics
-- process-disappearance-race-handling
-- deprecated-command-elimination
-- process-tree-termination
-- cross-platform-newline-handling
-- total-fixed
-- final-file
-- commits
-- structured-audit-logging-hybrid-approach
-- powershell-json-edge-case-handling
-- subprocess-output-validation-nan-prevention
-- process-matching-precision-security
-- advisory-documented
-- root-cause
-- prevention
-
-**Learnings:**
-
-- CI security scanner blocked PR #308 merge with HIGH severity issues
-- Root cause: Static analysis tools flag template interpolation in shell
-- Prevention: Refactor to `execFileSync`/`spawnSync` with args arrays to
-- Pattern: Even with validation, prefer args arrays over string interpolation
-- Root cause: Writing to directories or FIFOs instead of regular files can be
-- Prevention: Use `fstatSync(fd).isFile()` on Unix after opening,
 
 ---
 
@@ -6574,252 +2512,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 202: PR #311 Learning Effectiveness Analyzer + Security Infrastructure - Qodo (2026-01-24)
-
-**Date:** 2026-01-24 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 22    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 5        | 8     | 7     | 2       |
-
-**Patterns:**
-
-- path-traversal-in---file-option
-- toctou-race-in-safewritefile
-- ssrf-allowlist-bypass
-- symlinked-archive-reads
-- duplicate-review-counting
-- ci-regex-g-with-test
-- ci-readfilesync-without-trycatch
-- ci-empty-string-path-validation
-- word-boundary-matching
-- pattern-id-fallbacks
-- email-masking-edge-case
-- commit-message-newlines
-- readfilesync-in-safereadfile
-- markdown-table-malformed
-- toctou-for-overwrite
-- regex-dos-in-getpatterndetails
-- saferegexexec-zero-length-match
-- false-pattern-matches
-- email-masking-subdomains
-- pattern-checker-exclusions
-
-**Learnings:**
-
-- Added path.resolve + relative check +
-- Removed existsSync, rely on atomic wx flag
-- Block localhost/loopback, IP addresses, require
-- Added lstatSync checks before reading archive
-- Added seenReviewNumbers Set for deduplication
-- Removed /g flag from boolean-only tests in
-- Wrapped 3 occurrences with proper
-
----
-
-### Review 204: Session #98 S0/S1 Guardrails PR - Qodo Compliance + CI (2026-01-26)
-
-**Date:** 2026-01-26 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 11    | 1        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 3        | 2     | 2     | 0       |
-
-**Patterns:**
-
-- subshell-guardrail-bypass
-- lint-staged-knip-false-positive
-- readfilesync-pattern-compliance-false-positive
-- utc-timezone-bug-in-getnextday
-- command-injection-concern
-- rolloutmode-env-configurable
-- duplicate-validation-constants
-- path-traversal-in-audit-s0s1-validatorjs
-- trap-cleanup-bug
-- fail-closed-on-invalid-dates
-- silent-jsonl-parse-failures
-- normalize-rolloutmode
-
-**Learnings:**
-
-- Pre-commit hook used `echo | while` which
-- Knip flagged lint-staged as unused
-- Non-UTC date parsing could cause
-- Date strings interpolated into git commands.
-- Made audit hook mode configurable via
-- Noted duplication between
-
----
-
-### Review 211: Session #103 Testing Infrastructure PR - Qodo + SonarCloud + CI (2026-01-27)
-
-**Date:** 2026-01-27 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 0     | 2        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 5     | 0     | 1       |
-
-**Patterns:**
-
-- readfile-error-handling-with-context
-- crlf-regex-line-89-milestones-overview
-- crlf-regex-line-107-sprint-section
-- bug-l141-conditional-same-value
-- path-traversal-prevention
-- test-factory-counter-vs-datenow
-- warning-for-skipped-roadmapfuture-checks
-- track-naming-regex-excludes-subsections
-- pg-validation-matches-group-format
-- scoped-version-history-regex
-- session-102-103
-- mcp-memory-vs-vector-db-decision
-- --fix-cli-flag
-- unstructured-logging
-- 63-counter-based-unique-ids-for-test-factories
-- 64-scope-regex-to-relevant-section
-- 65-format-matching-for-validation-scripts
-
-**Learnings:**
-
-- Added `instanceof Error` check
-- Changed regex to use `\r?\n`
-- Changed regex to use `\r?\n` for
-- Removed redundant ternary that returned
-- Replaced `startsWith("..")` with regex
-- Changed test data factory example in
-
----
-
-### Review 212: Session #103 CI Fix - Pattern Checker False Positives (2026-01-27)
-
-**Date:** 2026-01-27 | **Source:** ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 0     | 0       |
-
-**Patterns:**
-
-- readfilesync-without-trycatch-at-l39
-- path-validation-empty-string-at-l175
-- 66-pattern-checker-limitations
-
-**Learnings:**
-
-- CI BLOCKERS, BOTH FALSE POSITIVES):\*\*
-- FALSE POSITIVE. The `readFile`
-- Fix: Added `check-roadmap-health.js` to `pathExcludeList` with audit
-- FALSE POSITIVE. The condition at
-- Fix: Added `check-roadmap-health` to `pathExclude` regex with audit comment
-- Line-by-line pattern checks cannot
-
----
-
-### Review 213: PR #321 Doc Compliance - Qodo + SonarCloud (2026-01-28)
-
-**Date:** 2026-01-28 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 0     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 0     | 0       |
-
-**Patterns:**
-
-- broaden-pre-commit-doc-index-check
-- simplify-regex-complexity
-- url-decode-file-paths
-- remove-redundant-return
-- encode-parentheses-in-markdown-links
-- cross-file-anchor-validation
-- 67-unicode-property-escapes-for-emoji
-- 68-markdown-link-parentheses-encoding
-- 69-pre-commit-adm-filter
-
-**Learnings:**
-
-- ADM filter + quoted variables
-- Unicode emoji regex + URL decoding
-- Removed redundant return
-- Purpose/Version History sections +
-- Changed `--diff-filter=A` to
-- SonarCloud flagged emoji regex at 27
-
----
-
-### Review 214: PR #322 Alert System & Context Preservation - Qodo + SonarCloud + CI (2026-01-28)
-
-**Date:** 2026-01-28 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 21       | 11    | 6     | 0       |
-
-**Patterns:**
-
-- directory-traversal-fix
-- sensitive-data-persistence
-- path-traversal-regex-character
-- session-state-path-mismatch
-- sessioncontextmd-path
-- getrecentdecisions-order
-- race-condition-data-loss
-- sonarqube-regex-precedence
-- type-check-always-report
-- platform-root-search
-- empty-alert-prevention
-- replace-custom-alerting-with-standard-tools
-- 70-existssync-readfilesync-race
-- 71-pathrelative-security
-- 72-regex-character-encoding
-- 73-platform-agnostic-root
-
-**Learnings:**
-
-- Qodo PR Compliance + Code Suggestions, SonarCloud, CI Pattern Check
-- Pattern Compliance):\*\*
-- Got oldest decisions, not newest. Changed to
-- L47 in `generate-pending-alerts.js` needs
-- ALWAYS wrap readFileSync in
-- For containment validation, prefer
-
----
-
 ### Review 215: PR #324 Round 2 - Gap-Safe Consolidation Counting (2026-01-29)
 
 **Date:** 2026-01-29 | **PR:** #324 | **Source:** qodo
@@ -6848,39 +2540,6 @@ deduplicated, non-overlapping ranges):
 - Root cause: getLastConsolidatedReview only checks "Last Consolidation"
 - Prevention: Add fallback to check "Consolidation Trigger" section where
 - Fixed: 7 items (all suggestions applied)
-
----
-
-### Review 216: PR #324 Round 3 - Defensive Math Operations (2026-01-29)
-
-**Date:** 2026-01-29 | **PR:** #324 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 5     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 0     | 0       |
-
-**Patterns:**
-
-- mathmax-on-empty-array
-- spread-operator-stack-limits
-- script-parity
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Filter may produce empty array, spread to Math.max fails
-- Prevention: Check filtered array length before calling Math.max
-- Root cause: Spread converts array to function arguments (limited ~65k)
-- Prevention: Use reduce() for unbounded arrays
-- Root cause: Only updated one script's getLastConsolidatedReview
-- Prevention: When updating shared logic, update all scripts
 
 ---
 
@@ -6920,72 +2579,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 218: TDMS Phase 1-8 PR - Qodo Compliance + CI (2026-01-31)
-
-**Date:** 2026-01-31 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 26    | 26    | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 4        | 9     | 11    | 2       |
-
-**Patterns:**
-
-- append-only-canonical-files
-- api-pagination-required
-- stable-ids-are-critical
-- guard-against-missing-hash-fields
-- safe-jsonl-parsing
-- atomic-file-writes
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Initial implementation used writeFileSync without reading
-- Prevention: Always read existing, merge, then write
-- Root cause: SonarCloud API defaults to 500 results per page
-- Prevention: Always check for pagination in API docs, implement fetch loops
-- Root cause: generate-views.js reassigned IDs after sorting
-- Prevention: IDs assigned once at creation, never modified
-
----
-
-### Review 219: TDMS PR Follow-up - Qodo Compliance + CI (2026-01-31)
-
-**Date:** 2026-01-31 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 25    | 25    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 9     | 14    | 2       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Copy-paste without consistent error handling patterns
-- Prevention: All loadMasterDebt/loadItems functions need try-catch with line
-- Root cause: Line 0 treated as valid when comparing distances
-- Prevention: Require positive finite line numbers before proximity checks
-- Root cause: No tracking of already-used IDs in current run
-- Prevention: Track usedIds set during ID assignment
-
----
-
 ### Review 221: PR #327 Process Audit System - CI + Qodo (2026-01-31)
 
 **Date:** 2026-01-31 | **PR:** #327 | **Source:** qodo+ci
@@ -7014,242 +2607,6 @@ deduplicated, non-overlapping ranges):
 - Root cause: Context compaction can corrupt file formats
 - Prevention: Validate JSONL before commit, remove blank lines
 - Root cause: Glob patterns match the output file on re-runs
-
----
-
-### Review 222: PR #327 Process Audit System Round 2 - Qodo (2026-01-31)
-
-**Date:** 2026-01-31 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Error Handling & State Logic\*\* (importance 8-9):
-- FAIL/UNKNOWN shouldn't count
-- Shell Safety\*\* (importance 7):
-
----
-
-### Review 223: PR #327 Process Audit System Round 3 - Qodo Security (2026-01-31)
-
-**Date:** 2026-01-31 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Secure Error Handling\*\* (Qodo Generic Compliance):
-- Data Consistency\*\* (importance 9):
-
----
-
-### Review 224: Cross-Platform Config PR - CI Pattern Compliance + SonarCloud + Qodo (2026-02-02)
-
-**Date:** 2026-02-02 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 27    | 0        | 7        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 5     | 17    | 0       |
-
-**Patterns:**
-
-- unsafe-errormessage-access
-- clamp-percentages
-- crash-on-missing-mcpservers
-- invalid-timestamps-corrupt-metrics
-- agent-diff-compares-names-not-content
-- jsonparse-without-trycatch
-- null-object-diffing
-- statsync-race-condition
-- empty-input-file
-- negative-age-metrics
-- arrayisarray-guard-for-todos
-- atomic-writes
-- write-failure-handling
-
-**Learnings:**
-
-- CI Pattern Compliance Failure + SonarCloud Security Hotspot + Qodo
-- Script injection vulnerability
-- Path containment, try/catch, percentage
-- Path containment (4 locations), try/catch
-- Fix: Pass PR body via environment variable instead of interpolation
-- Fix: Add containment validation using path.relative check
-- Fix: Wrap all file reads in try/catch
-
----
-
-### Review 225: PR #329 Audit Documentation Enhancement - SonarCloud + Qodo (2026-02-02)
-
-**Date:** 2026-02-02 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 52    | 0     | 5        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- timeout-validation-missing
-- http-redirects-marked-as-failures
-- 405-method-not-allowed-not-retried
-- planning-directory-excluded
-- regex-operator-precedence-bug
-- shell-redirection-order
-
-**Learnings:**
-
-- SonarCloud Security Analysis + Qodo Compliance + Qodo Code
-- Fix: Added `isInternalIP()` function blocking RFC1918, localhost, link-local,
-- Fix: Added validation with Number.isFinite() and range clamping
-- Fix: Changed 3xx responses to `ok: true` with redirect info preserved
-- HEAD requests returning 405 weren't
-- Fix: Extracted `makeRequest()` helper, retry with GET on 405 response
-- Fix: Changed filter to `entry.startsWith(".") && entry !== ".planning"`
-
----
-
-### Review 226: ai-pattern-checks.js Enhancement - CI + SonarCloud + Qodo (2026-02-03)
-
-**Date:** 2026-02-03 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 21    | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 3        | 7     | 10    | 2       |
-
-**Patterns:**
-
-- path-validation-with-startswith
-- regex-g-flag-with-test-in-loop
-- readfilesync-without-explicit-trycatch-context
-- sonarcloud-s5852-naivedatafetch-regex-dos
-- sonarcloud-s5852-extractimports-regex-dos
-- division-by-zero
-- unvalidated-file-path
-- multi-line-regex-detection-failure
-- scoped-package-detection-bug
-- multi-line-query-patterns
-- score-clamping
-- absolute-path-validation
-- path-alias-support
-- canonical-builtin-list
-- deep-import-support
-- word-boundaries
-- re-export-detection
-- packagejson-caching
-- unused-variables-removed
-- all-startswith-converted
-- documentation-terminology
-- pattern-exclusion-documentation
-- qodo-19
-
-**Learnings:**
-
-- CI Pattern Compliance Failure + SonarCloud Security Hotspots + Qodo
-- Line 83 used `startsWith("/")` which
-- Fix: Converted to regex `/^[/\\]/.test()` for CI compliance
-- Line 220 `detectAIPatterns()` used
-- Fix: Rewrote to use `exec()` loop with fresh RegExp and zero-length match
-- Fix: Removed existsSync, rely purely on try/catch. Added to pathExcludeList.
-
----
-
-### Review 227: PR #331 Audit Comprehensive Staged Execution - Qodo + CI (2026-02-03)
-
-**Date:** 2026-02-03 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 11    | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 4        | 5     | 2     | 0       |
-
-**Patterns:**
-
-- prototype-pollution-in-jsonl-processing
-- type-guards-before-string-methods
-- user-context-for-audit-trails
-
-**Learnings:**
-
-- Qodo Compliance + CI Pattern Checker **PR:** #331
-- Unsafe error.message access →
-- Same error.message fix
-- Fixed: 11 items (4 CRITICAL, 5 MAJOR, 2 MINOR)
-- Deferred: 1 item (architectural)
-- False Positives: 2 items (pattern checker doesn't detect multi-line try/catch
-
----
-
-### Review 235: PR #332 Audit Documentation 6-Stage - Qodo/CI (2026-02-03)
-
-**Date:** 2026-02-03 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 6     | 2        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 1     | 4     | 0       |
-
-**Patterns:**
-
-- redesign-episodic-memory-as-systemic-feature
-- yaml-list-indentation
-- yaml-explicit-empty-arrays
-- prettier-function-name-splitting
-- process-filtering-precision
-
-**Learnings:**
-
-- Qodo/CI Review Feedback **PR:** #332
-- YAML syntax errors: improper list indentation for
-- Episodic memory function name broken by Prettier across
-- Python process filtering too broad. Generic
-- JSON output for cycle detection (DEFERRED - current text
-- Alert on missing circular dependency script instead of
-- Anchor canonical paths regex for robustness:
 
 ---
 
@@ -7285,42 +2642,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 237: PR #334 transform-jsonl-schema.js Security Hardening - Qodo/CI (2026-02-03)
-
-**Date:** 2026-02-03 | **PR:** #334 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 15    | 12    | 3        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 5     | 5     | 0       |
-
-**Patterns:**
-
-- path-traversal-prevention-with-regex
-- path-containment-validation
-- safe-error-message-access
-- category-map-key-normalization
-- guard-against-invalid-input-types
-- --output-flag-validation
-- readfilesync-trycatch-compliance
-- file-existence-check-before-read
-
-**Learnings:**
-
-- Fixed: 12 items (2 CRITICAL CI, 5 MAJOR, 5 MINOR)
-- Deferred: 3 items (ajv schema validation - architectural, intentional PII in
-- False Positives: 2 (readFileSync IS in try/catch at line 374, file at line 471
-- Pattern checker may have false positives for multi-line try/catch blocks
-- File paths from `fs.readdirSync()` are system-provided, not user input
-- Lowercase category map keys eliminate case-sensitivity bugs
-
----
-
 ### Review 238: PR #334 Round 2 transform-jsonl-schema.js Hardening - Qodo (2026-02-03)
 
 **Date:** 2026-02-03 | **PR:** #334 | **Source:** qodo+ci
@@ -7353,43 +2674,6 @@ deduplicated, non-overlapping ranges):
 - False Positives: 3 (readFileSync at L497 IS in try/catch L496-502, file paths
 - Pattern checker may flag false positives for variable names like `file` even
 - Symlink resolution must happen BEFORE containment validation, not after
-
----
-
-### Review 239: PR #334 Round 3 Security Hardening - Qodo (2026-02-03)
-
-**Date:** 2026-02-03 | **PR:** #334 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 9     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 3     | 3     | 2       |
-
-**Patterns:**
-
-- critical---sensitive-path-exposure
-- major---symlink-race-in-atomic-writes
-- major---exit-code-propagation
-- major---silent-failures-in---all-mode
-- minor---predictable-temp-filenames
-- minor---case-sensitivity-in-validation
-- minor---cross-platform-rename
-- trivial---directory-path-errors
-- trivial---ci-exit-tracking
-
-**Learnings:**
-
-- Sensitive Path Exposure:\*\* `validation-state.json` committed to
-- Symlink Race in Atomic Writes:\*\* Temp file creation vulnerable to
-- Exit Code Propagation:\*\* Script returns 0 even on errors, breaking
-- Silent Failures in --all Mode:\*\* Files that fail transformation are
-- Predictable Temp Filenames:\*\* Using just `.tmp` suffix allows race
-- Case Sensitivity in Validation:\*\* Severity/effort fields rejected
 
 ---
 
@@ -7490,248 +2774,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 252: PR #338 eval-sonarcloud Skill Follow-up - Qodo (2026-02-05)
-
-**Date:** 2026-02-05 | **PR:** #338 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 6     | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 2     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Debug commands reveal partial/full tokens in process
-- Prevention: Use stdin-based patterns like `curl --config -` for sensitive
-- Root cause: Path validation used logical paths, not real paths
-- Prevention: Use fs.realpathSync() to resolve symlinks before path
-- Root cause: Destructuring only `items`, ignoring `errors` return value
-- Prevention: Always check `errors` when calling loadJsonlFile
-
----
-
-### Review 253: PR #338 eval-sonarcloud Symlink Defense - Qodo (2026-02-05)
-
-**Date:** 2026-02-05 | **PR:** #338 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 8     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 3        | 1     | 4     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Applied fix to one function but not sibling functions with same
-- Prevention: When fixing security pattern, grep for ALL instances across ALL
-- Root cause: Hardcoded debug commands in generated report, separate from
-- Prevention: Audit ALL output strings for sensitive command patterns
-- Root cause: Brevity prioritized over debuggability
-- Prevention: Always log parse failures, even when returning fallback
-
----
-
-### Review 254: PR #338 Token Exposure + Parse Logging - Qodo (2026-02-05)
-
-**Date:** 2026-02-05 | **PR:** #338 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 3     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 1     | 1     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Thought heredoc avoided expansion but `$VAR` outside quotes
-- Prevention: Remove manual curl commands; use scripts that handle auth
-- Root cause: Same pattern in same file, different function name
-- Prevention: When fixing a pattern, grep for ALL functions with similar code
-- Root cause: Added user context for audit trail without considering PII
-- Prevention: Hash identifiers in logs to preserve traceability without
-
----
-
-### Review 255: PR Cherry-Pick - Qodo Compliance + SonarCloud + CI (2026-02-06)
-
-**Date:** 2026-02-06 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 22    | 22    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 3        | 6     | 12    | 1       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo Compliance + Qodo PR Suggestions + SonarCloud Quality Gate + CI
-- Root cause: Script authored on Windows with hardcoded user path
-- Prevention: Always use dynamic path.resolve(\_\_dirname, "../../")
-- Root cause: Regex-based checker + exclusion list not updated for new files
-- Prevention: Add verified try/catch files to exclusion list immediately
-- Root cause: copyFileSync replaces entire file instead of merging updates
-- Prevention: Use in-place update or merge strategy for sync operations
-
----
-
-### Review 256: PR Cherry-Pick Round 2 - Qodo Suggestions + CI (2026-02-06)
-
-**Date:** 2026-02-06 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 30    | 8     | 2        | 20       |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 7     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo Compliance + Qodo PR Code Suggestions + CI Pattern Compliance
-- Root cause: Regex negative lookahead only checks chars after match
-- Prevention: Add file to pathExclude when `rel === ""` is at start of
-- Root cause: Escape detection not guarded by `inString` flag
-- Prevention: Always guard escape handling with string context check
-- Root cause: replace() is not anchored to start of string
-- Prevention: Use startsWith() + slice() for prefix removal
-
----
-
-### Review 257: PR Cherry-Pick Round 3 - Qodo Compliance + Suggestions (2026-02-06)
-
-**Date:** 2026-02-06 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 3     | 2        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Fallback rm+rename not wrapped in its own try/catch
-- Prevention: Always wrap fallback with cleanup of tmp on failure
-- Fixed: 3 items (Windows rename fallback in 3 files)
-- Rejected: 2 items (audit trail completeness already has timestamp+action;
-- Deferred: 2 items (PII in audit logs via os.userInfo() - intentional design
-- Atomic file operations need defense-in-depth: try rename, catch → rm+rename,
-
----
-
-### Review 258: PR Cherry-Pick Round 4 - Qodo Compliance + Suggestions (2026-02-06)
-
-**Date:** 2026-02-06 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 4     | 2        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 3     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: String prefix matching is not path-aware
-- Prevention: Use `path.relative()` + regex for all containment checks
-- Root cause: Parsers don't filter non-JSON decorators
-- Prevention: Skip lines starting with triple backticks
-- Fixed: 4 items (path containment, trailing newline, rename fallback, fence
-- Rejected: 3 items (source exfiltration by design, audit trail for CLI,
-
----
-
-### Review 259: PR Cherry-Pick Round 5 - PII Scrub + Hardening (2026-02-06)
-
-**Date:** 2026-02-06 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 5     | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 2     | 2     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Eval scripts log absolute `path.resolve()` output into reports
-- Prevention: Always use relative paths in generated reports
-- Root cause: Audit trail needed operator identity but raw username is PII
-- Prevention: Use getOperatorId() helper (CI="ci", local=hash, opt-in raw)
-- Root cause: Two-step operation leaves gap for data loss
-- Prevention: Use copyFileSync + unlinkSync (dest always has content)
-
----
-
 ### Review 301: PR #342 Multi-AI Audit Data Quality - Doc Lint + Qodo (2026-02-06)
 
 **Date:** 2026-02-06 | **PR:** #342 | **Source:** qodo
@@ -7790,156 +2832,6 @@ deduplicated, non-overlapping ranges):
 - Prevention: Always add `\n` to negated character classes in table parsing
 - Root cause: `check-session-gaps.js` used `{}` for groupBySession
 - Prevention: Use `Object.create(null)` for any user-influenced map keys
-
----
-
-### Review 261: PR #346 Audit Trigger Reset - Round 2 Qodo (2026-02-07)
-
-**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 4     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 2     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Incomplete find-replace when changing delimiters
-- Prevention: Search for ALL occurrences of old delimiter when changing
-- Root cause: No validation on parsed date from markdown
-- Prevention: Always validate dates with
-- Root cause: `reset-audit-triggers.js` displayName regex too strict
-- Prevention: Use `[-\\s]+` pattern between word parts
-
----
-
-### Review 262: PR #346 Audit Trigger Reset - Round 3 Qodo + SonarCloud (2026-02-07)
-
-**Date:** 2026-02-07 | **PR:** #346 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 5     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 2     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Original hooks used string-based `execSync` for git commands
-- Prevention: Always use `execFileSync` with array args for subprocess calls
-- Root cause: Re-parsing YYYY-MM-DD string through Date constructor
-- Prevention: Use original date string directly, don't round-trip through
-- Root cause: Regex matched first table with category names
-- Prevention: Read from specifically named section (fixed in R5)
-
----
-
-### Review 263: PR #346 Audit Trigger Reset - Round 4 Qodo (2026-02-07)
-
-**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 3     | 3     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 1     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Same bug as `reset-audit-triggers.js` but in different function
-- Prevention: Extract shared `toDisplayName()` helper for category names
-- Root cause: Windows does not support POSIX rename-over semantics
-- Prevention: Always add `rmSync(dest, {force:true})` before `renameSync`
-- Root cause: Entries are JSON strings but could be corrupted
-- Prevention: Wrap in try-catch via safe helper function
-
----
-
-### Review 264: PR #346 Audit Trigger Reset - Round 5 Qodo (2026-02-07)
-
-**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 3     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 0     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: `getCategoryAuditDates()` matched against entire file content
-- Prevention: Always scope markdown regex to the relevant `##` section
-- Root cause: Generic `\d{4}-\d{2}-\d{2}` matches dates in comments/links
-- Prevention: Anchor date regex to table row structure
-- Root cause: `seed-commit-log.js` could write empty file if all hashes fail
-- Prevention: Add length check + exit after validation loop
-
----
-
-### Review 265: PR #346 Audit Trigger Reset - Round 6 Qodo (2026-02-07)
-
-**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 6     | 3     | 0        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 0     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: `saveJson()` did rmSync(dest) then renameSync(tmp, dest)
-- Prevention: Use backup-swap pattern (dest→.bak, tmp→dest, rm .bak)
-- Root cause: Automated review bots run on push, not on latest HEAD
-- Prevention: Check commit hash in feedback header against current HEAD
-- Fixed: 1 item (backup-swap saveJson)
-- Already Fixed: 3 items (empty entries guard, section scoping, table date regex
 
 ---
 
@@ -8032,115 +2924,6 @@ deduplicated, non-overlapping ranges):
 - Prevention: Add verified-patterns.json entries for confirmed false
 - Root cause: Quick refactor moved inline constant to loadConfig without
 - Prevention: Cache config at module scope when used in hot loops
-
----
-
-### Review 268: PR #352 Round 2 - Qodo + CI False Positives (2026-02-09)
-
-**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 1     | 0       |
-
-**Learnings:**
-
-- Pattern checker line numbers shift after edits — always re-verify false
-- Module-scope `loadConfig()` needs try/catch even more than function-scope
-
----
-
-### Review 269: PR #352 Round 3 - Qodo Security + Config Resilience (2026-02-09)
-
-**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 1     | 0       |
-
-**Learnings:**
-
-- Qodo PR Security Compliance + Code Suggestions (Round 3)
-- Every module-scope `loadConfig()` call in the codebase needs try/catch — this
-- Symlink guards needed even for internal tooling directories (`.claude/skills`)
-- Silent catch blocks prevent diagnosis — always log at least a warning
-- Fail-closed is the safe default for CI enforcement hooks when config is empty
-
----
-
-### Review 270: PR #352 Round 4 - Qodo Config Guards + YAML Parsing (2026-02-09)
-
-**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 4     | 1     | 0       |
-
-**Learnings:**
-
-- Systematic pattern: every `loadConfig*()` at module scope across the codebase
-- YAML block scalars (`|`, `>`) are common in SKILL.md frontmatter but the
-
----
-
-### Review 271: PR #352 Round 5 - Qodo Regex + Config Guards (2026-02-09)
-
-**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 0     | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 4     | 2     | 0       |
-
-**Learnings:**
-
-- Global `g` flag on regex used with `.test()` is a recurring bug pattern —
-- Path-matching regex needs anchoring at path boundaries, not just substring
-- All 10 config consumers from the Session #142 JSON extraction are now guarded
-
----
-
-### Review 272: PR #352 Round 6 — Final loadConfig Sweep (2026-02-09)
-
-**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 1        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 8     | 2     | 0       |
-
-**Learnings:**
-
-- Instead of fixing one file per round, grep'd entire
-- Zero unguarded loadConfig calls remain in codebase.
 
 ---
 
@@ -8335,36 +3118,6 @@ deduplicated, non-overlapping ranges):
 
 - Root cause: R5 early-return refactor removed the if block that naturally
 - Prevention: When flattening if-else with early continue, add break at end
-
----
-
-### Review 280: Qodo Evidence Deduplication in JSONL Debt Files (2026-02-10)
-
-**Date:** 2026-02-10 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 21    | 14    | 0        | 7        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 13    | 1       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Upstream aggregation script merges evidence without dedup
-- Prevention: Created `scripts/debt/dedup-evidence.js` for batch cleanup;
-- Fix: Script removes these automatically
-- Fixed: 14 items (all via dedup script — 84 total entries fixed across 3 files)
-- Rejected: 7 (R2: stale content_hash × 5, restore merged_from, schema change)
-- Qodo found 14 instances but the script found 28 per file — always fix
 
 ---
 
@@ -9202,36 +3955,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 310: Qodo PR Suggestions — Alerts v3 Health Score, Edge Cases, Path Normalization (2026-02-13)
-
-**Date:** 2026-02-13 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 3     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 2     | 0       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: `continue` on missing categories + dynamic `totalWeight`
-- Prevention: Always normalize against fixed total possible weight
-- Root cause: No parent commit to diff against
-- Prevention: Fallback to empty tree hash
-- Root cause: Audit tool outputs Windows paths
-- Prevention: Normalize at ingest time
-
----
-
 ### Review 311: SonarCloud + Qodo — PR #365 Audit Ecosystem Branch (2026-02-14)
 
 **Date:** 2026-02-14 | **PR:** #365 | **Source:** sonarcloud+qodo
@@ -9977,89 +4700,78 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 339: PR #369 R5 — CC Extraction, tmpFile Symlink, ISO Date Normalization (2026-02-17)
+### Review 359: PR #431 R5 — Backup Safety, Nullish Coalescing & Error Context (2026-03-14)
 
-**Date:** 2026-02-17 | **Source:** sonarcloud+qodo
+**Date:** 2026-03-14 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 2     | 7     | 0        | 5        |
+| 18    | 11    | 0        | 7        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- extract-validateinputpath-for-cc-reduction
-- tmpfile-symlink-guard
-- iso-timestamp-normalization
-- guard---apply-loop-against-closedfiltered-items
-- cross-platform-atomic-rename
+| 0        | 2     | 9     | 7       |
 
 **Learnings:**
 
-- SonarCloud (1 CC Issue) + Qodo Security (1) + Qodo Compliance (1) +
+- Fixed: 11 items across 9 files
+- Rejected: 7 items (5 cross-round dedup from R3/R4, 1 architectural, 1 FP)
+- Symlink overwrite risk (R4 dedup — isSafeToWrite guard at L515)
+- Set.has x2 (R4 dedup — string.includes(), not array)
+- Unix path redaction (R3+R4 dedup — deliberately removed in R3)
+- Type-dependent design (R4 dedup — simple boolean in 6-line function)
 
 ---
 
-### Review 340: PR #369 R6 — CC Extraction x2, wx Flag, Atomic writeMasterDebt, Collision Detection (2026-02-17)
+### Review 360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
 
-**Date:** 2026-02-17 | **Source:** sonarcloud+qodo
+**Date:** 2026-03-14 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 9     | 7     | 0        | 4        |
+| 20    | 14    | 0        | 6        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- extract-guardsymlink-atomicwrite-for-cc-reduction
-- extract-classifyopenitems-applyresolutions-for-cc-reduction
-- exclusive-create-flag-wx
-- atomic-write-for-writemasterdebt
-- return-canonical-path
-- finding-key-collision-detection
-- -apply-logic-into-separate-functions
+| 0        | 1     | 12    | 7       |
 
 **Learnings:**
 
-- SonarCloud (2 CC Issues) + Qodo Security (1) + Qodo Suggestions (8)
+- Fixed: 14 items across 8 files
+- Rejected: 6 items (3 cross-round dedup R4+R5, 1 architectural, 2
+- Set.has for tableContent (R4+R5 dedup — string.includes(), not array)
+- Set.has for antiPatternSection (R4+R5 dedup — string.includes(), not array)
+- Type-dependent design (R4+R5 dedup — simple boolean in 6-line function)
+- No JSONL schema validation (architectural — downstream has Number.isFinite and
 
 ---
 
-### Review 341: PR #369 R7 — CC indexByKey, Ancestor Symlink, fstatSync Forward Scan, Error -1 (2026-02-17)
+### Review 361: PR #431 R7 — Flagged Section Sanitization, TOCTOU & Diminishing Returns (2026-03-14)
 
-**Date:** 2026-02-17 | **Source:** sonarcloud+qodo
+**Date:** 2026-03-14 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 4     | 7     | 0        | 3        |
+| 17    | 6     | 0        | 11       |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- extract-indexbykey-for-cc-reduction
-- ancestor-symlink-containment
-- dir-dest-symlink-guards-in-fallback
-- fstatsync-forward-scan
-- return--1-on-git-error
+| 0        | 1     | 9     | 7       |
 
 **Learnings:**
 
-- SonarCloud (1 CC Issue) + Qodo Security (2) + Qodo Compliance (2) +
+- Fixed: 6 items across 5 files
+- Rejected: 11 items (4 cross-round dedup R4-R6, 1 intentional TODO scaffold, 6
+- Set.has for tableContent (R4+R5+R6 dedup — string.includes())
+- Set.has for antiPatternSection (R4+R5+R6 dedup — string.includes())
+- Type-dependent design (R4+R5+R6 dedup — simple boolean)
+- OS temp dir for test (R3+R4 dedup — repo boundary needed)
 
 ---
 
@@ -10338,32 +5050,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 355: Gemini Code Assist — EXIT Trap, Evidence Dedup, mktemp Guards (2026-02-19)
-
-**Date:** 2026-02-19 | **PR:** #379 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 3     | 1        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- silent-hook-output-after-posix-migration
-- object-dedup-by-reference-vs-value
-- mktemp-mv-error-handling
-
-**Learnings:**
-
-- When replacing bash-isms with POSIX equivalents, audit the DX
-
----
-
 ### Review 362: PR #382 R1 — Regex DoS, Severity Mapping Bug, Table Parsing, 49 Items (2026-02-20)
 
 **Date:** 2026-02-20 | **PR:** #382 | **Source:** sonarcloud+qodo
@@ -10494,150 +5180,90 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 454: PR #384 R1 — SonarCloud + Qodo + CI (2026-02-22)
+### Review 472: Mixed (Qodo + SonarCloud) R1 — ecosystem expansion test infrastructure (2026-03-09)
 
-**Date:** 2026-02-22 | **Source:** manual
+**Date:** 2026-03-09 | **Source:** sonarcloud+qodo+coderabbit
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 28    | 0     | 0        | 0        |
+| 197   | 197   | 3        | 6        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
 | 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- cc-extraction-creates-new-cc
-- fp-report-double-counting
-- duplicate-code-in-ifelse-if
-- regex-cc-with-i-flag
-- division-by-zero-in-analytics
-- pathexcludelist-merging-counts-without-tracking-source-infla
-
----
-
-### Review 370: PR #386 R1 — SonarCloud + Qodo + Gemini + CI (2026-02-23)
-
-**Date:** 2026-02-23 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 19    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sonarcloud-s5852-two-strikes
-- regex-dos-in-seed-commit-logjs
-- optional-chaining
-- array-mutation
-- git-log-parsing
-- atomic-write-hardening
-- repo-root-resolution
-- sticky-boolean-false-positive
-- prettier-ci-fix
-- verified-patterns
 
 **Learnings:**
 
-- SonarCloud S5852 two-strikes: replaced 2 complex regexes (complexity 31
-- Regex DoS in seed-commit-log.js: replaced complex session counter regex with
-- Optional chaining: 3 instances of `x && x.test()` → `x?.test()` in
-- Array mutation: `keys.sort()` → `[...keys].sort()` for non-mutating sort
-- Git log parsing: `parts.length < 4` → `< 6` to match 6-field format
-- Atomic write hardening: added try/catch cleanup, rmSync before renameSync,
-- Repo root resolution: `process.cwd()` → `git rev-parse --show-toplevel`
+- Qodo/CodeRabbit + SonarCloud | **Round:** R1 (3
+- Fixed: 197 items across 60+ files
+- Deferred: 3 items (cognitive complexity refactors — architectural)
+- Rejected: 6 items (test fixture passwords, safe Math.random, bounded regex)
+- When mocking via mutable function refs, give the DEFAULT value a matching
+- Broad `catch {}` in test setup hides real failures — always catch specific
+- SonarCloud S2068 (hard-coded passwords) is a known FP for test fixtures that
 
 ---
 
-### Review 371: PR #386 R2 — SonarCloud S5852 + CC Reduction + Qodo Hardening (2026-02-23)
+### Review 356: PR #431 R2 — Data Effectiveness Audit Schema & Security Fixes (2026-03-13)
 
-**Date:** 2026-02-23 | **Source:** manual
+**Date:** 2026-03-13 | **Source:** sonarcloud+qodo+ci
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 6     | 0     | 0        | 0        |
+| 54    | 54    | 0        | 0        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+| 2        | 8     | 21    | 23      |
 
 **Patterns:**
 
-- s5852-two-strikes
-- cc-reduction
-- concurrency-safe-tmp
-- fallback-unlinksync-guard
-- stringraw-for-backslash
-- match-snippets
+- root-cause
+- prevention
 
 **Learnings:**
 
-- S5852 two-strikes: replaced `/(\d+)\s*$/` regex with backward digit walk (pure
-- CC reduction: extracted `parseCommitLines` and `writeEntries` from `main()`
-- CC reduction: wrapped `logical-or-numeric-fallback` testFn in IIFE with
-- Concurrency-safe tmp: `COMMIT_LOG.tmp` → `COMMIT_LOG.tmp.${pid}.${Date.now()}`
-- Fallback unlinkSync guard: added try/catch around cross-drive cleanup
-- String.raw for backslash: `"\\|"` → `String.raw\`\\|\``
-- Match snippets: added `match: line.trim().slice(0, 120)` to both testFn
+- Root cause: Schema refactored without updating all consumers
+- Prevention: Schema migration checklist — grep all consumers before shipping
+- Root cause: Ad-hoc regex instead of using existing validatePathInDir helper
+- Prevention: Always use security-helpers.js for path validation
+- Root cause: Copy-paste fallbacks diverged from canonical implementation
+- Prevention: All fallbacks must match the 5-replace canonical pattern
 
 ---
 
-### Review 372: PR #388 R1 (2026-02-23)
+### Review 357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
 
-**Date:** 2026-02-23 | **Source:** manual
+**Date:** 2026-03-13 | **Source:** sonarcloud+qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 26    | 16    | 0        | 10       |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+| 2        | 8     | 14    | 2       |
 
----
+**Patterns:**
 
-### Review 373: PR #388 R2 (2026-02-23)
+- root-cause
+- prevention
+- propagation
 
-**Date:** 2026-02-23 | **Source:** manual
+**Learnings:**
 
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
----
-
-### Review 374: PR #388 R3 (2026-02-23)
-
-**Date:** 2026-02-23 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+- Root cause: Overly broad catch-all added to complement Windows path
+- Prevention: Canonical sanitizeError should only redact known-sensitive
+- Propagation: Fixed in 8 files (canonical + 7 fallback copies)
+- Root cause: Single functions doing too much — iteration + mutation +
+- Prevention: Extract helpers when function has >2 concerns
+- Root cause: Test helper didn't account for the security boundary
 
 ---
 
@@ -10714,47 +5340,6 @@ deduplicated, non-overlapping ranges):
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
 | 0        | 0     | 0     | 0       |
-
----
-
-### Review 376: PR #392 R1 (2026-02-25)
-
-**Date:** 2026-02-25 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 3     | 0       |
-
-**Patterns:**
-
-- git-glob-pathspecs-require-glob-prefix-when-using
-
----
-
-### Review 377: PR #392 R2 (2026-02-25)
-
-**Date:** 2026-02-25 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- 3-qodo-compliance-items-repeat-rejected
-- stringerr-on-exec-error-objects-produces-object-object-
 
 ---
 
@@ -10889,70 +5474,57 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 455: PR #389 R1 — Qodo + Gemini (2026-02-25)
+### Review 470: SonarCloud R2-2 — ReDoS regex simplification + CI exec blocker (2026-03-09)
 
-**Date:** 2026-02-25 | **Source:** manual
+**Date:** 2026-03-09 | **PR:** #393 | **Source:** sonarcloud+ci
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 25    | 0     | 0        | 0        |
+| 7     | 8     | 0        | 3        |
 
 **Severity Breakdown:**
 
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+| 0        | 8     | 24    | 5       |
 
 **Patterns:**
 
-- path-containment-across-new-audit-checkers
-- basename-only-dedup-in-run-files
-- symlink-skip-via-lstatsync
-- canverifypkgscripts-flag
-- code-fence-counting-needs-state-machine
-- frontmatter-regex-must-anchor-to-file-start
+- check-propagationjs
+- audit-skill-templates
+- pr-review-skillmd
+- reviewssync-script
+- large-pr-scope-remains-the-1-systemic-driver
+- propagation-is-the-persistent-2-driver
+- pr-390-shows-small-prs-work
+- r1-review-quality-improving
+- pr-scope-discipline-paid-off
+- propagation-automation-is-production-validated
+- qodo-batch-rejection-saves-investigation-time
+- cross-platform-path-normalization-is-now-the-1-recurring-pat
+- jsonl-data-quality-inflates-review-metrics
+- zero-avoidable-rounds-from-unimplemented-retro-items
+- propagation-check
+- qodo-compliance-repeat-rejection
+- focused-pr-scope-continues-to-pay-off
+- propagation-discipline-held
+- multi-source-convergence-is-high-signal
+- tdms-data-quality-is-the-remaining-systemic-issue
+- fixtemplate-45-is-production-validated
+- safe-fsjs-received-substantive-security-fixes
+- sonarcloud-0-fp-rate
+- qodo-compliance-fp-rate-remains-high-50
+- test-production-regex-sync-is-a-new-pattern
+- unused-import-cleanup-11-files
 
----
+**Learnings:**
 
-### Review 456: PR #389 R2 — Qodo + Gemini + Compliance (2026-02-25)
-
-**Date:** 2026-02-25 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 31    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- collectscriptfiles-symlink-propagation
-- findingsfilter-id-generation
-- yaml-multiline-run-parsing
-- isinsidetrycatch-brace-logic
-- resolverelativepath-absolute-path-stripping
-- dos-caps-for-recursive-walkers
-- yaml-multiline-run
-
----
-
-### Review 384: PR #393 R2 (2026-02-26)
-
-**Date:** 2026-02-26 | **PR:** #393 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
+- SonarCloud Security Hotspots + CI | **Round:** R2-2
+- Fixed: 8 items (1 CI blocker + 7 S5852 regex simplifications across 8 files)
+- Rejected: 3 items (S1523 string literal FP, S2245 test PRNG FP, S5443 test
+- Two-strikes rule works well for test isolation patterns — simple string
+- None. Clean forward progression.
+- Add quoted-value secret redaction edge case tests. Pattern:
 
 ---
 
@@ -11222,186 +5794,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 457: PR #394 R1 — SonarCloud + Qodo + Gemini + CI (2026-02-26)
-
-**Date:** 2026-02-26 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 42    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 8        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- cc-reduction-via-generic-ast-walker
-- isinsidetryblock-must-check-range-not-just-ancestor-type
-- hasrenamesyncnearby-ordering-matters
-- pre-existing-violations-surface-when-file-is-modified
-- sec-004-triggered-by-inline-comment-examples
-- duplicate-hash-prevention-in-batch-ingestion
-
----
-
-### Review 400: Maintenance PR R1 (2026-02-27)
-
-**Date:** 2026-02-27 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 37    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- agents
-- fix-one-audit-all
-- cc-extract-helpers-proactively
-
----
-
-### Review 401: Maintenance PR R2 (2026-02-27)
-
-**Date:** 2026-02-27 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 2     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- cc-extract-helpers-proactively
-- nan-safe-timestamp-validation
-
----
-
-### Review 403: Maintenance PR R4 (2026-02-27)
-
-**Date:** 2026-02-27 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 14    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- cc-reduction-pattern
-- review-suggestion-creates-new-issue-when-a-reviewer-suggesti
-
----
-
-### Review 404: Maintenance PR R5 (2026-02-27)
-
-**Date:** 2026-02-27 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- serial-regex-flagging-sonarcloud-flags-regexes-one-per-round
-
----
-
-### Review 405: Maintenance PR R6 (2026-02-27)
-
-**Date:** 2026-02-27 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- indexof-to-includes-every-time-indexofx--1-is-written
-
----
-
-### Review 406: Maintenance PR R7 (2026-02-27)
-
-**Date:** 2026-02-27 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- cc-creep-from-error-handling-adding-trycatch-blocks-to
-
----
-
-### Review 407: PR #398 R1 — Ecosystem Diagnosis + GitHub Automation (2026-02-27)
-
-**Date:** 2026-02-27 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 1        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- learnings
-- --escapetablecell-overuse-dont-use-table-cell-escaping-for-m
-
-**Learnings:**
-
-- CRITICAL: `.serena/project.yml` YAML indentation (duplicate `- typescript`)
-- MAJOR: Pin GitHub Actions to SHA hashes (dependabot/fetch-metadata,
-- MAJOR: Known-duplicate ID logic now catches within-file dups (Qodo #11)
-- MINOR: SESSION_HISTORY.md missing purpose section + doc headers
-- MINOR: `escapeTableCell` used for link text caused `&amp;` — added
-- MINOR: Broken DOCUMENTATION_INDEX table row (2-line split)
-- MINOR: Prettier formatting on new GitHub workflow files
-
----
-
 ### Review 397: PR #407 R2 — Qodo/Gemini/CI (2026-02-28)
 
 **Date:** 2026-02-28 | **PR:** #407 | **Source:** manual
@@ -11441,77 +5833,6 @@ deduplicated, non-overlapping ranges):
 **Patterns:**
 
 - pattern-checker-cant-detect-rmsync-within-nested-trycatch-
-
----
-
-### Review 408: PR #407 R3 — SonarCloud + Qodo Batch 1 (2026-02-28)
-
-**Date:** 2026-02-28 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 45    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- learnings
-- cc-extraction
-- replaceall-migration
-- stringraw-for-regex
-
----
-
-### Review 416: PR #407 R7 — SonarCloud + Qodo + CI (2026-03-01)
-
-**Date:** 2026-03-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 23    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- already-fixed-stale
-- learnings
-- verify-tsconfig-moduletarget-before-accepting-top-level-awai
-
----
-
-### Review 417: PR #407 R8 — CI/Qodo/SonarCloud (2026-03-01)
-
-**Date:** 2026-03-01 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 26    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 3        | 7     | 5     | 0       |
-
-**Patterns:**
-
-- severity
-- learnings
-- isretrosectionend-logic-inversion-prheadingretestline
-
-**Learnings:**
-
-- SonarCloud (4 code smells)
 
 ---
 
@@ -11724,473 +6045,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 442: PR #411 R1-R8 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
-
-**Date:** 2026-03-02 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- blocker
-- semgrep-oss-fn-and-objmethod-patterns-match-all
-
-**Learnings:**
-
-- Semgrep OSS (64), Gemini (2), Qodo (38), CI failures (6), CodeQL
-- Batched protocol effective: 8 rounds, 8 commits, no push until done
-- Semgrep OSS lacks type information — custom rules must target specific
-- First-time SonarCloud scan on this codebase produced many pre-existing
-- Parallel agents (ESLint rules + health scripts) cut R3 fix time in half
-- R6 demonstrated that 78+ mechanical SonarCloud fixes can be applied safely
-
----
-
-### Review 443: PR #412 R1 — Gemini + Qodo + CI (2026-03-02)
-
-**Date:** 2026-03-02 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- verify-doc-math-before-commit
-- clarify-ai-implementation-time
-
-**Learnings:**
-
-- Gemini Code Assist (6), Qodo (1), CI Prettier failure (1) **Total:**
-- All items are documentation accuracy fixes in
-- CI failure was pre-existing Prettier formatting on 11 unrelated files
-
----
-
-### Review 444: PR #415 R1 — Qodo + Gemini + CI + SonarCloud + Semgrep + Dep Review (2026-03-02)
-
-**Date:** 2026-03-02 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- root-cause
-- exclude-planning-from-all-tools
-- never-commit-raw-transcripts
-
-**Learnings:**
-
-- Qodo (3), Gemini (1), CI ESLint failure (1), CI Security Check
-- Fix: added `.planning/**` to ESLint ignores, security-check SKIP_PATTERNS, and
-- Deleted 10 agent-research transcript files containing PII (local paths,
-- PR creep warnings were invisible (hook redirects all output to log file,
-- SKIP_REASON example "reason" (6 chars) violated 10-char minimum. Fixed to
-
----
-
-### Review 445: PR #415 R2 — SonarCloud + CodeQL + CI + Qodo + Gemini (2026-03-04)
-
-**Date:** 2026-03-04 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- ci-blockers-3
-- security-hotspots-2
-- logic-inversions-2
-- code-quality-150
-- hook-visibility
-- dynamic-import-cleanup
-- bug-fix
-- execfilesync-over-execsync
-- backslash-first-in-escape-chains
-
-**Learnings:**
-
-- SonarCloud (174), CodeQL (3), CI Security Check (2), Qodo (5),
-- S4721 command injection resolved by execFileSync;
-- Merged ~40 groups of consecutive `Array#push()`
-- JSONL sync warning in pre-commit wrote to stdout
-- Audit framework output used `t3Count` (total) instead of
-- Backslash double-escaping in GFM tables — may over-escape in
-- SonarCloud duplication gate (5.7% vs 3% threshold) — planning
-
----
-
-### Review 446: PR #415 R3 — SonarCloud + Qodo + Gemini (2026-03-04)
-
-**Date:** 2026-03-04 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- duplication-elimination
-- validator-rewrite
-- regex-fix
-- stale-counts
-- crlf-safety
-- shared-module-over-duplication
-- dryrun-stdout-comparison
-
-**Learnings:**
-
-- SonarCloud (81), Qodo (4), Gemini (4) **Total:** 12 unique
-- Extracted shared `readJsonl()` and `escapeCell()`
-- Updated decision count 83→92 in ROADMAP.md (2 places) and
-- `backfill-tenet-evidence.js` JSON.parse now uses trimmed line
-- S4036 PATH binary hijacking (hardcoded `execFileSync("node")`
-
----
-
-### Review 447: PR #415 R4 — SonarCloud + Qodo (2026-03-04)
-
-**Date:** 2026-03-04 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- s5852-dry-run-regex
-- replaceall-consistency
-- unescaped-table-cell
-- crlf-in-escapecell
-- at-1-preference
-- string-parsing-over-regex-two-strikes
-
-**Learnings:**
-
-- SonarCloud (6), Qodo (2) **Total:** 8 unique **Fixed:** 5
-- Replaced `/\n+--- DRY RUN.*$/s` with
-- Added `\r` stripping before `\n` → space conversion
-- S5852 on `/ +$/gm` (space-only quantifier, no backtracking —
-
----
-
-### Review 448: PR #417 R1 — SonarCloud + Qodo + Semgrep + CI (2026-03-05)
-
-**Date:** 2026-03-05 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sonarcloud-8
-- qodo-10
-- semgrep-1
-- ci-1
-- rejected-4
-- log-malformed-jsonl-lines
-- validate-cli-args-before-parse
-
-**Learnings:**
-
-- SonarCloud (8), Qodo suggestions (10), Qodo compliance (2), Semgrep
-- Numeric comparison normalization, deterministic PR sorting,
-- Array bounds check warning (addressed via Qodo numeric fix)
-- Prettier formatting on 6 files
-- Log-Malformed-JSONL-Lines; Validate-CLI-Args-Before-Parse;
-
----
-
-### Review 449: PR #417 R2 — Qodo + Gemini + Semgrep + CI (2026-03-05)
-
-**Date:** 2026-03-05 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 15    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- qodo-bug-1
-- qodo-bug-2
-- qodo-bug-3
-- qodo-bug-4
-- qodo-bug-5
-- qodo-bug-6
-- qodo-suggestion
-- ci-1
-- rejected-3
-- validate-regex-context-before-fix
-- derive-null-totals
-
-**Learnings:**
-
-- Qodo bugs (6), Qodo suggestions (7), Qodo compliance (2), Gemini
-- Propagation not blocking — added `--blocking` flag to
-- CC can't parse TS — scoped CC check to `.js`/`.mjs` only
-- Metrics null totals — derive total from
-- CC skipped on no-upstream — fallback to origin/main or
-- Committed runtime state files — gitignored + git rm --cached
-- Sonar ignores too broad — narrowed S5852/S4036/S6354 to
-
----
-
-### Review 450: PR #417 R3 — Qodo + SonarCloud + Semgrep + Gemini (2026-03-05)
-
-**Date:** 2026-03-05 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sonar-resourcekey-comma-syntax
-- sonarcloud-s1121-negated-condition
-- crlf-safe-jsonl-parsing
-- doc-consolidation-numbering
-- rejected-7
-- sonarcloud-resourcekey-only-accepts-single-path-patterns
-
-**Learnings:**
-
-- SonarCloud (1), Qodo bugs (6), Qodo suggestions (3), Qodo compliance
-- SonarCloud `resourceKey` doesn't support
-- Flipped `r.total != null ? A : B` to
-- Trim each line individually before JSON.parse to
-- Renamed duplicate "#1"/"#2" consolidation
-- Qodo Bugs #1-5 (stale, all fixed in R2), Semgrep array
-- SonarCloud `resourceKey` only accepts single path patterns, not
-
----
-
-### Review 451: PR #417 R4 — Qodo + Gemini (2026-03-05)
-
-**Date:** 2026-03-05 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- review-450-total-fix
-- fd3-guard
-- prototype-pollution
-- fixrate-type
-- rejected-6
-- qodo-suggestions-re-raise-rejected-items-across-rounds-alway
-
-**Learnings:**
-
-- Qodo suggestions (8), Gemini (2) **Total:** 10 **Fixed:** 4
-- Corrected Total:4 → Total:11 (deduped count)
-- Added fallback from >&3 to >&2 in pre-commit propagation check
-- Changed perSource/perPR to Object.create(null) +
-- Return number|null instead of string for --json output
-- POSIX regex (3rd raise — correct for `git grep -E`), TS in
-- Qodo Suggestions re-raise rejected items across rounds. Always
-
----
-
-### Review 477: PR #419 R1 — SonarCloud + Qodo + Semgrep + Gemini + CI (2026-03-06)
-
-**Date:** 2026-03-06 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- windows-rename-safety
-- preflight-safety-checks
-- symlink-guards-on-reads
-- eslint-config-bypass
-- argument-injection
-- --windows-rename-safety-fsrenamesync-can-fail-to-overwrite-e
-
-**Learnings:**
-
-- SonarCloud (5), Qodo Bugs (2), Qodo Compliance (3), Qodo Suggestions
-- Shell:true command injection (hardcoded bin names only, not user input)
-- Silent JSONL parse failures (intentional skip of malformed lines)
-- Error echo in session-start.js (pre-existing, first-line truncated)
-
----
-
-### Review 478: PR #419 R2 — SonarCloud + Qodo (2026-03-06)
-
-**Date:** 2026-03-06 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sonarcloud-cc-1
-- qodo-suggestion-copyfilesync-fallback
-- qodo-suggestion-trycatch-in-applyrepair
-- qodo-security-preflight-all-paths
-- qodo-suggestion-nan-guard
-- rejected-5
-- extract-helper-for-cc
-- copyfilesync-fallback-over-unlink-rename
-
-**Learnings:**
-
-- SonarCloud (1), Qodo Compliance (4), Qodo Suggestions (5) **Total:**
-- Extracted `deduplicateEntry` helper from
-- Replaced unlinkSync+renameSync
-- Expanded isSafeToWrite preflight to
-- Added Number.isFinite filter before
-- Qodo Compliance S4036 PATH hijacking (repeat-rejected —
-
----
-
-### Review 479: PR #419 R3 — SonarCloud + Qodo + CI (2026-03-06)
-
-**Date:** 2026-03-06 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sonarcloud-cc-2715
-- symlink-dir-guard
-- isfile-check
-- ci-knip-unused-dep
-- rejected-6
-- extract-multiple-helpers-for-high-cc
-
-**Learnings:**
-
-- SonarCloud (1), Qodo Compliance (4), Qodo Suggestions (5), CI (1)
-- Extracted `preflightSafetyCheck`, `backupFiles`,
-- Added lstatSync check on backup directory before
-- Added `st.isFile()` guard in backup/delete loops to skip
-- Added `@modelcontextprotocol/server-memory` to
-- Extract-Multiple-Helpers-For-High-CC;
-
----
-
-### Review 475: Qodo R4 — fnm eval safety, gitleaks regex, cwd determinism (2026-03-07)
-
-**Date:** 2026-03-07 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 13    | 11    | 0        | 2        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 3     | 8     | 2       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: R3 fixed standalone scripts but missed the central wrapper.
-- Prevention: Always capture command substitution output, validate non-empty,
-- Root cause: Overly broad word-boundary regex without negative lookbehind.
-- Prevention: Use negative lookbehind `(?<!no\s)` for patterns that have
-- Root cause: Inconsistency during incremental additions to the hook.
-- Prevention: When adding execFileSync with relative paths, always include
-
----
-
 ### Review 476: Qodo R3 — fnm ripple effects, gitleaks hardening, cross-platform globs (2026-03-07)
 
 **Date:** 2026-03-07 | **PR:** #421 | **Source:** qodo
@@ -12218,379 +6072,6 @@ deduplicated, non-overlapping ranges):
 - Prevention: Always use escaped double quotes (`\"..\"`) in package.json
 - Root cause: Defensive "don't break the developer" approach didn't account
 - Prevention: Security scanners should fail-closed; non-security tools can
-
----
-
-### Review 473: Qodo R6 — diminishing returns, JSONL data normalization (2026-03-08)
-
-**Date:** 2026-03-08 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 2     | 0        | 8        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 7     | 2       |
-
-**Learnings:**
-
-- Fixed: 2 items (rev-436 completeness, `""` → `null` x7 entries x2 files)
-- Rejected: 8 items (3 repeats, 5 pre-existing/over-engineering)
-- After 5+ rounds, most new items are repeat FPs or diminishing-value hardening
-- Consider merging PR after R5 when fix rate drops below 30%
-- JSONL empty fields should use `null` not `""` for consistency
-
----
-
-### Review 474: Qodo R5 — eval input validation, maxBuffer, TDMS provenance (2026-03-08)
-
-**Date:** 2026-03-08 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 5     | 0        | 5        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 6     | 2       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: R4 added capture-before-eval but not content validation.
-- Prevention: Any eval of external command output should validate content.
-- Root cause: `/add-debt` skill doesn't inject `"source"` field
-- Prevention: Check field parity with existing entries when appending JSONL.
-- Fixed: 5 items (+ propagation to 12 TDMS entries across 2 files)
-
----
-
-### Review 458: PR #423 R1 — Qodo + Semgrep + CI (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- stdin-tty-blocking
-- mcp-portability
-- bot-score-double-counting
-- semgrep-bounds-check
-- home-env-guard
-- zip-self-inclusion
-- script-permissions
-- raw-exceptions
-- --always-guard-fsreadfilesync0-with-processstdinistty-preven
-
-**Learnings:**
-
-- Qodo (3 bugs, guide, suggestions, compliance), Semgrep (2), CI
-- Replaced `cmd /c npx` with bare `npx` for memory server
-- Added early return guard in `parseSetupNodeCache`
-- Restored `chmod(0o755)` on example.py with Windows
-- Always guard `fs.readFileSync(0)` with `!process.stdin.isTTY` — prevents TTY
-- MCP server configs should use cross-platform commands (`npx`, `node`) not
-- Scoring formulas: denominator should match the population being measured, not
-
----
-
-### Review 459: PR #423 R2 — Qodo + Gemini (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- secret-packaging-denylist
-- yaml-boundary-detection
-- cache-counting-bug
-- restore-continueonerror
-- fp-1fp-4-test-assertions
-- global-settings-deterministic-testing
-- --tests-without-assertions-are-worse-than-no-tests-they-prov
-
-**Learnings:**
-
-- Qodo (Compliance + Code Suggestions), Gemini **Total:** 13 unique
-- Two regression tests had no assertions (always
-- Added `CLAUDE_GLOBAL_SETTINGS_PATH`
-- Sensitive local file access: intentional feature, already guarded in R1
-- Swallowed exceptions: optional feature, catch comment sufficient
-- Unstructured test logging: standard practice for test files
-- Stdin schema validation: upstream (Claude Code) guarantees structure
-
----
-
-### Review 462: PR #423 R3 — Qodo (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- symlink-exfiltration
-- expanded-sensitive-patterns
-- ci-aware-global-settings
-- cache-issue-fallback
-- block-push-to-main-protocol
-- yaml-comment-stripping
-- inline-yaml-with-block
-- --symlinks-are-a-common-packagingbuild-exfiltration-vector-a
-
-**Learnings:**
-
-- Qodo (Compliance + Code Suggestions) **Total:** 10 unique (after
-- Added SSH keys (`id_rsa`, `id_dsa`,
-- Added fallback message when `cacheResult.issue` is
-- Added `console.log("ok"); process.exit(0)` to
-- Audit trail user attribution: automated health score snapshots, no actor
-- Silent exception handling: R2 repeat, intentional design
-- Cache denominator revert: contradicts R2 fix (importance 8)
-
----
-
-### Review 465: PR #423 R4 — Qodo (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- path-traversal-via-symlink
-- bot-scoring-denominator
-- isstepboundary-sibling-keys
-- quoted-yaml-comment-handling
-- --issymlink-is-insufficient-for-path-traversal-use-resolve-
-
-**Learnings:**
-
-- Qodo (Compliance + Code Suggestions) **Total:** 8 unique (after
-- Existence score now only counts
-- Sibling YAML keys (`env:`, `name:`, `id:`) at
-- Local config exposure: R4 repeat (4th time) — intentional, guarded
-- Swallowed exceptions: R4 repeat (3rd time) — intentional design
-- Prompt field fallback: R3 repeat — fields never existed in protocol
-- Stdin payload cap: trusted upstream + 2000-char truncation already exists
-
----
-
-### Review 468: PR #423 R5 — Qodo + Semgrep (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- exclude-non-distributable-dirs
-- crash-safe-skippedappend
-- deterministic-fp-3-test
-- semgrep-bounds-check
-- --test-fixtures-env-var-overrides-make-checker-tests-determi
-
-**Learnings:**
-
-- Qodo (Compliance + Code Suggestions), Semgrep **Total:** 10 unique
-- Wrapped `relative_to()` in try/except to handle
-- Uses `CLAUDE_CHECK_GLOBAL_SETTINGS` +
-- Added `raw.length > 0` guard before `raw[0]` access
-- Local config exposure: R5 repeat (5th time)
-- Silent exception swallow: R5 repeat (4th time)
-- No audit logging: lightweight hook, prompts in CC logs
-
----
-
-### Review 470: SonarCloud R2-2 — ReDoS regex simplification + CI exec blocker (2026-03-09)
-
-**Date:** 2026-03-09 | **PR:** #393 | **Source:** sonarcloud+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 8     | 0        | 3        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 8     | 24    | 5       |
-
-**Patterns:**
-
-- check-propagationjs
-- audit-skill-templates
-- pr-review-skillmd
-- reviewssync-script
-- large-pr-scope-remains-the-1-systemic-driver
-- propagation-is-the-persistent-2-driver
-- pr-390-shows-small-prs-work
-- r1-review-quality-improving
-- pr-scope-discipline-paid-off
-- propagation-automation-is-production-validated
-- qodo-batch-rejection-saves-investigation-time
-- cross-platform-path-normalization-is-now-the-1-recurring-pat
-- jsonl-data-quality-inflates-review-metrics
-- zero-avoidable-rounds-from-unimplemented-retro-items
-- propagation-check
-- qodo-compliance-repeat-rejection
-- focused-pr-scope-continues-to-pay-off
-- propagation-discipline-held
-- multi-source-convergence-is-high-signal
-- tdms-data-quality-is-the-remaining-systemic-issue
-- fixtemplate-45-is-production-validated
-- safe-fsjs-received-substantive-security-fixes
-- sonarcloud-0-fp-rate
-- qodo-compliance-fp-rate-remains-high-50
-- test-production-regex-sync-is-a-new-pattern
-- unused-import-cleanup-11-files
-
-**Learnings:**
-
-- SonarCloud Security Hotspots + CI | **Round:** R2-2
-- Fixed: 8 items (1 CI blocker + 7 S5852 regex simplifications across 8 files)
-- Rejected: 3 items (S1523 string literal FP, S2245 test PRNG FP, S5443 test
-- Two-strikes rule works well for test isolation patterns — simple string
-- None. Clean forward progression.
-- Add quoted-value secret redaction edge case tests. Pattern:
-
----
-
-### Review 471: Qodo R2-3 — error handling, duplicate detection, cross-platform (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 9     | 9     | 0        | 4        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Qodo Compliance + Code Suggestions | **Round:** R2-3
-- Fixed: 9 items (across 17 files with propagation)
-- Rejected: 4 items (CI step dedupe, registry sort, checker validation,
-- Duplicate category keys across checkers are a silent data-clobbering risk —
-- Cross-platform test portability: always use `os.tmpdir()` instead of `/tmp`
-
----
-
-### Review 472: Mixed (Qodo + SonarCloud) R1 — ecosystem expansion test infrastructure (2026-03-09)
-
-**Date:** 2026-03-09 | **Source:** sonarcloud+qodo+coderabbit
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 197   | 197   | 3        | 6        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Qodo/CodeRabbit + SonarCloud | **Round:** R1 (3
-- Fixed: 197 items across 60+ files
-- Deferred: 3 items (cognitive complexity refactors — architectural)
-- Rejected: 6 items (test fixture passwords, safe Math.random, bounded regex)
-- When mocking via mutable function refs, give the DEFAULT value a matching
-- Broad `catch {}` in test setup hides real failures — always catch specific
-- SonarCloud S2068 (hard-coded passwords) is a known FP for test fixtures that
-
----
-
-### Review 469: PR #424 R3 — Mixed (CI + SonarCloud + Qodo) (2026-03-10)
-
-**Date:** 2026-03-10 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- s5852-two-strikes
-- ci-step-dedupe
-- js-strip-safety
-- unused-code-removal
-- error-safety-propagation-x7
-- processexit-guard-x7
-- finding-id-validation
-- --two-strikes-regex-replacement-with-string-parsing-is-faste
-
-**Learnings:**
-
-- CI/ESLint, SonarCloud Hotspots, Qodo Compliance + Code Suggestions
-- Replaced `stepRegex` in `generate-test-registry.js`
-- Prepended step index to CI step target values to prevent
-- Changed `file.replace(".js", "")` to
-- Removed `buildTaskMap` (resolve-dependencies.test),
-- Replaced `err.message` with
-- Wrapped `process.exit()` in
 
 ---
 
@@ -12723,67 +6204,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 356: PR #431 R2 — Data Effectiveness Audit Schema & Security Fixes (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 54    | 54    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 8     | 21    | 23      |
-
-**Patterns:**
-
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Root cause: Schema refactored without updating all consumers
-- Prevention: Schema migration checklist — grep all consumers before shipping
-- Root cause: Ad-hoc regex instead of using existing validatePathInDir helper
-- Prevention: Always use security-helpers.js for path validation
-- Root cause: Copy-paste fallbacks diverged from canonical implementation
-- Prevention: All fallbacks must match the 5-replace canonical pattern
-
----
-
-### Review 357: PR #431 R3 — Robustness, Complexity & Propagation Fixes (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 26    | 16    | 0        | 10       |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 8     | 14    | 2       |
-
-**Patterns:**
-
-- root-cause
-- prevention
-- propagation
-
-**Learnings:**
-
-- Root cause: Overly broad catch-all added to complement Windows path
-- Prevention: Canonical sanitizeError should only redact known-sensitive
-- Propagation: Fixed in 8 files (canonical + 7 fallback copies)
-- Root cause: Single functions doing too much — iteration + mutation +
-- Prevention: Extract helpers when function has >2 concerns
-- Root cause: Test helper didn't account for the security boundary
-
----
-
 ### Review 482: PR #429 R1 — SonarCloud + Qodo + CI (2026-03-13)
 
 **Date:** 2026-03-13 | **PR:** #429 | **Source:** sonarcloud+qodo
@@ -12807,154 +6227,6 @@ deduplicated, non-overlapping ranges):
 - Rejected: 2 items (S4036 PATH: `execFileSync` doesn't use shell; secure
 - Dead imports from pre-migration code can trigger CI blockers — `setDoc` was in
 - Hook placement matters: `block-push-to-main.js` is a PreToolUse hook (blocks
-
----
-
-### Review 483: PR #429 R2 — Qodo + Gemini + CI (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Auto-generated DEBT entries (e.g. from log-override.js hook bypass detection)
-- When Zod schemas and documentation disagree on enum values, check existing
-- SARIF upload guarded by `hashFiles() != ''` without asserting file existence
-- Validator scripts claiming "all files" coverage but only checking a hardcoded
-
----
-
-### Review 484: PR #429 R3 — SonarCloud + Qodo + CI (2026-03-13)
-
-**Date:** 2026-03-13 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Learnings:**
-
-- Semgrep `--test` mode catch blocks must distinguish between "flag not
-- IIFE-in-template-literal (`${(() => {...})()}`) is valid JS but hurts
-- Cross-round dedup saves effort: R3 item 7 (hook.command logging risk) was
-
----
-
-### Review 358: PR #431 R4 — Modernization, Complexity & Data Guards (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 52    | 37    | 0        | 15       |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 2        | 3     | 0     | 34      |
-
-**Patterns:**
-
-- lesson
-
-**Learnings:**
-
-- Lesson: When SonarCloud will re-flag the same items every round, fix them
-- Rejected: 15 items (2 R3 dedup, 13 over-engineering/false-positive)
-- POSIX path redaction (R3 dedup — R3 deliberately removed this regex)
-- OS temp directory for tests (R3 dedup — tests need repo boundary compat)
-- Symlink security in run-alerts.js (isSafeToWrite guard already at L515)
-
----
-
-### Review 359: PR #431 R5 — Backup Safety, Nullish Coalescing & Error Context (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 11    | 0        | 7        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 9     | 7       |
-
-**Learnings:**
-
-- Fixed: 11 items across 9 files
-- Rejected: 7 items (5 cross-round dedup from R3/R4, 1 architectural, 1 FP)
-- Symlink overwrite risk (R4 dedup — isSafeToWrite guard at L515)
-- Set.has x2 (R4 dedup — string.includes(), not array)
-- Unix path redaction (R3+R4 dedup — deliberately removed in R3)
-- Type-dependent design (R4 dedup — simple boolean in 6-line function)
-
----
-
-### Review 360: PR #431 R6 — Sanitization, Scaffold Validity & Baseline Bug (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 20    | 14    | 0        | 6        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 12    | 7       |
-
-**Learnings:**
-
-- Fixed: 14 items across 8 files
-- Rejected: 6 items (3 cross-round dedup R4+R5, 1 architectural, 2
-- Set.has for tableContent (R4+R5 dedup — string.includes(), not array)
-- Set.has for antiPatternSection (R4+R5 dedup — string.includes(), not array)
-- Type-dependent design (R4+R5 dedup — simple boolean in 6-line function)
-- No JSONL schema validation (architectural — downstream has Number.isFinite and
-
----
-
-### Review 361: PR #431 R7 — Flagged Section Sanitization, TOCTOU & Diminishing Returns (2026-03-14)
-
-**Date:** 2026-03-14 | **Source:** sonarcloud+qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 6     | 0        | 11       |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 9     | 7       |
-
-**Learnings:**
-
-- Fixed: 6 items across 5 files
-- Rejected: 11 items (4 cross-round dedup R4-R6, 1 intentional TODO scaffold, 6
-- Set.has for tableContent (R4+R5+R6 dedup — string.includes())
-- Set.has for antiPatternSection (R4+R5+R6 dedup — string.includes())
-- Type-dependent design (R4+R5+R6 dedup — simple boolean)
-- OS temp dir for test (R3+R4 dedup — repo boundary needed)
 
 ---
 
@@ -13047,74 +6319,6 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 49    | 47    | 0        | 2        |
-
----
-
-### Review 487: PR #448 R2 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 488: PR #448 R3 — Mixed (Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 489: PR #448 R4 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 490: PR #448 R5 — Mixed (CI+Qodo+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review rev-1: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 49    | 47    | 0        | 2        |
-
-**Patterns:**
-
-- grep-false-positive
-- migration-silent-noop
-- timestamp-string-comparison
-- review_rounds-mutation-bug
-- semgrep-over-suppression
-- cc-extraction
-- path-traversal-fix
-- symlink-guard
-
-**Learnings:**
-
-- grep patterns must not match success messages
-- migration scripts must fail loudly on missing source
-- use Date.parse not string comparison for timestamps
-- semgrep pattern-not-inside with $X.map suppresses unrelated $ARR[0]
 
 ---
 
@@ -13211,84 +6415,6 @@ deduplicated, non-overlapping ranges):
 
 - CI compiled output needs ESLint ignores
 - non-numeric coercion to 0 hides violations
-
----
-
-### Review backfill-448-r1: PR #448 R1 — Mixed Qodo+Gemini+SonarCloud (2026-03-18) (2026-03-18)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 49    | 47    | 0        | 2        |
-
----
-
-### Review backfill-448-r2: PR #448 R2 — Mixed CI+Qodo+SonarCloud (2026-03-18) (2026-03-18)
-
-> **Completeness:** partial
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 27    | 19    | 0        | 8        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 2     | 9     | 8       |
-
----
-
-### Review backfill-448-r3: PR #448 R3 — Mixed Qodo+SonarCloud (2026-03-18) (2026-03-18)
-
-> **Completeness:** partial
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 10    | 0        | 8        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 5     | 4       |
-
----
-
-### Review backfill-448-r4: PR #448 R4 — Mixed CI+Qodo+SonarCloud (2026-03-18) (2026-03-18)
-
-> **Completeness:** partial
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 17    | 10    | 0        | 7        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 1     | 5     | 4       |
-
----
-
-### Review backfill-448-r5: PR #448 R5 — Mixed CI+Qodo+SonarCloud (2026-03-18) (2026-03-18)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-18 | **PR:** #448 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 18    | 11    | 0        | 7        |
 
 ---
 
@@ -13438,87 +6564,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review backfill-453-r3: PR #453 R3 — Mixed (security redaction, date validation, atomic write) (2026-03-20) (2026-03-20)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-20 | **PR:** #453 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 22    | 22    | 0        | 0        |
-
----
-
-### Review backfill-453-r4: PR #453 R4 — Mixed (CC extraction, Prettier, backup) (2026-03-20) (2026-03-20)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-20 | **PR:** #453 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 11    | 0        | 0        |
-
----
-
-### Review backfill-456-r1: PR #456 R1 — Mixed Qodo+Gemini+CI (2026-03-20) (2026-03-20)
-
-**Date:** 2026-03-20 | **PR:** #456 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 3     | 0        | 2        |
-
----
-
-### Review backfill-456-r2: PR #456 R2 — Mixed CI+Qodo (2026-03-20) (2026-03-20)
-
-**Date:** 2026-03-20 | **PR:** #456 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 4     | 3     | 0        | 1        |
-
----
-
-### Review backfill-457-r1: PR #457 R1 — Mixed Qodo+CI (2026-03-20) (2026-03-20)
-
-**Date:** 2026-03-20 | **PR:** #457 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 7     | 0        | 1        |
-
----
-
-### Review 496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI) (2026-03-21)
-
-**Date:** 2026-03-21 | **PR:** #459 | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Generic Firestore collection methods need allowlists even when callers are
-- `startsWith("*")` in line classifiers must be gated by file extension to avoid
-- Token redaction using word-split misses embedded secrets (e.g.,
-- Meeting widget `setInterval` handlers: define as `useCallback` before effect
-
-**Learnings:**
-
-- `getCollectionDocs` accepted arbitrary collection names — added allowlist +
-- `isTrivialLine` treated `* list item` as trivial in .md files — gated
-- `sanitizeMessage` split on whitespace then checked tokens — switched to regex
-- SonarCloud `replaceAll` suggestions: use `replaceAll()` with string args
-- `String.raw` template literals with single backslash cause parse errors in CJS
-- PLAN.md: raw research findings should be archived, not deleted, to preserve
-- Rejected: `post-read-handler` console.warn — already has nosemgrep with
-
----
-
 ### Review review-496: PR #459 R1 — 16 review fixes (security, bugs, compliance, planning) (2026-03-21)
 
 **Date:** 2026-03-21 | **PR:** #459 | **Source:** mixed
@@ -13535,33 +6580,23 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review backfill-459-r1: PR #459 R1 — Mixed Qodo+Gemini+SonarCloud+CI (2026-03-21) (2026-03-21)
+### Review rev-8: PR #461 R1 — Mixed (2026-03-22) (2026-03-22)
 
-**Date:** 2026-03-21 | **PR:** #459 | **Source:** mixed
+**Date:** 2026-03-22 | **PR:** #461 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 17    | 16    | 0        | 1        |
+| 7     | 1     | 1        | 5        |
 
 ---
 
-### Review 497: PR #461 R1 — Mixed (Gemini+Qodo) (2026-03-22)
+### Review rev-9: PR #461 R2 — Qodo (2026-03-22) (2026-03-22)
 
 **Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 498: PR #461 R2 — Qodo (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 12    | 4     | 0        | 8        |
 
 ---
 
@@ -13594,114 +6629,6 @@ deduplicated, non-overlapping ranges):
 | Critical | Major | Minor | Trivial |
 | -------- | ----- | ----- | ------- |
 | 1        | 2     | 2     | 2       |
-
----
-
-### Review backfill-460-r1: PR #460 R1 — Mixed Qodo+Gemini (2026-03-22) (2026-03-22)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 10    | 0        | 0        |
-
----
-
-### Review backfill-460-r2: PR #460 R2 — Mixed Qodo (2026-03-22) (2026-03-22)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-22 | **PR:** #460 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 5     | 5     | 0        | 0        |
-
----
-
-### Review rev-8: PR #461 R1 — Mixed (2026-03-22) (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 7     | 1     | 1        | 5        |
-
----
-
-### Review rev-9: PR #461 R2 — Qodo (2026-03-22) (2026-03-22)
-
-**Date:** 2026-03-22 | **PR:** #461 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 12    | 4     | 0        | 8        |
-
----
-
-### Review 499: PR #468 R1 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 13    | 0     | 0        | 0        |
-
----
-
-### Review 500: PR #468 R2 — Mixed Gemini+Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 0     | 0        | 0        |
-
----
-
-### Review 501: PR #468 R3 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
-
----
-
-### Review 502: PR #468 R4 — Qodo (2026-03-24)
-
-**Date:** 2026-03-24 | **PR:** #468 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 8     | 0     | 0        | 0        |
-
----
-
-### Review backfill-464-r1: PR #464 R1 — Qodo (2026-03-24) (2026-03-24)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-24 | **PR:** #464 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
-
----
-
-### Review backfill-465-r1: PR #465 R1 — Qodo (2026-03-24) (2026-03-24)
-
-> **Completeness:** partial **Missing fields:** severity
-
-**Date:** 2026-03-24 | **PR:** #465 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 1     | 0     | 0        | 0        |
 
 ---
 
@@ -13742,6 +6669,30 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 8     | 5     | 0        | 3        |
+
+---
+
+### Review backfill-464-r1: PR #464 R1 — Qodo (2026-03-24) (2026-03-24)
+
+> **Completeness:** partial **Missing fields:** severity
+
+**Date:** 2026-03-24 | **PR:** #464 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 2     | 0     | 0        | 0        |
+
+---
+
+### Review backfill-465-r1: PR #465 R1 — Qodo (2026-03-24) (2026-03-24)
+
+> **Completeness:** partial **Missing fields:** severity
+
+**Date:** 2026-03-24 | **PR:** #465 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 1     | 0     | 0        | 0        |
 
 ---
 
@@ -14164,16 +7115,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 506: PR #492 R1 — Mixed (Qodo + Qodo Suggestions + Qodo Compliance + Gemini + SonarCloud + CI) (2026-04-04)
-
-**Date:** 2026-04-04 | **PR:** #492 | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
 ### Review review-pr492-r1: PR #492 R1 - Mixed (Qodo + Suggestions + Compliance + Gemini + SonarCloud + CI) (2026-04-04)
 
 **Date:** 2026-04-04 | **PR:** #492 | **Source:** mixed
@@ -14220,16 +7161,6 @@ deduplicated, non-overlapping ranges):
   beyond what reviewer flagged
 - Multi-source convergence (4 reviewers on GraphQL injection) is strongest
   signal, auto-elevate
-
----
-
-### Review 507: PR #492 R2 — Mixed (Doc Lint CI + Wave4 CI + Pattern Compliance CI + Qodo Compliance + Qodo Suggestions + SonarCloud) (2026-04-05)
-
-**Date:** 2026-04-05 | **PR:** #492 | **Source:** ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
 
 ---
 
@@ -14344,13 +7275,13 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 509: PR #488 R2 — Mixed (SonarCloud + Qodo Compliance + Qodo Suggestions + CI) (2026-04-07)
+### Review rev-67: PR #488 R2 (2026-04-07)
 
-**Date:** 2026-04-07 | **PR:** #488 | **Source:** sonarcloud+qodo+ci
+**Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 11    | 5     | 0        | 6        |
 
 ---
 
@@ -14361,16 +7292,6 @@ deduplicated, non-overlapping ranges):
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
 | 24    | 14    | 0        | 10       |
-
----
-
-### Review rev-67: PR #488 R2 (2026-04-07)
-
-**Date:** 2026-04-07 | **PR:** #488 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 11    | 5     | 0        | 6        |
 
 ---
 
@@ -15045,7 +7966,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review rev-94: (untitled) (2026-04-17)
+### Review rev-94: PR #516 R1 — SonarCloud + Qodo + Gemini + CI (2026-04-17)
 
 **Date:** 2026-04-17 | **PR:** #516 | **Source:** mixed
 
@@ -15060,907 +7981,6 @@ deduplicated, non-overlapping ranges):
 - path-traversal-validation
 - replaceAll-over-replace
 - block-scalar-blank-lines
-
----
-
-### Review rev-95: (untitled) (2026-04-17)
-
-**Date:** 2026-04-17 | **PR:** #516 | **Source:** mixed
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 10    | 4     | 0        | 6        |
-
-**Patterns:**
-
-- string-raw
-- array-push-batch
-- mode-enum-typo
-- maxBuffer
-
----
-
-### Review 44: Hook Refinements & Output Limiting (unknown)
-
-**Date:** unknown | **Source:** qodo
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- self-monitoring-for-pattern-checkers
-- windows-path-pattern-precision
-- output-limiting-for-terminal-safety
-- root-cause
-- prevention
-
-**Learnings:**
-
-- Qodo PR Compliance Guide **PR:** Session #19
-- Fourth round of refinements for pattern-check.sh and
-- Root cause: Scripts that enforce patterns should be checked themselves
-- Prevention: Add enforcement scripts to their own scan list
-- Pattern: Include `pattern-check.sh` in default files for
-- Root cause: `[A-Za-z]:*` matches valid POSIX files containing colons (e.g.,
-- Prevention: Check for `[A-Za-z]:/*` to require the slash after drive letter
-
----
-
-### Review 366: — PR #383 R5 (SonarCloud + Qodo + CI) — 2026-02-21 (unknown)
-
-**Date:** unknown | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- secret-leakage-in-redaction
-- path-traversal-2-files
-- mathrandom-prng
-- atomic-dual-file-writes
-- over-broad-s0-downgrade
-- sync-by-idhash
-- duplicate-debt-ids
-- unreachable-null-guard
-- swallowed-parse-errors
-- per-line-jsonl-safety
-- jsonparse-guard
-- body-discard-guard
-- -backreference-leaks-secrets
-- startswithroot-sep-is-fragile
-- dual-file-writes-need-atomicity
-- readjsonl-silent-catch-is-a-smell
-
-**Learnings:**
-
-- SonarCloud (24), Qodo Compliance (5), Qodo Code Suggestions (12), CI
-
----
-
-### Review 367: — PR #383 R6 (SonarCloud + Qodo + CI) — 2026-02-21 (unknown)
-
-**Date:** unknown | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- symlink-directory-bypass
-- verify-resolutionsjs-savejsonl
-- double-counting-bug
-- readjsonlfromgit-crash
-- reverify-resolvedjs-crash
-- partial-atomic-write
-- dedup-key-normalization
-- hotspot-body-discard
-- remove-assignment-of-i
-- responsebodycancel
-- propagation-misses-are-the-1-r6-driver
-- indexof-based-arg-parsing-avoids-sonarcloud-s1854
-- iswritesafe-must-check-parent-dirs
-
-**Learnings:**
-
-- SonarCloud (25), Qodo Compliance (5), Qodo Code Suggestions (9), CI
-
----
-
-### Review 368: — PR #383 R7 (SonarCloud + Qodo + CI) — 2026-02-21 (unknown)
-
-**Date:** unknown | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- 25-cc-reductions
-- 5-security-hotspots
-- compliance-fixes
-
-**Learnings:**
-
-- SonarCloud (30), Qodo Compliance (5), Qodo Code Suggestions (15), CI
-
----
-
-### Review 369: — PR #383 R8 (Qodo + SonarCloud) — 2026-02-21 (unknown)
-
-**Date:** unknown | **Source:** sonarcloud+qodo+ci
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- symlink-guard-sync-dedupedjs
-- fail-closed-fallback
-- atomic-paired-writes-with-rollback
-- parent-dir-symlink-check
-- path-traversal-guards
-- token-validation
-- sprint-status-robustness
-- triage-scattered-intake
-- verify-resolutionsjs
-- roadmap-debt-refs
-- propagation-remains-dominant
-- fail-closed-is-the-correct-default
-- parent-directory-symlink-traversal
-
-**Learnings:**
-
-- Qodo Code Suggestions (12), Qodo Compliance (5), SonarCloud (4), CI
-
----
-
-### Review 409: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-
----
-
-### Review 410: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-
----
-
-### Review 411: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-
----
-
-### Review 412: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-
----
-
-### Review 413: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- learnings
-- cc-extraction
-- replaceall-migration
-
-**Learnings:**
-
-- PR #407 R3 — SonarCloud + Qodo Batch 1
-
----
-
-### Review 414: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-
----
-
-### Review 415: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- mapfn-passes-element
-- index
-- array-never-pass-functions
-
-**Learnings:**
-
-- PR #407 R2 — Qodo/Gemini/CI **Patterns:**
-
----
-
-### Review 420: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- learnings
-- atomic-write-must-not-delete-target-before-rename
-
-**Learnings:**
-
-- PR #407 R7 — SonarCloud + Qodo + CI
-
----
-
-### Review 421: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- learnings
-- cc-extraction
-- replaceall-migration
-
-**Learnings:**
-
-- PR #407 R3 — SonarCloud + Qodo Batch 1
-
----
-
-### Review 422: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- pattern-checker-cant-detect-rmsync-within-nested-trycatch-
-
-**Learnings:**
-
-- PR #407 R6 — SonarCloud/Qodo/CI **Patterns:**
-
----
-
-### Review 423: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 197   | 19    | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 6        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- qodopr-agenttoml
-- fixtemplatesmd
-- pr-retro-skillmd
-- run-pattern-checker-before-pushing-review-fixes
-- cc-re-check-after-extraction-is-not-optional
-- propagation-enforcement-remains-the-top-systemic-issue
-- pr-review-skillmd-step-05
-- s5852-requires-recursive-regex-audit
-- pre-commit-cc-hook-may-not-cover-iife-expressions
-- small-prs-fewer-rounds
-- pr-review-skillmd-step-14
-- codepatternsmd
-- large-pr-scope-is-the-1-systemic-driver
-- propagation-is-now-partially-automated
-- multi-source-review-has-diminishing-returns
-- review-convergence-achieved
-- no-new-templates-needed
-- ecosystem-audit-template
-- add-security-checklist-to-ecosystem-audit-checker-template
-- efficiency
-- avoidable-rounds
-- avoidable-
-- single-highest-impact-change
-- trend
-- score
-- chain-1-walkastcontainscallto-cc
-- chain-2-isinsidetryblock
-- chain-3-hasrenamesyncnearby
-- chain-4-chainexpression
-- chain-5-qodo-compliance-repeats
-- cc-progressive-reduction
-- propagation-miss
-- qodo-repeat-rejection-noise
-- fixtemplates
-- pre-push-hook
-- blocking-implement-cc-pre-push-check
-- regex-sweep-after-any-s5852-fix
-- when-adding-escapesanitization-functions
-- auto-compute-changelog-metrics
-- note
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-- Add `npm run patterns:check --staged` to the R1 fix workflow.
-- After extracting helpers for CC reduction, always re-check the
-- Add `scripts/debt/` to compliance exclusion paths
-- Add reminder to CC extraction template: "After
-- No new known churn patterns needed. PR #384's issues
-- Round count: #379(11) → #382(3) → #383(8) → **#384(4)**.
-
----
-
-### Review 424: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- mapfn-passes-element
-- index
-- array-never-pass-functions
-
-**Learnings:**
-
-- PR #407 R2 — Qodo/Gemini/CI **Patterns:**
-
----
-
-### Review 425: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- severity
-- learnings
-- isretrosectionend-logic-inversion-prheadingretestline
-
-**Learnings:**
-
-- PR #407 R8 — CI/Qodo/SonarCloud **Patterns:**
-
----
-
-### Review 426: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- already-fixed-stale
-- learnings
-
-**Learnings:**
-
-- PR #407 R7 — SonarCloud + Qodo + CI
-
----
-
-### Review 427: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- learnings
-- cc-extraction
-- replaceall-migration
-
-**Learnings:**
-
-- PR #407 R3 — SonarCloud + Qodo Batch 1
-
----
-
-### Review 428: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- pattern-checker-cant-detect-rmsync-within-nested-trycatch-
-
-**Learnings:**
-
-- PR #407 R6 — SonarCloud/Qodo/CI **Patterns:**
-
----
-
-### Review 429: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-
----
-
-### Review 430: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- mapfn-passes-element
-- index
-- array-never-pass-functions
-
-**Learnings:**
-
-- PR #407 R2 — Qodo/Gemini/CI **Patterns:**
-
----
-
-### Review 431: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- severity
-- learnings
-- isretrosectionend-logic-inversion-prheadingretestline
-
-**Learnings:**
-
-- PR #407 R8 — CI/Qodo/SonarCloud **Patterns:**
-- SonarCloud (4 code smells)
-
----
-
-### Review 432: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- already-fixed-stale
-- learnings
-
-**Learnings:**
-
-- PR #407 R7 — SonarCloud + Qodo + CI
-
----
-
-### Review 433: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- learnings
-- cc-extraction
-- replaceall-migration
-
-**Learnings:**
-
-- PR #407 R3 — SonarCloud + Qodo Batch 1
-
----
-
-### Review 434: (unknown)
-
-**Date:** unknown | **PR:** #407 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- atomic-writes-should-attempt-renamesync-first
-- fall-back-to
-
-**Learnings:**
-
-- PR #407 R10 — SonarCloud/Qodo/Dependency Review
-
----
-
-### Review 435: (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- composite-key-for-nullable-ids
-- rollback-on-dual-write-failure
-
-**Learnings:**
-
-- Maintenance PR R3 **Patterns:**
-
----
-
-### Review 436: (unknown)
-
-**Date:** unknown | **PR:** #395 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- sanitize-errorjs-sanitize-inputjs-json-key-quoting
-- debt-7598
-- debt-7603
-
-**Learnings:**
-
-- PR #395 R2 **Patterns:**
-
----
-
-### Review 437: (unknown)
-
-**Date:** unknown | **PR:** #398 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Severity Breakdown:**
-
-| Critical | Major | Minor | Trivial |
-| -------- | ----- | ----- | ------- |
-| 0        | 0     | 0     | 0       |
-
-**Patterns:**
-
-- premature-dedup-new-set-before-duplicate-detection-defeats
-
-**Learnings:**
-
-- PR #398 R2 **Patterns:**
-
----
-
-### Review review-pr489-r1: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
-
-**Date:** unknown | **PR:** #489 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
-- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
-- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
-- sanitizeError import paths: 5 hooks + rotate-state.js used
-- Source traceability false-negative: `checkSourceTraceability()` only checked
-- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
-- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
-- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
-- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
-
----
-
-### Review review-pr489-r2: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
-
-**Date:** unknown | **PR:** #489 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
-- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
-- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
-- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
-- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
-- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
 
 ---
 
@@ -15986,75 +8006,6 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
-- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
-- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
-- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
-- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
-- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
-
----
-
-### Review 66: PR #491 R1 (Mixed: SonarCloud + Qodo + Gemini) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Unguarded symlink delete: `rmSync` in run-consolidation.js cleanup path
-- Repomix bloat: 113K lines of packed external repos committed to git. Fix:
-- Dead code: `PATTERN_KEYWORDS` array (40 regexes) defined but never referenced
-- Exit code doc mismatch: header documented `2 = error` but code used
-- `String.raw` for escaped backslashes: SonarCloud S6638 — use `String.raw`
-- Test hardening: readFileSync try/catch, Array→Set for `.has()` lookups.
-- Rejected node:test→Jest suggestion: SoNash uses node:test, not Jest.
-
----
-
-### Review 66-pr493: PR #493 R1 (Mixed: Qodo + Gemini + SonarCloud + Doc Lint) (unknown) (unknown)
-
-**Date:** unknown | **PR:** #493 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
----
-
-### Review 67: PR #491 R2 (Mixed: CI + Qodo) (unknown)
-
-**Date:** unknown | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
-
-**Patterns:**
-
-- Pattern checker false positives: `symlink-parent-traversal` regex only
-- `silent-json-parse` line-level check missed try/catch on prior line. Added
-- `mkdirSync` before `isSafeToWrite` check: genuine TOCTOU in run-alerts.js
-- Exit code 2→1: run-consolidation.js used non-standard exit(2). Fixed.
-- TDMS data quality: 239 duplicate `audit:hash-*` entries, 412 evidence field
-- Path disclosure: R1 fix logged full `ARCHIVE_DIR` path to stderr. Removed.
-- Rejected exit code revert suggestions: contradicts CI pattern compliance gate.
-
----
-
 ### Review 67-pr494: PR #494 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
 
 **Date:** unknown | **PR:** #494 | **Source:** manual
@@ -16076,7 +8027,5453 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
+### Review 1: Phase 1 Documentation Templates (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- self-compliance-failure
+- status-synchronization-gap
+- template-placeholder-ambiguity
+- missing-cross-reference-validation
+- metadata-inconsistency
+
+**Learnings:**
+
+- Root cause: DOCUMENTATION_STANDARDS.md created without validating against
+- Prevention: Added "Document follows its own standards" to Pre-Commit
+- Root cause: Updated PLAN document but didn't sync SESSION_CONTEXT.md (62% →
+- Prevention: Added Status Synchronization Protocol matrix to
+- Root cause: Placeholders like `[Step 1]`, `[Brief description]` too generic
+- Prevention: Added concrete examples and clarifying text to all templates
+- Root cause: No static analysis run during creation
+
+---
+
+### Review 2: File Rename & Cross-Reference Updates (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- tool-specific-language-persistence
+- incomplete-link-format-coverage
+- missing-forward-reference-annotations
+- template-contradictions
+- broken-shell-commands-in-examples
+- generic-examples-lacking-concrete-mappings
+
+**Learnings:**
+
+- CodeRabbit 🐰 + Qodo (first multi-tool review)
+- Root cause: After renaming CODERABBIT_REVIEW_PROCESS.md →
+- Prevention: When renaming files, grep for old terminology in
+- Files: AI_HANDOFF.md:61, ROADMAP_LOG.md:21
+- Root cause: Cross-Reference Validation protocol only listed inline links
+- Prevention: Expanded protocol to cover all Markdown link formats
+- Files: DOCUMENTATION_STANDARDS.md:558-570
+
+---
+
+### Review 3: Mandatory Learning Enforcement (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- phase-assignment-inconsistency
+- document-type-classification-ambiguity
+
+**Learnings:**
+
+- CodeRabbit 🐰 (review of learning system additions)
+- Root cause: "Phase 1 or 4" placeholder left from template, not updated when
+- Prevention: When documenting forward references, commit to single phase or
+- Files: AI_REVIEW_PROCESS.md:448
+- Root cause: Related Documents section mixes Markdown docs with
+- Prevention: Could separate "Documentation" vs "Tools/Automation"
+- Files: AI_REVIEW_PROCESS.md:418-422 (deferred - functional as-is)
+
+---
+
+### Review 4: Phase 1.5 Multi-AI Review System (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- process-overheadcomplexity-creep
+- script-robustness-gaps
+- documentation-accuracy-drift
+- unused-code-artifacts
+- -git-command-guards-check-commit-count-before-headn
+- -command-availability-checks-command--v-before-using-tools
+- -accurate-completion-messages-track-warningsfailures
+
+**Learnings:**
+
+- CodeRabbit 🐰 + Qodo (comprehensive review of governance
+- Root cause: Layering governance procedures without considering cumulative
+- Example: "1% chance" threshold creates decision fatigue; multiple mandatory
+- Prevention: During reviews, explicitly analyze complexity/overhead impact.
+- Resolution: Softened "1% chance" to "clearly applies" - maintains intent
+- Root cause: Scripts written for happy-path only without edge case guards
+- Examples: HEAD~10 fails on repos with <10 commits; timeout command not
+
+---
+
+### Review 5: CodeRabbit Round 2 - Minor Fixes (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- npm-install-robustness
+- markdown-lint-violations
+- misleading-variable-names
+- overly-broad-pattern-matching
+
+**Learnings:**
+
+- Root cause: npm install can fail on peer dependency conflicts in sandboxed
+- Example: Missing --legacy-peer-deps flag in session-start.sh
+- Prevention: Always include --legacy-peer-deps in automated npm install
+- Resolution: Added flag to both npm install commands in session-start.sh
+- Root cause: Blank lines between consecutive blockquotes flagged by
+- Example: Blockquotes in AI_WORKFLOW.md separated by blank lines
+- Prevention: Use `>` continuation for consecutive blockquotes, or join into
+
+---
+
+### Review 7: CodeRabbit Round 4 - Off-by-One Bug (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- off-by-one-in-git-history-commands
+
+**Learnings:**
+
+- Root cause: HEAD~N requires N+1 commits in history; if COMMIT_COUNT=10,
+- Example: `LOOKBACK=$((COMMIT_COUNT < 10 ? COMMIT_COUNT : 10))` allows
+- Prevention: Always use `COMMIT_COUNT - 1` as upper bound for HEAD~N
+- Resolution: Fixed LOOKBACK calculation to ensure LOOKBACK < COMMIT_COUNT
+- Edge cases in git commands compound - the original guard for
+
+---
+
+### Review 8: CI Fix & Reference Corrections (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- missing-explicit-dependency
+- section-reference-inaccuracy
+- document-archival-conflict
+- undocumented-advisory-content
+
+**Learnings:**
+
+- Root cause: eslint required as peer dependency but not installed explicitly
+- Example: `npm ci` failed with "Missing: eslint@9.39.2 from lock file"
+- Prevention: When adding packages that require eslint (e.g.,
+- Resolution: Added eslint ^9.39.2 to devDependencies
+- Root cause: Referenced section by abbreviated name instead of full title
+- Example: "Enforcement Mechanism" instead of "Learning Capture Enforcement
+
+---
+
+### Review 9: CodeRabbit Round 6 - Documentation Clarity (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- conflicting-code-examples
+- retrospective-context-ambiguity
+- forward-looking-enforcement-vagueness
+- ambiguous-version-history-phrasing
+
+**Learnings:**
+
+- Root cause: Review #4 pattern for HEAD~N guard was incorrect, Review #7
+- Example: Two different LOOKBACK formulas in same document created confusion
+- Prevention: When fixing bugs in documented patterns, annotate the original
+- Resolution: Added correction note to Review #4 with corrected code inline
+- Root cause: Review #6 read as contemporaneous discovery of Review #5's gap
+- Example: "Adding Review #5 and #6 retroactively" wasn't clear about
+- Prevention: Explicitly label retrospective analyses upfront
+
+---
+
+### Review 10: Session Hook Robustness & CI Fixes (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- npm-install-modifies-lockfile
+- missing-transitive-dependencies
+- lockfile-existence-not-checked
+- emptycorrupted-lockfile-edge-case
+- unsafe-variable-increment
+- missing---legacy-peer-deps
+
+**Learnings:**
+
+- Root cause: Session hook used `npm install` which modifies
+- Example: Every session start created lockfile drift, breaking CI's `npm ci`
+- Prevention: Always use `npm ci` in automated scripts; never `npm install`
+- Resolution: Changed session-start.sh to use `npm ci`
+- Root cause: External deployment check expected jest, not in package.json
+
+---
+
+### Review 11: Lockfile Sync & Workflow Configuration (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- lockfile-structural-inconsistencies
+- feature-branches-in-workflow-triggers
+- missing-firebase-environment-variables
+- npm-cache-keyed-on-wrong-lockfile
+- secrets-validation-missing
+
+**Learnings:**
+
+- Root cause: Lockfile generated with duplicated/invalid entries that npm ci
+- Example: CI failed with "Missing jest@30.2.0" but package-lock.json HAD
+- Prevention: After ANY lockfile changes, verify with
+- Resolution: Complete regeneration (`rm package-lock.json && npm install`)
+- Root cause: Adding feature branch to deploy-firebase.yml for testing
+- Example: `claude/review-repo-docs-D4nYF` in triggers is temporary
+
+---
+
+### Review 12: The Jest Incident - Understanding WHY Before Fixing (2026-01-01)
+
+**Date:** 2026-01-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- -fixing-without-understanding-critical---anti-pattern
+- npm-ci-vs-npm-install-vs-cloud-build
+- peer-dependencies-are-real-dependencies
+- cascade-effect-of-wrong-fixes
+- does-this-project-actually-use-x
+- what-is-the-real-root-cause
+- is-this-symptom-or-cause
+- npm-ci---legacy-peer-deps
+- added-jest-lockfile-bloated
+- lockfile-sync-issues-more-regeneration-attempts
+- multiple-commits-user-frustration-wasted-time
+
+**Learnings:**
+
+- CI failures across multiple commits **Tools:** Qodo + CI +
+- A cascade of CI failures over multiple hours, caused by
+- Root cause: Saw "jest" in error message → assumed project needed jest →
+- Example: "an external CI check expects jest" - but this was WRONG
+- Prevention: **ALWAYS ask "WHY?" before making changes:**
+- Resolution: Removed jest from root package.json; fixed actual issue (peer
+- Root cause: Different npm commands have different peer dependency behavior
+
+---
+
+### Review 13: Phase 2 Automation Scripts (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- -command-injection-vulnerability
+- -arbitrary-file-deletion
+- -exit-code-capture-bug
+- filename-with-spaces-breaks-loop
+- missing-workflow-permissions
+- unused-parameters-not-cleaned
+- dry-violation---duplicated-helpers
+- double-script-execution
+- brittle-output-parsing
+- regex-with-global-flag-in-loop
+
+**Learnings:**
+
+- CodeRabbit 🐰 + Qodo + GitHub Actions CI
+- Root cause: Shell command interpolation without sanitization
+- Example: `git rev-list --count --since="${sinceDate}" HEAD` in
+- Prevention: Sanitize all external inputs before shell interpolation; use
+- Resolution: Add input validation for date strings (regex match ISO format
+
+---
+
+### Review 14: CodeRabbit/Qodo Fix Implementation (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- regex-with-test-in-loops
+- input-validation-patterns
+- the-latter-captures-assignment-exit-code-always-0-not-comman
+- spaces-in-filenames-break-word-splitting-in-for-loops
+- global-flag-makes-lastindex-stateful-causing-missed-matches
+
+**Learnings:**
+
+- Implementation session following Review #13 findings **Scope:** All
+- DRY violation: Extract `safeReadFile`/`safeWriteFile` to
+- ESLint JSON output parsing (requires jq dependency)
+- Cross-platform path normalization for Windows compatibility
+- The latter captures assignment exit code (always 0), not command exit code
+- `while IFS= read -r file` NOT `for file in $list`
+- Spaces in filenames break word-splitting in for loops
+
+---
+
+### Review 15: CI Workflow and Documentation Fixes (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- subshell-variable-scope
+- yaml-template-literal-safety
+- github-actions-bot-detection
+- documentation-compliance
+
+**Learnings:**
+
+- CI failure feedback + continuation of Review #14 fixes **Scope:**
+- Variables set in `while` loop fed by pipe (`|`)
+- Template literals with `${}` at line start
+- Wrong: Template literal spanning multiple lines in YAML
+- Right: `['line1', 'line2', variable].join('\n')`
+- Wrong: `c.user.type === 'Bot'` (GitHub Actions may not set this)
+- Right: `c.user.login === 'github-actions[bot]'`
+
+---
+
+### Review 16: Security Hardening and Robustness (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- markdown-injection-prevention
+- safe-github-actions-interpolation
+- filename-safe-file-lists
+- exit-code-over-output-parsing
+- escape-triple-backticks
+- escape-github-actions-syntax
+- update-parsing-to-use-same-separator
+
+**Learnings:**
+
+- CodeRabbit/Qodo continued feedback on Review #15 commit **Scope:**
+- Always sanitize user/tool output before
+- Escape triple backticks: `sed 's/\`\`\`/\\\\`\\\\`\\\\`/g'`
+- Escape GitHub Actions syntax: `sed 's/\${{/\\${{/g'`
+- Never use `${{ }}` in JavaScript
+- Wrong: `const x = \`${{ steps.foo.outputs.bar }}\`;`
+- Right: Use `env:` block and `process.env.VAR`
+
+---
+
+### Review 17: Remaining Qodo/CodeRabbit Fixes (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cross-platform-path-handling
+- safe-error-handling-for-non-error-throws
+- yaml-expression-parsing-gotcha
+- markdown-link-portability
+- husky-ci-compatibility
+- stderr-corrupts-json-parsing
+
+**Learnings:**
+
+- Full Qodo compliance feedback + CodeRabbit suggestions from Review
+- Cross-platform compatibility, robustness, workflow YAML fixes
+- Use `path.relative()` instead of string
+- Wrong: `resolvedPath.startsWith(resolvedRoot)` (fails on Windows
+- Right: `path.relative(root, path).startsWith('..')` (works everywhere)
+- JavaScript allows throwing any
+- Wrong: `error.message` (crashes if non-Error thrown)
+
+---
+
+### Review 18: Security Hardening and Temp File Cleanup (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- windows-cross-drive-security
+- accurate-path-traversal-detection
+- shell-temp-file-cleanup
+- exit-code-differentiation
+- retry-loops-for-race-conditions
+- secure-error-handling
+- secure-logging-practices
+- works-even-if-script-exits-early-due-to-error
+- 0-successno-action-needed
+- 1-action-recommended-not-an-error
+- check-exit-code-explicitly-not-just-if-command-failed
+
+**Learnings:**
+
+- Qodo compliance feedback + CodeRabbit PR suggestions **Scope:**
+- Check: Compare drive letters before using relative path check
+- Simple `startsWith('..')` has false
+- Wrong: `rel.startsWith('..')` matches filenames like `..hidden.md`
+- Right: `/^\.\.(?:[\\/]|$)/.test(rel)` ensures it's actually traversing up
+- Always use trap for guaranteed cleanup
+- Pattern: `TMPFILE=$(mktemp); trap 'rm -f "$TMPFILE"' EXIT`
+
+---
+
+### Review 19: Follow-up Refinements (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- retry-loop-failure-tracking
+- block-dangerous-paths-early
+- guarantee-valid-json-output
+- proper-nouns-in-documentation
+- block-absolute-unix-paths
+- block-absolute-windows-paths
+- markdown-not-markdown-language-name-is-a-proper-noun
+- javascript-not-javascript-github-not-github-etc
+
+**Learnings:**
+
+- CodeRabbit and Qodo follow-up suggestions after Review #18 fixes.
+- Don't assume loop exit means success
+- Wrong: `for i in 1 2 3; do cmd && break; sleep 5; done`
+- Right: Track `SUCCESS=false`, set `SUCCESS=true` on success, fail if still
+- Check user input before path resolution
+- Block absolute Unix paths: `filePath.startsWith('/')`
+- Block absolute Windows paths: `/^[A-Za-z]:/.test(filePath)`
+
+---
+
+### Review 20: Security Error Handling & Cross-Platform Fixes (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- recurring-issues-must-be-fixed-not-noted
+- error-sanitization-pattern
+- extensionless-file-detection-by-shebang
+- unique-delimiter-for-githuboutput
+- preserve-stderr-for-debugging-while-checking-exit-code
+
+**Learnings:**
+
+- FINALLY addressing the recurring Qodo compliance findings for
+- Reusable error sanitization utility that:
+- Strips sensitive patterns (home directories, credentials, connection
+- Works with Error objects, strings, and unknown throws
+- Provides `sanitizeError()`, `sanitizeErrorForJson()`, `createSafeLogger()`,
+- Pattern #1 (error sanitization) - This is now a
+
+---
+
+### Review 21: Robust Error Handling & Centralized Sanitization (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- incomplete-sanitization-patterns
+- silent-error-swallowing
+- centralized-utilities-must-be-used-not-just-created
+- aborterror-handling-for-web-share-api
+- path-traversal-prevention
+- robust-file-reading
+- github-actions-expression-defaults
+- creating-sanitize-errorjs-was-not-enough
+- typescript-files-continued-using-incomplete-inline-regex
+
+**Learnings:**
+
+- Follow-up to Review #20 addressing recurring compliance findings
+- Why Error Handling Issues Kept Getting Flagged:\*\*
+- TypeScript re-export wrapper providing
+- Creating `sanitize-error.js` was not enough
+- TypeScript files continued using incomplete inline regex
+- Fix: Import shared utility in ALL files, create TS wrapper for type safety
+- Pattern #1 (centralized utilities) - reinforced
+
+---
+
+### Review 22: Phase 3 CodeRabbit Reviews (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- documentation-must-match-codebase-state
+- sequential-numbering-must-be-verified
+- link-references-must-be-consistent
+- warning-terminology-should-be-meaningful
+- ai-instructions-should-be-document-specific
+- when-copyingediting-sections-check-for-duplicate-numbers
+- if-a-file-is-archived-all-references-should-use-the-archived
+- dont-mix-plain-text-references-with-markdown-links
+- reserve-blocker-for-actual-blockers
+- use-note-for-informational-notices
+- use-critical-sparingly-for-actual-critical-items
+
+**Learnings:**
+
+- CodeRabbit automated reviews during Phase 3 documentation
+- When copying/editing sections, check for duplicate numbers
+- Easy to miss: "Layer 5" appearing twice in security layers
+- If a file is archived, ALL references should use the archived path
+- Don't mix plain text references with markdown links
+- Reserve "⚠️ BLOCKER" for actual blockers
+- Use "📌 NOTE" for informational notices
+
+---
+
+### Review 23: Link Text Consistency (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- CodeRabbit review of TRIGGERS.md addition and prior Phase 3
+- Link display text should show clean filename; actual path goes in the
+- Consistency in documentation formatting matters even for small
+
+---
+
+### Review 24: Pattern Automation Script Security (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- secure-logging-for-code-analysis-tools
+- existssync-before-readfilesync
+- fallback-regex-wildcards
+- content-based-hashing-for-stable-ids
+
+**Learnings:**
+
+- Qodo PR Compliance Review of `suggest-pattern-automation.js` **PR:**
+- Root cause: Script logged extracted code snippets directly, potentially
+- Example: `console.log(\`Code: ${code.slice(0, 60)}\`)` - could log API keys
+- Prevention: Always sanitize before logging extracted code: redact long
+- Resolution: Added `sanitizeCodeForLogging()` with secret/path redaction
+- Root cause: `readFileSync()` without existence check crashes with unhelpful
+
+---
+
+### Review 25: Pattern Automation Script Robustness (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-disclosure-prevention
+- review-metadata-preservation
+- original-flag-preservation
+- parse-failure-abort
+- basename-for-error-messages
+- regex-keys-vs-literal-keys
+- capture-groups-for-metadata
+- preserve-original-semantics
+- fail-fast-on-parse-errors
+
+**Learnings:**
+
+- Qodo/CodeRabbit Second Review of `suggest-pattern-automation.js`
+- Qodo Compliance Checker, CodeRabbit
+- Wrong: `console.error(\`File not found: ${LEARNINGS_FILE}\`)`
+- Right: `const LEARNINGS_FILENAME = basename(LEARNINGS_FILE);` then use
+- Why: Full paths can expose filesystem structure, usernames, deployment
+- Wrong: `if (code.toLowerCase().includes(key.toLowerCase()))`
+- Right: `const keyRegex = new RegExp(key, 'i'); if (keyRegex.test(code))`
+
+---
+
+### Review 26: Pattern Automation Script - Third Round (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- sanitize-pattern-output
+- improved-path-redaction
+- original-flag-preservation
+- lazy-quantifiers-in-retry-loop-pattern
+- derived-data-needs-same-sanitization
+- path-regex-completeness
+- nullish-coalescing-for-semantic-defaults
+- lazy-quantifiers-for-bounded-patterns
+
+**Learnings:**
+
+- Qodo/CodeRabbit Third Review of `suggest-pattern-automation.js`
+- Qodo Compliance Checker, CodeRabbit
+- Wrong: `suggested.pattern.slice(0, 50)` - truncates but doesn't sanitize
+- Right: `sanitizeCodeForLogging(suggested.pattern, 50)` - sanitizes AND
+- Why: Patterns are derived from code and may contain embedded secrets
+- Wrong: `/\/[A-Za-z]\/[^/\s]+\/[^/\s]+/g` - only matches `/A/path/segments`
+- Right: Unix: `/(?:^|[\s"'\`(])\/(?:[^/\s]+\/){2,}[^/\s]+/g`
+
+---
+
+### Review 27: Pattern Automation Script - Fourth Round (2026-01-02)
+
+**Date:** 2026-01-02 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- sanitize-originalcode-before-persistence
+- capture-groups-for-path-redaction
+- multiline-regex-lookahead
+- regex-flags-sanitization
+- stateful-global-regex-with-test
+- restrictive-file-permissions
+- artifact-vs-console-sanitization
+- capture-groups-for-replacements
+- global-flag-with-test
+- multiline-lookahead
+- flag-validation-for-dynamic-regexp
+
+**Learnings:**
+
+- Qodo/CodeRabbit Fourth Review of `suggest-pattern-automation.js`
+- Qodo Compliance Checker, CodeRabbit
+- Wrong: `originalCode: code` - raw code written to JSON file
+- Right: `originalCode: sanitizeCodeForLogging(code, 120)`
+- Why: Artifacts (JSON files) persist beyond the session and can leak secrets
+- Wrong: `.replace(/pattern/g, (m) => m[0] + 'replacement')` - callback
+- Right: `.replace(/(prefix)(path)/g, '$1/[REDACTED]')` - capture groups
+
+---
+
+### Review 28: Documentation & Process Planning Improvements (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- document-consistency-for-severity-levels
+- avoid-brittle-line-number-references
+- explicit-security-item-tracking
+- avoid-planning-document-fragmentation
+- verify-counts-when-referencing-external-docs
+
+**Learnings:**
+
+- CodeRabbit PR Review + technical-writer Agent Review **PR:**
+- CodeRabbit, technical-writer agent
+- Created INTEGRATED_IMPROVEMENT_PLAN.md to consolidate fragmented
+- Root cause: claude.md and AI_WORKFLOW.md used different MUST/SHOULD for
+- Prevention: When creating parallel checklists in multiple docs, ensure
+- Resolution: SHOULD for quality-improvement tools (technical-writer,
+
+---
+
+### Review 29: Documentation Consistency & Verification Refinements (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- make-acceptance-criteria-objectively-verifiable
+- clarify-trigger-ordering-when-multiple-apply
+- specify-workflow-ordering-in-multi-step-triggers
+- keep-cross-document-references-current
+
+**Learnings:**
+
+- CodeRabbit Third Round Review **PR:** `claude/session-start-h9O9F`
+- Follow-up review after addressing second round feedback. Focus on
+- Root cause: "Broken links fixed" is subjective; no verification step
+- Prevention: Always include verification command in acceptance criteria
+- Pattern: "- [ ] X completed (validated by `npm run Y`)"
+- Root cause: Both systematic-debugging and debugger could apply to complex
+- Prevention: When triggers can overlap, specify ordering explicitly
+
+---
+
+### Review 30: Claude Hooks PR Compliance & Security (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- move-complex-hook-logic-to-scripts
+- prioritize-security-over-general-patterns
+- validate-and-sanitize-hook-arguments
+- never-expose-config-secrets-in-hook-output
+- order-file-type-detection-by-specificity
+- use-case-insensitive-matching-for-security-keywords
+- cover-all-related-tools-in-hooks
+- check-for-empty-input
+
+**Learnings:**
+
+- Qodo Code Review + CodeRabbit **PR:**
+- PR adding PostToolUse and UserPromptSubmit hooks to
+- Root cause: Inline prompts with 400+ char decision trees are unmaintainable
+- Prevention: Create dedicated `.claude/hooks/*.sh` scripts
+- Benefit: Scripts are testable, maintainable, and can use proper control
+
+---
+
+### Review 31: CodeRabbit CLI Hook Improvements (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- iterate-over-all-arguments-in-hooks
+- unquoted-arguments-for-multi-value
+- timeout-external-commands
+- bash-parameter-expansion-over-external-commands
+
+**Learnings:**
+
+- Qodo + CodeRabbit PR (combined) **PR:**
+- First review of the new CodeRabbit CLI integration hook.
+- Root cause: Only `$1` was processed, ignoring rest of `$@`
+- Prevention: Use `for FILE in "$@"; do ... done` loop
+- Right: `for FILE in "$@"; do ... done`
+
+---
+
+### Review 32: CodeRabbit CLI Robustness (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- capture-exit-status-dont-swallow-errors
+- use-set--f-to-prevent-glob-expansion
+- portable-bash-version-compatibility
+- bound-hook-runtime-with-file-limits
+- keep-protocol-output-clean-stdout-vs-stderr
+
+**Learnings:**
+
+- Second round of feedback on CodeRabbit CLI integration addressing
+- Root cause: `|| true` hides whether command failed
+- Prevention: Use `|| STATUS=$?` and check status explicitly
+- Wrong: `OUTPUT=$(cmd) || true`
+- Right: `OUTPUT=$(cmd) || STATUS=$?; if [[ $STATUS -eq 124 ]]; then ...`
+
+---
+
+### Review 33: Qodo PR Compliance + Script Security & Documentation Fixes (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-traversal-prevention-with-containment-check
+- distinguish-enoent-from-other-errors
+- always-close-readline-interface
+- fail-ci-fast-on-missing-required-config
+- cross-platform-exec-with-stdio-options
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #12 (code
+- Comprehensive code review addressing security vulnerabilities,
+- Root cause: User-controlled paths used with `fs.statSync`/`fs.readFileSync`
+- Prevention: Resolve path with `path.resolve()`, then verify it stays within
+- Wrong: `fs.readFileSync(path.join(projectRoot, userPath))`
+- Note: Also check edge case where resolved path equals projectRoot exactly
+
+---
+
+### Review 34: Qodo PR Compliance Follow-up - Security Hardening & Documentation (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- use-pathrelative-for-containment-checks
+- validate-cli-arguments-at-entry-point
+- redact-secrets-from-historical-docs
+- include-all-working-tree-changes-in-detection
+- preserve-multi-group-regex-matches
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #12
+- Second round of feedback following Review #33, addressing remaining
+- Root cause: String-based `startsWith()` can be bypassed on different OS
+- Prevention: Use `path.relative()` - if result starts with `..` or is
+- Note: `rel === ''` means path equals root exactly (may or may not be
+- Root cause: User-supplied paths passed directly to filesystem operations
+
+---
+
+### Review 36: Qodo PR Compliance + CodeRabbit Script & Documentation Fixes (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- wrap-all-file-operations-in-trycatch
+- sanitize-error-output-for-ci-logs
+- directories-are-valid-deliverables
+- dont-suppress-script-errors
+- deduplicate-user-input
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #14 **Tools:**
+- Fourth round of feedback addressing error handling robustness,
+- Root cause: fs.existsSync followed by fs.readFileSync without try/catch
+- Prevention: Always wrap filesystem operations that can fail with
+- Note: existsSync doesn't guarantee readFileSync success (race conditions,
+- Root cause: main().catch exposing full error messages and stack traces
+- Prevention: Redact home directories and omit stack traces in production/CI
+
+---
+
+### Review 37: Qodo PR Compliance + CodeRabbit Script Security & Documentation (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- use-splitn0-for-error-first-line
+- wrap-all-planconfig-file-reads
+- use-relative-paths-in-logs
+- normalize-quotedprefixed-paths
+- never-recommend-committing-env-files
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #15 **Tools:**
+- Fifth round of feedback addressing plan file error handling, stack
+- Root cause: String(err) can include multi-line stack traces with file paths
+- Prevention: Extract first line before sanitizing paths
+- Note: Stack traces often contain full paths that reveal environment details
+- Root cause: fs.readFileSync can fail with permission/encoding errors
+- Prevention: Try/catch with structured failure response for CI mode
+
+---
+
+### Review 38: CodeRabbit Security Hardening + Regex Accuracy (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- reject-path-traversal-before-processing
+- strip-control-characters-from-errors
+- consistent-return-shapes-for-audit-results
+- match-actual-heading-levels-in-regex
+
+**Learnings:**
+
+- CodeRabbit **PR:** Session #16 **Tools:** CodeRabbit
+- Sixth round of feedback addressing path traversal vulnerabilities,
+- Root cause: Paths from documents could contain `..` to escape intended
+- Prevention: Filter out paths containing `..` segments before any file
+- Pattern: `.filter(d => !d.path.split('/').includes('..'))`
+- Note: Check after normalization but before file existence checks
+- Root cause: Error messages could contain ANSI escape codes for terminal
+
+---
+
+### Review 39: Qodo Script Robustness + Terminal Sanitization (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- explicit-requests-should-fail-explicitly
+- cross-platform-path-security
+- preserve-safe-whitespace-in-sanitization
+- sanitize-file-derived-terminal-output
+- regex-must-match-actual-content-structure
+
+**Learnings:**
+
+- Qodo PR Compliance Guide **PR:** Session #17 **Tools:** Qodo
+- Seventh round of feedback addressing explicit plan failure
+- Root cause: --plan flag accepts path but missing file silently passes in
+- Prevention: Track `planWasProvided` flag, fail even in interactive if
+- Note: Silent success on explicit request violates principle of least
+- Root cause: Path traversal check split on `/` but Windows uses `\`
+- Prevention: Normalize path separators before security checks
+
+---
+
+### Review 40: Qodo Archive Security + Cross-Platform Robustness (2026-01-03)
+
+**Date:** 2026-01-03 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- archive-paths-need-containment-checks
+- invalid-files-are-worse-than-missing-files
+- windows-crlf-requires-explicit-handling
+- empty-path-after-resolution-must-be-rejected
+
+**Learnings:**
+
+- Qodo PR Compliance Guide **PR:** Session #18 **Tools:** Qodo
+- Eighth round of feedback addressing archive path traversal, invalid
+- Root cause: Archive fallback lookup joined untrusted path with archive root
+- Prevention: Verify resolved path is within archive root before fs
+- Pattern: `path.relative(archiveRoot, resolved)` must not start with `..`
+- Note: Same pattern as projectRoot checks; apply to all secondary roots
+- Root cause: Required file exists but is empty/invalid, yet check passes
+
+---
+
+### Review 42: Qodo/CodeRabbit Hook Hardening Round 2 (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- block-cli-option-like-paths
+- use-specific-traversal-patterns
+- portable-path-resolution
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #19
+- Follow-up review with additional security hardening for
+- Root cause: Path starting with `-` could be interpreted as CLI option
+- Prevention: Reject paths matching `-*` before further processing
+- Pattern: `case "$path" in -*) exit 0 ;; esac`
+- Note: Also block newlines to prevent multi-line spoofing
+
+---
+
+### Review 43: Qodo/CodeRabbit Additional Hardening (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- grep--e-for-alternation
+- block-post-normalization-absolute-paths
+- alternative-rejected
+- integratedimprovementplanmd
+- adr-folder-structure
+- preserve-investment-adjust-course
+- validate-before-acting-on-stale-plans
+- single-source-of-truth-for-improvement-work
+- explicit-what-we-decided-not-to-do
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #19
+- Third round of hardening for pattern-check.sh and
+- Root cause: Basic grep treats `\|` literally, not as alternation
+- Prevention: Always use `grep -E` for alternation patterns
+- Pattern: `grep -E "a|b|c"` not `grep "a\|b\|c"`
+- Note: This was silently failing, outputting nothing
+
+---
+
+### Review 45: Comprehensive Security & Compliance Hardening (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- safe-error-property-access
+- block-list-vs-allow-list-conflicts
+- space-to-newline-for-grep-anchors
+- event-specific-actions-in-ci
+- defensive-error-handler-wrappers
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23 (continued
+- Comprehensive multi-pass review of all scripts for security and
+- Root cause: Using original path for existsSync after security check allows
+- Prevention: Resolve path once at validation, use resolved path for all
+- Note: Attacker could swap file between security check and read
+- Root cause: Catch blocks assume `error.message` exists, but throws can be
+
+---
+
+### Review 46: Advanced Security Hardening & Script Robustness (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- symlink-escape-prevention-with-realpathsync
+- maxbuffer-for-execsync
+- ansi-escape-sequence-stripping
+- jq-array-counting-pattern
+- awk-vs-sed-for-multi-section-extraction
+- argument-parsing-with-values
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
+- Second round of fixes from PR Compliance Guide, addressing symlink
+- Root cause: resolve() creates canonical path, but file could be symlink
+- Prevention: After resolve(), use realpathSync() and verify relative path
+- Note: Falls back to resolved path when file doesn't exist yet
+- Root cause: Default maxBuffer is 1MB, large outputs cause ENOBUFS error
+
+---
+
+### Review 47: PII Protection & Workflow Robustness (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pii-masking-for-logs
+- sensitive-directory-detection
+- printf-vs-echo-in-shell-scripts
+- fault-tolerant-api-calls-in-workflows
+- drive-agnostic-windows-path-sanitization
+- relative-path-navigation-in-docs
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
+- Third round of compliance fixes addressing PII logging, sensitive
+- Root cause: Console.log/error directly output user email addresses
+- Prevention: Create maskEmail() helper that preserves structure but hides
+- Pattern: `u***@e***.com` format - shows first char of local/domain, masks
+- Note: Even in error cases, mask the email before logging
+
+---
+
+### Review 48: Security Hardening & Documentation Fixes (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- explicit-filename-blocklists
+- fail-closed-security-for-realpath
+- osc-escape-sequence-stripping
+- edge-case-handling-in-string-functions
+- string-vs-number-comparison-in-yaml
+- git-pathspec-separator
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
+- Fourth round of compliance fixes addressing secret exfiltration
+- Root cause: Regex patterns with wildcards can miss common exact filenames
+- Prevention: Add explicit exact-match patterns for known sensitive files
+- Pattern: `/^firebase-service-account\.json$/i` alongside
+- Note: Defense-in-depth - both pattern-based and exact-match protection
+
+---
+
+### Review 49: Workflow Hardening & Code Cleanup (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- critical-file-pattern-coverage
+- path-boundary-anchoring-in-regex
+- robust-main-module-detection
+- log-file-reading-direction
+- relative-path-context-in-docs
+- dead-code-from-security-hardening
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
+- Fifth round of compliance fixes addressing workflow tier detection
+- Root cause: Tier 4 patterns missing next.config.js/mjs which is a critical
+- Prevention: When defining tier patterns, cross-reference with documented
+- Pattern: `next\.config\.(js|mjs)$` - covers both CommonJS and ESM configs
+- Note: Temporary workflow patterns should match the authoritative script
+
+---
+
+### Review 50: Audit Trails & Comprehensive Hardening (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- structured-audit-logging
+- label-auto-creation-in-workflows
+- multi-segment-env-pattern
+- explicit-flag-validation
+- uid-masking-for-logs
+- biome-ignore-for-security-regexes
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #23
+- Sixth round of compliance fixes addressing audit trail
+- Root cause: Admin actions logged only human-readable messages without
+- Prevention: Emit JSON audit entries with timestamp, operator, action,
+- Note: Mask all identifiers (email, uid) in audit entries too
+- Root cause: addLabels fails if label doesn't exist in fresh repos/forks
+
+---
+
+### Review 51: ESLint Audit Follow-up & Pattern Checker Fixes (2026-01-04)
+
+**Date:** 2026-01-04 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- global-flag-required-for-exec-loops
+- regex-scope-limits-miss-multi-line-catch-blocks
+- crlf-cross-platform-regex
+- path-boundary-anchoring-in-exclusions
+- redundant-regex-alternatives
+- command-output-caching-in-hooks
+
+**Learnings:**
+
+- Qodo PR Compliance + CodeRabbit **PR:** Session #23 (ESLint audit
+- Follow-up review of ESLint warning audit commit (71a4390) and
+- AST-based linting migration (architectural suggestion for future)
+- Root cause: Pattern without `/g` flag used in `while (exec())` loop never
+- Prevention: Every pattern used with exec() must have `/g` flag
+- Pattern: Always add `/g` when pattern will be used in a loop
+
+---
+
+### Review 52: Document Health & Archival Fixes (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-boundary-anchoring
+- document-archival-standards
+- portable-shell-commands-in-templates
+
+**Learnings:**
+
+- Qodo PR Compliance + CodeRabbit **PR:** Session after tiered
+- Review of tiered access model implementation and planning doc
+- None new (AST-based linting already deferred from #51)
+- Root cause: pathExclude patterns without anchors match substrings
+- Prevention: Always use `(?:^|[\\/])` for path-based exclusions
+- Note: Same pattern from #51 applied to validate-phase-completion.js
+
+---
+
+### Review 53: CI Fix & Security Pattern Corrections (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pathrelative-security-misconception
+- regex-scope-in-pattern-checkers
+- ci-reference-updates-after-archival
+
+**Learnings:**
+
+- Qodo PR Compliance + CodeRabbit + CI Feedback **PR:** Session after
+- Review of document archival commit that broke CI
+- Pre-push set +e/set -e: Script doesn't use set -e, current code works
+- Root cause: False belief that path.relative() never returns bare ".."
+- Reality: `path.relative('/a', '/')` returns ".." (no separator)
+- Prevention: Never exclude files from security scans based on this
+
+---
+
+### Review 54: Step 4B Addition & Slash Commands Reference (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- archive-link-updates
+- nested-code-fences-in-markdown
+- step-range-in-effort-tracking
+
+**Learnings:**
+
+- GitHub Actions docs-lint + Qodo PR Compliance + CodeRabbit **PR:**
+- Review of Step 4B (Remediation Sprint) addition to
+- Critical/High sections (256-778); Medium/Template sections (803+) fixed in
+  Review #56 |
+- Root cause: Links to archived files not updated when files moved
+- Prevention: `grep -r "FILENAME" docs/` before marking archival complete
+- Pattern: Always update references when archiving
+
+---
+
+### Review 55: Comprehensive Nested Code Fence Fix & Schema Clarity (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- comprehensive-code-fence-audit
+- artifact-naming-consistency
+- acceptance-criteria-completeness
+
+**Learnings:**
+
+- Qodo PR Compliance + CodeRabbit **PR:** Commit after e0444ee (PR
+- Qodo (4 suggestions), CodeRabbit (6 suggestions)
+- Follow-up review after Review #54 fixes. Identified that nested
+- Root cause: Fixing one instance doesn't fix all - must search
+- Prevention: `grep -n '^\`\`\`' FILE | wc -l` to count all fence lines
+- Pattern: After fixing code fences, audit entire file for other instances
+- Root cause: Output file format suffix not always explicit
+
+---
+
+### Review 56: Effort Estimate Accuracy & Complete Code Fence Fix (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- effort-estimate-verification
+- complete-pattern-fix-audit
+
+**Learnings:**
+
+- Qodo PR Compliance + CodeRabbit **PR:** Commit after a525c01 (PR
+- Qodo (4 suggestions), CodeRabbit (1 critical +
+- Follow-up review after Review #55 fixes. Identified that Step 4
+- Root cause: Estimate stated without summing detailed task breakdown
+- Prevention: Always verify rollup matches sum of component estimates
+- Pattern: `grep -o "hours)" FILE | wc -l` to count task hours, then verify
+- Root cause: Fixing critical sections, missing lower-priority sections
+
+---
+
+### Review 57: CI Failure Fix & Effort Estimate Accuracy (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- verify-ai-suggestions-about-file-paths
+- effort-estimate-arithmetic-verification
+- optional-vs-required-artifact-semantics
+
+**Learnings:**
+
+- Qodo PR Compliance + CodeRabbit + CI docs-lint failure **PR:**
+- CI docs-lint workflow failed due to broken links introduced in
+- Root cause: Qodo suggested using stub files that don't exist
+- Prevention: Always verify target files exist before changing link paths:
+- Pattern: AI path suggestions are hypothetical until verified
+- Root cause: Range estimate (24-30h) didn't match exact sum (28h)
+
+---
+
+### Review 58: Template Compliance & Documentation Consistency (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+ci+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- renamed-files-need-compliance-check
+- link-format-consistency
+
+**Learnings:**
+
+- Mixed - GitHub Actions CI + Qodo PR Suggestions + CodeRabbit PR
+- Document cleanup PR introduced a renamed file
+- S3 is appropriate for defensive
+- Grep command alternative syntax - Current `--exclude` format is acceptable and
+- Root cause: File renamed without adding required template sections
+- Prevention: After renaming, run `npm run docs:lint` on changed files
+
+---
+
+### Review 59: Prompt Schema & Documentation Consistency (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- prompt-schema-clarity
+- grep-file-exclusion
+
+**Learnings:**
+
+- Qodo PR Suggestions + CodeRabbit PR **PR:**
+- Follow-up review after broken link fixes found additional
+- Root cause: JSON examples in prompts can confuse AI about output format
+- Prevention: Use bullet list format for schemas when showing structure
+- Pattern: "Reference only" labels help prevent format copying
+- Root cause: `grep -v "pattern"` filters by line content, not filename
+- Prevention: Use `--exclude="filename"` for file-based filtering
+
+---
+
+### Review 60: Document Sync & Documentation Clarity (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- document-counter-synchronization
+- grep---exclude-path-behavior
+
+**Learnings:**
+
+- Qodo PR Suggestions + CodeRabbit PR **PR:**
+- Follow-up review after Review #59 found document synchronization
+- Non-existent file references - SESSION_CONTEXT.md and ROADMAP.md exist at root
+- Root cause: Adding reviews without updating range references
+- Prevention: After adding review, grep for range patterns and update all
+- Pattern: `grep -n "#[0-9]*-[0-9]*" docs/AI_REVIEW_LEARNINGS_LOG.md`
+- Root cause: `--exclude` matches filename, not full path
+
+---
+
+### Review 61: Stale Review Assessment & Path/Terminology Fixes (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- stale-review-detection
+
+**Learnings:**
+
+- Review feedback was 10 commits behind HEAD
+- Most issues (grep exclusion, code fence clarity, duplicate links, review
+- Only 2 current issues identified
+- SESSION_CONTEXT.md and ROADMAP.md exist at
+- Root cause: Reviews queued while development continues
+- Prevention: Check HEAD vs review commit before processing
+
+---
+
+### Review 62: Multi-AI Template & Security Doc Fixes (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- security-documentation-must-be-explicit
+- archived-document-path-handling
+- template-schema-completeness
+- model-name-accuracy
+- technology-appropriate-security-checks
+
+**Learnings:**
+
+- Review of Multi-AI audit template additions and documentation
+- Several trivial suggestions were duplicates or not relevant to current files
+- Root cause: Ambiguous comment could imply unsafe practice
+- Prevention: Security docs must explicitly state prohibitions, not just hint
+- Pattern: "NOTE: Service account credentials must NEVER be used in
+- Note: Even comments can create security misconceptions
+
+---
+
+### Review 63: Documentation Link Fixes & Template Updates (2026-01-05)
+
+**Date:** 2026-01-05 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- relative-path-context-in-templates
+- template-placeholder-hygiene
+
+**Learnings:**
+
+- Review of Multi-AI template additions and documentation updates.
+- Root cause: Templates in `docs/templates/` using `docs/` paths instead of
+- Prevention: When in subdirectory, use `../` to reference sibling
+- Pattern: Files in `docs/templates/` should use `../file.md` not
+- Note: Applies to all templates referencing other docs
+- Root cause: Placeholder values (YYYY-MM-DD, [Author]) left in version
+
+---
+
+### Review 72: 2026 Q1 Multi-AI Audit Plans - Documentation Lint & AI Review Fixes (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- jsonlschemastandardmd-broken-links
+- globalsecuritystandardsmd-broken-links
+- securitymd-broken-link
+- eightphaserefactorplanmd-broken-links
+- codereview-version-placeholders
+- documentation-audit-structure-placeholders
+- process-automation-inventory-placeholders
+- process-stack-placeholders
+- refactoring-stack-placeholders
+- codereview-absolute-paths
+- documentation-greedy-regex
+- performance-non-portable-du-command
+- readme-model-names-and-output-clarifications
+- documentation-audit-history-table
+- documentation-known-issues-section
+
+**Learnings:**
+
+- Documentation Lint, Qodo PR suggestions, CodeRabbit PR review
+- Step 4.2 completion - comprehensive multi-AI review feedback
+- Broken Documentation Links (12 fixes)\*\*
+- Root cause: All 6 plan files referenced `./JSONL_SCHEMA_STANDARD.md` but
+- Files: SECURITY_AUDIT, CODE_REVIEW, PROCESS, PERFORMANCE, DOCUMENTATION,
+- Fix: Changed all to `../../templates/JSONL_SCHEMA_STANDARD.md`
+- Prevention: Verify relative paths match actual file location in directory
+
+---
+
+### Review 73: Multi-AI Audit Plan Scaffold (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-containment-at-shell-level
+- robust-json-parsing-in-shell
+- terminal-output-sanitization
+
+**Learnings:**
+
+- Qodo PR Compliance Guide + CodeRabbit **PR:** Session #19 **Tools:**
+- Ninth round of feedback addressing pattern-check.sh security (path
+- Root cause: Hook accepts file_path from JSON and passes to node script
+- Prevention: Validate path is relative AND within project root using
+- Pattern: `realpath -m "$path"` must start with
+- Note: Shell scripts need same containment discipline as JS
+- Root cause: sed-based parsing fails on escaped quotes, backslashes
+
+---
+
+### Review 74: Multi-AI Audit Plan Polish (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- relative-path-calculation-from-subdirectories
+- schema-progress-tracking-fields
+- explicit-deduplication-rules
+- no-repo-mode-output-completeness
+- environment-context-for-performance-metrics
+- structured-humansummary-requirements
+
+**Learnings:**
+
+- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
+- Qodo Code Suggestions, CodeRabbit PR Review
+- Comprehensive review of 6 Multi-AI Audit Plan files (2026-Q1) after
+- Root cause: Files in `docs/reviews/2026-Q1/` linking to `docs/` need
+- Prevention: Count directory levels when creating relative links
+- Pattern: From `docs/reviews/2026-Q1/FILE.md` to `docs/TARGET.md` =
+- Note: Already established in Consolidation #6, reinforced here
+
+---
+
+### Review 75: Multi-AI Audit Plan Methodology Enhancement (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- conflicting-pr-review-suggestions
+- methodology-ambiguity-in-multi-ai-workflows
+- schema-category-enum-clarity
+- regex-robustness-for-markdown-links
+- jsonl-validation-robustness
+- false-positive-issue-detection
+
+**Learnings:**
+
+- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
+- Qodo Code Suggestions, CodeRabbit PR Review
+- Second-round review of Multi-AI Audit Plan files (2026-Q1)
+- Root cause: Qodo and CodeRabbit provided contradictory path corrections for
+- Prevention: Verify actual file structure before applying path fixes
+- Resolution: Used `find` to locate actual file, confirmed current path
+- Note: AI reviewers can hallucinate incorrect paths without repo context
+
+---
+
+### Review 76: Multi-AI Audit Plan Polish - Round 3 (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- shell-script-exit-code-propagation
+- relative-path-calculation-errors
+- model-name-standardization
+- methodology-edge-case-handling
+- version-metadata-consistency
+- cross-file-consistency-for-enums
+- codereviewplan-claudemd-claudemd-was-going-up-3
+- performanceauditplan-missing-prefix-on-related-documents-lin
+- chatgpt-4o-gpt-4o-openais-official-name-excludes-chat
+- gpt-52-codex-gpt-5-codex-standardized-version-format
+
+**Learnings:**
+
+- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
+- Qodo Code Suggestions, CodeRabbit PR Review
+- Third-round review of Multi-AI Audit Plan files (2026-Q1)
+- Root cause: Pipes don't propagate exit codes in bash; `grep | while`
+- Prevention: Use process substitution
+- Pattern: Exit codes preserved through process substitution, not through
+
+---
+
+### Review 77: Multi-AI Audit Plan Refinement (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- shell-script-portability-bash-specific-constructs
+- relative-path-calculation-from-nested-directories
+- jsonl-schema-validity
+- documentation-consistency-severity-scales
+- version-history-date-logic
+- schema-completeness-for-reproducibility
+- relative-path-errors-persist
+- shell-script-portability-matters
+- schema-validity-critical
+- pattern-repetition-indicates-systematic-issue
+
+**Learnings:**
+
+- Mixed (Qodo PR + CodeRabbit PR) **PR:** Session #27 **Commit:**
+- Qodo Code Suggestions, CodeRabbit PR Review
+- Fourth-round review of Multi-AI Audit Plan files (2026-Q1)
+- Root cause: Used bash-specific `< <(...)` process substitution which is not
+- Prevention: Use standard pipe + `nl -ba` for line numbers instead of
+- Pattern: `grep ... | nl -ba | while IFS=$'\t' read -r n line` for portable
+- Note: Also improved error messages with line numbers and filtered
+
+---
+
+### Review 79: Multi-AI Audit Plan JSONL & Schema Corrections (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- no-repo-mode-parser-breaking-output-instructions
+- schema-contradiction-in-no-repo-instructions
+- bash-specific-features-in-documentation-scripts
+- invalid-json-tokens-in-schema-examples
+- model-name-canonical-format-establishment
+- metadata-drift-across-reviews
+- critical-pattern-completion
+- schema-first-principle
+- canonical-format-enforcement
+- bash-portability-trade-off
+- metadata-synchronization-gap-persists
+- automation-opportunity
+
+**Learnings:**
+
+- Qodo PR Code Suggestions **PR:** Session #28 **Commit:** 7753d6a
+- Sixth-round review of Multi-AI Audit Plan files (2026-Q1)
+- Root cause: Instructions told AI to output literal non-JSON text in JSONL
+- Prevention: NO-REPO MODE instructions must specify header + zero lines, not
+- Pattern: "Print the header `FINDINGS_JSONL` and then output zero lines —
+
+---
+
+### Review 452: Multi-AI Audit Plan Polish (2026-01-06)
+
+**Date:** 2026-01-06 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- self-inconsistency-detection
+- shell-command-portability
+- documentation-metadata-consistency
+- self-consistency-check
+- shell-portability-matters
+- metadata-discipline
+- provider-neutral-specs
+- regex-character-classes
+
+**Learnings:**
+
+- Mixed - Qodo PR Code Suggestions + CodeRabbit PR Review
+- Post-Review #72 feedback on the updated multi-AI audit plan files.
+- Root cause: PR adds documentation rule in CODE_PATTERNS.md while violating
+- Prevention: Cross-check new rules against files being modified in same PR
+- Pattern: When adding/updating pattern rules, grep for violations in PR diff
+- Fix: Made all model names provider-neutral ("Claude Opus (verify at
+- Root cause: Using non-portable commands (`ls -lh | sort -k5`,
+
+---
+
+### Review 81: Capability-Tiered Context & NO-REPO MODE Standardization (2026-01-07)
+
+**Date:** 2026-01-07 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cross-template-consistency-required
+- inline-context-must-be-complete
+- grep-commands-need-full-file-coverage
+- terminology-drift-detection
+- output-contract-clarity
+
+**Learnings:**
+
+- Post-implementation review of capability-tiered PRE-REVIEW CONTEXT
+- Root cause: Each template evolved independently, creating terminology drift
+- Prevention: When adding features to multiple templates, audit all for
+- Pattern: "NO-REPO MODE" is canonical; "LIMITED MODE" deprecated
+- Root cause: Inline summaries only covered highlights, not full inventory
+- Prevention: When providing fallback context, list ALL relevant items
+
+---
+
+### Review 82: Inline-Context Completeness & Schema Definitions (2026-01-07)
+
+**Date:** 2026-01-07 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- inline-context-must-have-exact-counts
+- schema-must-precede-usage
+- verify-before-documenting
+- grep-coverage-consistency
+
+**Learnings:**
+
+- Post-implementation review of PR Review #81 fixes. Review
+- Root cause: Initial inline-context used approximations like "2-3 locations"
+- Prevention: Always use grep to verify exact counts before documenting
+- Pattern: "DailyQuoteCard: 2 locations" not "DailyQuoteCard: 2-3 locations"
+- Root cause: NO-REPO MODE referenced REFACTORING_METRICS_JSON without
+- Prevention: When adding new JSON outputs, define schema immediately
+
+---
+
+### Review 87: Schema Symmetry & Markdown Syntax (2026-01-07)
+
+**Date:** 2026-01-07 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- schema-symmetry-across-plans
+- validate-markdown-after-code-block-edits
+- cross-plan-consistency
+- markdown-fence-hygiene
+
+**Learnings:**
+
+- Review identified missing QUALITY_METRICS_JSON null schema in
+- Root cause: Added REFACTORING_METRICS_JSON in Review #82 but forgot
+- Prevention: When adding schema to one plan, check all similar plans for
+- Pattern: All audit plans with metrics output need explicit null-structure
+- Root cause: Adding content above code blocks left orphan closing fences
+- Prevention: When editing near fenced blocks, verify open/close matching
+
+---
+
+### Review 88: Phase 4.2 Multi-AI Security Audit (2026-01-07)
+
+**Date:** 2026-01-07 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- defense-in-depth-gaps
+- fail-open-security-controls
+- multi-model-agreement
+- risk-acceptance-documentation
+- compensating-controls
+
+**Learnings:**
+
+- Multi-AI Security Audit (Claude Opus 4.5 + ChatGPT 5.2)
+- Phase 4.2 Execution - SECURITY_AUDIT_PLAN_2026_Q1 **Findings:**
+- Comprehensive security audit aggregating findings from Claude Opus
+- Root cause: Multiple security layers incomplete (rate limiting, bot gating,
+- Prevention: Security checklist for each endpoint (auth + rate limit +
+- Pattern: Every callable needs: rate limit + schema validation + bot gating
+- Root cause: Old Firestore rules allow direct writes that bypass new
+
+---
+
+### Review 89: b: Audit Plan Placeholder Validation (2026-01-07)
+
+**Date:** 2026-01-07 | **Source:** coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- placeholder-content-validation
+- scope-boundary-definition
+- documentation-consistency
+- template-instantiation-validation
+- cross-file-consistency
+
+**Learnings:**
+
+- CodeRabbit review of placeholder replacement fixes in
+- Root cause: Template-derived files populated with example data not
+- Prevention: After replacing placeholders, verify all referenced
+- Pattern: SCOPE sections must reference actual app routes, not example paths
+- Root cause: Performance audit scope incorrectly included test files
+- Prevention: Audit scopes should match audit purpose (performance ≠ tests)
+
+---
+
+### Review 98: Document Sync Validation Script - Security & Quality Fixes (2026-01-08)
+
+**Date:** 2026-01-08 | **Source:** sonarcloud+qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-traversal-in-dependency-files
+- redos-vulnerabilities
+- unimplemented-cli-flags
+- regex-security-triad
+- documentation-validation
+- timestamp-precision
+
+**Learnings:**
+
+- Mixed (Qodo Compliance + Qodo PR + CodeRabbit PR x2 + SonarQube)
+- Multi-source review of Session #35 commits implementing document
+- Root cause: Global regex patterns reused across forEach iterations without
+- Prevention: Reset lastIndex before each line or use non-global patterns in
+- Pattern: `/g` flag + .exec() in loops = stateful lastIndex causes missed
+
+---
+
+### Review 99: Document Sync Validator - Follow-up Security & Quality Issues (2026-01-08)
+
+**Date:** 2026-01-08 | **Source:** qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- silent-error-handling
+- path-traversal-in-link-checker
+- overly-broad-regex-scope
+- non-portable-path-validation
+- ai-review-tool-false-positive-detection
+
+**Learnings:**
+
+- Follow-up review of Review #98 commit (555c3d8 + 80fa31e)
+- Root cause: checkStaleness returns `{isStale: false}` when date
+- Prevention: Surface parse errors to caller; invalid data should fail
+- Pattern: Treating parse failure as "valid but not stale" = silent data
+- Root cause: checkBrokenLinks doesn't validate that link targets stay within
+
+---
+
+### Review 100: Review #99 Post-Commit Refinements (2026-01-08)
+
+**Date:** 2026-01-08 | **Source:** sonarcloud+qodo+coderabbit
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- dead-code-after-exception-throwing-calls
+- error-severity-mismatches
+- ineffective-validation-conditions
+- review-numbering-conflicts
+- exception-semantics
+- error-type-differentiation
+- validation-redundancy
+- audit-trail-integrity
+
+**Learnings:**
+
+- Follow-up review of Review #99 commit (e06b918) identified dead
+- Root cause: existsSync check placed after successful realpathSync (which
+- Prevention: Remember realpathSync throws on non-existent paths; success =
+- Pattern: Code after try/catch with throwing functions may be unreachable
+- Root cause: Invalid date format treated as MINOR staleness issue instead of
+- Prevention: Use parseError flag to escalate severity for data validation
+
+---
+
+### Review 138: PR #243 Step 4C Qodo Compliance Review (2026-01-13)
+
+**Date:** 2026-01-13 | **PR:** #243 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- feature-flag-allowlist
+- nextjs-env-var-client-bundling
+
+**Learnings:**
+
+- Post-commit review of Step 4C SonarCloud Issue Triage changes.
+- Root cause: `process.env[featureId]` with dynamic key could probe env vars
+- Prevention: Allowlist valid feature flag names, reject unknown keys
+- Root cause: Dynamic `process.env[key]` is NOT inlined by Next.js on client
+- Prevention: Use static map with explicit `process.env.NEXT_PUBLIC_*`
+- Pattern: For client-side env access, always use explicit string literals
+
+---
+
+### Review 139: PR Cherry-Pick Security Audit CI Fixes (2026-01-13)
+
+**Date:** 2026-01-13 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Some commands were created without proper frontmatter structure
+- Prevention: Always add frontmatter when creating new commands
+- Root cause: Audit reports were missing standard sections
+- Prevention: Include Purpose, Version History, and Last Updated in all audit
+- All `.claude/commands/*.md` files MUST have YAML frontmatter with a
+- The frontmatter must be at the very start of the file:
+
+---
+
+### Review 140: PR Review Processing Round 2 (2026-01-13)
+
+**Date:** 2026-01-13 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Pipe to `while read` instead of `xargs` to prevent hangs on empty input
+- Category names in Focus Areas should match schema enum values
+- Use POSIX character classes `[[:space:]]` for portable regex
+- Always include both .ts and .tsx in grep patterns for React projects
+
+---
+
+### Review 141: PR Review Processing Round 3 (2026-01-13)
+
+**Date:** 2026-01-13 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Schema category enums should be single CamelCase tokens (no spaces/multiline)
+- Always use `grep -E` for patterns with alternation (`|`)
+- Include all relevant file types (.ts, .tsx, .js, .mjs, .json) in grep patterns
+
+---
+
+### Review 143: CI Pattern Compliance and Command Injection Fix (2026-01-13)
+
+**Date:** 2026-01-13 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Qodo PR Compliance + SonarCloud + Pattern Compliance CI
+- Shell interpolation with env vars is command injection - use execFileSync with
+- When security checks can't determine state, fail-closed (block) not fail-open
+- Error objects in JS are not guaranteed - non-Error values can be thrown
+- CSS imports from transitive dependencies need explicit package.json entries
+- Pattern compliance false positives: add verified files to pathExclude with
+
+---
+
+### Review 144: Step 6-7 PR CI Fixes (2026-01-14)
+
+**Date:** 2026-01-14 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Parse dependency rules from DOCUMENT_DEPENDENCIES.md (architectural - tracked)
+- When archiving files, update ALL scripts that reference them
+- Shell scripts in pre-commit hooks may run with `/bin/sh`, avoid bash-only
+- Cross-document dependency checks should be updated when archiving source docs
+
+---
+
+### Review 145: Settings Page Accessibility & Security (2026-01-14)
+
+**Date:** 2026-01-14 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- accessible-toggle-pattern
+- local-date-formatting
+- preference-preservation
+
+**Learnings:**
+
+- Custom interactive elements (toggles) must use native button or add role +
+- When updating nested objects (preferences), spread existing values to preserve
+- Input validation must happen before Firestore writes - NaN checks, range
+- Audit logging should capture action type and changed fields, not sensitive
+
+---
+
+### Review 146: Operational Visibility Sprint PR Feedback (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- useeffect-dependency-on-state-causes-re-subscriptions
+- firestore-timestamps-need-type-handling
+- auth-protected-routes-fail-lighthouse-audits
+
+**Learnings:**
+
+- Documentation Lint + Qodo Compliance + CI + PR Suggestions
+- Separate dev dashboard as distinct app (architectural - valid but out of scope
+- Client-side DSNs (like Sentry) are acceptable to commit as they're public by
+- Non-sensitive config (org names, project names) should use env vars, not GCP
+
+---
+
+### Review 147: CI Blocker Fixes + Firebase Error Handling (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- prettier-can-override-linter-requirements
+- firestore-implicit-deny-needs-explicit-rules
+- force-token-refresh-for-admin-checks
+
+**Learnings:**
+
+- The logger module only has info/warn/error methods - no debug level
+- Firestore denies access by default but explicit rules improve auditability
+- Show specific error types (permission-denied, network) for better UX
+
+---
+
+### Review 148: Dev Dashboard Security Hardening (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- never-expose-raw-errormessage-to-users
+- client-side-read-only-for-dev-data
+- defensive-null-guards
+
+**Learnings:**
+
+- Firestore allows client writes | Major | Security | Changed to read-only
+  (write: if false) |
+- Access control bypass - Already fixed in #147 (Firestore rules)
+- Chrome sandbox disabled - Acceptable for local dev scripts (#146)
+- No ticket provided - N/A for dev branch
+- Prettier may want blank lines after prettier-ignore-end comments
+- Dev dashboards should be read-only for clients - CI writes the data
+
+---
+
+### Review 149: Robustness & Error Handling Improvements (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- react-strict-mode-double-invoke
+- runtime-data-validation
+- consistent-state-cleanup
+
+**Learnings:**
+
+- Pattern compliance CI can flag safe code if regex doesn't understand context
+- React Strict Mode runs effects twice in dev - guard initialization with flags
+- Firestore Partial<T> + validation is safer than direct type assertion
+
+---
+
+### Review 150: Deployment Safety & Async Cleanup (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- definestring-for-deployment-safety
+- async-cleanup-pattern
+- optional-chaining-for-external-data
+- use-chain-with-fallback-to-0
+
+**Learnings:**
+
+- Firebase Functions don't have access to .env files in production - only
+- React Strict Mode double-invokes effects - but isCancelled pattern handles
+- Firestore failed-precondition usually means missing index, not missing data
+
+---
+
+### Review 151: ErrorsTab Expandable Details PR Feedback (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- url-protocol-validation
+- date-validation-before-formatting
+- memoize-derived-render-data
+
+**Learnings:**
+
+- CI Feedback + Qodo PR Compliance + PR Code Suggestions
+- Move knowledge base to Firestore (architectural change - tracked for separate
+- Sentry permalinks should only ever be https://sentry.io URLs, but defensive
+- Interactive table rows cause accessibility issues - use semantic button
+
+---
+
+### Review 152: Admin Error Utils PR Feedback (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- regex-redos-prevention
+- security-test-false-positives
+- whitespace-validation
+
+**Learnings:**
+
+- SonarCloud Security Hotspots + Qodo PR Code Suggestions + CI
+- Test validates security function
+- Email regex per RFC 5321: local-part max 64 chars, domain max 253 chars
+- SonarCloud security hotspots in test files often flag the test inputs, not
+
+---
+
+### Review 153: Admin Error Utils Follow-up (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- nullable-type-signatures
+
+**Learnings:**
+
+- Full email regex RFC compliance: local `{1,64}` + domain `{1,253}` + TLD
+- Large payload protection prevents both performance issues and ensures
+- Explicit nullable types make API contracts clearer even when implementation
+
+---
+
+### Review 154: Admin Error Utils Security Hardening (2026-01-15)
+
+**Date:** 2026-01-15 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- url-credential-rejection
+- jwt-token-detection
+- phone-regex-precision
+
+**Learnings:**
+
+- URL API provides parsed username/password/port - check all three for security
+- JWT tokens use base64url encoding (alphanumeric + hyphen + underscore)
+- Test data should avoid matching production patterns (use 'x' not 'a' for
+
+---
+
+### Review 155: Security Check Self-Detection & CI Fix (2026-01-16)
+
+**Date:** 2026-01-16 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- self-referential-exclusion
+- multiline-output-comparison
+
+**Learnings:**
+
+- Regex patterns like `/\beval\s*\(/` will match message strings containing
+- GitHub Actions `${{ steps.x.outputs.y }}` for multiline values returns all
+
+---
+
+### Review 156: Security Hardening & Pre-Push Fix (2026-01-16)
+
+**Date:** 2026-01-16 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pre-push-vs-pre-commit-file-selection
+- path-traversal-in-cli-args
+- cross-platform-regex
+
+**Learnings:**
+
+- CLI tools accepting file paths need path traversal protection even for
+- Windows uses backslash, POSIX uses forward slash - regex patterns matching
+
+---
+
+### Review 161: lint-staged PR Feedback (2026-01-16)
+
+**Date:** 2026-01-16 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- supply-chain-security-with-npx
+- hook-error-visibility
+
+**Learnings:**
+
+- Suppressing stderr (`2>/dev/null`) in hooks hides actionable failure context
+- CI checks formatting after local hooks - ensure lint-staged formats before
+
+---
+
+### Review 162: Track A Admin Panel PR Feedback (2026-01-16)
+
+**Date:** 2026-01-16 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- preserve-custom-claims
+- collection-group-queries
+- batch-auth-operations
+- complete-cleanup-loops
+
+**Learnings:**
+
+- Qodo PR Compliance + PR Code Suggestions + CI Feedback
+- Firebase custom claims are replaced entirely by setCustomUserClaims - always
+- Storage file orphan detection using publicUrl() is brittle - prefer file.name
+- N+1 patterns in Cloud Functions can cause timeouts at scale - batch where
+- CI formatting checks run after local hooks - ensure consistent formatting
+
+---
+
+### Review 163: Track A PR Follow-up Compliance (2026-01-17)
+
+**Date:** 2026-01-17 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- per-item-error-handling-in-jobs
+- firestore-transactions-for-multi-read-write
+- schema-validation-for-admin-apis
+- listdocuments-for-id-only-queries
+- null-to-remove-claims
+- error-propagation-over-swallowing
+
+**Learnings:**
+
+- Function names should reflect what they clean up, not the collection they
+- Per-item error handling makes jobs resilient to transient failures
+- Always validate admin API inputs with schemas, not just presence checks
+- Transactions prevent concurrent admin updates from corrupting data
+
+---
+
+### Review 164: Track A Cherry-Pick PR Qodo Compliance (2026-01-17)
+
+**Date:** 2026-01-17 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- firestore-index-query-scope
+- storage-pagination-for-scalability
+- defense-in-depth-metadata-redaction
+
+**Learnings:**
+
+- Root cause: Configuration mismatch between index definition and query usage
+- Prevention: Validate indexes match query patterns (collectionGroup queries
+- Root cause: Loading all files into memory can exhaust resources at scale
+- Prevention: Use `maxResults` + `pageToken` pagination pattern, process in
+- Root cause: Legacy data may bypass write-time redaction
+- Prevention: Add read-time redaction as safety net for UI exposure
+
+---
+
+### Review 165: Track A Follow-up Qodo Compliance (2026-01-17)
+
+**Date:** 2026-01-17 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- -ai-reviewer-contradiction
+- isplainobject-guard
+- pagination-loop-guard
+
+**Learnings:**
+
+- Root cause: AI reviewers don't have full context between reviews
+- Prevention: Check actual query code before applying index scope changes
+- Actual code: `db.collection("security_logs")` → needs COLLECTION scope
+- Root cause: typeof obj === "object" matches Date, Timestamp, etc.
+- Prevention: Check Object.getPrototypeOf() === Object.prototype
+- Root cause: pageToken could theoretically repeat
+
+---
+
+### Review 171: aggregate-audit-findings.js PR Hardening (2026-01-17)
+
+**Date:** 2026-01-17 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- bounded-regex-for-redos-prevention
+- on-algorithm-dos-protection
+- cognitive-complexity-extraction
+- error-sanitization-for-cli-tools
+
+**Learnings:**
+
+- SonarCloud Security Hotspots + SonarCloud Issues + Qodo PR
+- O(n²) Levenshtein pairwise | Major | Performance | Add
+  MAX_LEVENSHTEIN_LENGTH=500, truncate inputs |
+- Root cause: Backtracking regex with unbounded quantifiers on alternations
+- Prevention: Use explicit character class with length limits
+- Root cause: Algorithmic complexity becomes exploitable with large inputs
+- Prevention: Define MAX_LENGTH constant, truncate before processing
+- Root cause: Functions accumulating nested conditionals over time
+
+---
+
+### Review 182: SonarCloud Sprint PR 1 - Mechanical Fixes (2026-01-19)
+
+**Date:** 2026-01-19 | **PR:** #284 | **Source:** sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- nodejs-import-inconsistency
+- shell-script-modernization
+- repeated-string-literals
+- sonarcloud-fixes-can-introduce-bugs
+- esm-namespace-imports
+- path-containment-patterns
+- shell-variable-order
+
+**Learnings:**
+
+- All mechanical/automatable SonarCloud issues including Node.js
+- Run syntax validation after batch find-replace operations
+- Node.js built-ins need namespace imports in ESM (`import * as fs`)
+- Path security checks need robust regex patterns, not simple string methods
+- Shell variable order matters with strict mode (`set -u`)
+
+---
+
+### Review 183: SonarCloud Sprint PR 2 - Critical Issues Partial (2026-01-19)
+
+**Date:** 2026-01-19 | **PR:** #284 | **Source:** sonarcloud
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cognitive-complexity-in-job-functions
+- void-operator-pattern
+- mutable-exports-for-ssr
+
+**Learnings:**
+
+- High-impact critical issues including cognitive complexity
+- Each helper function should do one thing; names should describe the
+- Firebase job functions grow organically without refactoring - set complexity
+
+---
+
+### Review 187: Cherry-Pick PR Qodo Compliance Review (2026-01-20)
+
+**Date:** 2026-01-20 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- global-regex-flag-for-scanning
+- promiseresolve-for-sync-errors
+- ip-hash-still-privacy-sensitive
+- lstatsync-for-symlink-detection
+- error-type-over-message
+
+**Learnings:**
+
+- Security scanners must detect ALL matches - non-global regex is a critical bug
+- Use `Promise.resolve().then(() => fn())` pattern to catch sync exceptions
+- Even anonymized data should stay out of third-party services (privacy best
+- Error messages may contain API keys, paths, or PII - log type/code only
+
+---
+
+### Review 188: Cherry-Pick PR Qodo Follow-up Review (2026-01-20)
+
+**Date:** 2026-01-20 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 1        |
+
+**Patterns:**
+
+- type-guards-before-string-methods
+- stateful-regex-cloning
+- set-for-deduplication
+- cli-argument-flexibility
+
+**Learnings:**
+
+- Qodo can flag issues that are already handled elsewhere - always verify with
+- Adjacent-only deduplication (`arr[arr.length-1] !== value`) doesn't prevent
+- API responses may return numbers as strings - use explicit coercion
+- Event type allowlists prevent malformed log entries and improve error messages
+- Rejected: 1 item (false positive - check exists)
+
+---
+
+### Review 189: Cherry-Pick PR Qodo Second Follow-up (2026-01-20)
+
+**Date:** 2026-01-20 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 1        |
+
+**Patterns:**
+
+- set-vs-array-iteration
+- regex-lastindex-reset
+- cross-platform-line-endings
+- firestore-timestamp-safety
+
+**Learnings:**
+
+- Changing data structures (Array→Set) has ripple effects on iteration code
+- Regex with g/y flags maintain state between calls - reset before each use
+- Windows files processed on Unix (or vice versa) can have mismatched line
+- Firestore timestamps may be null, undefined, or even plain objects in edge
+- Rejected: 1 item (high-level PR criticism - intentional work)
+
+---
+
+### Review 190: Cherry-Pick PR Qodo Third Follow-up (2026-01-20)
+
+**Date:** 2026-01-20 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- symlink-traversal-protection
+- deterministic-set-iteration
+- bulk-fix-conflict-detection
+- helper-extraction-for-safety
+
+**Learnings:**
+
+- Symlink attacks can bypass path traversal checks - always use lstatSync first
+- Set iteration order is undefined in JS - sort after Array.from() for
+- Bulk operations need to validate against individual entries to prevent
+- Magic numbers should be named constants for clarity and maintainability
+
+---
+
+### Review 191: Encrypted Secrets PR CI + Qodo Compliance (2026-01-21)
+
+**Date:** 2026-01-21 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- hidden-passphrase-input
+- secure-file-permissions
+- terminal-state-cleanup
+- placeholder-detection
+
+**Learnings:**
+
+- CI Pattern Compliance + Qodo PR Suggestions (2 rounds)
+- Node.js readline doesn't hide input by default - need raw mode for passwords
+- Pattern compliance catches issues that linters miss
+- Shell history exposure: prefer --stdin over env var for sensitive values
+- Always validate input buffers before crypto operations
+
+---
+
+### Review 192: PR Documentation Lint + Qodo Suggestions (2026-01-21)
+
+**Date:** 2026-01-21 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- documentation-linting
+- static-audit-reports-anti-pattern
+- sensitive-ide-configuration
+
+**Learnings:**
+
+- Root cause: Document created without proper structure/frontmatter
+- Prevention: Follow Tier 2 doc template (Purpose + Version History + AI
+- Root cause: Audit reports hardcoded instead of using live dashboard
+- Prevention: Use SonarCloud dashboard + issue tracker, not static markdown
+- Root cause: IDE-specific config committed to shared workspace settings
+- Prevention: Keep user settings in .vscode/settings.json, not shared config
+
+---
+
+### Review 193: Qodo PR Security Compliance + Code Suggestions (2026-01-21)
+
+**Date:** 2026-01-21 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- local-config-committed
+- duplicate-documentation-content
+- invalid-markdown-structure
+
+**Learnings:**
+
+- Root cause: .local.json files are user-specific, not for shared repository
+- Prevention: Ensure .local.json in .gitignore, never commit user-specific
+- Root cause: Manual content editing without verification
+- Prevention: Review diff before committing, use unique section markers
+- Root cause: Line continuation without proper list syntax
+- Prevention: Validate markdown structure, add newlines between list items
+
+---
+
+### Review 195: PR #334f459 Expansion Placement Metadata - CI Lint + Qodo Suggestions (2026-01-22)
+
+**Date:** 2026-01-22 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- documentation-lint-violations
+- non-deterministic-insertion-order
+- major-added-purpose-section
+- minor-added-ai-instructions-section
+- minor-added-quick-start-section
+- minor-refined-insert-after-column
+- tracker-format-migration
+- documentation-compliance
+- deterministic-metadata
+- markdown-as-database-technical-debt
+- architectural-decisions
+
+**Learnings:**
+
+- Review of placement metadata framework added to
+- Root cause: New tracker document lacked required Tier-2 sections
+- Prevention: All Tier-2 docs require Purpose/Overview, AI Instructions,
+- Pattern: EXPANSION_EVALUATION_TRACKER is state tracking doc, needs
+- Root cause: Multiple items using "Create M4.5" instead of referencing
+- Prevention: Use linked-list style insertion (each item references previous
+
+---
+
+### Review 196: PR #036fab3 Expansion Metadata Refinement - Qodo Follow-up (2026-01-22)
+
+**Date:** 2026-01-22 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- broken-insertion-chain-logic
+- inconsistent-command-namespace
+- ambiguous-metadata-values
+- critical-fixed-broken-insertion-chain
+- minor-standardized-command-namespace
+- minor-fixed-suggestion-count
+- minor-fixed-placement-count
+- minor-made-end-of-list-deterministic
+- minor-added-type-prefixes-to-insert-after
+- minor-normalized-relationship-column
+- minor-added-feature-group-registry
+- cross-list-reference-integrity
+- command-namespace-consistency
+- type-prefix-disambiguation
+- controlled-vocabularies
+
+**Learnings:**
+
+- Follow-up review of fixes applied in Review #195, identifying
+- Root cause: F4.2 references F4.4 in Insert After, but F4.4 is in deferred
+- Prevention: Insertion chains must only reference items within same list
+- Pattern: Cross-list references break linked-list integrity
+- Root cause: Mixed use of `/expansion` and `/expansion-evaluation` commands
+- Prevention: Use full namespace consistently across all documentation
+
+---
+
+### Review 453: GitHub Actions Documentation Lint + Qodo MCP Audit Contradiction (2026-01-22)
+
+**Date:** 2026-01-22 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 6     | 6     | 0        | 0        |
+
+**Patterns:**
+
+- documentation-moved-without-standardization
+- self-contradictory-audit-documentation
+
+**Learnings:**
+
+- Root cause: Moved .serena memory file without adding required documentation
+- Prevention: Always check documentation linter requirements when moving
+- Root cause: Initial analysis assumed permissions = usage; actual
+- Prevention: Verify usage before making recommendations; update
+- Fixed: 6 items (1 Critical, 2 Major, 3 Minor)
+
+---
+
+### Review 197: PR claude/new-session-z2qIR Expansion Evaluation Tracker - Qodo Consistency Check (2026-01-23)
+
+**Date:** 2026-01-23 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cross-document-count-synchronization
+- stale-handoff-next-steps
+- placement-status-consistency
+- false-positive-detection---qodo-limitations
+
+**Learnings:**
+
+- Follow-up review of expansion evaluation tracker after F1
+- Root cause: Evaluation totals in EXPANSION_EVALUATION_TRACKER (Technical:
+- Prevention: After evaluation milestones, verify all summary counts match
+- Pattern: Multi-document tracking requires explicit sync checkpoints
+- Root cause: SESSION_CONTEXT Next Step described completed work ("Update
+- Prevention: Update Next Step field when transitioning between evaluation
+
+---
+
+### Review 199: PR #308 Round 4 - CI Security Scanner + Qodo Hardening (2026-01-23)
+
+**Date:** 2026-01-23 | **PR:** #308 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- security-scanner-context-limitations
+- file-type-validation-for-log-targets
+- error-code-semantics-in-process-signals
+- process-discovery-race-conditions
+- args-arrays-over-template-interpolation
+- log-target-type-validation
+- process-signal-error-code-semantics
+- process-disappearance-race-handling
+- deprecated-command-elimination
+- process-tree-termination
+- cross-platform-newline-handling
+- structured-audit-logging-hybrid-approach
+- powershell-json-edge-case-handling
+- subprocess-output-validation-nan-prevention
+- process-matching-precision-security
+
+**Learnings:**
+
+- CI security scanner blocked PR #308 merge with HIGH severity issues
+- Root cause: Static analysis tools flag template interpolation in shell
+- Prevention: Refactor to `execFileSync`/`spawnSync` with args arrays to
+- Pattern: Even with validation, prefer args arrays over string interpolation
+- Root cause: Writing to directories or FIFOs instead of regular files can be
+- Prevention: Use `fstatSync(fd).isFile()` on Unix after opening,
+
+---
+
+### Review 202: PR #311 Learning Effectiveness Analyzer + Security Infrastructure - Qodo (2026-01-24)
+
+**Date:** 2026-01-24 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-traversal-in---file-option
+- toctou-race-in-safewritefile
+- ssrf-allowlist-bypass
+- symlinked-archive-reads
+- duplicate-review-counting
+- ci-regex-g-with-test
+- ci-readfilesync-without-trycatch
+- ci-empty-string-path-validation
+- word-boundary-matching
+- pattern-id-fallbacks
+- email-masking-edge-case
+- commit-message-newlines
+- readfilesync-in-safereadfile
+- markdown-table-malformed
+- toctou-for-overwrite
+
+**Learnings:**
+
+- Added path.resolve + relative check +
+- Removed existsSync, rely on atomic wx flag
+- Block localhost/loopback, IP addresses, require
+- Added lstatSync checks before reading archive
+- Added seenReviewNumbers Set for deduplication
+- Removed /g flag from boolean-only tests in
+- Wrapped 3 occurrences with proper
+
+---
+
+### Review 204: Session #98 S0/S1 Guardrails PR - Qodo Compliance + CI (2026-01-26)
+
+**Date:** 2026-01-26 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- subshell-guardrail-bypass
+- lint-staged-knip-false-positive
+- readfilesync-pattern-compliance-false-positive
+- utc-timezone-bug-in-getnextday
+- command-injection-concern
+- rolloutmode-env-configurable
+- duplicate-validation-constants
+- path-traversal-in-audit-s0s1-validatorjs
+- fail-closed-on-invalid-dates
+- silent-jsonl-parse-failures
+- normalize-rolloutmode
+
+**Learnings:**
+
+- Pre-commit hook used `echo | while` which
+- Knip flagged lint-staged as unused
+- Non-UTC date parsing could cause
+- Date strings interpolated into git commands.
+- Made audit hook mode configurable via
+
+---
+
+### Review 211: Session #103 Testing Infrastructure PR - Qodo + SonarCloud + CI (2026-01-27)
+
+**Date:** 2026-01-27 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- readfile-error-handling-with-context
+- crlf-regex-line-89-milestones-overview
+- crlf-regex-line-107-sprint-section
+- bug-l141-conditional-same-value
+- path-traversal-prevention
+- test-factory-counter-vs-datenow
+- warning-for-skipped-roadmapfuture-checks
+- track-naming-regex-excludes-subsections
+- pg-validation-matches-group-format
+- scoped-version-history-regex
+- mcp-memory-vs-vector-db-decision
+- unstructured-logging
+- 63-counter-based-unique-ids-for-test-factories
+- 64-scope-regex-to-relevant-section
+- 65-format-matching-for-validation-scripts
+
+**Learnings:**
+
+- Added `instanceof Error` check
+- Changed regex to use `\r?\n` for
+- Removed redundant ternary that returned
+- Replaced `startsWith("..")` with regex
+- Changed test data factory example in
+
+---
+
+### Review 212: Session #103 CI Fix - Pattern Checker False Positives (2026-01-27)
+
+**Date:** 2026-01-27 | **Source:** ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- readfilesync-without-trycatch-at-l39
+- path-validation-empty-string-at-l175
+- 66-pattern-checker-limitations
+
+**Learnings:**
+
+- CI BLOCKERS, BOTH FALSE POSITIVES):\*\*
+- FALSE POSITIVE. The `readFile`
+- Fix: Added `check-roadmap-health.js` to `pathExcludeList` with audit
+- FALSE POSITIVE. The condition at
+- Fix: Added `check-roadmap-health` to `pathExclude` regex with audit comment
+- Line-by-line pattern checks cannot
+
+---
+
+### Review 213: PR #321 Doc Compliance - Qodo + SonarCloud (2026-01-28)
+
+**Date:** 2026-01-28 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- broaden-pre-commit-doc-index-check
+- simplify-regex-complexity
+- url-decode-file-paths
+- remove-redundant-return
+- encode-parentheses-in-markdown-links
+- cross-file-anchor-validation
+- 67-unicode-property-escapes-for-emoji
+- 68-markdown-link-parentheses-encoding
+- 69-pre-commit-adm-filter
+
+**Learnings:**
+
+- ADM filter + quoted variables
+- Unicode emoji regex + URL decoding
+- Purpose/Version History sections +
+- SonarCloud flagged emoji regex at 27
+
+---
+
+### Review 214: PR #322 Alert System & Context Preservation - Qodo + SonarCloud + CI (2026-01-28)
+
+**Date:** 2026-01-28 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- directory-traversal-fix
+- sensitive-data-persistence
+- path-traversal-regex-character
+- session-state-path-mismatch
+- sessioncontextmd-path
+- getrecentdecisions-order
+- race-condition-data-loss
+- sonarqube-regex-precedence
+- type-check-always-report
+- platform-root-search
+- empty-alert-prevention
+- replace-custom-alerting-with-standard-tools
+- 70-existssync-readfilesync-race
+- 71-pathrelative-security
+- 72-regex-character-encoding
+
+**Learnings:**
+
+- Qodo PR Compliance + Code Suggestions, SonarCloud, CI Pattern Check
+- Got oldest decisions, not newest. Changed to
+- L47 in `generate-pending-alerts.js` needs
+- For containment validation, prefer
+
+---
+
+### Review 216: PR #324 Round 3 - Defensive Math Operations (2026-01-29)
+
+**Date:** 2026-01-29 | **PR:** #324 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- mathmax-on-empty-array
+- spread-operator-stack-limits
+
+**Learnings:**
+
+- Root cause: Filter may produce empty array, spread to Math.max fails
+- Prevention: Check filtered array length before calling Math.max
+- Root cause: Spread converts array to function arguments (limited ~65k)
+- Prevention: Use reduce() for unbounded arrays
+- Root cause: Only updated one script's getLastConsolidatedReview
+- Prevention: When updating shared logic, update all scripts
+
+---
+
+### Review 218: TDMS Phase 1-8 PR - Qodo Compliance + CI (2026-01-31)
+
+**Date:** 2026-01-31 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- append-only-canonical-files
+- api-pagination-required
+- stable-ids-are-critical
+- guard-against-missing-hash-fields
+
+**Learnings:**
+
+- Root cause: Initial implementation used writeFileSync without reading
+- Prevention: Always read existing, merge, then write
+- Root cause: SonarCloud API defaults to 500 results per page
+- Prevention: Always check for pagination in API docs, implement fetch loops
+- Root cause: generate-views.js reassigned IDs after sorting
+- Prevention: IDs assigned once at creation, never modified
+
+---
+
+### Review 219: TDMS PR Follow-up - Qodo Compliance + CI (2026-01-31)
+
+**Date:** 2026-01-31 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Copy-paste without consistent error handling patterns
+- Prevention: All loadMasterDebt/loadItems functions need try-catch with line
+- Root cause: Line 0 treated as valid when comparing distances
+- Prevention: Require positive finite line numbers before proximity checks
+- Root cause: No tracking of already-used IDs in current run
+- Prevention: Track usedIds set during ID assignment
+
+---
+
+### Review 222: PR #327 Process Audit System Round 2 - Qodo (2026-01-31)
+
+**Date:** 2026-01-31 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Error Handling & State Logic\*\* (importance 8-9):
+- Shell Safety\*\* (importance 7):
+
+---
+
+### Review 223: PR #327 Process Audit System Round 3 - Qodo Security (2026-01-31)
+
+**Date:** 2026-01-31 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Secure Error Handling\*\* (Qodo Generic Compliance):
+- Data Consistency\*\* (importance 9):
+
+---
+
+### Review 224: Cross-Platform Config PR - CI Pattern Compliance + SonarCloud + Qodo (2026-02-02)
+
+**Date:** 2026-02-02 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- unsafe-errormessage-access
+- crash-on-missing-mcpservers
+- invalid-timestamps-corrupt-metrics
+- agent-diff-compares-names-not-content
+- jsonparse-without-trycatch
+- null-object-diffing
+- statsync-race-condition
+- negative-age-metrics
+- arrayisarray-guard-for-todos
+- write-failure-handling
+
+**Learnings:**
+
+- CI Pattern Compliance Failure + SonarCloud Security Hotspot + Qodo
+- Script injection vulnerability
+- Path containment, try/catch, percentage
+- Path containment (4 locations), try/catch
+- Fix: Pass PR body via environment variable instead of interpolation
+- Fix: Add containment validation using path.relative check
+- Fix: Wrap all file reads in try/catch
+
+---
+
+### Review 225: PR #329 Audit Documentation Enhancement - SonarCloud + Qodo (2026-02-02)
+
+**Date:** 2026-02-02 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- timeout-validation-missing
+- http-redirects-marked-as-failures
+- 405-method-not-allowed-not-retried
+- planning-directory-excluded
+- regex-operator-precedence-bug
+- shell-redirection-order
+
+**Learnings:**
+
+- SonarCloud Security Analysis + Qodo Compliance + Qodo Code
+- Fix: Added `isInternalIP()` function blocking RFC1918, localhost, link-local,
+- Fix: Added validation with Number.isFinite() and range clamping
+- Fix: Changed 3xx responses to `ok: true` with redirect info preserved
+- HEAD requests returning 405 weren't
+- Fix: Extracted `makeRequest()` helper, retry with GET on 405 response
+- Fix: Changed filter to `entry.startsWith(".") && entry !== ".planning"`
+
+---
+
+### Review 226: ai-pattern-checks.js Enhancement - CI + SonarCloud + Qodo (2026-02-03)
+
+**Date:** 2026-02-03 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-validation-with-startswith
+- regex-g-flag-with-test-in-loop
+- readfilesync-without-explicit-trycatch-context
+- sonarcloud-s5852-naivedatafetch-regex-dos
+- sonarcloud-s5852-extractimports-regex-dos
+- unvalidated-file-path
+- multi-line-regex-detection-failure
+- scoped-package-detection-bug
+- multi-line-query-patterns
+- absolute-path-validation
+- canonical-builtin-list
+- deep-import-support
+- re-export-detection
+- packagejson-caching
+- unused-variables-removed
+
+**Learnings:**
+
+- CI Pattern Compliance Failure + SonarCloud Security Hotspots + Qodo
+- Line 83 used `startsWith("/")` which
+- Fix: Converted to regex `/^[/\\]/.test()` for CI compliance
+- Line 220 `detectAIPatterns()` used
+- Fix: Rewrote to use `exec()` loop with fresh RegExp and zero-length match
+- Fix: Removed existsSync, rely purely on try/catch. Added to pathExcludeList.
+
+---
+
+### Review 227: PR #331 Audit Comprehensive Staged Execution - Qodo + CI (2026-02-03)
+
+**Date:** 2026-02-03 | **PR:** #331 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 11    | 11    | 1        | 0        |
+
+**Patterns:**
+
+- prototype-pollution-in-jsonl-processing
+- type-guards-before-string-methods
+- user-context-for-audit-trails
+
+**Learnings:**
+
+- Qodo Compliance + CI Pattern Checker **PR:** #331
+- Unsafe error.message access →
+- Fixed: 11 items (4 CRITICAL, 5 MAJOR, 2 MINOR)
+- Deferred: 1 item (architectural)
+- False Positives: 2 items (pattern checker doesn't detect multi-line try/catch
+
+---
+
+### Review 235: PR #332 Audit Documentation 6-Stage - Qodo/CI (2026-02-03)
+
+**Date:** 2026-02-03 | **PR:** #332 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- redesign-episodic-memory-as-systemic-feature
+- yaml-list-indentation
+- yaml-explicit-empty-arrays
+- prettier-function-name-splitting
+- process-filtering-precision
+
+**Learnings:**
+
+- Qodo/CI Review Feedback **PR:** #332
+- YAML syntax errors: improper list indentation for
+- Episodic memory function name broken by Prettier across
+- Python process filtering too broad. Generic
+- JSON output for cycle detection (DEFERRED - current text
+- Alert on missing circular dependency script instead of
+- Anchor canonical paths regex for robustness:
+
+---
+
+### Review 237: PR #334 transform-jsonl-schema.js Security Hardening - Qodo/CI (2026-02-03)
+
+**Date:** 2026-02-03 | **PR:** #334 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 12    | 12    | 3        | 0        |
+
+**Patterns:**
+
+- path-traversal-prevention-with-regex
+- path-containment-validation
+- safe-error-message-access
+- category-map-key-normalization
+- guard-against-invalid-input-types
+- --output-flag-validation
+- readfilesync-trycatch-compliance
+- file-existence-check-before-read
+
+**Learnings:**
+
+- Fixed: 12 items (2 CRITICAL CI, 5 MAJOR, 5 MINOR)
+- Deferred: 3 items (ajv schema validation - architectural, intentional PII in
+- False Positives: 2 (readFileSync IS in try/catch at line 374, file at line 471
+- Pattern checker may have false positives for multi-line try/catch blocks
+- File paths from `fs.readdirSync()` are system-provided, not user input
+- Lowercase category map keys eliminate case-sensitivity bugs
+
+---
+
+### Review 239: PR #334 Round 3 Security Hardening - Qodo (2026-02-03)
+
+**Date:** 2026-02-03 | **PR:** #334 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- critical---sensitive-path-exposure
+- major---symlink-race-in-atomic-writes
+- major---exit-code-propagation
+- major---silent-failures-in---all-mode
+- minor---predictable-temp-filenames
+- minor---case-sensitivity-in-validation
+- minor---cross-platform-rename
+- trivial---directory-path-errors
+- trivial---ci-exit-tracking
+
+**Learnings:**
+
+- Sensitive Path Exposure:\*\* `validation-state.json` committed to
+- Symlink Race in Atomic Writes:\*\* Temp file creation vulnerable to
+- Exit Code Propagation:\*\* Script returns 0 even on errors, breaking
+- Silent Failures in --all Mode:\*\* Files that fail transformation are
+- Predictable Temp Filenames:\*\* Using just `.tmp` suffix allows race
+- Case Sensitivity in Validation:\*\* Severity/effort fields rejected
+
+---
+
+### Review 252: PR #338 eval-sonarcloud Skill Follow-up - Qodo (2026-02-05)
+
+**Date:** 2026-02-05 | **PR:** #338 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Debug commands reveal partial/full tokens in process
+- Prevention: Use stdin-based patterns like `curl --config -` for sensitive
+- Root cause: Path validation used logical paths, not real paths
+- Prevention: Use fs.realpathSync() to resolve symlinks before path
+- Root cause: Destructuring only `items`, ignoring `errors` return value
+- Prevention: Always check `errors` when calling loadJsonlFile
+
+---
+
+### Review 253: PR #338 eval-sonarcloud Symlink Defense - Qodo (2026-02-05)
+
+**Date:** 2026-02-05 | **PR:** #338 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Applied fix to one function but not sibling functions with same
+- Prevention: When fixing security pattern, grep for ALL instances across ALL
+- Root cause: Hardcoded debug commands in generated report, separate from
+- Prevention: Audit ALL output strings for sensitive command patterns
+- Root cause: Brevity prioritized over debuggability
+- Prevention: Always log parse failures, even when returning fallback
+
+---
+
+### Review 254: PR #338 Token Exposure + Parse Logging - Qodo (2026-02-05)
+
+**Date:** 2026-02-05 | **PR:** #338 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Thought heredoc avoided expansion but `$VAR` outside quotes
+- Prevention: Remove manual curl commands; use scripts that handle auth
+- Root cause: Same pattern in same file, different function name
+- Prevention: When fixing a pattern, grep for ALL functions with similar code
+- Root cause: Added user context for audit trail without considering PII
+- Prevention: Hash identifiers in logs to preserve traceability without
+
+---
+
+### Review 255: PR Cherry-Pick - Qodo Compliance + SonarCloud + CI (2026-02-06)
+
+**Date:** 2026-02-06 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Qodo Compliance + Qodo PR Suggestions + SonarCloud Quality Gate + CI
+- Root cause: Script authored on Windows with hardcoded user path
+- Prevention: Always use dynamic path.resolve(\_\_dirname, "../../")
+- Root cause: Regex-based checker + exclusion list not updated for new files
+- Prevention: Add verified try/catch files to exclusion list immediately
+- Root cause: copyFileSync replaces entire file instead of merging updates
+- Prevention: Use in-place update or merge strategy for sync operations
+
+---
+
+### Review 256: PR Cherry-Pick Round 2 - Qodo Suggestions + CI (2026-02-06)
+
+**Date:** 2026-02-06 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Qodo Compliance + Qodo PR Code Suggestions + CI Pattern Compliance
+- Root cause: Regex negative lookahead only checks chars after match
+- Prevention: Add file to pathExclude when `rel === ""` is at start of
+- Root cause: Escape detection not guarded by `inString` flag
+- Prevention: Always guard escape handling with string context check
+- Root cause: replace() is not anchored to start of string
+- Prevention: Use startsWith() + slice() for prefix removal
+
+---
+
+### Review 257: PR Cherry-Pick Round 3 - Qodo Compliance + Suggestions (2026-02-06)
+
+**Date:** 2026-02-06 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 3     | 2        | 2        |
+
+**Learnings:**
+
+- Root cause: Fallback rm+rename not wrapped in its own try/catch
+- Prevention: Always wrap fallback with cleanup of tmp on failure
+- Fixed: 3 items (Windows rename fallback in 3 files)
+- Rejected: 2 items (audit trail completeness already has timestamp+action;
+- Deferred: 2 items (PII in audit logs via os.userInfo() - intentional design
+- Atomic file operations need defense-in-depth: try rename, catch → rm+rename,
+
+---
+
+### Review 258: PR Cherry-Pick Round 4 - Qodo Compliance + Suggestions (2026-02-06)
+
+**Date:** 2026-02-06 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 4     | 4     | 0        | 3        |
+
+**Learnings:**
+
+- Root cause: String prefix matching is not path-aware
+- Prevention: Use `path.relative()` + regex for all containment checks
+- Root cause: Parsers don't filter non-JSON decorators
+- Prevention: Skip lines starting with triple backticks
+- Fixed: 4 items (path containment, trailing newline, rename fallback, fence
+- Rejected: 3 items (source exfiltration by design, audit trail for CLI,
+
+---
+
+### Review 259: PR Cherry-Pick Round 5 - PII Scrub + Hardening (2026-02-06)
+
+**Date:** 2026-02-06 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Eval scripts log absolute `path.resolve()` output into reports
+- Prevention: Always use relative paths in generated reports
+- Root cause: Audit trail needed operator identity but raw username is PII
+- Prevention: Use getOperatorId() helper (CI="ci", local=hash, opt-in raw)
+- Root cause: Two-step operation leaves gap for data loss
+- Prevention: Use copyFileSync + unlinkSync (dest always has content)
+
+---
+
+### Review 261: PR #346 Audit Trigger Reset - Round 2 Qodo (2026-02-07)
+
+**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Incomplete find-replace when changing delimiters
+- Prevention: Search for ALL occurrences of old delimiter when changing
+- Root cause: No validation on parsed date from markdown
+- Prevention: Always validate dates with
+- Root cause: `reset-audit-triggers.js` displayName regex too strict
+- Prevention: Use `[-\\s]+` pattern between word parts
+
+---
+
+### Review 262: PR #346 Audit Trigger Reset - Round 3 Qodo + SonarCloud (2026-02-07)
+
+**Date:** 2026-02-07 | **PR:** #346 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Original hooks used string-based `execSync` for git commands
+- Prevention: Always use `execFileSync` with array args for subprocess calls
+- Root cause: Re-parsing YYYY-MM-DD string through Date constructor
+- Prevention: Use original date string directly, don't round-trip through
+- Root cause: Regex matched first table with category names
+- Prevention: Read from specifically named section (fixed in R5)
+
+---
+
+### Review 263: PR #346 Audit Trigger Reset - Round 4 Qodo (2026-02-07)
+
+**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: Same bug as `reset-audit-triggers.js` but in different function
+- Prevention: Extract shared `toDisplayName()` helper for category names
+- Root cause: Windows does not support POSIX rename-over semantics
+- Prevention: Always add `rmSync(dest, {force:true})` before `renameSync`
+- Root cause: Entries are JSON strings but could be corrupted
+- Prevention: Wrap in try-catch via safe helper function
+
+---
+
+### Review 264: PR #346 Audit Trigger Reset - Round 5 Qodo (2026-02-07)
+
+**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: `getCategoryAuditDates()` matched against entire file content
+- Prevention: Always scope markdown regex to the relevant `##` section
+- Root cause: Generic `\d{4}-\d{2}-\d{2}` matches dates in comments/links
+- Prevention: Anchor date regex to table row structure
+- Root cause: `seed-commit-log.js` could write empty file if all hashes fail
+- Prevention: Add length check + exit after validation loop
+
+---
+
+### Review 265: PR #346 Audit Trigger Reset - Round 6 Qodo (2026-02-07)
+
+**Date:** 2026-02-07 | **PR:** #346 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 3     | 1     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: `saveJson()` did rmSync(dest) then renameSync(tmp, dest)
+- Prevention: Use backup-swap pattern (dest→.bak, tmp→dest, rm .bak)
+- Root cause: Automated review bots run on push, not on latest HEAD
+- Prevention: Check commit hash in feedback header against current HEAD
+- Fixed: 1 item (backup-swap saveJson)
+- Already Fixed: 3 items (empty entries guard, section scoping, table date regex
+
+---
+
+### Review 268: PR #352 Round 2 - Qodo + CI False Positives (2026-02-09)
+
+**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Pattern checker line numbers shift after edits — always re-verify false
+- Module-scope `loadConfig()` needs try/catch even more than function-scope
+
+---
+
+### Review 269: PR #352 Round 3 - Qodo Security + Config Resilience (2026-02-09)
+
+**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Qodo PR Security Compliance + Code Suggestions (Round 3)
+- Every module-scope `loadConfig()` call in the codebase needs try/catch — this
+- Symlink guards needed even for internal tooling directories (`.claude/skills`)
+- Silent catch blocks prevent diagnosis — always log at least a warning
+- Fail-closed is the safe default for CI enforcement hooks when config is empty
+
+---
+
+### Review 270: PR #352 Round 4 - Qodo Config Guards + YAML Parsing (2026-02-09)
+
+**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Systematic pattern: every `loadConfig*()` at module scope across the codebase
+- YAML block scalars (`|`, `>`) are common in SKILL.md frontmatter but the
+
+---
+
+### Review 271: PR #352 Round 5 - Qodo Regex + Config Guards (2026-02-09)
+
+**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Global `g` flag on regex used with `.test()` is a recurring bug pattern —
+- Path-matching regex needs anchoring at path boundaries, not just substring
+- All 10 config consumers from the Session #142 JSON extraction are now guarded
+
+---
+
+### Review 272: PR #352 Round 6 — Final loadConfig Sweep (2026-02-09)
+
+**Date:** 2026-02-09 | **PR:** #352 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Instead of fixing one file per round, grep'd entire
+- Zero unguarded loadConfig calls remain in codebase.
+
+---
+
+### Review 280: Qodo Evidence Deduplication in JSONL Debt Files (2026-02-10)
+
+**Date:** 2026-02-10 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 14    | 14    | 0        | 7        |
+
+**Learnings:**
+
+- Root cause: Upstream aggregation script merges evidence without dedup
+- Prevention: Created `scripts/debt/dedup-evidence.js` for batch cleanup;
+- Fix: Script removes these automatically
+- Fixed: 14 items (all via dedup script — 84 total entries fixed across 3 files)
+- Rejected: 7 (R2: stale content_hash × 5, restore merged_from, schema change)
+- Qodo found 14 instances but the script found 28 per file — always fix
+
+---
+
+### Review 310: Qodo PR Suggestions — Alerts v3 Health Score, Edge Cases, Path Normalization (2026-02-13)
+
+**Date:** 2026-02-13 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: `continue` on missing categories + dynamic `totalWeight`
+- Prevention: Always normalize against fixed total possible weight
+- Root cause: No parent commit to diff against
+- Prevention: Fallback to empty tree hash
+- Root cause: Audit tool outputs Windows paths
+- Prevention: Normalize at ingest time
+
+---
+
+### Review 339: PR #369 R5 — CC Extraction, tmpFile Symlink, ISO Date Normalization (2026-02-17)
+
+**Date:** 2026-02-17 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- extract-validateinputpath-for-cc-reduction
+- tmpfile-symlink-guard
+- iso-timestamp-normalization
+- guard---apply-loop-against-closedfiltered-items
+- cross-platform-atomic-rename
+
+**Learnings:**
+
+- SonarCloud (1 CC Issue) + Qodo Security (1) + Qodo Compliance (1) +
+
+---
+
+### Review 340: PR #369 R6 — CC Extraction x2, wx Flag, Atomic writeMasterDebt, Collision Detection (2026-02-17)
+
+**Date:** 2026-02-17 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- extract-guardsymlink-atomicwrite-for-cc-reduction
+- extract-classifyopenitems-applyresolutions-for-cc-reduction
+- exclusive-create-flag-wx
+- atomic-write-for-writemasterdebt
+- return-canonical-path
+- finding-key-collision-detection
+- -apply-logic-into-separate-functions
+
+**Learnings:**
+
+- SonarCloud (2 CC Issues) + Qodo Security (1) + Qodo Suggestions (8)
+
+---
+
+### Review 341: PR #369 R7 — CC indexByKey, Ancestor Symlink, fstatSync Forward Scan, Error -1 (2026-02-17)
+
+**Date:** 2026-02-17 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- extract-indexbykey-for-cc-reduction
+- ancestor-symlink-containment
+- dir-dest-symlink-guards-in-fallback
+- fstatsync-forward-scan
+- return--1-on-git-error
+
+**Learnings:**
+
+- SonarCloud (1 CC Issue) + Qodo Security (2) + Qodo Compliance (2) +
+
+---
+
+### Review 355: Gemini Code Assist — EXIT Trap, Evidence Dedup, mktemp Guards (2026-02-19)
+
+**Date:** 2026-02-19 | **PR:** #379 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- silent-hook-output-after-posix-migration
+- object-dedup-by-reference-vs-value
+- mktemp-mv-error-handling
+
+**Learnings:**
+
+- When replacing bash-isms with POSIX equivalents, audit the DX
+
+---
+
+### Review 454: PR #384 R1 — SonarCloud + Qodo + CI (2026-02-22)
+
+**Date:** 2026-02-22 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cc-extraction-creates-new-cc
+- fp-report-double-counting
+- duplicate-code-in-ifelse-if
+- regex-cc-with-i-flag
+- division-by-zero-in-analytics
+- pathexcludelist-merging-counts-without-tracking-source-infla
+
+---
+
+### Review 370: PR #386 R1 — SonarCloud + Qodo + Gemini + CI (2026-02-23)
+
+**Date:** 2026-02-23 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- sonarcloud-s5852-two-strikes
+- regex-dos-in-seed-commit-logjs
+- atomic-write-hardening
+- repo-root-resolution
+- sticky-boolean-false-positive
+
+**Learnings:**
+
+- SonarCloud S5852 two-strikes: replaced 2 complex regexes (complexity 31
+- Regex DoS in seed-commit-log.js: replaced complex session counter regex with
+- Optional chaining: 3 instances of `x && x.test()` → `x?.test()` in
+- Array mutation: `keys.sort()` → `[...keys].sort()` for non-mutating sort
+- Git log parsing: `parts.length < 4` → `< 6` to match 6-field format
+- Atomic write hardening: added try/catch cleanup, rmSync before renameSync,
+- Repo root resolution: `process.cwd()` → `git rev-parse --show-toplevel`
+
+---
+
+### Review 371: PR #386 R2 — SonarCloud S5852 + CC Reduction + Qodo Hardening (2026-02-23)
+
+**Date:** 2026-02-23 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- concurrency-safe-tmp
+- fallback-unlinksync-guard
+- stringraw-for-backslash
+
+**Learnings:**
+
+- S5852 two-strikes: replaced `/(\d+)\s*$/` regex with backward digit walk (pure
+- CC reduction: extracted `parseCommitLines` and `writeEntries` from `main()`
+- CC reduction: wrapped `logical-or-numeric-fallback` testFn in IIFE with
+- Concurrency-safe tmp: `COMMIT_LOG.tmp` → `COMMIT_LOG.tmp.${pid}.${Date.now()}`
+- Fallback unlinkSync guard: added try/catch around cross-drive cleanup
+- String.raw for backslash: `"\\|"` → `String.raw\`\\|\``
+- Match snippets: added `match: line.trim().slice(0, 120)` to both testFn
+
+---
+
+### Review 376: PR #392 R1 (2026-02-25)
+
+**Date:** 2026-02-25 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- git-glob-pathspecs-require-glob-prefix-when-using
+
+---
+
+### Review 377: PR #392 R2 (2026-02-25)
+
+**Date:** 2026-02-25 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- 3-qodo-compliance-items-repeat-rejected
+- stringerr-on-exec-error-objects-produces-object-object-
+
+---
+
+### Review 455: PR #389 R1 — Qodo + Gemini (2026-02-25)
+
+**Date:** 2026-02-25 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- path-containment-across-new-audit-checkers
+- basename-only-dedup-in-run-files
+- symlink-skip-via-lstatsync
+- canverifypkgscripts-flag
+- code-fence-counting-needs-state-machine
+- frontmatter-regex-must-anchor-to-file-start
+
+---
+
+### Review 456: PR #389 R2 — Qodo + Gemini + Compliance (2026-02-25)
+
+**Date:** 2026-02-25 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- collectscriptfiles-symlink-propagation
+- findingsfilter-id-generation
+- yaml-multiline-run-parsing
+- isinsidetrycatch-brace-logic
+- resolverelativepath-absolute-path-stripping
+- dos-caps-for-recursive-walkers
+
+---
+
+### Review 457: PR #394 R1 — SonarCloud + Qodo + Gemini + CI (2026-02-26)
+
+**Date:** 2026-02-26 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cc-reduction-via-generic-ast-walker
+- isinsidetryblock-must-check-range-not-just-ancestor-type
+- hasrenamesyncnearby-ordering-matters
+- pre-existing-violations-surface-when-file-is-modified
+- sec-004-triggered-by-inline-comment-examples
+- duplicate-hash-prevention-in-batch-ingestion
+
+---
+
+### Review 400: Maintenance PR R1 (2026-02-27)
+
+**Date:** 2026-02-27 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cc-extract-helpers-proactively
+
+---
+
+### Review 401: Maintenance PR R2 (2026-02-27)
+
+**Date:** 2026-02-27 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cc-extract-helpers-proactively
+- nan-safe-timestamp-validation
+
+---
+
+### Review 403: Maintenance PR R4 (2026-02-27)
+
+**Date:** 2026-02-27 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cc-reduction-pattern
+- review-suggestion-creates-new-issue-when-a-reviewer-suggesti
+
+---
+
+### Review 404: Maintenance PR R5 (2026-02-27)
+
+**Date:** 2026-02-27 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- serial-regex-flagging-sonarcloud-flags-regexes-one-per-round
+
+---
+
+### Review 405: Maintenance PR R6 (2026-02-27)
+
+**Date:** 2026-02-27 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- indexof-to-includes-every-time-indexofx--1-is-written
+
+---
+
+### Review 406: Maintenance PR R7 (2026-02-27)
+
+**Date:** 2026-02-27 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- cc-creep-from-error-handling-adding-trycatch-blocks-to
+
+---
+
+### Review 407: PR #398 R1 — Ecosystem Diagnosis + GitHub Automation (2026-02-27)
+
+**Date:** 2026-02-27 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- --escapetablecell-overuse-dont-use-table-cell-escaping-for-m
+
+**Learnings:**
+
+- CRITICAL: `.serena/project.yml` YAML indentation (duplicate `- typescript`)
+- MAJOR: Pin GitHub Actions to SHA hashes (dependabot/fetch-metadata,
+- MAJOR: Known-duplicate ID logic now catches within-file dups (Qodo #11)
+- MINOR: SESSION_HISTORY.md missing purpose section + doc headers
+- MINOR: `escapeTableCell` used for link text caused `&amp;` — added
+- MINOR: Broken DOCUMENTATION_INDEX table row (2-line split)
+- MINOR: Prettier formatting on new GitHub workflow files
+
+---
+
+### Review 408: PR #407 R3 — SonarCloud + Qodo Batch 1 (2026-02-28)
+
+**Date:** 2026-02-28 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- replaceall-migration
+- stringraw-for-regex
+
+---
+
+### Review 416: PR #407 R7 — SonarCloud + Qodo + CI (2026-03-01)
+
+**Date:** 2026-03-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- already-fixed-stale
+- verify-tsconfig-moduletarget-before-accepting-top-level-awai
+
+---
+
+### Review 417: PR #407 R8 — CI/Qodo/SonarCloud (2026-03-01)
+
+**Date:** 2026-03-01 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- isretrosectionend-logic-inversion-prheadingretestline
+
+---
+
+### Review 442: PR #411 R1-R8 — Semgrep OSS + Gemini + Qodo + CI + CodeQL + SonarCloud (2026-03-02)
+
+**Date:** 2026-03-02 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- semgrep-oss-fn-and-objmethod-patterns-match-all
+
+**Learnings:**
+
+- Semgrep OSS (64), Gemini (2), Qodo (38), CI failures (6), CodeQL
+- Batched protocol effective: 8 rounds, 8 commits, no push until done
+- Semgrep OSS lacks type information — custom rules must target specific
+- First-time SonarCloud scan on this codebase produced many pre-existing
+- Parallel agents (ESLint rules + health scripts) cut R3 fix time in half
+- R6 demonstrated that 78+ mechanical SonarCloud fixes can be applied safely
+
+---
+
+### Review 443: PR #412 R1 — Gemini + Qodo + CI (2026-03-02)
+
+**Date:** 2026-03-02 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- verify-doc-math-before-commit
+- clarify-ai-implementation-time
+
+**Learnings:**
+
+- Gemini Code Assist (6), Qodo (1), CI Prettier failure (1) **Total:**
+- All items are documentation accuracy fixes in
+- CI failure was pre-existing Prettier formatting on 11 unrelated files
+
+---
+
+### Review 444: PR #415 R1 — Qodo + Gemini + CI + SonarCloud + Semgrep + Dep Review (2026-03-02)
+
+**Date:** 2026-03-02 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- exclude-planning-from-all-tools
+- never-commit-raw-transcripts
+
+**Learnings:**
+
+- Qodo (3), Gemini (1), CI ESLint failure (1), CI Security Check
+- Fix: added `.planning/**` to ESLint ignores, security-check SKIP_PATTERNS, and
+- Deleted 10 agent-research transcript files containing PII (local paths,
+- PR creep warnings were invisible (hook redirects all output to log file,
+- SKIP_REASON example "reason" (6 chars) violated 10-char minimum. Fixed to
+
+---
+
+### Review 445: PR #415 R2 — SonarCloud + CodeQL + CI + Qodo + Gemini (2026-03-04)
+
+**Date:** 2026-03-04 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- security-hotspots-2
+- dynamic-import-cleanup
+- execfilesync-over-execsync
+- backslash-first-in-escape-chains
+
+**Learnings:**
+
+- SonarCloud (174), CodeQL (3), CI Security Check (2), Qodo (5),
+- S4721 command injection resolved by execFileSync;
+- Merged ~40 groups of consecutive `Array#push()`
+- JSONL sync warning in pre-commit wrote to stdout
+- Audit framework output used `t3Count` (total) instead of
+- Backslash double-escaping in GFM tables — may over-escape in
+- SonarCloud duplication gate (5.7% vs 3% threshold) — planning
+
+---
+
+### Review 447: PR #415 R4 — SonarCloud + Qodo (2026-03-04)
+
+**Date:** 2026-03-04 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 8     | 5     | 0        | 0        |
+
+**Patterns:**
+
+- s5852-dry-run-regex
+- replaceall-consistency
+- unescaped-table-cell
+- string-parsing-over-regex-two-strikes
+
+**Learnings:**
+
+- SonarCloud (6), Qodo (2) **Total:** 8 unique **Fixed:** 5
+- Replaced `/\n+--- DRY RUN.*$/s` with
+- Added `\r` stripping before `\n` → space conversion
+- S5852 on `/ +$/gm` (space-only quantifier, no backtracking —
+
+---
+
+### Review 448: PR #417 R1 — SonarCloud + Qodo + Semgrep + CI (2026-03-05)
+
+**Date:** 2026-03-05 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- log-malformed-jsonl-lines
+- validate-cli-args-before-parse
+
+**Learnings:**
+
+- SonarCloud (8), Qodo suggestions (10), Qodo compliance (2), Semgrep
+- Numeric comparison normalization, deterministic PR sorting,
+- Array bounds check warning (addressed via Qodo numeric fix)
+- Prettier formatting on 6 files
+- Log-Malformed-JSONL-Lines; Validate-CLI-Args-Before-Parse;
+
+---
+
+### Review 449: PR #417 R2 — Qodo + Gemini + Semgrep + CI (2026-03-05)
+
+**Date:** 2026-03-05 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- validate-regex-context-before-fix
+
+**Learnings:**
+
+- Qodo bugs (6), Qodo suggestions (7), Qodo compliance (2), Gemini
+- Propagation not blocking — added `--blocking` flag to
+- CC can't parse TS — scoped CC check to `.js`/`.mjs` only
+- Metrics null totals — derive total from
+- CC skipped on no-upstream — fallback to origin/main or
+- Committed runtime state files — gitignored + git rm --cached
+- Sonar ignores too broad — narrowed S5852/S4036/S6354 to
+
+---
+
+### Review 450: PR #417 R3 — Qodo + SonarCloud + Semgrep + Gemini (2026-03-05)
+
+**Date:** 2026-03-05 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- sonar-resourcekey-comma-syntax
+- sonarcloud-s1121-negated-condition
+- crlf-safe-jsonl-parsing
+- doc-consolidation-numbering
+- sonarcloud-resourcekey-only-accepts-single-path-patterns
+
+**Learnings:**
+
+- SonarCloud (1), Qodo bugs (6), Qodo suggestions (3), Qodo compliance
+- SonarCloud `resourceKey` doesn't support
+- Flipped `r.total != null ? A : B` to
+- Trim each line individually before JSON.parse to
+- Renamed duplicate "#1"/"#2" consolidation
+- Qodo Bugs #1-5 (stale, all fixed in R2), Semgrep array
+- SonarCloud `resourceKey` only accepts single path patterns, not
+
+---
+
+### Review 451: PR #417 R4 — Qodo + Gemini (2026-03-05)
+
+**Date:** 2026-03-05 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 10    | 4     | 0        | 0        |
+
+**Patterns:**
+
+- review-450-total-fix
+- prototype-pollution
+- qodo-suggestions-re-raise-rejected-items-across-rounds-alway
+
+**Learnings:**
+
+- Qodo suggestions (8), Gemini (2) **Total:** 10 **Fixed:** 4
+- Corrected Total:4 → Total:11 (deduped count)
+- Added fallback from >&3 to >&2 in pre-commit propagation check
+- Changed perSource/perPR to Object.create(null) +
+- Return number|null instead of string for --json output
+- POSIX regex (3rd raise — correct for `git grep -E`), TS in
+- Qodo Suggestions re-raise rejected items across rounds. Always
+
+---
+
+### Review 477: PR #419 R1 — SonarCloud + Qodo + Semgrep + Gemini + CI (2026-03-06)
+
+**Date:** 2026-03-06 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- windows-rename-safety
+- preflight-safety-checks
+- symlink-guards-on-reads
+- eslint-config-bypass
+- --windows-rename-safety-fsrenamesync-can-fail-to-overwrite-e
+
+**Learnings:**
+
+- SonarCloud (5), Qodo Bugs (2), Qodo Compliance (3), Qodo Suggestions
+- Shell:true command injection (hardcoded bin names only, not user input)
+- Silent JSONL parse failures (intentional skip of malformed lines)
+- Error echo in session-start.js (pre-existing, first-line truncated)
+
+---
+
+### Review 478: PR #419 R2 — SonarCloud + Qodo (2026-03-06)
+
+**Date:** 2026-03-06 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- qodo-suggestion-copyfilesync-fallback
+- qodo-suggestion-trycatch-in-applyrepair
+- qodo-security-preflight-all-paths
+- qodo-suggestion-nan-guard
+- extract-helper-for-cc
+- copyfilesync-fallback-over-unlink-rename
+
+**Learnings:**
+
+- SonarCloud (1), Qodo Compliance (4), Qodo Suggestions (5) **Total:**
+- Extracted `deduplicateEntry` helper from
+- Replaced unlinkSync+renameSync
+- Expanded isSafeToWrite preflight to
+- Added Number.isFinite filter before
+- Qodo Compliance S4036 PATH hijacking (repeat-rejected —
+
+---
+
+### Review 479: PR #419 R3 — SonarCloud + Qodo + CI (2026-03-06)
+
+**Date:** 2026-03-06 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- extract-multiple-helpers-for-high-cc
+
+**Learnings:**
+
+- SonarCloud (1), Qodo Compliance (4), Qodo Suggestions (5), CI (1)
+- Extracted `preflightSafetyCheck`, `backupFiles`,
+- Added lstatSync check on backup directory before
+- Added `st.isFile()` guard in backup/delete loops to skip
+- Added `@modelcontextprotocol/server-memory` to
+- Extract-Multiple-Helpers-For-High-CC;
+
+---
+
+### Review 475: Qodo R4 — fnm eval safety, gitleaks regex, cwd determinism (2026-03-07)
+
+**Date:** 2026-03-07 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: R3 fixed standalone scripts but missed the central wrapper.
+- Prevention: Always capture command substitution output, validate non-empty,
+- Root cause: Overly broad word-boundary regex without negative lookbehind.
+- Prevention: Use negative lookbehind `(?<!no\s)` for patterns that have
+- Root cause: Inconsistency during incremental additions to the hook.
+- Prevention: When adding execFileSync with relative paths, always include
+
+---
+
+### Review 473: Qodo R6 — diminishing returns, JSONL data normalization (2026-03-08)
+
+**Date:** 2026-03-08 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 2     | 2     | 0        | 8        |
+
+**Learnings:**
+
+- Fixed: 2 items (rev-436 completeness, `""` → `null` x7 entries x2 files)
+- Rejected: 8 items (3 repeats, 5 pre-existing/over-engineering)
+- After 5+ rounds, most new items are repeat FPs or diminishing-value hardening
+- Consider merging PR after R5 when fix rate drops below 30%
+- JSONL empty fields should use `null` not `""` for consistency
+
+---
+
+### Review 474: Qodo R5 — eval input validation, maxBuffer, TDMS provenance (2026-03-08)
+
+**Date:** 2026-03-08 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 5     | 5     | 0        | 0        |
+
+**Learnings:**
+
+- Root cause: R4 added capture-before-eval but not content validation.
+- Prevention: Any eval of external command output should validate content.
+- Root cause: `/add-debt` skill doesn't inject `"source"` field
+- Prevention: Check field parity with existing entries when appending JSONL.
+- Fixed: 5 items (+ propagation to 12 TDMS entries across 2 files)
+
+---
+
+### Review 458: PR #423 R1 — Qodo + Semgrep + CI (2026-03-09)
+
+**Date:** 2026-03-09 | **Source:** qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- bot-score-double-counting
+- semgrep-bounds-check
+- --always-guard-fsreadfilesync0-with-processstdinistty-preven
+
+**Learnings:**
+
+- Qodo (3 bugs, guide, suggestions, compliance), Semgrep (2), CI
+- Replaced `cmd /c npx` with bare `npx` for memory server
+- Added early return guard in `parseSetupNodeCache`
+- Restored `chmod(0o755)` on example.py with Windows
+- Always guard `fs.readFileSync(0)` with `!process.stdin.isTTY` — prevents TTY
+- MCP server configs should use cross-platform commands (`npx`, `node`) not
+- Scoring formulas: denominator should match the population being measured, not
+
+---
+
+### Review 471: Qodo R2-3 — error handling, duplicate detection, cross-platform (2026-03-09)
+
+**Date:** 2026-03-09 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 9     | 9     | 0        | 4        |
+
+**Learnings:**
+
+- Qodo Compliance + Code Suggestions | **Round:** R2-3
+- Fixed: 9 items (across 17 files with propagation)
+- Rejected: 4 items (CI step dedupe, registry sort, checker validation,
+- Duplicate category keys across checkers are a silent data-clobbering risk —
+- Cross-platform test portability: always use `os.tmpdir()` instead of `/tmp`
+
+---
+
+### Review 469: PR #424 R3 — Mixed (CI + SonarCloud + Qodo) (2026-03-10)
+
+**Date:** 2026-03-10 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- unused-code-removal
+- error-safety-propagation-x7
+- processexit-guard-x7
+- finding-id-validation
+- --two-strikes-regex-replacement-with-string-parsing-is-faste
+
+**Learnings:**
+
+- CI/ESLint, SonarCloud Hotspots, Qodo Compliance + Code Suggestions
+- Replaced `stepRegex` in `generate-test-registry.js`
+- Prepended step index to CI step target values to prevent
+- Changed `file.replace(".js", "")` to
+- Removed `buildTaskMap` (resolve-dependencies.test),
+
+---
+
+### Review 483: PR #429 R2 — Qodo + Gemini + CI (2026-03-13)
+
+**Date:** 2026-03-13 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Auto-generated DEBT entries (e.g. from log-override.js hook bypass detection)
+- When Zod schemas and documentation disagree on enum values, check existing
+- SARIF upload guarded by `hashFiles() != ''` without asserting file existence
+- Validator scripts claiming "all files" coverage but only checking a hardcoded
+
+---
+
+### Review 484: PR #429 R3 — SonarCloud + Qodo + CI (2026-03-13)
+
+**Date:** 2026-03-13 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Learnings:**
+
+- Semgrep `--test` mode catch blocks must distinguish between "flag not
+- IIFE-in-template-literal (`${(() => {...})()}`) is valid JS but hurts
+- Cross-round dedup saves effort: R3 item 7 (hook.command logging risk) was
+
+---
+
+### Review rev-1: PR #448 R1 — Mixed (Qodo+Gemini+SonarCloud) (2026-03-18)
+
+**Date:** 2026-03-18 | **PR:** #448 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- grep-false-positive
+- migration-silent-noop
+- timestamp-string-comparison
+- review_rounds-mutation-bug
+- semgrep-over-suppression
+
+**Learnings:**
+
+- grep patterns must not match success messages
+- migration scripts must fail loudly on missing source
+- use Date.parse not string comparison for timestamps
+- semgrep pattern-not-inside with $X.map suppresses unrelated $ARR[0]
+
+---
+
+### Review 496: PR #459 R1 — Mixed (Qodo+Gemini+SonarCloud+CI) (2026-03-21)
+
+**Date:** 2026-03-21 | **PR:** #459 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Generic Firestore collection methods need allowlists even when callers are
+- `startsWith("*")` in line classifiers must be gated by file extension to avoid
+- Token redaction using word-split misses embedded secrets (e.g.,
+- Meeting widget `setInterval` handlers: define as `useCallback` before effect
+
+**Learnings:**
+
+- `getCollectionDocs` accepted arbitrary collection names — added allowlist +
+- `isTrivialLine` treated `* list item` as trivial in .md files — gated
+- `sanitizeMessage` split on whitespace then checked tokens — switched to regex
+- SonarCloud `replaceAll` suggestions: use `replaceAll()` with string args
+- `String.raw` template literals with single backslash cause parse errors in CJS
+- PLAN.md: raw research findings should be archived, not deleted, to preserve
+- Rejected: `post-read-handler` console.warn — already has nosemgrep with
+
+---
+
+### Review 44: Hook Refinements & Output Limiting (unknown) (unknown)
+
+**Date:** unknown | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- self-monitoring-for-pattern-checkers
+- windows-path-pattern-precision
+- output-limiting-for-terminal-safety
+
+**Learnings:**
+
+- Qodo PR Compliance Guide **PR:** Session #19
+- Fourth round of refinements for pattern-check.sh and
+- Root cause: Scripts that enforce patterns should be checked themselves
+- Prevention: Add enforcement scripts to their own scan list
+- Pattern: Include `pattern-check.sh` in default files for
+- Root cause: `[A-Za-z]:*` matches valid POSIX files containing colons (e.g.,
+- Prevention: Check for `[A-Za-z]:/*` to require the slash after drive letter
+
+---
+
+### Review 366: PR #383 R5 (SonarCloud + Qodo + CI) — 2026-02-21 (unknown) (unknown)
+
+**Date:** unknown | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- secret-leakage-in-redaction
+- path-traversal-2-files
+- atomic-dual-file-writes
+- over-broad-s0-downgrade
+- unreachable-null-guard
+- swallowed-parse-errors
+- per-line-jsonl-safety
+- -backreference-leaks-secrets
+- startswithroot-sep-is-fragile
+- dual-file-writes-need-atomicity
+- readjsonl-silent-catch-is-a-smell
+
+**Learnings:**
+
+- SonarCloud (24), Qodo Compliance (5), Qodo Code Suggestions (12), CI
+
+---
+
+### Review 367: PR #383 R6 (SonarCloud + Qodo + CI) — 2026-02-21 (unknown) (unknown)
+
+**Date:** unknown | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- symlink-directory-bypass
+- verify-resolutionsjs-savejsonl
+- double-counting-bug
+- readjsonlfromgit-crash
+- reverify-resolvedjs-crash
+- partial-atomic-write
+- dedup-key-normalization
+- hotspot-body-discard
+- remove-assignment-of-i
+- propagation-misses-are-the-1-r6-driver
+- indexof-based-arg-parsing-avoids-sonarcloud-s1854
+- iswritesafe-must-check-parent-dirs
+
+**Learnings:**
+
+- SonarCloud (25), Qodo Compliance (5), Qodo Code Suggestions (9), CI
+
+---
+
+### Review 368: PR #383 R7 (SonarCloud + Qodo + CI) — 2026-02-21 (unknown) (unknown)
+
+**Date:** unknown | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- 5-security-hotspots
+
+**Learnings:**
+
+- SonarCloud (30), Qodo Compliance (5), Qodo Code Suggestions (15), CI
+
+---
+
+### Review 369: PR #383 R8 (Qodo + SonarCloud) — 2026-02-21 (unknown) (unknown)
+
+**Date:** unknown | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- symlink-guard-sync-dedupedjs
+- fail-closed-fallback
+- atomic-paired-writes-with-rollback
+- parent-dir-symlink-check
+- path-traversal-guards
+- sprint-status-robustness
+- triage-scattered-intake
+- verify-resolutionsjs
+- propagation-remains-dominant
+- fail-closed-is-the-correct-default
+- parent-directory-symlink-traversal
+
+**Learnings:**
+
+- Qodo Code Suggestions (12), Qodo Compliance (5), SonarCloud (4), CI
+
+---
+
+### Review 409: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- premature-dedup-new-set-before-duplicate-detection-defeats
+
+---
+
+### Review 410: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- premature-dedup-new-set-before-duplicate-detection-defeats
+
+---
+
+### Review 411: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- premature-dedup-new-set-before-duplicate-detection-defeats
+
+---
+
+### Review 412: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- premature-dedup-new-set-before-duplicate-detection-defeats
+
+---
+
+### Review 413: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- replaceall-migration
+
+**Learnings:**
+
+- PR #407 R3 — SonarCloud + Qodo Batch 1
+
+---
+
+### Review 414: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- premature-dedup-new-set-before-duplicate-detection-defeats
+
+---
+
+### Review 415: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- mapfn-passes-element
+- array-never-pass-functions
+
+**Learnings:**
+
+- PR #407 R2 — Qodo/Gemini/CI **Patterns:**
+
+---
+
+### Review 420: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- atomic-write-must-not-delete-target-before-rename
+
+**Learnings:**
+
+- PR #407 R7 — SonarCloud + Qodo + CI
+
+---
+
+### Review 421: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- replaceall-migration
+
+**Learnings:**
+
+- PR #407 R3 — SonarCloud + Qodo Batch 1
+
+---
+
+### Review 422: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pattern-checker-cant-detect-rmsync-within-nested-trycatch-
+
+**Learnings:**
+
+- PR #407 R6 — SonarCloud/Qodo/CI **Patterns:**
+
+---
+
+### Review 423: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- run-pattern-checker-before-pushing-review-fixes
+- cc-re-check-after-extraction-is-not-optional
+- propagation-enforcement-remains-the-top-systemic-issue
+- pr-review-skillmd-step-05
+- s5852-requires-recursive-regex-audit
+- pre-commit-cc-hook-may-not-cover-iife-expressions
+- small-prs-fewer-rounds
+- pr-review-skillmd-step-14
+- large-pr-scope-is-the-1-systemic-driver
+- propagation-is-now-partially-automated
+- multi-source-review-has-diminishing-returns
+- review-convergence-achieved
+- no-new-templates-needed
+- ecosystem-audit-template
+- add-security-checklist-to-ecosystem-audit-checker-template
+
+**Learnings:**
+
+- Add `npm run patterns:check --staged` to the R1 fix workflow.
+- After extracting helpers for CC reduction, always re-check the
+- Add `scripts/debt/` to compliance exclusion paths
+- Add reminder to CC extraction template: "After
+- No new known churn patterns needed. PR #384's issues
+- Round count: #379(11) → #382(3) → #383(8) → **#384(4)**.
+
+---
+
+### Review 424: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- mapfn-passes-element
+- array-never-pass-functions
+
+**Learnings:**
+
+- PR #407 R2 — Qodo/Gemini/CI **Patterns:**
+
+---
+
+### Review 425: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- isretrosectionend-logic-inversion-prheadingretestline
+
+**Learnings:**
+
+- PR #407 R8 — CI/Qodo/SonarCloud **Patterns:**
+
+---
+
+### Review 426: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- already-fixed-stale
+
+**Learnings:**
+
+- PR #407 R7 — SonarCloud + Qodo + CI
+
+---
+
+### Review 427: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- replaceall-migration
+
+**Learnings:**
+
+- PR #407 R3 — SonarCloud + Qodo Batch 1
+
+---
+
+### Review 428: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pattern-checker-cant-detect-rmsync-within-nested-trycatch-
+
+**Learnings:**
+
+- PR #407 R6 — SonarCloud/Qodo/CI **Patterns:**
+
+---
+
+### Review 429: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- premature-dedup-new-set-before-duplicate-detection-defeats
+
+---
+
+### Review 430: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- mapfn-passes-element
+- array-never-pass-functions
+
+**Learnings:**
+
+- PR #407 R2 — Qodo/Gemini/CI **Patterns:**
+
+---
+
+### Review 431: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- isretrosectionend-logic-inversion-prheadingretestline
+
+**Learnings:**
+
+- PR #407 R8 — CI/Qodo/SonarCloud **Patterns:**
+
+---
+
+### Review 432: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- already-fixed-stale
+
+**Learnings:**
+
+- PR #407 R7 — SonarCloud + Qodo + CI
+
+---
+
+### Review 433: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- replaceall-migration
+
+**Learnings:**
+
+- PR #407 R3 — SonarCloud + Qodo Batch 1
+
+---
+
+### Review 434: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #407 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- atomic-writes-should-attempt-renamesync-first
+
+**Learnings:**
+
+- PR #407 R10 — SonarCloud/Qodo/Dependency Review
+
+---
+
+### Review 435: (unknown) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- composite-key-for-nullable-ids
+- rollback-on-dual-write-failure
+
+**Learnings:**
+
+- Maintenance PR R3 **Patterns:**
+
+---
+
+### Review 436: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #395 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- sanitize-errorjs-sanitize-inputjs-json-key-quoting
+
+---
+
+### Review 437: (unknown) (unknown)
+
+**Date:** unknown | **PR:** #398 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- premature-dedup-new-set-before-duplicate-detection-defeats
+
+---
+
+### Review review-pr489-r1: PR #489 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown) (unknown)
+
+**Date:** unknown | **PR:** #489 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Symlink bypass in large-file-gate.js: early `process.exit(0)` for symlinks
+- S5852 regex DoS (silent-json-parse): backtracking-vulnerable `[^)]+\s*;?\s*\n`
+- CC reductions: resolve-hook-warnings (39→helpers), check-tools (27→helpers),
+- sanitizeError import paths: 5 hooks + rotate-state.js used
+- Source traceability false-negative: `checkSourceTraceability()` only checked
+- TOCTOU `existsSync` pre-checks in validate-research.js (4 functions). Fix:
+- Zip Slip + Tar Slip: install-tools.sh validated archives AFTER extraction.
+- Propagation: 4 patterns across 46 files audited, 7 fixed (path-traversal
+- CI: 37 research files needed prettier, 3 new scripts needed test baseline.
+
+---
+
+### Review review-pr489-r2: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown) (unknown)
+
+**Date:** unknown | **PR:** #489 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review 65: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review 66: PR #491 R1 (Mixed: SonarCloud + Qodo + Gemini) (unknown) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Unguarded symlink delete: `rmSync` in run-consolidation.js cleanup path
+- Repomix bloat: 113K lines of packed external repos committed to git. Fix:
+- Dead code: `PATTERN_KEYWORDS` array (40 regexes) defined but never referenced
+- Exit code doc mismatch: header documented `2 = error` but code used
+- `String.raw` for escaped backslashes: SonarCloud S6638 — use `String.raw`
+- Test hardening: readFileSync try/catch, Array→Set for `.has()` lookups.
+- Rejected node:test→Jest suggestion: SoNash uses node:test, not Jest.
+
+---
+
+### Review 67: PR #491 R2 (Mixed: CI + Qodo) (unknown) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Pattern checker false positives: `symlink-parent-traversal` regex only
+- `silent-json-parse` line-level check missed try/catch on prior line. Added
+- `mkdirSync` before `isSafeToWrite` check: genuine TOCTOU in run-alerts.js
+- Exit code 2→1: run-consolidation.js used non-standard exit(2). Fixed.
+- TDMS data quality: 239 duplicate `audit:hash-*` entries, 412 evidence field
+- Path disclosure: R1 fix logged full `ARCHIVE_DIR` path to stderr. Removed.
+- Rejected exit code revert suggestions: contradicts CI pattern compliance gate.
+
+---
+
+### Review 70: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #498 | **Source:** manual
 
@@ -16094,7 +13491,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 71: PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint) (unknown)
+### Review 71: PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #500 | **Source:** manual
 
@@ -16104,13 +13501,12 @@ deduplicated, non-overlapping ranges):
 
 **Patterns:**
 
-- pii-in-agent-logs
 - research-doc-schema-consistency
 - research-design-feedback-vs-bugs
 
 ---
 
-### Review 72-pr503: PR #503 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
+### Review 72-pr503: PR #503 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #503 | **Source:** manual
 
@@ -16128,7 +13524,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 73-pr503: PR #503 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (unknown)
+### Review 73-pr503: PR #503 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #503 | **Source:** manual
 
@@ -16144,7 +13540,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 74-pr503: PR #503 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (unknown)
+### Review 74-pr503: PR #503 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #503 | **Source:** manual
 
@@ -16159,7 +13555,7 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 75-pr503: PR #503 R4 (Qodo Compliance + Qodo Suggestions) (unknown)
+### Review 75-pr503: PR #503 R4 (Qodo Compliance + Qodo Suggestions) (unknown) (unknown)
 
 **Date:** unknown | **PR:** #503 | **Source:** qodo
 
@@ -16174,7 +13570,341 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 76-pr503: PR #503 R5 (Qodo Compliance + Qodo Suggestions) (unknown)
+### Review 76-pr503: PR #503 R5 (Qodo Compliance + Qodo Suggestions) (unknown) (unknown)
+
+**Date:** unknown | **PR:** #503 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- unreachable-fallback-code
+
+---
+
+### Review 358: PR #431 R4 — Modernization, Complexity & Data Guards (2026-03-14)
+
+**Date:** 2026-03-14 | **Source:** sonarcloud+qodo+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 37    | 37    | 0        | 15       |
+
+---
+
+### Review rev-95: PR #470 R1 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Synchronous network calls in statusline block rendering — always use
+- API keys passed via `exec.Command` argv are visible in process listings — use
+- `parsed.entries || []` trusts structure without type validation — use
+- Cross-platform path normalization: git log outputs forward slashes but Windows
+- Version history tables: newest version must sort first (descending order)
+- SonarCloud first-scan on new Go files produces volume of "define constant"
+
+**Learnings:**
+
+- Go statusline: `refreshCacheIfStale` was called both synchronously in `main()`
+- Weather fetch: replaced `curl` subprocess with `net/http.Client` — eliminates
+- Added `context.WithTimeout(3s)` to `gh` CLI calls to prevent indefinite hangs
+- Cognitive complexity: extracted `findLatestTodoFile`, `findInProgressTask`,
+- Baseline filtering: per-location filtering (not whole-miss exclusion) ensures
+- Rejected: "audit trails for session counting" — statusline is local diagnostic
+- Rejected: "widgetUptime Windows-only" — both locales are Windows, graceful
+
+---
+
+### Review rev-96: PR #470 R2 (Qodo + SonarCloud) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Ignored I/O errors (MkdirAll, WriteFile, Unmarshal) in statusline widgets —
+- Propagation: readJsonl CJS/ESM interop guard (`?.default ??`) must apply to
+- suppressedMissesCount should count suppressed locations not whole misses
+
+**Learnings:**
+
+- SonarCloud flagged `todosDir` variable names as "TODO comments" — false
+- Baseline entry validation (shape check + toPosixPath normalization) prevents
+- Git log path whitespace: use `trimEnd()` not `trim()` on file paths to
+
+---
+
+### Review rev-97: PR #470 R3 (Qodo + SonarCloud + statusline bugfixes) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Goroutine cache refresh in short-lived binaries is a no-op — process exits
+- OpenWeatherMap `/data/2.5/weather` temp_max/min are observation range, not
+- Hook outcome "warn" is not failure — statusline should treat pass+warn as
+
+**Learnings:**
+
+- Weather cache was always stale because goroutine refresh never completed
+- Daily high/low: forecast API cnt=8 (8x3h=24h) gives real daily range (H:87
+- Cache permissions tightened: 0644→0600 files, 0755→0700 dirs
+- Rejected: API key in URL — OpenWeatherMap only supports query param auth
+- Rejected: audit trails for session counting (3rd time — R1, R2, R3)
+- Rejected: runtime typeof checks for readJsonl — over-engineering
+- Rejected: CI failures (gitleaks SHA, sanitize-error.cjs) — infrastructure +
+
+---
+
+### Review rev-98: PR #470 R4 (Qodo + SonarCloud) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cognitive complexity: extract helpers when adding nested API calls (forecast
+- Permission consistency: when tightening cache to 0600, also tighten session
+
+**Learnings:**
+
+- Extracted `fetchDailyForecast()` from `fetchWeather()` to reduce CC from 35 to
+- Session file permissions tightened 0644→0600, MkdirAll 0755→0700
+- build.sh HOME normalization: cygpath preferred, fallback to string replace
+- R4 fix rate 36% — approaching diminishing returns, recommend max one more
+- Rejected 4th time: audit trails for session counting
+- Rejected: path traversal guard concern — todoFile from os.ReadDir is trusted
+
+---
+
+### Review rev-101: PR #488 R1 (Mixed: Qodo Compliance + Qodo Suggestions + Gemini) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- TDMS created-date churn: normalize-all.js overwrites `created` on re-runs.
+- Agent invocation audit trail: JSONL entries missing `user` and `outcome`
+- Brainstorm evaluation table: BRAINSTORM.md used custom headers (Clarity/
+
+---
+
+### Review rev-112: PR #491 R2 (Mixed: CI + Qodo) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Pattern checker false positives: `symlink-parent-traversal` regex only
+- `silent-json-parse` line-level check missed try/catch on prior line. Added
+- `mkdirSync` before `isSafeToWrite` check: genuine TOCTOU in run-alerts.js
+- Exit code 2→1: run-consolidation.js used non-standard exit(2). Fixed.
+- TDMS data quality: 239 duplicate `audit:hash-*` entries, 412 evidence field
+- Path disclosure: R1 fix logged full `ARCHIVE_DIR` path to stderr. Removed.
+- Rejected exit code revert suggestions: contradicts CI pattern compliance gate.
+
+---
+
+### Review rev-111: PR #491 R1 (Mixed: SonarCloud + Qodo + Gemini) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Unguarded symlink delete: `rmSync` in run-consolidation.js cleanup path
+- Repomix bloat: 113K lines of packed external repos committed to git. Fix:
+- Dead code: `PATTERN_KEYWORDS` array (40 regexes) defined but never referenced
+- Exit code doc mismatch: header documented `2 = error` but code used
+- `String.raw` for escaped backslashes: SonarCloud S6638 — use `String.raw`
+- Test hardening: readFileSync try/catch, Array→Set for `.has()` lookups.
+- Rejected node:test→Jest suggestion: SoNash uses node:test, not Jest.
+
+---
+
+### Review rev-110: PR #489 R2 (Mixed: Qodo + Gemini + SonarCloud) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on
+- shell:true removal: `execFileSync` with `shell: true` unnecessary, creates
+- validateGitDir tightened: reject filesystem roots, scope to cwd parent.
+- gsd-check-update TOCTOU: existsSync + lstatSync → lstatSync + ENOENT catch.
+- CC extraction: logResolveResult() helper reduced runResolveChecks CC 17→<15.
+- Gemini stale detection: 5 comments referenced pre-R1 commit. Auto-rejected.
+
+---
+
+### Review rev-100: PR #487 R1 (Mixed: Doc Lint + SonarCloud + Gemini + Qodo + CI) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- Vitest→node:test propagation across 3 agent files (test-engineer,
+- SonarCloud Array#push() batching: 16 instances across render-todos.js
+- Consolidation script duplication: 3 identical consolidation blocks
+- New script (render-todos.js) missing from .test-baseline.json — CI gate
+- Qodo defensive coding: nullish coalescing on JSONL-parsed fields before
+- Qodo performance: .slice(-500) cap on todoLines in session-start.js startup
+
+---
+
+### Review rev-99: PR #483 R1 (Mixed: Qodo + Gemini + CI) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- 3-source convergence on rotation unbounded growth (Qodo+Gemini+QodoSugg) —
+- 3-source convergence on symlink guard fail-open (Gemini+QodoCompl+QodoSugg) —
+- GSD hooks registered in settings.json but files don't exist at configured
+- Consolidation script bug: 34 identical consolidation entries written to
+
+---
+
+### Review rev-113: PR #498 R1 (Mixed: Qodo + Qodo Compliance + Gemini) (unknown)
+
+**Date:** unknown | **PR:** #498 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- volatile-state-tracking
+- reviews-jsonl-integrity
+- extraction-journal-normalize
+- skill-schema-consistency
+- slug-algorithm-separator-preservation
+
+---
+
+### Review rev-114: PR #500 R1 (Mixed: Qodo + Gemini + Doc Lint) (unknown)
+
+**Date:** unknown | **PR:** #500 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- pii-in-agent-logs
+- research-doc-schema-consistency
+- research-design-feedback-vs-bugs
+
+---
+
+### Review rev-102: PR #503 R1 (Mixed: SonarCloud + Qodo + Gemini + CI) (unknown)
+
+**Date:** unknown | **PR:** #503 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- slug-traversal-validation-scope
+- falsy-score-clobbering
+- overbroad-sql-deletion
+- prepare-inside-loop
+- bandFromScore-duplication
+
+---
+
+### Review rev-103: PR #503 R2 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (unknown)
+
+**Date:** unknown | **PR:** #503 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- migration-uuid-stability
+- readonly-symlink-guard
+- cc-from-fix-accumulation
+
+---
+
+### Review rev-104: PR #503 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (unknown)
+
+**Date:** unknown | **PR:** #503 | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- lstatSync-regression
+- proto-delete-deprecated
+
+---
+
+### Review rev-105: PR #503 R4 (Qodo Compliance + Qodo Suggestions) (unknown)
+
+**Date:** unknown | **PR:** #503 | **Source:** qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 0     | 0        | 0        |
+
+**Patterns:**
+
+- symlink-follow-vs-refuse
+- path-resolution-bugs
+
+---
+
+### Review rev-106: PR #503 R5 (Qodo Compliance + Qodo Suggestions) (unknown)
 
 **Date:** unknown | **PR:** #503 | **Source:** qodo
 
@@ -16189,6 +13919,36 @@ deduplicated, non-overlapping ranges):
 
 ---
 
+### Review rev-107: PR #504 R1 (Mixed: CodeQL + Qodo + Gemini + SonarCloud + CI) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 28    | 0        | 7        |
+
+---
+
+### Review 78: PR #504 R2 (Mixed: SonarCloud + CI + Qodo Compliance + Qodo Suggestions) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 10    | 0        | 17       |
+
+---
+
+### Review rev-108: PR #504 R3 (Mixed: SonarCloud + Qodo Suggestions + Qodo Compliance) (unknown)
+
+**Date:** unknown | **Source:** manual
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 0     | 5     | 0        | 13       |
+
+---
+
 ### Review 80: PR #504 R4 (Mixed: SonarCloud + Qodo Suggestions) (unknown)
 
 **Date:** unknown | **Source:** manual
@@ -16199,23 +13959,13 @@ deduplicated, non-overlapping ranges):
 
 ---
 
-### Review 83: PR #507 R2 (Mixed: Qodo Compliance + Qodo Suggestions + Gemini + CodeQL + SonarCloud) (unknown)
+### Review rev-109: PR #505 R1 (Mixed: Qodo + Gemini + SonarCloud + CI) (unknown)
 
-**Date:** unknown | **PR:** #507 | **Source:** manual
-
-| Total | Fixed | Deferred | Rejected |
-| ----- | ----- | -------- | -------- |
-| 2     | 0     | 0        | 0        |
-
----
-
-### Review 84: PR #507 R3 (Mixed: SonarCloud + Qodo Compliance + Qodo Suggestions) (unknown)
-
-**Date:** unknown | **Source:** manual
+**Date:** unknown | **PR:** #505 | **Source:** manual
 
 | Total | Fixed | Deferred | Rejected |
 | ----- | ----- | -------- | -------- |
-| 0     | 0     | 0        | 0        |
+| 0     | 14    | 0        | 2        |
 
 ## Key Patterns
 

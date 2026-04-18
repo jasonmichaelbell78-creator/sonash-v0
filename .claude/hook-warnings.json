@@ -1,54 +1,14 @@
 {
-  "warnings": [
-    {
-      "hook": "pre-commit",
-      "type": "agent",
-      "severity": "warning",
-      "message": "Agent compliance warnings - code changed without agent review",
-      "action": "Use code-reviewer agent for modified code",
-      "timestamp": "2026-04-17T23:30:47.992Z",
-      "occurrences": 3,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
-      "type": "review-lifecycle",
-      "severity": "warning",
-      "message": "Review lifecycle validation issues found",
-      "action": "npm run reviews:lifecycle",
-      "timestamp": "2026-04-17T22:37:56.236Z",
-      "occurrences": 1,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-push",
-      "type": "audit",
-      "severity": "warning",
-      "message": "npm audit found security vulnerabilities",
-      "action": "npm audit",
-      "timestamp": "2026-04-17T18:28:40.484Z",
-      "occurrences": 1,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "session-start",
-      "type": "tdms-s0",
-      "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-17T11:43:18.355Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "jsonl-sync",
-      "severity": "warning",
-      "message": "Planning JSONL changed without MD regeneration",
-      "action": "Run generation scripts",
-      "timestamp": "2026-04-18T12:09:38.510Z",
-      "occurrences": 1,
-      "occurrences_since_ack": 1
-    }
-  ]
+  "warnings": [],
+  "lastCleared": "2026-04-18T15:50:00.000Z",
+  "acknowledgedBy": "session-286 triage sweep",
+  "acknowledgedTypes": {
+    "jsonl-sync": "2026-04-18T15:50:00.000Z",
+    "agent": "2026-04-18T15:50:00.000Z",
+    "review-lifecycle": "2026-04-18T15:50:00.000Z",
+    "audit": "2026-04-18T15:50:00.000Z",
+    "tdms-s0": "2026-04-18T15:50:00.000Z",
+    "session-end-missing": "2026-04-18T15:50:00.000Z",
+    "pipeline-ratchet-baselines": "2026-04-18T15:50:00.000Z"
+  }
 }

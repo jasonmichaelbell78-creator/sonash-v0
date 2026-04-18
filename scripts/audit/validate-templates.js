@@ -420,7 +420,7 @@ function main() {
     );
   }
 
-  files.sort();
+  files.sort((a, b) => a.localeCompare(b));
   const results = validateAllTemplates(files, jsonMode);
 
   if (jsonMode) {

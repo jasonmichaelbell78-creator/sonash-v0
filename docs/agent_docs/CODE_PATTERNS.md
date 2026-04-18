@@ -1,6 +1,6 @@
 # Code Review Patterns Reference
 
-**Document Version:** 4.3 **Source:** Distilled from 347 AI code reviews **Last
+**Document Version:** 4.4 **Source:** Distilled from 347 AI code reviews **Last
 Updated:** 2026-02-26
 
 ---
@@ -1312,6 +1312,55 @@ pattern from 3 reviews (#425, #431, #417)
 
 **Source:** Consolidation #89 (Reviews #366-#rev-95)
 
+### Volatile State Tracking
+
+🟡 **Rule:** Volatile State Tracking — recurring pattern from 3 reviews (#70,
+#review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Reviews Jsonl Integrity
+
+🟡 **Rule:** Reviews Jsonl Integrity — recurring pattern from 3 reviews (#70,
+#review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Extraction Journal Normalize
+
+🟡 **Rule:** Extraction Journal Normalize — recurring pattern from 3 reviews
+(#70, #review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Skill Schema Consistency
+
+🟡 **Rule:** Skill Schema Consistency — recurring pattern from 3 reviews (#70,
+#review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Slug Algorithm Separator Preservation
+
+🟡 **Rule:** Slug Algorithm Separator Preservation — recurring pattern from 3
+reviews (#70, #review-pr498-r1)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Research Doc Schema Consistency
+
+🟡 **Rule:** Research Doc Schema Consistency — recurring pattern from 3 reviews
+(#71, #rev-68)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
+### Research Design Feedback Vs Bugs
+
+🟡 **Rule:** Research Design Feedback Vs Bugs — recurring pattern from 3 reviews
+(#71, #rev-68)
+
+**Source:** Consolidation #90 (Reviews #366-#rev-94)
+
 ## Enforcement
 
 These patterns are automatically enforced by:
@@ -1333,6 +1382,7 @@ helpers.
 
 | Version | Date       | Changes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | ------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 4.4     | 2026-04-18 | **CONSOLIDATION #90:** Auto-added 7 patterns (volatile-state-tracking, reviews-jsonl-integrity, extraction-journal-normalize, skill-schema-consistency, slug-algorithm-separator-preservation, research-doc-schema-consistency, research-design-feedback-vs-bugs). Source: Reviews #366-#rev-94.                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | 4.3     | 2026-04-17 | **CONSOLIDATION #89:** Auto-added 9 patterns (replaceall-migration, mapfn-passes-element, array-never-pass-functions, pattern-checker-cant-detect-rmsync-within-nested-trycatch-, isretrosectionend-logic-inversion-prheadingretestline, already-fixed-stale, root-cause, trade-off, lesson). Source: Reviews #366-#rev-95.                                                                                                                                                                                                                                                                                                                                                                                             |
 | 4.2     | 2026-04-03 | **CONSOLIDATION #36:** Auto-added 6 patterns (cross-platform binary naming: install-tools.sh hardcoded `.exe` extension on, shell:true removal: `execfilesync` with `shell: true` unnecessary, creates, validategitdir tightened: reject filesystem roots, scope to cwd parent., gsd-check-update toctou: existssync + lstatsync → lstatsync + enoent catch., cc extraction: logresolveresult() helper reduced runresolvechecks cc 17→<15., gemini stale detection: 5 comments referenced pre-r1 commit. auto-rejected.). Source: Reviews #64-#rev-65.                                                                                                                                                                  |
 | 4.1     | 2026-03-09 | **CONSOLIDATION #2:** Auto-added 9 patterns (verify-doc-math-before-commit, clarify-ai-implementation-time, secret-packaging-denylist, yaml-boundary-detection, cache-counting-bug, restore-continueonerror, fp-1fp-4-test-assertions, global-settings-deterministic-testing, --tests-without-assertions-are-worse-than-no-tests-they-prov). Source: Reviews #452-#470.                                                                                                                                                                                                                                                                                                                                                 |

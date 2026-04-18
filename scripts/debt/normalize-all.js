@@ -170,12 +170,12 @@ async function main() {
   }
 
   console.log("\n  By Category:");
-  for (const cat of Object.keys(byCategory).sort()) {
+  for (const cat of Object.keys(byCategory).sort((a, b) => a.localeCompare(b))) {
     console.log(`    ${cat}: ${byCategory[cat]}`);
   }
 
   console.log("\n  By Source:");
-  for (const src of Object.keys(bySource).sort()) {
+  for (const src of Object.keys(bySource).sort((a, b) => a.localeCompare(b))) {
     console.log(`    ${src}: ${bySource[src]}`);
   }
 
