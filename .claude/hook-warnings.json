@@ -1,3 +1,15 @@
 {
-  "warnings": []
+  "warnings": [
+    {
+      "hook": "pre-commit",
+      "type": "pr-creep",
+      "severity": "info",
+      "message": "Branch has >=10 commits — create PR soon",
+      "action": "Create PR: gh pr create",
+      "timestamp": "2026-04-19T16:15:38.527Z",
+      "occurrences": 5,
+      "occurrences_since_ack": 1,
+      "count": "10"
+    }
+  ]
 }
