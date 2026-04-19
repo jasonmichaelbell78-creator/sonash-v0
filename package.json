@@ -181,7 +181,7 @@
     "@types/node": "^22.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@typescript/native-preview": "^7.0.0-dev.20260418.1",
+    "@typescript/native-preview": "^7.0.0-dev.20260419.1",
     "c8": "^11.0.0",
     "chrome-launcher": "^1.2.1",
     "cross-env": "^10.1.0",
