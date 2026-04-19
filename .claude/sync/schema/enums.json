@@ -1,0 +1,192 @@
+{
+  "schema_version": "1.0",
+  "enums": {
+    "type": {
+      "values": [
+        "skill",
+        "agent",
+        "team",
+        "hook",
+        "hook-lib",
+        "memory",
+        "canonical-memory",
+        "script",
+        "script-lib",
+        "tool",
+        "tool-file",
+        "research-session",
+        "plan",
+        "planning-artifact",
+        "todo-log",
+        "config",
+        "settings",
+        "ci-workflow",
+        "doc",
+        "output-style",
+        "keybindings",
+        "shared-doc-lib",
+        "database",
+        "other"
+      ],
+      "description": "File-kind classification for every record in the sync registry.",
+      "decision_ref": "D15"
+    },
+    "source_scope": {
+      "values": ["universal", "user", "project", "machine", "ephemeral"],
+      "description": "Where the file's code/definition belongs.",
+      "decision_ref": "D20"
+    },
+    "runtime_scope": {
+      "values": ["universal", "user", "project", "machine", "ephemeral"],
+      "description": "Where the file's runtime effects land (same enum as source_scope).",
+      "decision_ref": "D20"
+    },
+    "portability": {
+      "values": [
+        "portable",
+        "sanitize-then-portable",
+        "portable-with-deps",
+        "not-portable",
+        "not-portable-product"
+      ],
+      "description": "What the sync tool does with this file when crossing repos.",
+      "decision_ref": "D21"
+    },
+    "status": {
+      "values": [
+        "active",
+        "complete",
+        "deferred",
+        "stub",
+        "gated",
+        "deprecated",
+        "archived",
+        "generated"
+      ],
+      "description": "Lifecycle state of the file.",
+      "decision_ref": "D22"
+    },
+    "hook_event": {
+      "values": [
+        "PreToolUse",
+        "PostToolUse",
+        "PostToolUseFailure",
+        "SessionStart",
+        "Stop",
+        "SubagentStop",
+        "Notification",
+        "PreCompact",
+        "UserPromptSubmit"
+      ],
+      "description": "Claude Code event that fires a hook.",
+      "decision_ref": "Group P3"
+    },
+    "dependency_hardness": {
+      "values": ["hard", "soft"],
+      "description": "Whether a dependency is strictly required or optional.",
+      "decision_ref": "D23"
+    },
+    "dependency_kind": {
+      "values": ["spawn", "import", "reference", "invoke"],
+      "description": "How one file depends on another file in the registry.",
+      "decision_ref": "D23"
+    },
+    "state_file_access": {
+      "values": ["read", "write", "read-write"],
+      "description": "Access mode for a state-file path used by a file.",
+      "decision_ref": "D28"
+    },
+    "data_contract_role": {
+      "values": ["producer", "consumer", "read-write"],
+      "description": "What a file does with respect to a given data contract.",
+      "decision_ref": "D30"
+    },
+    "agent_runtime_lifecycle": {
+      "values": ["per-invocation", "per-session", "persistent", "ephemeral"],
+      "description": "How long an agent instance persists at runtime.",
+      "decision_ref": "Group P2"
+    },
+    "reference_layout": {
+      "values": ["none", "flat", "subdirectory"],
+      "description": "Layout convention for a skill's companion reference docs.",
+      "decision_ref": "Group P1"
+    },
+    "memory_type": {
+      "values": ["user", "feedback", "project", "reference", "tenet", "index"],
+      "description": "Category of a memory or canonical-memory file.",
+      "decision_ref": "Group P4"
+    },
+    "canonical_staleness_category": {
+      "values": [
+        "fresh",
+        "formatting-only",
+        "semantic-drift",
+        "operationally-wrong",
+        "intentional-scope-difference"
+      ],
+      "description": "Drift state of a canonical-memory file versus its user-home counterpart.",
+      "decision_ref": "Group P4"
+    },
+    "module_system": {
+      "values": ["cjs", "esm", "none"],
+      "description": "JavaScript module system used by a script (cannot be inferred from extension alone).",
+      "decision_ref": "Group P5 scripts"
+    },
+    "tool_language": {
+      "values": ["go", "javascript", "bash", "yaml", "toml", "json", "markdown"],
+      "description": "Primary language of a tool or tool-file.",
+      "decision_ref": "Group P5 tools"
+    },
+    "session_type": {
+      "values": ["brainstorm", "deep-research", "deep-plan", "hybrid"],
+      "description": "Kind of research-session directory.",
+      "decision_ref": "Group P6"
+    },
+    "research_depth": {
+      "values": ["L0-brainstorm", "L1", "L2", "L3", "L4"],
+      "description": "Depth tier of a research session.",
+      "decision_ref": "Group P6"
+    },
+    "plan_scope": {
+      "values": [
+        "milestone",
+        "diagnosis",
+        "decisions",
+        "roadmap",
+        "research-program",
+        "deferral-registry",
+        "session-bookmark",
+        "port-ledger",
+        "execution-handoff",
+        "backlog",
+        "cross-pr-learning",
+        "learnings"
+      ],
+      "description": "Scope/kind of a plan or planning-artifact document.",
+      "decision_ref": "Group P6"
+    },
+    "exit_code_action": {
+      "values": ["block", "warn", "allow"],
+      "description": "What a hook's exit code signals to Claude Code (distinct from continue_on_error).",
+      "decision_ref": "Group P3"
+    },
+    "port_strategy": {
+      "values": ["atomic", "partial-ok"],
+      "description": "Whether all components of a composite must travel together or partial ports are acceptable.",
+      "decision_ref": "D31"
+    },
+    "port_status": {
+      "values": [
+        "ported",
+        "partial-port",
+        "sonash-only",
+        "jason-os-only",
+        "in-sync",
+        "not-ported-portable",
+        "not-ported-not-portable"
+      ],
+      "description": "Cross-repo port state of a file at last migration.",
+      "decision_ref": "D32"
+    }
+  }
+}

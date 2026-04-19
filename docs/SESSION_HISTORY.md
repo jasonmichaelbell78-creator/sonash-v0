@@ -1,10 +1,68 @@
 # Session History Log
 
 <!-- prettier-ignore-start -->
-**Document Version:** 1.2
-**Last Updated:** 2026-02-27
+**Document Version:** 1.3
+**Last Updated:** 2026-04-19
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
+
+### Session #287 (2026-04-18)
+
+**Focus**: T28 CAS CLOSED via Step B+C bundle (y2z-monolith E2E, 6/6 handoff
+points, 4/4 recall queries, SQLite 35→37 sources) + triage (T48 dup-ID renumber
+to T50, post-todos-render matcher split, TAG_SUGGESTION.md workflow). Tag vocab
++14 (187→201). 1 commit (`8926477c`).
+
+### Session #286 (2026-04-18)
+
+**Focus**: Triage sweep (12 findings: Dependabot, 4 npm vulns, 24 reviews
+findings, SonarCloud D→A, HIGH hotspot) + housecleaning (ESLint 2423→0 errors) +
+reviews data integrity (61 reconcile gaps backfilled, 84 disposition violations
+fixed). Health B89→A97 (+8). 3 commits.
+
+### Session #285 (2026-04-17)
+
+**Focus**: T28 CAS quintet closure — `/skill-audit recall` (106 decisions,
+66→98/110) + Wave 4 `/synthesize` propagation + first `/synthesize v2.0` run on
+35-source corpus + schema drift fixes. 6 commits.
+
+### Session #284 (2026-04-15)
+
+**Focus**: `/skill-audit synthesize` Phase 4 Waves 1-3 of 4 — 109-decision
+rewrite, Phase 2.5/4.5 convergence gates, self-audit.js, State schema v2. 4
+commits.
+
+### Session #283 (2026-04-15)
+
+**Focus**: Remote sync + `/analyze` skill-audit (Wave 1-6) + ecosystem validator
+fix.
+
+### Session #282 (2026-04-15)
+
+**Focus**: skill-audit batch `2026-04-15-analysis-quartet` — 7 waves, 9 commits.
+4 handler rewrites (repo/website/document/media v1→v2.0) + Wave 6 per-skill
+self-audit.js.
+
+### Session #279 (2026-04-14)
+
+**Focus**: Triage 4 fixed + T29 synthesis-consolidation PLAN CLOSED + TODOS.md
+auto-render hook built + CAS PLAN hygiene banner. 5 commits.
+
+### Session #278 (2026-04-13)
+
+**Focus**: T29 Step 12 COMPLETE via `/synthesize` incremental mode run — 5 new
+Wave 5 ledger rows (Rank 1 eval harness S-tier from GitNexus). `/repo-analysis`
+v4.6 Section 2b Use-As-Is Verdict requirement for product repos.
+
+### Session #277 (2026-04-13)
+
+**Focus**: T29 Step 10.5 CLOSED + Wave 5 synthesis shipped. 31 Standard sources,
+opportunity ledger populated.
+
+### Session #276 (2026-04-13)
+
+**Focus**: T40 complete (CAS tag vocabulary full retag migration, 295 entries,
+78 new vocab) + T29 Wave 4 Step 10 CLOSED.
 
 ### Session #275 (2026-04 archive — from Session #278 /session-end)
 

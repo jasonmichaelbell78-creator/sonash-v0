@@ -5,7 +5,9 @@ description: >-
   sub-questions, low-confidence areas, and unresolved contradictions, then
   pursues them with profile-switched search strategies. Spawned by
   /deep-research during Phase 3.95.
-tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch
+tools:
+  Read, Write, Bash, Grep, Glob, WebSearch, WebFetch,
+  mcp__context7__resolve-library-id, mcp__context7__query-docs
 disallowedTools: Agent
 skills: [sonash-context]
 model: sonnet

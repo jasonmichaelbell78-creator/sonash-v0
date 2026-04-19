@@ -1,0 +1,129 @@
+{
+  "task": "T21: Orphan file/script/action search and repair",
+  "topic_slug": "orphan-detection",
+  "current_phase": "discovery-complete",
+  "current_batch": 3,
+  "decisions": [
+    {
+      "id": 1,
+      "question": "Output format",
+      "choice": "Script (scripts/detect-orphans.js), not a skill",
+      "rationale": "Diagnostic tool, not a workflow"
+    },
+    {
+      "id": 2,
+      "question": "Graph storage",
+      "choice": "In-memory per run",
+      "rationale": "Repo small enough for full rebuild; persisted graphs go stale"
+    },
+    {
+      "id": 3,
+      "question": "Report format",
+      "choice": "Both JSONL + Markdown",
+      "rationale": "JSONL for machine triage/TDMS, Markdown for human review"
+    },
+    {
+      "id": 4,
+      "question": "Scope",
+      "choice": "All 9 categories, no deferrals",
+      "rationale": "User requested full build with no deferrals"
+    },
+    {
+      "id": 5,
+      "question": "Text reference parsing",
+      "choice": "Format-aware (B): JS AST for imports, regex for .md, JSON/YAML parsing for configs",
+      "rationale": "Simple grep too many false positives, full NLP overkill"
+    },
+    {
+      "id": 6,
+      "question": "Confidence levels",
+      "choice": "HIGH/MEDIUM/LOW per finding based on heuristics",
+      "rationale": "archive/ = HIGH, recent git activity = LOW"
+    },
+    {
+      "id": 7,
+      "question": "Triage output",
+      "choice": "Proposed actions per item (delete/archive/wire-up/keep-as-standalone)",
+      "rationale": "Saves manual classification step"
+    },
+    {
+      "id": 8,
+      "question": "Architecture",
+      "choice": "Script + agent orchestration (D): deterministic detection script, AI-driven triage agents",
+      "rationale": "Detection repeatable via npm run, judgment benefits from AI context"
+    },
+    {
+      "id": 9,
+      "question": "JS import parsing",
+      "choice": "Regex for require/import patterns",
+      "rationale": "Scripts are straightforward CJS/ESM, AST adds dependency for minimal gain"
+    },
+    {
+      "id": 10,
+      "question": "Skill/agent text patterns",
+      "choice": "Match: slash-commands, backtick commands, agent names, markdown links, quoted paths",
+      "rationale": "Covers all known reference styles in .md files"
+    },
+    {
+      "id": 11,
+      "question": "State file ownership",
+      "choice": "String-match state file basenames across all .js files",
+      "rationale": "State files have no imports; only detectable via string literals"
+    },
+    {
+      "id": 12,
+      "question": "Planning/research orphan definition",
+      "choice": "Directory whose todo is completed/absent AND no active skill/plan references it",
+      "rationale": "Completed initiatives are archival, not broken references"
+    },
+    {
+      "id": 13,
+      "question": "npm script validation",
+      "choice": "Yes, include dead npm script detection as sub-check",
+      "rationale": "Explorer found 2 dead workflow refs; same pattern in package.json"
+    },
+    {
+      "id": 14,
+      "question": "npm script names",
+      "choice": "orphans:detect (scanner) + orphans:report (Markdown regen)",
+      "rationale": "Consistent with existing npm script naming"
+    },
+    {
+      "id": 15,
+      "question": "Output location",
+      "choice": ".planning/orphan-detection/findings.jsonl + REPORT.md",
+      "rationale": "Planning/maintenance artifact, not operational state or user docs"
+    },
+    {
+      "id": 16,
+      "question": "TDMS integration",
+      "choice": "No TDMS intake — present fix options to resolve on the spot",
+      "rationale": "User wants immediate resolution, not debt deferral"
+    },
+    {
+      "id": 17,
+      "question": "Incremental runs",
+      "choice": "Diff against previous JSONL — flag NEW/RESOLVED/UNCHANGED",
+      "rationale": "Shows progress across cleanup passes"
+    },
+    {
+      "id": 18,
+      "question": "Hook/session integration",
+      "choice": "No for v1 — manual runs only",
+      "rationale": "Can add to /alerts later if needed"
+    },
+    {
+      "id": 19,
+      "question": "Agent triage scope",
+      "choice": "One agent per category, parallel (C)",
+      "rationale": "Parallel keeps it fast, each agent needs only its category context"
+    },
+    {
+      "id": 20,
+      "question": "Archive strategy",
+      "choice": "scripts/archive/ for scripts (existing convention), git-delete for everything else",
+      "rationale": "Git history is sufficient archive for non-script files"
+    }
+  ],
+  "timestamp": "2026-04-05T12:15:00Z"
+}

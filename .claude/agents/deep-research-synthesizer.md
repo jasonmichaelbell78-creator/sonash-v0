@@ -7,7 +7,7 @@ description: >-
   report with inline citations, confidence levels, and structured machine-
   parseable output. Spawned by the /deep-research skill after all searcher
   agents complete.
-tools: Read, Write, Bash
+tools: Read, Write, Bash, Grep, Glob
 color: purple
 ---
 

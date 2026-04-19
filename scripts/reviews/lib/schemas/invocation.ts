@@ -45,7 +45,15 @@ export const InvocationRecord = BaseRecord.extend({
       // general-purpose context fields
       topic: z.string().min(1).nullable().optional(),
       note: z.string().min(1).nullable().optional(),
+      // (T36) context fields added by the task-queue slash-command skill
+      action: z.string().min(1).nullable().optional(),
+      todosActive: z.number().int().min(0).nullable().optional(),
     })
+    // .passthrough() is intentional — context fields vary per skill. Unknown
+    // keys are preserved, not validated. Explicit fields above exist for
+    // discoverability only; do not remove passthrough without adding every
+    // consumer's context keys (which is why T36 fixed the bug this way).
+    .passthrough()
     .nullable()
     .optional(),
 });

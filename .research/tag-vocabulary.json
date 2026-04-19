@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-04-13",
+  "last_updated": "2026-04-18",
   "description": "Controlled vocabulary for tags applied to analysis records and extraction journal entries. See .claude/skills/shared/CONVENTIONS.md §14 for rules.",
   "categories": {
     "domain": "Problem space or field (e.g., knowledge-management, security)",
@@ -1025,6 +1025,81 @@
       "category": "technology",
       "definition": "WebAssembly runtime or compile target",
       "count": 1
+    },
+    "archival": {
+      "category": "domain",
+      "definition": "Content preservation for durability beyond original source lifetime",
+      "count": 0
+    },
+    "offline-first": {
+      "category": "concept",
+      "definition": "Architecture that prioritizes functioning without network connectivity",
+      "count": 0
+    },
+    "rust": {
+      "category": "technology",
+      "definition": "Rust programming language and ecosystem",
+      "count": 0
+    },
+    "packaging": {
+      "category": "technique",
+      "definition": "Bundling software for distribution across install channels",
+      "count": 0
+    },
+    "anti-pattern": {
+      "category": "quality",
+      "definition": "Cautionary practice to avoid",
+      "count": 0
+    },
+    "content-storage": {
+      "category": "concept",
+      "definition": "Design patterns for how external/user content is persisted",
+      "count": 0
+    },
+    "wrapper-pattern": {
+      "category": "pattern",
+      "definition": "Wrapping a deterministic worker in an authenticated/managed interface (e.g., CLI wrapped by serverless callable)",
+      "count": 0
+    },
+    "inconsistency": {
+      "category": "quality",
+      "definition": "Same concern applied inconsistently across artifacts within one project",
+      "count": 0
+    },
+    "reproducibility": {
+      "category": "quality",
+      "definition": "Bit-identical or version-identical rebuild discipline",
+      "count": 0
+    },
+    "convention": {
+      "category": "quality",
+      "definition": "Conventional layout/style that reduces cognitive overhead",
+      "count": 0
+    },
+    "project-layout": {
+      "category": "technique",
+      "definition": "Directory/module organization patterns",
+      "count": 0
+    },
+    "build-system": {
+      "category": "technology",
+      "definition": "Build tools and compilation pipelines (Make, Cargo, etc.)",
+      "count": 0
+    },
+    "design-pattern": {
+      "category": "pattern",
+      "definition": "Reusable solution template for a common design problem",
+      "count": 0
+    },
+    "open-source": {
+      "category": "quality",
+      "definition": "Open source project attribute or licensing signal",
+      "count": 0
+    },
+    "tool-demo": {
+      "category": "taxonomic",
+      "definition": "Runnable application/tool demonstrating a specific capability",
+      "count": 0
     }
   },
   "synonyms": {

@@ -58,6 +58,29 @@ extraction-journal entry (`extraction-journal.jsonl` rows) per CONVENTIONS.md
 6. **Write approved tags** to both files once accepted. Update
    `.research/tag-vocabulary.json` with any newly approved tags.
 
+## Writing to `.research/tag-vocabulary.json` (sanctioned pattern)
+
+**Canonical path:** direct **Edit tool** on `.research/tag-vocabulary.json`,
+inserting new tag entries inline before the closing `}` of the `tags` object
+(alongside existing entries). Bump `last_updated` to today's date in the same or
+adjacent Edit.
+
+**Do NOT use** (hook-denied patterns observed Session #287):
+
+- `jq --slurpfile <tmpfile> ... > out && mv` where `<tmpfile>` was
+  heredoc-written by an unseen Bash — flagged as "modification of shared state
+  with unverifiable parameters."
+- `Write(scripts/tmp-*.js) && node ... && rm` one-shot script patterns — flagged
+  as "unverifiable code execution."
+
+Both are valid mechanics in isolation but the hook cannot attest the
+intermediate payloads were what the user approved. Direct Edit keeps the full
+diff visible in the transcript.
+
+**Floor:** the Edit must include the new tag name + category + definition
+exactly as the user approved in the Phase 6c prompt. Do not paraphrase
+definitions or silently add extra tags beyond the approved set.
+
 ## Skills declare their own signal sources
 
 Each skill's Phase 6c section includes one line like:

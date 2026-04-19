@@ -70,7 +70,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
@@ -93,7 +93,7 @@
         ]
       },
       {
-        "matcher": "^(?i)write$",
+        "matcher": "^Write$",
         "hooks": [
           {
             "type": "command",
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit)$",
+        "matcher": "^(Write|Edit)$",
         "hooks": [
           {
             "type": "command",
@@ -115,7 +115,7 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit)$",
+        "matcher": "^(Write|Edit)$",
         "hooks": [
           {
             "type": "command",
@@ -126,23 +126,13 @@
         ]
       },
       {
-        "matcher": "^(?i)read$",
+        "matcher": "^Read$",
         "hooks": [
           {
             "type": "command",
             "if": "Read(*.jsonl)|Read(*.log)|Read(*.csv)|Read(*.ndjson)",
             "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/large-file-gate.js",
             "statusMessage": "Checking file size..."
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node .claude/hooks/gsd-prompt-guard.js",
-            "timeout": 5
           }
         ]
       }
@@ -152,7 +142,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/pre-compaction-save.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/pre-compaction-save.js \"$ARGUMENTS\"",
             "statusMessage": "Saving state before compaction..."
           }
         ]
@@ -160,41 +150,41 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "^(?i)write$",
+        "matcher": "^Write$",
         "hooks": [
           {
             "type": "command",
-            "command": "CLAUDE_TOOL=write bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-write-validator.js $ARGUMENTS",
+            "command": "CLAUDE_TOOL=write bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-write-validator.js \"$ARGUMENTS\"",
             "statusMessage": "Validating write operation..."
           }
         ]
       },
       {
-        "matcher": "^(?i)edit$",
+        "matcher": "^Edit$",
         "hooks": [
           {
             "type": "command",
-            "command": "CLAUDE_TOOL=edit bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-write-validator.js $ARGUMENTS",
+            "command": "CLAUDE_TOOL=edit bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-write-validator.js \"$ARGUMENTS\"",
             "statusMessage": "Validating edit operation..."
           }
         ]
       },
       {
-        "matcher": "^(?i)multiedit$",
+        "matcher": "^MultiEdit$",
         "hooks": [
           {
             "type": "command",
-            "command": "CLAUDE_TOOL=multiedit bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-write-validator.js $ARGUMENTS",
+            "command": "CLAUDE_TOOL=multiedit bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-write-validator.js \"$ARGUMENTS\"",
             "statusMessage": "Validating multiedit operation..."
           }
         ]
       },
       {
-        "matcher": "^(?i)read$",
+        "matcher": "^Read$",
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-read-handler.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-read-handler.js \"$ARGUMENTS\"",
             "statusMessage": "Processing read operation..."
           }
         ]
@@ -204,25 +194,25 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/decision-save-prompt.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/decision-save-prompt.js \"$ARGUMENTS\"",
             "statusMessage": "Checking decision documentation..."
           }
         ]
       },
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
             "if": "Bash(git commit *)|Bash(git cherry-pick *)|Bash(git merge *)|Bash(git revert *)",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/commit-tracker.js $ARGUMENTS",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/commit-tracker.js \"$ARGUMENTS\"",
             "statusMessage": "Tracking commits...",
             "continueOnError": true
           }
         ]
       },
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
@@ -244,7 +234,7 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit)$",
+        "matcher": "^(Write|Edit)$",
         "hooks": [
           {
             "type": "command",
@@ -256,12 +246,36 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit|multiedit)$",
+        "matcher": "^Write$",
         "hooks": [
           {
             "type": "command",
-            "if": "Write(.planning/todos.jsonl)|Edit(.planning/todos.jsonl)|MultiEdit(.planning/todos.jsonl)",
-            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js $ARGUMENTS",
+            "if": "Write(.planning/todos.jsonl)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js \"$ARGUMENTS\"",
+            "statusMessage": "Re-rendering TODOS.md from todos.jsonl...",
+            "continueOnError": true
+          }
+        ]
+      },
+      {
+        "matcher": "^Edit$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Edit(.planning/todos.jsonl)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js \"$ARGUMENTS\"",
+            "statusMessage": "Re-rendering TODOS.md from todos.jsonl...",
+            "continueOnError": true
+          }
+        ]
+      },
+      {
+        "matcher": "^MultiEdit$",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "MultiEdit(.planning/todos.jsonl)",
+            "command": "bash .claude/hooks/ensure-fnm.sh node .claude/hooks/post-todos-render.js \"$ARGUMENTS\"",
             "statusMessage": "Re-rendering TODOS.md from todos.jsonl...",
             "continueOnError": true
           }
@@ -292,7 +306,7 @@
     ],
     "PostToolUseFailure": [
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
