@@ -70,7 +70,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
@@ -93,7 +93,7 @@
         ]
       },
       {
-        "matcher": "^(?i)write$",
+        "matcher": "^Write$",
         "hooks": [
           {
             "type": "command",
@@ -104,7 +104,7 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit)$",
+        "matcher": "^(Write|Edit)$",
         "hooks": [
           {
             "type": "command",
@@ -115,7 +115,7 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit)$",
+        "matcher": "^(Write|Edit)$",
         "hooks": [
           {
             "type": "command",
@@ -126,7 +126,7 @@
         ]
       },
       {
-        "matcher": "^(?i)read$",
+        "matcher": "^Read$",
         "hooks": [
           {
             "type": "command",
@@ -160,7 +160,7 @@
     ],
     "PostToolUse": [
       {
-        "matcher": "^(?i)write$",
+        "matcher": "^Write$",
         "hooks": [
           {
             "type": "command",
@@ -170,7 +170,7 @@
         ]
       },
       {
-        "matcher": "^(?i)edit$",
+        "matcher": "^Edit$",
         "hooks": [
           {
             "type": "command",
@@ -180,7 +180,7 @@
         ]
       },
       {
-        "matcher": "^(?i)multiedit$",
+        "matcher": "^MultiEdit$",
         "hooks": [
           {
             "type": "command",
@@ -190,7 +190,7 @@
         ]
       },
       {
-        "matcher": "^(?i)read$",
+        "matcher": "^Read$",
         "hooks": [
           {
             "type": "command",
@@ -210,7 +210,7 @@
         ]
       },
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
@@ -222,7 +222,7 @@
         ]
       },
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",
@@ -244,7 +244,7 @@
         ]
       },
       {
-        "matcher": "^(?i)(write|edit)$",
+        "matcher": "^(Write|Edit)$",
         "hooks": [
           {
             "type": "command",
@@ -256,7 +256,7 @@
         ]
       },
       {
-        "matcher": "^(?i)write$",
+        "matcher": "^Write$",
         "hooks": [
           {
             "type": "command",
@@ -268,7 +268,7 @@
         ]
       },
       {
-        "matcher": "^(?i)edit$",
+        "matcher": "^Edit$",
         "hooks": [
           {
             "type": "command",
@@ -280,7 +280,7 @@
         ]
       },
       {
-        "matcher": "^(?i)multiedit$",
+        "matcher": "^MultiEdit$",
         "hooks": [
           {
             "type": "command",
@@ -316,7 +316,7 @@
     ],
     "PostToolUseFailure": [
       {
-        "matcher": "^(?i)bash$",
+        "matcher": "^Bash$",
         "hooks": [
           {
             "type": "command",

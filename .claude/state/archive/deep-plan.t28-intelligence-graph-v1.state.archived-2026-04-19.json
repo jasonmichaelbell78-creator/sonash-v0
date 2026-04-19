@@ -1,0 +1,17 @@
+{
+  "task": "Deep Plan: T28 Intelligence Graph V1",
+  "topic": "T28 Content Intelligence Graph v1 implementation — SQLite + better-sqlite3 + FTS5 + graphology + custom MCP server",
+  "status": "phase_0",
+  "current_batch": 0,
+  "total_batches_so_far": 0,
+  "decisions": [],
+  "total_decisions": 0,
+  "artifacts": {
+    "diagnosis": ".planning/t28-intelligence-graph-v1/DIAGNOSIS.md",
+    "decisions": null,
+    "plan": null
+  },
+  "research_context": ".research/t28-intelligence-graph-data-layer/RESEARCH_OUTPUT.md",
+  "query_audit": ".research/t28-intelligence-graph-data-layer/query-pattern-audit.md",
+  "updated": "2026-04-08T14:00:00Z"
+}

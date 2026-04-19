@@ -1,14 +1,3 @@
 {
-  "warnings": [
-    {
-      "hook": "session-start",
-      "type": "tdms-s0",
-      "severity": "warning",
-      "message": "S0: 26 critical debt items",
-      "action": "npm run debt:report --severity=S0",
-      "timestamp": "2026-04-18T21:29:30.462Z",
-      "occurrences": 4,
-      "occurrences_since_ack": 1
-    }
-  ]
+  "warnings": []
 }
