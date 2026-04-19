@@ -1,0 +1,646 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://jason-os.local/sync/schema/schema-v1.json",
+  "title": "JASON-OS Sync-Mechanism Registry Schema",
+  "description": "Validation spec for sync-mechanism registry records (files.jsonl + composites.jsonl). Schema v1.0 — 26 universal file-level columns, 41 per-type extension fields, section records, migration-metadata, and composite records. Authoritative source: .claude/sync/schema/SCHEMA.md (§3-§9). Decision record: .planning/piece-2-schema-design/DECISIONS.md (D1-D32).",
+  "version": "1.0",
+  "definitions": {
+    "enum_type": {
+      "type": "string",
+      "enum": [
+        "skill",
+        "agent",
+        "team",
+        "hook",
+        "hook-lib",
+        "memory",
+        "canonical-memory",
+        "script",
+        "script-lib",
+        "tool",
+        "tool-file",
+        "research-session",
+        "plan",
+        "planning-artifact",
+        "todo-log",
+        "config",
+        "settings",
+        "ci-workflow",
+        "doc",
+        "output-style",
+        "keybindings",
+        "shared-doc-lib",
+        "database",
+        "other"
+      ]
+    },
+    "enum_scope": {
+      "type": "string",
+      "enum": ["universal", "user", "project", "machine", "ephemeral"]
+    },
+    "enum_portability": {
+      "type": "string",
+      "enum": [
+        "portable",
+        "sanitize-then-portable",
+        "portable-with-deps",
+        "not-portable",
+        "not-portable-product"
+      ]
+    },
+    "enum_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "complete",
+        "deferred",
+        "stub",
+        "gated",
+        "deprecated",
+        "archived",
+        "generated"
+      ]
+    },
+    "enum_hook_event": {
+      "type": "string",
+      "enum": [
+        "PreToolUse",
+        "PostToolUse",
+        "PostToolUseFailure",
+        "SessionStart",
+        "Stop",
+        "SubagentStop",
+        "Notification",
+        "PreCompact",
+        "UserPromptSubmit"
+      ]
+    },
+    "enum_dependency_hardness": {
+      "type": "string",
+      "enum": ["hard", "soft"]
+    },
+    "enum_dependency_kind": {
+      "type": "string",
+      "enum": ["spawn", "import", "reference", "invoke"]
+    },
+    "enum_state_file_access": {
+      "type": "string",
+      "enum": ["read", "write", "read-write"]
+    },
+    "enum_data_contract_role": {
+      "type": "string",
+      "enum": ["producer", "consumer", "read-write"]
+    },
+    "enum_agent_runtime_lifecycle": {
+      "type": "string",
+      "enum": ["per-invocation", "per-session", "persistent", "ephemeral"]
+    },
+    "enum_reference_layout": {
+      "type": "string",
+      "enum": ["none", "flat", "subdirectory"]
+    },
+    "enum_memory_type": {
+      "type": "string",
+      "enum": ["user", "feedback", "project", "reference", "tenet", "index"]
+    },
+    "enum_canonical_staleness_category": {
+      "type": "string",
+      "enum": [
+        "fresh",
+        "formatting-only",
+        "semantic-drift",
+        "operationally-wrong",
+        "intentional-scope-difference"
+      ]
+    },
+    "enum_module_system": {
+      "type": "string",
+      "enum": ["cjs", "esm", "none"]
+    },
+    "enum_tool_language": {
+      "type": "string",
+      "enum": ["go", "javascript", "bash", "yaml", "toml", "json", "markdown"]
+    },
+    "enum_session_type": {
+      "type": "string",
+      "enum": ["brainstorm", "deep-research", "deep-plan", "hybrid"]
+    },
+    "enum_research_depth": {
+      "type": "string",
+      "enum": ["L0-brainstorm", "L1", "L2", "L3", "L4"]
+    },
+    "enum_plan_scope": {
+      "type": "string",
+      "enum": [
+        "milestone",
+        "diagnosis",
+        "decisions",
+        "roadmap",
+        "research-program",
+        "deferral-registry",
+        "session-bookmark",
+        "port-ledger",
+        "execution-handoff",
+        "backlog",
+        "cross-pr-learning",
+        "learnings"
+      ]
+    },
+    "enum_exit_code_action": {
+      "type": "string",
+      "enum": ["block", "warn", "allow"]
+    },
+    "enum_port_strategy": {
+      "type": "string",
+      "enum": ["atomic", "partial-ok"]
+    },
+    "enum_port_status": {
+      "type": "string",
+      "enum": [
+        "ported",
+        "partial-port",
+        "sonash-only",
+        "jason-os-only",
+        "in-sync",
+        "not-ported-portable",
+        "not-ported-not-portable"
+      ]
+    },
+    "dependency_entry": {
+      "type": "object",
+      "required": ["name", "hardness", "kind"],
+      "properties": {
+        "name": { "type": "string" },
+        "hardness": { "$ref": "#/definitions/enum_dependency_hardness" },
+        "kind": { "$ref": "#/definitions/enum_dependency_kind" }
+      },
+      "additionalProperties": false
+    },
+    "external_dep_entry": {
+      "type": "object",
+      "required": ["name", "hardness"],
+      "properties": {
+        "name": { "type": "string" },
+        "hardness": { "$ref": "#/definitions/enum_dependency_hardness" }
+      },
+      "additionalProperties": false
+    },
+    "state_file_entry": {
+      "type": "object",
+      "required": ["path", "access"],
+      "properties": {
+        "path": { "type": "string" },
+        "access": { "$ref": "#/definitions/enum_state_file_access" }
+      },
+      "additionalProperties": false
+    },
+    "data_contract_entry": {
+      "type": "object",
+      "required": ["contract_name", "target_file", "role", "fields"],
+      "properties": {
+        "contract_name": { "type": "string" },
+        "target_file": { "type": "string" },
+        "role": { "$ref": "#/definitions/enum_data_contract_role" },
+        "fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "component_unit_entry": {
+      "type": "object",
+      "required": ["name", "path", "role"],
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "lineage_object": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["source_project", "source_path", "source_version", "ported_date"],
+          "properties": {
+            "source_project": { "type": "string" },
+            "source_path": { "type": "string" },
+            "source_version": { "type": "string" },
+            "ported_date": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "action_pin_entry": {
+      "type": "object",
+      "required": ["action", "sha", "tag"],
+      "properties": {
+        "action": { "type": "string" },
+        "sha": { "type": "string" },
+        "tag": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "section_record": {
+      "type": "object",
+      "required": [
+        "heading",
+        "last_known_lines",
+        "scope",
+        "portability",
+        "purpose",
+        "sanitize_fields",
+        "notes"
+      ],
+      "properties": {
+        "heading": { "type": "string" },
+        "last_known_lines": { "type": "string" },
+        "scope": { "$ref": "#/definitions/enum_scope" },
+        "portability": { "$ref": "#/definitions/enum_portability" },
+        "purpose": { "type": "string" },
+        "sanitize_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "migration_metadata": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": [
+            "context_skills",
+            "dropped_in_port",
+            "stripped_in_port",
+            "version_delta_from_canonical",
+            "port_status"
+          ],
+          "properties": {
+            "context_skills": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "dropped_in_port": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "stripped_in_port": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "version_delta_from_canonical": { "type": "string" },
+            "port_status": { "$ref": "#/definitions/enum_port_status" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "file_record": {
+      "type": "object",
+      "required": [
+        "name",
+        "path",
+        "type",
+        "purpose",
+        "source_scope",
+        "runtime_scope",
+        "portability",
+        "status",
+        "notes"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "type": { "$ref": "#/definitions/enum_type" },
+        "purpose": { "type": "string" },
+        "source_scope": { "$ref": "#/definitions/enum_scope" },
+        "runtime_scope": { "$ref": "#/definitions/enum_scope" },
+        "portability": { "$ref": "#/definitions/enum_portability" },
+        "status": { "$ref": "#/definitions/enum_status" },
+        "notes": { "type": "string" },
+        "dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/dependency_entry" }
+        },
+        "external_services": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        },
+        "tool_deps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        },
+        "mcp_dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        },
+        "required_secrets": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        },
+        "lineage": { "$ref": "#/definitions/lineage_object" },
+        "supersedes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "superseded_by": {
+          "type": ["string", "null"]
+        },
+        "sanitize_fields": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "state_files": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/state_file_entry" }
+        },
+        "data_contracts": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/data_contract_entry" }
+        },
+        "component_units": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/component_unit_entry" }
+        },
+        "composite_id": {
+          "type": ["string", "null"]
+        },
+        "is_copy_of": {
+          "type": ["string", "null"]
+        },
+        "has_copies_at": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "content_hash": { "type": "string" },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/section_record" }
+        },
+        "migration_metadata": { "$ref": "#/definitions/migration_metadata" },
+        "reference_layout": { "$ref": "#/definitions/enum_reference_layout" },
+        "supports_parallel": { "type": "boolean" },
+        "fallback_available": { "type": "boolean" },
+        "pipeline_phase": {
+          "type": ["string", "null"]
+        },
+        "model": { "type": "string" },
+        "maxTurns": {
+          "type": ["integer", "null"]
+        },
+        "tools": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "disallowedTools": {
+          "oneOf": [
+            { "type": "null" },
+            {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          ]
+        },
+        "color": {
+          "type": ["string", "null"]
+        },
+        "runtime_lifecycle": { "$ref": "#/definitions/enum_agent_runtime_lifecycle" },
+        "event": { "$ref": "#/definitions/enum_hook_event" },
+        "matcher": {
+          "type": ["string", "null"]
+        },
+        "if_condition": {
+          "type": ["string", "null"]
+        },
+        "continue_on_error": { "type": "boolean" },
+        "exit_code_action": { "$ref": "#/definitions/enum_exit_code_action" },
+        "async_spawn": { "type": "boolean" },
+        "kill_switch_env": {
+          "type": ["string", "null"]
+        },
+        "memory_type": { "$ref": "#/definitions/enum_memory_type" },
+        "tenet_number": {
+          "type": ["integer", "null"]
+        },
+        "has_canonical": { "type": "boolean" },
+        "append_only": { "type": "boolean" },
+        "recency_signal": {
+          "type": ["string", "null"]
+        },
+        "canonical_staleness_category": {
+          "$ref": "#/definitions/enum_canonical_staleness_category"
+        },
+        "entry_point": { "type": "boolean" },
+        "shells_out": { "type": "boolean" },
+        "test_coverage": { "type": "boolean" },
+        "module_system": { "$ref": "#/definitions/enum_module_system" },
+        "language": { "$ref": "#/definitions/enum_tool_language" },
+        "requires_build": { "type": "boolean" },
+        "binary_present": { "type": "boolean" },
+        "install_target": { "type": "string" },
+        "secret_config_required": { "type": "boolean" },
+        "session_type": { "$ref": "#/definitions/enum_session_type" },
+        "depth": { "$ref": "#/definitions/enum_research_depth" },
+        "claim_count": { "type": "integer" },
+        "source_count": { "type": "integer" },
+        "plan_scope": { "$ref": "#/definitions/enum_plan_scope" },
+        "trigger_events": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "runner_os": { "type": "string" },
+        "action_pins": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/action_pin_entry" }
+        },
+        "secret_bearing": { "type": "boolean" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "type": { "const": "skill" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["reference_layout", "supports_parallel", "fallback_available"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "enum": ["agent", "team"] } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": [
+              "pipeline_phase",
+              "model",
+              "maxTurns",
+              "tools",
+              "disallowedTools",
+              "color",
+              "runtime_lifecycle"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "enum": ["hook", "hook-lib"] } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": [
+              "event",
+              "matcher",
+              "if_condition",
+              "continue_on_error",
+              "exit_code_action",
+              "async_spawn",
+              "kill_switch_env"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "enum": ["memory", "canonical-memory"] } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": [
+              "memory_type",
+              "tenet_number",
+              "has_canonical",
+              "append_only",
+              "recency_signal",
+              "canonical_staleness_category"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "enum": ["script", "script-lib"] } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["entry_point", "shells_out", "test_coverage", "module_system"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "enum": ["tool", "tool-file"] } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": [
+              "language",
+              "requires_build",
+              "binary_present",
+              "install_target",
+              "secret_config_required"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "research-session" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["session_type", "depth", "claim_count", "source_count"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "enum": ["plan", "planning-artifact"] } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["plan_scope"]
+          }
+        },
+        {
+          "if": {
+            "properties": { "type": { "const": "ci-workflow" } },
+            "required": ["type"]
+          },
+          "then": {
+            "required": ["trigger_events", "runner_os", "action_pins", "secret_bearing"]
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "composite_record": {
+      "type": "object",
+      "required": [
+        "name",
+        "purpose",
+        "source_scope",
+        "runtime_scope",
+        "portability",
+        "status",
+        "workflow_family",
+        "port_strategy"
+      ],
+      "properties": {
+        "name": { "type": "string" },
+        "purpose": { "type": "string" },
+        "source_scope": { "$ref": "#/definitions/enum_scope" },
+        "runtime_scope": { "$ref": "#/definitions/enum_scope" },
+        "portability": { "$ref": "#/definitions/enum_portability" },
+        "status": { "$ref": "#/definitions/enum_status" },
+        "workflow_family": {
+          "type": ["string", "null"]
+        },
+        "port_strategy": { "$ref": "#/definitions/enum_port_strategy" },
+        "gsd_phase": {
+          "type": ["string", "null"]
+        },
+        "lineage": { "$ref": "#/definitions/lineage_object" },
+        "supersedes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "superseded_by": {
+          "type": ["string", "null"]
+        },
+        "notes": { "type": "string" },
+        "data_contracts": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/data_contract_entry" }
+        },
+        "component_units": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/component_unit_entry" }
+        },
+        "dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/dependency_entry" }
+        },
+        "external_services": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        },
+        "tool_deps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        },
+        "mcp_dependencies": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        },
+        "required_secrets": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/external_dep_entry" }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [{ "$ref": "#/definitions/file_record" }, { "$ref": "#/definitions/composite_record" }]
+}
