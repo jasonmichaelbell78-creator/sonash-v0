@@ -252,16 +252,18 @@ VERIFIED, REFUTED, UNVERIFIABLE, CONFLICTED) with evidence.
 "+80% improvement") MUST cite its measurement methodology, benchmark, or source.
 Unsubstantiated % claims are flagged as UNVERIFIABLE by verifiers.
 
-**Persistence safety net (post-spawn — applies to verifier and Phase 3 / 3.96
-agents):** After each verifier or challenger agent returns, orchestrator MUST
-verify the expected `findings/<file>` (or `challenges/<file>`) is non-empty
-(non-zero bytes; substantive content beyond a header). If the agent failed to
-write OR returned a truncated `<result>`, orchestrator captures the agent's full
-return text and writes it to the expected path as a fallback. Never proceed
-silently — if both agent-write AND fallback are empty, re-spawn the agent (max 1
-retry) then escalate to user. This addresses the Windows 0-byte agent-write bug
-(CLAUDE.md Critical Rule 15) and response truncation observed during
-piece-1a-discovery-scan-jason-os.
+**Persistence safety net (post-spawn — applies to verifier, challenger, and
+dispute-resolver agents across Phases 2.5, 3, 3.5, 3.9, and 3.96):** After each
+applicable agent returns, orchestrator MUST verify the expected
+`findings/<file>` (or `challenges/<file>`) is non-empty (non-zero bytes;
+substantive content beyond a header). If the agent failed to write OR returned a
+truncated `<result>`, orchestrator captures the agent's full return text and
+writes it to the expected path as a fallback. Never proceed silently — if both
+agent-write AND fallback are empty, re-spawn the agent (max 1 retry) then
+escalate to user. This addresses the Windows 0-byte agent-write bug (CLAUDE.md
+Critical Rule 15) and response truncation observed during
+piece-1a-discovery-scan-jason-os (T23) and piece-1b-discovery-scan-sonash (T24,
+dispute-resolver gap).
 
 ---
 

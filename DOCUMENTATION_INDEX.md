@@ -700,14 +700,14 @@ _Uncategorized_
 | [database-architect](.claude/agents/database-architect.md)                           | async def create_customer(self, customer_data):                 | ↓0 ↑0      | 2026-04-01    |
 | [debugger](.claude/agents/debugger.md)                                               | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [deep-research-final-synthesizer](.claude/agents/deep-research-final-synthesizer.md) | -                                                               | ↓0 ↑0      | 2026-04-02    |
-| [deep-research-gap-pursuer](.claude/agents/deep-research-gap-pursuer.md)             | -                                                               | ↓0 ↑0      | 2026-04-01    |
+| [deep-research-gap-pursuer](.claude/agents/deep-research-gap-pursuer.md)             | -                                                               | ↓0 ↑0      | 2026-04-18    |
 | [deep-research-searcher](.claude/agents/deep-research-searcher.md)                   | -                                                               | ↓0 ↑0      | 2026-04-01    |
-| [deep-research-synthesizer](.claude/agents/deep-research-synthesizer.md)             | Combines findings from multiple searcher agents into a coher... | ↓0 ↑0      | 2026-04-02    |
+| [deep-research-synthesizer](.claude/agents/deep-research-synthesizer.md)             | Combines findings from multiple searcher agents into a coher... | ↓0 ↑0      | 2026-04-18    |
 | [deep-research-verifier](.claude/agents/deep-research-verifier.md)                   | -                                                               | ↓0 ↑0      | 2026-04-18    |
 | [dependency-manager](.claude/agents/dependency-manager.md)                           | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [deployment-engineer](.claude/agents/deployment-engineer.md)                         | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [devops-troubleshooter](.claude/agents/devops-troubleshooter.md)                     | -                                                               | ↓0 ↑0      | 2026-04-01    |
-| [dispute-resolver](.claude/agents/dispute-resolver.md)                               | -                                                               | ↓0 ↑0      | 2026-04-01    |
+| [dispute-resolver](.claude/agents/dispute-resolver.md)                               | -                                                               | ↓0 ↑0      | 2026-04-18    |
 | [document-analyst](.claude/agents/document-analyst.md)                               | -                                                               | ↓0 ↑0      | 2026-04-08    |
 | [documentation-expert](.claude/agents/documentation-expert.md)                       | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [error-detective](.claude/agents/error-detective.md)                                 | -                                                               | ↓0 ↑0      | 2026-04-01    |
