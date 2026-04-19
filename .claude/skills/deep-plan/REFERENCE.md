@@ -1,6 +1,6 @@
 <!-- prettier-ignore-start -->
-**Document Version:** 1.1
-**Last Updated:** 2026-04-02
+**Document Version:** 1.2
+**Last Updated:** 2026-04-19
 **Status:** ACTIVE
 <!-- prettier-ignore-end -->
 
@@ -121,6 +121,16 @@ framing?]
 ```markdown
 # Implementation Plan: [Feature Name]
 
+<!-- prettier-ignore-start -->
+**Status:** ⏳ IN PROGRESS — 0 / [N] steps ✅
+**Version:** 1.0
+**Last Updated:** YYYY-MM-DD
+<!-- prettier-ignore-end -->
+
+> **Plan hygiene (MUST):** Update the Status banner and each step's header
+> marker as work completes. `plans:hygiene` checker will flag drift. See
+> `plans:hygiene` npm script.
+
 ## Summary
 
 [2-3 sentence overview of what's being built]
@@ -137,7 +147,9 @@ framing?]
 
 1. **`path/to/file`** - What changes
 
-## Step 1: [Title]
+---
+
+## Step 1: [Title] ⏳ PENDING
 
 [Implementation details, code snippets where helpful]
 
@@ -145,13 +157,33 @@ framing?]
 
 ---
 
-## Step N: Audit
+## Step N: Audit ⏳ PENDING
 
 Run code-reviewer agent on all new/modified files.
 
 **Done when:** All findings addressed or tracked in TDMS **Depends on:** All
 implementation steps
+
+---
+
+## Status Summary
+
+| Step | Title   | Status     | Completed |
+| ---- | ------- | ---------- | --------- |
+| 1    | [Title] | ⏳ PENDING |           |
+| ...  | ...     | ...        |           |
+| N    | Audit   | ⏳ PENDING |           |
+
+**Legend:** ⏳ PENDING · 🔄 IN PROGRESS · ✅ COMPLETE · ❌ BLOCKED · ⏸ DEFERRED
 ```
+
+**Hygiene contract for PLAN.md files** (parallel to TODOS.md ↔ todos.jsonl):
+
+- **Status banner** at top MUST be updated as steps complete (`X / N steps ✅`)
+- **Per-step header marker** (✅/🔄/❌/⏸) MUST change when status changes
+- **Status Summary table** at bottom MUST reflect per-step status
+- `npm run plans:hygiene` checks for drift (missing banner, unmarked steps,
+  commits referencing plan without any status change)
 
 ---
 

@@ -33,6 +33,12 @@ plans by front-loading decision-making through exhaustive questioning.
    artifact during execution.
 6. **Handoff is a decision tree, not a phase** — after approval, route to the
    right execution approach (subagent / GSD / manual).
+7. **PLAN.md hygiene is a live contract** — plans MUST be updated as work
+   completes: top status banner (`X / N steps ✅`), per-step header marker
+   (⏳/🔄/✅/❌/⏸), and Status Summary table MUST reflect reality. Same hygiene
+   contract as TODOS.md ↔ todos.jsonl. `npm run plans:hygiene` flags drift;
+   session-end surfaces it. Drift discovered post-hoc (as with T28 + T29 PLANs
+   in Session #279) requires manual backfill and wastes context.
 
 ## When to Use
 
