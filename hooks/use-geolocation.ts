@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useEffectEvent } from "react";
 import { type Coordinates } from "@/lib/utils/distance";
 
 export type GeolocationStatus =
@@ -163,12 +163,19 @@ export function useGeolocation(options: UseGeolocationOptions = {}) {
     });
   }, []);
 
-  // Request on mount if option is enabled
-  useEffect(() => {
+  // Request on mount if option is enabled — useEffectEvent reads latest
+  // opts/isAvailable/requestLocation without needing them as deps, and avoids
+  // the react-hooks/set-state-in-effect rule (setState is called inside the
+  // event handler, not directly in the effect body).
+  const onMount = useEffectEvent(() => {
     if (opts.requestOnMount && isAvailable) {
       requestLocation();
     }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  });
+
+  useEffect(() => {
+    onMount();
+  }, []);
 
   return {
     ...state,
