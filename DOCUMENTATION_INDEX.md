@@ -642,9 +642,9 @@ _TDMS tracking and management_
 | Document                                                                               | Description                                                     | References | Last Modified |
 | -------------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
 | [TDMS Final System Audit](docs/technical-debt/FINAL_SYSTEM_AUDIT.md)                   | <!-- prettier-ignore-start -->                                  | ↓1 ↑2      | 2026-03-19    |
-| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-18    |
+| [Technical Debt Index](docs/technical-debt/INDEX.md)                                   | <!-- prettier-ignore-start -->                                  | ↓5 ↑4      | 2026-04-19    |
 | [Technical Debt Management System - Procedure Guide](docs/technical-debt/PROCEDURE.md) | This document provides step-by-step procedures for managing ... | ↓8 ↑1      | 2026-03-19    |
-| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-04-18    |
+| [Technical Debt Metrics](docs/technical-debt/METRICS.md)                               | This document provides a real-time dashboard of technical de... | ↓1 ↑0      | 2026-04-19    |
 
 ### Templates (Tier 3)
 
@@ -1420,7 +1420,7 @@ _Uncategorized_
 | [CAS Step A — Multi-Skill Audit Handoff](.planning/content-analysis-system/STEP_A_HANDOFF.md)  | -                                                                | ↓0 ↑0      | 2026-04-15    |
 | [Decision Record: T28 Content Analysis System](.planning/content-analysis-system/DECISIONS.md) | -                                                                | ↓0 ↑0      | 2026-04-08    |
 | [Diagnosis: T28 Content Analysis System](.planning/content-analysis-system/DIAGNOSIS.md)       | -                                                                | ↓0 ↑0      | 2026-04-08    |
-| [Implementation Plan: T28 Content Analysis System](.planning/content-analysis-system/PLAN.md)  | > **Status:** ✅ **COMPLETE** — 14 of 15 steps done; Step 14 ... | ↓0 ↑0      | 2026-04-18    |
+| [Implementation Plan: T28 Content Analysis System](.planning/content-analysis-system/PLAN.md)  | > **Status:** ✅ **COMPLETE** — 14 of 15 steps done; Step 14 ... | ↓0 ↑0      | 2026-04-19    |
 
 ### .planning > creator-view-upgrade (Tier 4)
 
@@ -1661,7 +1661,7 @@ _Uncategorized_
 
 | Document                                                                 | Description                                                     | References | Last Modified |
 | ------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
-| [Extraction Candidates — Cross-Entity Summary](.research/EXTRACTIONS.md) | Auto-generated from `extraction-journal.jsonl` by `scripts/c... | ↓0 ↑0      | 2026-04-18    |
+| [Extraction Candidates — Cross-Entity Summary](.research/EXTRACTIONS.md) | Auto-generated from `extraction-journal.jsonl` by `scripts/c... | ↓0 ↑0      | 2026-04-19    |
 
 ### .research > analysis (Tier 4)
 
@@ -2662,9 +2662,9 @@ _Uncategorized_
 
 | Document                                                                       | Description | References | Last Modified |
 | ------------------------------------------------------------------------------ | ----------- | ---------- | ------------- |
-| [Creator View — Y2Z/monolith](.research/analysis/y2z-monolith/creator-view.md) | -           | ↓0 ↑0      | 2026-04-18    |
-| [Deep Read — Y2Z/monolith](.research/analysis/y2z-monolith/deep-read.md)       | -           | ↓0 ↑0      | 2026-04-18    |
-| [Engineer View — Y2Z/monolith](.research/analysis/y2z-monolith/summary.md)     | -           | ↓0 ↑0      | 2026-04-18    |
+| [Creator View — Y2Z/monolith](.research/analysis/y2z-monolith/creator-view.md) | -           | ↓0 ↑0      | 2026-04-19    |
+| [Deep Read — Y2Z/monolith](.research/analysis/y2z-monolith/deep-read.md)       | -           | ↓0 ↑0      | 2026-04-19    |
+| [Engineer View — Y2Z/monolith](.research/analysis/y2z-monolith/summary.md)     | -           | ↓0 ↑0      | 2026-04-19    |
 
 ### .research > analysis > youtube-oszdfnqmgrw (Tier 4)
 
@@ -3829,7 +3829,7 @@ _Reference_
 | [Review Policy Quick Reference](docs/REVIEW_POLICY_QUICK_REF.md)                  | This is a **one-page quick reference** for the SoNash review...   | ↓3 ↑4      | 2026-03-19    |
 | [Review Policy Visual Guide](docs/REVIEW_POLICY_VISUAL_GUIDE.md)                  | This document provides **visual diagrams and flowcharts** fo...   | ↓2 ↑3      | 2026-03-19    |
 | [Session Decision Log](docs/SESSION_DECISIONS.md)                                 | This document captures important decisions, options presente...   | ↓1 ↑0      | 2026-01-24    |
-| [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-04-13    |
+| [Session History Log](docs/SESSION_HISTORY.md)                                    | Append-only archive of session summaries from SESSION_CONTEX...   | ↓2 ↑1      | 2026-04-19    |
 | [Slash Commands & Skills Reference](docs/SLASH_COMMANDS_REFERENCE.md)             | Comprehensive reference for all slash commands and skills av...   | ↓1 ↑2      | 2026-03-19    |
 | [TRIGGERS.md - Automation & Enforcement Reference](docs/TRIGGERS.md)              | -                                                                 | ↓2 ↑1      | 2026-04-14    |
 
@@ -3905,11 +3905,11 @@ _Auto-generated debt dashboards_
 
 | Document                                                                     | Description                    | References | Last Modified |
 | ---------------------------------------------------------------------------- | ------------------------------ | ---------- | ------------- |
-| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
-| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
-| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
+| [Technical Debt by Category](docs/technical-debt/views/by-category.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-19    |
+| [Technical Debt by Severity](docs/technical-debt/views/by-severity.md)       | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-19    |
+| [Technical Debt by Status](docs/technical-debt/views/by-status.md)           | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-19    |
 | [Unplaced Technical Debt Items](docs/technical-debt/views/unplaced-items.md) | <!-- prettier-ignore-start --> | ↓0 ↑1      | 2026-02-02    |
-| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-18    |
+| [Verification Queue](docs/technical-debt/views/verification-queue.md)        | <!-- prettier-ignore-start --> | ↓1 ↑0      | 2026-04-19    |
 
 ---
 

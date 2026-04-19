@@ -19,6 +19,12 @@ updates:
       # Firebase Data Connect generated SDK — local path dep, gitignored,
       # unreachable from Dependabot's sandboxed checkout.
       - dependency-name: "@dataconnect/generated"
+      # eslint-plugin-react-hooks 7.1+ adds the react-hooks/set-state-in-effect
+      # rule which requires a codebase-wide cleanup pass (37+ warnings across
+      # admin/errors-tab, notebook/today-page, etc.). Pinned to 7.0.x until
+      # the cleanup lands. See T51 (Session #288 triage).
+      - dependency-name: "eslint-plugin-react-hooks"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
     labels:
       - "dependencies"
     commit-message:
