@@ -4,7 +4,7 @@ description: >-
   Dispute resolution agent for deep-research pipeline. Resolves conflicting
   claims using DRAGged 5-type classification, evidence-weight hierarchy, and
   dissent records. Spawned by /deep-research during Phase 3.5.
-tools: Read, Grep, Glob
+tools: Read, Write, Bash, Grep, Glob
 disallowedTools: Agent
 skills: [sonash-context]
 model: sonnet

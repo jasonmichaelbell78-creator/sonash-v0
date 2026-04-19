@@ -283,7 +283,10 @@ unavailable" in metadata.json.
 ## Phase 3.5: Dispute Resolution (mandatory when conflicts exist)
 
 Spawn `Agent(subagent_type="dispute-resolver")` for conflicting claims. 1 agent
-per 5 disputes. Details: REFERENCE.md Section 21.
+per 5 disputes. Produces `findings/dispute-resolutions.md`. **Apply Phase 2.5
+persistence safety net** to every spawn — verify non-empty output on disk;
+orchestrator fallback-writes the full agent return if the agent failed or
+truncated; max 1 retry then escalate. Details: REFERENCE.md Section 21.
 
 ---
 
@@ -403,15 +406,16 @@ to artifact-based recovery on corruption. Schema: REFERENCE.md Section 19.
 
 ## Version History
 
-| Version | Date       | Description                                                                                                     |
-| ------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
-| 1.9     | 2026-04-03 | Added Windows agent output fallback (anthropics/claude-code#39791)                                              |
-| 1.8     | 2026-03-29 | Skill-audit: 20 decisions — UX, guard rails, output, compaction, CL, TDMS, scalability, extraction              |
-| 1.7     | 2026-03-29 | Add Phases 3.95-3.97: gap pursuit, gap verification, final re-synthesis. Rule 9. Extract detail to REFERENCE.md |
-| 1.6     | 2026-03-27 | Add Rules 8-10: context exhaustion re-spawn, mandatory verification + dispute resolution phases                 |
-| 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override                                                 |
-| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)                                                        |
-| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation                                                        |
-| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing                                                    |
-| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles                                                      |
-| 1.0     | 2026-03-22 | Initial implementation                                                                                          |
+| Version | Date       | Description                                                                                                                                                                                                    |
+| ------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.10    | 2026-04-18 | T24: Phase 3.5 persistence safety net (dispute-resolver Write grant completes T23); 4 agent tool-grant enhancements (contrarian+Bash+WebFetch, otb+Bash+WebFetch, gap-pursuer+context7, synthesizer+Grep+Glob) |
+| 1.9     | 2026-04-03 | Added Windows agent output fallback (anthropics/claude-code#39791)                                                                                                                                             |
+| 1.8     | 2026-03-29 | Skill-audit: 20 decisions — UX, guard rails, output, compaction, CL, TDMS, scalability, extraction                                                                                                             |
+| 1.7     | 2026-03-29 | Add Phases 3.95-3.97: gap pursuit, gap verification, final re-synthesis. Rule 9. Extract detail to REFERENCE.md                                                                                                |
+| 1.6     | 2026-03-27 | Add Rules 8-10: context exhaustion re-spawn, mandatory verification + dispute resolution phases                                                                                                                |
+| 1.5     | 2026-03-23 | Formula is now FLOOR: scope-aware allocation with user override                                                                                                                                                |
+| 1.4     | 2026-03-22 | Skill-audit: 25 decisions, SKILL.md rewrite (<300 lines)                                                                                                                                                       |
+| 1.3     | 2026-03-22 | P3: management commands, strategy log, source reputation                                                                                                                                                       |
+| 1.2     | 2026-03-22 | P2: downstream adapters, GSD/deep-plan/skill-creator routing                                                                                                                                                   |
+| 1.1     | 2026-03-22 | P1: Gemini CLI, research index, CL preset, search profiles                                                                                                                                                     |
+| 1.0     | 2026-03-22 | Initial implementation                                                                                                                                                                                         |

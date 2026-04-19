@@ -4,7 +4,7 @@ description: >-
   Adversarial agent for deep-research pipeline. Challenges research findings
   using pre-mortem framing and steel-man critique. Produces structured
   challenges with severity levels. Spawned by /deep-research during Phase 3.
-tools: Read, Write, Grep, Glob, WebSearch
+tools: Read, Write, Bash, Grep, Glob, WebSearch, WebFetch
 disallowedTools: Agent
 skills: [sonash-context]
 model: sonnet

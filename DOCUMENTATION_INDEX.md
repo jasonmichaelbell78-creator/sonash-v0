@@ -3,7 +3,7 @@
 > **Auto-generated** - Do not edit manually. Run `npm run docs:index` to
 > regenerate.
 
-**Generated:** 2026-04-18 **Active Documents:** 1544 **Archived Documents:** 132
+**Generated:** 2026-04-19 **Active Documents:** 1544 **Archived Documents:** 132
 
 ---
 
@@ -523,7 +523,7 @@ _Claude Code skills_
 | [Deep Plan Reference](.claude/skills/deep-plan/REFERENCE.md)                                                                        | Question categories, example questions, output templates, an...   | ↓1 ↑0      | 2026-04-08    |
 | [Deep Research Reference](.claude/skills/deep-research/REFERENCE.md)                                                                | Output templates, question type classification, source evalu...   | ↓1 ↑0      | 2026-03-30    |
 | [deep-plan](.claude/skills/deep-plan/SKILL.md)                                                                                      | Structured discovery-first planning that produces high-quali...   | ↓0 ↑1      | 2026-04-11    |
-| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa...   | ↓0 ↑1      | 2026-04-15    |
+| [deep-research](.claude/skills/deep-research/SKILL.md)                                                                              | Multi-agent research engine that does what a single conversa...   | ↓0 ↑1      | 2026-04-18    |
 | [Defense-in-Depth Validation](.claude/skills/systematic-debugging/defense-in-depth.md)                                              | Reject obviously invalid input at API boundary                    | ↓0 ↑0      | 2026-01-12    |
 | [developer-growth-analysis](.claude/skills/developer-growth-analysis/SKILL.md)                                                      | This skill provides personalized feedback on your recent cod...   | ↓0 ↑0      | 2026-02-24    |
 | [doc-ecosystem-audit](.claude/skills/doc-ecosystem-audit/SKILL.md)                                                                  | Deep diagnostic of the entire documentation ecosystem — docu...   | ↓0 ↑0      | 2026-03-26    |
@@ -696,14 +696,14 @@ _Uncategorized_
 | ------------------------------------------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
 | [backend-architect](.claude/agents/backend-architect.md)                             | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [code-reviewer](.claude/agents/code-reviewer.md)                                     | If either check fails, list every violation before proceedin... | ↓0 ↑0      | 2026-04-01    |
-| [contrarian-challenger](.claude/agents/contrarian-challenger.md)                     | -                                                               | ↓0 ↑0      | 2026-04-01    |
+| [contrarian-challenger](.claude/agents/contrarian-challenger.md)                     | -                                                               | ↓0 ↑0      | 2026-04-18    |
 | [database-architect](.claude/agents/database-architect.md)                           | async def create_customer(self, customer_data):                 | ↓0 ↑0      | 2026-04-01    |
 | [debugger](.claude/agents/debugger.md)                                               | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [deep-research-final-synthesizer](.claude/agents/deep-research-final-synthesizer.md) | -                                                               | ↓0 ↑0      | 2026-04-02    |
 | [deep-research-gap-pursuer](.claude/agents/deep-research-gap-pursuer.md)             | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [deep-research-searcher](.claude/agents/deep-research-searcher.md)                   | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [deep-research-synthesizer](.claude/agents/deep-research-synthesizer.md)             | Combines findings from multiple searcher agents into a coher... | ↓0 ↑0      | 2026-04-02    |
-| [deep-research-verifier](.claude/agents/deep-research-verifier.md)                   | -                                                               | ↓0 ↑0      | 2026-04-01    |
+| [deep-research-verifier](.claude/agents/deep-research-verifier.md)                   | -                                                               | ↓0 ↑0      | 2026-04-18    |
 | [dependency-manager](.claude/agents/dependency-manager.md)                           | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [deployment-engineer](.claude/agents/deployment-engineer.md)                         | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [devops-troubleshooter](.claude/agents/devops-troubleshooter.md)                     | -                                                               | ↓0 ↑0      | 2026-04-01    |
@@ -720,7 +720,7 @@ _Uncategorized_
 | [mcp-expert](.claude/agents/mcp-expert.md)                                           | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [media-analyst](.claude/agents/media-analyst.md)                                     | -                                                               | ↓0 ↑0      | 2026-04-08    |
 | [nextjs-architecture-expert](.claude/agents/nextjs-architecture-expert.md)           | -                                                               | ↓0 ↑0      | 2026-04-01    |
-| [otb-challenger](.claude/agents/otb-challenger.md)                                   | -                                                               | ↓0 ↑0      | 2026-04-01    |
+| [otb-challenger](.claude/agents/otb-challenger.md)                                   | -                                                               | ↓0 ↑0      | 2026-04-18    |
 | [penetration-tester](.claude/agents/penetration-tester.md)                           | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [performance-engineer](.claude/agents/performance-engineer.md)                       | -                                                               | ↓0 ↑0      | 2026-04-01    |
 | [plan](.claude/agents/plan.md)                                                       | Check for blockers and requirements:                            | ↓0 ↑0      | 2026-04-01    |
@@ -7013,7 +7013,7 @@ reference but not actively tracked in the reference graph._
 
 | Version | Date       | Changes                           |
 | ------- | ---------- | --------------------------------- |
-| Auto    | 2026-04-18 | Auto-generated from codebase scan |
+| Auto    | 2026-04-19 | Auto-generated from codebase scan |
 
 ---
 
