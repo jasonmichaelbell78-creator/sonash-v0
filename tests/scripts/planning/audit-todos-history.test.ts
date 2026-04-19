@@ -168,7 +168,7 @@ describe("buildRegression", () => {
     assert.equal(r.prevTotal, 2);
     assert.equal(r.currentTotal, 1);
     assert.equal(r.prevShortSha, "prev1234");
-    assert.ok(typeof r.iso === "string" && (r.iso as string).endsWith("Z"));
+    assert.ok(typeof r.iso === "string" && r.iso.endsWith("Z"));
   });
 });
 

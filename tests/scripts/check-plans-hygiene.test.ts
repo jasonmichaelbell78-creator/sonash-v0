@@ -10,7 +10,7 @@
  */
 
 import assert from "node:assert/strict";
-import { describe, it, before, afterEach } from "node:test";
+import { describe, it, afterEach } from "node:test";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as os from "node:os";
@@ -124,11 +124,14 @@ describe("STATUS_BANNER_RE", () => {
 
   it("is anchored to line start (no ReDoS on long non-match lines)", () => {
     // If the banner regex backtracked, a repeated-pattern long line would
-    // explode exponentially. Linear regex completes instantly.
+    // explode exponentially. Linear regex completes instantly. The `.test()`
+    // result is captured explicitly so SonarCloud S2699 (unused return) is
+    // satisfied — the assertion here is timing-based, not match-based.
     const longLine = "x".repeat(10_000);
     const t0 = Date.now();
-    mod.STATUS_BANNER_RE.test(longLine);
+    const matched = mod.STATUS_BANNER_RE.test(longLine);
     const elapsed = Date.now() - t0;
+    assert.equal(matched, false);
     assert.ok(elapsed < 100, `regex took ${elapsed}ms on 10k non-match`);
   });
 });

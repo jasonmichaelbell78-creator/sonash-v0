@@ -76,10 +76,12 @@ function listCommitsTouchingFile() {
     .split("\n")
     .map((row) => {
       const parts = parsePipeRow(row);
-      if (!parts || !parts.sha || !parts.ts) return null;
+      if (!parts?.sha || !parts?.ts) return null;
+      const sec = Number.parseInt(parts.ts, 10);
+      if (!Number.isFinite(sec)) return null;
       return {
         sha: parts.sha,
-        ts: Number.parseInt(parts.ts, 10) * 1000,
+        ts: sec * 1000,
         subject: parts.subject.slice(0, 120),
       };
     })
@@ -158,13 +160,21 @@ function scanForRegressions(commits) {
 }
 
 function buildSummary(commits, regressions, finalIds) {
+  // currentMaxId: derive only from valid T-prefixed numeric IDs. idNumericKey
+  // returns Number.MAX_SAFE_INTEGER for non-T IDs, so a naïve reduce would
+  // surface that as the "max" whenever any sentinel slipped in.
+  let currentMaxId = null;
+  if (finalIds) {
+    const numericKeys = [...finalIds]
+      .filter((id) => /^T\d+/.test(id))
+      .map((id) => idNumericKey(id));
+    currentMaxId = numericKeys.length > 0 ? Math.max(...numericKeys) : null;
+  }
   return {
     commitsScanned: commits.length,
     regressionCount: regressions.length,
     totalLostIds: regressions.reduce((sum, r) => sum + r.lostCount, 0),
-    currentMaxId: finalIds
-      ? [...finalIds].reduce((max, id) => Math.max(max, idNumericKey(id)), 0)
-      : null,
+    currentMaxId,
     currentTotal: finalIds ? finalIds.size : null,
   };
 }

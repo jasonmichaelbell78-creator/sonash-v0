@@ -36,8 +36,11 @@ const STATUS_MARKER_RE = /[⏳🔄✅❌⏸]/u;
 // separately from the banner line in parseStepCounts to keep this regex
 // linear in input length (ReDoS-safe per SonarCloud S5852).
 const STATUS_BANNER_RE = /^>?[ \t]*\*\*Status:\*\*\s/im;
-const STEP_FRACTION_RE = /(\d+)\s*(?:\/|of)\s*(\d+)\s*steps?/iu;
-const ALL_STEPS_RE = /all\s+(\d+)\s*steps?/iu;
+// Digit groups bounded to 6 chars (1,000,000 step plans are absurd): cosmetic
+// hardening that silences SonarCloud S5852 re-flags without changing runtime.
+// Input is already bounded by the single-line banner slice in analyzePlan.
+const STEP_FRACTION_RE = /(\d{1,6})\s*(?:\/|of)\s*(\d{1,6})\s*steps?/iu;
+const ALL_STEPS_RE = /all\s+(\d{1,6})\s*steps?/iu;
 // Step headers may be at depth 2 (##) or 3 (###) — .planning/ plans use both.
 const STEP_HEADER_RE = /^#{2,3}\s+(Step\s+[\w.]+:|Wave\s+\d+:|Phase\s+\w+:)/im;
 
@@ -67,7 +70,7 @@ function listPlanFiles() {
   }
   return raw
     .split("\0")
-    .map((p) => p.trim())
+    .filter(Boolean)
     .filter((p) => p.startsWith(".planning/") && p.endsWith("/PLAN.md"));
 }
 
@@ -142,6 +145,9 @@ function analyzePlan(relPath) {
 function planLastCommitMs(planPath) {
   // Last git commit that touched this plan file. More reliable than fs mtime
   // for drift detection in a git repo: file mtime resets on checkout/pull.
+  // Returns null when the baseline is unknown (git failure or unparseable
+  // timestamp) so callers can skip drift detection rather than treating the
+  // Unix epoch as the baseline (which would falsely flag every commit).
   try {
     const raw = execFileSync("git", ["log", "-1", "--format=%ct", "--", planPath], {
       cwd: ROOT,
@@ -149,10 +155,10 @@ function planLastCommitMs(planPath) {
       maxBuffer: 1024 * 1024,
     }).trim();
     const sec = Number.parseInt(raw, 10);
-    return Number.isFinite(sec) ? sec * 1000 : 0;
+    return Number.isFinite(sec) ? sec * 1000 : null;
   } catch (err) {
     vlog(`git log for ${planPath} failed: ${sanitizeError(err)}`);
-    return 0;
+    return null;
   }
 }
 
@@ -191,10 +197,12 @@ function findDriftCandidates(planPath) {
     .split("\n")
     .map((row) => {
       const parts = parsePipeRow(row);
-      if (!parts || !parts.sha || !parts.ts) return null;
+      if (!parts?.sha || !parts?.ts) return null;
+      const sec = Number.parseInt(parts.ts, 10);
+      if (!Number.isFinite(sec)) return null;
       return {
         sha: parts.sha,
-        ts: Number.parseInt(parts.ts, 10) * 1000,
+        ts: sec * 1000,
         subject: parts.subject,
       };
     })
@@ -202,7 +210,11 @@ function findDriftCandidates(planPath) {
 
   if (commits.length === 0) return [];
 
+  // Skip drift detection when the baseline is unknown — reporting "all commits
+  // are newer than epoch" would be a false-positive storm.
   const baselineMs = planLastCommitMs(planPath);
+  if (baselineMs === null) return [];
+
   return commits
     .filter((c) => c.ts > baselineMs)
     .map((c) => ({
