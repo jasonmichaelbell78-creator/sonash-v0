@@ -45,7 +45,7 @@ export const InvocationRecord = BaseRecord.extend({
       // general-purpose context fields
       topic: z.string().min(1).nullable().optional(),
       note: z.string().min(1).nullable().optional(),
-      // /todo skill-specific context fields (T36)
+      // (T36) context fields added by the task-queue slash-command skill
       action: z.string().min(1).nullable().optional(),
       todosActive: z.number().int().min(0).nullable().optional(),
     })

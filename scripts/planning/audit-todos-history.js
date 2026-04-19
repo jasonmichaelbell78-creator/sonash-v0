@@ -1,9 +1,9 @@
 /* global __dirname */
 /**
- * audit-todos-history.js — diagnostic for historically-lost todo entries (T35)
+ * audit-todos-history.js — diagnostic for historically-lost entries (T35)
  *
  * Walks git log of .planning/todos.jsonl and flags commits where the set
- * of todo IDs LOST an entry (silent drop bug). T30 fixed forward protection;
+ * of entry IDs LOST a record (silent drop bug). T30 fixed forward protection;
  * this script looks backward to identify any prior damage.
  *
  * Detection: for each pair of consecutive commits touching the file, compute
@@ -55,18 +55,32 @@ function runGitRead(argsArray) {
   }
 }
 
+function parsePipeRow(row) {
+  // Parse `%H|%ct|%s` lines. Subject can itself contain `|`, so split on the
+  // first two delimiters only and preserve the remainder as the subject.
+  const first = row.indexOf("|");
+  if (first === -1) return null;
+  const second = row.indexOf("|", first + 1);
+  if (second === -1) return null;
+  return {
+    sha: row.slice(0, first),
+    ts: row.slice(first + 1, second),
+    subject: row.slice(second + 1),
+  };
+}
+
 function listCommitsTouchingFile() {
   const raw = runGitRead(["log", "--follow", "--format=%H|%ct|%s", "--", FILE]);
   if (!raw) return [];
   return raw
     .split("\n")
     .map((row) => {
-      const [sha, ts, subject] = row.split("|");
-      if (!sha || !ts) return null;
+      const parts = parsePipeRow(row);
+      if (!parts || !parts.sha || !parts.ts) return null;
       return {
-        sha,
-        ts: Number.parseInt(ts, 10) * 1000,
-        subject: (subject ?? "").slice(0, 120),
+        sha: parts.sha,
+        ts: Number.parseInt(parts.ts, 10) * 1000,
+        subject: parts.subject.slice(0, 120),
       };
     })
     .filter(Boolean)
@@ -102,16 +116,24 @@ function diffIds(before, after) {
   return lost;
 }
 
-function main() {
-  const commits = listCommitsTouchingFile();
-  if (commits.length === 0) {
-    log("No commits touch .planning/todos.jsonl (or git not available)");
-    process.exit(0);
-  }
+function buildRegression(commit, prevCommit, prevIds, ids, lost) {
+  return {
+    sha: commit.sha,
+    shortSha: commit.sha.slice(0, 8),
+    subject: commit.subject,
+    ts: commit.ts,
+    iso: new Date(commit.ts).toISOString(),
+    prevSha: prevCommit?.sha,
+    prevShortSha: prevCommit?.sha.slice(0, 8),
+    prevSubject: prevCommit?.subject,
+    lost,
+    lostCount: lost.length,
+    prevTotal: prevIds.size,
+    currentTotal: ids.size,
+  };
+}
 
-  log(`Scanning ${commits.length} commits that touch ${FILE}...`);
-  log("");
-
+function scanForRegressions(commits) {
   const regressions = [];
   let prevIds = null;
   let prevCommit = null;
@@ -122,64 +144,94 @@ function main() {
       vlog(`skipping ${commit.sha.slice(0, 8)} (cannot read file)`);
       continue;
     }
-
     if (prevIds !== null) {
       const lost = diffIds(prevIds, ids);
       if (lost.length > 0) {
-        regressions.push({
-          sha: commit.sha,
-          shortSha: commit.sha.slice(0, 8),
-          subject: commit.subject,
-          ts: commit.ts,
-          iso: new Date(commit.ts).toISOString(),
-          prevSha: prevCommit?.sha,
-          prevShortSha: prevCommit?.sha.slice(0, 8),
-          prevSubject: prevCommit?.subject,
-          lost,
-          lostCount: lost.length,
-          prevTotal: prevIds.size,
-          currentTotal: ids.size,
-        });
+        regressions.push(buildRegression(commit, prevCommit, prevIds, ids, lost));
       }
     }
-
     prevIds = ids;
     prevCommit = commit;
   }
 
-  const summary = {
+  return { regressions, finalIds: prevIds };
+}
+
+function buildSummary(commits, regressions, finalIds) {
+  return {
     commitsScanned: commits.length,
     regressionCount: regressions.length,
     totalLostIds: regressions.reduce((sum, r) => sum + r.lostCount, 0),
-    currentMaxId: prevIds
-      ? [...prevIds].reduce((max, id) => Math.max(max, idNumericKey(id)), 0)
+    currentMaxId: finalIds
+      ? [...finalIds].reduce((max, id) => Math.max(max, idNumericKey(id)), 0)
       : null,
-    currentTotal: prevIds ? prevIds.size : null,
+    currentTotal: finalIds ? finalIds.size : null,
   };
+}
 
+function formatLostList(lost) {
+  const head = lost.slice(0, 10).join(", ");
+  const suffix = lost.length > 10 ? ", ..." : "";
+  return head + suffix;
+}
+
+function renderRegression(r) {
+  log(`  ${r.shortSha} (${r.iso.slice(0, 10)}): ${r.subject}`);
+  log(`     Lost ${r.lostCount} ID(s): ${formatLostList(r.lost)}`);
+  log(`     Before: ${r.prevTotal} todos → After: ${r.currentTotal} todos`);
+  log(`     Predecessor: ${r.prevShortSha ?? "?"} (${r.prevSubject ?? "?"})`);
+  log("");
+}
+
+function renderReport(regressions, summary, commitsCount) {
   if (jsonOutput) {
     console.log(JSON.stringify({ summary, regressions }, null, 2));
-  } else if (regressions.length === 0) {
-    log(`✅ No ID regressions detected across ${commits.length} commits`);
-    log(`   Current: ${summary.currentTotal} todos, last ID T${summary.currentMaxId ?? "?"}`);
-  } else {
-    log(
-      `⚠️  ${regressions.length} commit(s) dropped todo IDs (total ${summary.totalLostIds} IDs lost):`
-    );
-    log("");
-    for (const r of regressions) {
-      log(`  ${r.shortSha} (${r.iso.slice(0, 10)}): ${r.subject}`);
-      log(
-        `     Lost ${r.lostCount} ID(s): ${r.lost.slice(0, 10).join(", ")}${r.lost.length > 10 ? `, ...` : ""}`
-      );
-      log(`     Before: ${r.prevTotal} todos → After: ${r.currentTotal} todos`);
-      log(`     Predecessor: ${r.prevShortSha ?? "?"} (${r.prevSubject ?? "?"})`);
-      log("");
-    }
-    log(`Run with --json for machine-readable output.`);
+    return;
   }
+  if (regressions.length === 0) {
+    log(`✅ No ID regressions detected across ${commitsCount} commits`);
+    log(`   Current: ${summary.currentTotal} todos, last ID T${summary.currentMaxId ?? "?"}`);
+    return;
+  }
+  log(
+    `⚠️  ${regressions.length} commit(s) dropped todo IDs (total ${summary.totalLostIds} IDs lost):`
+  );
+  log("");
+  for (const r of regressions) renderRegression(r);
+  log("Run with --json for machine-readable output.");
+}
+
+function main() {
+  const commits = listCommitsTouchingFile();
+  if (commits.length === 0) {
+    log("No commits touch .planning/todos.jsonl (or git not available)");
+    process.exit(0);
+  }
+
+  log(`Scanning ${commits.length} commits that touch ${FILE}...`);
+  log("");
+
+  const { regressions, finalIds } = scanForRegressions(commits);
+  const summary = buildSummary(commits, regressions, finalIds);
+  renderReport(regressions, summary, commits.length);
 
   process.exit(regressions.length > 0 ? 1 : 0);
 }
 
-main();
+module.exports = {
+  parsePipeRow,
+  listCommitsTouchingFile,
+  extractIdsAtCommit,
+  idNumericKey,
+  diffIds,
+  buildRegression,
+  scanForRegressions,
+  buildSummary,
+  formatLostList,
+  renderRegression,
+  renderReport,
+};
+
+if (require.main === module) {
+  main();
+}

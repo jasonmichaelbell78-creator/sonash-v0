@@ -887,7 +887,7 @@ _Uncategorized_
 | Document                                                                                | Description                                               | References | Last Modified |
 | --------------------------------------------------------------------------------------- | --------------------------------------------------------- | ---------- | ------------- |
 | [Hook Ecosystem Audit Report — 2026-03-08](.claude/tmp/hook-audit-report-2026-03-08.md) | \| # \| ID \| Severity \| Category \| Decision \| Note \| | ↓0 ↑0      | 2026-03-08    |
-| [pr body](.claude/tmp/pr-body.md)                                                       | -                                                         | ↓0 ↑0      | 2026-03-12    |
+| [pr body](.claude/tmp/pr-body.md)                                                       | -                                                         | ↓0 ↑0      | 2026-04-19    |
 | [pr body 286](.claude/tmp/pr-body-286.md)                                               | -                                                         | ↓0 ↑0      | 2026-04-18    |
 | [pr492 new body](.claude/tmp/pr492-new-body.md)                                         | -                                                         | ↓0 ↑0      | 2026-04-05    |
 
