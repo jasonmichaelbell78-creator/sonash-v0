@@ -42,7 +42,7 @@ function vlog(msg) {
   if (verbose && !jsonOutput) console.log(`  [verbose] ${msg}`);
 }
 
-function runGit(argsArray) {
+function runGitRead(argsArray) {
   try {
     return execFileSync("git", argsArray, {
       cwd: ROOT,
@@ -56,7 +56,7 @@ function runGit(argsArray) {
 }
 
 function listCommitsTouchingFile() {
-  const raw = runGit(["log", "--follow", "--format=%H|%ct|%s", "--", FILE]);
+  const raw = runGitRead(["log", "--follow", "--format=%H|%ct|%s", "--", FILE]);
   if (!raw) return [];
   return raw
     .split("\n")
@@ -74,7 +74,7 @@ function listCommitsTouchingFile() {
 }
 
 function extractIdsAtCommit(sha) {
-  const raw = runGit(["show", `${sha}:${FILE}`]);
+  const raw = runGitRead(["show", `${sha}:${FILE}`]);
   if (raw === null) return null;
   const ids = new Set();
   for (const rawLine of raw.split("\n")) {
