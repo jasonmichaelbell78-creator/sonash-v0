@@ -40,8 +40,9 @@ When working with documentation:
 2. [Multi-AI Review Framework](#multi-ai-review-framework)
 3. [Core Documentation](#core-documentation)
 4. [Guides & Processes](#guides--processes)
-5. [Templates](#templates)
-6. [Archive](#archive)
+5. [Active Plans](#active-plans)
+6. [Templates](#templates)
+7. [Archive](#archive)
 
 ---
 
@@ -140,6 +141,15 @@ All templates now in `docs/audits/multi-ai/templates/`:
 | ~~AUDIT_ECOSYSTEM_CODIFICATION.md~~          | _(does not exist — may be archived)_              | —                                                                       |
 | **INTEGRATED_IMPROVEMENT_PLAN.md**           | Phased improvement plan (COMPLETE - archived)     | `docs/archive/completed-plans/INTEGRATED_IMPROVEMENT_PLAN.md`           |
 | **AI_REVIEW_LEARNINGS_LOG.md**               | Historical log of AI review findings and patterns | `docs/AI_REVIEW_LEARNINGS_LOG.md`                                       |
+
+## Active Plans
+
+| Document                                | Purpose                                       | Location                                      |
+| --------------------------------------- | --------------------------------------------- | --------------------------------------------- |
+| **PLAN_MAP.md**                         | Navigation for active planning documents      | `docs/PLAN_MAP.md`                            |
+| **CODEX_CLAUDE_DUAL_SYSTEM_PLAN.md**    | Permanent dual Claude and Codex workflow plan | `docs/plans/CODEX_CLAUDE_DUAL_SYSTEM_PLAN.md` |
+| **BRANCH_TRIAGE_PLAN.md**               | Dependabot branch and dependency backlog plan | `docs/plans/BRANCH_TRIAGE_PLAN.md`            |
+| **CODEX_CLAUDE_DUAL_WORKFLOW_GUIDE.md** | Claude/Codex commands and navigation guide    | `docs/CODEX_CLAUDE_DUAL_WORKFLOW_GUIDE.md`    |
 
 ---
 
