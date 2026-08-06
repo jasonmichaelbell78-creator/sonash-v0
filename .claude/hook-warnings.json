@@ -19,16 +19,6 @@
       "timestamp": "2026-08-06T14:25:10.231Z",
       "occurrences": 1,
       "occurrences_since_ack": 1
-    },
-    {
-      "hook": "pre-commit",
-      "type": "propagation-staged",
-      "severity": "warning",
-      "message": "WARN-severity propagation misses in staged files",
-      "action": "Review sibling files for same patterns",
-      "timestamp": "2026-08-06T18:51:42.569Z",
-      "occurrences": 1,
-      "occurrences_since_ack": 1
     }
   ]
 }
