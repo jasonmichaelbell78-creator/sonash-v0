@@ -14,6 +14,27 @@ documented. Corpus: 35 → 37 sources, 370 → 379 extractions, 280 → 332 tags
 
 Quick session-to-session handoff context for AI coding sessions.
 
+## Current Codex/Codespaces Handoff (2026-08-06)
+
+- **Branch:** `agent/codespaces-baseline`; committed baseline `65f9eb76` is
+  already present in the merged `origin/main` tree.
+- **Completed:** Added the Node 22 Codespaces baseline, the initial Codex
+  foundation, the read-only Dependabot snapshot in `docs/BRANCH_TRIAGE.md`, and
+  the tested Codex direct-main guard.
+- **Validation:** PR #651 passed the isolated root validation tier under Node 22
+  after compiling the review artifacts: 4,009 tests (4,007 passed, 2 skipped),
+  build passed, and gitleaks found no leaks.
+- **Container state:** The current container exposes Node 22, Codex, Firebase
+  CLI, GitHub CLI, gitleaks, and ripgrep. The devcontainer feature pins in
+  `.devcontainer/devcontainer.json` remain an uncommitted stabilization change.
+- **Worktree:** Existing `.claude/` runtime state, generated documentation,
+  `llms.txt`, and `package-lock.json` changes predate this Codex foundation and
+  should be reviewed separately; do not discard them automatically.
+- **Next:** Resume from `docs/CODEX_HANDOFF_2026-08-06.md`; recreate PR #651
+  against current `main` and validate it before merging, then handle the
+  remaining dependency groups separately. Do not port Claude hooks, mutate
+  Dependabot PR state, or add MCP credentials to the repository.
+
 ## AI Instructions
 
 **This document is your session starting point:**

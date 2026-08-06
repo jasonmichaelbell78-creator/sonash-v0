@@ -1,0 +1,6 @@
+# Repository-scoped Codex configuration.
+# Keep credentials, provider/auth settings, personal model choices, and
+# machine-specific paths in the user's Codex home configuration.
+
+# Allow the complete root AGENTS.md guidance to be loaded without truncation.
+project_doc_max_bytes = 65536

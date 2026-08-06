@@ -150,6 +150,8 @@ All templates now in `docs/audits/multi-ai/templates/`:
 | **CODEX_CLAUDE_DUAL_SYSTEM_PLAN.md**    | Permanent dual Claude and Codex workflow plan | `docs/plans/CODEX_CLAUDE_DUAL_SYSTEM_PLAN.md` |
 | **BRANCH_TRIAGE_PLAN.md**               | Dependabot branch and dependency backlog plan | `docs/plans/BRANCH_TRIAGE_PLAN.md`            |
 | **CODEX_CLAUDE_DUAL_WORKFLOW_GUIDE.md** | Claude/Codex commands and navigation guide    | `docs/CODEX_CLAUDE_DUAL_WORKFLOW_GUIDE.md`    |
+| **BRANCH_TRIAGE.md**                    | Current Dependabot triage metadata snapshot   | `docs/BRANCH_TRIAGE.md`                       |
+| **CODEX_HANDOFF_2026-08-06.md**         | Durable Codex checkpoint for the next session | `docs/CODEX_HANDOFF_2026-08-06.md`            |
 
 ---
 

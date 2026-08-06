@@ -2,14 +2,33 @@
   "warnings": [
     {
       "hook": "pre-commit",
-      "type": "pr-creep",
-      "severity": "info",
-      "message": "Branch has >=10 commits — create PR soon",
-      "action": "Create PR: gh pr create",
-      "timestamp": "2026-04-19T16:15:38.527Z",
-      "occurrences": 5,
-      "occurrences_since_ack": 1,
-      "count": "10"
+      "type": "missing-tool",
+      "severity": "warning",
+      "message": "gitleaks not installed — secrets scan skipped",
+      "action": "Install: winget install Gitleaks.Gitleaks",
+      "timestamp": "2026-08-06T14:13:23.226Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-push",
+      "type": "audit",
+      "severity": "warning",
+      "message": "npm audit found security vulnerabilities",
+      "action": "npm audit",
+      "timestamp": "2026-08-06T14:25:10.231Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
+    },
+    {
+      "hook": "pre-commit",
+      "type": "propagation-staged",
+      "severity": "warning",
+      "message": "WARN-severity propagation misses in staged files",
+      "action": "Review sibling files for same patterns",
+      "timestamp": "2026-08-06T18:51:42.569Z",
+      "occurrences": 1,
+      "occurrences_since_ack": 1
     }
   ]
 }
