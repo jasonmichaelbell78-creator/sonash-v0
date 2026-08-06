@@ -1517,8 +1517,8 @@ accumulate.
 
 | Metric         | Value  | Threshold | Action if Exceeded                       |
 | -------------- | ------ | --------- | ---------------------------------------- |
-| Main log lines | ~19460 | 1500      | Run `npm run reviews:archive -- --apply` |
-| Active reviews | 561    | 30        | Run `npm run reviews:archive -- --apply` |
+| Main log lines | ~19730 | 1500      | Run `npm run reviews:archive -- --apply` |
+| Active reviews | 563    | 30        | Run `npm run reviews:archive -- --apply` |
 
 ### Restructure History
 
@@ -15625,6 +15625,101 @@ deduplicated, non-overlapping ranges):
   bucket separately.
 - SonarCloud default quality gate is read-only via API. Threshold adjustments
   require UI or gate-copy flow.
+
+---
+
+### Review review-pr528-r1: PR #528 R1 - Mixed (Qodo + Gemini + SonarCloud + CI) (2026-04-19)
+
+**Date:** 2026-04-19 | **PR:** #528 | **Source:** qodo+gemini+sonarcloud+ci
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 22    | 15    | 0        | 7        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 1        | 5     | 4     | 2       |
+
+**Patterns:**
+
+- quote-ARGUMENTS-in-hook-commands
+- horizontal-whitespace-after-line-anchor
+- pipe-subject-robust-parsing
+- git-log-ct-over-fs-mtime
+- ls-files-z-over-pathspec-glob
+- extract-helpers-for-CC-reduction
+- require-main-guard-for-new-cli-scripts
+- reword-to-avoid-S1135-word-boundary
+- reject-S4036-safe-git-invocation
+
+**Learnings:**
+
+- Propagation sweep on shell-injection pattern: 3 PR-introduced + 7 pre-existing
+  $ARGUMENTS sites fixed in one commit per CLAUDE.md propagation mandate.
+- Horizontal whitespace [ \t] after ^ in multiline regex avoids swallowing the
+  preceding newline. Found via unit test asserting bannerDone === 3.
+- parsePipeRow via indexOf-twice preserves subjects containing |. Multi-source
+  convergence (Qodo + Gemini + Qodo-review) across two files.
+- git ls-files -z + JS filter is more portable than \*\* pathspec-magic on older
+  git versions.
+- git log -1 --format=%ct beats fs.mtime for drift baseline in a git repo.
+- CC 20 reduced to <5 via 6 helper extractions; helpers also unlock unit
+  testing.
+- require.main === module guard + module.exports from day 1 saves the R2
+  refactor.
+- S1135 flags lowercase todo at word boundaries even after the / prefix -
+  reword, dont NOSONAR.
+- S4036 PATH warnings rejected: execFileSync(git, fixedArgv) is the established
+  CJS git pattern; mitigation is env-level PATH hygiene.
+
+---
+
+### Review review-pr528-r2: PR #528 R2 - Mixed (SonarCloud Hotspots/Issues + Qodo Suggestions/Compliance) (2026-04-19)
+
+**Date:** 2026-04-19 | **PR:** #528 | **Source:** sonarcloud+qodo
+
+| Total | Fixed | Deferred | Rejected |
+| ----- | ----- | -------- | -------- |
+| 16    | 10    | 0        | 6        |
+
+**Severity Breakdown:**
+
+| Critical | Major | Minor | Trivial |
+| -------- | ----- | ----- | ------- |
+| 0        | 4     | 5     | 1       |
+
+**Patterns:**
+
+- bounded-quantifier-silences-S5852-cosmetic
+- null-not-zero-for-missing-baseline
+- finite-guard-before-nan-multiplication
+- filter-before-reduce-to-avoid-sentinel-poisoning
+- optional-chain-on-negated-property-access
+- capture-test-return-for-S2699
+- cross-round-dedup-for-line-shift-reflags
+
+**Learnings:**
+
+- Bounded quantifier \d{1,6} silences S5852 without changing runtime when inputs
+  are already bounded upstream - cosmetic but stops re-flags across refactors.
+- planLastCommitMs returning 0 on failure caused false-positive drift storm -
+  distinguish 'no data' from 'data=0' via null + caller short-circuit.
+- NaN from Number.parseInt silently drops commits in drift filter - add explicit
+  Number.isFinite gate before multiplying.
+- idNumericKey Number.MAX_SAFE_INTEGER sentinel poisons Math.max reduce - filter
+  to /^T\d+/ before computing currentMaxId.
+- Cross-round dedup works: 2 S4036 PATH hotspots auto-rejected in R2 (same
+  rule + same file as R1 rejection; user marked Safe in SonarCloud dashboard
+  already).
+- .test() return must be captured for SonarCloud S2699 even in timing-only
+  tests - cheapest fix is const matched + assert.equal(matched, false).
+- Security-auditor agent validates security dispositions: S5852 cosmetic (input
+  bounded via lines.slice), S4036 reject (fixed argv + PATH hygiene env-level),
+  passthrough INFO (telemetry envelope, not security boundary).
+- Optional chain S6582 propagation limited to R1-touched files - grep confirmed
+  no other !x || !x.y patterns in both scripts.
 
 ## Key Patterns
 
