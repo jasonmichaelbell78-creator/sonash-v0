@@ -19,6 +19,10 @@ export default tseslint.config(
       },
     },
     rules: {
+      // ESLint 10 enables these core checks in the recommended preset. Keep the
+      // existing Functions baseline during migration and remediate separately.
+      "preserve-caught-error": "off",
+      "no-useless-assignment": "off",
       // Allow unused vars with underscore prefix
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       // Warn on any type
