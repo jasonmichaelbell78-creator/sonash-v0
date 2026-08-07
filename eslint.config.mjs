@@ -3,14 +3,21 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import security from "eslint-plugin-security";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import globals from "globals";
 
 const require = createRequire(import.meta.url);
+const tsconfigRootDir = fileURLToPath(new URL(".", import.meta.url));
 const sonash = require("./eslint-plugin-sonash/index.js");
 
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      parserOptions: { tsconfigRootDir },
+    },
+  },
   {
     plugins: { security },
     rules: {
