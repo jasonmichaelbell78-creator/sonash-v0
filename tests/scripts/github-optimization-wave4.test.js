@@ -379,7 +379,7 @@ describe("4.6: Codecov Integration", () => {
 
     it("codecov action is SHA-pinned", () => {
       assert.ok(
-        content.includes("codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2"),
+        content.includes("codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f"),
         "Codecov action should be SHA-pinned"
       );
     });
@@ -428,7 +428,7 @@ describe("4.7: OpenSSF Scorecard", () => {
   });
 
   it("has scorecard action SHA-pinned", () => {
-    assert.ok(content.includes("ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a"));
+    assert.ok(content.includes("ossf/scorecard-action@2d1146689b8cda280b9bc96326124645441f03bc"));
   });
 
   it("has version comment", () => {
