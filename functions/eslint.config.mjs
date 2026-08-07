@@ -1,5 +1,8 @@
 import eslint from "@eslint/js";
 import tseslint from "typescript-eslint";
+import { fileURLToPath } from "node:url";
+
+const tsconfigRootDir = fileURLToPath(new URL(".", import.meta.url));
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -12,6 +15,7 @@ export default tseslint.config(
     languageOptions: {
       parserOptions: {
         project: "./tsconfig.json",
+        tsconfigRootDir,
       },
     },
     rules: {
