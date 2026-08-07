@@ -57,6 +57,13 @@ export default [
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-hooks/set-state-in-effect": "warn",
+      // ESLint 10 / react-hooks 7.1 introduce these checks into their
+      // recommended presets. Keep the existing lint baseline during the
+      // dependency migration; enable them in a dedicated remediation pass.
+      "react-hooks/preserve-manual-memoization": "warn",
+      "preserve-caught-error": "off",
+      "no-useless-assignment": "off",
+      "no-unassigned-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
