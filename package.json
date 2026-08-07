@@ -177,7 +177,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.1",
+    "@eslint/js": "10.0.1",
     "@firebase/rules-unit-testing": "^5.0.0",
     "@modelcontextprotocol/server-memory": "^2026.1.26",
     "@playwright/test": "^1.62.1",
@@ -191,9 +191,9 @@
     "chrome-launcher": "^1.2.1",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
-    "eslint": "^9.39.2",
-    "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-security": "^3.0.1",
+    "eslint": "10.7.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-security": "^4.0.1",
     "fast-check": "^4.8.0",
     "firebase-admin": "^13.10.0",
     "firebase-tools": "15.26.0",
@@ -222,6 +222,7 @@
   },
   "overrides": {
     "fast-xml-parser": "5.5.7",
-    "@tootallnate/once": "3.0.1"
+    "@tootallnate/once": "3.0.1",
+    "@types/eslint-scope": "9.1.0"
   }
 }

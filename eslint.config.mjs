@@ -3,14 +3,21 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 import security from "eslint-plugin-security";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 import globals from "globals";
 
 const require = createRequire(import.meta.url);
+const tsconfigRootDir = fileURLToPath(new URL(".", import.meta.url));
 const sonash = require("./eslint-plugin-sonash/index.js");
 
 export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      parserOptions: { tsconfigRootDir },
+    },
+  },
   {
     plugins: { security },
     rules: {
@@ -57,6 +64,13 @@ export default [
     rules: {
       ...reactHooks.configs.recommended.rules,
       "react-hooks/set-state-in-effect": "warn",
+      // ESLint 10 / react-hooks 7.1 introduce these checks into their
+      // recommended presets. Keep the existing lint baseline during the
+      // dependency migration; enable them in a dedicated remediation pass.
+      "react-hooks/preserve-manual-memoization": "warn",
+      "preserve-caught-error": "off",
+      "no-useless-assignment": "off",
+      "no-unassigned-vars": "off",
       "@typescript-eslint/no-unused-vars": [
         "warn",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
