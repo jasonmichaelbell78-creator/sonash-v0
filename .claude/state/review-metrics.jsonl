@@ -161,8 +161,9 @@
 {"pr":645,"title":"chore(deps): bump ip-address from 10.2.0 to 10.4.0","total_commits":1,"fix_commits":1,"fix_ratio":1,"review_rounds":0,"timestamp":"2026-08-06T15:10:29.716Z"}
 {"pr":653,"title":"build: add Codespaces baseline","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T16:27:54.569Z"}
 {"pr":652,"title":"docs: add Codex dual-system plans","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T16:27:55.469Z"}
-{"pr":664,"title":"chore(deps): consolidate MCP transitive updates","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:46:59.989Z"}
-{"pr":662,"title":"ci: harden and pin CI dependency tooling","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:47:00.705Z"}
-{"pr":656,"title":"chore(deps): bump on-headers and serve","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:47:01.489Z"}
-{"pr":655,"title":"chore(deps): bump dompurify from 3.4.12 to 3.4.13","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:47:02.275Z"}
+{"pr":664,"title":"chore(deps): consolidate MCP transitive updates","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:54:54.533Z"}
+{"pr":662,"title":"ci: harden and pin CI dependency tooling","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:54:55.906Z"}
+{"pr":656,"title":"chore(deps): bump on-headers and serve","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:54:56.661Z"}
+{"pr":655,"title":"chore(deps): bump dompurify from 3.4.12 to 3.4.13","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:54:57.439Z"}
 {"pr":654,"title":"test: establish infrastructure readiness gates","total_commits":6,"fix_commits":3,"fix_ratio":0.5,"review_rounds":0,"timestamp":"2026-08-07T17:47:03.115Z"}
+{"pr":663,"title":"chore(ci): consolidate GitHub Actions upgrades","total_commits":9,"fix_commits":2,"fix_ratio":0.22,"review_rounds":0,"timestamp":"2026-08-07T17:54:55.245Z"}
