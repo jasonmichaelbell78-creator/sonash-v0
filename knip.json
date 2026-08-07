@@ -25,7 +25,7 @@
     "better-sqlite3",
     "serve"
   ],
-  "ignoreBinaries": ["report", "vitest", "gitleaks", "firebase"],
+  "ignoreBinaries": ["report", "vitest", "gitleaks"],
   "next": {
     "entry": [
       "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",
