@@ -161,3 +161,8 @@
 {"pr":645,"title":"chore(deps): bump ip-address from 10.2.0 to 10.4.0","total_commits":1,"fix_commits":1,"fix_ratio":1,"review_rounds":0,"timestamp":"2026-08-06T15:10:29.716Z"}
 {"pr":653,"title":"build: add Codespaces baseline","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T16:27:54.569Z"}
 {"pr":652,"title":"docs: add Codex dual-system plans","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T16:27:55.469Z"}
+{"pr":664,"title":"chore(deps): consolidate MCP transitive updates","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:35:42.585Z"}
+{"pr":662,"title":"ci: harden and pin CI dependency tooling","total_commits":2,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:35:43.382Z"}
+{"pr":656,"title":"chore(deps): bump on-headers and serve","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:35:44.210Z"}
+{"pr":655,"title":"chore(deps): bump dompurify from 3.4.12 to 3.4.13","total_commits":1,"fix_commits":0,"fix_ratio":0,"review_rounds":0,"timestamp":"2026-08-07T17:35:44.927Z"}
+{"pr":654,"title":"test: establish infrastructure readiness gates","total_commits":6,"fix_commits":3,"fix_ratio":0.5,"review_rounds":0,"timestamp":"2026-08-07T17:35:45.870Z"}
