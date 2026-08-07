@@ -22,9 +22,10 @@
     "vaul",
     "@modelcontextprotocol/server-memory",
     "@typescript/native-preview",
-    "better-sqlite3"
+    "better-sqlite3",
+    "serve"
   ],
-  "ignoreBinaries": ["report", "vitest", "gitleaks"],
+  "ignoreBinaries": ["report", "vitest", "gitleaks", "firebase"],
   "next": {
     "entry": [
       "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",

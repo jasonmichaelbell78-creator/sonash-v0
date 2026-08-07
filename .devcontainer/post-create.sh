@@ -21,7 +21,7 @@ npx tsc --project scripts/reviews/tsconfig.json
 npm install --global "@openai/codex@${codex_version}" "firebase-tools@${firebase_tools_version}"
 npx --yes "playwright@${playwright_version}" install --with-deps chromium
 
-for command in node npm git gh codex firebase gitleaks; do
+for command in node npm git gh codex firebase gitleaks java; do
   command -v "$command" >/dev/null
 done
 

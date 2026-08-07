@@ -5,7 +5,7 @@ ARG GITLEAKS_VERSION=8.30.1
 USER root
 
 RUN apt-get update \
-    && apt-get install --yes --no-install-recommends ca-certificates curl ripgrep \
+    && apt-get install --yes --no-install-recommends ca-certificates curl openjdk-21-jre-headless ripgrep \
     && rm -rf /var/lib/apt/lists/*
 
 # Install the repository's secret-scanning CLI from its signed release checksum

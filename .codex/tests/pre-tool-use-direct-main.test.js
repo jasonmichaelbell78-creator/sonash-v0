@@ -32,6 +32,27 @@ test("denies a push targeting main from any branch", () => {
   assert.equal(result.hookSpecificOutput.permissionDecision, "deny");
 });
 
+test("denies a refspec push targeting main", () => {
+  const result = runHook({
+    tool_name: "Bash",
+    tool_input: { command: 'npm test && git push origin "HEAD:main"' },
+    cwd: process.cwd(),
+  });
+
+  assert.equal(result.hookSpecificOutput.permissionDecision, "deny");
+});
+
+test("allows a push targeting a working branch", () => {
+  assert.deepEqual(
+    runHook({
+      tool_name: "Bash",
+      tool_input: { command: "git push origin codex/infrastructure-readiness" },
+      cwd: process.cwd(),
+    }),
+    { continue: true }
+  );
+});
+
 test("allows read-only Git commands on the working branch", () => {
   assert.deepEqual(
     runHook({

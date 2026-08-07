@@ -366,6 +366,126 @@ accumulate.
 > reset and fixed in Session #193. See consolidation.json for current state.
 
 <details>
+<summary>Previous Consolidation (#98)</summary>
+
+- **Date:** 2026-08-07
+- **Reviews consolidated:** #366-#review-pr528-r2
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#97)</summary>
+
+- **Date:** 2026-08-07
+- **Reviews consolidated:** #366-#review-pr528-r2
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#96)</summary>
+
+- **Date:** 2026-08-07
+- **Reviews consolidated:** #366-#review-pr528-r2
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#95)</summary>
+
+- **Date:** 2026-08-07
+- **Reviews consolidated:** #366-#review-pr528-r2
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#94)</summary>
+
+- **Date:** 2026-08-07
+- **Reviews consolidated:** #366-#review-pr528-r2
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+
+</details>
+<details>
+<summary>Previous Consolidation (#93)</summary>
+
+- **Date:** 2026-08-07
+- **Reviews consolidated:** #366-#review-pr528-r2
+- **Recurring patterns:**
+  - prevention (47x)
+  - root-cause (47x)
+  - premature-dedup-new-set-before-duplicate-detection-defeats (7x)
+  - cc-extraction (5x)
+  - replaceall-migration (5x)
+  - array-never-pass-functions (4x)
+  - mapfn-passes-element (4x)
+  - already-fixed-stale (3x)
+  - cognitive-complexity-extraction (3x)
+  - impact (3x)
+  - isretrosectionend-logic-inversion-prheadingretestline (3x)
+  - pattern-checker-cant-detect-rmsync-within-nested-trycatch- (3x)
+
+</details>
+<details>
 <summary>Previous Consolidation (#93)</summary>
 
 - **Date:** 2026-04-19
