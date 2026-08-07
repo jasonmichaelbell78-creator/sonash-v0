@@ -12,6 +12,8 @@ node_modules
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
 .temp-test-phase-*/
 .tmp/
 
@@ -172,3 +174,8 @@ functions/.next/
 tools/statusline/sonash-statusline
 tools/statusline/sonash-statusline.exe
 tools/statusline/config.local.toml
+
+# Codex local diagnostics and runtime output
+/.codex-log/
+/.codex/state/
+/.codex/tmp/

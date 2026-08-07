@@ -52,7 +52,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run oxlint (fast correctness check)
         run: npm run lint:fast
@@ -68,6 +68,37 @@ jobs:
 
       - name: Check for unused dependencies/exports
         run: npm run deps:unused
+
+  # ── Job 1b: Functions Build (parallel with lint & test) ─────────
+  functions:
+    name: Functions Lint & Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: functions/package-lock.json
+
+      - name: Install Functions dependencies
+        run: npm ci --ignore-scripts
+        working-directory: functions
+
+      - name: Lint Functions
+        run: npm run lint
+        working-directory: functions
+
+      - name: Build Functions
+        run: npm run build
+        working-directory: functions
 
   # ── Job 2: Type Check & Test (parallel with lint) ────────────────
   test:
@@ -89,7 +120,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Type check
         run: npx tsc --noEmit
@@ -148,6 +179,75 @@ jobs:
           path: coverage/
           retention-days: 14
 
+  # ── Job 2b: Emulator Rules (parallel with lint & test) ──────────
+  rules:
+    name: Firestore Rules Emulator Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Setup Java 21 for Firebase Emulator
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: "temurin"
+          java-version: "21"
+
+      - name: Verify Java runtime for Firebase Emulator
+        run: java -version
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run Firestore rules tests
+        run: npm run test:rules
+
+  # ── Job 2c: Browser Smoke (parallel with lint & test) ───────────
+  e2e:
+    name: Browser Smoke Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install Chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
+
+      - name: Run browser smoke tests
+        run: npm run test:e2e
+        env:
+          CI: true
+          NEXT_PUBLIC_FIREBASE_API_KEY: test
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: test
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: test
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: test
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: test
+          NEXT_PUBLIC_FIREBASE_APP_ID: test
+          NEXT_PUBLIC_FIREBASE_APPCHECK_RECAPTCHA_SITE_KEY: test
+
   # ── Job 3: Validate (parallel with lint & test) ──────────────────
   validate:
     name: Validate & Compliance
@@ -169,7 +269,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Get changed files for pattern check
         if: ${{ github.event_name == 'pull_request' }}
@@ -250,7 +350,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    needs: [lint, test, validate]
+    needs: [lint, test, validate, functions, rules, e2e]
     permissions:
       contents: read
 
@@ -265,7 +365,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build application
         run: npm run build

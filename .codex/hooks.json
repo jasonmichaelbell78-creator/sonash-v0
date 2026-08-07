@@ -1,0 +1,17 @@
+{
+  "description": "SoNash Codex lifecycle hooks. Each hook is independently reviewed and tested.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"$(git rev-parse --show-toplevel)/.codex/hooks/pre-tool-use-direct-main.js\"",
+            "statusMessage": "Checking protected-branch command"
+          }
+        ]
+      }
+    ]
+  }
+}
