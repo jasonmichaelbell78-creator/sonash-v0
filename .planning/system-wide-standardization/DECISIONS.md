@@ -3,8 +3,8 @@
 > **Auto-generated** from JSONL source files by `generate-decisions.js`. **Do
 > not manually edit.** Update JSONL → run script → MD regenerated.
 
-**Generated:** 2026-03-04  
-**Decisions:** 92 | **Tenets:** 18 | **Directives:** 41 | **Ideas:** 45
+**Generated:** 2026-08-07  
+**Decisions:** 93 | **Tenets:** 19 | **Directives:** 40 | **Ideas:** 42
 
 ---
 
@@ -150,19 +150,20 @@ Every component has exactly one owner responsible for it. Others consume, never
 supersede. Primary ownership = maintenance responsibility, not authority
 hierarchy.
 
-**T17. declarative_over_imperative** Declare WHAT should be, let tools enforce
-HOW. Enforcement manifests, schemas, configs — all declarative. You describe the
-world you want; automation makes it so.
+**T17. declarative_over_imperative**  
+Declare WHAT should be, let tools enforce HOW. Enforcement manifests, schemas,
+configs — all declarative. You describe the world you want; automation makes it
+so.
 
-**T19. extensive_discovery_first** Every skill MUST front-load extensive
-discovery before producing output. Multi-agent codebase exploration + deep-plan
-Q&A with findings is the standard pattern. Discovery is not optional polish —
-it's the mechanism that makes output useful. Shallow discovery produces shallow
-skills. _Note: Added during create-audit skill audit (Session #211). User
-directive: extensive discovery/findings/Q&A needs to be a core tenet of all
-skills. Extends T15 (interactivity first) with the specific requirement that
-discovery must be multi-pass, multi-agent, and exhaustive before any output is
-generated._
+**T19. extensive_discovery_first**  
+Every skill MUST front-load extensive discovery before producing output.
+Multi-agent codebase exploration + deep-plan Q&A with findings is the standard
+pattern. Discovery is not optional polish — it's the mechanism that makes output
+useful. Shallow discovery produces shallow skills. _Note: Added during
+create-audit skill audit (Session #211). User directive: extensive
+discovery/findings/Q&A needs to be a core tenet of all skills. Extends T15
+(interactivity first) with the specific requirement that discovery must be
+multi-pass, multi-agent, and exhaustive before any output is generated._
 
 ---
 
@@ -453,10 +454,6 @@ Non-negotiable constraints. These override defaults and recommendations.
 **1. roadmap_will_change**  
 ROADMAP.md will need additions, changes, removals after this process
 
-**2. grand_plan_reassessment**  
-TDMS Grand Plan needs reassessment — changing many files invalidates existing
-debt items
-
 **3. state_persistence_standard**  
 Constant state file saving is a standard here AND repo-wide going forward — to
 be canonized as rules
@@ -643,90 +640,84 @@ Future considerations, potential work items, things to watch for. These are NOT
 decisions — they're institutional memory for later reference.
 
 1. ROADMAP entries will change significantly post-standardization
-2. Grand Plan debt items may become invalid as files change
-3. State persistence should use whatever resources are best
-4. Future idea capture mechanism needed
-5. Cross-ecosystem subsystem mapping is its own discovery task
-6. Canon is Ecosystem Zero — all others derive from it
-7. Planning standardization (deep-plan, GSD) as backbone — build from there
-8. PR creep guardrail: commit counter hook (warn 10, block 25, override
+2. State persistence should use whatever resources are best
+3. Future idea capture mechanism needed
+4. Cross-ecosystem subsystem mapping is its own discovery task
+5. Canon is Ecosystem Zero — all others derive from it
+6. Planning standardization (deep-plan, GSD) as backbone — build from there
+7. PR creep guardrail: commit counter hook (warn 10, block 25, override
    available)
-9. Branch scope declaration idea: S/M/L with commit brackets
-10. Session-end PR gate: flag if >15 commits not in a PR
-11. State saving rules need to be canonized
-12. 13 cross-cutting subsystems
-13. Configuration as single source of truth vs hardcoded values
-14. Per-ecosystem required-vs-optional subsystem mapping needed
-15. L5 is north star not exit criteria — most target L3-L4 baseline
-16. Upgrade-friendliness as design principle in every component
-17. MCP memory as secondary state backup (verify next session)
-18. Configure episodic memory for remote sessions (broader benefit beyond this
+8. Branch scope declaration idea: S/M/L with commit brackets
+9. Session-end PR gate: flag if >15 commits not in a PR
+10. State saving rules need to be canonized
+11. 13 cross-cutting subsystems
+12. Configuration as single source of truth vs hardcoded values
+13. Per-ecosystem required-vs-optional subsystem mapping needed
+14. L5 is north star not exit criteria — most target L3-L4 baseline
+15. Upgrade-friendliness as design principle in every component
+16. MCP memory as secondary state backup (verify next session)
+17. Configure episodic memory for remote sessions (broader benefit beyond this
     plan)
-19. Interactivity-first as a design tenet for all skills and tooling — batch
+18. Interactivity-first as a design tenet for all skills and tooling — batch
     questioning > monologue output
-20. Health report dual format (JSON envelope + JSONL findings) could become a
+19. Health report dual format (JSON envelope + JSONL findings) could become a
     general pattern for all ecosystem outputs
-21. Core tenets discovery phase should precede schema/structure decisions —
+20. Core tenets discovery phase should precede schema/structure decisions —
     tenets guide everything downstream
-22. Tenets should be CANON's first artifact (.canon/tenets.jsonl) — CANON
+21. Tenets should be CANON's first artifact (.canon/tenets.jsonl) — CANON
     defines itself before it defines others
-23. CROSS_PLATFORM_SETUP.md is stale — references removed sync script. Needs
+22. CROSS_PLATFORM_SETUP.md is stale — references removed sync script. Needs
     update when platform-agnostic tenet is implemented
-24. Cascade/override (D#5) and progressive disclosure are useful patterns but
+23. Cascade/override (D#5) and progressive disclosure are useful patterns but
     not tenets — keep as referenced patterns, not principles
-25. 17 tenets across 4 categories is the right granularity — specific enough to
+24. 17 tenets across 4 categories is the right granularity — specific enough to
     be actionable, broad enough to be stable
-26. Roadmap & Execution ecosystem is the HUB — all other ecosystems feed work
+25. Roadmap & Execution ecosystem is the HUB — all other ecosystems feed work
     items into it. Non-debt pipelines (audit findings → roadmap, deep-plan
     decisions → roadmap, feature planning → roadmap) are completely missing. T8
     violation.
-27. Roadmap & Execution needs high implementation priority — if we standardize
+26. Roadmap & Execution needs high implementation priority — if we standardize
     13 ecosystems, each generates work items needing automated intake
-28. CANON enforcement cascade: version broadcast → health checker detection →
+27. CANON enforcement cascade: version broadcast → health checker detection →
     migration automation → fail-loud escalation → staggered rollout. Both
     self-protection and downstream propagation.
-29. deep-plan decisions should auto-generate ROADMAP sprint items — manual
+28. deep-plan decisions should auto-generate ROADMAP sprint items — manual
     copying is T8 violation
-30. audit-aggregator produces report but nobody places findings into sprints
+29. audit-aggregator produces report but nobody places findings into sprints
     unless human does it — another missing pipeline
-31. App-layer ecosystem planning is fundamentally different from process
+30. App-layer ecosystem planning is fundamentally different from process
     ecosystem planning — connection points between layers are the priority, not
     internal structure
-32. Operational sprint health monitoring items may overlap with ecosystem
+31. Operational sprint health monitoring items may overlap with ecosystem
     standardization health monitoring — need reconciliation during sequencing
-33. Planning docs (ROADMAP, sprints, grand plan, future roadmap) need continuous
-    updates during plan execution — additions AND deletions of
-    completed/deprecated items
-34. Audits L5 pathway should be architecturally designed during L4 work —
+32. Audits L5 pathway should be architecturally designed during L4 work —
     versioned audit standards, automated regression detection, self-auditing
     capabilities
-35. Checklist adaptation formalization: rigid framework + earned flexibility.
+33. Checklist adaptation formalization: rigid framework + earned flexibility.
     Per-ecosystem mapping with required justification for any deviation from the
     16-item standard
-36. Wave structure allows both parallelism (within waves) and learning transfer
+34. Wave structure allows both parallelism (within waves) and learning transfer
     (between waves) — hybrid approach
-37. TDMS as cross-wave staged effort — each wave advances it one level
-38. Skills elevation to Wave 2 creates a heavy wave — may need 2A/2B split or
+35. TDMS as cross-wave staged effort — each wave advances it one level
+36. Skills elevation to Wave 2 creates a heavy wave — may need 2A/2B split or
     careful parallel tracks
-39. Track-CANON in ROADMAP.md as the overhaul's big-picture sequence, with
+37. Track-CANON in ROADMAP.md as the overhaul's big-picture sequence, with
     individual items in natural tracks
-40. ROADMAP additions should trigger dedupe against MASTER_DEBT to prevent
+38. ROADMAP additions should trigger dedupe against MASTER_DEBT to prevent
     duplicate entries
-41. Knowledge base concept: all prior research (framework repo, PR Review v2,
+39. Knowledge base concept: all prior research (framework repo, PR Review v2,
     research agents, decision logs, standards) form a reusable database for
     every ecosystem deep-plan Phase 0
-42. 3+ sessions without standardization progress should trigger ecosystem health
+40. 3+ sessions without standardization progress should trigger ecosystem health
     dashboard flag (T8 automation over discipline)
-43. Grand Plan pre-checks before each ecosystem: scan changelog for MASTER_DEBT
-    items referencing files about to be modified
-44. Changelog extensible-core schema mirrors D22 ecosystem registry pattern —
+41. Changelog extensible-core schema mirrors D22 ecosystem registry pattern —
     required fields + optional context
-45. CANON version trajectory: 0.1.0 → 0.2.0 (checkpoint #4) → 0.3.0 (checkpoint
+42. CANON version trajectory: 0.1.0 → 0.2.0 (checkpoint #4) → 0.3.0 (checkpoint
     #7) → 0.4.0 (checkpoint #15) → 1.0.0 (checkpoint #21)
 
 ---
 
 _Generated by `scripts/planning/generate-decisions.js` —
-2026-03-04T20:38:57.487Z_  
+2026-08-07T10:53:57.201Z_  
 _Source: decisions.jsonl, tenets.jsonl, directives.jsonl, ideas.jsonl_  
 _Update: append to JSONL → run script → MD regenerated_
