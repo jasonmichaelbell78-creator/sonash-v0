@@ -6,10 +6,51 @@ const { execFileSync } = require("node:child_process");
 const fs = require("node:fs");
 
 const PROTECTED_BRANCHES = new Set(["main", "master"]);
-const GIT_PUSH_RE = /(?:^|[;&|]\s*)git(?:\s+\S+)*\s+push(?:\s|$)/i;
-const GIT_MUTATION_RE =
-  /(?:^|[;&|]\s*)git(?:\s+\S+)*\s+(?:commit|merge|rebase|cherry-pick|revert|reset|pull)(?:\s|$)/i;
-const MAIN_REF_RE = /(?:^|[\s/:])main(?:$|[\s"'])/i;
+const GIT_MUTATIONS = new Set([
+  "commit",
+  "merge",
+  "rebase",
+  "cherry-pick",
+  "revert",
+  "reset",
+  "pull",
+]);
+
+function commandSegments(command) {
+  return command
+    .replaceAll("&&", ";")
+    .replaceAll("||", ";")
+    .replaceAll("|", ";")
+    .replaceAll("\n", ";")
+    .split(";")
+    .map((segment) =>
+      segment
+        .replaceAll("\t", " ")
+        .split(" ")
+        .map((token) => token.replaceAll('"', "").replaceAll("'", "").trim().toLowerCase())
+        .filter(Boolean)
+    )
+    .filter((tokens) => tokens.length > 0);
+}
+
+function gitCommands(command) {
+  return commandSegments(command)
+    .map((tokens) => {
+      const gitIndex = tokens.indexOf("git");
+      return gitIndex === -1 ? [] : tokens.slice(gitIndex + 1);
+    })
+    .filter((tokens) => tokens.length > 0);
+}
+
+function targetsProtectedBranch(tokens) {
+  return tokens.some(
+    (token) =>
+      PROTECTED_BRANCHES.has(token) ||
+      [...PROTECTED_BRANCHES].some(
+        (branch) => token.endsWith(`/${branch}`) || token.endsWith(`:${branch}`)
+      )
+  );
+}
 
 function emit(output) {
   process.stdout.write(`${JSON.stringify(output)}\n`);
@@ -61,7 +102,10 @@ if (typeof command !== "string" || command.trim() === "") {
 
 const cwd = typeof input.cwd === "string" ? input.cwd : process.cwd();
 const branch = currentBranch(cwd);
-const pushesMain = GIT_PUSH_RE.test(command) && MAIN_REF_RE.test(command);
+const commands = gitCommands(command);
+const pushesMain = commands.some(
+  (tokens) => tokens.includes("push") && targetsProtectedBranch(tokens)
+);
 
 if (pushesMain) {
   deny(
@@ -70,7 +114,11 @@ if (pushesMain) {
   process.exit(0);
 }
 
-if (PROTECTED_BRANCHES.has(branch) && GIT_MUTATION_RE.test(command)) {
+const mutatesRepository = commands.some((tokens) =>
+  tokens.some((token) => GIT_MUTATIONS.has(token))
+);
+
+if (PROTECTED_BRANCHES.has(branch) && mutatesRepository) {
   deny(
     `Mutating Git command blocked on protected branch ${branch}. Switch to a working branch first.`
   );

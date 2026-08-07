@@ -1,7 +1,7 @@
 # Testing Infrastructure Plan
 
-**Document Version:** 1.2 **Created:** 2026-01-27 (Session #103) **Last
-Updated:** 2026-02-23 **Status:** ACTIVE **Priority:** P1 **Related:**
+**Document Version:** 1.3 **Created:** 2026-01-27 (Session #103) **Last
+Updated:** 2026-08-07 **Status:** ACTIVE **Priority:** P1 **Related:**
 [TESTING_CHECKLIST.md](../TESTING_CHECKLIST.md), [ROADMAP.md](../../ROADMAP.md)
 (Track T)
 
@@ -27,30 +27,43 @@ This document outlines a comprehensive testing infrastructure for SoNash that:
 
 ## Current State Assessment
 
+> **Infrastructure gate status (2026-08-07): BASELINE VALIDATED; EXPANSION
+> INCOMPLETE**
+>
+> The application build, type checks, root test suite, coverage threshold,
+> Functions build, public browser smoke tests, Codex direct-main hook tests, and
+> Firestore rules emulator tests are healthy in the rebuilt Node 22/Java 21
+> devcontainer. Visual regression, component, load/performance, test-data
+> factory, and test-dashboard infrastructure remain incomplete.
+
 ### What We Have
 
-| Category           | Status      | Details                                           |
-| ------------------ | ----------- | ------------------------------------------------- |
-| Unit Tests         | ✅ Strong   | 294+ tests, Vitest, 98.9% pass rate               |
-| Manual Checklists  | ✅ Good     | TESTING_CHECKLIST.md with phase-specific guidance |
-| Track A Tests      | ✅ Complete | 131 tests across 8 categories                     |
-| CI Integration     | ✅ Basic    | Pre-push test run, pattern compliance             |
-| Coverage Reporting | ⚠️ Planned  | AUTO-004 in backlog                               |
-| E2E Tests          | ❌ Missing  | Only D5.5 golden-path planned                     |
-| Visual Regression  | ❌ Missing  | No infrastructure                                 |
-| Component Testing  | ❌ Missing  | No isolated component tests                       |
-| Load Testing       | ❌ Missing  | No infrastructure                                 |
+| Category           | Status        | Details                                                            |
+| ------------------ | ------------- | ------------------------------------------------------------------ |
+| Unit Tests         | ✅ Strong     | 4,009 tests: 4,007 passed, 2 skipped                               |
+| Manual Checklists  | ✅ Good       | TESTING_CHECKLIST.md with phase-specific guidance                  |
+| Track A Tests      | ✅ Complete   | Existing infrastructure suites remain covered                      |
+| CI Integration     | ✅ Expanded   | App gates plus Functions lint/build, rules emulator, browser smoke |
+| Coverage Reporting | ✅ Enforced   | CI enforces a 65% overall line-coverage threshold                  |
+| E2E Tests          | ✅ Foundation | Playwright public smoke suite: 2 passing tests                     |
+| Visual Regression  | ⚠️ Planned    | No screenshot baseline suite yet                                   |
+| Component Testing  | ⚠️ Planned    | No isolated component test runner yet                              |
+| Load Testing       | ⚠️ Planned    | No load/performance harness yet                                    |
 
-### Key Gaps
+### Remaining Gaps
 
-1. **No E2E test suite** - Can't automatically verify user journeys
-2. **No component isolation tests** - UI components untested in isolation
-3. **No visual regression** - UI changes go undetected
-4. **No browser automation** - All UI testing is manual
-5. **No test data factories** - Manual test setup is time-consuming
-6. **No dashboard visibility** - Can't see test health at a glance
-
----
+1. **Golden-path E2E coverage** - The Playwright foundation currently covers
+   public landing/manifest smoke only.
+2. **Visual regression** - No screenshot baseline suite is configured.
+3. **Component isolation tests** - No component test runner is configured.
+4. **Load/performance testing** - No load harness is configured.
+5. **Test data factories** - No reusable user, meeting, journal, or emulator
+   seed factories.
+6. **Dashboard visibility** - Test results and coverage are not surfaced in the
+   Dev Dashboard.
+7. **Infrastructure debt** - Documentation freshness/accuracy checks and the
+   full security scan still report pre-existing findings that must be triaged
+   before claiming a clean 100% gate.
 
 ## Proposed Testing Stack
 
