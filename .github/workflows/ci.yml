@@ -52,7 +52,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Run oxlint (fast correctness check)
         run: npm run lint:fast
@@ -89,7 +89,7 @@ jobs:
           cache-dependency-path: functions/package-lock.json
 
       - name: Install Functions dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
         working-directory: functions
 
       - name: Lint Functions
@@ -120,7 +120,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Type check
         run: npx tsc --noEmit
@@ -207,10 +207,10 @@ jobs:
         run: java -version
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Install Firebase CLI
-        run: npm install --global firebase-tools@15.26.0
+        run: npm install --global --ignore-scripts firebase-tools@15.26.0
 
       - name: Run Firestore rules tests
         run: npm run test:rules
@@ -234,10 +234,10 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: ./node_modules/.bin/playwright install --with-deps chromium
 
       - name: Run browser smoke tests
         run: npm run test:e2e
@@ -272,7 +272,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Get changed files for pattern check
         if: ${{ github.event_name == 'pull_request' }}
@@ -368,7 +368,7 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Build application
         run: npm run build
