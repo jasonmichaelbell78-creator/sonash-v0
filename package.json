@@ -210,6 +210,7 @@
     "prettier": "^3.8.4",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
+    "serve": "^14.2.4",
     "tailwindcss": "^4.2.2",
     "tsc-alias": "^1.8.17",
     "tsx": "^4.22.4",
