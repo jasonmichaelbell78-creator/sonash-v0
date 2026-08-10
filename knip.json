@@ -1,5 +1,5 @@
 {
-  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "$schema": "https://unpkg.com/knip@6/schema.json",
   "entry": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts"],
   "project": ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}", "lib/**/*.ts"],
   "ignore": ["tests/**", "scripts/**"],
@@ -25,7 +25,7 @@
     "better-sqlite3",
     "serve"
   ],
-  "ignoreBinaries": ["report", "vitest", "gitleaks"],
+  "ignoreBinaries": ["report", "gitleaks"],
   "next": {
     "entry": [
       "app/**/{page,layout,loading,error,not-found,template,default,route}.tsx",
