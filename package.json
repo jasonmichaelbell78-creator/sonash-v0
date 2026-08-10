@@ -208,7 +208,7 @@
     "oxlint": "^1.77.0",
     "postcss": "^8.5.25",
     "postcss-load-config": "^6.0.1",
-    "prettier": "^3.9.6",
+    "prettier": "^3.8.4",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "serve": "^14.2.6",
