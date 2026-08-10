@@ -814,10 +814,10 @@ _Uncategorized_
 
 _Uncategorized_
 
-| Document                                                       | Description                                                     | References | Last Modified |
-| -------------------------------------------------------------- | --------------------------------------------------------------- | ---------- | ------------- |
-| [Codex Infrastructure and PR Checkpoint](.codex/CHECKPOINT.md) | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-08-07    |
-| [SoNash Codex Configuration](.codex/README.md)                 | This directory contains the repository-scoped Codex foundati... | ↓0 ↑0      | 2026-08-06    |
+| Document                                         | Description                                                     | References | Last Modified |
+| ------------------------------------------------ | --------------------------------------------------------------- | ---------- | ------------- |
+| [Codex Project Checkpoint](.codex/CHECKPOINT.md) | <!-- prettier-ignore-start -->                                  | ↓0 ↑0      | 2026-08-10    |
+| [SoNash Codex Configuration](.codex/README.md)   | This directory contains the repository-scoped Codex foundati... | ↓0 ↑0      | 2026-08-06    |
 
 ### .gemini (Tier 4)
 
@@ -3512,7 +3512,7 @@ Documents with no inbound links (not referenced by any other document):
 - [Sync-Mechanism Registry Schema](.claude/sync/schema/SCHEMA.md)
 - [audit-review-team](.claude/teams/audit-review-team.md)
 - [research-plan-team](.claude/teams/research-plan-team.md)
-- [Codex Infrastructure and PR Checkpoint](.codex/CHECKPOINT.md)
+- [Codex Project Checkpoint](.codex/CHECKPOINT.md)
 - [SoNash Codex Configuration](.codex/README.md)
 - [SoNash Code Review Style Guide](.gemini/styleguide.md)
 - [Security Instructions for Copilot](.github/instructions/security.instructions.md)
@@ -4816,7 +4816,7 @@ Documents with no inbound links (not referenced by any other document):
 | 267  | [.claude/sync/schema/SCHEMA.md](.claude/sync/schema/SCHEMA.md)                                                                                                                                                             | Sync-Mechanism Registry Schema                                                                                                           | 4    | ACTIVE \*\*Source of                                                     |
 | 268  | [.claude/teams/audit-review-team.md](.claude/teams/audit-review-team.md)                                                                                                                                                   | audit-review-team                                                                                                                        | 4    | ACTIVE                                                                   |
 | 269  | [.claude/teams/research-plan-team.md](.claude/teams/research-plan-team.md)                                                                                                                                                 | research-plan-team                                                                                                                       | 4    | ACTIVE                                                                   |
-| 270  | [.codex/CHECKPOINT.md](.codex/CHECKPOINT.md)                                                                                                                                                                               | Codex Infrastructure and PR Checkpoint                                                                                                   | 4    | ACTIVE                                                                   |
+| 270  | [.codex/CHECKPOINT.md](.codex/CHECKPOINT.md)                                                                                                                                                                               | Codex Project Checkpoint                                                                                                                 | 4    | ACTIVE                                                                   |
 | 271  | [.codex/README.md](.codex/README.md)                                                                                                                                                                                       | SoNash Codex Configuration                                                                                                               | 4    | -                                                                        |
 | 272  | [.gemini/styleguide.md](.gemini/styleguide.md)                                                                                                                                                                             | SoNash Code Review Style Guide                                                                                                           | 4    | ACTIVE                                                                   |
 | 273  | [.github/copilot-instructions.md](.github/copilot-instructions.md)                                                                                                                                                         | Copilot Instructions - SoNash Recovery Notebook                                                                                          | 4    | -                                                                        |
