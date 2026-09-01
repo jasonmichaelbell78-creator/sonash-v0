@@ -73,7 +73,7 @@ jobs:
         run: test -s semgrep-local.sarif || { echo "::error::semgrep-local.sarif missing or empty — Semgrep scan may have failed silently"; exit 1; }
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@5595ccaf912efad79be6eef63a5619ff05969be3 # v4.37.6
+        uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
         if: always() && hashFiles('semgrep-local.sarif') != ''
         with:
           sarif_file: semgrep-local.sarif
